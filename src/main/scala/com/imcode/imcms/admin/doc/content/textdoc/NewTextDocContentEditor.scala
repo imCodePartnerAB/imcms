@@ -10,7 +10,8 @@ import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 class NewTextDocContentEditor(doc: TextDocumentDomainObject, metaEditor: MetaEditor) extends DocContentEditor {
   override type Data = TextDocumentDomainObject
 
-  override val view = new NewTextDocContentEditorView |>> { w =>
+  override val view = new NewTextDocContentEditorView |>> {
+    w =>
 
   }
 

@@ -13,7 +13,7 @@ import imcode.util.io.FileInputStreamSource;
 import java.io.File;
 import java.util.Collection;
 
-import com.imcode.imcms.dao.MetaDao;
+import com.imcode.imcms.mapping.dao.MetaDao;
 
 /**
  * Initializes a document fields depending on document's type.

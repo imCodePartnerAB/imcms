@@ -13,8 +13,8 @@ class SessionCounterManagerView extends VerticalLayout with FullWidth {
   val miReload = mb.addItem("Reload")
   val miHelp = mb.addItem("Help")
   val frmValues = new SessionCounterForm with Margin
-//  val pnlValues = new Panel(new VerticalLayout with UndefinedSize) with UndefinedSize
-//
-//  pnlValues.setContent(frmValues)
+  //  val pnlValues = new Panel(new VerticalLayout with UndefinedSize) with UndefinedSize
+  //
+  //  pnlValues.setContent(frmValues)
   addComponents(mb, frmValues)
 }

@@ -1,45 +1,21 @@
 package com.imcode.imcms.mapping.dao;
 
 import com.imcode.imcms.mapping.orm.DocLanguage;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Transactional
-public class DocLanguageDao {
+@Service
+public interface DocLanguageDao extends CrudRepository<DocLanguage, Integer> {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    DocLanguage getByCode(String code);
 
-    public List<DocLanguage> getAll() {
-        return entityManager.createQuery("SELECT l FROM Language l", DocLanguage.class).getResultList();
-    }
+    @Modifying
+    @Query("DELETE FROM DocLanguage l WHERE l.code = ?1")
+    int deleteByCode(String code);
 
-    public DocLanguage getById(int id) {
-        return entityManager.find(DocLanguage.class, id);
-    }
-
-    public DocLanguage getByCode(String code) {
-        return entityManager.createQuery("SELECT l FROM Language l WHERE l.code = ?1", DocLanguage.class)
-                .setParameter(1, code)
-                .getSingleResult();
-    }
-
-    public DocLanguage save(DocLanguage language) {
-        return entityManager.merge(language);
-    }
-
-    public int deleteById(int id) {
-        return entityManager.createQuery("DELETE FROM DocLanguage l WHERE l.id = ?1")
-                .setParameter(1, id)
-                .executeUpdate();
-    }
-
-    public int deleteByCode(String code) {
-        return entityManager.createQuery("DELETE FROM DocLanguage l WHERE l.code = ?1")
-                .setParameter(1, code)
-                .executeUpdate();
-    }
+    List<DocLanguage> findAll();
 }

@@ -42,17 +42,18 @@ class TextDocPermSetEditor(
     view.chkEditIncludes.checked = permSet.getEditIncludes
   }
 
-  override def collectValues(): ErrorsOrData = new TextDocumentPermissionSetDomainObject(permSet.getType) |>> { ps =>
-    ps.setEditDocumentInformation(view.chkEditMeta.checked)
-    ps.setEditPermissions(view.chkEditPermissions.checked)
-    ps.setEdit(view.chkEditTexts.checked)
+  override def collectValues(): ErrorsOrData = new TextDocumentPermissionSetDomainObject(permSet.getType) |>> {
+    ps =>
+      ps.setEditDocumentInformation(view.chkEditMeta.checked)
+      ps.setEditPermissions(view.chkEditPermissions.checked)
+      ps.setEdit(view.chkEditTexts.checked)
 
-    ps.setEditTemplates(view.chkEditTemplates.checked)
-    ps.setEditImages(view.chkEditImages.checked)
-    ps.setEditMenus(view.chkEditMenus.checked)
-    ps.setEditIncludes(view.chkEditIncludes.checked)
+      ps.setEditTemplates(view.chkEditTemplates.checked)
+      ps.setEditImages(view.chkEditImages.checked)
+      ps.setEditMenus(view.chkEditMenus.checked)
+      ps.setEditIncludes(view.chkEditIncludes.checked)
 
-    ps.setAllowedDocumentTypeIds(new java.util.HashSet(view.tcsCreateDocsOfTypes.itemIds))
-    ps.setAllowedTemplateGroupIds(view.tcsUseTemplatesFromTemplateGroups.itemIds.asScala.map(_.getId: JInteger).toSet.asJava)
+      ps.setAllowedDocumentTypeIds(new java.util.HashSet(view.tcsCreateDocsOfTypes.itemIds))
+      ps.setAllowedTemplateGroupIds(view.tcsUseTemplatesFromTemplateGroups.itemIds.asScala.map(_.getId: JInteger).toSet.asJava)
   } |> Right.apply
 }

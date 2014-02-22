@@ -7,7 +7,7 @@ import imcode.server.document.{LifeCyclePhase, DocumentDomainObject}
 
 // todo: refactor, change package ???
 object Theme {
-  implicit val stringToThemeResource = new TR(_:String)
+  implicit val stringToThemeResource = new TR(_: String)
 
   object Icon {
     val About16: TR = "icons/16/globe.png"
@@ -43,12 +43,16 @@ object Theme {
 
     object Doc {
       def phase(lifeCyclePhase: LifeCyclePhase): TR = s"icons/doc_status/${lifeCyclePhase}.gif"
+
       def phase(doc: DocumentDomainObject): TR = if (doc == null) null else phase(doc.getLifeCyclePhase)
     }
 
     object Language {
       def flag(language: DocumentLanguage): TR = flag(language.getCode)
+
       def flag(languageCode: String): TR = s"icons/language_flag/${languageCode}.gif"
     }
+
   }
+
 }

@@ -7,7 +7,7 @@ import com.imcode.imcms.vaadin.data._
 import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDomainObject
 import com.imcode.imcms.ImcmsServicesSupport
-import com.imcode.imcms.dao.TextDocDao
+import com.imcode.imcms.mapping.dao.TextDocDao
 import com.imcode.imcms.vaadin.component.dialog._
 import com.vaadin.server.Sizeable
 import org.joda.time.DateTime

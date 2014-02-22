@@ -3,7 +3,7 @@ package imcms
 package admin.instance.settings.language
 
 import com.imcode.imcms.api.DocumentLanguage
-import com.imcode.imcms.mapping.dao.DocLanguageDao
+import com.imcode.imcms.mapping.dao.{SystemDao, DocLanguageDao}
 import com.imcode.imcms.mapping.orm.DocLanguage
 import com.imcode.imcms.mapping.OrmToApi
 import com.imcode.imcms.vaadin.Current
@@ -11,7 +11,6 @@ import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import _root_.imcode.server.Imcms
 import com.imcode.imcms.security.{PermissionGranted, PermissionDenied}
-import com.imcode.imcms.dao.SystemDao
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.component.dialog._
 import com.imcode.imcms.vaadin.data._
@@ -140,7 +139,7 @@ class LanguageManager {
 
     val default: JInteger = systemDao.getProperty("DefaultLanguageId").getValue.toInt
     for {
-      vo <- languageDao.getAll.asScala
+      vo <- languageDao.findAll.asScala
       code = vo.getCode
       isDefault = default == vo.getId.intValue
     } view.tblLanguages.addRow(code,

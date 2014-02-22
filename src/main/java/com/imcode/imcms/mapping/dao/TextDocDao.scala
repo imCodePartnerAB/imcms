@@ -29,11 +29,11 @@ class TextDocDao extends HibernateSupport {
   //fixme: should return ORM
   def getTextsInAllLanguages(docRef: DocRef, no: Int, loopItemRefOpt: Option[LoopItemRef], createIfNotExists: Boolean): JList[TextDocText] = {
     for {
-      language <- docLanguageDao.getAll.asScala
+      language <- docLanguageDao.findAll.asScala
       docRef2 = DocRef.of(docRef.getDocId, docRef.getDocVersionNo, language.getCode)
       text <- getText(docRef2, no, loopItemRefOpt).asOption
     } yield text
-  } |> { _.asJava }
+  } |> { _.toList.asJava }
 
   /** Inserts or updates text. */
   def saveText(text: TextDocText): TextDocText = hibernate.saveOrUpdate(text)
@@ -144,7 +144,7 @@ class TextDocDao extends HibernateSupport {
   def getImagesInAllLanguages(ref: DocVersionRef, no: Int, contentRefOpt: Option[TextDocLoopEntry] = None,
                 createIfNotExists: Boolean = false): JList[TextDocImage] = {
     for {
-      language <- docLanguageDao.getAll.asScala
+      language <- docLanguageDao.findAll.asScala
       image <- getImage(ref, no, language, contentRefOpt).asOption
     } yield image
   } |> { _.asJava }

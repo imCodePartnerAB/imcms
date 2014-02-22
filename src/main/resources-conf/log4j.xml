@@ -5,8 +5,8 @@
 
     <!-- Renderer for DocumentRequest -->
     <renderer
-        renderingClass="imcode.util.log.FakeRequestRenderer"
-        renderedClass="imcode.server.DocumentRequest"/>
+            renderingClass="imcode.util.log.FakeRequestRenderer"
+            renderedClass="imcode.server.DocumentRequest"/>
 
     <!-- The accesslog (logs usermovements) -->
     <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
@@ -88,7 +88,7 @@
         <appender-ref ref="ALL"/>
     </category>
 
-    
+
     <!--DISABLED-->
     <!--Log all SQL DDL statements as they are executed-->
     <category name="org.hibernate.tool.hbm2ddl" additivity="false">

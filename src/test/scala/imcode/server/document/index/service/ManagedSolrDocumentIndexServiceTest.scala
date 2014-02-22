@@ -38,8 +38,9 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
       val service = new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, ops, _ => ())
 
       try {
-        (1001 to 1010).foreach { id =>
-          service.update(AddDocToIndex(id))
+        (1001 to 1010).foreach {
+          id =>
+            service.update(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)
@@ -57,17 +58,19 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
       var serviceErrors = Vector.empty[ManagedSolrDocumentIndexService.ServiceFailure]
       val service = new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, opsMock, serviceErrors :+= _)
 
-      Mockito.when(opsMock.addDocsToIndex(any(classOf[SolrServer]), anyInt())).thenAnswer { invocation: InvocationOnMock =>
-        invocation.getArguments match {
-          case Array(solrServer: SolrServer, docId: JInteger) =>
-            if (docId > 1005) throw new RuntimeException("failed to index document " + docId)
-            else ops.addDocsToIndex(solrServer, docId)
-        }
+      Mockito.when(opsMock.addDocsToIndex(any(classOf[SolrServer]), anyInt())).thenAnswer {
+        invocation: InvocationOnMock =>
+          invocation.getArguments match {
+            case Array(solrServer: SolrServer, docId: JInteger) =>
+              if (docId > 1005) throw new RuntimeException("failed to index document " + docId)
+              else ops.addDocsToIndex(solrServer, docId)
+          }
       }
 
       try {
-        (1001 to 1010).foreach { id =>
-          service.update(AddDocToIndex(id))
+        (1001 to 1010).foreach {
+          id =>
+            service.update(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)
@@ -92,8 +95,9 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
 
         Thread.sleep(1000)
 
-        (1001 to 1010).foreach { id =>
-          service.update(AddDocToIndex(id))
+        (1001 to 1010).foreach {
+          id =>
+            service.update(AddDocToIndex(id))
         }
 
         Thread.sleep(1000)

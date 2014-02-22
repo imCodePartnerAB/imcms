@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.dao.SystemDao
 import com.imcode.imcms.mapping.orm.SystemProperty
 import imcms.test.TestSetup.db
 import org.junit.runner.RunWith
@@ -30,8 +31,9 @@ class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAft
     db.runScripts("src/test/resources/sql/system_property_dao.sql")
   }
 
-  def getExistingProperty(name: String) = systemDao.getProperty(name) |>> { property =>
-    property must not be (null)
+  def getExistingProperty(name: String) = systemDao.getProperty(name) |>> {
+    property =>
+      property must not be (null)
   }
 
 
@@ -42,8 +44,8 @@ class SystemPropertyDaoSpec extends WordSpec with MustMatchers with BeforeAndAft
 
     "return existing property by name" in {
       val property = getExistingProperty(START_DOC)
-      property.getName must be (START_DOC)
-      property.getValue must be (1001.toString)
+      property.getName must be(START_DOC)
+      property.getValue must be(1001.toString)
     }
 
     "update existing property" in {

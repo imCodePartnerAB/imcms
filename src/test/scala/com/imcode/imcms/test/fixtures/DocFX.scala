@@ -24,45 +24,49 @@ object DocFX {
   val VacantId = Int.MaxValue
 
   def mkDefaultTextDocEn: TextDocumentDomainObject = mkTextDoc(DocFX.DefaultId, LanguageFX.mkEnglish)
+
   def mkDefaultTextDocSe: TextDocumentDomainObject = mkTextDoc(DocFX.DefaultId, LanguageFX.mkSwedish)
 
-  def mkTextDoc(docId: Int, language: DocumentLanguage): TextDocumentDomainObject = new TextDocumentDomainObject |>> { doc =>
-    doc.setId(docId)
-    doc.setCreatorId(100)
-    doc.setPublisherId(200)
-    doc.setCategoryIds(0.until(10).toSet.map(Int.box).asJava)
-    doc.setLanguage(language)
-    doc.setKeywords(0.until(10).map(n => "keyword_%d_%d".format(docId, n)).:+("keyword %d %d".format(docId, 10)).toSet.asJava)
-    doc.setAlias("alias_%d" format docId)
-    doc.setTemplateName("template_%d" format docId)
-    doc.setSearchDisabled(false)
+  def mkTextDoc(docId: Int, language: DocumentLanguage): TextDocumentDomainObject = new TextDocumentDomainObject |>> {
+    doc =>
+      doc.setId(docId)
+      doc.setCreatorId(100)
+      doc.setPublisherId(200)
+      doc.setCategoryIds(0.until(10).toSet.map(Int.box).asJava)
+      doc.setLanguage(language)
+      doc.setKeywords(0.until(10).map(n => "keyword_%d_%d".format(docId, n)).:+("keyword %d %d".format(docId, 10)).toSet.asJava)
+      doc.setAlias("alias_%d" format docId)
+      doc.setTemplateName("template_%d" format docId)
+      doc.setSearchDisabled(false)
 
-    // only roles are indexed, permission sets are ignored
-    doc.getMeta.getRoleIdToDocumentPermissionSetTypeMappings |> { m =>
-      m.setPermissionSetTypeForRole(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL)
-      m.setPermissionSetTypeForRole(RoleId.USERADMIN, DocumentPermissionSetTypeDomainObject.FULL)
-      m.setPermissionSetTypeForRole(RoleId.SUPERADMIN, DocumentPermissionSetTypeDomainObject.FULL)
-    }
+      // only roles are indexed, permission sets are ignored
+      doc.getMeta.getRoleIdToDocumentPermissionSetTypeMappings |> {
+        m =>
+          m.setPermissionSetTypeForRole(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL)
+          m.setPermissionSetTypeForRole(RoleId.USERADMIN, DocumentPermissionSetTypeDomainObject.FULL)
+          m.setPermissionSetTypeForRole(RoleId.SUPERADMIN, DocumentPermissionSetTypeDomainObject.FULL)
+      }
 
-    doc.getCommonContent |> { m =>
-      DocumentCommonContent.builder(m)
-        .headline("i18n_meta_headline_%d_%s".format(docId, language.getCode))
-        .menuText("i18n_meta_menu_text_%d_%s".format(docId, language.getCode))
-        .build() |> doc.setCommonContent
-    }
+      doc.getCommonContent |> {
+        m =>
+          DocumentCommonContent.builder(m)
+            .headline("i18n_meta_headline_%d_%s".format(docId, language.getCode))
+            .menuText("i18n_meta_menu_text_%d_%s".format(docId, language.getCode))
+            .build() |> doc.setCommonContent
+      }
 
-    doc.setProperties(0.until(10).map(n => ("property_name_%d_%d".format(docId, n), "property_value_%d_%d".format(docId, n))).
-      :+("property_name_%d_%d".format(docId, 10), "property value %d %d".format(docId, 10)).toMap.asJava)
+      doc.setProperties(0.until(10).map(n => ("property_name_%d_%d".format(docId, n), "property_value_%d_%d".format(docId, n))).
+        :+("property_name_%d_%d".format(docId, 10), "property value %d %d".format(docId, 10)).toMap.asJava)
 
-    // setup menu items (FIELD__CHILD_ID) as mocks
-    // doc.setMenus(Map(
-    //   1 -> ...
-    //   2 -> ...
-    // ))
+      // setup menu items (FIELD__CHILD_ID) as mocks
+      // doc.setMenus(Map(
+      //   1 -> ...
+      //   2 -> ...
+      // ))
 
-    for (textNo <- 0 until 10) {
-      doc.setText(textNo, new TextDomainObject("text_%d_%d_%s".format(docId, textNo, language.getCode)))
-    }
+      for (textNo <- 0 until 10) {
+        doc.setText(textNo, new TextDomainObject("text_%d_%d_%s".format(docId, textNo, language.getCode)))
+      }
   }
 
   def mkTextDocs(startDocId: Int = DefaultId, count: Int = 10, languages: Seq[DocumentLanguage] = LanguageFX.mkLanguages): Seq[TextDocumentDomainObject] =

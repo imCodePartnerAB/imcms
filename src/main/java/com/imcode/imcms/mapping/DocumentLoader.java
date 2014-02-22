@@ -2,7 +2,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.mapping.dao.DocVersionDao;
-import com.imcode.imcms.dao.MetaDao;
+import com.imcode.imcms.mapping.dao.MetaDao;
 import com.imcode.imcms.mapping.orm.DocCommonContent;
 import com.imcode.imcms.mapping.orm.DocMeta;
 import imcode.server.ImcmsConstants;

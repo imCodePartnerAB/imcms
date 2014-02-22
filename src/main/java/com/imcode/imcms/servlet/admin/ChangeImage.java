@@ -3,7 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.mapping.LoopEntryRef;
 import com.imcode.imcms.mapping.LoopItemRef;
 import com.imcode.imcms.mapping.TextDocumentImageWrapper;
-import com.imcode.imcms.dao.TextDocDao;
+import com.imcode.imcms.mapping.dao.TextDocDao;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;

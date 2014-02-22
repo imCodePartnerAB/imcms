@@ -2,7 +2,7 @@ package com.imcode.imcms.mapping;
 
 import com.google.common.base.Optional;
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.dao.TextDocDao;
+import com.imcode.imcms.mapping.dao.TextDocDao;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;

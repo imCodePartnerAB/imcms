@@ -16,7 +16,7 @@ import org.apache.solr.common.SolrException
  * In case of an indexing error replaces managed instance with new one and re-indexes documents.
  */
 class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexServiceOps)
-    extends DocumentIndexService {
+  extends DocumentIndexService {
 
   private val lock = new AnyRef
   private val shutdownRef: AtomicBoolean = new AtomicBoolean(false)
@@ -60,9 +60,10 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
         logger.info("New managed service instance can not be created - service has been shout down.")
       } else {
         logger.info("Creating new instance of managed service. Data directory will be recreated.")
-        newManagedService(recreateDataDir = true) |> { newService =>
-          serviceRef.set(newService)
-          newService.rebuild()
+        newManagedService(recreateDataDir = true) |> {
+          newService =>
+            serviceRef.set(newService)
+            newService.rebuild()
         }
 
         logger.info("New managed service instance has been created.")

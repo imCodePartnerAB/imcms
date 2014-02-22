@@ -1,9 +1,8 @@
 package com.imcode
 package imcms.mapping
 
-import com.imcode.imcms.mapping.dao.DocLanguageDao
+import com.imcode.imcms.mapping.dao.{SystemDao, DocLanguageDao}
 import javax.inject.Inject
-import com.imcode.imcms.dao.SystemDao
 import _root_.java.util
 import com.imcode.imcms.api.{DocumentLanguage, DocumentLanguageService}
 import scala.beans.BeanProperty
@@ -23,7 +22,7 @@ class DefaultDocumentLanguageService extends DocumentLanguageService with Log4jL
   override def getByCode(code: String): DocumentLanguage = languageDao.getByCode(code) |> OrmToApi.toApi
 
   override def getAllLanguages: util.List[DocumentLanguage] = {
-    languageDao.getAll.asScala.map(OrmToApi.toApi).asJava
+    languageDao.findAll.asScala.map(OrmToApi.toApi).asJava
   }
 
   override def isDefault(language: DocumentLanguage): Boolean = getDefault == language
@@ -34,7 +33,7 @@ class DefaultDocumentLanguageService extends DocumentLanguageService with Log4jL
       null
 
     case property => property.getValue match {
-      case NonNegInt(id) => languageDao.getById(property.getValue.toInt).asOption match {
+      case NonNegInt(id) => languageDao.findOne(property.getValue.toInt).asOption match {
         case Some(language) => language |> OrmToApi.toApi
         case None =>
           logger.error(s"I18n configuration error. Language with id $id does not exists.")

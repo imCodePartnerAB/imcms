@@ -18,6 +18,11 @@
         <appender-ref ref="ALL"/>
     </category>
 
+    <category name="log4j.logger.org.hibernate" additivity="false">
+        <priority value="all"/>
+        <appender-ref ref="ALL"/>
+    </category>
+
     <category name="org.hibernate.SQL" additivity="false">
         <priority value="all"/>
         <appender-ref ref="ALL"/>

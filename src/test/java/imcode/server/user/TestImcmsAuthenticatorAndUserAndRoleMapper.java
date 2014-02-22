@@ -16,10 +16,10 @@ public class TestImcmsAuthenticatorAndUserAndRoleMapper extends TestCase {
         LoginPasswordManager userLoginPasswordManager = new LoginPasswordManager();
         ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(mockImcmsServices, userLoginPasswordManager);
         UserDomainObject user = new UserDomainObject();
-        user.setLoginName( "Test" );
-        user.setImcmsExternal( true );
-        user.setLanguageIso639_2( "eng" );
-        imcmsAuthenticatorAndUserAndRoleMapper.addUser( user);
+        user.setLoginName("Test");
+        user.setImcmsExternal(true);
+        user.setLanguageIso639_2("eng");
+        imcmsAuthenticatorAndUserAndRoleMapper.addUser(user);
         database.assertExpectedSqlCalls();
     }
 

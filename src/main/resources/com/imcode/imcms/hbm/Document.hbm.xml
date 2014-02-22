@@ -1,172 +1,172 @@
 <?xml version="1.0" encoding="UTF-8"?>
- 
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
- 
+
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
 <hibernate-mapping>
 
-  <!-- ==================================================================== -->
-  <!-- META -->
-  <!-- ==================================================================== -->
-  <query name="Meta.getAllDocumentIds">
-    <![CDATA[
+    <!-- ==================================================================== -->
+    <!-- META -->
+    <!-- ==================================================================== -->
+    <query name="Meta.getAllDocumentIds">
+        <![CDATA[
     SELECT m.id FROM Meta m ORDER BY m.id
-    ]]>  
-  </query>   
-  
-  <query name="Meta.getDocumentIdsInRange">
-    <![CDATA[
+    ]]>
+    </query>
+
+    <query name="Meta.getDocumentIdsInRange">
+        <![CDATA[
     SELECT m.id FROM Meta m 
     WHERE m.id 
     BETWEEN :min AND :max 
     ORDER BY m.id
-    ]]>  
-  </query>   
-  
-  <query name="Meta.getMaxDocumentId">
-    <![CDATA[
+    ]]>
+    </query>
+
+    <query name="Meta.getMaxDocumentId">
+        <![CDATA[
     SELECT max(m.id) FROM Meta m
-    ]]>  
-  </query> 
-  
-  <query name="Meta.getMinDocumentId">
-    <![CDATA[
+    ]]>
+    </query>
+
+    <query name="Meta.getMinDocumentId">
+        <![CDATA[
     SELECT min(m.id) FROM Meta m
-    ]]>  
-  </query>
-  
-  <query name="Meta.getMinMaxDocumentIds">
-    <![CDATA[
+    ]]>
+    </query>
+
+    <query name="Meta.getMinMaxDocumentIds">
+        <![CDATA[
     SELECT min(m.id), max(m.id) FROM Meta m
     ]]>
-  </query>
+    </query>
 
-  <query name="DocAppearance.getByDocId">
-    <![CDATA[
+    <query name="DocAppearance.getByDocId">
+        <![CDATA[
     SELECT l FROM Appearance l WHERE l.docId = :docId
     ]]>
-  </query>    
+    </query>
 
-  <query name="DocAppearance.getByDocIdAndLanguageCode">
-    <![CDATA[
+    <query name="DocAppearance.getByDocIdAndLanguageCode">
+        <![CDATA[
     SELECT l FROM Appearance l WHERE l.docId = :docId AND l.language.code = :languageCode
     ]]>
-  </query>
+    </query>
 
-  <query name="DocAppearance.deleteByDocIdAndLanguageCode">
-    <![CDATA[
+    <query name="DocAppearance.deleteByDocIdAndLanguageCode">
+        <![CDATA[
     DELETE FROM Appearance l WHERE l.docId = :docId AND l.language.code = :languageCode
     ]]>
-  </query>
+    </query>
 
-  <!-- ==================================================================== -->
-  <!-- PROPERTIES -->
-  <!-- ==================================================================== -->
+    <!-- ==================================================================== -->
+    <!-- PROPERTIES -->
+    <!-- ==================================================================== -->
 
-  <!-- Unique -->
-  <query name="DocumentProperty.getDocumentIdByAlias">
-    <![CDATA[
+    <!-- Unique -->
+    <query name="DocumentProperty.getDocumentIdByAlias">
+        <![CDATA[
 		SELECT p.docId
 		FROM DocumentProperty p
 		WHERE p.name = :name AND value= :value
     ]]>
-  </query>
+    </query>
 
-  <!-- Collection -->
-  <query name="DocumentProperty.getAllAliases">
-    <![CDATA[
+    <!-- Collection -->
+    <query name="DocumentProperty.getAllAliases">
+        <![CDATA[
 		SELECT p.value
 		FROM DocumentProperty p
 		WHERE p.name = :name
 		ORDER BY p.value
     ]]>
-  </query>
+    </query>
 
-  <!-- Unique -->
-  <query name="DocumentProperty.getAliasProperty">
-    <![CDATA[
+    <!-- Unique -->
+    <query name="DocumentProperty.getAliasProperty">
+        <![CDATA[
 		SELECT p FROM
 		DocumentProperty p
 		WHERE p.name = :name AND lower(p.value) = lower(:value)
     ]]>
-  </query>
+    </query>
 
-  <!-- Unique -->
-  <query name="DocumentProperty.getProperty">
-    <![CDATA[
+    <!-- Unique -->
+    <query name="DocumentProperty.getProperty">
+        <![CDATA[
 		SELECT p FROM
 		DocumentProperty p
 		WHERE p.docId = :docId AND p.name = :name
     ]]>
-  </query>
+    </query>
 
-  <!-- ==================================================================== -->
-  <!-- CATEGORIES -->
-  <!-- ==================================================================== -->
+    <!-- ==================================================================== -->
+    <!-- CATEGORIES -->
+    <!-- ==================================================================== -->
 
-  <query name="CategoryType.getAllTypes">
-    <![CDATA[
+    <query name="CategoryType.getAllTypes">
+        <![CDATA[
     SELECT t FROM CategoryType t ORDER BY t.name
     ]]>
-  </query>
+    </query>
 
-  <query name="CategoryType.getByName">
-    <![CDATA[
+    <query name="CategoryType.getByName">
+        <![CDATA[
     SELECT t FROM CategoryType t WHERE t.name = :name
     ]]>
-  </query>
+    </query>
 
-  <query name="Category.getByType">
-    <![CDATA[
+    <query name="Category.getByType">
+        <![CDATA[
     SELECT c FROM Category c WHERE c.type = ?
     ]]>
-  </query>
+    </query>
 
-  <query name="Category.getByNameAndType">
-    <![CDATA[
+    <query name="Category.getByNameAndType">
+        <![CDATA[
     SELECT c FROM Category c WHERE c.name = :name AND c.type = :type
     ]]>
-  </query>
+    </query>
 
-  <query name="Category.getAll">
-    <![CDATA[
+    <query name="Category.getAll">
+        <![CDATA[
     FROM Category c ORDER BY c.type.name ASC, c.name ASC
     ]]>
-  </query>
+    </query>
 
-    
-  <!-- ==================================================================== -->
-  <!-- Html document -->
-  <!-- ==================================================================== -->
-  <query name="HtmlDoc.getReference">
-    <![CDATA[
+
+    <!-- ==================================================================== -->
+    <!-- Html document -->
+    <!-- ==================================================================== -->
+    <query name="HtmlDoc.getReference">
+        <![CDATA[
     FROM HtmlReference r WHERE r.docIdentity = :docIdentity
     ]]>
-  </query>
+    </query>
 
 
-  <!-- ==================================================================== -->
-  <!-- Url document -->
-  <!-- ==================================================================== -->
-  <query name="UrlDoc.getReference">
-    <![CDATA[
+    <!-- ==================================================================== -->
+    <!-- Url document -->
+    <!-- ==================================================================== -->
+    <query name="UrlDoc.getReference">
+        <![CDATA[
     FROM UrlReference r WHERE r.docIdentity = :docIdentity
     ]]>
-  </query>
+    </query>
 
-  <!-- ==================================================================== -->
-  <!-- File document -->
-  <!-- ==================================================================== -->
-  <query name="FileDoc.getReferences">
-    <![CDATA[
+    <!-- ==================================================================== -->
+    <!-- File document -->
+    <!-- ==================================================================== -->
+    <query name="FileDoc.getReferences">
+        <![CDATA[
     FROM FileReference r WHERE r.docIdentity = :docIdentity ORDER BY r.defaultFileId DESC, r.fileId
     ]]>
-  </query>
+    </query>
 
-  <query name="FileDoc.deleteAllReferences">
-    <![CDATA[
+    <query name="FileDoc.deleteAllReferences">
+        <![CDATA[
     DELETE FROM FileReference r WHERE r.docIdentity = :docIdentity
     ]]>
-  </query>
-    
+    </query>
+
 </hibernate-mapping>

@@ -6,6 +6,7 @@ import com.vaadin.ui.Table
 // implicit
 class TableWrapper[A <: TItemId](table: Table with ContainerWithTypedItemId[A]) {
   def addRow(itemId: A, column: Any, columns: Any*): AnyRef = table.addItem((column +: columns).map(_.asInstanceOf[AnyRef]).toArray, itemId)
+
   def addRowWithAutoId(column: Any, columns: Any*): AnyRef = table.addItem((column +: columns).map(_.asInstanceOf[AnyRef]).toArray, null)
 
   object generatedColumn {
@@ -19,5 +20,8 @@ class TableWrapper[A <: TItemId](table: Table with ContainerWithTypedItemId[A]) 
   }
 
   def columnHeaders: Seq[String] = table.getColumnHeaders.toSeq
-  def columnHeaders_=(headers: Seq[String]) { table.setColumnHeaders(headers.toArray: _*) }
+
+  def columnHeaders_=(headers: Seq[String]) {
+    table.setColumnHeaders(headers.toArray: _*)
+  }
 }

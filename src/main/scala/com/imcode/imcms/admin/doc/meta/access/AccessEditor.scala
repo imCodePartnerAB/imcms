@@ -47,8 +47,8 @@ import com.imcode.imcms.vaadin.Editor
  *
  * Any user role can be associated with at most one permission set per document.
  * The system has two build-in unmodifiable permission sets which always contain the same permissions:
- *   READ - contains single permission - 'view'.
- *   FULL - contains all permissions.
+ * READ - contains single permission - 'view'.
+ * FULL - contains all permissions.
  * Additionally, for every document system automatically creates two customizable permission sets called CUSTOM-1 and CUSTOM-2.
  * Initially, those sets contain single permission - 'veiw'.
  * An administrator can customize those sets at any time by adding or removing permissions to/from a set
@@ -59,13 +59,13 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
   private val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
 
   case class Data(
-    rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone(),
-    restrictedOnePermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject],
-    restrictedTwoPermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject],
-    isRestrictedOneMorePrivilegedThanRestrictedTwo: Boolean = meta.getRestrictedOneMorePrivilegedThanRestrictedTwo,
-    isLinkedForUnauthorizedUsers: Boolean = meta.getLinkedForUnauthorizedUsers,
-    isLinkableByOtherUsers: Boolean = meta.getLinkableByOtherUsers
-  )
+                   rolesPermissions: RoleIdToDocumentPermissionSetTypeMappings = meta.getRoleIdToDocumentPermissionSetTypeMappings.clone(),
+                   restrictedOnePermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject],
+                   restrictedTwoPermSet: TextDocumentPermissionSetDomainObject = meta.getPermissionSets.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject],
+                   isRestrictedOneMorePrivilegedThanRestrictedTwo: Boolean = meta.getRestrictedOneMorePrivilegedThanRestrictedTwo,
+                   isLinkedForUnauthorizedUsers: Boolean = meta.getLinkedForUnauthorizedUsers,
+                   isLinkableByOtherUsers: Boolean = meta.getLinkableByOtherUsers
+                   )
 
   private val initialValues = Data()
   private val permSetsEditor = new DocPermSetsEditor(doc, user)
@@ -79,87 +79,104 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
   // ui.lytRestrictedPermSets.btnEditRestrictedOnePermSet setReadOnly !user.canDefineRestrictedOneFor(doc)
   // ui.lytRestrictedPermSets.btnEditRestrictedTwoPermSet setReadOnly !user.canDefineRestrictedTwoFor(doc)
   // ui.chkLim1IsMorePrivilegedThanLim2 setReadOnly !user.isSuperAdminOrHasFullPermissionOn(doc)
-  override val view = new AccessEditorView |>> { editorView =>
-    editorView.perms.miRoleAdd.setCommandHandler { _ =>
-      val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
-      val assignedRoles = editorView.perms.tblRolesPermSets.itemIds.asScala.toSet
-      val availableRolesWithPermsSetTypes: Map[RoleDomainObject, List[DocumentPermissionSetTypeDomainObject]] =
-        (for {
-          role <- roleMapper.getAllRoles
-          roleId = role.getId
-          if !(role.getId == RoleId.SUPERADMIN || assignedRoles.contains(role))
-          setTypes = types.filter(user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(_, roleId, doc))
-          if setTypes.nonEmpty
-        } yield role -> setTypes)(breakOut)
+  override val view = new AccessEditorView |>> {
+    editorView =>
+      editorView.perms.miRoleAdd.setCommandHandler {
+        _ =>
+          val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
+          val assignedRoles = editorView.perms.tblRolesPermSets.itemIds.asScala.toSet
+          val availableRolesWithPermsSetTypes: Map[RoleDomainObject, List[DocumentPermissionSetTypeDomainObject]] =
+            (for {
+              role <- roleMapper.getAllRoles
+              roleId = role.getId
+              if !(role.getId == RoleId.SUPERADMIN || assignedRoles.contains(role))
+              setTypes = types.filter(user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(_, roleId, doc))
+              if setTypes.nonEmpty
+            } yield role -> setTypes)(breakOut)
 
-      if (availableRolesWithPermsSetTypes.isEmpty) {
-        Current.page.showWarningNotification("No roles available")
-      } else {
-        new OkCancelDialog("Add role") |>> { dlg =>
-          val availableRoles = availableRolesWithPermsSetTypes.keySet
-          dlg.mainComponent = new AddRolePermSetDialogView |>> { c =>
-            availableRoles.foreach { role => c.cbRole.addItem(role, role.getName) }
+          if (availableRolesWithPermsSetTypes.isEmpty) {
+            Current.page.showWarningNotification("No roles available")
+          } else {
+            new OkCancelDialog("Add role") |>> {
+              dlg =>
+                val availableRoles = availableRolesWithPermsSetTypes.keySet
+                dlg.mainComponent = new AddRolePermSetDialogView |>> {
+                  c =>
+                    availableRoles.foreach {
+                      role => c.cbRole.addItem(role, role.getName)
+                    }
 
-            c.cbRole.addValueChangeHandler { _ =>
-              val availablePermSetTypes = availableRolesWithPermsSetTypes(c.cbRole.firstSelected)
-              types.foreach { typeSet =>
-                c.ogPermsSetType.setItemEnabled(typeSet, availablePermSetTypes contains typeSet)
-              }
+                    c.cbRole.addValueChangeHandler {
+                      _ =>
+                        val availablePermSetTypes = availableRolesWithPermsSetTypes(c.cbRole.firstSelected)
+                        types.foreach {
+                          typeSet =>
+                            c.ogPermsSetType.setItemEnabled(typeSet, availablePermSetTypes contains typeSet)
+                        }
 
-              c.ogPermsSetType.selection = availablePermSetTypes.head
-            }
+                        c.ogPermsSetType.selection = availablePermSetTypes.head
+                    }
 
-            c.cbRole.selection = availableRoles.head
+                    c.cbRole.selection = availableRoles.head
 
-            dlg.setOkButtonHandler {
-              val role = c.cbRole.firstSelected
-              val setType = c.ogPermsSetType.firstSelected
+                    dlg.setOkButtonHandler {
+                      val role = c.cbRole.firstSelected
+                      val setType = c.ogPermsSetType.firstSelected
 
-              addRolePermSetType(role, setType)
-            }
-          }
-        } |> Current.ui.addWindow
-      }
-    }
-
-
-    editorView.perms.miRoleChangePermSet.setCommandHandler { _ =>
-      whenSingleton(editorView.perms.tblRolesPermSets.selection) { role =>
-        types.filter(setType => user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(setType, role.getId, doc)) match {
-          case Nil => Current.page.showWarningNotification("You are not allowed to edit this role")
-          case availableSetTypes =>
-            new OkCancelDialog("Change Role Permissions") |>> { dlg =>
-              dlg.mainComponent = new ChangeRolePermSetDialogView |>> { c =>
-                c.lblRole.value = role.getName
-
-                c.ogPermsSetType.selection = editorView.perms.tblRolesPermSets
-                  .item(role)
-                  .getItemProperty(RolePermSetPropertyId).getValue.asInstanceOf[RolePermSet].setType
-
-                types.foreach { setType =>
-                  c.ogPermsSetType.setItemEnabled(setType, availableSetTypes contains setType)
+                      addRolePermSetType(role, setType)
+                    }
                 }
-
-                dlg.setOkButtonHandler {
-                  setRolePermSetType(role, c.ogPermsSetType.firstSelected)
-                }
-              }
             } |> Current.ui.addWindow
-        }
+          }
       }
-    }
 
-    editorView.perms.miRoleRemove.setCommandHandler { _ =>
-      whenSelected(editorView.perms.tblRolesPermSets) { roles =>
-        roles.foreach(editorView.perms.tblRolesPermSets.removeItem)
+
+      editorView.perms.miRoleChangePermSet.setCommandHandler {
+        _ =>
+          whenSingleton(editorView.perms.tblRolesPermSets.selection) {
+            role =>
+              types.filter(setType => user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(setType, role.getId, doc)) match {
+                case Nil => Current.page.showWarningNotification("You are not allowed to edit this role")
+                case availableSetTypes =>
+                  new OkCancelDialog("Change Role Permissions") |>> {
+                    dlg =>
+                      dlg.mainComponent = new ChangeRolePermSetDialogView |>> {
+                        c =>
+                          c.lblRole.value = role.getName
+
+                          c.ogPermsSetType.selection = editorView.perms.tblRolesPermSets
+                            .item(role)
+                            .getItemProperty(RolePermSetPropertyId).getValue.asInstanceOf[RolePermSet].setType
+
+                          types.foreach {
+                            setType =>
+                              c.ogPermsSetType.setItemEnabled(setType, availableSetTypes contains setType)
+                          }
+
+                          dlg.setOkButtonHandler {
+                            setRolePermSetType(role, c.ogPermsSetType.firstSelected)
+                          }
+                      }
+                  } |> Current.ui.addWindow
+              }
+          }
       }
-    }
 
-    editorView.perms.miEditPermSets.setCommandHandler { _ =>
-      new OkCancelDialog("Permissions") |>> { dlg =>
-        dlg.mainComponent = permSetsEditor.view
-      } |> Current.ui.addWindow
-    }
+      editorView.perms.miRoleRemove.setCommandHandler {
+        _ =>
+          whenSelected(editorView.perms.tblRolesPermSets) {
+            roles =>
+              roles.foreach(editorView.perms.tblRolesPermSets.removeItem)
+          }
+      }
+
+      editorView.perms.miEditPermSets.setCommandHandler {
+        _ =>
+          new OkCancelDialog("Permissions") |>> {
+            dlg =>
+              dlg.mainComponent = permSetsEditor.view
+          } |> Current.ui.addWindow
+      }
   }
 
   resetValues()
@@ -169,7 +186,7 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
     val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
     val allButSuperadminRole = roleMapper.getAllRoles
       .filterNot(_.getId == RoleId.SUPERADMIN)
-      .map(role => (role.getId, role))(breakOut) : Map[RoleId, RoleDomainObject]
+      .map(role => (role.getId, role))(breakOut): Map[RoleId, RoleDomainObject]
 
     view.perms.tblRolesPermSets.removeAllItems()
 
@@ -211,14 +228,16 @@ class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Ed
 
     Right(
       Data(
-        new RoleIdToDocumentPermissionSetTypeMappings |>> { rolesPermissions =>
-          import view.perms.tblRolesPermSets
-          tblRolesPermSets.itemIds.asScala.foreach { role =>
-            rolesPermissions.setPermissionSetTypeForRole(
-              role.getId,
-              tblRolesPermSets.getContainerProperty(role, RolePermSetPropertyId).getValue.asInstanceOf[RolePermSet].setType
-            )
-          }
+        new RoleIdToDocumentPermissionSetTypeMappings |>> {
+          rolesPermissions =>
+            import view.perms.tblRolesPermSets
+            tblRolesPermSets.itemIds.asScala.foreach {
+              role =>
+                rolesPermissions.setPermissionSetTypeForRole(
+                  role.getId,
+                  tblRolesPermSets.getContainerProperty(role, RolePermSetPropertyId).getValue.asInstanceOf[RolePermSet].setType
+                )
+            }
         },
         permSetsValues.restrictedOnePermSet,
         permSetsValues.restrictedTwoPermSet,

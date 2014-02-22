@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+
+    <session-factory>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+        <property name="hibernate.connection.driver">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql:///test?useUnicode=yes&amp;characterEncoding=UTF-8</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.archive.autodetection"/>
+
+        <mapping class="com.imcode.imcms.mapping.orm.DocLanguage"/>
+    </session-factory>
+
+</hibernate-configuration>

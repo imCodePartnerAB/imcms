@@ -36,59 +36,64 @@ class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Ma
     addContainerProperties(this,
       PropertyDescriptor[String]("Name"))
   }
-  
+
   val btnReload = new Button("Reload") with LinkStyle
 
-  private val lytTables = new GridLayout(2,2) with Spacing {
+  private val lytTables = new GridLayout(2, 2) with Spacing {
     addComponents(tblMetas, tblDocs, tblVersions, tblLanguages)
   }
 
   def reload() {
     tblMetas.removeAllItems
-//    for ((id, m) <- docLoaderCache.getMetas) {
-//      tblMetas.addItem(Array(id,
-//                             DocumentTypeDomainObject.TYPES.get(m.getDocumentTypeId).getName,
-//                             m.getCreatedDatetime,
-//                             m.getModifiedDatetime,
-//                             let(m.getDefaultVersionNo) { no =>
-//                               if (no == DocumentVersion.WORKING_VERSION_NO) "Working" else no.toString
-//                             }),
-//                       id)
-//    }
+    //    for ((id, m) <- docLoaderCache.getMetas) {
+    //      tblMetas.addItem(Array(id,
+    //                             DocumentTypeDomainObject.TYPES.get(m.getDocumentTypeId).getName,
+    //                             m.getCreatedDatetime,
+    //                             m.getModifiedDatetime,
+    //                             let(m.getDefaultVersionNo) { no =>
+    //                               if (no == DocumentVersion.WORKING_VERSION_NO) "Working" else no.toString
+    //                             }),
+    //                       id)
+    //    }
   }
 
-  btnReload.addClickHandler { _ =>
-    reload()
+  btnReload.addClickHandler {
+    _ =>
+      reload()
   }
 
-  tblMetas.addValueChangeHandler { _ =>
-    tblVersions.removeAllItems()
-    tblDocs.removeAllItems()
-    tblLanguages.removeAllItems()
-    
-    whenSelected(tblMetas) { docId =>
-      docLoaderCache.getMeta(docId).getEnabledLanguages.foreach { l =>
-        tblLanguages.addItem(Array(l.getName), l.getCode)
+  tblMetas.addValueChangeHandler {
+    _ =>
+      tblVersions.removeAllItems()
+      tblDocs.removeAllItems()
+      tblLanguages.removeAllItems()
+
+      whenSelected(tblMetas) {
+        docId =>
+          docLoaderCache.getMeta(docId).getEnabledLanguages.foreach {
+            l =>
+              tblLanguages.addItem(Array(l.getName), l.getCode)
+          }
+
+          docLoaderCache.getDocVersionInfo(docId).getVersions.foreach {
+            v =>
+              tblVersions.addRow(v.getNo, v.getNo, v.getCreatedDt, v.getModifiedDt)
+          }
+
+          val counter = new java.util.concurrent.atomic.AtomicInteger(0)
+
+        //      for {
+        //        docMap <- docLoaderCache.getWorkingDocuments.values
+        //        (id, doc) <- docMap if id == docId
+        //        no = Int box counter.incrementAndGet
+        //      } tblDocs.addItem(Array(no, "Working", doc.getLanguage.getName), no)
+        //
+        //      for {
+        //        docMap <- docLoaderCache.getDefaultDocuments.values
+        //        (id, doc) <- docMap if id == docId
+        //        no = Int box counter.incrementAndGet
+        //      } tblDocs.addItem(Array(no, doc.getVersionNo.toString, doc.getLanguage.getName), no)
       }
-
-      docLoaderCache.getDocVersionInfo(docId).getVersions.foreach { v =>
-        tblVersions.addRow(v.getNo, v.getNo, v.getCreatedDt, v.getModifiedDt)
-      }                                                                                
-
-      val counter = new java.util.concurrent.atomic.AtomicInteger(0)
-      
-//      for {
-//        docMap <- docLoaderCache.getWorkingDocuments.values
-//        (id, doc) <- docMap if id == docId
-//        no = Int box counter.incrementAndGet
-//      } tblDocs.addItem(Array(no, "Working", doc.getLanguage.getName), no)
-//
-//      for {
-//        docMap <- docLoaderCache.getDefaultDocuments.values
-//        (id, doc) <- docMap if id == docId
-//        no = Int box counter.incrementAndGet
-//      } tblDocs.addItem(Array(no, doc.getVersionNo.toString, doc.getLanguage.getName), no)
-    }
   }
 
   addComponent(btnReload)

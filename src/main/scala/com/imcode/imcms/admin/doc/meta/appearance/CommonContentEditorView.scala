@@ -9,8 +9,9 @@ import com.imcode.imcms.vaadin.component._
 class CommonContentEditorView(val language: DocumentLanguage, caption: String) extends CustomLayout("admin/doc/meta/appearance/i18n_meta") with FullWidth {
   private val lytContent = new FormLayout
 
-  val chkEnabled = new CheckBox(caption) |>> { chk =>
-    chk.setIcon(Theme.Icon.Language.flag(language))
+  val chkEnabled = new CheckBox(caption) |>> {
+    chk =>
+      chk.setIcon(Theme.Icon.Language.flag(language))
   }
 
   val txtTitle = new TextField("Title") with FullWidth

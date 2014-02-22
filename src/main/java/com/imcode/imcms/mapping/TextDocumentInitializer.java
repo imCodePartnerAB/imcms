@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.dao.*;
+import com.imcode.imcms.mapping.dao.*;
 import com.imcode.imcms.mapping.orm.*;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-
-import com.imcode.imcms.dao.TextDocDao;
 
 public class TextDocumentInitializer {
 

@@ -30,7 +30,7 @@ import javax.persistence.*;
  * JPA mapping (currently) does not replace or extend functionality provided by ImcmsAuthenticatorAndUserAndRoleMapper.
  * Must not be used for updates.
  */
-@Entity(name = "User")
+//@Entity(name = "User")
 @Table(name = "users")
 public class UserDomainObject implements Cloneable, Serializable {
 

@@ -13,7 +13,7 @@ class LuceneQueryConversionTest extends WordSpec with BeforeAndAfterAll with Bef
   "TermRangeQuery" should {
     "produce date range between infinity and upper bound" in {
       val format = org.apache.solr.common.util.DateUtil.getThreadLocalDateFormat
-      val dateFrom =  DateTools.dateToString(new Date, DateTools.Resolution.MILLISECOND) // format.format(new Date)
+      val dateFrom = DateTools.dateToString(new Date, DateTools.Resolution.MILLISECOND) // format.format(new Date)
       val dateTo = format.format(new Date)
       println("Date from: %s, date to: %s".format(dateFrom, dateTo))
 

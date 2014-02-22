@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.imcode.db.Database;
 import com.imcode.imcms.DocIdentityCleanerVisitor;
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.dao.NativeQueriesDao;
+import com.imcode.imcms.mapping.dao.NativeQueriesDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.orm.DocCommonContent;
 import imcode.server.Config;

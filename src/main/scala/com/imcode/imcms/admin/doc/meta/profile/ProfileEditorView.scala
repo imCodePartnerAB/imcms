@@ -10,12 +10,13 @@ import com.vaadin.ui.themes.Reindeer
 
 
 class ProfileEditorView(
-   defaultPermSetEditorView: TextDocPermSetEditorView,
-   restrictedOnePermSetEditorView: TextDocPermSetEditorView,
-   restrictedTwoPermSetEditorView: TextDocPermSetEditorView)
-extends VerticalLayout with FullWidth {
+                         defaultPermSetEditorView: TextDocPermSetEditorView,
+                         restrictedOnePermSetEditorView: TextDocPermSetEditorView,
+                         restrictedTwoPermSetEditorView: TextDocPermSetEditorView)
+  extends VerticalLayout with FullWidth {
 
-  val cbDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NoNullSelection // ??? NullSelection ???
+  val cbDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NoNullSelection
+  // ??? NullSelection ???
   val cbRestrictedOneDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NullSelection
   val cbRestrictedTwoDefaultTemplate = new ComboBox("Template") with SingleSelect[String] with NullSelection
 

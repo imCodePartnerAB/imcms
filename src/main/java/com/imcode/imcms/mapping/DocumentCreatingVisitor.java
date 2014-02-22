@@ -8,7 +8,7 @@ import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
-import com.imcode.imcms.dao.MetaDao;
+import com.imcode.imcms.mapping.dao.MetaDao;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

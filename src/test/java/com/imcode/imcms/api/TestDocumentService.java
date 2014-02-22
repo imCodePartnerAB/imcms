@@ -30,28 +30,28 @@ public class TestDocumentService extends TestCase {
         super.setUp();
         contentManagementSystem = new MockContentManagementSystem();
         user = new User(new UserDomainObject());
-        contentManagementSystem.setCurrentUser( user );
+        contentManagementSystem.setCurrentUser(user);
         imcmsServices = new MockImcmsServices();
         imcmsServices.setRoleGetter(new MockRoleGetter());
         database = new MockDatabase();
         DocumentMapper documentMapper = new DocumentMapper(imcmsServices, database);
         documentMapper.setDocumentIndex(new MockDocumentIndex());
-        imcmsServices.setDocumentMapper(documentMapper) ;
+        imcmsServices.setDocumentMapper(documentMapper);
         imcmsServices.setCategoryMapper(documentMapper.getCategoryMapper());
-        contentManagementSystem.setInternal( imcmsServices );
-        documentService = new DocumentService(contentManagementSystem) ;
+        contentManagementSystem.setInternal(imcmsServices);
+        documentService = new DocumentService(contentManagementSystem);
     }
 
 
     public void testApiWrappingList() {
-        List list = new ArrayList() ;
+        List list = new ArrayList();
         DocumentService.ApiDocumentWrappingList apiDocumentWrappingList = new DocumentService.ApiDocumentWrappingList(list, contentManagementSystem);
-        list.add(new TextDocumentDomainObject()) ;
-        assertNotNull(apiDocumentWrappingList.get(0)) ;
+        list.add(new TextDocumentDomainObject());
+        assertNotNull(apiDocumentWrappingList.get(0));
         TextDocument document = new TextDocument(new TextDocumentDomainObject(), contentManagementSystem);
-        apiDocumentWrappingList.set(0, document) ;
-        assertNotNull(apiDocumentWrappingList.get(0)) ;
-        assertEquals(document, apiDocumentWrappingList.remove(0)) ;
-        assertTrue(list.isEmpty()) ;
+        apiDocumentWrappingList.set(0, document);
+        assertNotNull(apiDocumentWrappingList.get(0));
+        assertEquals(document, apiDocumentWrappingList.remove(0));
+        assertTrue(list.isEmpty());
     }
 }

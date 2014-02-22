@@ -34,7 +34,8 @@ import scala.Some
 // todo: template/group
 // todo: add [im]cms path element: /[im]cms/sysadmin/...; [im]cms/docadmin/...
 @com.vaadin.annotations.Theme("imcms")
-class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui =>
+class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
+  ui =>
 
   // todo: move logic into filter
   override def init(request: VaadinRequest) {
@@ -60,32 +61,33 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
     val titleOpt = request.getParameter("label").trimToOption
     val returnUrlOpt = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption
 
-    docOpt.flatMap { doc =>
-      val docId = doc.getId
+    docOpt.flatMap {
+      doc =>
+        val docId = doc.getId
 
-      condOpt(pathInfo) {
-        case null | "" | "/" => wrapDocEditor(request, doc)
-      } orElse {
-        condOpt(pathInfo, doc, request.getParameter("menu_no")) {
-          case ("/menu", textDoc: TextDocumentDomainObject, NonNegInt(menuNo)) =>
-            val title = titleOpt.getOrElse("menu_editor.title".f(docId, menuNo))
-            val returnUrl = returnUrlOpt.getOrElse(
-              s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}&editmenu=$menuNo"
-            )
+        condOpt(pathInfo) {
+          case null | "" | "/" => wrapDocEditor(request, doc)
+        } orElse {
+          condOpt(pathInfo, doc, request.getParameter("menu_no")) {
+            case ("/menu", textDoc: TextDocumentDomainObject, NonNegInt(menuNo)) =>
+              val title = titleOpt.getOrElse("menu_editor.title".f(docId, menuNo))
+              val returnUrl = returnUrlOpt.getOrElse(
+                s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}&editmenu=$menuNo"
+              )
 
-            wrapTextDocMenuEditor(MenuEditorParameters(textDoc, menuNo, title, returnUrl))
+              wrapTextDocMenuEditor(MenuEditorParameters(textDoc, menuNo, title, returnUrl))
+          }
+        } orElse {
+          condOpt(pathInfo, doc, request.getParameter("txt")) {
+            case ("/text", textDoc: TextDocumentDomainObject, NonNegInt(textNo)) =>
+              wrapTextDocTextEditor(request, textDoc, textNo)
+          }
+        } orElse {
+          condOpt(pathInfo, doc, request.getParameter("img")) {
+            case ("/image", textDoc: TextDocumentDomainObject, NonNegInt(imageNo)) =>
+              wrapTextDocImageEditor(request, textDoc, imageNo)
+          }
         }
-      } orElse {
-        condOpt(pathInfo, doc, request.getParameter("txt")) {
-          case ("/text", textDoc: TextDocumentDomainObject, NonNegInt(textNo)) =>
-            wrapTextDocTextEditor(request, textDoc, textNo)
-        }
-      } orElse {
-        condOpt(pathInfo, doc, request.getParameter("img")) {
-          case ("/image", textDoc: TextDocumentDomainObject, NonNegInt(imageNo)) =>
-            wrapTextDocImageEditor(request, textDoc, imageNo)
-        }
-      }
     } getOrElse {
       new Label("N/A")
     }
@@ -94,13 +96,21 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
   def wrapTextDocImageEditor(request: VaadinRequest, doc: TextDocumentDomainObject, imageNo: Int): EditorContainerView = {
     val imageEditor = new ImagesEditor(doc.getRef, imageNo)
-    val editorContainerView =  new EditorContainerView("doc.edit_image.title".i)
+    val editorContainerView = new EditorContainerView("doc.edit_image.title".i)
 
     editorContainerView.mainComponent = imageEditor.view
-    editorContainerView.buttons.btnSave.addClickHandler { _ => }
-    editorContainerView.buttons.btnReset.addClickHandler { _ => imageEditor.resetValues() }
-    editorContainerView.buttons.btnSaveAndClose.addClickHandler { _ => }
-    editorContainerView.buttons.btnClose.addClickHandler { _ => }
+    editorContainerView.buttons.btnSave.addClickHandler {
+      _ =>
+    }
+    editorContainerView.buttons.btnReset.addClickHandler {
+      _ => imageEditor.resetValues()
+    }
+    editorContainerView.buttons.btnSaveAndClose.addClickHandler {
+      _ =>
+    }
+    editorContainerView.buttons.btnClose.addClickHandler {
+      _ =>
+    }
 
     imageEditor.view.setSize(900, 600)
     imageEditor.resetValues()
@@ -110,91 +120,101 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
 
 
   def wrapDocEditor(request: VaadinRequest, doc: DocumentDomainObject): EditorContainerView = {
-    new EditorContainerView("doc.edit_properties.title".f(doc.getId)) |>> { w =>
-      val editor = new DocEditor(doc)
+    new EditorContainerView("doc.edit_properties.title".f(doc.getId)) |>> {
+      w =>
+        val editor = new DocEditor(doc)
+
+        w.mainComponent = editor.view
+
+        editor.view.setSize(900, 600)
+
+        w.buttons.btnSave.addClickHandler {
+          _ =>
+            editor.collectValues() match {
+              case Left(errors) => Current.page.showConstraintViolationNotification(errors)
+              case Right((editedDoc, i18nMetas)) =>
+                try {
+                  imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, Current.imcmsUser)
+                  Current.page.showInfoNotification("notification.doc.saved".i)
+                  Current.page.open(Current.contextPath, "_self")
+                } catch {
+                  case e: Exception => Current.page.showUnhandledExceptionNotification(e)
+                }
+            }
+        }
+
+        w.buttons.btnClose.addClickHandler {
+          _ =>
+            Current.page.open(Current.contextPath, "_self")
+        }
+
+        Current.page.getUriFragment.asOption.map(_.toLowerCase).foreach {
+          case "info" => editor.metaEditor.view.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
+          case "access" => editor.metaEditor.view.treeEditors.selection = "doc_meta_editor.menu_item.access"
+          case "appearance" => editor.metaEditor.view.treeEditors.selection = "doc_meta_editor.menu_item.appearance"
+          case "content" => editor.view.setSelectedTab(1)
+          case _ =>
+        }
+    }
+  }
+
+
+  def wrapTextDocMenuEditor(params: MenuEditorParameters) = new EditorContainerView(params.title) |>> {
+    w =>
+      val doc = params.doc
+      val docId = doc.getId
+      val menuNo = params.menuNo
+      val menu = params.doc.getMenu(menuNo)
+
+      val editor = new MenuEditor(doc, menu) |>> {
+        _.view.setSize(900, 600)
+      }
 
       w.mainComponent = editor.view
 
-      editor.view.setSize(900, 600)
+      w.buttons.btnReset.addClickHandler {
+        _ =>
+          editor.resetValues()
+      }
 
-      w.buttons.btnSave.addClickHandler { _ =>
-        editor.collectValues() match {
-          case Left(errors) => Current.page.showConstraintViolationNotification(errors)
-          case Right((editedDoc, i18nMetas)) =>
-            try {
-              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, Current.imcmsUser)
-              Current.page.showInfoNotification("notification.doc.saved".i)
-              Current.page.open(Current.contextPath, "_self")
-            } catch {
-              case e: Exception => Current.page.showUnhandledExceptionNotification(e)
+      w.buttons.btnSaveAndClose.addClickHandler {
+        _ =>
+          save(close = true)
+      }
+
+      w.buttons.btnClose.addClickHandler {
+        _ =>
+          val editedMenu = editor.collectValues().right.get
+          if (editedMenu.getSortOrder == menu.getSortOrder && editedMenu.getMenuItems.deep == menu.getMenuItems.deep) {
+            closeEditor()
+          } else {
+            new ConfirmationDialog("menu_editor_dlg.confirmation.close_without_saving.title".i,
+              "menu_editor_dlg.confirmation.close_without_saving.message".i) |>> {
+              dlg =>
+                dlg.setOkButtonHandler {
+                  closeEditor()
+                  dlg.close()
+                }
+            } |> Current.ui.addWindow
+          }
+      }
+
+      def closeEditor() {
+        Current.page.open(params.returnUrl, "_self")
+      }
+
+      def save(close: Boolean) {
+        editor.collectValues().right.get |> {
+          menu =>
+            imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocumentMenuWrapper.of(doc.getVersionRef, menuNo, menu), Current.imcmsUser)
+            Current.page.showInfoNotification("menu_editor.notification.saved".i)
+
+            if (close) {
+              Current.page.open(params.returnUrl, "_self")
             }
         }
       }
-
-      w.buttons.btnClose.addClickHandler { _ =>
-        Current.page.open(Current.contextPath, "_self")
-      }
-
-      Current.page.getUriFragment.asOption.map(_.toLowerCase).foreach {
-        case "info" => editor.metaEditor.view.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"
-        case "access" => editor.metaEditor.view.treeEditors.selection = "doc_meta_editor.menu_item.access"
-        case "appearance" => editor.metaEditor.view.treeEditors.selection = "doc_meta_editor.menu_item.appearance"
-        case "content" => editor.view.setSelectedTab(1)
-        case _ =>
-      }
-    }
   }
-
-
-  def wrapTextDocMenuEditor(params: MenuEditorParameters) = new EditorContainerView(params.title) |>> { w =>
-    val doc = params.doc
-    val docId = doc.getId
-    val menuNo = params.menuNo
-    val menu = params.doc.getMenu(menuNo)
-
-    val editor = new MenuEditor(doc, menu) |>> { _.view.setSize(900, 600) }
-
-    w.mainComponent = editor.view
-
-    w.buttons.btnReset.addClickHandler { _ =>
-      editor.resetValues()
-    }
-
-    w.buttons.btnSaveAndClose.addClickHandler { _ =>
-      save(close = true)
-    }
-
-    w.buttons.btnClose.addClickHandler { _ =>
-      val editedMenu = editor.collectValues().right.get
-      if (editedMenu.getSortOrder == menu.getSortOrder && editedMenu.getMenuItems.deep == menu.getMenuItems.deep) {
-        closeEditor()
-      } else {
-        new ConfirmationDialog("menu_editor_dlg.confirmation.close_without_saving.title".i,
-                               "menu_editor_dlg.confirmation.close_without_saving.message".i) |>> { dlg =>
-          dlg.setOkButtonHandler {
-            closeEditor()
-            dlg.close()
-          }
-        } |> Current.ui.addWindow
-      }
-    }
-
-    def closeEditor() {
-      Current.page.open(params.returnUrl, "_self")
-    }
-
-    def save(close: Boolean) {
-      editor.collectValues().right.get |> { menu =>
-        imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocumentMenuWrapper.of(doc.getVersionRef, menuNo, menu), Current.imcmsUser)
-        Current.page.showInfoNotification("menu_editor.notification.saved".i)
-
-        if (close) {
-          Current.page.open(params.returnUrl, "_self")
-        }
-      }
-    }
-  }
-
 
 
   // [+] Text can be inside or outside of a content loop
@@ -230,19 +250,19 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
   //  }
 
   // [+] editor/text formats
-//  boolean showModeEditor = formats.isEmpty();
-//  boolean showModeText   = formats.contains("text") || showModeEditor;
-//  boolean showModeHtml   = formats.contains("html") || formats.contains("none") || showModeEditor ;
-//  boolean editorHidden   = getCookie("imcms_hide_editor", request).equals("true") ;
-//  int rows = (request.getParameter("rows") != null && request.getParameter("rows").matches("^\\d+$")) ? Integer.parseInt(request.getParameter("rows")) : 0 ;
-//
-// [-]
-//  if (rows > 0) {
-//    showModeEditor = false;
-//  }
-//
-//  [-]
-//  Cookie?
+  //  boolean showModeEditor = formats.isEmpty();
+  //  boolean showModeText   = formats.contains("text") || showModeEditor;
+  //  boolean showModeHtml   = formats.contains("html") || formats.contains("none") || showModeEditor ;
+  //  boolean editorHidden   = getCookie("imcms_hide_editor", request).equals("true") ;
+  //  int rows = (request.getParameter("rows") != null && request.getParameter("rows").matches("^\\d+$")) ? Integer.parseInt(request.getParameter("rows")) : 0 ;
+  //
+  // [-]
+  //  if (rows > 0) {
+  //    showModeEditor = false;
+  //  }
+  //
+  //  [-]
+  //  Cookie?
   // <title><? templates/sv/change_text.html/1 ?></title>
   //         <script src="<%= request.getContextPath() %>/imcms/$language/scripts/imcms_admin.js.jsp"
   //
@@ -250,13 +270,13 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
   //            JS XINA
 
   // if TEXT_TYPE == text type html && !editor hidden
-//  String returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
-//  if (returnUrl != null) {
-//    %>
-//    <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__RETURN_URL%>" value="<%=returnUrl%>">
-//      <%
-//        }
-//        %>
+  //  String returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
+  //  if (returnUrl != null) {
+  //    %>
+  //    <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__RETURN_URL%>" value="<%=returnUrl%>">
+  //      <%
+  //        }
+  //        %>
 
   // [-]
   // History / RESTORE
@@ -289,15 +309,15 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
   //
   // [-] Detect type using text format
   // [-] Escape HTML
-/*
-        <div id="editor"><%
-	        if (rows == 1) { %>
-	          <input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%;" /><%
-	        } else { %>
-            <textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width: 100%;"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
-	        } %>
-        </div>
-   */
+  /*
+          <div id="editor"><%
+            if (rows == 1) { %>
+              <input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%;" /><%
+            } else { %>
+              <textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width: 100%;"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
+            } %>
+          </div>
+     */
   // [+] label
   // [-] validate
   // [!] Return URL
@@ -310,91 +330,96 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport { ui
   //}
 
   // [-] <%= showModeEditor ? "Editor/" : "" %>HTML
-  def wrapTextDocTextEditor(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int): EditorContainerView = new EditorContainerView |>> { w =>
-    val title = request.getParameter("label").trimToNull match {
-      case null => s"Document ${doc.getId} text no $textNo"
-      case label => label |> StringEscapeUtils.escapeHtml4
-    }
+  def wrapTextDocTextEditor(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int): EditorContainerView = new EditorContainerView |>> {
+    w =>
+      val title = request.getParameter("label").trimToNull match {
+        case null => s"Document ${doc.getId} text no $textNo"
+        case label => label |> StringEscapeUtils.escapeHtml4
+      }
 
-    w.setTitle(title)
+      w.setTitle(title)
 
-    val formats = request.getParameterMap.get("format") match {
-      case null => Set.empty[String]
-      case array => array.toSet
-    }
+      val formats = request.getParameterMap.get("format") match {
+        case null => Set.empty[String]
+        case array => array.toSet
+      }
 
-    val rowsCountOpt = request.getParameter("rows") |> {
-      case  NonNegInt(rows) => Some(rows)
-      case _ => None
-    }
+      val rowsCountOpt = request.getParameter("rows") |> {
+        case NonNegInt(rows) => Some(rows)
+        case _ => None
+      }
 
-    val showModeText = formats.isEmpty || formats.contains("text")
-    val showModeHtml = formats.isEmpty || formats.contains("html") || formats.contains("none")
-    val showModeEditor = formats.isEmpty && rowsCountOpt.isEmpty
+      val showModeText = formats.isEmpty || formats.contains("text")
+      val showModeHtml = formats.isEmpty || formats.contains("html") || formats.contains("none")
+      val showModeEditor = formats.isEmpty && rowsCountOpt.isEmpty
 
-    val LoopItemRefRE = """(\d+)_(\d+)_(\d+)""".r
-    val loopItemRefOpt = request.getParameter("contentRef") match {
-      case LoopItemRefRE(loopNo, contentNo, itemNo) => LoopItemRef.of(loopNo.toInt, contentNo.toInt, itemNo.toInt) |> opt
-      case _ => None
-    }
+      val LoopItemRefRE = """(\d+)_(\d+)_(\d+)""".r
+      val loopItemRefOpt = request.getParameter("contentRef") match {
+        case LoopItemRefRE(loopNo, contentNo, itemNo) => LoopItemRef.of(loopNo.toInt, contentNo.toInt, itemNo.toInt) |> opt
+        case _ => None
+      }
 
-    // fixme
-    val textDocMapper: TextDocMapper = ???
-    val texts = (loopItemRefOpt match {
-      case Some(loopItemRef) => textDocMapper.getLoopTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), loopItemRef)
-      case _ => textDocMapper.getTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo)
-    }).asScala.map {
-      case (language, textOpt) =>language -> textOpt.or(TextDocumentUtils.createDefaultText())
-    }
+      // fixme
+      val textDocMapper: TextDocMapper = ???
+      val texts = (loopItemRefOpt match {
+        case Some(loopItemRef) => textDocMapper.getLoopTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), loopItemRef)
+        case _ => textDocMapper.getTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo)
+      }).asScala.map {
+        case (language, textOpt) => language -> textOpt.or(TextDocumentUtils.createDefaultText())
+      }
 
-    for ((language, text) <- texts) {
-      text.setType(TextDomainObject.TEXT_TYPE_HTML)
-    }
+      for ((language, text) <- texts) {
+        text.setType(TextDomainObject.TEXT_TYPE_HTML)
+      }
 
-    // Current language
-    val preferredLanguage = Imcms.getUser.getDocGetterCallback.documentLanguages.preferred
+      // Current language
+      val preferredLanguage = Imcms.getUser.getDocGetterCallback.documentLanguages.preferred
 
-    val (format, canChangeFormat) = (showModeText, showModeHtml) match {
-      case (true, false) => (TextDomainObject.Format.PLAIN_TEXT, false)
-      case (false, true) => (TextDomainObject.Format.HTML, false)
-      case _ => (TextDomainObject.Format.values()(texts.head._2.getType), true)
-    }
+      val (format, canChangeFormat) = (showModeText, showModeHtml) match {
+        case (true, false) => (TextDomainObject.Format.PLAIN_TEXT, false)
+        case (false, true) => (TextDomainObject.Format.HTML, false)
+        case _ => (TextDomainObject.Format.values()(texts.head._2.getType), true)
+      }
 
-    val editor = new TextEditor(texts.values.toSeq, TextEditorParameters(format, rowsCountOpt, canChangeFormat, showModeEditor))
+      val editor = new TextEditor(texts.values.toSeq, TextEditorParameters(format, rowsCountOpt, canChangeFormat, showModeEditor))
 
-    w.mainComponent = editor.view
-    editor.view.setSize(900, 600)
+      w.mainComponent = editor.view
+      editor.view.setSize(900, 600)
 
-    w.buttons.btnSave.addClickHandler { _ =>
-      save(closeAfterSave = false)
-    }
-    w.buttons.btnSaveAndClose.addClickHandler { _ =>
-      save(closeAfterSave = true)
-    }
+      w.buttons.btnSave.addClickHandler {
+        _ =>
+          save(closeAfterSave = false)
+      }
+      w.buttons.btnSaveAndClose.addClickHandler {
+        _ =>
+          save(closeAfterSave = true)
+      }
 
-    w.buttons.btnClose.addClickHandler { _ =>
-      closeEditor()
-    }
+      w.buttons.btnClose.addClickHandler {
+        _ =>
+          closeEditor()
+      }
 
-    def closeEditor() {
-      Current.page.open(Current.contextPath, "_self")
-    }
+      def closeEditor() {
+        Current.page.open(Current.contextPath, "_self")
+      }
 
-    def save(closeAfterSave: Boolean) {
-      editor.collectValues().right.get |> { texts =>
-        // -check permissionSet.getEditTexts()
-        try {
-          //fixme:
-          //imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, Current.imcmsUser)
-          val user = new UserDomainObject() // todo: fixme
-          imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
-          if (closeAfterSave) closeEditor()
-        } catch {
-          case e: NoPermissionToEditDocumentException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
-          case e: NoPermissionToAddDocumentToMenuException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
-          case e: DocumentSaveException => throw new ShouldNotBeThrownException(e)
+      def save(closeAfterSave: Boolean) {
+        editor.collectValues().right.get |> {
+          texts =>
+          // -check permissionSet.getEditTexts()
+            try {
+              //fixme:
+              //imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, Current.imcmsUser)
+              val user = new UserDomainObject() // todo: fixme
+              imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
+              if (closeAfterSave) closeEditor()
+            } catch {
+              case e: NoPermissionToEditDocumentException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
+              case e: NoPermissionToAddDocumentToMenuException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
+              case e: DocumentSaveException => throw new ShouldNotBeThrownException(e)
+            }
         }
       }
-    }
   }
 }

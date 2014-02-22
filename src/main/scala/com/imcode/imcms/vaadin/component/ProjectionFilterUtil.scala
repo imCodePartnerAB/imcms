@@ -22,7 +22,7 @@ object ProjectionFilterUtil {
              stub: => Component = {
                new Label("projection_filter.lbl_any_value".i) with UndefinedSize
              }
-            ) {
+              ) {
 
     layout.addComponent(if (checkBox.checked) component else stub, name)
   }

@@ -2,7 +2,8 @@ package com.imcode.imcms.vaadin.data
 
 import com.vaadin.data.{Item, Container}
 
-trait ReadOnlyContainer { this: Container =>
+trait ReadOnlyContainer {
+  this: Container =>
 
   override def addItem(): AnyRef = throw new UnsupportedOperationException
 

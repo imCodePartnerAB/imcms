@@ -16,14 +16,14 @@ import junit.framework.TestCase;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
-public class TestDocument extends TestCase{
+public class TestDocument extends TestCase {
 
     public void testGetAllRolesMappedToPermissions() {
         final MockContentManagementSystem contentManagementSystem = new MockContentManagementSystem();
         contentManagementSystem.setCurrentInternalUser(new UserDomainObject());
         MockImcmsServices imcmsServices = new MockImcmsServices();
         contentManagementSystem.setInternal(imcmsServices);
-        imcmsServices.setRoleGetter(new MockRoleGetter()) ;
+        imcmsServices.setRoleGetter(new MockRoleGetter());
         final TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
         textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERADMIN, DocumentPermissionSetTypeDomainObject.FULL);
         textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL);
@@ -32,38 +32,38 @@ public class TestDocument extends TestCase{
 
         final Map allRolesMappedToPermissions = doc.getRolesMappedToPermissions();
         Set roles = allRolesMappedToPermissions.keySet();
-        assertTrue(CollectionUtils.exists(roles, new RoleIdEqualsPredicate(RoleId.USERADMIN))) ;
-        assertTrue(CollectionUtils.exists(roles, new RoleIdEqualsPredicate(RoleId.USERS))) ;
-        assertTrue(CollectionUtils.exists(roles, new RoleIdEqualsPredicate(new RoleId(3)))) ;
+        assertTrue(CollectionUtils.exists(roles, new RoleIdEqualsPredicate(RoleId.USERADMIN)));
+        assertTrue(CollectionUtils.exists(roles, new RoleIdEqualsPredicate(RoleId.USERS)));
+        assertTrue(CollectionUtils.exists(roles, new RoleIdEqualsPredicate(new RoleId(3))));
     }
 
     public void testSearchDisabled() {
         TextDocumentDomainObject documentDO = new TextDocumentDomainObject();
         TextDocument document = new TextDocument(documentDO, null);
-        assertFalse(document.isSearchDisabled()) ;
+        assertFalse(document.isSearchDisabled());
         documentDO.setSearchDisabled(true);
-        assertTrue(document.isSearchDisabled()) ;
+        assertTrue(document.isSearchDisabled());
         document.setSearchDisabled(false);
-        assertFalse(documentDO.isSearchDisabled()) ;
+        assertFalse(documentDO.isSearchDisabled());
     }
 
     public void testKeywords() {
         TextDocumentDomainObject documentDO = new TextDocumentDomainObject();
         TextDocument document = new TextDocument(documentDO, null);
         Set keywords = new HashSet();
-        keywords.add("foo") ;
+        keywords.add("foo");
         //documentDO.setKeywords(keywords);
-        assertTrue(document.getKeywords().contains("foo")) ;
+        assertTrue(document.getKeywords().contains("foo"));
     }
 
     public void testLinkableByOtherUsers() {
         TextDocumentDomainObject documentDO = new TextDocumentDomainObject();
         TextDocument document = new TextDocument(documentDO, null);
-        assertFalse(document.isLinkableByOtherUsers()) ;
+        assertFalse(document.isLinkableByOtherUsers());
         documentDO.setLinkableByOtherUsers(true);
-        assertTrue(document.isLinkableByOtherUsers()) ;
+        assertTrue(document.isLinkableByOtherUsers());
         document.setLinkableByOtherUsers(false);
-        assertFalse(documentDO.isLinkableByOtherUsers()) ;
+        assertFalse(documentDO.isLinkableByOtherUsers());
     }
 
     private static class RoleIdEqualsPredicate implements Predicate {
@@ -74,7 +74,7 @@ public class TestDocument extends TestCase{
         }
 
         public boolean evaluate(Object o) {
-            return ((Role)o).getId() == roleId.intValue() ;
+            return ((Role) o).getId() == roleId.intValue();
         }
     }
 

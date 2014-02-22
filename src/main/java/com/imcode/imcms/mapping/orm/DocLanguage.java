@@ -28,6 +28,22 @@ public class DocLanguage implements Serializable, Cloneable {
     @Column(nullable = false)
     private boolean enabled;
 
+    public DocLanguage() {
+
+    }
+
+    public DocLanguage(String code, String name, String nativeName, boolean enabled) {
+        this(null, code, name, nativeName, enabled);
+    }
+
+    public DocLanguage(Integer id, String code, String name, String nativeName, boolean enabled) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+        this.nativeName = nativeName;
+        this.enabled = enabled;
+    }
+
     @Override
     public boolean equals(Object o) {
         return o == this || (o instanceof DocLanguage && equals((DocLanguage) o));

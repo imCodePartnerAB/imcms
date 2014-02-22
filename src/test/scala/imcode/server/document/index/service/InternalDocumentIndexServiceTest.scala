@@ -22,7 +22,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
     val ms = new DocIndexingMocksSetup
 
     ms.addDocuments(DocFX.mkTextDocs(DocFX.DefaultId, 10))
-    ms.addCategories(CategoryFX.mkCategories() :_*)
+    ms.addCategories(CategoryFX.mkCategories(): _*)
 
     new DocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
   }
@@ -31,86 +31,95 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
     "index all documents" in {
       TestSetup.solr.recreateHome()
 
-      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
-        assertTrue("No docs", docs.isEmpty)
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) {
+        service =>
+          val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
+          assertTrue("No docs", docs.isEmpty)
 
-        for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          service.update(AddDocToIndex(metaId))
-        }
+          for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
+            service.update(AddDocToIndex(metaId))
+          }
 
-        Thread.sleep(1000)
+          Thread.sleep(1000)
       }
 
-      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
-        assertEquals("Found docs", 20, docs.size)
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) {
+        service =>
+          val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
+          assertEquals("Found docs", 20, docs.size)
 
-        for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          val docs = service.query(new SolrQuery("meta_id:" + metaId)).get.getResults
-          assertEquals("Found docs", 2, docs.size)
-        }
+          for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
+            val docs = service.query(new SolrQuery("meta_id:" + metaId)).get.getResults
+            assertEquals("Found docs", 2, docs.size)
+          }
       }
     }
 
     "rebuild index" in {
-      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        service.rebuild().get |> { task =>
-          task.future.get()
-        }
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) {
+        service =>
+          service.rebuild().get |> {
+            task =>
+              task.future.get()
+          }
       }
 
 
-      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
-        assertEquals("Found docs", 20, docs.size)
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) {
+        service =>
+          val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
+          assertEquals("Found docs", 20, docs.size)
 
-        for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          val docs = service.query(new SolrQuery(s"meta_id:$metaId")).get.getResults
-          assertEquals("Found docs", 2, docs.size)
-        }
+          for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
+            val docs = service.query(new SolrQuery(s"meta_id:$metaId")).get.getResults
+            assertEquals("Found docs", 2, docs.size)
+          }
       }
     }
 
     "recreate and rebuild index when index is corrupted" in {
       TestSetup.solr.recreateHome()
 
-      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
-        assertTrue("No docs", docs.isEmpty)
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) {
+        service =>
+          val docs = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
+          assertTrue("No docs", docs.isEmpty)
 
-        for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
-          service.update(AddDocToIndex(metaId))
-          if (metaId == DocFX.DefaultId + 5) {
-            TestSetup.solr.recreateHome()
+          for (metaId <- DocFX.DefaultId until (DocFX.DefaultId + 10)) {
+            service.update(AddDocToIndex(metaId))
+            if (metaId == DocFX.DefaultId + 5) {
+              TestSetup.solr.recreateHome()
+            }
           }
-        }
 
-        Thread.sleep(1000)
+          Thread.sleep(1000)
 
-        val docs2 = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
-        assertEquals("Found docs", 20, docs2.size)
+          val docs2 = service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults
+          assertEquals("Found docs", 20, docs2.size)
       }
     }
 
     "read failure test" in {
       TestSetup.solr.recreateHome()
 
-      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) { service =>
-        service.rebuild().get |> { task =>
-          task.future.get()
-        }
+      using(new InternalDocumentIndexService(TestSetup.solr.home, ops)) {
+        service =>
+          service.rebuild().get |> {
+            task =>
+              task.future.get()
+          }
 
-        service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults |> { docs =>
-          assertEquals("Found docs", 20, docs.size)
-        }
+          service.query(new SolrQuery("*:*").setRows(Integer.MAX_VALUE)).get.getResults |> {
+            docs =>
+              assertEquals("Found docs", 20, docs.size)
+          }
 
-        //Test.solr.recreateHome()
+          //Test.solr.recreateHome()
 
-        service.query(new SolrQuery("nnn:uuu").setRows(Integer.MAX_VALUE)) match {
-          case Failure(error) =>
-          case _ =>
-        }
+          service.query(new SolrQuery("nnn:uuu").setRows(Integer.MAX_VALUE)) match {
+            case Failure(error) =>
+            case _ =>
+          }
       }
     }
   }

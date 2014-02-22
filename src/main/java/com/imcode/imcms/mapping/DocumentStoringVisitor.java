@@ -1,8 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.dao.*;
-import com.imcode.imcms.dao.TextDocDao;
+import com.imcode.imcms.mapping.dao.*;
 import com.imcode.imcms.mapping.dao.DocLanguageDao;
 import com.imcode.imcms.mapping.dao.DocVersionDao;
 import com.imcode.imcms.mapping.orm.*;

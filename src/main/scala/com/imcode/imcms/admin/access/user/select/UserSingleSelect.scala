@@ -12,23 +12,28 @@ class UserSingleSelect {
 
   private val selectionRef = new AtomicReference(Option.empty[UserDomainObject])
 
-  val view = new UserSingleSelectView |>> { w =>
-    w.btnSelect.addClickHandler { _ =>
-      val dialog = new UserSingleSelectDialog
-      dialog.setOkButtonHandler {
-        selection = dialog.projection.selection.headOption
-        dialog.close()
+  val view = new UserSingleSelectView |>> {
+    w =>
+      w.btnSelect.addClickHandler {
+        _ =>
+          val dialog = new UserSingleSelectDialog
+          dialog.setOkButtonHandler {
+            selection = dialog.projection.selection.headOption
+            dialog.close()
+          }
+
+          dialog.show()
       }
 
-      dialog.show()
-    }
-
-    w.btnClear.addClickHandler { _ => selection = None }
+      w.btnClear.addClickHandler {
+        _ => selection = None
+      }
   }
 
   selection = None
 
   def selection: Option[UserDomainObject] = selectionRef.get
+
   def selection_=(userOpt: Option[UserDomainObject]) {
     view.btnClear.setEnabled(userOpt.isDefined)
     view.lblName.value = userOpt match {

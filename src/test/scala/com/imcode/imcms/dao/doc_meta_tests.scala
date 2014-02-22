@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.dao.DocVersionDao
+import com.imcode.imcms.mapping.dao.{MetaDao, DocVersionDao}
 import com.imcode.imcms.mapping.{DocumentCommonContent, DocRef}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

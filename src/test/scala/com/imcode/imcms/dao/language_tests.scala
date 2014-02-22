@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.dao.DocLanguageDao
+import com.imcode.imcms.mapping.dao.{SystemDao, DocLanguageDao}
 import com.imcode.imcms.mapping.orm.{DocLanguage, SystemProperty}
 import org.junit.Assert._
 import org.junit.runner.RunWith
@@ -33,7 +33,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
 
 
   test("get all [2] languages") {
-    val languages = languageDao.getAll
+    val languages = languageDao.findAll
     assertTrue("DB contains 2 languages.", languages.size == 2)
   }
 
@@ -41,7 +41,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     val id = 3
     val code: String = "ee"
 
-    assertNull("Language with id %d does not exists." format id, languageDao.getById(3))
+    assertNull("Language with id %d does not exists." format id, languageDao.findOne(3))
     assertNull("Language with code %s does not exists." format code, languageDao.getByCode(code))
 
     val builder = DocLanguage.builder()
@@ -51,18 +51,18 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     builder.nativeName("Eesti")
     builder.enabled(true)
     val language = languageDao.save(builder.build())
-    assertNotNull("Language with id %d exists." format id, languageDao.getById(3))
+    assertNotNull("Language with id %d exists." format id, languageDao.findOne(3))
     assertNotNull("Language with code %s exists." format code, languageDao.getByCode(code))
   }
 
   test("update existing language") {
-    val language = languageDao.getById(1)
+    val language = languageDao.findOne(1)
     assertTrue("Language is enabled.", language.isEnabled.booleanValue)
 
     val updatedLanguage = DocLanguage.builder(language).enabled(false).build()
     languageDao.save(updatedLanguage)
 
-    val languageFromDb = languageDao.getById(1)
+    val languageFromDb = languageDao.findOne(1)
     assertFalse("Language is disabled.", languageFromDb.isEnabled)
   }
 
@@ -70,7 +70,7 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
     val property = systemDao.getProperty("DefaultLanguageId")
     assertNotNull("DefaultLanguageId system property exists.", property)
     assertEquals("DefaultLanguageId system property is set to %d." format 1, new JInteger(1), property.getValueAsInteger)
-    val language = languageDao.getById(property.getValueAsInteger)
+    val language = languageDao.findOne(property.getValueAsInteger)
     assertNotNull("Default language exists.", language)
   }
 
@@ -86,18 +86,18 @@ class LanguageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAft
   }
 
   test("get existing language by id") {
-    for (id <- Array(1, 2); language = languageDao.getById(id)) {
+    for (id <- Array(1, 2); language = languageDao.findOne(id)) {
       assertNotNull("Language with id %d is exists." format id, language)
       assertEquals("Language id is correct.", id, language.getId)
     }
-    assertNull("Language with id %d does not exists." format 3, languageDao.getById(3))
+    assertNull("Language with id %d does not exists." format 3, languageDao.findOne(3))
   }
 
   test("change default language") {
     val property = systemDao.getProperty("DefaultLanguageId")
     property.setValue("2")
     systemDao.saveProperty(property)
-    val language = languageDao.getById(systemDao.getProperty("DefaultLanguageId").getValueAsInteger)
+    val language = languageDao.findOne(systemDao.getProperty("DefaultLanguageId").getValueAsInteger)
     assertEquals("Language id is correct.", language.getId, 2)
   }
 }

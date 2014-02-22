@@ -100,38 +100,42 @@ class UberAdmin extends UI {
     )
 
 
-  private lazy val menu = new Tree with SingleSelect[MenuItem] with Immediate with NoNullSelection |>> { tree =>
-    def addMenuItem(item: MenuItem) {
-      tree.addItem(item)
-      tree.setItemCaption(item, item.caption.i)
+  private lazy val menu = new Tree with SingleSelect[MenuItem] with Immediate with NoNullSelection |>> {
+    tree =>
+      def addMenuItem(item: MenuItem) {
+        tree.addItem(item)
+        tree.setItemCaption(item, item.caption.i)
 
-      item.iconOpt.foreach(icon => tree.setItemIcon(item, icon))
-      item.children |> { children =>
-        tree.setChildrenAllowed(item, children.nonEmpty)
-        for (child <- children) {
-          addMenuItem(child)
-          tree.setParent(child, item)
+        item.iconOpt.foreach(icon => tree.setItemIcon(item, icon))
+        item.children |> {
+          children =>
+            tree.setChildrenAllowed(item, children.nonEmpty)
+            for (child <- children) {
+              addMenuItem(child)
+              tree.setParent(child, item)
+            }
         }
       }
-    }
 
-    addMenuItem(menuRoot)
+      addMenuItem(menuRoot)
 
-    tree.addValueChangeHandler { _ =>
-      content.setSecondComponent(
-        tree.firstSelectedOpt match {
-          case Some(menuItem) => menuItem.view
-          case _ => null
-        }
-      )
-    }
+      tree.addValueChangeHandler {
+        _ =>
+          content.setSecondComponent(
+            tree.firstSelectedOpt match {
+              case Some(menuItem) => menuItem.view
+              case _ => null
+            }
+          )
+      }
   }
 
 
-  private lazy val content: HorizontalSplitPanel = new HorizontalSplitPanel with FullSize |>> { hsp =>
-    hsp.setFirstComponent(menu)
-    hsp.setSplitPosition(15)
-    hsp.addStyleName(Reindeer.SPLITPANEL_SMALL)
+  private lazy val content: HorizontalSplitPanel = new HorizontalSplitPanel with FullSize |>> {
+    hsp =>
+      hsp.setFirstComponent(menu)
+      hsp.setSplitPosition(15)
+      hsp.addStyleName(Reindeer.SPLITPANEL_SMALL)
   }
 
 
@@ -153,13 +157,15 @@ class UberAdmin extends UI {
   private def createNotImplementedStubView(caption: String) =
     new VerticalLayout with MiddleCenterAlignment with FullSize |>> {
       _.addComponent(new Label("NOT AVAILABLE") with UndefinedSize)
-    } |> { view =>
-      createTabSheet(caption -> view)
+    } |> {
+      view =>
+        createTabSheet(caption -> view)
     }
 
   private def createTabSheet(tabs: (String, Component)*) =
-    new TabSheet with MinimalStyle with FullSize |>> { ts =>
-      for ((caption, component) <- tabs) ts.addTab(component, caption)
+    new TabSheet with MinimalStyle with FullSize |>> {
+      ts =>
+        for ((caption, component) <- tabs) ts.addTab(component, caption)
     }
 
   private lazy val adminView = createTabSheet("imCMS Admin" -> new UberAdminManager().view)
@@ -225,13 +231,16 @@ class UberAdmin extends UI {
         val terms = AdminSearchTerms.getTermCounts(lytBar.calFrom.getValue, lytBar.calTo.getValue)
 
         tblTerms.removeAllItems()
-        terms.asScala.foreach { t =>
-          val item = Array[AnyRef](t.getTerm, t.getCount.toString)
-          tblTerms.addItem(item, item)
+        terms.asScala.foreach {
+          t =>
+            val item = Array[AnyRef](t.getTerm, t.getCount.toString)
+            tblTerms.addItem(item, item)
         }
       }
 
-      lytBar.btnReload.addClickHandler { _ => reload() }
+      lytBar.btnReload.addClickHandler {
+        _ => reload()
+      }
 
       reload()
     }

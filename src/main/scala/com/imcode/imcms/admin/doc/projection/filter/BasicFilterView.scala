@@ -13,15 +13,21 @@ class BasicFilterView extends CustomLayout("admin/doc/projection/basic_filter") 
 
   object idRange {
     val chkEnabled = new CheckBox("docs_projection.basic_filter.chk_range".i) with ExposeValueChange[JBoolean] with Immediate
-    
-    val txtStart = new TextField { setColumns(5) }
-    val txtEnd = new TextField { setColumns(5) }
+
+    val txtStart = new TextField {
+      setColumns(5)
+    }
+    val txtEnd = new TextField {
+      setColumns(5)
+    }
   }
 
   object text {
     val chkEnabled = new CheckBox("docs_projection.basic_filter.chk_text".i) with ExposeValueChange[JBoolean] with Immediate
-    
-    val txtText = new TextField with FullWidth |>> { _.setInputPrompt("docs_projection.basic_filter.txt_text.prompt".i) }
+
+    val txtText = new TextField with FullWidth |>> {
+      _.setInputPrompt("docs_projection.basic_filter.txt_text.prompt".i)
+    }
   }
 
   object types {
@@ -37,12 +43,24 @@ class BasicFilterView extends CustomLayout("admin/doc/projection/basic_filter") 
   object phases {
     val chkEnabled = new CheckBox("docs_projection.basic_filter.chk_phase".i) with ExposeValueChange[JBoolean] with Immediate
 
-    val chkNew = new CheckBox("docs_projection.basic_filter.chk_phase_new".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.NEW)) }
-    val chkDisapproved = new CheckBox("docs_projection.basic_filter.chk_phase_disapproved".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.DISAPPROVED)) }
-    val chkApproved = new CheckBox("docs_projection.basic_filter.chk_phase_approved".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.APPROVED)) }
-    val chkPublished = new CheckBox("docs_projection.basic_filter.chk_phase_published".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.PUBLISHED)) }
-    val chkArchived = new CheckBox("docs_projection.basic_filter.chk_phase_archived".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.ARCHIVED)) }
-    val chkUnpublished = new CheckBox("docs_projection.basic_filter.chk_phase_expired".i) |>> { _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.UNPUBLISHED)) }
+    val chkNew = new CheckBox("docs_projection.basic_filter.chk_phase_new".i) |>> {
+      _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.NEW))
+    }
+    val chkDisapproved = new CheckBox("docs_projection.basic_filter.chk_phase_disapproved".i) |>> {
+      _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.DISAPPROVED))
+    }
+    val chkApproved = new CheckBox("docs_projection.basic_filter.chk_phase_approved".i) |>> {
+      _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.APPROVED))
+    }
+    val chkPublished = new CheckBox("docs_projection.basic_filter.chk_phase_published".i) |>> {
+      _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.PUBLISHED))
+    }
+    val chkArchived = new CheckBox("docs_projection.basic_filter.chk_phase_archived".i) |>> {
+      _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.ARCHIVED))
+    }
+    val chkUnpublished = new CheckBox("docs_projection.basic_filter.chk_phase_expired".i) |>> {
+      _.setIcon(Theme.Icon.Doc.phase(LifeCyclePhase.UNPUBLISHED))
+    }
   }
 
   object languages {
@@ -54,46 +72,57 @@ class BasicFilterView extends CustomLayout("admin/doc/projection/basic_filter") 
     val chkEnabled = new CheckBox("docs_projection.basic_filter.chk_extended".i) with FullWidth with ExposeValueChange[JBoolean] with Immediate
     val btnCustomize = new Button("...") with SmallDefaultStyle
   }
-  
+
   object filterButtons {
-    val btnReset = new Button("btn_caption.reset".i) with SmallDefaultStyle { b => b.setIcon(Theme.Icon.Reload16) }
+    val btnReset = new Button("btn_caption.reset".i) with SmallDefaultStyle {
+      b =>
+      b.setIcon(Theme.Icon.Reload16)
+    }
     val btnApplyFilter = new Button("btn_caption.search".i) with SmallDefaultStyle
     val btnChoosePredefinedFilter = new Button("...") with SmallDefaultStyle
-    val btnBack = new Button("back") with SmallDefaultStyle |>> { b => b.setIcon(Theme.Icon.HistoryBack16) }
-  }
-
-  private val lytIdRange = new HorizontalLayout with Spacing with UndefinedSize |>> { lyt =>
-    import idRange._
-    lyt.addComponents(txtStart, new Label("-"), txtEnd)
-  }
-
-  private val lytTypes = new HorizontalLayout with Spacing with UndefinedSize |>> { lyt =>
-    import types._
-    lyt.addComponents(chkText, chkFile, chkHtml, chkUrl)
-  }
-
-  private val lytPhases = new HorizontalLayout with Spacing with UndefinedSize |>> { lyt =>
-    import phases._
-    lyt.addComponents(chkNew, chkDisapproved, chkApproved, chkPublished, chkArchived, chkUnpublished)
-  }
-
-  private val lytSearchButtons = new HorizontalLayout with UndefinedSize with Spacing |>> { lyt =>
-    import filterButtons._
-    val lytFilter = new HorizontalLayout with UndefinedSize |>> { lyt =>
-      lyt.setStyleName("segment")
-      lyt.addStyleName("segment-alternate")
+    val btnBack = new Button("back") with SmallDefaultStyle |>> {
+      b => b.setIcon(Theme.Icon.HistoryBack16)
     }
-
-    btnApplyFilter.addStyleName("first")
-    btnChoosePredefinedFilter.addStyleName("last")
-
-    lytFilter.addComponents(btnApplyFilter, btnChoosePredefinedFilter)
-
-    lyt.addComponents(btnBack, lytFilter, btnReset)
   }
 
-  private val lytExtended = new HorizontalLayout with Spacing with UndefinedSize |>> { lyt =>
-    lyt.addComponents(extended.chkEnabled, extended.btnCustomize)
+  private val lytIdRange = new HorizontalLayout with Spacing with UndefinedSize |>> {
+    lyt =>
+      import idRange._
+      lyt.addComponents(txtStart, new Label("-"), txtEnd)
+  }
+
+  private val lytTypes = new HorizontalLayout with Spacing with UndefinedSize |>> {
+    lyt =>
+      import types._
+      lyt.addComponents(chkText, chkFile, chkHtml, chkUrl)
+  }
+
+  private val lytPhases = new HorizontalLayout with Spacing with UndefinedSize |>> {
+    lyt =>
+      import phases._
+      lyt.addComponents(chkNew, chkDisapproved, chkApproved, chkPublished, chkArchived, chkUnpublished)
+  }
+
+  private val lytSearchButtons = new HorizontalLayout with UndefinedSize with Spacing |>> {
+    lyt =>
+      import filterButtons._
+      val lytFilter = new HorizontalLayout with UndefinedSize |>> {
+        lyt =>
+          lyt.setStyleName("segment")
+          lyt.addStyleName("segment-alternate")
+      }
+
+      btnApplyFilter.addStyleName("first")
+      btnChoosePredefinedFilter.addStyleName("last")
+
+      lytFilter.addComponents(btnApplyFilter, btnChoosePredefinedFilter)
+
+      lyt.addComponents(btnBack, lytFilter, btnReset)
+  }
+
+  private val lytExtended = new HorizontalLayout with Spacing with UndefinedSize |>> {
+    lyt =>
+      lyt.addComponents(extended.chkEnabled, extended.btnCustomize)
   }
 
   this.addNamedComponents(
@@ -118,25 +147,30 @@ class BasicFilterView extends CustomLayout("admin/doc/projection/basic_filter") 
     "docs_projection.basic_filter.buttons" -> lytSearchButtons
   )
 
-  idRange.chkEnabled.addValueChangeHandler { _ =>
-    ProjectionFilterUtil.toggle(this, "docs_projection.basic_filter.range", idRange.chkEnabled, lytIdRange,
-      new Label("%s - %s".format(idRange.txtStart.getInputPrompt.trimToEmpty, idRange.txtEnd.getInputPrompt.trimToEmpty))
-    )
+  idRange.chkEnabled.addValueChangeHandler {
+    _ =>
+      ProjectionFilterUtil.toggle(this, "docs_projection.basic_filter.range", idRange.chkEnabled, lytIdRange,
+        new Label("%s - %s".format(idRange.txtStart.getInputPrompt.trimToEmpty, idRange.txtEnd.getInputPrompt.trimToEmpty))
+      )
   }
 
-  text.chkEnabled.addValueChangeHandler { _ =>
-    ProjectionFilterUtil.toggle(this, "docs_projection.basic_filter.text", text.chkEnabled, text.txtText)
+  text.chkEnabled.addValueChangeHandler {
+    _ =>
+      ProjectionFilterUtil.toggle(this, "docs_projection.basic_filter.text", text.chkEnabled, text.txtText)
   }
 
-  types.chkEnabled.addValueChangeHandler { _ =>
-    ProjectionFilterUtil.toggle(this, "docs_projection.basic_filter.types", types.chkEnabled, lytTypes)
+  types.chkEnabled.addValueChangeHandler {
+    _ =>
+      ProjectionFilterUtil.toggle(this, "docs_projection.basic_filter.types", types.chkEnabled, lytTypes)
   }
 
-  phases.chkEnabled.addValueChangeHandler { _ =>
-    ProjectionFilterUtil.toggle(this, "docs_projection.basic_filter.phases", phases.chkEnabled, lytPhases)
+  phases.chkEnabled.addValueChangeHandler {
+    _ =>
+      ProjectionFilterUtil.toggle(this, "docs_projection.basic_filter.phases", phases.chkEnabled, lytPhases)
   }
 
-  languages.chkEnabled.addValueChangeHandler { _ =>
-    ProjectionFilterUtil.toggle(this, "docs_projection.basic_filter.languages", languages.chkEnabled, languages.layout)
+  languages.chkEnabled.addValueChangeHandler {
+    _ =>
+      ProjectionFilterUtil.toggle(this, "docs_projection.basic_filter.languages", languages.chkEnabled, languages.layout)
   }
 }

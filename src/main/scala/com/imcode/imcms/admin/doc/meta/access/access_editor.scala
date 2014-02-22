@@ -22,16 +22,17 @@ private case class RolePermSet(role: RoleDomainObject, setType: DocumentPermissi
 /**
  * Role permission type table column generator for properties ids of type DocumentPermissionSetTypeDomainObject.
  * todo: check Vaadin (bug?) warning:
- *   For some reason when adding items to table, values are not available (assigned) immediately, hence
- *   Property.getValue returns null.
+ * For some reason when adding items to table, values are not available (assigned) immediately, hence
+ * Property.getValue returns null.
  */
 private class RolesPermSetsTableColumnGenerator(setType: DocumentPermissionSetTypeDomainObject) extends Table.ColumnGenerator {
-  def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = new Label with UndefinedSize |>> { lbl =>
-    val rolePermSetType = source.getItem(itemId)
-      .getItemProperty(RolePermSetPropertyId)
-      .getValue.asInstanceOf[RolePermSet]
+  def generateCell(source: Table, itemId: AnyRef, columnId: AnyRef) = new Label with UndefinedSize |>> {
+    lbl =>
+      val rolePermSetType = source.getItem(itemId)
+        .getItemProperty(RolePermSetPropertyId)
+        .getValue.asInstanceOf[RolePermSet]
 
-    lbl.value = if (rolePermSetType != null && rolePermSetType.setType == setType) "X" else ""
+      lbl.value = if (rolePermSetType != null && rolePermSetType.setType == setType) "X" else ""
   }
 }
 
@@ -40,8 +41,9 @@ private class AddRolePermSetDialogView extends FormLayout with UndefinedSize {
   val cbRole = new ComboBox("Role") with SingleSelect[RoleDomainObject] with NoNullSelection with Immediate
   val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect[DocumentPermissionSetTypeDomainObject]
 
-  Seq(READ, RESTRICTED_1, RESTRICTED_2, FULL).foreach { setType =>
-    ogPermsSetType.addItem(setType, PermSetTypeName(setType))
+  Seq(READ, RESTRICTED_1, RESTRICTED_2, FULL).foreach {
+    setType =>
+      ogPermsSetType.addItem(setType, PermSetTypeName(setType))
   }
 
   addComponents(cbRole, ogPermsSetType)
@@ -52,11 +54,14 @@ private class AddRolePermSetDialogView extends FormLayout with UndefinedSize {
  * Changes permission set type for a role.
  */
 private class ChangeRolePermSetDialogView extends FormLayout with UndefinedSize {
-  val lblRole = new Label with UndefinedSize |>> {_ setCaption "Role"}
+  val lblRole = new Label with UndefinedSize |>> {
+    _ setCaption "Role"
+  }
   val ogPermsSetType = new OptionGroup("Permissions") with SingleSelect[DocumentPermissionSetTypeDomainObject]
 
-  Seq(READ, RESTRICTED_1, RESTRICTED_2, FULL).foreach { setType =>
-    ogPermsSetType.addItem(setType, PermSetTypeName(setType))
+  Seq(READ, RESTRICTED_1, RESTRICTED_2, FULL).foreach {
+    setType =>
+      ogPermsSetType.addItem(setType, PermSetTypeName(setType))
   }
 
   addComponents(lblRole, ogPermsSetType)

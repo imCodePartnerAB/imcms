@@ -53,7 +53,10 @@ trait DocumentIndexService extends Log4jLoggerSupport {
 
 object DocumentIndexService {
   implicit def toManagedResource[R <: DocumentIndexService] = new ManagedResource[R] {
-    def close(resource: R) { resource.shutdown() }
+    def close(resource: R) {
+      resource.shutdown()
+    }
+
     override def toString = "ManagedResource[_ <: DocumentIndexService]"
   }
 }

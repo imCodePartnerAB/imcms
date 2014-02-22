@@ -67,8 +67,9 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
   @throws(classOf[SolrInputDocumentCreateException])
   def mkSolrInputDocsView(): SeqView[(DocId, Seq[SolrInputDocument]), Seq[_]] = {
-    documentMapper.getImcmsServices.getDocumentLanguageSupport.getLanguages.asScala |> { languages =>
-      documentMapper.getAllDocumentIds.asScala.view.map(docId => docId.toInt -> mkSolrInputDocs(docId, languages))
+    documentMapper.getImcmsServices.getDocumentLanguageSupport.getLanguages.asScala |> {
+      languages =>
+        documentMapper.getAllDocumentIds.asScala.view.map(docId => docId.toInt -> mkSolrInputDocs(docId, languages))
     }
   }
 
@@ -87,19 +88,21 @@ class DocumentIndexServiceOps(documentMapper: DocumentMapper, documentIndexer: D
 
   @throws(classOf[SolrInputDocumentCreateException])
   def addDocsToIndex(solrServer: SolrServer, docId: Int) {
-    mkSolrInputDocs(docId) |> { solrInputDocs =>
-      if (solrInputDocs.nonEmpty) {
-        solrServer.add(solrInputDocs.asJava)
-        solrServer.commit()
-        logger.trace("added %d solrInputDoc(s) with docId %d into the index.".format(solrInputDocs.length, docId))
-      }
+    mkSolrInputDocs(docId) |> {
+      solrInputDocs =>
+        if (solrInputDocs.nonEmpty) {
+          solrServer.add(solrInputDocs.asJava)
+          solrServer.commit()
+          logger.trace("added %d solrInputDoc(s) with docId %d into the index.".format(solrInputDocs.length, docId))
+        }
     }
   }
 
 
-  def deleteDocsFromIndex(solrServer: SolrServer, docId: Int): Unit = mkSolrDocsDeleteQuery(docId) |> { deleteQuery =>
-    solrServer.deleteByQuery(deleteQuery)
-    solrServer.commit()
+  def deleteDocsFromIndex(solrServer: SolrServer, docId: Int): Unit = mkSolrDocsDeleteQuery(docId) |> {
+    deleteQuery =>
+      solrServer.deleteByQuery(deleteQuery)
+      solrServer.commit()
   }
 
 

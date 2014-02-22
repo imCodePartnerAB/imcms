@@ -12,9 +12,10 @@ class CategoryEditorView(val imagePickerComponent: ImagePickerComponent) extends
     setColumns(11)
   }
   val txtName = new TextField("Name") with Required
-  val txaDescription = new TextArea("Description") |>> { t =>
-    t.setRows(5)
-    t.setColumns(11)
+  val txaDescription = new TextArea("Description") |>> {
+    t =>
+      t.setRows(5)
+      t.setColumns(11)
   }
 
   val sltType = new ComboBox("Type") with SingleSelect[String] with Required with NoNullSelection
