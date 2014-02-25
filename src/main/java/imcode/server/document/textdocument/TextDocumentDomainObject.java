@@ -2,7 +2,6 @@ package imcode.server.document.textdocument;
 
 import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.LoopItemRef;
-import com.imcode.imcms.mapping.orm.TemplateNames;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
@@ -11,6 +10,63 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
+
+    public static class TemplateNames implements Cloneable {
+        private String templateName;
+        private int templateGroupId;
+        private String defaultTemplateName;
+        private String defaultTemplateNameForRestricted1;
+        private String defaultTemplateNameForRestricted2;
+
+        @Override
+        public TemplateNames clone() {
+            try {
+                return (TemplateNames) super.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new AssertionError(e);
+            }
+        }
+
+        public String getTemplateName() {
+            return templateName;
+        }
+
+        public void setTemplateName(String templateName) {
+            this.templateName = templateName;
+        }
+
+        public int getTemplateGroupId() {
+            return templateGroupId;
+        }
+
+        public void setTemplateGroupId(int templateGroupId) {
+            this.templateGroupId = templateGroupId;
+        }
+
+        public String getDefaultTemplateName() {
+            return defaultTemplateName;
+        }
+
+        public void setDefaultTemplateName(String defaultTemplateName) {
+            this.defaultTemplateName = defaultTemplateName;
+        }
+
+        public String getDefaultTemplateNameForRestricted1() {
+            return defaultTemplateNameForRestricted1;
+        }
+
+        public void setDefaultTemplateNameForRestricted1(String defaultTemplateNameForRestricted1) {
+            this.defaultTemplateNameForRestricted1 = defaultTemplateNameForRestricted1;
+        }
+
+        public String getDefaultTemplateNameForRestricted2() {
+            return defaultTemplateNameForRestricted2;
+        }
+
+        public void setDefaultTemplateNameForRestricted2(String defaultTemplateNameForRestricted2) {
+            this.defaultTemplateNameForRestricted2 = defaultTemplateNameForRestricted2;
+        }
+    }
 
     /**
      * Modified text indexes.
@@ -187,7 +243,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @param no
      * @param menu
      */
-    // fixme: check sort order vs RB4
     public void setMenu(int no, MenuDomainObject menu) {
         MenuDomainObject newMenu = menu.clone();
         MenuDomainObject oldMenu = menus.get(no);

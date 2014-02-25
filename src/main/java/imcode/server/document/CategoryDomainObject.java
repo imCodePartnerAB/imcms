@@ -15,36 +15,20 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 
-@Entity(name = "Category")
-@Table(name = "categories")
 public class CategoryDomainObject implements Comparable<CategoryDomainObject>, Serializable, Cloneable {
 
-    private String name;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
     private int id;
-
+    private String name;
     private String description = "";
-
-    @Column(name = "image")
     private String imageUrl = "";
-
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "category_type_id", nullable = false)
     private CategoryTypeDomainObject type;
 
-
-    public CategoryDomainObject() {
-    }
-
     public CategoryDomainObject(int id, String name, String description, String imageUrl, CategoryTypeDomainObject type) {
+        this.id = id;
         this.description = description;
         this.type = type;
         this.name = name;
         this.imageUrl = imageUrl;
-        this.id = id;
     }
 
     public String getName() {
@@ -122,7 +106,7 @@ public class CategoryDomainObject implements Comparable<CategoryDomainObject>, S
 
             return clone;
         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
     }
 }

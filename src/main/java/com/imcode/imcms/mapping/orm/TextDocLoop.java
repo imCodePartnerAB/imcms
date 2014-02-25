@@ -86,6 +86,22 @@ public class TextDocLoop extends DocVersionedContent {
     @Version
     private int version;
 
+    public TextDocLoop() {
+    }
+
+    public TextDocLoop(Integer id, DocVersion docVersion, Integer no, Integer nextEntryNo, List<Entry> entries) {
+        setId(id);
+        setDocVersion(docVersion);
+        this.no = no;
+        this.nextEntryNo = nextEntryNo;
+        this.entries = new LinkedList<>(entries);
+    }
+
+    public TextDocLoop(DocVersion docVersion, Integer no, Integer nextEntryNo, List<Entry> entries) {
+        this(null, docVersion, no, nextEntryNo, entries);
+    }
+
+
     @ElementCollection
     @CollectionTable(
             name = "imcms_text_doc_contents",

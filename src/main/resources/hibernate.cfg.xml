@@ -26,8 +26,8 @@
         <mapping class="imcode.server.document.CategoryTypeDomainObject"/>
         <mapping class="imcode.server.document.CategoryDomainObject"/>
 
-        <mapping class="com.imcode.imcms.mapping.orm.TemplateNames"/>
-        <mapping class="com.imcode.imcms.mapping.orm.Include"/>
+        <mapping class="com.imcode.imcms.mapping.orm.TextDocTemplateNames"/>
+        <mapping class="com.imcode.imcms.mapping.orm.TextDocInclude"/>
         <mapping class="com.imcode.imcms.mapping.orm.FileDocItem"/>
         <mapping class="com.imcode.imcms.mapping.orm.HtmlDocContent"/>
         <mapping class="com.imcode.imcms.mapping.orm.UrlDocContent"/>

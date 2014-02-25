@@ -10,7 +10,7 @@
 
     <tag>
         <name>contentloop2</name>
-        <tag-class>com.imcode.imcms.servlet.tags.ContentLoopTag2</tag-class>
+        <tag-class>com.imcode.imcms.servlet.tags.LoopTag</tag-class>
         <body-content>JSP</body-content>
 
         <attribute>

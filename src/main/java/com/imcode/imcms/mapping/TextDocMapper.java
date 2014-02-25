@@ -2,12 +2,12 @@ package com.imcode.imcms.mapping;
 
 import com.google.common.base.Optional;
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.mapping.dao.TextDocDao;
+import com.imcode.imcms.mapping.dao.*;
+import com.imcode.imcms.mapping.orm.DocVersion;
+import com.imcode.imcms.mapping.orm.TextDocMenu;
+import com.imcode.imcms.mapping.orm.TextDocMenuItem;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.MenuDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.*;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Service;
 
@@ -15,22 +15,47 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 @Transactional
 // fixme: implment
+// fixme: images: TextDocumentUtils.initImagesSources
 public class TextDocMapper {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Inject
-    private TextDocDao textDocDao;
+    private DocVersionDao versionDao;
+
+    @Inject
+    private TextDocTextDao textDao;
+
+    @Inject
+    private TextDocImageDao imageDao;
+
+    @Inject
+    private TextDocMenuDao menuDao;
+
+    @Inject
+    TextDocTemplateNamesDao templateNamesDao;
+
+    @Inject
+    private TextDocLoopDao loopDao;
+
+    @Inject
+    private DocLanguageDao languageDao;
+
+    //fixme: init to doc mapper
+    private DocumentGetter menuItemDocumentGetter;
 
     // -----------------------------------------------------------------------------------------------------------------
     public List<TextDocumentTextWrapper> getAllTexts(DocVersionRef docVersionRef) {
+
+
         throw new NotImplementedException();
     }
 
@@ -119,22 +144,33 @@ public class TextDocMapper {
 
     // -----------------------------------------------------------------------------------------------------------------
     public Map<Integer, MenuDomainObject> getMenus(DocVersionRef docVersionRef) {
-        throw new NotImplementedException();
+        DocVersion docVersion = versionDao.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        List<TextDocMenu> textDocMenus = menuDao.getByDocVersion(docVersion);
+        Map<Integer, MenuDomainObject> menus = new HashMap<>();
+
+        for (TextDocMenu textDocMenu : textDocMenus) {
+            menus.put(textDocMenu.getNo(), initMenuItems(OrmToApi.toApi(textDocMenu)));
+        }
+
+        return menus;
     }
 
-    private void initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
-
+    private MenuDomainObject initMenuItems(MenuDomainObject menu) {
         for (Map.Entry<Integer, MenuItemDomainObject> entry : menu.getItemsMap().entrySet()) {
             Integer referencedDocumentId = entry.getKey();
             MenuItemDomainObject menuItem = entry.getValue();
-            GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, documentGetter);
+            GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, menuItemDocumentGetter);
 
             menuItem.setDocumentReference(gtr);
         }
+
+        return menu;
     }
 
+    public TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
+        return OrmToApi.toApi(templateNamesDao.findOne(docId));
+    }
 
     // get menu
-    // get template
     // get include
 }

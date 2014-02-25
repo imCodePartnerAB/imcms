@@ -5,45 +5,45 @@
 
 <hibernate-mapping>
 
-    <!-- Unique result -->
-    <query name="DocVersion.getByDocIdAndNo">
+    <!-- Unique -->
+    <query name="DocVersion.findByDocIdAndNo">
     <![CDATA[
-    SELECT v FROM DocVersion v WHERE v.docId = :docId AND v.no = :no
+        SELECT v FROM DocVersion v WHERE v.docId = ?1 AND v.no = ?2
     ]]>
     </query>
 
 
     <!-- Unique -->
-    <query name="DocVersion.getLatestVersion">
+    <query name="DocVersion.findLatest">
     <![CDATA[
-	  SELECT v FROM DocVersion v
-	  WHERE v.id = (
-	    SELECT max(v.id) FROM DocVersion v
-	    WHERE v.docId = :docId
-	  )
+        SELECT v FROM DocVersion v
+        WHERE v.id = (
+            SELECT max(v.id) FROM DocVersion v
+            WHERE v.docId = ?1
+        )
     ]]>
     </query>
 
     <!-- Unique -->
-    <query name="DocVersion.getDefaultVersion">
+    <query name="DocVersion.findDefault">
     <![CDATA[
-	 SELECT v FROM Meta m, DocVersion v
-	 WHERE m.defaultVersionNo = v.no AND m.id = v.docId AND m.id = :docId
+        SELECT v FROM DocMeta m, DocVersion v
+        WHERE m.defaultVersionNo = v.no AND m.id = v.docId AND m.id = ?1
     ]]>
     </query>
 
-    <query name="DocVersion.changeDefaultVersion">
+    <query name="DocVersion.setDefault">
     <![CDATA[
-	  UPDATE Meta m
-	  SET m.defaultVersionNo = :defaultVersionNo, m.publisherId = :publisherId
-	  WHERE m.id = :docId
+        UPDATE DocMeta m
+        SET m.defaultVersionNo = :defaultVersionNo, m.publisherId = :publisherId
+        WHERE m.id = :docId
     ]]>
     </query>
 
     <!-- Collection -->
     <query name="DocVersion.getByDocId">
     <![CDATA[
-      SELECT v FROM DocVersion v WHERE v.docId = :docId
+        SELECT v FROM DocVersion v WHERE v.docId = ?1
     ]]>
     </query>
 

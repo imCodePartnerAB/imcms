@@ -6,7 +6,7 @@
 <hibernate-mapping>
 
     <!-- Bulk delete -->
-    <query name="TextDocText.deleteBy.docVersion_and_docLanguage">
+    <query name="TextDocText.deleteBy_docVersion_and_docLanguage">
     <![CDATA[
     DELETE FROM TextDocText t WHERE t.docVersion = :docVersion AND t.docLanguage = :docLanguage
     ]]>

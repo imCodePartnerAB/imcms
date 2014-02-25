@@ -8,7 +8,7 @@ import com.imcode.Log4jLoggerSupport
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
 import scala.collection.JavaConverters._
 import org.apache.solr.common.SolrInputDocument
-import scala.reflect.BeanProperty
+import scala.beans.BeanProperty
 import java.util.Date
 
 /**

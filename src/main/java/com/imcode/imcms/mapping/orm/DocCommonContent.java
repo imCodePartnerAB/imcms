@@ -10,6 +10,9 @@ import java.util.Objects;
 @Table(name = "imcms_doc_i18n_meta")
 public class DocCommonContent {
 
+    private static final int META_HEADLINE_MAX_LENGTH = 255;
+    private static final int META_TEXT_MAX_LENGTH = 1000;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -19,7 +22,7 @@ public class DocCommonContent {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private DocLanguage language;
+    private DocLanguage docLanguage;
 
     /**
      * Doc's headline label. Mainly used as HTML page title.
@@ -40,6 +43,17 @@ public class DocCommonContent {
     @Column(name = "menu_image_url")
     private String menuImageURL;
 
+    public DocCommonContent() {
+    }
+
+    public DocCommonContent(Integer docId, DocLanguage docLanguage, String headline, String menuText, String menuImageURL) {
+        this.docId = docId;
+        this.docLanguage = docLanguage;
+        this.headline = headline;
+        this.menuText = menuText;
+        this.menuImageURL = menuImageURL;
+    }
+
     @Override
     public boolean equals(Object o) {
         return o == this || (o instanceof DocCommonContent && equals((DocCommonContent) o));
@@ -51,12 +65,12 @@ public class DocCommonContent {
                 && Objects.equals(headline, that.headline)
                 && Objects.equals(menuText, that.menuText)
                 && Objects.equals(menuImageURL, that.menuImageURL)
-                && Objects.equals(language, that.language);
+                && Objects.equals(docLanguage, that.docLanguage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, docId, headline, menuText, menuImageURL, language);
+        return Objects.hash(id, docId, headline, menuText, menuImageURL, docLanguage);
     }
 
     public Integer getId() {
@@ -75,12 +89,12 @@ public class DocCommonContent {
         this.docId = docId;
     }
 
-    public DocLanguage getLanguage() {
-        return language;
+    public DocLanguage getDocLanguage() {
+        return docLanguage;
     }
 
-    public void setLanguage(DocLanguage language) {
-        this.language = language;
+    public void setDocLanguage(DocLanguage language) {
+        this.docLanguage = language;
     }
 
     public String getHeadline() {
@@ -88,7 +102,7 @@ public class DocCommonContent {
     }
 
     public void setHeadline(String headline) {
-        this.headline = headline;
+        this.headline = headline == null ? null : headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
     }
 
     public String getMenuText() {
@@ -96,7 +110,7 @@ public class DocCommonContent {
     }
 
     public void setMenuText(String menuText) {
-        this.menuText = menuText;
+        this.menuText = menuText == null ? null : menuText.substring(0, Math.min(menuText.length(), META_TEXT_MAX_LENGTH - 1));
     }
 
     public String getMenuImageURL() {

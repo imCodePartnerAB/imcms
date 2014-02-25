@@ -31,13 +31,12 @@ public class SystemPropertyDaoTest {
     EntityManager entityManager;
 
     List<SystemProperty> recreateProperties() {
-        entityManager.createQuery("DELETE FROM SystemProperty").executeUpdate();
-        entityManager.clear();
+        dao.deleteAll();
 
         SystemProperty p1 = new SystemProperty(1, START_DOC, "1001");
         SystemProperty p2 = new SystemProperty(8, DEFAULT_LANGUAGE_ID, "1");
 
-        return Arrays.asList(entityManager.merge(p1), entityManager.merge(p2));
+        return Arrays.asList(dao.saveAndFlush(p1), dao.saveAndFlush(p2));
     }
 
     @Test

@@ -28,13 +28,12 @@ public class DocLanguageDaoTest {
     EntityManager entityManager;
 
     public List<DocLanguage> recreateLanguages() {
-        entityManager.createQuery("DELETE FROM DocLanguage").executeUpdate();
-        entityManager.clear();
+        dao.deleteAll();
 
-        DocLanguage en = new DocLanguage("en", "English", "English", true);
-        DocLanguage se = new DocLanguage("se", "Swedish", "Svenska", true);
-
-        return Arrays.asList(entityManager.merge(en), entityManager.merge(se));
+        return Arrays.asList(
+                dao.saveAndFlush(new DocLanguage("en", "English", "English", true)),
+                dao.saveAndFlush(new DocLanguage("se", "Swedish", "Svenska", true))
+        );
     }
 
     @Test
@@ -44,7 +43,7 @@ public class DocLanguageDaoTest {
     }
 
     @Test
-    public void testGetById() throws Exception {
+    public void testFindById() throws Exception {
         List<DocLanguage> languages = recreateLanguages();
 
         assertEquals(languages.get(0), dao.findOne(languages.get(0).getId()));
@@ -52,11 +51,11 @@ public class DocLanguageDaoTest {
     }
 
     @Test
-    public void testGetByCode() throws Exception {
+    public void testFindByCode() throws Exception {
         List<DocLanguage> languages = recreateLanguages();
 
-        assertEquals(languages.get(0), dao.getByCode("en"));
-        assertEquals(languages.get(1), dao.getByCode("se"));
+        assertEquals(languages.get(0), dao.findByCode("en"));
+        assertEquals(languages.get(1), dao.findByCode("se"));
     }
 
     @Test
@@ -76,8 +75,8 @@ public class DocLanguageDaoTest {
     public void testDeleteByCode() throws Exception {
         recreateLanguages();
 
-        assertNotNull(dao.getByCode("en"));
+        assertNotNull(dao.findByCode("en"));
         dao.deleteByCode("en");
-        assertNull(dao.getByCode("en"));
+        assertNull(dao.findByCode("en"));
     }
 }

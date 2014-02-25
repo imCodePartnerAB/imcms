@@ -3,7 +3,6 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.mapping.LoopEntryRef;
 import com.imcode.imcms.mapping.LoopItemRef;
 import com.imcode.imcms.mapping.TextDocumentImageWrapper;
-import com.imcode.imcms.mapping.dao.TextDocDao;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -135,8 +134,6 @@ public class ChangeImage extends HttpServlet {
         };
 
         //fixme:
-        TextDocDao textDocDao = Imcms.getServices().getManagedBean(TextDocDao.class);
-
         List<TextDocumentImageWrapper> images = null;//textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentLoopRef), true);
 
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());

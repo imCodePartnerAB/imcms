@@ -7,17 +7,13 @@ import com.imcode.imcms.vaadin.data._
 import com.vaadin.ui._
 import imcode.server.document.textdocument.TextDomainObject
 import com.imcode.imcms.ImcmsServicesSupport
-import com.imcode.imcms.mapping.dao.TextDocDao
 import com.imcode.imcms.vaadin.component.dialog._
 import com.vaadin.server.Sizeable
 import org.joda.time.DateTime
 import java.util.Date
-import scala.Some
 import com.imcode.imcms.vaadin.data.PropertyDescriptor
 
 class TextHistory(text: TextDomainObject) extends ImcmsServicesSupport {
-  private val textDao = imcmsServices.getManagedBean(classOf[TextDocDao])
-
   val view = new TextHistoryView(s"Document history") |>> { widget =>
     def rows(id: Long = 0, dateTime: DateTime = DateTime.now()): Stream[(Long, Option[Date], Date)] = {
       val nextId = id + 1

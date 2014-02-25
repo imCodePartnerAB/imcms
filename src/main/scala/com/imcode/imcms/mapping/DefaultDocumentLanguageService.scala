@@ -19,7 +19,7 @@ class DefaultDocumentLanguageService extends DocumentLanguageService with Log4jL
   @BeanProperty
   var systemDao : SystemPropertyDao = null
 
-  override def getByCode(code: String): DocumentLanguage = languageDao.getByCode(code) |> OrmToApi.toApi
+  override def getByCode(code: String): DocumentLanguage = languageDao.findByCode(code) |> OrmToApi.toApi
 
   override def getAllLanguages: util.List[DocumentLanguage] = {
     languageDao.findAll.asScala.map(OrmToApi.toApi).asJava

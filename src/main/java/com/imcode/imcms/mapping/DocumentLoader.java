@@ -1,8 +1,9 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.mapping.dao.DocMetaDao;
 import com.imcode.imcms.mapping.dao.DocVersionDao;
-import com.imcode.imcms.mapping.dao.MetaDao;
+import com.imcode.imcms.mapping.dao.DocDao;
 import com.imcode.imcms.mapping.orm.DocCommonContent;
 import com.imcode.imcms.mapping.orm.DocMeta;
 import imcode.server.ImcmsConstants;
@@ -28,14 +29,18 @@ public class DocumentLoader {
     public final static int PERM_CREATE_DOCUMENT = 8;
 
     @Inject
-    private MetaDao metaDao;
+    private DocDao metaDao;
 
     @Inject
     private DocVersionDao documentVersionDao;
 
+    @Inject
+    private DocMetaDao docMetaDao;
+
     /**
      * Initializes document's fields.
      */
+    @Inject
     private DocumentInitializingVisitor documentInitializingVisitor;
 
     /**
@@ -46,7 +51,7 @@ public class DocumentLoader {
      */
     //fixme: alias
     public Meta loadMeta(int docId) {
-        DocMeta ormMeta = metaDao.getMeta(docId);
+        DocMeta ormMeta = docMetaDao.findOne(docId);
 
         if (ormMeta == null) return null;
 
@@ -70,7 +75,7 @@ public class DocumentLoader {
      * Loads and initializes document's content.
      */
     public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
-        DocCommonContent ormAppearance = metaDao.getDocAppearance(document.getRef());
+        DocCommonContent ormAppearance = metaDao.getDocCommonContent(document.getRef());
         DocumentCommonContent appearance = ormAppearance != null
                 ? OrmToApi.toApi(ormAppearance)
                 : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build();
@@ -165,11 +170,11 @@ public class DocumentLoader {
     }
 
 
-    public MetaDao getMetaDao() {
+    public DocDao getMetaDao() {
         return metaDao;
     }
 
-    public void setMetaDao(MetaDao metaDao) {
+    public void setMetaDao(DocDao metaDao) {
         this.metaDao = metaDao;
     }
 

@@ -3,9 +3,10 @@ package imcms.mapping
 
 import com.imcode.imcms.api._
 import com.imcode.imcms.mapping.orm._
-import imcode.server.document.textdocument.{TextDomainObject}
+import imcode.server.document.textdocument.{MenuDomainObject, MenuItemDomainObject, TextDocumentDomainObject, TextDomainObject}
 
 import scala.collection.JavaConverters._
+import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
 
 object OrmToApi {
 
@@ -68,4 +69,58 @@ object OrmToApi {
     val entries = orm.getEntries.asScala.map(e => Int.box(e.getNo) -> Boolean.box(e.isEnabled)).toMap.asJava
     Loop.of(entries, orm.getNextEntryNo)
   }
+
+  def toApi(orm: DocCategoryType): CategoryTypeDomainObject = new CategoryTypeDomainObject(
+    orm.getId,
+    orm.getName,
+    orm.getMaxChoices,
+    orm.isInherited,
+    orm.isImageArchive
+  )
+
+  def toApi(orm: DocCategory): CategoryDomainObject = new CategoryDomainObject(
+    orm.getId,
+    orm.getName,
+    orm.getDescription,
+    orm.getImageUrl,
+    toApi(orm.getType)
+  )
+
+  def toOrm(api: CategoryTypeDomainObject): DocCategoryType = new DocCategoryType(
+    api.getId, api.getName, api.getMaxChoices, api.isInherited, api.isImageArchive
+  )
+
+  def toOrm(api: CategoryDomainObject): DocCategory = new DocCategory(
+    api.getId, api.getName, api.getDescription, api.getImageUrl, toOrm(api.getType)
+  )
+
+  def toApi(orm: TextDocTemplateNames): TextDocumentDomainObject.TemplateNames = new TextDocumentDomainObject.TemplateNames |>> { api =>
+    api.setDefaultTemplateName(orm.getDefaultTemplateName)
+    api.setDefaultTemplateNameForRestricted1(orm.getDefaultTemplateNameForRestricted1)
+    api.setDefaultTemplateNameForRestricted2(orm.getDefaultTemplateNameForRestricted2)
+    api.setTemplateGroupId(orm.getTemplateGroupId)
+    api.setTemplateName(orm.getTemplateName)
+  }
+
+  def toOrm(api: TextDocumentDomainObject.TemplateNames): TextDocTemplateNames = new TextDocTemplateNames |>> { orm =>
+    orm.setDefaultTemplateName(orm.getDefaultTemplateName)
+    orm.setDefaultTemplateNameForRestricted1(orm.getDefaultTemplateNameForRestricted1)
+    orm.setDefaultTemplateNameForRestricted2(orm.getDefaultTemplateNameForRestricted2)
+    orm.setTemplateGroupId(orm.getTemplateGroupId)
+    orm.setTemplateName(orm.getTemplateName)
+  }
+
+
+  def toApi(orm: TextDocMenu): MenuDomainObject = new MenuDomainObject |>> { api =>
+    api.setSortOrder(orm.getSortOrder)
+    orm.getItems.asScala.foreach {
+      case (toDocId, textDocMenuItem) => api.addMenuItemUnchecked(toApi(textDocMenuItem))
+    }
+  }
+
+  def toApi(orm: TextDocMenuItem): MenuItemDomainObject = new MenuItemDomainObject |>> { api =>
+    api.setSortKey(orm.getSortKey)
+    api.setTreeSortIndex(orm.getTreeSortIndex)
+  }
+
 }

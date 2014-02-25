@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Entity(name = "Menu")
+@Entity
 @Table(name = "imcms_text_doc_menus")
 public class TextDocMenu extends TextDocMenuBase {
 

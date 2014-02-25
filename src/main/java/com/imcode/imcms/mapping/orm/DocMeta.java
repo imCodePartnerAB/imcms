@@ -8,7 +8,7 @@ import java.util.*;
  * <p/>
  * Shared by all versions of the same document.
  */
-@Entity(name = "Meta")
+@Entity
 @Table(name = "meta")
 public class DocMeta {
 
@@ -193,7 +193,7 @@ public class DocMeta {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "document_categories", joinColumns = @JoinColumn(name = "meta_id"))
     @Column(name = "category_id", nullable = false)
-    private Set<Integer> categoryIds = new HashSet<Integer>();
+    private Set<Integer> categoryIds = new HashSet<>();
 
     // Set id is either restricted 1 or restricted 2
     // Roles are user defined or system predefined roles

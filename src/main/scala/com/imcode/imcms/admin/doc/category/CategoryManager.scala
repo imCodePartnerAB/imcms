@@ -33,8 +33,8 @@ class CategoryManager {
   val view: CategoryManagerView = new CategoryManagerView |>> { w =>
     w.miReload.setCommandHandler { _ => reload() }
     w.tblCategories.addValueChangeHandler { _ =>  handleSelection() }
-
-    w.miNew.setCommandHandler { _ => editAndSave(new CategoryDomainObject) }
+    //fixme: new CategoryDomainObject() params
+    w.miNew.setCommandHandler { _ => editAndSave(new CategoryDomainObject(0, null, null, null, null)) }
     w.miEdit.setCommandHandler { _ =>
       whenSelected(w.tblCategories) { id =>
         categoryMapper.getCategoryById(id.intValue) match {

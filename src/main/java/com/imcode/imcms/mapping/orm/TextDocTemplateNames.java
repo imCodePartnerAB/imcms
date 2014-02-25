@@ -12,7 +12,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "text_docs")
-public class TemplateNames implements Cloneable {
+public class TextDocTemplateNames implements Cloneable {
 
     @Id
     @Column(name = "meta_id")
@@ -34,9 +34,9 @@ public class TemplateNames implements Cloneable {
     private String defaultTemplateNameForRestricted2;
 
     @Override
-    public TemplateNames clone() {
+    public TextDocTemplateNames clone() {
         try {
-            return (TemplateNames) super.clone();
+            return (TextDocTemplateNames) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new UnhandledException(e);
         }

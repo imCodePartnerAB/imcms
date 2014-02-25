@@ -13,18 +13,24 @@ import imcode.util.io.FileInputStreamSource;
 import java.io.File;
 import java.util.Collection;
 
-import com.imcode.imcms.mapping.dao.MetaDao;
+import com.imcode.imcms.mapping.dao.DocDao;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 /**
  * Initializes a document fields depending on document's type.
  * <p/>
  * Document's fields are queried from a database.
  */
+@Service
 public class DocumentInitializingVisitor extends DocumentVisitor {
 
+    @Inject
     private TextDocumentInitializer textDocumentInitializer;
 
-    private MetaDao metaDao;
+    @Inject
+    private DocDao metaDao;
 
     /**
      * Initializes file document.
@@ -76,19 +82,15 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
         doc.setUrl(reference.getUrl());
     }
 
-
-    /**
-     *
-     */
     public void visitTextDocument(final TextDocumentDomainObject document) {
         textDocumentInitializer.initialize(document);
     }
 
-    public MetaDao getMetaDao() {
+    public DocDao getMetaDao() {
         return metaDao;
     }
 
-    public void setMetaDao(MetaDao metaDao) {
+    public void setMetaDao(DocDao metaDao) {
         this.metaDao = metaDao;
     }
 

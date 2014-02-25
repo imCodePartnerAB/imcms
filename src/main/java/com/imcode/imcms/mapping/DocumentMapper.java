@@ -2,7 +2,6 @@ package com.imcode.imcms.mapping;
 
 import com.google.common.collect.Sets;
 import com.imcode.db.Database;
-import com.imcode.imcms.DocIdentityCleanerVisitor;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.dao.NativeQueriesDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
@@ -144,9 +143,10 @@ public class DocumentMapper implements DocumentGetter {
             newDocument.setLanguage(parentDoc.getLanguage());
         }
 
+        newDocument.getMeta().setId(null);
         newDocument.getMeta().setDocumentType(documentTypeId);
 
-        newDocument.accept(new DocIdentityCleanerVisitor());
+        newDocument.setVersionNo(0);
 
         newDocument.setHeadline("");
         newDocument.setMenuText("");
@@ -833,7 +833,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @param texts - texts being saved
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
-     * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
+     * @see com.imcode.imcms.servlet.tags.LoopTag
      */
     public synchronized void saveTextDocTexts(Collection<TextDocumentTextWrapper> texts, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
@@ -856,7 +856,7 @@ public class DocumentMapper implements DocumentGetter {
      * <p/>
      * Non saved content loop might be added to the document by ContentLoopTag2.
      *
-     * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
+     * @see com.imcode.imcms.servlet.tags.LoopTag
      * @since 6.0
      */
     public synchronized void saveTextDocImages(Collection<TextDocumentImageWrapper> images, UserDomainObject user)
@@ -882,7 +882,7 @@ public class DocumentMapper implements DocumentGetter {
      * <p/>
      * Non saved content loop might be added to the document by ContentLoopTag2.
      *
-     * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
+     * @see com.imcode.imcms.servlet.tags.LoopTag
      * @since 6.0
      */
     public synchronized void saveTextDocImage(TextDocumentImageWrapper image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
@@ -951,7 +951,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public DocumentCommonContent getI18nMeta(DocRef docRef) {
-        DocCommonContent ormAppearance = documentSaver.getMetaDao().getDocAppearance(docRef);
+        DocCommonContent ormAppearance = documentSaver.getMetaDao().getDocCommonContent(docRef);
 
         return ormAppearance == null ? null : OrmToApi.toApi(ormAppearance);
     }
@@ -959,10 +959,10 @@ public class DocumentMapper implements DocumentGetter {
     public Map<DocumentLanguage, DocumentCommonContent> getAppearances(int docId) {
         Map<DocumentLanguage, DocumentCommonContent> appearancesMap = new HashMap<>();
 
-        List<DocCommonContent> ormAppearances = documentSaver.getMetaDao().getAppearance(docId);
+        List<DocCommonContent> ormAppearances = documentSaver.getMetaDao().getDocCommonContents(docId);
 
         for (DocCommonContent ormAppearance : ormAppearances) {
-            appearancesMap.put(OrmToApi.toApi(ormAppearance.getLanguage()), OrmToApi.toApi(ormAppearance));
+            appearancesMap.put(OrmToApi.toApi(ormAppearance.getDocLanguage()), OrmToApi.toApi(ormAppearance));
         }
 
         return appearancesMap;

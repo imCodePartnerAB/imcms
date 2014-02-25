@@ -8,7 +8,7 @@ import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
-import com.imcode.imcms.mapping.dao.MetaDao;
+import com.imcode.imcms.mapping.dao.DocDao;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -31,7 +31,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         //reference.setDocRef(document.getRef());
         reference.setHtml(document.getHtml());
 
-        MetaDao dao = services.getManagedBean(MetaDao.class);
+        DocDao dao = services.getManagedBean(DocDao.class);
 
         dao.saveHtmlReference(reference);
     }
@@ -48,7 +48,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         reference.setUrlFrameName("");
         reference.setUrl(document.getUrl());
 
-        MetaDao dao = services.getManagedBean(MetaDao.class);
+        DocDao dao = services.getManagedBean(DocDao.class);
 
         dao.saveUrlReference(reference);
     }

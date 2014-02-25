@@ -11,29 +11,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity(name = "CategoryType")
-@Table(name = "category_types")
-public class CategoryTypeDomainObject implements Cloneable, Comparable, Serializable {
+public class CategoryTypeDomainObject implements Comparable, Serializable, Cloneable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_type_id")
-    private Integer id;
-
-    @Column(name = "name")
+    private int id;
     private String name;
-
-    @Column(name = "max_choices")
     private int maxChoices;
-
-    @Column(name = "inherited")
     private boolean inherited;
-
-    @Column(name = "is_image_archive", nullable = false)
     private boolean imageArchive;
-
-    public CategoryTypeDomainObject() {
-    }
 
     public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited) {
         this.id = id;
@@ -42,8 +26,17 @@ public class CategoryTypeDomainObject implements Cloneable, Comparable, Serializ
         this.inherited = inherited;
     }
 
+    public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited, boolean imageArchive) {
+        this.id = id;
+        this.name = name;
+        this.maxChoices = maxChoices;  // 0=single choice, 1=multi choice
+        this.inherited = inherited;
+        this.imageArchive = imageArchive;
+    }
+
+
     public int getId() {
-        return id == null ? 0 : id;
+        return id;
     }
 
     public String getName() {
@@ -77,6 +70,7 @@ public class CategoryTypeDomainObject implements Cloneable, Comparable, Serializ
     public void setImageArchive(boolean imageArchive) {
         this.imageArchive = imageArchive;
     }
+
 
     public boolean equals(Object o) {
         return this == o
@@ -126,7 +120,7 @@ public class CategoryTypeDomainObject implements Cloneable, Comparable, Serializ
         try {
             return (CategoryTypeDomainObject) super.clone();
         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
     }
 }

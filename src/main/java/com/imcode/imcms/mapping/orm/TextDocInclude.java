@@ -8,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.util.Objects;
 
@@ -17,7 +16,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "includes")
-public class Include implements Cloneable {
+public class TextDocInclude implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,14 +28,13 @@ public class Include implements Cloneable {
     @Column(name = "included_meta_id")
     private Integer includedDocumentId;
 
-
     // Include no
     @Column(name = "include_id")
-    private Integer index;
+    private Integer no;
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Include)) {
+        if (!(obj instanceof TextDocInclude)) {
             return false;
         }
 
@@ -44,16 +42,16 @@ public class Include implements Cloneable {
             return true;
         }
 
-        final Include o = (Include) obj;
+        final TextDocInclude o = (TextDocInclude) obj;
 
         return new EqualsBuilder()
-                .append(index, o.getIndex()).isEquals();
+                .append(no, o.getNo()).isEquals();
     }
 
     @Override
-    public Include clone() {
+    public TextDocInclude clone() {
         try {
-            return (Include) super.clone();
+            return (TextDocInclude) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
         }
@@ -61,7 +59,7 @@ public class Include implements Cloneable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(index);
+        return Objects.hash(no);
     }
 
     public Integer getId() {
@@ -88,11 +86,11 @@ public class Include implements Cloneable {
         this.includedDocumentId = includedDocId;
     }
 
-    public Integer getIndex() {
-        return index;
+    public Integer getNo() {
+        return no;
     }
 
-    public void setIndex(Integer index) {
-        this.index = index;
+    public void setNo(Integer index) {
+        this.no = index;
     }
 }

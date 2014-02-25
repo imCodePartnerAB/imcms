@@ -17,10 +17,12 @@ import com.imcode.imcms.servlet.ImageCacheManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-
+//fixme:  JPA
+@Service
 @Transactional
 public class ImageCacheMapper {
     private static final Logger log = Logger.getLogger(ImageCacheMapper.class);

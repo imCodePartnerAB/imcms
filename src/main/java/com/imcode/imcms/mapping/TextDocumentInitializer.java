@@ -12,18 +12,29 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+
+@Service
 public class TextDocumentInitializer {
-
-    private final static Logger LOG = Logger.getLogger(TextDocumentInitializer.class);
 
     private DocumentGetter documentGetter;
 
-    private MetaDao metaDao;
+    @Inject
+    private DocDao metaDao;
 
-    private TextDocDao textDocDao;
+    @Inject
+    private TextDocLoopDao textDocLoopDao;
 
+    @Inject
     private TextDocMapper textDocMapper;
+
+    @Inject
+    private DocVersionDao docVersionDao;
+
+    @Inject
+    private TextDocIncludeDao textDocIncludeDao;
 
     /**
      * Initializes text document.
@@ -49,12 +60,12 @@ public class TextDocumentInitializer {
 
 
     public void initIncludes(TextDocumentDomainObject document) {
-        Collection<Include> includes = metaDao.getIncludes(document.getMeta().getId());
+        Collection<TextDocInclude> textDocIncludes = textDocIncludeDao.findByDocId(document.getMeta().getId());
 
         Map<Integer, Integer> includesMap = new HashMap<>();
 
-        for (Include include : includes) {
-            includesMap.put(include.getIndex(), include.getIncludedDocumentId());
+        for (TextDocInclude textDocInclude : textDocIncludes) {
+            includesMap.put(textDocInclude.getNo(), textDocInclude.getIncludedDocumentId());
         }
 
         document.setIncludesMap(includesMap);
@@ -62,10 +73,10 @@ public class TextDocumentInitializer {
 
 
     public void initTemplateNames(TextDocumentDomainObject document) {
-        TemplateNames templateNames = metaDao.getTemplateNames(document.getMeta().getId());
+        TextDocumentDomainObject.TemplateNames templateNames = textDocMapper.getTemplateNames(document.getMeta().getId());
 
         if (templateNames == null) {
-            templateNames = new TemplateNames();
+            templateNames = new TextDocumentDomainObject.TemplateNames();
         }
 
         document.setTemplateNames(templateNames);
@@ -89,6 +100,7 @@ public class TextDocumentInitializer {
         }
     }
 
+    @Deprecated
     private MenuDomainObject initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
 
         for (Map.Entry<Integer, MenuItemDomainObject> entry : menu.getItemsMap().entrySet()) {
@@ -107,7 +119,10 @@ public class TextDocumentInitializer {
      * @throws IllegalStateException if a content loop is empty i.e. does not have a contents.
      */
     public void initContentLoops(TextDocumentDomainObject document) {
-        List<TextDocLoop> loops = textDocDao.getLoops(document.getRef());
+        DocRef docRef = document.getRef();
+        DocVersion docVersion = docVersionDao.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+
+        List<TextDocLoop> loops = textDocLoopDao.findByDocVersion(docVersion);
         Map<Integer, Loop> loopsMap = new HashMap<>();
 
         for (TextDocLoop loop : loops) {
@@ -117,21 +132,14 @@ public class TextDocumentInitializer {
         document.setLoops(loopsMap);
     }
 
-    public MetaDao getMetaDao() {
+    public DocDao getMetaDao() {
         return metaDao;
     }
 
-    public void setMetaDao(MetaDao metaDao) {
+    public void setMetaDao(DocDao metaDao) {
         this.metaDao = metaDao;
     }
 
-    public TextDocDao getTextDocDao() {
-        return textDocDao;
-    }
-
-    public void setTextDocDao(TextDocDao textDocDao) {
-        this.textDocDao = textDocDao;
-    }
 
     public DocumentGetter getDocumentGetter() {
         return documentGetter;

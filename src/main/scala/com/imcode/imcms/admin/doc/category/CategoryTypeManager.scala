@@ -29,8 +29,9 @@ class CategoryTypeManager {
         _ => handleSelection()
       }
 
+    // fixme :  new CategoryTypeDomainObject params
       w.miNew.setCommandHandler {
-        _ => editAndSave(new CategoryTypeDomainObject)
+        _ => editAndSave(new CategoryTypeDomainObject(0, null, 0, false));
       }
       w.miEdit.setCommandHandler {
         _ =>

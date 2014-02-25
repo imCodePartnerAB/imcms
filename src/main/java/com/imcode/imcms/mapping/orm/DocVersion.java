@@ -35,6 +35,18 @@ public class DocVersion implements Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
+    public DocVersion() {
+    }
+
+    public DocVersion(Integer docId, int no, User createdBy, Date createdDt, User modifiedBy, Date modifiedDt) {
+        this.docId = docId;
+        this.no = no;
+        this.createdBy = createdBy;
+        this.createdDt = createdDt;
+        this.modifiedBy = modifiedBy;
+        this.modifiedDt = modifiedDt;
+    }
+
     @Override
     public DocVersion clone() {
         try {

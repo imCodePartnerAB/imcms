@@ -43,11 +43,11 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, docLanguageSupport: Docum
    * @return doc's version info or null if doc does not exists
    */
   def getDocVersionInfo(docId: DocId): DocumentVersionInfo = versionInfos.getOrPut(docId) {
-    docLoader.getDocumentVersionDao.getAllVersions(docId) match {
+    docLoader.getDocumentVersionDao.findByDocId(docId) match {
       case versions if versions.size == 0 => null
       case versions =>
         val workingVersion = versions.get(0)
-        val defaultVersion = docLoader.getDocumentVersionDao.getDefaultVersion(docId)
+        val defaultVersion = docLoader.getDocumentVersionDao.findDefault(docId)
         new DocumentVersionInfo(docId, versions.asScala.map(OrmToApi.toApi).asJava, OrmToApi.toApi(workingVersion),
           OrmToApi.toApi(defaultVersion))
     }
@@ -57,7 +57,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, docLanguageSupport: Docum
    * @return doc's id or null if doc does not exists or alias is not set
    */
   def getDocId(docAlias: String): DocId = aliasesToIds.getOrPut(docAlias) {
-    docLoader.getMetaDao.getDocumentIdByAlias(docAlias) |>> {
+    docLoader.getMetaDao.getDocIdByAlias(docAlias) |>> {
       case null =>
       case docId => idsToAliases.put(docId, docAlias)
     }

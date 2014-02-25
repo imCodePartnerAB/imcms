@@ -13,7 +13,7 @@ import scala.util.control.{Exception => Ex}
 
 import com.imcode.imcms.api._
 
-import com.imcode.imcms.mapping.dao.MetaDao
+import com.imcode.imcms.mapping.dao.DocDao
 
 import com.vaadin.data.Validator
 import com.vaadin.data.Validator.InvalidValueException
@@ -71,7 +71,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentComm
     }
 
     v.alias.txtAlias.addValidator(new Validator {
-      val metaDao = imcmsServices.getManagedBean(classOf[MetaDao])
+      val metaDao = imcmsServices.getManagedBean(classOf[DocDao])
 
       def findDocIdByAlias(): Option[Int] =
         for {

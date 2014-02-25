@@ -15,10 +15,10 @@ import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 /**
- * Content loop tag v2.
+ *
  */
 //fixme: reimplement
-public class ContentLoopTag2 extends BodyTagSupport {
+public class LoopTag extends BodyTagSupport {
 
     /**
      * Creates empty content loop.

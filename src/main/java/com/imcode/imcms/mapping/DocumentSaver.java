@@ -1,11 +1,7 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.DocIdentityCleanerVisitor;
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.mapping.dao.DocLanguageDao;
-import com.imcode.imcms.mapping.dao.DocVersionDao;
-import com.imcode.imcms.mapping.dao.MetaDao;
-import com.imcode.imcms.mapping.dao.TextDocDao;
+import com.imcode.imcms.mapping.dao.*;
 import com.imcode.imcms.mapping.orm.*;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
@@ -32,16 +28,19 @@ public class DocumentSaver {
     private DocumentMapper documentMapper;
 
     @Inject
-    private MetaDao metaDao;
+    private DocDao metaDao;
 
     @Inject
     private DocVersionDao documentVersionDao;
 
     @Inject
-    private TextDocDao textDocDao;
+    private DocLanguageDao docLanguageDao;
 
     @Inject
-    private DocLanguageDao docLanguageDao;
+    private TextDocTextDao textDocTextDao;
+
+    @Inject
+    private TextDocLoopDao textDocLoopDao;
 
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
 
@@ -134,19 +133,20 @@ public class DocumentSaver {
             return;
         }
 
-        TextDocLoop ormLoop = textDocDao.getLoop(docRef.getDocVersionRef(), loopEntryRef.getLoopNo());
+        DocVersion docVersion = documentVersionDao.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        TextDocLoop ormLoop = textDocLoopDao.findByDocVersionAndNo(docVersion, loopEntryRef.getLoopNo());
 
         if (ormLoop == null) {
             ormLoop = new TextDocLoop();
             ormLoop.setNo(loopEntryRef.getLoopNo());
             ormLoop.getEntries().add(new TextDocLoop.Entry(loopEntryRef.getEntryNo()));
-            textDocDao.saveLoop(ormLoop);
+            textDocLoopDao.save(ormLoop);
         } else {
             Loop apiLoop = OrmToApi.toApi(ormLoop);
             int contentNo = loopEntryRef.getEntryNo();
             if (!apiLoop.findEntryIndexByNo(contentNo).isPresent()) {
                 ormLoop.getEntries().add(new TextDocLoop.Entry(contentNo));
-                textDocDao.saveLoop(ormLoop);
+                textDocLoopDao.save(ormLoop);
             }
         }
     }
@@ -154,17 +154,10 @@ public class DocumentSaver {
 
     @Transactional
     public void changeDocumentDefaultVersion(int docId, int newDefaultDocVersionNo, UserDomainObject publisher) {
-        DocVersion currentDefaultVersion = documentVersionDao.getDefaultVersion(docId);
+        DocVersion currentDefaultVersion = documentVersionDao.findDefault(docId);
 
         if (currentDefaultVersion.getNo() != newDefaultDocVersionNo) {
-            DocVersion version = documentVersionDao.getVersion(docId, newDefaultDocVersionNo);
-            if (version == null) {
-                throw new IllegalStateException(
-                        String.format("Doc %d default version can not be changed. Version no %d does not exists.",
-                                docId, newDefaultDocVersionNo));
-            }
-
-            documentVersionDao.changeDefaultVersion(version, publisher);
+            documentVersionDao.setDefault(docId, newDefaultDocVersionNo, publisher.getId());
 
             metaDao.touch(DocRef.of(docId, newDefaultDocVersionNo), publisher);
         }
@@ -184,11 +177,10 @@ public class DocumentSaver {
 
         DocumentDomainObject firstDoc = docs.get(0);
         Meta meta = firstDoc.getMeta().clone();
-        DocVersion nextVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
+        DocVersion nextVersion = documentVersionDao.create(meta.getId(), user.getId());
         DocumentSavingVisitor docSavingVisitor = new DocumentSavingVisitor(null, documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc : docs) {
-            doc.accept(new DocIdentityCleanerVisitor());
             doc.setMeta(meta);
             doc.setVersionNo(nextVersion.getNo());
 
@@ -238,7 +230,7 @@ public class DocumentSaver {
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
             DocumentLanguage language = e.getKey();
             DocumentCommonContent appearance = e.getValue();
-            DocCommonContent ormAppearance = metaDao.getDocAppearance(DocRef.of(doc.getId(), doc.getVersionNo(), language.getCode()));
+            DocCommonContent ormAppearance = metaDao.getDocCommonContent(DocRef.of(doc.getId(), doc.getVersionNo(), language.getCode()));
             if (ormAppearance == null) {
                 ormAppearance = new DocCommonContent();
             }
@@ -248,11 +240,11 @@ public class DocumentSaver {
             ormAppearance.setMenuText(appearance.getMenuText());
 
             if (ormAppearance.getId() == null) {
-                DocLanguage ormLanguage = docLanguageDao.getByCode(language.getCode());
+                DocLanguage ormLanguage = docLanguageDao.findByCode(language.getCode());
 
                 ormAppearance.setDocId(doc.getId());
-                ormAppearance.setLanguage(ormLanguage);
-                metaDao.saveAppearance(ormAppearance);
+                ormAppearance.setDocLanguage(ormLanguage);
+                metaDao.saveDocCommonContent(ormAppearance);
             }
         }
 
@@ -370,20 +362,20 @@ public class DocumentSaver {
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
             DocumentCommonContent appearance = e.getValue();
             DocCommonContent ormAppearance = new DocCommonContent();
-            DocLanguage ormLanguage = docLanguageDao.getByCode(e.getKey().getCode());
+            DocLanguage ormLanguage = docLanguageDao.findByCode(e.getKey().getCode());
 
             ormAppearance.setDocId(docId);
             ormAppearance.setHeadline(appearance.getHeadline());
             ormAppearance.setMenuImageURL(appearance.getMenuImageURL());
             ormAppearance.setMenuText(appearance.getMenuText());
-            ormAppearance.setLanguage(ormLanguage);
+            ormAppearance.setDocLanguage(ormLanguage);
 
-            metaDao.saveAppearance(ormAppearance);
+            metaDao.saveDocCommonContent(ormAppearance);
         }
 
         metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
 
-        DocVersion version = documentVersionDao.createVersion(docId, user.getId());
+        DocVersion version = documentVersionDao.create(docId, user.getId());
         doc.setVersionNo(version.getNo());
 
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
@@ -393,11 +385,11 @@ public class DocumentSaver {
         // refactor
         if (doc instanceof TextDocumentDomainObject && directiveses.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject) doc;
-            DocVersion ormVersion = documentVersionDao.getByDocIdAndNo(doc.getId(), doc.getVersionNo());
+            DocVersion ormVersion = documentVersionDao.findByDocIdAndNo(doc.getId(), doc.getVersionNo());
 
             for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
                 DocumentCommonContent appearance = e.getValue();
-                DocLanguage ormLanguage = docLanguageDao.getByCode(e.getKey().getCode());
+                DocLanguage ormLanguage = docLanguageDao.findByCode(e.getKey().getCode());
 
 
                 TextDocText text1 = new TextDocText();
@@ -418,8 +410,8 @@ public class DocumentSaver {
                 text1.setText(appearance.getHeadline());
                 text2.setText(appearance.getMenuText());
 
-                textDocDao.saveText(text1);
-                textDocDao.saveText(text2);
+                textDocTextDao.save(text1);
+                textDocTextDao.save(text2);
             }
         }
 
@@ -434,7 +426,7 @@ public class DocumentSaver {
         Set<DocLanguage> enabledLanguages = new HashSet<>();
 
         for (DocumentLanguage l : meta.getEnabledLanguages()) {
-            enabledLanguages.add(docLanguageDao.getByCode(l.getCode()));
+            enabledLanguages.add(docLanguageDao.findByCode(l.getCode()));
         }
 
         DocMeta ormMeta = new DocMeta();
@@ -610,11 +602,11 @@ public class DocumentSaver {
         this.documentMapper = documentMapper;
     }
 
-    public MetaDao getMetaDao() {
+    public DocDao getMetaDao() {
         return metaDao;
     }
 
-    public void setMetaDao(MetaDao metaDao) {
+    public void setMetaDao(DocDao metaDao) {
         this.metaDao = metaDao;
     }
 
@@ -624,13 +616,5 @@ public class DocumentSaver {
 
     public void setDocumentVersionDao(DocVersionDao documentVersionDao) {
         this.documentVersionDao = documentVersionDao;
-    }
-
-    public TextDocDao getTextDocDao() {
-        return textDocDao;
-    }
-
-    public void setTextDocDao(TextDocDao textDocDao) {
-        this.textDocDao = textDocDao;
     }
 }

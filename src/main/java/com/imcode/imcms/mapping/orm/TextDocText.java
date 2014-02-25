@@ -4,7 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Objects;
 
-@Entity(name = "Text")
+@Entity
 @Table(name = "imcms_text_doc_texts")
 public class TextDocText extends TextDocTextBase {
 
@@ -19,11 +19,11 @@ public class TextDocText extends TextDocTextBase {
                 && Objects.equals(getDocLanguage(), that.getDocLanguage())
                 && Objects.equals(getType(), that.getType())
                 && Objects.equals(getNo(), that.getNo())
-                && Objects.equals(getLoopEntry(), that.getLoopEntry());
+                && Objects.equals(getLoopEntryRef(), that.getLoopEntryRef());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDocVersion(), getDocLanguage(), getText(), getType(), getNo(), getLoopEntry());
+        return Objects.hash(getId(), getDocVersion(), getDocLanguage(), getText(), getType(), getNo(), getLoopEntryRef());
     }
 }

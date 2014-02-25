@@ -27,7 +27,7 @@ public class TextDocTextHistory extends TextDocTextBase {
                 && Objects.equals(getDocLanguage(), that.getDocLanguage())
                 && Objects.equals(getType(), that.getType())
                 && Objects.equals(getNo(), that.getNo())
-                && Objects.equals(getLoopEntry(), that.getLoopEntry())
+                && Objects.equals(getLoopEntryRef(), that.getLoopEntryRef())
                 && Objects.equals(modifiedBy, that.modifiedBy)
                 && Objects.equals(modifiedDt, that.modifiedDt);
     }
@@ -35,7 +35,7 @@ public class TextDocTextHistory extends TextDocTextBase {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getDocVersion(), getDocLanguage(), getText(), getType(), getNo(),
-                getLoopEntry(), modifiedBy, modifiedDt);
+                getLoopEntryRef(), modifiedBy, modifiedDt);
     }
 
     public User getModifiedBy() {

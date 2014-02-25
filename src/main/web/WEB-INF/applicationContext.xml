@@ -18,15 +18,22 @@
     <import resource="./beansContext.xml"/>
 
     <context:annotation-config/>
-    <context:component-scan base-package="com.imcode.imcms.addon.imagearchive"/>
+    <context:component-scan base-package="com.imcode.imcms.mapping, com.imcode.imcms.addon.imagearchive"/>
     <context:property-placeholder location="/WEB-INF/conf/server.properties" system-properties-mode="NEVER" ignore-resource-not-found="true"/>
     <!--ignore-unresolvable="true"-->
 
     <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
 
+    // fixme: replace with JPA
     <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
+
+    // fixme: replace with JPA
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"
+          p:configLocation="classpath:hibernate.cfg.xml"
+          p:dataSource-ref="dataSource"/>
+
 
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
         <property name="defaultLocale" value="sv"/>
@@ -60,53 +67,4 @@
     -->
     <bean id="dataSourceWithAutoCommit" parent="dataSource"
           p:defaultAutoCommit="true"/>
-
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"
-          p:configLocation="classpath:hibernate.cfg.xml"
-          p:dataSource-ref="dataSource"/>
-
-    <bean id="dao" abstract="true" class="com.imcode.imcms.dao.hibernate.HibernateSupport"
-          p:sessionFactory-ref="sessionFactory"/>
-
-    <bean id="textDocDao" class="com.imcode.imcms.dao.TextDocDao" parent="dao"/>
-
-    <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao" parent="dao"/>
-
-    <bean id="documentVersionDao" class="com.imcode.imcms.mapping.dao.DocVersionDao" parent="dao"/>
-
-    <bean id="languageDao" class="com.imcode.imcms.mapping.dao.DocLanguageDao" parent="dao"/>
-
-    <bean id="categoryMapper" class="com.imcode.imcms.mapping.CategoryMapper" parent="dao"/>
-
-    <bean id="ipAccessDao" class="com.imcode.imcms.mapping.dao.IPAccessDao" parent="dao"/>
-
-    <bean id="nativeQueriesDao" class="com.imcode.imcms.dao.NativeQueriesDao" parent="dao"/>
-
-    <bean id="systemDao" class="com.imcode.imcms.dao.SystemDao" parent="dao"/>
-
-    <bean id="imageCacheMapper" class="com.imcode.imcms.mapping.ImageCacheMapper"/>
-
-    <bean id="documentLanguageService" class="com.imcode.imcms.mapping.DefaultDocumentLanguageService"/>
-
-    <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver"
-          p:metaDao-ref="metaDao"
-          p:documentVersionDao-ref="documentVersionDao"
-          p:textDocDao-ref="textDocDao"/>
-
-
-    <bean id="textDocumentInitializer" class="com.imcode.imcms.mapping.TextDocumentInitializer"
-          p:metaDao-ref="metaDao"
-          p:textDocDao-ref="textDocDao"/>
-
-
-    <bean id="documentLoader" class="com.imcode.imcms.mapping.DocumentLoader"
-          p:metaDao-ref="metaDao"
-          p:documentVersionDao-ref="documentVersionDao"
-          p:documentInitializingVisitor-ref="documentInitializingVisitor"/>
-
-
-    <bean id="documentInitializingVisitor" class="com.imcode.imcms.mapping.DocumentInitializingVisitor"
-          p:metaDao-ref="metaDao"
-          p:textDocumentInitializer-ref="textDocumentInitializer"/>
-
 </beans>

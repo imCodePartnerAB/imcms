@@ -30,7 +30,7 @@ class LanguageManager {
     v.miEdit.setCommandHandler { _ =>
       whenSelected(v.tblLanguages) { code =>
         // fixme: use service
-        languageDao.getByCode(code) match {
+        languageDao.findByCode(code) match {
           case null => reload()
           case vo => editAndSave(vo |> OrmToApi.toApi)
         }
@@ -60,7 +60,7 @@ class LanguageManager {
         new ConfirmationDialog("Change default language?") |>> { dlg =>
           dlg.setOkButtonHandler {
             Current.ui.privileged(permission) {
-              val id = languageDao.getByCode(code).getId
+              val id = languageDao.findByCode(code).getId
               val property = systemDao.findByName("DefaultLanguageId")
               property.setValue(id.toString)
 
