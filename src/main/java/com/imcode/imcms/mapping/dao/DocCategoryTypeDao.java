@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping.dao;
 
+import com.imcode.imcms.mapping.orm.DocCategoryType;
 import com.imcode.imcms.mapping.orm.DocLanguage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -7,11 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DocLanguageDao extends JpaRepository<DocLanguage, Integer> {
+public interface DocCategoryTypeDao extends JpaRepository<DocCategoryType, Integer> {
 
-    DocLanguage findByCode(String code);
+    DocCategoryType findByName(String name);
 
-    @Modifying
-    @Query("DELETE FROM DocLanguage l WHERE l.code = ?1")
-    int deleteByCode(String code);
+    DocCategoryType findByNameIgnoreCase(String name);
 }
