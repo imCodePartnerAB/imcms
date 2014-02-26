@@ -50,7 +50,7 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
             file.setMimeType(item.getMimeType());
             file.setCreatedAsImage(item.getCreatedAsImage());
 
-            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getRef(), fileId);
+            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getVersionRef(), fileId);
             if (!fileForFileDocument.exists()) {
                 File oldlyNamedFileForFileDocument = new File(fileForFileDocument.getParentFile(),
                         fileForFileDocument.getName()

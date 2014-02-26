@@ -5,6 +5,7 @@ package admin.docadmin
 import com.imcode.imcms.admin.docadmin.menu.MenuEditorParameters
 import com.imcode.imcms.admin.docadmin.text.TextEditorParameters
 import com.imcode.imcms.api._
+import com.imcode.imcms.mapping.container.{DocVersionRef, LoopItemRef, TextDocMenuContainer}
 import java.util.Locale
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.component._
@@ -206,7 +207,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
       def save(close: Boolean) {
         editor.collectValues().right.get |> {
           menu =>
-            imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocumentMenuWrapper.of(doc.getVersionRef, menuNo, menu), Current.imcmsUser)
+            imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocMenuContainer.of(doc.getVersionRef, menuNo, menu), Current.imcmsUser)
             Current.page.showInfoNotification("menu_editor.notification.saved".i)
 
             if (close) {
@@ -360,7 +361,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
       }
 
       // fixme
-      val textDocMapper: TextDocMapper = ???
+      val textDocMapper: TextDocMapperService = ???
       val texts = (loopItemRefOpt match {
         case Some(loopItemRef) => textDocMapper.getLoopTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), loopItemRef)
         case _ => textDocMapper.getTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo)

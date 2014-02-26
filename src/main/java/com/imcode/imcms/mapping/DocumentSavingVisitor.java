@@ -11,10 +11,8 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 /**
- * Updates existing document fields.
- * <p/>
- * Not a public API. Must not be used directly.
- *
+ * Updates existing document content.
+
  * @see com.imcode.imcms.mapping.DocumentSaver
  */
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
@@ -44,8 +42,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         htmlReference.setHtml(document.getHtml());
         htmlReference.setDocVersion(docVersion);
 
-        metaDao.deleteHtmlReference(document.getRef());
-        metaDao.saveHtmlReference(htmlReference);
+        docDao.deleteHtmlReference(document.getRef());
+        docDao.saveHtmlReference(htmlReference);
     }
 
     // runs inside transaction   
@@ -61,8 +59,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         reference.setUrlLanguagePrefix("");
         reference.setUrlFrameName("");
 
-        metaDao.deleteUrlReference(document.getRef());
-        metaDao.saveUrlReference(reference);
+        docDao.deleteUrlReference(document.getRef());
+        docDao.saveUrlReference(reference);
     }
 
     // runs inside transaction 

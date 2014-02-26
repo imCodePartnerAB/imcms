@@ -1,6 +1,7 @@
 package com.imcode
 package imcms.mapping
 
+import com.imcode.imcms.mapping.container.DocRef
 import com.imcode.imcms.mapping.orm.{DocRef, DocVersion}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

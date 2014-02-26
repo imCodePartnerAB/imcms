@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.*;
+import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.dao.*;
 import com.imcode.imcms.mapping.orm.*;
 import imcode.server.Imcms;
@@ -18,9 +19,7 @@ import javax.inject.Inject;
 import java.util.*;
 
 /**
- * Used internally by DocumentMapper. Must NOT be used directly.
- * <p/>
- * Instantiated and initialized using spring framework.
+ * Used internally by DocumentMapper.
  */
 @Service
 public class DocumentSaver {
@@ -28,7 +27,7 @@ public class DocumentSaver {
     private DocumentMapper documentMapper;
 
     @Inject
-    private DocDao metaDao;
+    private DocDao docDao;
 
     @Inject
     private DocVersionDao documentVersionDao;
@@ -41,6 +40,12 @@ public class DocumentSaver {
 
     @Inject
     private TextDocLoopDao textDocLoopDao;
+
+    @Inject
+    private DocCommonContentDao docCommonContentDao;
+
+    @Inject
+    private DocMetaDao docMetaDao;
 
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
 
@@ -67,29 +72,29 @@ public class DocumentSaver {
      * @throws IllegalStateException if a text refers non-existing content loop.
      */
     @Transactional
-    public void saveText(TextDocumentTextWrapper textWrapper, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createLoopEntry(textWrapper.getDocRef(), textWrapper.getLoopEntryRef());
+    public void saveText(TextDocTextContainer textContainer, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        createLoopEntry(textContainer.getDocRef(), textContainer.getLoopEntryRef());
 
-        new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(textWrapper, user);
+        new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(textContainer, user);
 
-        metaDao.touch(textWrapper.getDocRef(), user);
+        docDao.touch(textContainer.getDocRef(), user);
     }
 
     @Transactional
-    public void saveTexts(Collection<TextDocumentTextWrapper> texts, UserDomainObject user)
+    public void saveTexts(Collection<TextDocTextContainer> texts, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        for (TextDocumentTextWrapper textWrapper : texts) {
-            saveText(textWrapper, user);
+        for (TextDocTextContainer textContainer : texts) {
+            saveText(textContainer, user);
         }
     }
 
 
     @Transactional
-    public void saveMenu(TextDocumentMenuWrapper menuWrapper, UserDomainObject user)
+    public void saveMenu(TextDocMenuContainer menuWrapper, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(menuWrapper, user);
 
-        metaDao.touch(menuWrapper.getDocVersionRef(), user);
+        docDao.touch(menuWrapper.getDocVersionRef(), user);
     }
 
 
@@ -103,25 +108,23 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public void saveImages(Collection<TextDocumentImageWrapper> images, UserDomainObject user)
+    public void saveImages(Collection<TextDocImageContainer> images, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        for (TextDocumentImageWrapper imageWrapper : images) {
-            saveImage(imageWrapper, user);
+        for (TextDocImageContainer imageContainer : images) {
+            saveImage(imageContainer, user);
         }
     }
 
 
     @Transactional
-    public void saveImage(TextDocumentImageWrapper imageWrapper, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        ImageDomainObject image = imageWrapper.getImage();
-
-        createLoopEntry(imageWrapper.getDocRef(), imageWrapper.getLoopEntryRef());
+    public void saveImage(TextDocImageContainer imageContainer, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        createLoopEntry(imageContainer.getDocRef(), imageContainer.getLoopEntryRef());
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
-        storingVisitor.saveTextDocumentImage(image, user);
+        storingVisitor.saveTextDocumentImage(imageContainer, user);
 
-        metaDao.touch(imageWrapper.getDocRef(), user);
+        docDao.touch(imageContainer.getDocRef(), user);
     }
 
     /**
@@ -159,7 +162,7 @@ public class DocumentSaver {
         if (currentDefaultVersion.getNo() != newDefaultDocVersionNo) {
             documentVersionDao.setDefault(docId, newDefaultDocVersionNo, publisher.getId());
 
-            metaDao.touch(DocRef.of(docId, newDefaultDocVersionNo), publisher);
+            docDao.touch(DocVersionRef.of(docId, newDefaultDocVersionNo), publisher);
         }
     }
 
@@ -184,7 +187,7 @@ public class DocumentSaver {
             doc.setMeta(meta);
             doc.setVersionNo(nextVersion.getNo());
 
-            docSavingVisitor.updateDocumentAppearance(doc, user);
+            docSavingVisitor.saveDocumentCommonContent(doc, user);
         }
 
         // Currently only text doc has i18n content.
@@ -229,28 +232,28 @@ public class DocumentSaver {
 
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
             DocumentLanguage language = e.getKey();
-            DocumentCommonContent appearance = e.getValue();
-            DocCommonContent ormAppearance = metaDao.getDocCommonContent(DocRef.of(doc.getId(), doc.getVersionNo(), language.getCode()));
-            if (ormAppearance == null) {
-                ormAppearance = new DocCommonContent();
+            DocumentCommonContent dcc = e.getValue();
+            DocCommonContent ormDcc = docCommonContentDao.findByDocIdAndDocLanguageCode(doc.getId(), language.getCode());
+            if (ormDcc == null) {
+                ormDcc = new DocCommonContent();
             }
 
-            ormAppearance.setHeadline(appearance.getHeadline());
-            ormAppearance.setMenuImageURL(appearance.getMenuImageURL());
-            ormAppearance.setMenuText(appearance.getMenuText());
+            ormDcc.setHeadline(dcc.getHeadline());
+            ormDcc.setMenuImageURL(dcc.getMenuImageURL());
+            ormDcc.setMenuText(dcc.getMenuText());
 
-            if (ormAppearance.getId() == null) {
+            if (ormDcc.getId() == null) {
                 DocLanguage ormLanguage = docLanguageDao.findByCode(language.getCode());
 
-                ormAppearance.setDocId(doc.getId());
-                ormAppearance.setDocLanguage(ormLanguage);
-                metaDao.saveDocCommonContent(ormAppearance);
+                ormDcc.setDocId(doc.getId());
+                ormDcc.setDocLanguage(ormLanguage);
+                docCommonContentDao.save(ormDcc);
             }
         }
 
         doc.accept(savingVisitor);
         updateModifiedDtIfNotSetExplicitly(doc);
-        metaDao.touch(doc.getRef(), user, doc.getModifiedDatetime());
+        docDao.touch(doc.getRef(), user, doc.getModifiedDatetime());
     }
 
 
@@ -262,60 +265,57 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     //fixme: meta persmissions
-    //fixme: implement
     @Transactional
-    public Integer copyDocument(List<DocumentDomainObject> docs, UserDomainObject user)
+    public int saveNewDocsWithSharedMetaAndVersion(List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-        return 0;
 
-//        DocumentDomainObject firstDoc = docs.get(0);
-//        Meta meta = firstDoc.getMeta().clone();
-//
-//        checkDocumentForSave(firstDoc);
-//
-//        documentMapper.setCreatedAndModifiedDatetimes(meta, new Date());
-//
-//        newUpdateDocumentRolePermissions(firstDoc, user, null);
-//
-//        // Update permissions
-//        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(firstDoc, user, null);
-//
-//        meta.setId(null);
-//        Integer copyDocId = saveMeta(meta);
-//        metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
-//        for (DocumentDomainObject doc : docs) {
-//            I18nMeta i18nMeta = I18nMeta.builder(doc.getAppearance()).id(null).docId(copyDocId).build();
-//
-//            metaDao.saveAppearance(i18nMeta);
-//        }
-//
-//        DocVersion copyDocVersion = documentVersionDao.createVersion(copyDocId, user.getId());
-//        DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
-//
-//        for (DocumentDomainObject doc : docs) {
-//            doc.setMeta(meta);
-//            doc.setVersionNo(copyDocVersion.getNo());
-//        }
-//
-//        // Currently only text doc has i18n content.
-//        if (!(firstDoc instanceof TextDocumentDomainObject)) {
-//            firstDoc.accept(docCreatingVisitor);
-//        } else {
-//            TextDocumentDomainObject textDoc = (TextDocumentDomainObject) firstDoc;
-//
-//            docCreatingVisitor.updateTextDocumentContentLoops(textDoc, user);
-//            docCreatingVisitor.updateTextDocumentMenus(textDoc, user);
-//            docCreatingVisitor.updateTextDocumentTemplateNames(textDoc, user);
-//            docCreatingVisitor.updateTextDocumentIncludes(textDoc);
-//
-//            for (DocumentDomainObject doc : docs) {
-//                textDoc = (TextDocumentDomainObject) doc;
-//                docCreatingVisitor.updateTextDocumentTexts(textDoc, user);
-//                docCreatingVisitor.updateTextDocumentImages(textDoc, user);
-//            }
-//        }
-//
-//        return copyDocId;
+        DocumentDomainObject firstDoc = docs.get(0);
+        Meta meta = firstDoc.getMeta().clone();
+
+        checkDocumentForSave(firstDoc);
+
+        documentMapper.setCreatedAndModifiedDatetimes(meta, new Date());
+
+        newUpdateDocumentRolePermissions(firstDoc, user, null);
+
+        // Update permissions
+        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(firstDoc, user, null);
+
+        meta.setId(null);
+        int newDocId = saveMeta(meta);
+
+        docDao.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, Integer.toString(newDocId));
+
+        DocVersion copyDocVersion = documentVersionDao.create(newDocId, user.getId());
+        DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
+
+        for (DocumentDomainObject doc : docs) {
+            doc.setMeta(meta);
+            doc.setVersionNo(copyDocVersion.getNo());
+            docCreatingVisitor.saveDocumentCommonContent(doc, user);
+        }
+
+        // Currently only text docs contain non-common i18n content
+        if (!(firstDoc instanceof TextDocumentDomainObject)) {
+            firstDoc.accept(docCreatingVisitor);
+        } else {
+            TextDocumentDomainObject textDoc = (TextDocumentDomainObject) firstDoc;
+
+            // loops, menus, template-names and includes are shared
+            docCreatingVisitor.updateTextDocumentContentLoops(textDoc, user);
+            docCreatingVisitor.updateTextDocumentMenus(textDoc, user);
+            docCreatingVisitor.updateTextDocumentTemplateNames(textDoc, user);
+            docCreatingVisitor.updateTextDocumentIncludes(textDoc);
+
+            // i18n content
+            for (DocumentDomainObject doc : docs) {
+                textDoc = (TextDocumentDomainObject) doc;
+                docCreatingVisitor.updateTextDocumentTexts(textDoc, user);
+                docCreatingVisitor.updateTextDocumentImages(textDoc, user);
+            }
+        }
+
+        return newDocId;
     }
 
 
@@ -327,8 +327,8 @@ public class DocumentSaver {
      * If user is a super-admin or has full permissions on a new document then
      *
      * @param doc
-     * @param appearances
-     * @param directiveses
+     * @param dccMap
+     * @param saveOpts
      * @param user
      * @param <T>
      * @return
@@ -336,8 +336,8 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public <T extends DocumentDomainObject> int saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances,
-                                                                EnumSet<DocumentMapper.SaveOpts> directiveses, UserDomainObject user)
+    public <T extends DocumentDomainObject> int saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> dccMap,
+                                                                EnumSet<DocumentMapper.SaveOpts> saveOpts, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Meta meta = doc.getMeta();
@@ -357,65 +357,49 @@ public class DocumentSaver {
         meta.setId(null);
         meta.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
         meta.setDocumentType(doc.getDocumentTypeId());
-        Integer docId = saveMeta(meta);
+        int newDocId = saveMeta(meta);
 
-        for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
-            DocumentCommonContent appearance = e.getValue();
-            DocCommonContent ormAppearance = new DocCommonContent();
+        for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
+            DocumentCommonContent dcc = e.getValue();
+            DocCommonContent ormDcc = new DocCommonContent();
             DocLanguage ormLanguage = docLanguageDao.findByCode(e.getKey().getCode());
 
-            ormAppearance.setDocId(docId);
-            ormAppearance.setHeadline(appearance.getHeadline());
-            ormAppearance.setMenuImageURL(appearance.getMenuImageURL());
-            ormAppearance.setMenuText(appearance.getMenuText());
-            ormAppearance.setDocLanguage(ormLanguage);
+            ormDcc.setDocId(newDocId);
+            ormDcc.setHeadline(dcc.getHeadline());
+            ormDcc.setMenuImageURL(dcc.getMenuImageURL());
+            ormDcc.setMenuText(dcc.getMenuText());
+            ormDcc.setDocLanguage(ormLanguage);
 
-            metaDao.saveDocCommonContent(ormAppearance);
+            docCommonContentDao.save(ormDcc);
         }
 
-        metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
+        docDao.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, String.valueOf(newDocId));
 
-        DocVersion version = documentVersionDao.create(docId, user.getId());
+        DocVersion version = documentVersionDao.create(newDocId, user.getId());
         doc.setVersionNo(version.getNo());
+        doc.setId(newDocId);
 
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
         doc.accept(docCreatingVisitor);
 
-        // refactor
-        if (doc instanceof TextDocumentDomainObject && directiveses.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
-            TextDocumentDomainObject textDoc = (TextDocumentDomainObject) doc;
+        // todo: refactor
+        if (doc instanceof TextDocumentDomainObject && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
             DocVersion ormVersion = documentVersionDao.findByDocIdAndNo(doc.getId(), doc.getVersionNo());
 
-            for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
-                DocumentCommonContent appearance = e.getValue();
+            for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
+                DocumentCommonContent dcc = e.getValue();
                 DocLanguage ormLanguage = docLanguageDao.findByCode(e.getKey().getCode());
 
-
-                TextDocText text1 = new TextDocText();
-                TextDocText text2 = new TextDocText();
-
-                text1.setNo(1);
-                text2.setNo(2);
-
-                text1.setDocLanguage(ormLanguage);
-                text2.setDocLanguage(ormLanguage);
-
-                text1.setDocVersion(ormVersion);
-                text2.setDocVersion(ormVersion);
-
-                text1.setType(TextDocType.PLAIN_TEXT);
-                text2.setType(TextDocType.PLAIN_TEXT);
-
-                text1.setText(appearance.getHeadline());
-                text2.setText(appearance.getMenuText());
+                TextDocText text1 = new TextDocText(ormVersion, ormLanguage, TextDocTextType.PLAIN_TEXT, 1, null, dcc.getHeadline());
+                TextDocText text2 = new TextDocText(ormVersion, ormLanguage, TextDocTextType.PLAIN_TEXT, 1, null, dcc.getMenuText());
 
                 textDocTextDao.save(text1);
                 textDocTextDao.save(text2);
             }
         }
 
-        return docId;
+        return newDocId;
     }
 
 
@@ -461,11 +445,12 @@ public class DocumentSaver {
         ormMeta.setSearchDisabled(meta.getSearchDisabled());
         ormMeta.setTarget(meta.getTarget());
 
-        metaDao.saveMeta(ormMeta);
+        docMetaDao.saveAndFlush(ormMeta);
 
-        // fixme: flush entityManager to get new id
+        int id = ormMeta.getId();
+        meta.setId(id);
 
-        return ormMeta.getId();
+        return id;
     }
 
 /*
@@ -582,7 +567,7 @@ public class DocumentSaver {
         String alias = document.getAlias();
 
         if (alias != null) {
-            DocProperty property = metaDao.getAliasProperty(alias);
+            DocProperty property = docDao.getAliasProperty(alias);
             if (property != null) {
                 Integer documentId = document.getId();
 
@@ -602,12 +587,12 @@ public class DocumentSaver {
         this.documentMapper = documentMapper;
     }
 
-    public DocDao getMetaDao() {
-        return metaDao;
+    public DocDao getDocDao() {
+        return docDao;
     }
 
-    public void setMetaDao(DocDao metaDao) {
-        this.metaDao = metaDao;
+    public void setDocDao(DocDao docDao) {
+        this.docDao = docDao;
     }
 
     public DocVersionDao getDocumentVersionDao() {

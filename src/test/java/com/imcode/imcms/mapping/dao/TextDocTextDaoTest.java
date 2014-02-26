@@ -69,7 +69,7 @@ public class TextDocTextDaoTest {
                     TextDocText text = new TextDocText();
 
                     text.setNo(no);
-                    text.setType(TextDocType.PLAIN_TEXT);
+                    text.setType(TextDocTextType.PLAIN_TEXT);
                     text.setDocLanguage(docLanguage);
                     text.setDocVersion(docVersion);
 

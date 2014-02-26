@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.mapping.orm.DocVersion;
 import com.imcode.imcms.mapping.orm.HtmlDocContent;
 import com.imcode.imcms.mapping.orm.UrlDocContent;
 import imcode.server.ImcmsServices;
@@ -12,8 +13,9 @@ import com.imcode.imcms.mapping.dao.DocDao;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Not a public API. Must not be used directly.
+ * Creates or updates document content.
  */
+//todo: init using spring
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
     private UserDomainObject currentUser;
@@ -26,9 +28,9 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     @Transactional
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
         HtmlDocContent reference = new HtmlDocContent();
+        DocVersion docVersion = docVersionDao.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
-        //fixme
-        //reference.setDocRef(document.getRef());
+        reference.setDocVersion(docVersion);
         reference.setHtml(document.getHtml());
 
         DocDao dao = services.getManagedBean(DocDao.class);
@@ -39,9 +41,9 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     @Transactional
     public void visitUrlDocument(UrlDocumentDomainObject document) {
         UrlDocContent reference = new UrlDocContent();
+        DocVersion docVersion = docVersionDao.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
-        //fixme
-        //reference.setDocRef(document.getRef());
+        reference.setDocVersion(docVersion);
         reference.setUrlTarget("");
         reference.setUrlText("");
         reference.setUrlLanguagePrefix("");

@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.dao.*;
 import com.imcode.imcms.mapping.orm.*;
 import imcode.server.document.GetterDocumentReference;
@@ -27,7 +28,7 @@ public class TextDocumentInitializer {
     private TextDocLoopDao textDocLoopDao;
 
     @Inject
-    private TextDocMapper textDocMapper;
+    private TextDocMapperService textDocMapper;
 
     @Inject
     private DocVersionDao docVersionDao;
@@ -48,14 +49,20 @@ public class TextDocumentInitializer {
     }
 
     public void initTexts(TextDocumentDomainObject document) {
-        for (Map.Entry<Integer, TextDomainObject> e : textDocMapper.getTexts(document.getRef()).entrySet()) {
-            document.setText(e.getKey(), e.getValue());
-        }
+        for (TextDocTextContainer textContainer : textDocMapper.getAllTexts(document.getRef())) {
+            LoopEntryRef loopEntryRef = textContainer.getLoopEntryRef();
 
-        for (Map.Entry<LoopItemRef, TextDomainObject> e : textDocMapper.getLoopTexts(document.getRef()).entrySet()) {
-            document.setText(e.getKey(), e.getValue());
+            if (loopEntryRef == null) {
+                document.setText(textContainer.getTextNo(), textContainer.getText());
+            } else {
+                document.setText(
+                        LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), textContainer.getTextNo()),
+                        textContainer.getText()
+                );
+            }
         }
     }
+
 
 
     public void initIncludes(TextDocumentDomainObject document) {
@@ -83,12 +90,17 @@ public class TextDocumentInitializer {
 
 
     public void initImages(TextDocumentDomainObject document) {
-        for (Map.Entry<Integer, ImageDomainObject> e : textDocMapper.getImages(document.getRef()).entrySet()) {
-            document.setImage(e.getKey(), e.getValue());
-        }
+        for (TextDocImageContainer imageContainer : textDocMapper.getAllImages(document.getRef())) {
+            LoopEntryRef loopEntryRef = imageContainer.getLoopEntryRef();
 
-        for (Map.Entry<LoopItemRef, ImageDomainObject> e : textDocMapper.getLoopImages(document.getRef()).entrySet()) {
-            document.setImage(e.getKey(), e.getValue());
+            if (loopEntryRef == null) {
+                document.setImage(imageContainer.getImageNo(), imageContainer.getImage());
+            } else {
+                document.setImage(
+                        LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), imageContainer.getImageNo()),
+                        imageContainer.getImage()
+                );
+            }
         }
     }
 

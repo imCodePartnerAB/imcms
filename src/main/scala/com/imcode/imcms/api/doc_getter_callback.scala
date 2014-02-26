@@ -1,7 +1,8 @@
 package com.imcode
 package imcms.api
 
-import com.imcode.imcms.mapping.{Meta, DocRef, DocumentMapper}
+import com.imcode.imcms.mapping.container.DocRef
+import com.imcode.imcms.mapping.{Meta, DocumentMapper}
 import imcode.server.document.DocumentDomainObject
 import imcode.server.user.UserDomainObject
 import javax.servlet.http.HttpServletRequest

@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.mapping.dao.DocCommonContentDao;
 import com.imcode.imcms.mapping.dao.DocMetaDao;
 import com.imcode.imcms.mapping.dao.DocVersionDao;
 import com.imcode.imcms.mapping.dao.DocDao;
@@ -9,6 +10,7 @@ import com.imcode.imcms.mapping.orm.DocMeta;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.*;
 import imcode.server.user.RoleId;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -20,7 +22,7 @@ import java.util.Set;
  * <p/>
  * Instantiated by spring-framework and initialized in DocumentMapper constructor.
  */
-@Service
+@Component
 public class DocumentLoader {
 
     /**
@@ -36,6 +38,9 @@ public class DocumentLoader {
 
     @Inject
     private DocMetaDao docMetaDao;
+
+    @Inject
+    DocCommonContentDao docCommonContentDao;
 
     /**
      * Initializes document's fields.
@@ -75,7 +80,7 @@ public class DocumentLoader {
      * Loads and initializes document's content.
      */
     public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
-        DocCommonContent ormAppearance = metaDao.getDocCommonContent(document.getRef());
+        DocCommonContent ormAppearance = docCommonContentDao.findByDocIdAndDocLanguageCode(document.getId(), document.getLanguage().getCode());
         DocumentCommonContent appearance = ormAppearance != null
                 ? OrmToApi.toApi(ormAppearance)
                 : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build();

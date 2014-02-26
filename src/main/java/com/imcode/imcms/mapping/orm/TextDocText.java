@@ -8,8 +8,20 @@ import java.util.Objects;
 @Table(name = "imcms_text_doc_texts")
 public class TextDocText extends TextDocTextBase {
 
+    public TextDocText() {
+
+    }
+
+    public TextDocText(DocVersion docVersion, DocLanguage docLanguage, TextDocTextType type, int no, TextDocLoopEntryRef loopEntryRef, String text) {
+        setDocVersion(docVersion);
+        setDocLanguage(docLanguage);
+        setType(type);
+        setNo(no);
+        setLoopEntryRef(loopEntryRef);
+    }
+
     @Override
-    public boolean equals(Object obj) {
+        public boolean equals(Object obj) {
         return obj == this || (obj instanceof TextDocText && equals((TextDocText) obj));
     }
 

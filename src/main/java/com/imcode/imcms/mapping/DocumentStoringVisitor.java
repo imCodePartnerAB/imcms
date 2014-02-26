@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.*;
+import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.dao.*;
 import com.imcode.imcms.mapping.dao.DocLanguageDao;
 import com.imcode.imcms.mapping.dao.DocVersionDao;
@@ -32,12 +33,12 @@ import org.apache.commons.lang.UnhandledException;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This class is not a part of public API. It's methods must not be called directly.
+ * Creates or updates document content.
  *
  * @see com.imcode.imcms.mapping.DocumentSaver
  */
-
-//hibernate.batch_update_versioned
+//todo: init using spring
+//todo: hibernate.batch_update_versioned
 public class DocumentStoringVisitor extends DocumentVisitor {
 
     protected ImcmsServices services;
@@ -45,21 +46,29 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     private static final int FILE_BUFFER_LENGTH = 2048;
     private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
 
-    protected DocDao metaDao;
+    // todo: @Inject
+    protected DocDao docDao;
     protected DocVersionDao docVersionDao;
     protected DocLanguageDao docLanguageDao;
-    // fixme: Inject
+
     protected TextDocTextDao textDocTextDao;
     protected TextDocLoopDao textDocLoopDao;
     protected TextDocMenuDao textDocMenuDao;
     protected TextDocTemplateNamesDao textDocTemplateNamesDao;
     protected TextDocIncludeDao textDocIncludeDao;
+    protected DocCommonContentDao docCommonContentDao;
 
     public DocumentStoringVisitor(ImcmsServices services) {
         this.services = services;
-        this.metaDao = services.getManagedBean(DocDao.class);
+        this.docDao = services.getManagedBean(DocDao.class);
         this.docVersionDao = services.getManagedBean(DocVersionDao.class);
         this.docLanguageDao = services.getManagedBean(DocLanguageDao.class);
+        this.textDocTextDao = services.getManagedBean(TextDocTextDao.class);
+        this.textDocLoopDao = services.getManagedBean(TextDocLoopDao.class);
+        this.textDocMenuDao = services.getManagedBean(TextDocMenuDao.class);
+        this.textDocTemplateNamesDao = services.getManagedBean(TextDocTemplateNamesDao.class);
+        this.textDocIncludeDao = services.getManagedBean(TextDocIncludeDao.class);
+        this.docCommonContentDao = services.getManagedBean(DocCommonContentDao.class);
     }
 
     /**
@@ -68,7 +77,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * @param fileDocumentFile
      * @param fileId
      */
-    protected void saveFileDocumentFile(DocRef docRef, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
+    protected void saveFileDocumentFile(DocVersionRef docVersionRef, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
                                         String fileId) {
         try {
             InputStreamSource inputStreamSource = fileDocumentFile.getInputStreamSource();
@@ -76,14 +85,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             try {
                 in = inputStreamSource.getInputStream();
             } catch (FileNotFoundException e) {
-                throw new UnhandledException("The file for filedocument " + docRef
+                throw new UnhandledException("The file for filedocument " + docVersionRef
                         + " has disappeared.", e);
             }
             if (null == in) {
                 return;
             }
 
-            File file = getFileForFileDocumentFile(docRef, fileId);
+            File file = getFileForFileDocumentFile(docVersionRef, fileId);
 
             FileInputStreamSource fileInputStreamSource = new FileInputStreamSource(file);
             boolean sameFileOnDisk = file.exists() && inputStreamSource.equals(fileInputStreamSource);
@@ -112,9 +121,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     /**
      * Returns file for FileDocumentFile.
      */
-    public static File getFileForFileDocumentFile(DocRef docRef, String fileId) {
+    public static File getFileForFileDocumentFile(DocVersionRef docVersionRef, String fileId) {
         File filePath = Imcms.getServices().getConfig().getFilePath();
-        String filename = getFilenameForFileDocumentFile(docRef, fileId);
+        String filename = getFilenameForFileDocumentFile(docVersionRef, fileId);
 
         return new File(filePath, filename);
     }
@@ -136,9 +145,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * @param fileId
      * @return FileDocumentFile filename
      */
-    public static String getFilenameForFileDocumentFile(DocRef docRef, String fileId) {
-        int docId = docRef.getDocId();
-        int docVersionNo = docRef.getDocVersionNo();
+    public static String getFilenameForFileDocumentFile(DocVersionRef docVersionRef, String fileId) {
+        int docId = docVersionRef.getDocId();
+        int docVersionNo = docVersionRef.getDocVersionNo();
 
         String filename = "" + docId;
 
@@ -167,16 +176,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         DocVersion docVersion = docVersionDao.findByDocIdAndNo(textDocument.getId(), textDocument.getVersionNo());
         DocLanguage docLanguage = docLanguageDao.findByCode(textDocument.getLanguage().getCode());
 
-        DocRef docRef = textDocument.getRef();
-
         textDocTextDao.deleteByDocVersionAndDocLanguage(docVersion, docLanguage);
 
         for (Map.Entry<Integer, TextDomainObject> e : textDocument.getTexts().entrySet()) {
-            saveTextDocumentText(TextDocumentTextWrapper.of(textDocument.getRef(), e.getKey(), e.getValue()), user);
+            saveTextDocumentText(TextDocTextContainer.of(textDocument.getRef(), e.getKey(), e.getValue()), user);
         }
 
         for (Map.Entry<LoopItemRef, TextDomainObject> e : textDocument.getLoopTexts().entrySet()) {
-            saveTextDocumentText(TextDocumentTextWrapper.of(textDocument.getRef(), e.getKey().getItemNo(), e.getValue()), user);
+            saveTextDocumentText(TextDocTextContainer.of(textDocument.getRef(), e.getKey().getItemNo(), e.getValue()), user);
         }
     }
 
@@ -209,43 +216,45 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
 
     @Transactional
-    public void updateDocumentAppearance(DocumentDomainObject doc, UserDomainObject user) {
-        DocRef docRef = doc.getRef();
-        DocLanguage docLanguage = docLanguageDao.findByCode(docRef.getDocLanguageCode());
+    public void saveDocumentCommonContent(DocumentDomainObject doc, UserDomainObject user) {
+        DocLanguage ormLanguage = docLanguageDao.findByCode(doc.getLanguage().getCode());
+        DocCommonContent ormDcc = docCommonContentDao.findByDocIdAndDocLanguage(doc.getId(), ormLanguage);
 
-        metaDao.deleteDocCommonContent(docRef);
+        if (ormDcc == null) {
+            ormDcc = new DocCommonContent();
+        }
 
-        DocumentCommonContent appearance = doc.getCommonContent();
-        DocCommonContent ormAppearance = new DocCommonContent();
-        ormAppearance.setDocId(docRef.getDocId());
-        ormAppearance.setDocLanguage(docLanguage);
-        ormAppearance.setHeadline(appearance.getHeadline());
-        ormAppearance.setMenuText(appearance.getMenuText());
-        ormAppearance.setMenuImageURL(appearance.getMenuImageURL());
+        DocumentCommonContent dcc = doc.getCommonContent();
 
-        metaDao.saveDocCommonContent(ormAppearance);
+        ormDcc.setDocId(doc.getId());
+        ormDcc.setDocLanguage(ormLanguage);
+        ormDcc.setHeadline(dcc.getHeadline());
+        ormDcc.setMenuText(dcc.getMenuText());
+        ormDcc.setMenuImageURL(dcc.getMenuImageURL());
+
+        docCommonContentDao.save(ormDcc);
     }
 
 
     /**
      * Saves text document's text.
      *
-     * @param textWrapper
+     * @param textContainer
      * @param user
      */
     @Transactional
-    public void saveTextDocumentText(TextDocumentTextWrapper textWrapper, UserDomainObject user) {
-        DocVersion docVersion = docVersionDao.findByDocIdAndNo(textWrapper.getDocRef().getDocId(), textWrapper.getDocRef().getDocVersionNo());
-        DocLanguage docLanguage = docLanguageDao.findByCode(textWrapper.getDocRef().getDocLanguageCode());
+    public void saveTextDocumentText(TextDocTextContainer textContainer, UserDomainObject user) {
+        DocVersion docVersion = docVersionDao.findByDocIdAndNo(textContainer.getDocRef().getDocId(), textContainer.getDocRef().getDocVersionNo());
+        DocLanguage docLanguage = docLanguageDao.findByCode(textContainer.getDocRef().getDocLanguageCode());
 
-        TextDomainObject text = textWrapper.getText();
+        TextDomainObject text = textContainer.getText();
         TextDocText ormText = new TextDocText();
 
         ormText.setDocLanguage(docLanguage);
         ormText.setDocVersion(docVersion);
         ormText.setText(text.getText());
-        ormText.setType(TextDocType.values()[text.getType()]);
-        LoopEntryRef loopEntryRef = textWrapper.getLoopEntryRef();
+        ormText.setType(TextDocTextType.values()[text.getType()]);
+        LoopEntryRef loopEntryRef = textContainer.getLoopEntryRef();
         if (loopEntryRef != null) {
             ormText.setLoopEntryRef(new TextDocLoopEntryRef(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo()));
         }
@@ -262,7 +271,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * Saves text document's image.
      */
     @Transactional
-    public void saveTextDocumentImage(ImageDomainObject image, UserDomainObject user) {
+    public void saveTextDocumentImage(TextDocImageContainer imageContainer, UserDomainObject user) {
+        ImageDomainObject image = imageContainer.getImage();
+
         image.setUrl(image.getSource().toStorageString());
         image.setType(image.getSource().getTypeId());
 
@@ -331,7 +342,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
 
     public void visitFileDocument(FileDocumentDomainObject fileDocument) {
-        metaDao.deleteFileReferences(fileDocument.getRef());
+        docDao.deleteFileReferences(fileDocument.getRef());
 
         DocVersion docVersion = docVersionDao.findByDocIdAndNo(fileDocument.getRef().getDocId(), fileDocument.getRef().getDocVersionNo());
 
@@ -353,9 +364,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             fileRef.setMimeType(fileDocumentFile.getMimeType());
             fileRef.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
 
-            metaDao.saveFileReference(fileRef);
+            docDao.saveFileReference(fileRef);
 
-            saveFileDocumentFile(fileDocument.getRef(), fileDocumentFile, fileId);
+            saveFileDocumentFile(fileDocument.getVersionRef(), fileDocumentFile, fileId);
         }
 
         DocumentMapper.deleteOtherFileDocumentFiles(fileDocument);
@@ -390,12 +401,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         textDocMenuDao.deleteByDocVersion(docVersion);
 
         for (Map.Entry<Integer, MenuDomainObject> entry : doc.getMenus().entrySet()) {
-            updateTextDocumentMenu(TextDocumentMenuWrapper.of(docVersionRef, entry.getKey(), entry.getValue()), user);
+            updateTextDocumentMenu(TextDocMenuContainer.of(docVersionRef, entry.getKey(), entry.getValue()), user);
         }
     }
 
     // fixme: implement
-    public void updateTextDocumentMenu(TextDocumentMenuWrapper menuWrapper, UserDomainObject user) {
+    public void updateTextDocumentMenu(TextDocMenuContainer menuWrapper, UserDomainObject user) {
         DocVersion docVersion = docVersionDao.findByDocIdAndNo(menuWrapper.getDocId(), menuWrapper.getDocVersionNo());
 
         MenuDomainObject menu = menuWrapper.getMenu();

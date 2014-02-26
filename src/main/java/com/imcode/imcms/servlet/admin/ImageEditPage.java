@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.mapping.TextDocumentImageWrapper;
+import com.imcode.imcms.mapping.container.TextDocImageContainer;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentTypeDomainObject;
@@ -100,8 +100,8 @@ public class ImageEditPage extends OkCancelPage {
     /**
      * Edited images.
      */
-    private List<TextDocumentImageWrapper> images = new LinkedList<>();
-    private List<TextDocumentImageWrapper> origImages = new LinkedList<>();
+    private List<TextDocImageContainer> images = new LinkedList<>();
+    private List<TextDocImageContainer> origImages = new LinkedList<>();
 
     public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image,
                          LocalizedMessage heading, String label, ServletContext servletContext,
@@ -181,7 +181,7 @@ public class ImageEditPage extends OkCancelPage {
             }
         }
 
-        for (TextDocumentImageWrapper wrapper : images) {
+        for (TextDocImageContainer wrapper : images) {
             ImageDomainObject img = wrapper.getImage();
             boolean save = shareImages || wrapper.getDocLanguageCode().equals(lang);
             if (!save) {
@@ -355,7 +355,7 @@ public class ImageEditPage extends OkCancelPage {
         if (null != request.getParameter(REQUEST_PARAMETER__DELETE_BUTTON)) {
             NullImageSource source = new NullImageSource();
 
-            for (TextDocumentImageWrapper wrapper : images) {
+            for (TextDocImageContainer wrapper : images) {
                 ImageDomainObject image = wrapper.getImage();
                 image.setSourceAndClearSize(source);
                 image.setAlternateText(null);
@@ -396,7 +396,7 @@ public class ImageEditPage extends OkCancelPage {
                 image.setRotateDirection(result.getRotateDirection());
 
                 if (shareImages) {
-                    for (TextDocumentImageWrapper wrapper : images) {
+                    for (TextDocImageContainer wrapper : images) {
                         ImageDomainObject img = wrapper.getImage();
                         img.setCropRegion(result.getCropRegion());
                         img.setRotateDirection(result.getRotateDirection());
@@ -461,7 +461,7 @@ public class ImageEditPage extends OkCancelPage {
                 int height = image.getHeight();
 
                 // TODO i18n: refactor
-                for (TextDocumentImageWrapper wrapper : images) {
+                for (TextDocImageContainer wrapper : images) {
                     ImageDomainObject i18nImage = wrapper.getImage();
                     if (shareImages || wrapper.getDocLanguageCode().equals(i18nCode)) {
                         setNewSourceAndClearProps(i18nImage, new ImagesPathRelativePathImageSource(imageUrl));
@@ -488,7 +488,7 @@ public class ImageEditPage extends OkCancelPage {
     }
 
     public ImageDomainObject getImageByLangCode(String langCode) {
-        for (TextDocumentImageWrapper wrapper : images) {
+        for (TextDocImageContainer wrapper : images) {
             ImageDomainObject img = wrapper.getImage();
             if (wrapper.getDocLanguageCode().equals(langCode)) {
                 return img;
@@ -504,7 +504,7 @@ public class ImageEditPage extends OkCancelPage {
         }
 
         ImageDomainObject img = null;
-        for (TextDocumentImageWrapper wrapper : images) {
+        for (TextDocImageContainer wrapper : images) {
             if (wrapper.getDocLanguageCode().equals(langCode)) {
                 img = wrapper.getImage();
                 break;
@@ -530,7 +530,7 @@ public class ImageEditPage extends OkCancelPage {
         }
         imageFormat = (allowedFormat ? imageFormat : Format.PNG);
 
-        for (TextDocumentImageWrapper wrapper : images) {
+        for (TextDocImageContainer wrapper : images) {
             wrapper.getImage().setFormat(imageFormat);
         }
     }
@@ -563,28 +563,28 @@ public class ImageEditPage extends OkCancelPage {
         super.dispatchOk(request, response);
     }
 
-    public List<TextDocumentImageWrapper> getImages() {
+    public List<TextDocImageContainer> getImages() {
         return images;
     }
 
     /**
      * Sets images and resets shareImages flag.
      */
-    public void setImages(List<TextDocumentImageWrapper> images) {
+    public void setImages(List<TextDocImageContainer> images) {
         this.images = images;
         origImages = new ArrayList<>(images.size());
 
-        for (TextDocumentImageWrapper wrapper : images) {
+        for (TextDocImageContainer wrapper : images) {
             ImageDomainObject img = wrapper.getImage();
             forceWidthHeight(img);
 
-            origImages.add(TextDocumentImageWrapper.of(wrapper.getDocRef(), wrapper.getLoopEntryRef(), wrapper.getImageNo(), img.clone()));
+            origImages.add(TextDocImageContainer.of(wrapper.getDocRef(), wrapper.getLoopEntryRef(), wrapper.getImageNo(), img.clone()));
         }
 
         boolean mayShareImages = images != null && images.size() > 1;
 
         if (mayShareImages) {
-            Iterator<TextDocumentImageWrapper> iterator = images.iterator();
+            Iterator<TextDocImageContainer> iterator = images.iterator();
             ImageDomainObject image = iterator.next().getImage();
             ImageSource source = image.getSource();
 
@@ -611,7 +611,7 @@ public class ImageEditPage extends OkCancelPage {
         boolean same = images.size() > 0;
         String path = null;
 
-        for (TextDocumentImageWrapper wrapper : images) {
+        for (TextDocImageContainer wrapper : images) {
             ImageDomainObject image = wrapper.getImage();
             ImageSource source = image.getSource();
             String newPath = source.getUrlPathRelativeToContextPath();

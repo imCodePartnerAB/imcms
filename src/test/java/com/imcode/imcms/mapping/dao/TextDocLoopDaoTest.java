@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.dao;
 
-import com.imcode.imcms.mapping.DocVersionRef;
+import com.imcode.imcms.mapping.container.DocVersionRef;
 import com.imcode.imcms.mapping.orm.DocVersion;
 import com.imcode.imcms.mapping.orm.TextDocLoop;
 import com.imcode.imcms.mapping.orm.User;
@@ -44,7 +44,7 @@ public class TextDocLoopDaoTest {
         docVersionDao.deleteAll();
         userDao.deleteAll();
 
-        User user = userDao.saveAndFlush(new User("admin", "admin"));
+        User user = userDao.saveAndFlush(new User("admin", "admin", "admin@imcode.com"));
         DocVersion docVersion = docVersionDao.saveAndFlush(
                 new DocVersion(
                         DOC_VERSION_REF.getDocId(),

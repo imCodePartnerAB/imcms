@@ -67,6 +67,10 @@ public final class DocumentCommonContent implements Serializable {
      */
     private final String menuImageURL;
 
+    public DocumentCommonContent() {
+        this("", "", "");
+    }
+
     public DocumentCommonContent(String headline, String menuText, String menuImageURL) {
         this.headline = headline;
         this.menuText = menuText;

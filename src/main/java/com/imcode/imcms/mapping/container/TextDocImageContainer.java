@@ -1,18 +1,20 @@
-package com.imcode.imcms.mapping;
+package com.imcode.imcms.mapping.container;
 
 import imcode.server.document.textdocument.ImageDomainObject;
+
+import java.util.Objects;
 
 /**
  * Uniquely identifies an text document image.
  */
-public class TextDocumentImageWrapper {
+public class TextDocImageContainer {
 
-    public static TextDocumentImageWrapper of(DocRef docRef, int imageNo, ImageDomainObject image) {
-        return new TextDocumentImageWrapper(docRef, null, imageNo, image);
+    public static TextDocImageContainer of(DocRef docRef, int imageNo, ImageDomainObject image) {
+        return new TextDocImageContainer(docRef, null, imageNo, image);
     }
 
-    public static TextDocumentImageWrapper of(DocRef docRef, LoopEntryRef loopEntryRef, int imageNo, ImageDomainObject image) {
-        return new TextDocumentImageWrapper(docRef, loopEntryRef, imageNo, image);
+    public static TextDocImageContainer of(DocRef docRef, LoopEntryRef loopEntryRef, int imageNo, ImageDomainObject image) {
+        return new TextDocImageContainer(docRef, loopEntryRef, imageNo, image);
     }
 
     private final DocRef docRef;
@@ -20,7 +22,10 @@ public class TextDocumentImageWrapper {
     private final LoopEntryRef loopEntryRef;
     private final ImageDomainObject image;
 
-    public TextDocumentImageWrapper(DocRef docRef, LoopEntryRef loopEntryRef, int imageNo, ImageDomainObject image) {
+    public TextDocImageContainer(DocRef docRef, LoopEntryRef loopEntryRef, int imageNo, ImageDomainObject image) {
+        Objects.requireNonNull(docRef);
+        Objects.requireNonNull(image);
+
         this.docRef = docRef;
         this.loopEntryRef = loopEntryRef;
         this.imageNo = imageNo;

@@ -1,6 +1,7 @@
 package imcode.server.document.index
 
 import com.imcode.imcms.api.DocumentVersion
+import com.imcode.imcms.mapping.container.DocVersionRef
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
@@ -95,7 +96,7 @@ class DirectoryIndexFixture {
 
   private val documentMapperMock = mock[DocumentMapper]
   private val categoryMapperMock = mock[CategoryMapper]
-  private val textDocMapperMock = mock[TextDocMapper]
+  private val textDocMapperMock = mock[TextDocMapperService]
 
   Mockito.when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer(new Answer[JSet[CategoryDomainObject]]() {
      def answer(invocation: InvocationOnMock): JSet[CategoryDomainObject] = {
@@ -120,7 +121,7 @@ class DirectoryIndexFixture {
     val docId = doc.getId ensuring (_ != DocumentDomainObject.ID_NEW, "document must not be new")
 
     Mockito.when(documentMapperMock.getDefaultDocument[TextDocumentDomainObject](docId)).thenReturn(doc)
-    Mockito.when(documentMapperMock.getAppearances(docId)).thenReturn(
+    Mockito.when(documentMapperMock.getCommonContents(docId)).thenReturn(
       i18nMetas.getOrElse(Seq(doc.getCommonContent)).asJava
     )
 

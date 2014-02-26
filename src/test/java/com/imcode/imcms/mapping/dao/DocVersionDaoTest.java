@@ -28,7 +28,7 @@ public class DocVersionDaoTest {
     DocVersionDao docVersionDao;
 
     @Inject
-    DocDao docDao;
+    DocMetaDao docMetaDao;
 
     @Inject
     UserDao userDao;
@@ -61,7 +61,7 @@ public class DocVersionDaoTest {
         docMeta.setTarget("_blank");
 
         userId = user.getId();
-        docId = docDao.saveMeta(docMeta).getId();
+        docId = docMetaDao.save(docMeta).getId();
 
 
         return Arrays.asList(

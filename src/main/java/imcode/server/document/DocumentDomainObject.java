@@ -1,8 +1,8 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.mapping.DocRef;
-import com.imcode.imcms.mapping.DocVersionRef;
+import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.mapping.container.DocVersionRef;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.Meta;
 import com.imcode.imcms.util.l10n.LocalizedMessage;

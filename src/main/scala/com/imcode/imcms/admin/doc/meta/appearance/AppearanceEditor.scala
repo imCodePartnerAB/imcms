@@ -34,9 +34,9 @@ import com.imcode.imcms.vaadin.Editor
  * -link target (_self | _top | _blank)
  *
  * @param meta doc's Meta
- * @param i18nMetas doc's i18nMeta-s
+ * @param commonContentMap doc's common content-s
  */
-class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentCommonContent]) extends Editor with ImcmsServicesSupport {
+class AppearanceEditor(meta: Meta, commonContentMap: Map[DocumentLanguage, DocumentCommonContent]) extends Editor with ImcmsServicesSupport {
 
   case class Data(
     i18nMetas: Map[DocumentLanguage, DocumentCommonContent],
@@ -128,7 +128,7 @@ class AppearanceEditor(meta: Meta, i18nMetas: Map[DocumentLanguage, DocumentComm
       i18nMetaEditorWidget.chkEnabled.checked = isDefaultLanguage || meta.getEnabledLanguages.contains(i18nMetaEditorWidget.language)
       i18nMetaEditorWidget.chkEnabled.setReadOnly(isDefaultLanguage)
 
-      i18nMetas.get(i18nMetaEditorWidget.language) match {
+      commonContentMap.get(i18nMetaEditorWidget.language) match {
         case Some(i18nMeta) =>
           i18nMetaEditorWidget.txtTitle.value = i18nMeta.getHeadline
           i18nMetaEditorWidget.txaMenuText.value = i18nMeta.getMenuText

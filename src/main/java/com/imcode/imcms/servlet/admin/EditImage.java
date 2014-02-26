@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.mapping.DocRef;
-import com.imcode.imcms.mapping.TextDocumentImageWrapper;
+import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.mapping.container.TextDocImageContainer;
 import imcode.server.document.textdocument.ImageDomainObject;
 
 import java.io.IOException;
@@ -47,8 +47,8 @@ public class EditImage extends HttpServlet {
         ImageEditPage imageEditPage = new ImageEditPage(null, image, null, "", getServletContext(), imageCommand, returnCommand, false, 0, 0);
 
         // Page should contain at least one image to edit.
-        List<TextDocumentImageWrapper> images = new ArrayList<>(1);
-        images.add(TextDocumentImageWrapper.of(DocRef.of(metaId, 0, "en"), 0, image));
+        List<TextDocImageContainer> images = new ArrayList<>(1);
+        images.add(TextDocImageContainer.of(DocRef.of(metaId, 0, "en"), 0, image));
         imageEditPage.setImages(images);
 
         imageEditPage.updateFromRequest(request);
@@ -76,7 +76,7 @@ public class EditImage extends HttpServlet {
      */
     private static class ImageRetrievalCommand implements Handler<ImageEditResult> {
 
-        private List<TextDocumentImageWrapper> images;
+        private List<TextDocImageContainer> images;
 
         public ImageDomainObject getImage() {
             return (images != null ? images.get(0).getImage() : null);

@@ -32,7 +32,6 @@ object OrmToApi {
     .menuText(orm.getMenuText)
     .build()
 
-
   def toApi(orm: DocMeta): Meta = new Meta |>> { m =>
     m.setArchivedDatetime(orm.getArchivedDatetime)
     m.setCategoryIds(orm.getCategoryIds)

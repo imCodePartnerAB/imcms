@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping.dao;
 
-import com.imcode.imcms.mapping.DocRef;
-import com.imcode.imcms.mapping.DocVersionRef;
+import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.mapping.container.DocVersionRef;
 import com.imcode.imcms.mapping.orm.*;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -23,9 +23,6 @@ public class DocDao {
 
     @Inject
     private DocMetaDao docMetaDao;
-
-    @Inject
-    private DocCommonContentDao docCommonContentDao;
 
     @Inject
     private DocPropertyDao docPropertyDao;
@@ -74,31 +71,6 @@ public class DocDao {
     }
 
 
-    public DocCommonContent getDocCommonContent(DocRef docRef) {
-        return docCommonContentDao.findByDocIdAndDocLanguageCode(docRef.getDocId(), docRef.getDocLanguageCode());
-    }
-
-
-    public List<DocCommonContent> getDocCommonContents(int docId) {
-        return docCommonContentDao.findByDocId(docId);
-    }
-
-
-    public int deleteDocCommonContent(DocRef docRef) {
-        DocCommonContent dcc = getDocCommonContent(docRef);
-
-        if (dcc == null) return 0;
-
-        entityManager.remove(dcc);
-
-        return 1;
-    }
-
-
-    public DocCommonContent saveDocCommonContent(DocCommonContent docCommonContent) {
-        return docCommonContentDao.saveAndFlush(docCommonContent);
-    }
-
 
     public void insertPropertyIfNotExists(int docId, String name, String value) {
         DocProperty property = docPropertyDao.findByDocIdAndName(docId, name);
@@ -113,10 +85,6 @@ public class DocDao {
         }
     }
 
-
-    public DocMeta saveMeta(DocMeta meta) {
-        return docMetaDao.save(meta);
-    }
 
 
     public int deleteHtmlReference(DocRef docIdentity) {

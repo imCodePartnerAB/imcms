@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping;
+package com.imcode.imcms.mapping.container;
 
 import java.util.Objects;
 

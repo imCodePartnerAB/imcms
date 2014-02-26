@@ -1,11 +1,12 @@
 package com.imcode.imcms.mapping;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.*;
+import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.dao.NativeQueriesDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
-import com.imcode.imcms.mapping.orm.DocCommonContent;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -21,17 +22,19 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.oro.text.perl.Perl5Util;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.*;
 
 /**
  * Note:
- * Spring is used to instantiate but not to inject NativeQueriesDao, DocumentSaver, DocumentLoader and CategoryMapper.
+ * Spring is used to instantiate but not to initialize the instance.
+ * Init must be called to complete initialization.
  */
-@Service
+@Component
 public class DocumentMapper implements DocumentGetter {
 
     /**
@@ -51,30 +54,24 @@ public class DocumentMapper implements DocumentGetter {
     private ImcmsServices imcmsServices;
 
     /**
-     * instantiated by SpringFramework.
-     */
-    private NativeQueriesDao nativeQueriesDao;
-
-    /**
-     * instantiated by SpringFramework.
-     */
-    private DocumentLoader documentLoader;
-
-    /**
      * Document loader caching proxy. Intercepts calls to DocumentLoader.
      */
     private DocLoaderCachingProxy documentLoaderCachingProxy;
 
-    /**
-     * Contain document saving and updating routines.
-     * instantiated by SpringFramework.
-     */
+    @Inject
+    private NativeQueriesDao nativeQueriesDao;
+
+    @Inject
+    private DocumentLoader documentLoader;
+
+    @Inject
     private DocumentSaver documentSaver;
 
-    /**
-     * instantiated by SpringFramework.
-     */
+    @Inject
     private CategoryMapper categoryMapper;
+
+    @Inject
+    private DocMapperService docMapperService;
 
     /**
      * Empty constructor for unit testing.
@@ -82,6 +79,7 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentMapper() {
     }
 
+    @Deprecated
     public DocumentMapper(ImcmsServices services, Database database) {
         this.imcmsServices = services;
         this.database = database;
@@ -99,7 +97,24 @@ public class DocumentMapper implements DocumentGetter {
 
         documentSaver = services.getManagedBean(DocumentSaver.class);
         documentSaver.setDocumentMapper(this);
+
+        docMapperService = services.getManagedBean(DocMapperService.class);
     }
+
+    public void init(ImcmsServices services, Database database) {
+        this.imcmsServices = services;
+        this.database = database;
+
+        Config config = services.getConfig();
+        int documentCacheMaxSize = config.getDocumentCacheMaxSize();
+
+        documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
+
+        documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
+
+        documentSaver.setDocumentMapper(this);
+    }
+
 
     /**
      * @param documentId document id.
@@ -347,7 +362,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveTextDocMenu(TextDocumentMenuWrapper menuWrapper, UserDomainObject user)
+    public void saveTextDocMenu(TextDocMenuContainer menuWrapper, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         try {
@@ -452,7 +467,7 @@ public class DocumentMapper implements DocumentGetter {
             imcmsServices.getImageCacheMapper().deleteDocumentImagesCache(document.getId(), textDoc.getImages());
         }
 
-        documentSaver.getMetaDao().deleteDocument(document.getId());
+        documentSaver.getDocDao().deleteDocument(document.getId());
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
 
@@ -491,7 +506,7 @@ public class DocumentMapper implements DocumentGetter {
 
     // TODO: refactor
     private int[] getDocumentIds(IntRange idRange) {
-        List<Integer> ids = documentSaver.getMetaDao().getDocumentIdsInRange(
+        List<Integer> ids = documentSaver.getDocDao().getDocumentIdsInRange(
                 idRange.getMinimumInteger(),
                 idRange.getMaximumInteger());
 
@@ -501,14 +516,14 @@ public class DocumentMapper implements DocumentGetter {
 
 
     public List<Integer> getAllDocumentIds() {
-        return documentSaver.getMetaDao().getAllDocumentIds();
+        return documentSaver.getDocDao().getAllDocumentIds();
     }
 
     /**
      * @return documents id range or null if there are no documents.
      */
     public IntRange getDocumentIdRange() {
-        Integer[] minMaxPair = documentSaver.getMetaDao().getMinMaxDocumentIds();
+        Integer[] minMaxPair = documentSaver.getDocDao().getMinMaxDocumentIds();
 
         return minMaxPair[0] == null ? null : new IntRange(minMaxPair[0], minMaxPair[1]);
     }
@@ -575,11 +590,11 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public int getLowestDocumentId() {
-        return documentSaver.getMetaDao().getMaxDocumentId();
+        return documentSaver.getDocDao().getMaxDocumentId();
     }
 
     public int getHighestDocumentId() {
-        return documentSaver.getMetaDao().getMinDocumentId();
+        return documentSaver.getDocDao().getMinDocumentId();
     }
 
 
@@ -598,7 +613,7 @@ public class DocumentMapper implements DocumentGetter {
     public <T extends DocumentDomainObject> T copyDocument(final T doc, final UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        Integer docId = copyDocument(doc.getRef(), user);
+        Integer docId = copyDocumentsWithSharedMetaAndVersion(doc.getVersionRef(), user);
 
         @SuppressWarnings("unchecked")
         T workingDocument = getWorkingDocument(docId, doc.getLanguage());
@@ -608,54 +623,55 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * Creates a new doc as a copy of an existing doc.
-     * Not a part of public API - used by admin interface.
+     * Copies docs that share the same document id and version no.
+     * Copied docs version is {@link com.imcode.imcms.api.DocumentVersion#WORKING_VERSION_NO}
      *
-     * @return new doc id.
+     * @return copied doc id.
      * @since 6.0
      */
-    //fixme: implement
-    public Integer copyDocument(final DocRef docRef, final UserDomainObject user)
+    public int copyDocumentsWithSharedMetaAndVersion(DocVersionRef docVersionRef, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-//        // todo: put into resource file.
-//        String copyHeadlineSuffix = "(Copy/Kopia)";
-//
-//        Meta meta = documentLoader.loadMeta(documentIdentity.getDocId());
-//        List<DocAppearance> i18nMetas = documentSaver.getMetaDao().getI18nMetas(documentIdentity.getDocId());
-//        List<DocumentDomainObject> docs = new LinkedList<>();
-//
-//        makeDocumentLookNew(meta, user);
-//        meta.setId(null);
-//        meta.removeAlis();
-//
-//        for (DocumentAppearance i18nMeta : i18nMetas) {
-//            DocumentLanguage language = i18nMeta.getLanguage();
-//            DocumentDomainObject doc = getCustomDocument(DocumentIdentity.buillder(documentIdentity).docLanguage(language).build());
-//
-//            doc.accept(new DocIdentityCleanerVisitor());
-//            doc.setMeta(meta);
-//            doc.setAppearance(DocumentAppearance.builder(i18nMeta).headline(i18nMeta.getHeadline() + copyHeadlineSuffix).build());
-//
-//            docs.add(doc);
-//        }
-//
-//        if (docs.isEmpty()) {
-//            throw new IllegalArgumentException(String.format(
-//                    "Unable to copy. Source document does not exists. DocRef: %s.", documentIdentity));
-//        }
-//
-//        Integer docCopyId = documentSaver.copyDocument(docs, user);
-//
-//        invalidateDocument(docCopyId);
-//
-//        return docCopyId;
-        return 0;
+        // todo: put into resource file.
+        String copyHeadlineSuffix = "(Copy/Kopia)";
+
+        Meta meta = documentLoader.loadMeta(docVersionRef.getDocId());
+        Map<DocumentLanguage, Optional<DocumentCommonContent>> dccMap = docMapperService.getCommonContents(docVersionRef.getDocId());
+        List<DocumentDomainObject> newDocs = new LinkedList<>();
+
+        makeDocumentLookNew(meta, user);
+        meta.setId(null);
+        meta.removeAlis();
+
+        for (Map.Entry<DocumentLanguage, Optional<DocumentCommonContent>> e : dccMap.entrySet()) {
+            DocumentLanguage language = e.getKey();
+            Optional<DocumentCommonContent> dccOpt = e.getValue();
+
+            if (!dccOpt.isPresent()) continue;
+
+            DocumentDomainObject newDoc = getCustomDocument(DocRef.of(docVersionRef, language.getCode())).clone();
+            DocumentCommonContent newDcc = DocumentCommonContent.builder(dccOpt.get()).headline(copyHeadlineSuffix + " " + dccOpt.get().getHeadline()).build();
+
+            newDoc.setMeta(meta);
+            newDoc.setCommonContent(newDcc);
+
+            newDocs.add(newDoc);
+        }
+
+        if (newDocs.isEmpty()) {
+            throw new IllegalArgumentException(String.format(
+                    "Unable to copy. Source document does not exists. DocVersionRef: %s.", docVersionRef));
+        }
+
+        Integer docCopyId = documentSaver.saveNewDocsWithSharedMetaAndVersion(newDocs, user);
+
+        invalidateDocument(docCopyId);
+
+        return docCopyId;
     }
 
 
     public List<DocumentDomainObject> getDocumentsWithPermissionsForRole(final RoleDomainObject role) {
-
         return new AbstractList<DocumentDomainObject>() {
             private List<Integer> documentIds = nativeQueriesDao.getDocumentsWithPermissionsForRole(role.getId().intValue());
 
@@ -812,15 +828,15 @@ public class DocumentMapper implements DocumentGetter {
      * <p/>
      * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
      *
-     * @param textWrapper - text being saved
+     * @param textContainer - text being saved
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      */
-    public synchronized void saveTextDocText(TextDocumentTextWrapper textWrapper, UserDomainObject user)
+    public synchronized void saveTextDocText(TextDocTextContainer textContainer, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         try {
-            documentSaver.saveText(textWrapper, user);
+            documentSaver.saveText(textContainer, user);
         } finally {
-            invalidateDocument(textWrapper.getDocRef().getDocId());
+            invalidateDocument(textContainer.getDocId());
         }
     }
 
@@ -831,18 +847,18 @@ public class DocumentMapper implements DocumentGetter {
      * <p/>
      * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
      *
-     * @param texts - texts being saved
+     * @param containers - texts being saved
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      * @see com.imcode.imcms.servlet.tags.LoopTag
      */
-    public synchronized void saveTextDocTexts(Collection<TextDocumentTextWrapper> texts, UserDomainObject user)
+    public synchronized void saveTextDocTexts(Collection<TextDocTextContainer> containers, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         try {
-            documentSaver.saveTexts(texts, user);
+            documentSaver.saveTexts(containers, user);
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
-            for (TextDocumentTextWrapper textWrapper : texts) {
-                docIds.add(textWrapper.getDocId());
+            for (TextDocTextContainer textContainer : containers) {
+                docIds.add(textContainer.getDocId());
             }
 
             for (Integer docId : docIds) {
@@ -859,14 +875,14 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.LoopTag
      * @since 6.0
      */
-    public synchronized void saveTextDocImages(Collection<TextDocumentImageWrapper> images, UserDomainObject user)
+    public synchronized void saveTextDocImages(Collection<TextDocImageContainer> containers, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
 
         try {
-            documentSaver.saveImages(images, user);
+            documentSaver.saveImages(containers, user);
         } finally {
             Set<Integer> docIds = Sets.newHashSet();
-            for (TextDocumentImageWrapper image : images) {
+            for (TextDocImageContainer image : containers) {
                 docIds.add(image.getDocId());
             }
 
@@ -885,7 +901,7 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.LoopTag
      * @since 6.0
      */
-    public synchronized void saveTextDocImage(TextDocumentImageWrapper image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public synchronized void saveTextDocImage(TextDocImageContainer image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         try {
             documentSaver.saveImage(image, user);
         } finally {
@@ -950,22 +966,9 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public DocumentCommonContent getI18nMeta(DocRef docRef) {
-        DocCommonContent ormAppearance = documentSaver.getMetaDao().getDocCommonContent(docRef);
-
-        return ormAppearance == null ? null : OrmToApi.toApi(ormAppearance);
-    }
-
-    public Map<DocumentLanguage, DocumentCommonContent> getAppearances(int docId) {
-        Map<DocumentLanguage, DocumentCommonContent> appearancesMap = new HashMap<>();
-
-        List<DocCommonContent> ormAppearances = documentSaver.getMetaDao().getDocCommonContents(docId);
-
-        for (DocCommonContent ormAppearance : ormAppearances) {
-            appearancesMap.put(OrmToApi.toApi(ormAppearance.getDocLanguage()), OrmToApi.toApi(ormAppearance));
-        }
-
-        return appearancesMap;
+    //todo: delegate to docMapperService?
+    public Map<DocumentLanguage, Optional<DocumentCommonContent>> getCommonContents(int docId) {
+        return docMapperService.getCommonContents(docId);
     }
 
     private class DocumentsIterator implements Iterator<DocumentDomainObject> {
@@ -1073,7 +1076,8 @@ public class DocumentMapper implements DocumentGetter {
 
         @Override
         public boolean accept(File file, int fileDocumentId, int docVersionNo, String fileId) {
-            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocumentFile(DocRef.of(fileDocumentId, fileDocument.getVersionNo()), fileId));
+            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocumentFile(
+                    DocVersionRef.of(fileDocumentId, fileDocument.getVersionNo()), fileId));
             boolean fileDocumentHasFile = null != fileDocument.getFile(fileId);
             return fileDocumentId == fileDocument.getId()
                     && docVersionNo == fileDocument.getVersionNo()

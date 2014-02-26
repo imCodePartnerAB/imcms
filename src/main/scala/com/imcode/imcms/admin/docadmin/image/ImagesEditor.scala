@@ -5,7 +5,8 @@ package admin.docadmin.image
 import _root_.imcode.server.document.textdocument.ImageDomainObject
 
 import com.google.common.base.Optional
-import com.imcode.imcms.mapping.{DocVersionRef, DocRef, TextDocMapper}
+import com.imcode.imcms.mapping.container.{DocRef, DocVersionRef}
+import com.imcode.imcms.mapping.TextDocMapperService
 import com.imcode.imcms.vaadin.{Current, Editor}
 import com.imcode.imcms.vaadin.component._
 
@@ -65,7 +66,7 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
     editors.clear()
 
     // fixme
-    val textDocMapper: TextDocMapper = ???
+    val textDocMapper: TextDocMapperService = ???
     val versionRef = DocVersionRef.buillder.docId(docRef.getDocId).docVersionNo(docRef.getDocVersionNo).build()
     for ((language, image) <- textDocMapper.getImages(versionRef, imageNo).asScala.map { case (l, i) => l -> i.or(TextDocumentUtils.createDefaultImage()) }) {
       val imageEditor = new ImageEditor(Some(image))

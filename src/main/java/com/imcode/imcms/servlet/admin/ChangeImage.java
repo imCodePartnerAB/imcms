@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.mapping.LoopEntryRef;
-import com.imcode.imcms.mapping.LoopItemRef;
-import com.imcode.imcms.mapping.TextDocumentImageWrapper;
+import com.imcode.imcms.mapping.container.LoopEntryRef;
+import com.imcode.imcms.mapping.container.LoopItemRef;
+import com.imcode.imcms.mapping.container.TextDocImageContainer;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -93,7 +93,7 @@ public class ChangeImage extends HttpServlet {
         Handler<ImageEditResult> imageCommand = new Handler<ImageEditResult>() {
             public void handle(ImageEditResult editResult) {
                 boolean shareImages = editResult.isShareImages();
-                List<TextDocumentImageWrapper> images = editResult.getEditedImages();
+                List<TextDocImageContainer> images = editResult.getEditedImages();
 
                 ImcmsServices services = Imcms.getServices();
                 String firstGeneratedFilename = null;
@@ -134,7 +134,7 @@ public class ChangeImage extends HttpServlet {
         };
 
         //fixme:
-        List<TextDocumentImageWrapper> images = null;//textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentLoopRef), true);
+        List<TextDocImageContainer> images = null;//textDocDao.getImages(document.getRef(), imageIndex, Option.apply(contentLoopRef), true);
 
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true, forcedWidth, forcedHeight);

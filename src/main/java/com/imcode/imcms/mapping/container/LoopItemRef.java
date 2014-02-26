@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping;
+package com.imcode.imcms.mapping.container;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;

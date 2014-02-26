@@ -10,7 +10,7 @@ public class TextDocTextBase extends DocVersionedI18nContent {
     private Integer no;
 
     @NotNull
-    private TextDocType type;
+    private TextDocTextType type;
 
     private String text;
 
@@ -32,11 +32,11 @@ public class TextDocTextBase extends DocVersionedI18nContent {
         this.text = text;
     }
 
-    public TextDocType getType() {
+    public TextDocTextType getType() {
         return type;
     }
 
-    public void setType(TextDocType type) {
+    public void setType(TextDocTextType type) {
         this.type = type;
     }
 

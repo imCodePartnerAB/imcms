@@ -2,10 +2,10 @@ package com.imcode.imcms.mapping;
 
 import com.google.common.base.Optional;
 import com.imcode.imcms.api.*;
+import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.dao.*;
 import com.imcode.imcms.mapping.orm.DocVersion;
 import com.imcode.imcms.mapping.orm.TextDocMenu;
-import com.imcode.imcms.mapping.orm.TextDocMenuItem;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import org.apache.commons.lang.NotImplementedException;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Transactional
 // fixme: implment
 // fixme: images: TextDocumentUtils.initImagesSources
-public class TextDocMapper {
+public class TextDocMapperService {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -52,15 +52,7 @@ public class TextDocMapper {
     //fixme: init to doc mapper
     private DocumentGetter menuItemDocumentGetter;
 
-    // -----------------------------------------------------------------------------------------------------------------
-    public List<TextDocumentTextWrapper> getAllTexts(DocVersionRef docVersionRef) {
-
-
-        throw new NotImplementedException();
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-    public Map<DocumentLanguage, Map<Integer, TextDomainObject>> getTexts(DocVersionRef docVersionRef) {
+    public List<TextDocTextContainer> getAllTexts(DocRef docRef) {
         throw new NotImplementedException();
     }
 
@@ -68,16 +60,7 @@ public class TextDocMapper {
         throw new NotImplementedException();
     }
 
-    public Map<Integer, TextDomainObject> getTexts(DocRef docRef) {
-        throw new NotImplementedException();
-    }
-
-    public Optional<TextDomainObject> getText(DocRef docRef, int textNo) {
-        throw new NotImplementedException();
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-    public Map<DocumentLanguage, Map<LoopItemRef, TextDomainObject>> getLoopTexts(DocVersionRef docVersionRef) {
+    public TextDomainObject getText(DocRef docRef, int textNo) {
         throw new NotImplementedException();
     }
 
@@ -85,21 +68,12 @@ public class TextDocMapper {
         throw new NotImplementedException();
     }
 
-    public Map<LoopItemRef, TextDomainObject> getLoopTexts(DocRef docRef) {
+    public TextDomainObject getLoopText(DocRef docRef, LoopItemRef loopItemRef) {
         throw new NotImplementedException();
     }
 
-    public Optional<TextDomainObject> getLoopText(DocRef docRef, LoopItemRef loopItemRef) {
-        throw new NotImplementedException();
-    }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    public List<TextDocumentImageWrapper> getAllImages(DocVersionRef docVersionRef) {
-        throw new NotImplementedException();
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-    public Map<DocumentLanguage, Map<Integer, ImageDomainObject>> getImages(DocVersionRef docVersionRef) {
+    public List<TextDocImageContainer> getAllImages(DocRef docRef) {
         throw new NotImplementedException();
     }
 
@@ -107,16 +81,7 @@ public class TextDocMapper {
         throw new NotImplementedException();
     }
 
-    public Map<Integer, ImageDomainObject> getImages(DocRef docRef) {
-        throw new NotImplementedException();
-    }
-
-    public Optional<ImageDomainObject> getImage(DocRef docRef, int textNo) {
-        throw new NotImplementedException();
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-    public Map<DocumentLanguage, Map<LoopItemRef, ImageDomainObject>> getLoopImages(DocVersionRef docVersionRef) {
+    public ImageDomainObject getImage(DocRef docRef, int textNo) {
         throw new NotImplementedException();
     }
 
@@ -124,25 +89,20 @@ public class TextDocMapper {
         throw new NotImplementedException();
     }
 
-    public Map<LoopItemRef, ImageDomainObject> getLoopImages(DocRef docRef) {
+    public ImageDomainObject getLoopImage(DocRef docRef, LoopItemRef loopItemRef) {
         throw new NotImplementedException();
     }
 
-    public Optional<ImageDomainObject> getLoopImage(DocRef docRef, LoopItemRef loopItemRef) {
-        throw new NotImplementedException();
-    }
 
-    // -----------------------------------------------------------------------------------------------------------------
     public Map<Integer, Loop> getLoops(DocVersionRef docVersionRef) {
         throw new NotImplementedException();
     }
 
-    public Optional<Loop> getLoop(DocVersionRef docVersionRef, int no) {
+    public Loop getLoop(DocVersionRef docVersionRef, int no) {
         throw new NotImplementedException();
     }
 
 
-    // -----------------------------------------------------------------------------------------------------------------
     public Map<Integer, MenuDomainObject> getMenus(DocVersionRef docVersionRef) {
         DocVersion docVersion = versionDao.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
         List<TextDocMenu> textDocMenus = menuDao.getByDocVersion(docVersion);
@@ -171,6 +131,5 @@ public class TextDocMapper {
         return OrmToApi.toApi(templateNamesDao.findOne(docId));
     }
 
-    // get menu
     // get include
 }

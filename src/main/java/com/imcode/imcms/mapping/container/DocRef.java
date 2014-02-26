@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping;
+package com.imcode.imcms.mapping.container;
 
 import java.util.Objects;
 
@@ -41,13 +41,25 @@ public final class DocRef {
             return this;
         }
 
+        public Builder docVersionRef(DocVersionRef docVersionRef) {
+            Objects.requireNonNull(docVersionRef);
+
+            this.docId = docVersionRef.getDocId();
+            this.docVersionNo = docVersionRef.getDocVersionNo();
+
+            return this;
+        }
+
         public DocRef build() {
             return DocRef.of(docId, docVersionNo, docLanguageCode);
         }
+
     }
 
-    public static DocRef of(int docId, int docVersionNo) {
-        return new DocRef(docId, docVersionNo, null);
+    public static DocRef of(DocVersionRef docVersionRef, String docLanguageCode) {
+        Objects.requireNonNull(docVersionRef);
+
+        return new DocRef(docVersionRef.getDocId(), docVersionRef.getDocVersionNo(), docLanguageCode);
     }
 
     public static DocRef of(int docId, int docVersionNo, String docLanguageCode) {
@@ -65,6 +77,8 @@ public final class DocRef {
     private final String cachedToString;
 
     public DocRef(int docId, int docVersionNo, String docLanguageCode) {
+        Objects.requireNonNull(docLanguageCode);
+
         this.docId = docId;
         this.docVersionNo = docVersionNo;
         this.docLanguageCode = docLanguageCode;

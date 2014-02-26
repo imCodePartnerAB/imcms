@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta
 
+import com.google.common.base.Optional
 import com.imcode.imcms.api.DocumentLanguage
 import com.imcode.imcms.mapping.DocumentCommonContent
 import com.imcode.imcms.vaadin.Current
@@ -66,15 +67,17 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
 
         case "doc_meta_editor.menu_item.appearance" =>
           if (appearanceEditorOpt.isEmpty) {
-            val i18nMetas: Map[DocumentLanguage, DocumentCommonContent] = doc.getId match {
+            val commonContentMap: Map[DocumentLanguage, DocumentCommonContent] = doc.getId match {
               case id if id != DocumentDomainObject.ID_NEW =>
-                imcmsServices.getDocumentMapper.getAppearances(id).asScala.toMap
+                imcmsServices.getDocumentMapper.getCommonContents(id).asScala.mapValues { dccOpt =>
+                  dccOpt.or(new DocumentCommonContent())
+                }.toMap
               case _ =>
                 Map.empty
             }
 
             appearanceEditorOpt = Some(
-              new AppearanceEditor(doc.getMeta, i18nMetas)
+              new AppearanceEditor(doc.getMeta, commonContentMap)
             )
           }
 

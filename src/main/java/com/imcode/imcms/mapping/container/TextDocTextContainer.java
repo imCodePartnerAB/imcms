@@ -1,18 +1,20 @@
-package com.imcode.imcms.mapping;
+package com.imcode.imcms.mapping.container;
 
 import imcode.server.document.textdocument.TextDomainObject;
+
+import java.util.Objects;
 
 /**
  * Uniquely identifies text in a text document.
  */
-public class TextDocumentTextWrapper {
+public class TextDocTextContainer {
 
-    public static TextDocumentTextWrapper of(DocRef docRef, int textNo, TextDomainObject text) {
-        return new TextDocumentTextWrapper(docRef, null, textNo, text);
+    public static TextDocTextContainer of(DocRef docRef, int textNo, TextDomainObject text) {
+        return new TextDocTextContainer(docRef, null, textNo, text);
     }
 
-    public static TextDocumentTextWrapper of(DocRef docRef, LoopEntryRef loopEntryRef, int textNo, TextDomainObject text) {
-        return new TextDocumentTextWrapper(docRef, loopEntryRef, textNo, text);
+    public static TextDocTextContainer of(DocRef docRef, LoopEntryRef loopEntryRef, int textNo, TextDomainObject text) {
+        return new TextDocTextContainer(docRef, loopEntryRef, textNo, text);
     }
 
     private final DocRef docRef;
@@ -20,7 +22,10 @@ public class TextDocumentTextWrapper {
     private final LoopEntryRef loopEntryRef;
     private final TextDomainObject text;
 
-    public TextDocumentTextWrapper(DocRef docRef, LoopEntryRef loopEntryRef, int textNo, TextDomainObject text) {
+    public TextDocTextContainer(DocRef docRef, LoopEntryRef loopEntryRef, int textNo, TextDomainObject text) {
+        Objects.requireNonNull(docRef);
+        Objects.requireNonNull(text);
+
         this.docRef = docRef;
         this.loopEntryRef = loopEntryRef;
         this.textNo = textNo;

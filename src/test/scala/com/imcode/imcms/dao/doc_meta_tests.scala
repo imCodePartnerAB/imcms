@@ -1,8 +1,9 @@
 package com.imcode
 package imcms.dao
 
+import com.imcode.imcms.mapping.container.DocRef
 import com.imcode.imcms.mapping.dao.{DocDao, DocVersionDao}
-import com.imcode.imcms.mapping.{DocumentCommonContent, DocRef}
+import com.imcode.imcms.mapping.DocumentCommonContent
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test.TestSetup.db
@@ -37,20 +38,20 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
     versionDao = ctx.getBean(classOf[DocVersionDao])
   }
 
-  def createMeta() = new DocMeta |>> { m =>
-    m.setDocumentType(2)
-    m.setCreatorId(3)
-    m.setRestrictedOneMorePrivilegedThanRestrictedTwo(true)
-    m.setLinkableByOtherUsers(true)
-    m.setLinkedForUnauthorizedUsers(true)
-    m.setCreatedDatetime(new Date)
-    m.setModifiedDatetime(new Date)
-    m.setSearchDisabled(true)
-    m.setTarget("_top")
-
-    //m.setProperties(Map("p1" -> "v1", "p2" -> "v2", "p3" -> "v3"))
-    m.setCategoryIds(Set[JInteger](0,1,2,3,4,5).asJava)
-  } |> metaDao.saveMeta
+//  def createMeta() = new DocMeta |>> { m =>
+//    m.setDocumentType(2)
+//    m.setCreatorId(3)
+//    m.setRestrictedOneMorePrivilegedThanRestrictedTwo(true)
+//    m.setLinkableByOtherUsers(true)
+//    m.setLinkedForUnauthorizedUsers(true)
+//    m.setCreatedDatetime(new Date)
+//    m.setModifiedDatetime(new Date)
+//    m.setSearchDisabled(true)
+//    m.setTarget("_top")
+//
+//    //m.setProperties(Map("p1" -> "v1", "p2" -> "v2", "p3" -> "v3"))
+//    m.setCategoryIds(Set[JInteger](0,1,2,3,4,5).asJava)
+//  } |> metaDao.saveMeta
 
 
   ".getMeta" should {
