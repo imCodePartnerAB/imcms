@@ -30,11 +30,11 @@ public class DocumentLanguageSupport {
     }
 
 
-    public DocumentLanguage getDefaultLanguage() {
+    public DocumentLanguage getDefault() {
         return defaultLanguage;
     }
 
-    public List<DocumentLanguage> getLanguages() {
+    public List<DocumentLanguage> getAll() {
         return languages;
     }
 

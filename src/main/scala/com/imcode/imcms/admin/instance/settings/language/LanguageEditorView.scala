@@ -12,7 +12,8 @@ class LanguageEditorView extends FormLayout with UndefinedSize {
   val txtCode = new TextField("doc_language_editor.frm_fld.code".i)
   val txtName = new TextField("doc_language_editor.frm_fld.name".i)
   val txtNativeName = new TextField("doc_language_editor.frm_fld.native_name".i)
-  val chkEnabled = new CheckBox("doc_language_editor.frm_fld.is_enabled".i)
+  // Decoration only - all languages are enabled in the current version
+  val chkEnabled = new CheckBox("doc_language_editor.frm_fld.is_enabled".i) with Checked with ReadOnly
 
   addComponents(txtId, txtCode, txtName, txtNativeName, chkEnabled)
 }

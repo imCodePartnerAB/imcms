@@ -22,7 +22,6 @@ object OrmToApi {
     .code(orm.getCode)
     .name(orm.getName)
     .nativeName(orm.getNativeName)
-    .enabled(orm.isEnabled)
     .build()
 
 

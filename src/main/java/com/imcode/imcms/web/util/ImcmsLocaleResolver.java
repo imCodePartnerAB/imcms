@@ -21,7 +21,7 @@ public class ImcmsLocaleResolver implements LocaleResolver {
 
         DocumentLanguage language = i18nContentSupport.getByCode(locale.getLanguage());
         if (language == null) {
-            language = i18nContentSupport.getDefaultLanguage();
+            language = i18nContentSupport.getDefault();
         }
 
         //Imcms.getUser().getDocGetterCallback().setLanguage(language);

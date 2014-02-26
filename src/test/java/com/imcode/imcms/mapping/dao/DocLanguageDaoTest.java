@@ -31,8 +31,8 @@ public class DocLanguageDaoTest {
         dao.deleteAll();
 
         return Arrays.asList(
-                dao.saveAndFlush(new DocLanguage("en", "English", "English", true)),
-                dao.saveAndFlush(new DocLanguage("se", "Swedish", "Svenska", true))
+                dao.saveAndFlush(new DocLanguage("en", "English", "English")),
+                dao.saveAndFlush(new DocLanguage("se", "Swedish", "Svenska"))
         );
     }
 

@@ -30,7 +30,7 @@ object DocGetterCallbacks {
   def updateUserDocGetterCallback(request: HttpServletRequest, services: ImcmsServices, user: UserDomainObject) {
     val currentDocGetterCallback = user.getDocGetterCallback
     val docI18nSupport = services.getDocumentLanguageSupport
-    val defaultLanguage = docI18nSupport.getDefaultLanguage
+    val defaultLanguage = docI18nSupport.getDefault
     val preferredLanguage = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE).trimToOption
                    .flatMap(code => docI18nSupport.getByCode(code).asOption)
                    .orElse(currentDocGetterCallback.asOption.map(_.documentLanguages.preferred))

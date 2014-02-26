@@ -31,8 +31,8 @@ public class DocCommonContentDaoTest {
         docCommonContentDao.deleteAll();
         docLanguageDao.deleteAll();
 
-        DocLanguage en = docLanguageDao.saveAndFlush(new DocLanguage("en", "English", "English", true));
-        DocLanguage se = docLanguageDao.saveAndFlush(new DocLanguage("se", "Swedish", "Svenska", true));
+        DocLanguage en = docLanguageDao.saveAndFlush(new DocLanguage("en", "English", "English"));
+        DocLanguage se = docLanguageDao.saveAndFlush(new DocLanguage("se", "Swedish", "Svenska"));
 
         return Arrays.asList(
             docCommonContentDao.saveAndFlush(

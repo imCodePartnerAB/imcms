@@ -98,7 +98,7 @@ class LanguageManager {
       c.txtCode.value = vo.getCode.trimToEmpty
       c.txtName.value = vo.getName.trimToEmpty
       c.txtNativeName.value = vo.getNativeName.trimToEmpty
-      c.chkEnabled.value = vo.isEnabled
+      c.chkEnabled.value = true
 
       dlg.setOkButtonHandler {
         DocumentLanguage.builder() |> { voc =>

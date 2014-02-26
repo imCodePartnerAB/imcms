@@ -52,8 +52,8 @@ public class TextDocTextDaoTest {
     public void setUp() {
         User user = userDao.saveAndFlush(new User("admin", "admin", "admin@imcode.com"));
         docLanguages = Arrays.asList(
-                docLanguageDao.saveAndFlush(new DocLanguage("en", "English", "English", true)),
-                docLanguageDao.saveAndFlush(new DocLanguage("se", "Swedish", "Svenska", true))
+                docLanguageDao.saveAndFlush(new DocLanguage("en", "English", "English")),
+                docLanguageDao.saveAndFlush(new DocLanguage("se", "Swedish", "Svenska"))
         );
 
         docVersions = Arrays.asList(

@@ -17,7 +17,6 @@ public final class DocumentLanguage implements Serializable {
         private String code;
         private String name;
         private String nativeName;
-        private boolean enabled;
 
         public Builder() {
         }
@@ -26,12 +25,6 @@ public final class DocumentLanguage implements Serializable {
             this.code = language.code;
             this.name = language.name;
             this.nativeName = language.nativeName;
-            this.enabled = language.enabled;
-        }
-
-        public Builder enabled(boolean enabled) {
-            this.enabled = enabled;
-            return this;
         }
 
         public Builder code(String code) {
@@ -50,7 +43,7 @@ public final class DocumentLanguage implements Serializable {
         }
 
         public DocumentLanguage build() {
-            return new DocumentLanguage(code, name, nativeName, enabled);
+            return new DocumentLanguage(code, name, nativeName);
         }
     }
 
@@ -60,19 +53,15 @@ public final class DocumentLanguage implements Serializable {
 
     private final String nativeName;
 
-    private final boolean enabled;
-
     /**
      * @param code       language ISO 639-1 code.
      * @param name       language name
      * @param nativeName language native name
-     * @param enabled    language enabled status
      */
-    public DocumentLanguage(String code, String name, String nativeName, boolean enabled) {
+    public DocumentLanguage(String code, String name, String nativeName) {
         this.code = code;
         this.name = name;
         this.nativeName = nativeName;
-        this.enabled = enabled;
     }
 
     @Override
@@ -83,13 +72,12 @@ public final class DocumentLanguage implements Serializable {
     private boolean equals(DocumentLanguage that) {
         return Objects.equals(code, that.code)
                 && Objects.equals(name, that.name)
-                && Objects.equals(enabled, that.enabled)
                 && Objects.equals(nativeName, that.nativeName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, name, nativeName, enabled);
+        return Objects.hash(code, name, nativeName);
     }
 
     @Override
@@ -119,9 +107,5 @@ public final class DocumentLanguage implements Serializable {
 
     public String getNativeName() {
         return nativeName != null ? nativeName : name;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
     }
 }

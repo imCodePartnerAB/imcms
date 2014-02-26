@@ -46,7 +46,7 @@ class DocVersionDaoImpl implements DocVersionDaoCustom {
      *
      * @return new document version.
      */
-    //fixme: check locking
+    //todo: check locking
     @Override
     public DocVersion create(int docId, int userId) {
         User creator = entityManager.getReference(User.class, userId);
@@ -76,7 +76,7 @@ class DocVersionDaoImpl implements DocVersionDaoCustom {
     }
 
     @Override
-    //fixme: check locking
+    //todo: check locking
     public void setDefault(int docId, int docVersionNo, int userId) {
         DocVersion docVersion = entityManager.createNamedQuery("DocVersion.findByDocIdAndNo", DocVersion.class)
                 .setParameter(1, docId)

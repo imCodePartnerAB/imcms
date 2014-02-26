@@ -72,7 +72,7 @@ class Filter extends ImcmsServicesSupport {
 
     basicView.languages.layout.removeAllComponents()
 
-    for (language <- imcmsServices.getDocumentLanguageSupport.getLanguages.asScala) {
+    for (language <- imcmsServices.getDocumentLanguageSupport.getAll.asScala) {
       val chkLanguage = new CheckBox(language.getNativeName) with TypedData[DocumentLanguage] |>> { chk =>
         chk.setIcon(Theme.Icon.Language.flag(language))
         chk.data = language

@@ -39,12 +39,12 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Document save options.
+     * Currently applies to text documents only.
      */
     public enum SaveOpts {
-        // Applies to text document only.
         CopyDocCommonContentIntoTextFields
     }
-
+    //todo: check resource
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
     private Database database;
@@ -73,9 +73,6 @@ public class DocumentMapper implements DocumentGetter {
     @Inject
     private DocMapperService docMapperService;
 
-    /**
-     * Empty constructor for unit testing.
-     */
     public DocumentMapper() {
     }
 
@@ -128,7 +125,7 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Creates new Document which inherits parent doc's meta excluding keywords and properties.
      * <p/>
-     * Doc's i18nMeta(s) and content (texts, images, urls, files, etc) are not inherited.
+     * Doc's CommonContent and content (texts, images, urls, files, etc) are not inherited.
      *
      * @param documentTypeId
      * @param parentDoc
@@ -136,9 +133,9 @@ public class DocumentMapper implements DocumentGetter {
      * @return
      */
     public DocumentDomainObject createDocumentOfTypeFromParent(
-            final int documentTypeId,
-            final DocumentDomainObject parentDoc,
-            final UserDomainObject user) {
+            int documentTypeId,
+            DocumentDomainObject parentDoc,
+            UserDomainObject user) {
 
         DocumentDomainObject newDocument;
 
@@ -196,7 +193,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param parent
      */
     void setTemplateForNewTextDocument(TextDocumentDomainObject newTextDocument, UserDomainObject user,
-                                       final DocumentDomainObject parent) {
+                                       DocumentDomainObject parent) {
         DocumentPermissionSetTypeDomainObject documentPermissionSetType = user.getDocumentPermissionSetTypeFor(parent);
         String templateName = null;
 
@@ -252,13 +249,13 @@ public class DocumentMapper implements DocumentGetter {
      * @see #createDocumentOfTypeFromParent(int, imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
      * @see imcode.server.document.DocumentDomainObject#fromDocumentTypeId(int)
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, final UserDomainObject user)
+    public <T extends DocumentDomainObject> T saveNewDocument(T doc, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
         T docClone = (T) doc.clone();
         DocumentLanguage language = docClone.getLanguage();
 
         if (language == null) {
-            language = imcmsServices.getDocumentLanguageSupport().getDefaultLanguage();
+            language = imcmsServices.getDocumentLanguageSupport().getDefault();
             docClone.setLanguage(language);
         }
 
@@ -285,9 +282,9 @@ public class DocumentMapper implements DocumentGetter {
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, DocumentCommonContent> appearances,
+    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances,
                                                               EnumSet<SaveOpts> saveOpts,
-                                                              final UserDomainObject user)
+                                                              UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         if (appearances.isEmpty()) {
@@ -322,7 +319,7 @@ public class DocumentMapper implements DocumentGetter {
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<DocumentLanguage, DocumentCommonContent> appearances, final UserDomainObject user)
+    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         return saveNewDocument(doc, appearances, EnumSet.noneOf(SaveOpts.class), user);
@@ -332,7 +329,7 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Updates existing document.
      */
-    public void saveDocument(final DocumentDomainObject doc, final UserDomainObject user)
+    public void saveDocument(DocumentDomainObject doc, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
         saveDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
     }
@@ -343,7 +340,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveDocument(final DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> appearances, final UserDomainObject user)
+    public void saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> appearances, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
@@ -381,12 +378,12 @@ public class DocumentMapper implements DocumentGetter {
      * @return new document version.
      * @since 6.0
      */
-    public DocumentVersion makeDocumentVersion(final int docId, final UserDomainObject user)
+    public DocumentVersion makeDocumentVersion(int docId, UserDomainObject user)
             throws DocumentSaveException {
 
         List<DocumentDomainObject> docs = new LinkedList<>();
 
-        for (DocumentLanguage language : imcmsServices.getDocumentLanguageSupport().getLanguages()) {
+        for (DocumentLanguage language : imcmsServices.getDocumentLanguageSupport().getAll()) {
             DocRef docRef = DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO, language.getCode());
             DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(docRef);
             docs.add(doc);
@@ -456,11 +453,11 @@ public class DocumentMapper implements DocumentGetter {
         return nativeQueriesDao.getAllMimeTypes().toArray(new String[]{});
     }
 
-    public void deleteDocument(final int docId, UserDomainObject user) {
+    public void deleteDocument(int docId, UserDomainObject user) {
         deleteDocument(getDefaultDocument(docId), user);
     }
 
-    public void deleteDocument(final DocumentDomainObject document, UserDomainObject user) {
+    public void deleteDocument(DocumentDomainObject document, UserDomainObject user) {
         if (document instanceof TextDocumentDomainObject) {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject) document;
 
@@ -500,7 +497,7 @@ public class DocumentMapper implements DocumentGetter {
         return nativeQueriesDao.getParentDocsIds(doc.getId());
     }
 
-    public Iterator<DocumentDomainObject> getDocumentsIterator(final IntRange idRange) {
+    public Iterator<DocumentDomainObject> getDocumentsIterator(IntRange idRange) {
         return new DocumentsIterator(getDocumentIds(idRange));
     }
 
@@ -585,7 +582,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
 
-    static void deleteOtherFileDocumentFiles(final FileDocumentDomainObject fileDocument) {
+    static void deleteOtherFileDocumentFiles(FileDocumentDomainObject fileDocument) {
         deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
     }
 
@@ -610,7 +607,7 @@ public class DocumentMapper implements DocumentGetter {
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
-    public <T extends DocumentDomainObject> T copyDocument(final T doc, final UserDomainObject user)
+    public <T extends DocumentDomainObject> T copyDocument(T doc, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Integer docId = copyDocumentsWithSharedMetaAndVersion(doc.getVersionRef(), user);
@@ -692,7 +689,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId) {
-        return getDefaultDocument(docId, imcmsServices.getDocumentLanguageSupport().getDefaultLanguage());
+        return getDefaultDocument(docId, imcmsServices.getDocumentLanguageSupport().getDefault());
     }
 
 
@@ -702,7 +699,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getWorkingDocument(int docId) {
-        return getWorkingDocument(docId, imcmsServices.getDocumentLanguageSupport().getDefaultLanguage());
+        return getWorkingDocument(docId, imcmsServices.getDocumentLanguageSupport().getDefault());
     }
 
 
@@ -713,7 +710,7 @@ public class DocumentMapper implements DocumentGetter {
     public <T extends DocumentDomainObject> T getCustomDocumentInDefaultLanguage(DocRef docRef) {
         return getCustomDocument(
                 DocRef.buillder(docRef)
-                        .docLanguageCode(imcmsServices.getDocumentLanguageSupport().getDefaultLanguage().getCode())
+                        .docLanguageCode(imcmsServices.getDocumentLanguageSupport().getDefault().getCode())
                         .build()
         );
     }
@@ -923,7 +920,7 @@ public class DocumentMapper implements DocumentGetter {
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
         DocumentLanguage language = callback != null
                 ? callback.documentLanguages().preferred()
-                : imcmsServices.getDocumentLanguageSupport().getDefaultLanguage();
+                : imcmsServices.getDocumentLanguageSupport().getDefault();
 
         List<DocumentDomainObject> docs = new LinkedList<>();
 

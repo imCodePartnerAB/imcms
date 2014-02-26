@@ -58,7 +58,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      * Documents instances are created directly (using new) only in tests.
      * In production instances are created via factories that are responsible for injecting an appropriate language.
      */
-    private volatile DocumentLanguage language = DocumentLanguage.builder().code("en").enabled(true).build();
+    private volatile DocumentLanguage language = DocumentLanguage.builder().code("en").build();
 
     @Override
     public DocumentDomainObject clone() {
@@ -124,7 +124,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 throw new IllegalArgumentException(errorMessage);
         }
 
-        document.setLanguage(Imcms.getServices().getDocumentLanguageSupport().getDefaultLanguage());
+        document.setLanguage(Imcms.getServices().getDocumentLanguageSupport().getDefault());
         document.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
 
         return (T) document;

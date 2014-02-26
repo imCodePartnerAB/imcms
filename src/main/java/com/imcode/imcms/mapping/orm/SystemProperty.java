@@ -71,8 +71,4 @@ public class SystemProperty {
     public void setValue(String value) {
         this.value = value;
     }
-
-    public Integer getValueAsInteger() {
-        return Integer.valueOf(value);
-    }
 }

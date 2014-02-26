@@ -156,9 +156,9 @@ int versionNo = document.getVersionNo();
 /* *******************************************************************************************
 *         Get languages                                                                     *
 ******************************************************************************************* */
-List<DocLanguage> languages = Imcms.getServices().getDocumentLanguageSupport().getLanguages();
+List<DocLanguage> languages = Imcms.getServices().getDocumentLanguageSupport().getAll();
 Set<DocLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
-DocLanguage defaultLanguage = Imcms.getServices().getDocumentLanguageSupport().getDefaultLanguage();
+DocLanguage defaultLanguage = Imcms.getServices().getDocumentLanguageSupport().getDefault();
 DocLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
 
 

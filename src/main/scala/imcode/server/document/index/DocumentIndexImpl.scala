@@ -65,7 +65,7 @@ class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex wit
   override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): SearchResult = {
     if (solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE) == null &&
       !solrQuery.getFilterQueries.exists(query => query.contains(s"${DocumentIndex.FIELD__LANGUAGE_CODE}:"))) {
-      solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE_CODE, imcmsServices.getDocumentLanguageSupport.getDefaultLanguage))
+      solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE_CODE, imcmsServices.getDocumentLanguageSupport.getDefault))
     }
 
     // todo: replace canSearchFor with filter queries

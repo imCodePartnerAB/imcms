@@ -56,7 +56,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val headlinePrefix = "headline_"
     val menuTextPrefix = "menu_text_"
 
-    val i18nMetas = i18nContentSupport.getLanguages.asScala.map { language =>
+    val i18nMetas = i18nContentSupport.getAll.asScala.map { language =>
       DocumentCommonContent.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
@@ -70,7 +70,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       EnumSet.noneOf(classOf[DocumentMapper.SaveOpts]),
       admin).getMeta.getId
 
-    i18nContentSupport.getLanguages.asScala.map { language =>
+    i18nContentSupport.getAll.asScala.map { language =>
       val doc = docMapper.getDefaultDocument(id, language).asInstanceOf[TextDocumentDomainObject]
 
       assertEquals(headlinePrefix + language.getCode, doc.getHeadline)
@@ -91,7 +91,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val headlinePrefix = "headline_"
     val menuTextPrefix = "menu_text_"
 
-    val i18nMetas = i18nContentSupport.getLanguages.asScala.map { language =>
+    val i18nMetas = i18nContentSupport.getAll.asScala.map { language =>
       DocumentCommonContent.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
@@ -105,7 +105,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
       EnumSet.of(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields),
       admin).getMeta.getId
 
-    i18nContentSupport.getLanguages.asScala.map { language =>
+    i18nContentSupport.getAll.asScala.map { language =>
       val doc = docMapper.getDefaultDocument(id, language).asInstanceOf[TextDocumentDomainObject]
 
       assertEquals(headlinePrefix + language.getCode, doc.getHeadline)
@@ -461,7 +461,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
   test("copy text doc") {
     //TextDocumentDomainObject doc = saveNewTextDocumentFn();
-    for (l <- Imcms.getServices.getDocumentLanguageSupport.getLanguages.asScala) {
+    for (l <- Imcms.getServices.getDocumentLanguageSupport.getAll.asScala) {
       val doc = docMapper.getDocument(1001).asInstanceOf[TextDocumentDomainObject]
       assertNotNull(doc)
     }
@@ -473,7 +473,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     assertNotSame(doc.getId, docCopyId)
 
-    for (l <- Imcms.getServices.getDocumentLanguageSupport.getLanguages.asScala.toList) {
+    for (l <- Imcms.getServices.getDocumentLanguageSupport.getAll.asScala.toList) {
       val doc = docMapper.getDocument(docCopyId)
       assertNotNull(doc)
     }
@@ -532,7 +532,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val docId = docMapper.saveNewDocument(doc, admin).getId
     val vi = docMapper.getDocumentVersionInfo(docId)
 
-    doc = docMapper.getDefaultDocument(docId, i18nContentSupport.getDefaultLanguage)
+    doc = docMapper.getDefaultDocument(docId, i18nContentSupport.getDefault)
 
     assertNotNull("New document exists",  doc)
     assertEquals("Default version of a new document is 0.", doc.getVersionNo, 0)
@@ -543,7 +543,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
     docMapper.changeDocumentDefaultVersion(docId, 1, admin)
 
-    doc = docMapper.getDefaultDocument(docId, i18nContentSupport.getDefaultLanguage)
+    doc = docMapper.getDefaultDocument(docId, i18nContentSupport.getDefault)
 
     assertEquals("Default version of a document is 1.", doc.getVersionNo, 1)
   }
@@ -762,7 +762,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
 
 
   def getMainWorkingDocumentInDefaultLanguage(assertDocExists: Boolean) = {
-    val doc: DocumentDomainObject = docMapper.getCustomDocument(DocRef.of(1001, 0, i18nContentSupport.getDefaultLanguage))
+    val doc: DocumentDomainObject = docMapper.getCustomDocument(DocRef.of(1001, 0, i18nContentSupport.getDefault))
 
     if (assertDocExists) {
       assertNotNull(doc)

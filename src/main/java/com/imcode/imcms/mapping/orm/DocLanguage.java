@@ -29,7 +29,10 @@ public class DocLanguage implements Serializable, Cloneable {
     private boolean enabled;
 
     public DocLanguage() {
+    }
 
+    public DocLanguage(String code, String name, String nativeName) {
+        this(null, code, name, nativeName, true);
     }
 
     public DocLanguage(String code, String name, String nativeName, boolean enabled) {

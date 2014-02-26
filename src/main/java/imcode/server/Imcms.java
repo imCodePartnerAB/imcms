@@ -243,7 +243,7 @@ public class Imcms {
         logger.info("Creating i18n support.");
 
         DocumentLanguageService dls = applicationContext.getBean(DocumentLanguageService.class);
-        List<DocumentLanguage> languages = dls.getAllLanguages();
+        List<DocumentLanguage> languages = dls.getAll();
 
         Map<String, DocumentLanguage> languagesByCodes = Maps.newHashMap();
         Map<String, DocumentLanguage> languagesByHosts = Maps.newHashMap();
