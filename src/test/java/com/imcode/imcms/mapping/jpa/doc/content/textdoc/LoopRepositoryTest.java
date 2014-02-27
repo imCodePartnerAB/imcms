@@ -1,9 +1,11 @@
-package com.imcode.imcms.mapping.dao;
+package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
 import com.imcode.imcms.mapping.container.DocVersionRef;
-import com.imcode.imcms.mapping.orm.DocVersion;
-import com.imcode.imcms.mapping.orm.TextDocLoop;
-import com.imcode.imcms.mapping.orm.User;
+import com.imcode.imcms.mapping.jpa.JpaConfiguration;
+import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.mapping.jpa.UserRepository;
+import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,29 +25,29 @@ import static org.hamcrest.CoreMatchers.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {JpaConfiguration.class})
 @Transactional
-public class TextDocLoopDaoTest {
+public class LoopRepositoryTest {
 
     static final DocVersionRef DOC_VERSION_REF = new DocVersionRef(1001, 0);
 
     @Inject
-    UserDao userDao;
+    UserRepository userRepository;
 
     @Inject
-    DocVersionDao docVersionDao;
+    DocVersionRepository docVersionRepository;
 
     @Inject
-    TextDocLoopDao textDocLoopDao;
+    LoopRepository loopRepository;
 
     @PersistenceContext
     EntityManager entityManager;
 
-    public List<TextDocLoop> recreateLoops() {
-        textDocLoopDao.deleteAll();
-        docVersionDao.deleteAll();
-        userDao.deleteAll();
+    public List<Loop> recreateLoops() {
+        loopRepository.deleteAll();
+        docVersionRepository.deleteAll();
+        userRepository.deleteAll();
 
-        User user = userDao.saveAndFlush(new User("admin", "admin", "admin@imcode.com"));
-        DocVersion docVersion = docVersionDao.saveAndFlush(
+        User user = userRepository.saveAndFlush(new User("admin", "admin", "admin@imcode.com"));
+        DocVersion docVersion = docVersionRepository.saveAndFlush(
                 new DocVersion(
                         DOC_VERSION_REF.getDocId(),
                         DOC_VERSION_REF.getDocVersionNo(),
@@ -56,38 +58,38 @@ public class TextDocLoopDaoTest {
         );
 
         return Arrays.asList(
-                textDocLoopDao.saveAndFlush(
-                    new TextDocLoop(
+                loopRepository.saveAndFlush(
+                    new Loop(
                             docVersion,
                             1,
                             2,
                             Arrays.asList(
-                                new TextDocLoop.Entry(1)
+                                new Loop.Entry(1)
                             )
                     )
                 ),
 
-                textDocLoopDao.saveAndFlush(
-                    new TextDocLoop(
+                loopRepository.saveAndFlush(
+                    new Loop(
                             docVersion,
                             2,
                             3,
                             Arrays.asList(
-                                    new TextDocLoop.Entry(1),
-                                    new TextDocLoop.Entry(2)
+                                    new Loop.Entry(1),
+                                    new Loop.Entry(2)
                             )
                     )
                 ),
 
-                textDocLoopDao.saveAndFlush(
-                    new TextDocLoop(
+                loopRepository.saveAndFlush(
+                    new Loop(
                             docVersion,
                             3,
                             4,
                             Arrays.asList(
-                                    new TextDocLoop.Entry(1),
-                                    new TextDocLoop.Entry(2),
-                                    new TextDocLoop.Entry(3)
+                                    new Loop.Entry(1),
+                                    new Loop.Entry(2),
+                                    new Loop.Entry(3)
                             )
                     )
                 )
@@ -98,8 +100,8 @@ public class TextDocLoopDaoTest {
     public void textFindByDocVersion() {
         recreateLoops();
 
-        DocVersion docVersion = docVersionDao.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
-        List<TextDocLoop> loops = textDocLoopDao.findByDocVersion(docVersion);
+        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
+        List<Loop> loops = loopRepository.findByDocVersion(docVersion);
 
         assertThat(loops.size(), is(3));
     }
@@ -108,10 +110,10 @@ public class TextDocLoopDaoTest {
     public void textFindByDocVersionAndNo() {
         recreateLoops();
 
-        DocVersion docVersion = docVersionDao.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
-        TextDocLoop loop1 = textDocLoopDao.findByDocVersionAndNo(docVersion, 1);
-        TextDocLoop loop2 = textDocLoopDao.findByDocVersionAndNo(docVersion, 2);
-        TextDocLoop loop3 = textDocLoopDao.findByDocVersionAndNo(docVersion, 3);
+        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
+        Loop loop1 = loopRepository.findByDocVersionAndNo(docVersion, 1);
+        Loop loop2 = loopRepository.findByDocVersionAndNo(docVersion, 2);
+        Loop loop3 = loopRepository.findByDocVersionAndNo(docVersion, 3);
 
         assertNotNull(loop1);
         assertNotNull(loop2);

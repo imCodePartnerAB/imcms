@@ -3,9 +3,9 @@ package imcms
 package admin.instance.settings.language
 
 import com.imcode.imcms.api.DocumentLanguage
-import com.imcode.imcms.mapping.dao.{SystemPropertyDao, DocLanguageDao}
-import com.imcode.imcms.mapping.orm.DocLanguage
-import com.imcode.imcms.mapping.OrmToApi
+import com.imcode.imcms.mapping.jpa.doc.{LanguageRepository, Language}
+import com.imcode.imcms.mapping.jpa.SystemPropertyRepository
+import com.imcode.imcms.mapping.EntityConverter
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
@@ -19,8 +19,8 @@ import com.imcode.imcms.vaadin.server._
 
 //todo delete in use message
 class LanguageManager {
-  private val languageDao = Imcms.getServices.getManagedBean(classOf[DocLanguageDao])
-  private val systemDao = Imcms.getServices.getManagedBean(classOf[SystemPropertyDao])
+  private val languageDao = Imcms.getServices.getManagedBean(classOf[LanguageRepository])
+  private val systemDao = Imcms.getServices.getManagedBean(classOf[SystemPropertyRepository])
 
   val view = new LanguageManagerView |>> { v =>
     v.miReload.setCommandHandler { _ => reload() }
@@ -32,7 +32,7 @@ class LanguageManager {
         // fixme: use service
         languageDao.findByCode(code) match {
           case null => reload()
-          case vo => editAndSave(vo |> OrmToApi.toApi)
+          case vo => editAndSave(vo |> EntityConverter.toApi)
         }
       }
     }
@@ -106,10 +106,9 @@ class LanguageManager {
           voc.code(c.txtCode.value)
           voc.name(c.txtName.value)
           voc.nativeName(c.txtNativeName.value)
-          voc.enabled(c.chkEnabled.value)
 
           Current.ui.privileged(permission) {
-            val language = new DocLanguage
+            val language = new Language
             // fixme: fil in all fields
             language.setCode(c.txtCode.trimmedValue)
             language.setName(c.txtName.trimmedValue)

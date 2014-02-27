@@ -2,7 +2,7 @@
 	
 	import="java.util.List,
 	        java.util.Map,
-	        com.imcode.imcms.mapping.orm.DocLanguage,
+	        com.imcode.imcms.mapping.jpa.doc.Language,
 	        java.util.Collection,
 	        com.imcode.imcms.flow.Page,
 	        com.imcode.imcms.servlet.admin.ImageEditPage,

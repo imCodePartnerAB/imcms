@@ -1,12 +1,16 @@
 <%@ page import="com.imcode.imcms.api.*,
                  java.util.*" errorPage="error.jsp" %>
-<%@ page import="com.imcode.imcms.mapping.orm.DocLanguage" %>
+<%@ page import="com.imcode.imcms.mapping.jpa.doc.Language" %>
+<%@ page import="com.imcode.imcms.mapping.jpa.doc.*" %>
+<%@ page import="com.imcode.imcms.api.Category" %>
+<%@ page import="com.imcode.imcms.api.Language" %>
+<%@ page import="com.imcode.imcms.api.CategoryType" %>
 <%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
-    DocLanguage language = DocumentLanguageSupport.getCurrentLanguage();
+    com.imcode.imcms.mapping.jpa.doc.Language language = DocumentLanguageSupport.getCurrentLanguage();
 
     document.setHeadline(language, "Test headline text");
     document.setMenuText(language, "Test menu text");
@@ -26,7 +30,7 @@
     }
 
     //Language english = Language.getLanguageByISO639_1( "en" );
-    Language english = Language.getLanguageByISO639_2( "eng" );
+    com.imcode.imcms.api.Language english = com.imcode.imcms.api.Language.getLanguageByISO639_2("eng");
     document.setLanguage( english );
 
     String categoryTypeName = "Type";

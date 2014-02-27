@@ -2,7 +2,8 @@ package com.imcode
 package imcms.mapping
 
 import com.imcode.imcms.mapping.container.DocRef
-import com.imcode.imcms.mapping.orm.{DocRef, DocVersion}
+import com.imcode.imcms.mapping.jpa.doc.DocVersion
+import com.imcode.imcms.mapping.jpa.DocRef
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec

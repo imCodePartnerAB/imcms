@@ -1,8 +1,9 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.dao.DocLanguageDao
-import com.imcode.imcms.mapping.orm.{DocLanguage, DocRef, TextDocTextHistory, DocRef}
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextHistory
+import com.imcode.imcms.mapping.jpa.doc.{LanguageRepository, Language}
+import com.imcode.imcms.mapping.jpa.{DocRef, DocRef}
 import scala.collection.JavaConverters._
 import org.junit.Assert._
 import org.junit.runner.RunWith
@@ -226,7 +227,7 @@ class TextDaoSuiteConfig {
   def textDao = new TextDocDao
 
   @Bean(autowire = Autowire.BY_TYPE)
-  def languageDao = new DocLanguageDao
+  def languageDao = new LanguageRepository
 
   @Bean
   def hibernatePropertiesConfigurator: (org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration) =
@@ -234,9 +235,9 @@ class TextDaoSuiteConfig {
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.BasicWithSql,
       TestSetup.hibernate.configurators.addAnnotatedClasses(
-        classOf[DocLanguage],
+        classOf[Language],
         classOf[TextDomainObject],
-        classOf[TextDocTextHistory]
+        classOf[TextHistory]
       ),
       TestSetup.hibernate.configurators.addXmlFiles(
         "com/imcode/imcms/hbm/DocLanguage.hbm.xml",

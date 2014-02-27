@@ -2,7 +2,7 @@
 	
 	import="com.imcode.imcms.api.DocumentVersion,
 	        com.imcode.imcms.api.DocumentVersionInfo,
-	        com.imcode.imcms.mapping.orm.DocLanguage,
+	        com.imcode.imcms.mapping.jpa.doc.Language,
 	        com.imcode.imcms.mapping.DocumentMapper,
 	        com.imcode.imcms.servlet.AdminPanelServlet,
 	        com.imcode.imcms.servlet.admin.AdminDoc,
@@ -156,10 +156,10 @@ int versionNo = document.getVersionNo();
 /* *******************************************************************************************
 *         Get languages                                                                     *
 ******************************************************************************************* */
-List<DocLanguage> languages = Imcms.getServices().getDocumentLanguageSupport().getAll();
-Set<DocLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
-DocLanguage defaultLanguage = Imcms.getServices().getDocumentLanguageSupport().getDefault();
-DocLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
+List<Language> languages = Imcms.getServices().getDocumentLanguageSupport().getAll();
+Set<Language> enabledLanguages = document.getMeta().getEnabledLanguages();
+Language defaultLanguage = Imcms.getServices().getDocumentLanguageSupport().getDefault();
+Language currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
 
 
 
@@ -183,7 +183,7 @@ if ("adminPanelHtml".equals(get)) { %>
                 <ul>
                     <li id="statusIcon"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></li><%
                 boolean hasManyLanguages = (languages.size() > 6) ;
-                for (DocLanguage lang: languages) {
+                for (Language lang: languages) {
                     String langCode       = lang.getCode() ;
                     String langName       = lang.getName() ;
                     String langNameNative = lang.getNativeName() ;

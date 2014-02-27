@@ -3,7 +3,7 @@ package imcms
 package admin.doc.meta.lifecycle
 
 import com.imcode.imcms.api.DocumentVersion
-import com.imcode.imcms.mapping.Meta
+import com.imcode.imcms.mapping.MetaVO
 import scala.collection.JavaConverters._
 import com.imcode.imcms.api.Document
 
@@ -18,7 +18,7 @@ import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.vaadin.Editor
 
 
-class LifeCycleEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
+class LifeCycleEditor(meta: MetaVO) extends Editor with ImcmsServicesSupport {
 
   case class Data(
                    publicationStatus: Document.PublicationStatus,

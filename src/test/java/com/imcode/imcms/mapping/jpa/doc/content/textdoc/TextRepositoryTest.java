@@ -1,6 +1,12 @@
-package com.imcode.imcms.mapping.dao;
+package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
-import com.imcode.imcms.mapping.orm.*;
+import com.imcode.imcms.mapping.jpa.JpaConfiguration;
+import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.mapping.jpa.UserRepository;
+import com.imcode.imcms.mapping.jpa.doc.Language;
+import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
+import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +27,7 @@ import static org.hamcrest.CoreMatchers.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {JpaConfiguration.class})
 @Transactional
-public class TextDocTextDaoTest {
+public class TextRepositoryTest {
 
     static final int DOC_ID = 1001;
 
@@ -33,53 +39,53 @@ public class TextDocTextDaoTest {
 
 
     @Inject
-    DocVersionDao docVersionDao;
+    DocVersionRepository docVersionRepository;
 
     @Inject
-    DocLanguageDao docLanguageDao;
+    LanguageRepository languageRepository;
 
     @Inject
-    TextDocTextDao textDocTextDao;
+    TextRepository textRepository;
 
     @Inject
-    UserDao userDao;
+    UserRepository userRepository;
 
-    List<DocLanguage> docLanguages;
+    List<Language> languages;
 
     List<DocVersion> docVersions;
 
     @Before
     public void setUp() {
-        User user = userDao.saveAndFlush(new User("admin", "admin", "admin@imcode.com"));
-        docLanguages = Arrays.asList(
-                docLanguageDao.saveAndFlush(new DocLanguage("en", "English", "English")),
-                docLanguageDao.saveAndFlush(new DocLanguage("se", "Swedish", "Svenska"))
+        User user = userRepository.saveAndFlush(new User("admin", "admin", "admin@imcode.com"));
+        languages = Arrays.asList(
+                languageRepository.saveAndFlush(new Language("en", "English", "English")),
+                languageRepository.saveAndFlush(new Language("se", "Swedish", "Svenska"))
         );
 
         docVersions = Arrays.asList(
-                docVersionDao.saveAndFlush(new DocVersion(DOC_ID, 0, user, new Date(), user, new Date())),
-                docVersionDao.saveAndFlush(new DocVersion(DOC_ID, 1, user, new Date(), user, new Date())),
-                docVersionDao.saveAndFlush(new DocVersion(DOC_ID, 2, user, new Date(), user, new Date()))
+                docVersionRepository.saveAndFlush(new DocVersion(DOC_ID, 0, user, new Date(), user, new Date())),
+                docVersionRepository.saveAndFlush(new DocVersion(DOC_ID, 1, user, new Date(), user, new Date())),
+                docVersionRepository.saveAndFlush(new DocVersion(DOC_ID, 2, user, new Date(), user, new Date()))
         );
 
         // texts with odd no have loop entry with the same loop no and entry no
         for (int no = MIN_TEXT_NO; no <= MAX_TEXT_NO; no++) {
-            for (DocLanguage docLanguage : docLanguages) {
-                for (DocVersion docVersion: docVersions) {
-                    TextDocText text = new TextDocText();
+            for (Language language : languages) {
+                for (DocVersion docVersion : docVersions) {
+                    Text text = new Text();
 
                     text.setNo(no);
-                    text.setType(TextDocTextType.PLAIN_TEXT);
-                    text.setDocLanguage(docLanguage);
+                    text.setType(TextType.PLAIN_TEXT);
+                    text.setLanguage(language);
                     text.setDocVersion(docVersion);
 
                     if ((no & 1) == 1) {
                         int loopNo = no;
                         int entryNo = no;
-                        text.setLoopEntryRef(new TextDocLoopEntryRef(loopNo, entryNo));
+                        text.setLoopEntryRef(new LoopEntryRef(loopNo, entryNo));
                     }
 
-                    textDocTextDao.saveAndFlush(text);
+                    textRepository.saveAndFlush(text);
                 }
             }
         }
@@ -87,17 +93,17 @@ public class TextDocTextDaoTest {
 
     @Test
     public void testFindByDocVersion() throws Exception {
-        for (DocVersion docVersion: docVersions) {
-            List<TextDocText> texts = textDocTextDao.findByDocVersion(docVersion);
+        for (DocVersion docVersion : docVersions) {
+            List<Text> texts = textRepository.findByDocVersion(docVersion);
             assertThat(texts.size(), is(TEXTS_COUNT__PER_VERSION));
         }
     }
 
     @Test
     public void testFindByDocVersionAndDocLanguage() throws Exception {
-        for (DocVersion docVersion: docVersions) {
-            for (DocLanguage docLanguage : docLanguages) {
-                List<TextDocText> texts = textDocTextDao.findByDocVersionAndDocLanguage(docVersion, docLanguage);
+        for (DocVersion docVersion : docVersions) {
+            for (Language language : languages) {
+                List<Text> texts = textRepository.findByDocVersionAndDocLanguage(docVersion, language);
                 assertThat(texts.size(), is(TEXTS_COUNT__PER_VERSION__PER_LANGUAGE));
             }
         }
@@ -106,10 +112,10 @@ public class TextDocTextDaoTest {
     @Test
     public void testFindByDocVersionAndNoAndLoopEntryIsNull() throws Exception {
         for (int no = MIN_TEXT_NO; no <= MAX_TEXT_NO; no++) {
-            for (DocLanguage docLanguage : docLanguages) {
-                for (DocVersion docVersion: docVersions) {
-                    TextDocText text = textDocTextDao.findByDocVersionAndDocLanguageAndNoAndLoopEntryIsNull(
-                            docVersion, docLanguage, no
+            for (Language language : languages) {
+                for (DocVersion docVersion : docVersions) {
+                    Text text = textRepository.findByDocVersionAndDocLanguageAndNoAndLoopEntryIsNull(
+                            docVersion, language, no
                     );
 
                     if ((no & 1) == 1) {
@@ -126,11 +132,11 @@ public class TextDocTextDaoTest {
     @Test
     public void testFindByDocVersionAndDocLanguageAndNoAndLoopEntryRef() throws Exception {
         for (int no = MIN_TEXT_NO; no <= MAX_TEXT_NO; no++) {
-            for (DocLanguage docLanguage : docLanguages) {
-                for (DocVersion docVersion: docVersions) {
-                    TextDocLoopEntryRef entryRef = new TextDocLoopEntryRef(no, no);
-                    TextDocText text = textDocTextDao.findByDocVersionAndDocLanguageAndNoAndLoopEntryRef(
-                            docVersion, docLanguage, no, entryRef
+            for (Language language : languages) {
+                for (DocVersion docVersion : docVersions) {
+                    LoopEntryRef entryRef = new LoopEntryRef(no, no);
+                    Text text = textRepository.findByDocVersionAndDocLanguageAndNoAndLoopEntryRef(
+                            docVersion, language, no, entryRef
                     );
 
                     if ((no & 1) == 1) {
@@ -157,9 +163,9 @@ public class TextDocTextDaoTest {
 
     @Test
     public void testDeleteByDocVersionAndDocLanguage() throws Exception {
-        for (DocLanguage docLanguage : docLanguages) {
-            for (DocVersion docVersion: docVersions) {
-                int deletedCount = textDocTextDao.deleteByDocVersionAndDocLanguage(docVersion, docLanguage);
+        for (Language language : languages) {
+            for (DocVersion docVersion : docVersions) {
+                int deletedCount = textRepository.deleteByDocVersionAndDocLanguage(docVersion, language);
 
                 assertThat(deletedCount, equalTo(TEXTS_COUNT__PER_VERSION__PER_LANGUAGE));
             }

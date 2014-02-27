@@ -6,7 +6,7 @@ import _root_.imcode.server.Imcms
 import _root_.imcode.server.document._
 import _root_.imcode.util.io.InputStreamSource
 import com.imcode.imcms.mapping.container.DocRef
-import com.imcode.imcms.mapping.orm._
+import com.imcode.imcms.mapping.jpa._
 import scala.collection.JavaConverters._
 import _root_.imcode.server.document.textdocument._
 import java.io.ByteArrayInputStream
@@ -18,7 +18,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite, BeforeAndAfterAll}
 import com.imcode.imcms.test._
 import com.imcode.imcms.test.TestSetup
-import com.imcode.imcms.mapping.{DocumentCommonContent, DocumentStoringVisitor, DocumentMapper}
+import com.imcode.imcms.mapping.{CommonContentVO, DocumentStoringVisitor, DocumentMapper}
 import com.imcode.imcms.api._
 import com.imcode.imcms.api.TextDocument.TextField
 
@@ -57,7 +57,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val menuTextPrefix = "menu_text_"
 
     val i18nMetas = i18nContentSupport.getAll.asScala.map { language =>
-      DocumentCommonContent.builder()
+      CommonContentVO.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
         .menuText(menuTextPrefix + language.getCode)
@@ -92,7 +92,7 @@ class DocumentMapperSuite extends FunSuite with BeforeAndAfterAll with BeforeAnd
     val menuTextPrefix = "menu_text_"
 
     val i18nMetas = i18nContentSupport.getAll.asScala.map { language =>
-      DocumentCommonContent.builder()
+      CommonContentVO.builder()
         .language(language)
         .headline(headlinePrefix + language.getCode)
         .menuText(menuTextPrefix + language.getCode)

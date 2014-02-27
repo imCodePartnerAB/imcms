@@ -7,18 +7,18 @@
     <session-factory>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
 
-        <mapping class="com.imcode.imcms.mapping.orm.DocMeta"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocVersion"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocLanguage"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocProperty"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.Meta"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.DocVersion"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.Language"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.Property"/>
 
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocText"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocImage"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocMenu"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocLoop"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocTextHistory"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocImageHistory"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocMenuHistory"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Text"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Menu"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextHistory"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.ImageHistory"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuHistory"/>
 
         <mapping class="imcode.server.user.UserDomainObject"/>
         <mapping class="imcode.server.document.textdocument.ImageCacheDomainObject"/>
@@ -26,15 +26,15 @@
         <mapping class="imcode.server.document.CategoryTypeDomainObject"/>
         <mapping class="imcode.server.document.CategoryDomainObject"/>
 
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocTemplateNames"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocInclude"/>
-        <mapping class="com.imcode.imcms.mapping.orm.FileDocItem"/>
-        <mapping class="com.imcode.imcms.mapping.orm.HtmlDocContent"/>
-        <mapping class="com.imcode.imcms.mapping.orm.UrlDocContent"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.TemplateNames"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Include"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.FileDocItem"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent"/>
 
-        <mapping class="com.imcode.imcms.mapping.orm.SystemProperty"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocCommonContent"/>
-        <mapping class="com.imcode.imcms.mapping.orm.IPAccess"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.SystemProperty"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.CommonContent"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.IPAccess"/>
 
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.Images"/>
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.ExifPK"/>

@@ -11,21 +11,21 @@
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.archive.autodetection"/>
 
-        <mapping class="com.imcode.imcms.mapping.orm.DocMeta"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocLanguage"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocVersion"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocProperty"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocCommonContent"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocCategory"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DocCategoryType"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.Meta"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.Language"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.DocVersion"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.Property"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.CommonContent"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.Category"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.CategoryType"/>
 
-        <mapping class="com.imcode.imcms.mapping.orm.User"/>
-        <mapping class="com.imcode.imcms.mapping.orm.SystemProperty"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.User"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.SystemProperty"/>
 
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocLoop"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocText"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocImage"/>
-        <mapping class="com.imcode.imcms.mapping.orm.TextDocMenu"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Text"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Menu"/>
 
         <mapping resource="com/imcode/imcms/hbm/DocVersion.hbm.xml"/>
     </session-factory>

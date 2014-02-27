@@ -2,8 +2,7 @@ package com.imcode
 package imcms
 package admin.access.ip
 
-import com.imcode.imcms.mapping.dao.IPAccessDao
-import com.imcode.imcms.mapping.orm.IPAccess
+import com.imcode.imcms.mapping.jpa.{IPAccessRepository, IPAccess}
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
 import com.imcode.imcms.security.PermissionGranted
@@ -25,7 +24,7 @@ import com.imcode.imcms.security.PermissionDenied
 // help: "Users from a specific IP number or an interval of numbers are given direct access to the system (so that the user does not have to log in)."
 
 class IPAccessManager {
-  private val ipAccessDao = Imcms.getServices.getManagedBean(classOf[IPAccessDao])
+  private val ipAccessDao = Imcms.getServices.getManagedBean(classOf[IPAccessRepository])
   private val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
   private val toDDN = ((_:String).toLong) andThen ipLongToString
   private val fromDDN = ipStringToLong(_:String).toString

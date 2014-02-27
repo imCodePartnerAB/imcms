@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.Schema;
+import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
@@ -242,7 +243,7 @@ public class Imcms {
     private static DocumentLanguageSupport createDocumentLanguageSupport() {
         logger.info("Creating i18n support.");
 
-        DocumentLanguageService dls = applicationContext.getBean(DocumentLanguageService.class);
+        DocumentLanguageMapper dls = applicationContext.getBean(DocumentLanguageMapper.class);
         List<DocumentLanguage> languages = dls.getAll();
 
         Map<String, DocumentLanguage> languagesByCodes = Maps.newHashMap();

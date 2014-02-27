@@ -96,7 +96,7 @@ class DirectoryIndexFixture {
 
   private val documentMapperMock = mock[DocumentMapper]
   private val categoryMapperMock = mock[CategoryMapper]
-  private val textDocMapperMock = mock[TextDocMapperService]
+  private val textDocMapperMock = mock[TextDocContentMapper]
 
   Mockito.when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer(new Answer[JSet[CategoryDomainObject]]() {
      def answer(invocation: InvocationOnMock): JSet[CategoryDomainObject] = {
@@ -114,7 +114,7 @@ class DirectoryIndexFixture {
 
 
   def addTextDocMock(doc: TextDocumentDomainObject,
-                     i18nMetas: Option[Seq[DocumentCommonContent]] = None,
+                     i18nMetas: Option[Seq[CommonContentVO]] = None,
                      texts: Option[Seq[TextDomainObject]] = None,
                      images: Option[Seq[ImageDomainObject]] = None) {
 

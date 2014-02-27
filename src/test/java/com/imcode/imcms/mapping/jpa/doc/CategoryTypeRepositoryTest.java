@@ -1,6 +1,8 @@
-package com.imcode.imcms.mapping.dao;
+package com.imcode.imcms.mapping.jpa.doc;
 
-import com.imcode.imcms.mapping.orm.DocCategoryType;
+import com.imcode.imcms.mapping.jpa.JpaConfiguration;
+import com.imcode.imcms.mapping.jpa.doc.CategoryTypeRepository;
+import com.imcode.imcms.mapping.jpa.doc.CategoryType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,35 +16,34 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {JpaConfiguration.class})
 @Transactional
-public class DocCategoryTypeDaoTest {
+public class CategoryTypeRepositoryTest {
 
 
     @Inject
-    DocCategoryTypeDao dao;
+    CategoryTypeRepository repository;
 
-    List<DocCategoryType> types;
+    List<CategoryType> types;
 
     @Before
     public void setUp() {
         types = recreateTypes();
     }
 
-    public List<DocCategoryType> recreateTypes() {
+    public List<CategoryType> recreateTypes() {
         return Arrays.asList(
-            dao.saveAndFlush(new DocCategoryType("DocCategoryTypeOne", 0, false, false)),
-            dao.saveAndFlush(new DocCategoryType("DocCategoryTypeTwo", 0, false, false))
+            repository.saveAndFlush(new CategoryType("DocCategoryTypeOne", 0, false, false)),
+            repository.saveAndFlush(new CategoryType("DocCategoryTypeTwo", 0, false, false))
         );
     }
 
     @Test
     public void testFindByName() throws Exception {
-        DocCategoryType type1 = dao.findByName("DocCategoryTypeOne");
-        DocCategoryType type2 = dao.findByName("DocCategoryTypeTWO");
+        CategoryType type1 = repository.findByName("DocCategoryTypeOne");
+        CategoryType type2 = repository.findByName("DocCategoryTypeTWO");
 
         assertNotNull(type1);
         assertNull(type2);
@@ -50,8 +51,8 @@ public class DocCategoryTypeDaoTest {
 
     @Test
     public void testFindByNameIgnoreCase() throws Exception {
-        DocCategoryType type1 = dao.findByNameIgnoreCase("DocCategoryTypeOne");
-        DocCategoryType type2 = dao.findByNameIgnoreCase("DocCategoryTypeTWO");
+        CategoryType type1 = repository.findByNameIgnoreCase("DocCategoryTypeOne");
+        CategoryType type2 = repository.findByNameIgnoreCase("DocCategoryTypeTWO");
 
         assertNotNull(type1);
         assertNotNull(type2);

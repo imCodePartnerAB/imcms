@@ -24,7 +24,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, docLanguageSupport: Docum
     cc.setName(classOf[DocLoaderCachingProxy].getCanonicalName + "." + name)
   }
 
-  val metas = CacheWrapper[DocId, Meta](cacheConfiguration("meats"))
+  val metas = CacheWrapper[DocId, MetaVO](cacheConfiguration("meats"))
   val versionInfos = CacheWrapper[DocId, DocumentVersionInfo](cacheConfiguration("versionInfos"))
   val workingDocs = CacheWrapper[DocCacheKey, DocumentDomainObject](cacheConfiguration("workingDocs"))
   val defaultDocs = CacheWrapper[DocCacheKey, DocumentDomainObject](cacheConfiguration("defaultDocs"))
@@ -38,19 +38,19 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, docLanguageSupport: Docum
   /**
    * @return doc's meta or null if doc does not exists
    */
-  def getMeta(docId: DocId): Meta = metas.getOrPut(docId) { docLoader.loadMeta(docId) }
+  def getMeta(docId: DocId): MetaVO = metas.getOrPut(docId) { docLoader.loadMeta(docId) }
 
   /**
    * @return doc's version info or null if doc does not exists
    */
   def getDocVersionInfo(docId: DocId): DocumentVersionInfo = versionInfos.getOrPut(docId) {
-    docLoader.getDocumentVersionDao.findByDocId(docId) match {
+    docLoader.getDocVersionRepository.findByDocId(docId) match {
       case versions if versions.size == 0 => null
       case versions =>
         val workingVersion = versions.get(0)
-        val defaultVersion = docLoader.getDocumentVersionDao.findDefault(docId)
-        new DocumentVersionInfo(docId, versions.asScala.map(OrmToApi.toApi).asJava, OrmToApi.toApi(workingVersion),
-          OrmToApi.toApi(defaultVersion))
+        val defaultVersion = docLoader.getDocVersionRepository.findDefault(docId)
+        new DocumentVersionInfo(docId, versions.asScala.map(EntityConverter.toApi).asJava, EntityConverter.toApi(workingVersion),
+          EntityConverter.toApi(defaultVersion))
     }
   }
 
@@ -58,7 +58,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, docLanguageSupport: Docum
    * @return doc's id or null if doc does not exists or alias is not set
    */
   def getDocId(docAlias: String): DocId = aliasesToIds.getOrPut(docAlias) {
-    docLoader.getMetaDao.getDocIdByAlias(docAlias) |>> {
+    docLoader.getDocRepository.getDocIdByAlias(docAlias) |>> {
       case null =>
       case docId => idsToAliases.put(docId, docAlias)
     }

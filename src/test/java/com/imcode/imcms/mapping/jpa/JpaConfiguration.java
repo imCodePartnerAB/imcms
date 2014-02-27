@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping.dao;
+package com.imcode.imcms.mapping.jpa;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.imcode.imcms.mapping.dao")
-@ComponentScan(basePackages = {"com.imcode.imcms.mapping.dao"})
-class JpaConfiguration {
+@EnableJpaRepositories(basePackages = "com.imcode.imcms.mapping.jpa")
+@ComponentScan(basePackages = {"com.imcode.imcms.mapping.jpa"})
+public class JpaConfiguration {
 
     @Bean
     public JpaTransactionManager transactionManager() {

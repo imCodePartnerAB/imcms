@@ -1,10 +1,10 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.*;
+import com.imcode.imcms.mapping.CommonContentVO;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.DocVersionRef;
-import com.imcode.imcms.mapping.DocumentCommonContent;
-import com.imcode.imcms.mapping.Meta;
+import com.imcode.imcms.mapping.MetaVO;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -47,9 +47,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 
-    private volatile Meta meta = new Meta();
+    private volatile MetaVO meta = new MetaVO();
 
-    private volatile DocumentCommonContent appearance = DocumentCommonContent.builder().build();
+    private volatile CommonContentVO commonContent = CommonContentVO.builder().build();
 
     private volatile int versionNo = DocumentVersion.WORKING_VERSION_NO;
 
@@ -163,11 +163,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getHeadline() {
-        return appearance.getHeadline();
+        return commonContent.getHeadline();
     }
 
     public void setHeadline(String v) {
-        setCommonContent(DocumentCommonContent.builder(getCommonContent()).headline(v).build());
+        setCommonContent(CommonContentVO.builder(getCommonContent()).headline(v).build());
     }
 
     public int getId() {
@@ -180,11 +180,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getMenuImage() {
-        return appearance.getMenuImageURL();
+        return commonContent.getMenuImageURL();
     }
 
     public void setMenuImage(String v) {
-        setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuImageURL(v).build());
+        setCommonContent(CommonContentVO.builder(getCommonContent()).menuImageURL(v).build());
     }
 
 
@@ -221,12 +221,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getMenuText() {
-        return appearance.getMenuText();
+        return commonContent.getMenuText();
     }
 
 
     public void setMenuText(String v) {
-        setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuText(v).build());
+        setCommonContent(CommonContentVO.builder(getCommonContent()).menuText(v).build());
     }
 
     public Date getModifiedDatetime() {
@@ -329,7 +329,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return isActiveAtTime(meta, new Date());
     }
 
-    private static boolean isActiveAtTime(Meta meta, Date now) {
+    private static boolean isActiveAtTime(MetaVO meta, Date now) {
         return isPublishedAtTime(meta, now) && !hasBeenArchivedAtTime(meta, now);
     }
 
@@ -381,7 +381,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return getId();
     }
 
-    private static boolean hasBeenArchivedAtTime(Meta meta, Date time) {
+    private static boolean hasBeenArchivedAtTime(MetaVO meta, Date time) {
         Date archivedDatetime = meta.getArchivedDatetime();
         return archivedDatetime != null && archivedDatetime.before(time);
     }
@@ -403,18 +403,18 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return getRolePermissionMappings().getPermissionSetTypeForRole(roleId);
     }
 
-    private static boolean isPublishedAtTime(Meta meta, Date date) {
+    private static boolean isPublishedAtTime(MetaVO meta, Date date) {
         boolean statusIsApproved = Document.PublicationStatus.APPROVED.equals(meta.getPublicationStatus());
 
         return statusIsApproved && publicationHasStartedAtTime(meta, date) && !publicationHasEndedAtTime(meta, date);
     }
 
-    private static boolean publicationHasStartedAtTime(Meta meta, Date date) {
+    private static boolean publicationHasStartedAtTime(MetaVO meta, Date date) {
         Date publicationStartDatetime = meta.getPublicationStartDatetime();
         return publicationStartDatetime != null && publicationStartDatetime.before(date);
     }
 
-    private static boolean publicationHasEndedAtTime(Meta meta, Date date) {
+    private static boolean publicationHasEndedAtTime(MetaVO meta, Date date) {
         Date publicationEndDatetime = meta.getPublicationEndDatetime();
         return publicationEndDatetime != null && publicationEndDatetime.before(date);
     }
@@ -434,7 +434,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public static LifeCyclePhase getLifeCyclePhaseAtTime(DocumentDomainObject doc, Date time) {
-        Meta meta = doc.getMeta();
+        MetaVO meta = doc.getMeta();
         LifeCyclePhase lifeCyclePhase;
 
         Document.PublicationStatus publicationStatus = meta.getPublicationStatus();
@@ -483,11 +483,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return StringUtils.defaultString(getAlias(), getId() + "");
     }
 
-    public Meta getMeta() {
+    public MetaVO getMeta() {
         return meta;
     }
 
-    public void setMeta(Meta meta) {
+    public void setMeta(MetaVO meta) {
         Objects.requireNonNull(meta, "meta argument can not be null.");
 
         this.meta = meta.clone();
@@ -504,14 +504,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
 
-    public DocumentCommonContent getCommonContent() {
-        return appearance;
+    public CommonContentVO getCommonContent() {
+        return commonContent;
     }
 
-    public void setCommonContent(DocumentCommonContent appearance) {
-        Objects.requireNonNull(appearance, "commonContent argument can not be null.");
+    public void setCommonContent(CommonContentVO commonContent) {
+        Objects.requireNonNull(commonContent, "commonContent argument can not be null.");
 
-        this.appearance = appearance;
+        this.commonContent = commonContent;
     }
 
     public boolean isNew() {

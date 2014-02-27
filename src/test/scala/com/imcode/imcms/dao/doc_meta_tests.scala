@@ -2,8 +2,11 @@ package com.imcode
 package imcms.dao
 
 import com.imcode.imcms.mapping.container.DocRef
-import com.imcode.imcms.mapping.dao.{DocDao, DocVersionDao}
-import com.imcode.imcms.mapping.DocumentCommonContent
+import com.imcode.imcms.mapping.jpa.VersionRepository
+import com.imcode.imcms.mapping.CommonContentVO
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Include
+import com.imcode.imcms.mapping.jpa.doc.content.{HtmlDocContent, FileDocItem, UrlDocContent}
+import com.imcode.imcms.mapping.jpa.doc._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import imcms.test.TestSetup.db
@@ -14,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowire
 import com.imcode.imcms.test.TestSetup
 import com.imcode.imcms.api._
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
-import com.imcode.imcms.mapping.orm._
+import com.imcode.imcms.mapping.jpa._
 import org.junit.Assert._
 import java.util.Date
 import scala.collection.JavaConverters._
@@ -24,8 +27,8 @@ import org.joda.time.DateTime
 @RunWith(classOf[JUnitRunner])
 class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
-	var metaDao: DocDao = _
-  var versionDao: DocVersionDao = _
+	var metaRepository: DocRepository = _
+  var versionRepository: DocVersionRepository = _
 
   override def beforeAll() = db.recreate()
 
@@ -34,8 +37,8 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
     val ctx = TestSetup.spring.createCtx(classOf[MetaDaoTestConfig])
 
-    metaDao = ctx.getBean(classOf[DocDao])
-    versionDao = ctx.getBean(classOf[DocVersionDao])
+    metaRepository = ctx.getBean(classOf[DocRepository])
+    versionRepository = ctx.getBean(classOf[DocVersionRepository])
   }
 
 //  def createMeta() = new DocMeta |>> { m =>
@@ -51,20 +54,20 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
 //
 //    //m.setProperties(Map("p1" -> "v1", "p2" -> "v2", "p3" -> "v3"))
 //    m.setCategoryIds(Set[JInteger](0,1,2,3,4,5).asJava)
-//  } |> metaDao.saveMeta
+//  } |> metaRepository.saveMeta
 
 
   ".getMeta" should {
     "return meta when it exists" in {
       val newMeta = createMeta()
-      val meta = metaDao.findMeta(newMeta.getId)
+      val meta = metaRepository.findMeta(newMeta.getId)
 
       assertNotNull("meta exist", meta)
     }
 
     "return null when no meta with provided id exists" in {
       expectResult(null) {
-        metaDao.findMeta(DocFX.VacantId)
+        metaRepository.findMeta(DocFX.VacantId)
       }
     }
   }
@@ -74,12 +77,12 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
     "update meta and version" in {
       val dt = new DateTime(2012, 12, 10, 13, 30).toDate
       val meta = createMeta()
-      val version = versionDao.create(meta.getId, UserFX.mkSuperAdmin.getId)
+      val version = versionRepository.create(meta.getId, UserFX.mkSuperAdmin.getId)
 
-      metaDao.touch(DocRef.of(meta.getId, 0), UserFX.mkDefaultUser, dt)
+      metaRepository.touch(DocRef.of(meta.getId, 0), UserFX.mkDefaultUser, dt)
 
-      val updatedMeta = metaDao.findMeta(meta.getId)
-      val updatedVersion = versionDao.findByDocIdAndNo(meta.getId, 0)
+      val updatedMeta = metaRepository.findMeta(meta.getId)
+      val updatedVersion = versionRepository.findByDocIdAndNo(meta.getId, 0)
 
       assertEquals("meta modified datetime", dt, updatedMeta.getModifiedDatetime)
       assertEquals("version modified datetime", dt, updatedVersion.getModifiedDt)
@@ -89,7 +92,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
   ".deleteFileReferences" in {
     val docIdentity = DocRefFX.Default
-    metaDao.deleteFileReferences(docIdentity)
+    metaRepository.deleteFileReferences(docIdentity)
   }
 
   ".saveFileReferences" in {
@@ -98,12 +101,12 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
       ref.setDocRef(docIdentity)
     }
 
-    metaDao.saveFileReference(fileRef)
+    metaRepository.saveFileReference(fileRef)
   }
 
   ".getFileReferences" in {
     val docIdentity = DocRefFX.Default
-    metaDao.getFileDocItems(docIdentity)
+    metaRepository.getFileDocItems(docIdentity)
   }
 
 
@@ -115,10 +118,10 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
 class MetaDaoTestConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
-  def versionDao = new DocVersionDao
+  def versionRepository = new DocVersionRepository
 
   @Bean(autowire = Autowire.BY_TYPE)
-  def metaDao = new DocDao
+  def metaRepository = new DocRepository
 
   @Bean
   def hibernatePropertiesConfigurator: org.hibernate.cfg.Configuration => org.hibernate.cfg.Configuration =
@@ -126,17 +129,17 @@ class MetaDaoTestConfig {
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.Basic,
       TestSetup.hibernate.configurators.addAnnotatedClasses(
-        classOf[DocProperty],
-        classOf[DocMeta],
-        classOf[DocumentCommonContent],
+        classOf[Property],
+        classOf[Meta],
+        classOf[CommonContentVO],
         classOf[DocVersion],
-        classOf[DocLanguage],
+        classOf[Language],
         classOf[CategoryDomainObject],
         classOf[CategoryTypeDomainObject],
         classOf[FileDocItem],
         classOf[UrlDocContent],
         classOf[HtmlDocContent],
-        classOf[TextDocInclude]
+        classOf[Include]
       ),
       TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")
     ))

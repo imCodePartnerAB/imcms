@@ -1,8 +1,8 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.dao.DocLanguageDao
-import com.imcode.imcms.mapping.orm.{DocLanguage, TextDocImageHistory}
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.ImageHistory
+import com.imcode.imcms.mapping.jpa.doc.{LanguageRepository, Language}
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -85,7 +85,7 @@ class ImageDaoSuite extends FunSuite with BeforeAndAfterAll with BeforeAndAfterE
 class ImageDaoSuiteConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
-  def languageDao = new DocLanguageDao
+  def languageDao = new LanguageRepository
 
   @Bean(autowire = Autowire.BY_TYPE)
   def textDocDao = new TextDocDao
@@ -96,9 +96,9 @@ class ImageDaoSuiteConfig {
       TestSetup.hibernate.configurators.Hbm2ddlAutoCreateDrop,
       TestSetup.hibernate.configurators.BasicWithSql,
       TestSetup.hibernate.configurators.addAnnotatedClasses(
-        classOf[DocLanguage],
+        classOf[Language],
         classOf[ImageDomainObject],
-        classOf[TextDocImageHistory]
+        classOf[ImageHistory]
       ),
       TestSetup.hibernate.configurators.addXmlFiles(
         "com/imcode/imcms/hbm/DocLanguage.hbm.xml",

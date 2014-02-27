@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta.category
 
-import com.imcode.imcms.mapping.Meta
+import com.imcode.imcms.mapping.MetaVO
 import java.util.Collections
 import scala.collection.JavaConverters._
 
@@ -21,7 +21,7 @@ import com.imcode.imcms.vaadin.Editor
  * Single-choice categories appear in a Select component, multi-choice in TwinSelect component.
  * Components (Select and TwinSelect) captions is set to type name.
  */
-class CategoryEditor(meta: Meta) extends Editor with ImcmsServicesSupport {
+class CategoryEditor(meta: MetaVO) extends Editor with ImcmsServicesSupport {
   case class Data(categoriesIds: Set[CategoryId])
 
   private val initialValues = Data(meta.getCategoryIds.asScala.toSet)

@@ -14,7 +14,7 @@
 	        org.apache.commons.lang.StringUtils,
 	        java.util.List,
 	        com.imcode.imcms.mapping.DocumentMapper,
-	        com.imcode.imcms.mapping.orm.DocVersion,
+	        com.imcode.imcms.mapping.jpa.doc.DocVersion,
 	        java.util.Set"
 	
 %><%@ taglib uri="imcmsvelocity" prefix="vel"
@@ -52,10 +52,10 @@ int versionNo = document.getVersionNo();
 /* *******************************************************************************************
  *         Get languages                                                                     *
  ******************************************************************************************* */
-List<DocLanguage> languages = Imcms.getServices().getDocumentLanguageSupport().getAll();
-Set<DocLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
-DocLanguage defaultLanguage = Imcms.getServices().getDocumentLanguageSupport().getDefault();
-DocLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
+List<Language> languages = Imcms.getServices().getDocumentLanguageSupport().getAll();
+Set<Language> enabledLanguages = document.getMeta().getEnabledLanguages();
+Language defaultLanguage = Imcms.getServices().getDocumentLanguageSupport().getDefault();
+Language currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
 
 /* *******************************************************************************************
  *         BROWSER SNIFFER                                                                   *
@@ -72,7 +72,7 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 <%@page import="org.apache.commons.collections.iterators.ReverseListIterator"%>
 <%@page import="java.util.Iterator"%>
 <%@ page import="imcode.server.ImcmsConstants" %>
-<%@ page import="com.imcode.imcms.mapping.orm.DocLanguage" %>
+<%@ page import="com.imcode.imcms.mapping.jpa.doc.Language" %>
 <%@ page import="com.imcode.imcms.api.DocumentVersionInfo" %>
 <vel:velocity>
 <style type="text/css">
@@ -147,7 +147,7 @@ if (null != languages) { %>
 	<tr><%
 	int iCount = 0 ;
 	int languagesPerRow = 7 ;
-	for (DocLanguage lang: languages ) {
+	for (Language lang: languages ) {
 		String langCode       = lang.getCode() ;
 		String langName       = lang.getName() ;
 		String langNameNative = lang.getNativeName() ;
