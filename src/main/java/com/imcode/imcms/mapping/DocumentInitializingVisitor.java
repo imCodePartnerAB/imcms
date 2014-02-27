@@ -1,22 +1,20 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.orm.FileDocItem;
-import com.imcode.imcms.mapping.orm.HtmlDocContent;
-import com.imcode.imcms.mapping.orm.UrlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.DocRepository;
+import com.imcode.imcms.mapping.jpa.doc.content.FileDocItem;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.util.io.FileInputStreamSource;
-
-import java.io.File;
-import java.util.Collection;
-
-import com.imcode.imcms.mapping.dao.DocDao;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.util.Collection;
 
 /**
  * Initializes a document fields depending on document's type.
@@ -30,7 +28,7 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
     private TextDocumentInitializer textDocumentInitializer;
 
     @Inject
-    private DocDao metaDao;
+    private DocRepository metaRepository;
 
     /**
      * Initializes file document.
@@ -40,7 +38,7 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
      * ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
     public void visitFileDocument(final FileDocumentDomainObject doc) {
-        Collection<FileDocItem> fileDocItems = metaDao.getFileDocItems(doc.getRef());
+        Collection<FileDocItem> fileDocItems = metaRepository.getFileDocItems(doc.getRef());
 
         for (FileDocItem item : fileDocItems) {
             String fileId = item.getFileId();
@@ -73,12 +71,12 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
 
 
     public void visitHtmlDocument(HtmlDocumentDomainObject doc) {
-        HtmlDocContent html = metaDao.getHtmlDocContent(doc.getRef());
+        HtmlDocContent html = metaRepository.getHtmlDocContent(doc.getRef());
         doc.setHtml(html.getHtml());
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject doc) {
-        UrlDocContent reference = metaDao.getUrlDocContent(doc.getRef());
+        UrlDocContent reference = metaRepository.getUrlDocContent(doc.getRef());
         doc.setUrl(reference.getUrl());
     }
 
@@ -86,12 +84,12 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
         textDocumentInitializer.initialize(document);
     }
 
-    public DocDao getMetaDao() {
-        return metaDao;
+    public DocRepository getMetaRepository() {
+        return metaRepository;
     }
 
-    public void setMetaDao(DocDao metaDao) {
-        this.metaDao = metaDao;
+    public void setMetaRepository(DocRepository metaRepository) {
+        this.metaRepository = metaRepository;
     }
 
     public TextDocumentInitializer getTextDocumentInitializer() {

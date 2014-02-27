@@ -1,15 +1,14 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.orm.DocVersion;
-import com.imcode.imcms.mapping.orm.HtmlDocContent;
-import com.imcode.imcms.mapping.orm.UrlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.DocRepository;
+import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import imcode.server.ImcmsServices;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-
-import com.imcode.imcms.mapping.dao.DocDao;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -28,20 +27,20 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     @Transactional
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
         HtmlDocContent reference = new HtmlDocContent();
-        DocVersion docVersion = docVersionDao.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
         reference.setDocVersion(docVersion);
         reference.setHtml(document.getHtml());
 
-        DocDao dao = services.getManagedBean(DocDao.class);
+        DocRepository repository = services.getManagedBean(DocRepository.class);
 
-        dao.saveHtmlReference(reference);
+        repository.saveHtmlReference(reference);
     }
 
     @Transactional
     public void visitUrlDocument(UrlDocumentDomainObject document) {
         UrlDocContent reference = new UrlDocContent();
-        DocVersion docVersion = docVersionDao.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
         reference.setDocVersion(docVersion);
         reference.setUrlTarget("");
@@ -50,9 +49,9 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         reference.setUrlFrameName("");
         reference.setUrl(document.getUrl());
 
-        DocDao dao = services.getManagedBean(DocDao.class);
+        DocRepository repository = services.getManagedBean(DocRepository.class);
 
-        dao.saveUrlReference(reference);
+        repository.saveUrlReference(reference);
     }
 
     @Transactional

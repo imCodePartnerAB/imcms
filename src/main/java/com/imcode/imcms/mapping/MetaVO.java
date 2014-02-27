@@ -16,7 +16,7 @@ import java.util.*;
  * <p/>
  * Shared by all versions of the same document.
  */
-public class Meta implements Serializable, Cloneable {
+public class MetaVO implements Serializable, Cloneable {
 
     /**
      * Document show setting for disabled language.
@@ -83,9 +83,9 @@ public class Meta implements Serializable, Cloneable {
 
 
     @Override
-    public Meta clone() {
+    public MetaVO clone() {
         try {
-            Meta clone = (Meta) super.clone();
+            MetaVO clone = (MetaVO) super.clone();
 
             clone.disabledLanguageShowSetting = disabledLanguageShowSetting;
             clone.properties = new HashMap<>(properties);

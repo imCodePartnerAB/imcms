@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.orm.DocVersion;
-import com.imcode.imcms.mapping.orm.HtmlDocContent;
-import com.imcode.imcms.mapping.orm.UrlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -36,19 +36,19 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction   
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
-        DocVersion docVersion = docVersionDao.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
         HtmlDocContent htmlReference = new HtmlDocContent();
 
         htmlReference.setHtml(document.getHtml());
         htmlReference.setDocVersion(docVersion);
 
-        docDao.deleteHtmlReference(document.getRef());
-        docDao.saveHtmlReference(htmlReference);
+        docRepository.deleteHtmlReference(document.getRef());
+        docRepository.saveHtmlReference(htmlReference);
     }
 
     // runs inside transaction   
     public void visitUrlDocument(UrlDocumentDomainObject document) {
-        DocVersion docVersion = docVersionDao.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
         UrlDocContent reference = new UrlDocContent();
 
         reference.setDocVersion(docVersion);
@@ -59,8 +59,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         reference.setUrlLanguagePrefix("");
         reference.setUrlFrameName("");
 
-        docDao.deleteUrlReference(document.getRef());
-        docDao.saveUrlReference(reference);
+        docRepository.deleteUrlReference(document.getRef());
+        docRepository.saveUrlReference(reference);
     }
 
     // runs inside transaction 

@@ -1,17 +1,16 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.mapping.dao.DocCommonContentDao;
-import com.imcode.imcms.mapping.dao.DocMetaDao;
-import com.imcode.imcms.mapping.dao.DocVersionDao;
-import com.imcode.imcms.mapping.dao.DocDao;
-import com.imcode.imcms.mapping.orm.DocCommonContent;
-import com.imcode.imcms.mapping.orm.DocMeta;
+import com.imcode.imcms.mapping.jpa.doc.DocRepository;
+import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
+import com.imcode.imcms.mapping.jpa.doc.Meta;
+import com.imcode.imcms.mapping.jpa.doc.MetaRepository;
+import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
+import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.*;
 import imcode.server.user.RoleId;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -31,16 +30,16 @@ public class DocumentLoader {
     public final static int PERM_CREATE_DOCUMENT = 8;
 
     @Inject
-    private DocDao metaDao;
+    private DocRepository docRepository;
 
     @Inject
-    private DocVersionDao documentVersionDao;
+    private DocVersionRepository docVersionRepository;
 
     @Inject
-    private DocMetaDao docMetaDao;
+    private MetaRepository metaRepository;
 
     @Inject
-    DocCommonContentDao docCommonContentDao;
+    private CommonContentRepository commonContentRepository;
 
     /**
      * Initializes document's fields.
@@ -55,35 +54,35 @@ public class DocumentLoader {
      * @return loaded meta of null if meta with given id does not exists.
      */
     //fixme: alias
-    public Meta loadMeta(int docId) {
-        DocMeta ormMeta = docMetaDao.findOne(docId);
+    public MetaVO loadMeta(int docId) {
+        Meta ormMeta = metaRepository.findOne(docId);
 
         if (ormMeta == null) return null;
 
-        Meta meta = OrmToApi.toApi(ormMeta);
+        MetaVO metaVO = EntityConverter.toVO(ormMeta);
 
-        if (meta != null) {
-            meta.setActualModifiedDatetime(meta.getModifiedDatetime());
+        if (metaVO != null) {
+            metaVO.setActualModifiedDatetime(metaVO.getModifiedDatetime());
 
             Document.PublicationStatus publicationStatus = publicationStatusFromInt(ormMeta.getPublicationStatusInt());
-            meta.setPublicationStatus(publicationStatus);
+            metaVO.setPublicationStatus(publicationStatus);
 
-            initRoleIdToPermissionSetIdMap(meta, ormMeta);
-            initDocumentsPermissionSets(meta, ormMeta);
-            initDocumentsPermissionSetsForNew(meta, ormMeta);
+            initRoleIdToPermissionSetIdMap(metaVO, ormMeta);
+            initDocumentsPermissionSets(metaVO, ormMeta);
+            initDocumentsPermissionSetsForNew(metaVO, ormMeta);
         }
 
-        return meta;
+        return metaVO;
     }
 
     /**
      * Loads and initializes document's content.
      */
     public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
-        DocCommonContent ormAppearance = docCommonContentDao.findByDocIdAndDocLanguageCode(document.getId(), document.getLanguage().getCode());
-        DocumentCommonContent appearance = ormAppearance != null
-                ? OrmToApi.toApi(ormAppearance)
-                : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build();
+        CommonContent ormAppearance = commonContentRepository.findByDocIdAndDocLanguageCode(document.getId(), document.getLanguage().getCode());
+        CommonContentVO appearance = ormAppearance != null
+                ? EntityConverter.toVO(ormAppearance)
+                : CommonContentVO.builder().headline("").menuImageURL("").menuText("").build();
 
         document.setCommonContent(appearance);
         document.accept(documentInitializingVisitor);
@@ -103,7 +102,7 @@ public class DocumentLoader {
     }
 
     // Moved from  DocumentInitializer.initDocuments
-    private void initRoleIdToPermissionSetIdMap(Meta meta, DocMeta ormMeta) {
+    private void initRoleIdToPermissionSetIdMap(MetaVO metaVO, Meta ormMeta) {
         RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
                 new RoleIdToDocumentPermissionSetTypeMappings();
 
@@ -113,28 +112,28 @@ public class DocumentLoader {
                     DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
         }
 
-        meta.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);
+        metaVO.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);
     }
 
-    private void initDocumentsPermissionSets(Meta meta, DocMeta ormMeta) {
+    private void initDocumentsPermissionSets(MetaVO metaVO, Meta ormMeta) {
         DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
                 ormMeta.getPermissionSetBitsMap(), ormMeta.getPermisionSetEx());
 
-        meta.setPermissionSets(permissionSets);
+        metaVO.setPermissionSets(permissionSets);
     }
 
 
-    private void initDocumentsPermissionSetsForNew(Meta meta, DocMeta ormMeta) {
+    private void initDocumentsPermissionSetsForNew(MetaVO metaVO, Meta ormMeta) {
         DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
                 ormMeta.getPermissionSetBitsForNewMap(), ormMeta.getPermisionSetExForNew());
 
-        meta.setPermissionSetsForNew(permissionSets);
+        metaVO.setPermissionSetsForNew(permissionSets);
     }
 
 
     private DocumentPermissionSets createDocumentsPermissionSets(
             Map<Integer, Integer> permissionSetBitsMap,
-            Set<DocMeta.PermisionSetEx> permissionSetEx) {
+            Set<Meta.PermisionSetEx> permissionSetEx) {
 
         DocumentPermissionSets permissionSets = new DocumentPermissionSets();
 
@@ -148,7 +147,7 @@ public class DocumentLoader {
             }
         }
 
-        for (DocMeta.PermisionSetEx ex : permissionSetEx) {
+        for (Meta.PermisionSetEx ex : permissionSetEx) {
             Integer setId = ex.getSetId();
             DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
 
@@ -175,12 +174,36 @@ public class DocumentLoader {
     }
 
 
-    public DocDao getMetaDao() {
-        return metaDao;
+    public DocRepository getDocRepository() {
+        return docRepository;
     }
 
-    public void setMetaDao(DocDao metaDao) {
-        this.metaDao = metaDao;
+    public void setDocRepository(DocRepository docRepository) {
+        this.docRepository = docRepository;
+    }
+
+    public DocVersionRepository getDocVersionRepository() {
+        return docVersionRepository;
+    }
+
+    public void setDocVersionRepository(DocVersionRepository docVersionRepository) {
+        this.docVersionRepository = docVersionRepository;
+    }
+
+    public MetaRepository getMetaRepository() {
+        return metaRepository;
+    }
+
+    public void setMetaRepository(MetaRepository metaRepository) {
+        this.metaRepository = metaRepository;
+    }
+
+    public CommonContentRepository getCommonContentRepository() {
+        return commonContentRepository;
+    }
+
+    public void setCommonContentRepository(CommonContentRepository commonContentRepository) {
+        this.commonContentRepository = commonContentRepository;
     }
 
     public DocumentInitializingVisitor getDocumentInitializingVisitor() {
@@ -189,13 +212,5 @@ public class DocumentLoader {
 
     public void setDocumentInitializingVisitor(DocumentInitializingVisitor documentInitializingVisitor) {
         this.documentInitializingVisitor = documentInitializingVisitor;
-    }
-
-    public DocVersionDao getDocumentVersionDao() {
-        return documentVersionDao;
-    }
-
-    public void setDocumentVersionDao(DocVersionDao documentVersionDao) {
-        this.documentVersionDao = documentVersionDao;
     }
 }

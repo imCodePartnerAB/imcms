@@ -2,14 +2,13 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.util.CompositeList;
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
 
 @Deprecated
 public class FragmentingDocumentGetter extends DocumentGetterWrapper {

@@ -2,19 +2,23 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.*;
-import com.imcode.imcms.mapping.dao.*;
-import com.imcode.imcms.mapping.orm.*;
+import com.imcode.imcms.mapping.jpa.doc.DocRepository;
+import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Include;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.IncludeRepository;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
 
 @Service
 public class TextDocumentInitializer {
@@ -22,19 +26,19 @@ public class TextDocumentInitializer {
     private DocumentGetter documentGetter;
 
     @Inject
-    private DocDao metaDao;
+    private DocRepository metaRepository;
 
     @Inject
-    private TextDocLoopDao textDocLoopDao;
+    private LoopRepository loopRepository;
 
     @Inject
-    private TextDocMapperService textDocMapper;
+    private TextDocContentMapper textDocMapper;
 
     @Inject
-    private DocVersionDao docVersionDao;
+    private DocVersionRepository docVersionRepository;
 
     @Inject
-    private TextDocIncludeDao textDocIncludeDao;
+    private IncludeRepository includeRepository;
 
     /**
      * Initializes text document.
@@ -66,12 +70,12 @@ public class TextDocumentInitializer {
 
 
     public void initIncludes(TextDocumentDomainObject document) {
-        Collection<TextDocInclude> textDocIncludes = textDocIncludeDao.findByDocId(document.getMeta().getId());
+        Collection<Include> includes = includeRepository.findByDocId(document.getMeta().getId());
 
         Map<Integer, Integer> includesMap = new HashMap<>();
 
-        for (TextDocInclude textDocInclude : textDocIncludes) {
-            includesMap.put(textDocInclude.getNo(), textDocInclude.getIncludedDocumentId());
+        for (Include include : includes) {
+            includesMap.put(include.getNo(), include.getIncludedDocumentId());
         }
 
         document.setIncludesMap(includesMap);
@@ -131,24 +135,24 @@ public class TextDocumentInitializer {
      */
     public void initContentLoops(TextDocumentDomainObject document) {
         DocRef docRef = document.getRef();
-        DocVersion docVersion = docVersionDao.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
 
-        List<TextDocLoop> loops = textDocLoopDao.findByDocVersion(docVersion);
+        List<com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop> loops = loopRepository.findByDocVersion(docVersion);
         Map<Integer, Loop> loopsMap = new HashMap<>();
 
-        for (TextDocLoop loop : loops) {
-            loopsMap.put(loop.getNo(), OrmToApi.toApi(loop));
+        for (com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop : loops) {
+            loopsMap.put(loop.getNo(), EntityConverter.toApi(loop));
         }
 
         document.setLoops(loopsMap);
     }
 
-    public DocDao getMetaDao() {
-        return metaDao;
+    public DocRepository getMetaRepository() {
+        return metaRepository;
     }
 
-    public void setMetaDao(DocDao metaDao) {
-        this.metaDao = metaDao;
+    public void setMetaRepository(DocRepository metaRepository) {
+        this.metaRepository = metaRepository;
     }
 
 

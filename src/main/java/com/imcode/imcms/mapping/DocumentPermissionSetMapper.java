@@ -1,19 +1,13 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.orm.DocMeta;
+import com.imcode.imcms.mapping.jpa.doc.Meta;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Copies documents permissions to meta.
@@ -62,8 +56,8 @@ public class DocumentPermissionSetMapper {
         }
 
         //fixme:
-        DocMeta meta = null; //document.getMeta();
-        Set<DocMeta.PermisionSetEx> permisionSetEx = forNewDocuments
+        Meta meta = null; //document.getMeta();
+        Set<Meta.PermisionSetEx> permisionSetEx = forNewDocuments
                 ? meta.getPermisionSetExForNew()
                 : meta.getPermisionSetEx();
 
@@ -78,8 +72,8 @@ public class DocumentPermissionSetMapper {
         // -> sqlDeleteFromExtendedPermissionsTable db command block        
         //TODO: Optimize - currently in prototype state: removes permisionSetEx 
         // for current setId
-        Set<DocMeta.PermisionSetEx> filteredPermissionSetEx = new HashSet<>();
-        for (DocMeta.PermisionSetEx setEx : permisionSetEx) {
+        Set<Meta.PermisionSetEx> filteredPermissionSetEx = new HashSet<>();
+        for (Meta.PermisionSetEx setEx : permisionSetEx) {
             if (!setEx.getSetId().equals(setId)) {
                 filteredPermissionSetEx.add(setEx);
             }
@@ -122,13 +116,13 @@ public class DocumentPermissionSetMapper {
 
     private void sqlSaveAllowedTemplateGroups(DocumentDomainObject document,
                                               TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
-                                              boolean forNewDocuments, Set<DocMeta.PermisionSetEx> permisionSetEx) {
+                                              boolean forNewDocuments, Set<Meta.PermisionSetEx> permisionSetEx) {
 
         Set<Integer> allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds();
         Integer setId = textDocumentPermissionSet.getType().getId();
 
         for (Integer allowedTemplateGroupId : allowedTemplateGroupIds) {
-            DocMeta.PermisionSetEx setEx = new DocMeta.PermisionSetEx();
+            Meta.PermisionSetEx setEx = new Meta.PermisionSetEx();
 
             setEx.setSetId(setId);
             setEx.setPermissionId(TextDocumentPermissionSetDomainObject.EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID);
@@ -171,12 +165,12 @@ public class DocumentPermissionSetMapper {
 
     private void sqlSaveAllowedDocumentTypes(DocumentDomainObject document,
                                              TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
-                                             boolean forNewDocuments, Set<DocMeta.PermisionSetEx> permisionSetEx) {
+                                             boolean forNewDocuments, Set<Meta.PermisionSetEx> permisionSetEx) {
         Set<Integer> allowedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds();
         Integer setId = textDocumentPermissionSet.getType().getId();
 
         for (Integer allowedDocumentTypeId : allowedDocumentTypeIds) {
-            DocMeta.PermisionSetEx setEx = new DocMeta.PermisionSetEx();
+            Meta.PermisionSetEx setEx = new Meta.PermisionSetEx();
 
             setEx.setSetId(setId);
             setEx.setPermissionId(DocumentLoader.PERM_CREATE_DOCUMENT);

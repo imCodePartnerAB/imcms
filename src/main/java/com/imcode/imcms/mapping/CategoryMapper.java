@@ -1,10 +1,10 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
-import com.imcode.imcms.mapping.dao.DocCategoryDao;
-import com.imcode.imcms.mapping.dao.DocCategoryTypeDao;
-import com.imcode.imcms.mapping.orm.DocCategory;
-import com.imcode.imcms.mapping.orm.DocCategoryType;
+import com.imcode.imcms.mapping.jpa.doc.Category;
+import com.imcode.imcms.mapping.jpa.doc.CategoryRepository;
+import com.imcode.imcms.mapping.jpa.doc.CategoryType;
+import com.imcode.imcms.mapping.jpa.doc.CategoryTypeRepository;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
@@ -26,19 +26,19 @@ public class CategoryMapper {
     private int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
 
     @Inject
-    private DocCategoryDao docCategoryDao;
+    private CategoryRepository categoryRepository;
 
     @Inject
-    private DocCategoryTypeDao docCategoryTypeDao;
+    private CategoryTypeRepository categoryTypeRepository;
 
 
     public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
-        DocCategoryType docCategoryType = docCategoryTypeDao.findOne(categoryType.getId());
-        List<DocCategory> docCategoryList = docCategoryDao.findByType(docCategoryType);
-        List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(docCategoryList.size());
+        CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
+        List<Category> categoryList = categoryRepository.findByType(docCategoryType);
+        List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(categoryList.size());
 
-        for (DocCategory docCategory : docCategoryList) {
-            categoryDomainObjectList.add(OrmToApi.toApi(docCategory));
+        for (Category category : categoryList) {
+            categoryDomainObjectList.add(EntityConverter.toVO(category));
         }
 
         return categoryDomainObjectList.toArray(new CategoryDomainObject[categoryDomainObjectList.size()]);
@@ -46,15 +46,15 @@ public class CategoryMapper {
 
 
     public boolean isUniqueCategoryTypeName(String categoryTypeName) {
-        return docCategoryTypeDao.findByNameIgnoreCase(categoryTypeName) == null;
+        return categoryTypeRepository.findByNameIgnoreCase(categoryTypeName) == null;
     }
 
     public CategoryTypeDomainObject[] getAllCategoryTypes() {
-        List<DocCategoryType> docCategoryTypeList = docCategoryTypeDao.findAll();
-        List<CategoryTypeDomainObject> categoryTypeDomainObjectList = new ArrayList<>(docCategoryTypeList.size());
+        List<CategoryType> categoryTypeList = categoryTypeRepository.findAll();
+        List<CategoryTypeDomainObject> categoryTypeDomainObjectList = new ArrayList<>(categoryTypeList.size());
 
-        for (DocCategoryType docCategoryType : docCategoryTypeList) {
-            categoryTypeDomainObjectList.add(OrmToApi.toApi(docCategoryType));
+        for (CategoryType categoryType : categoryTypeList) {
+            categoryTypeDomainObjectList.add(EntityConverter.toVO(categoryType));
         }
 
         return categoryTypeDomainObjectList.toArray(new CategoryTypeDomainObject[categoryTypeDomainObjectList.size()]);
@@ -62,73 +62,73 @@ public class CategoryMapper {
 
 
     public CategoryDomainObject getCategoryByTypeAndName(CategoryTypeDomainObject categoryType, String categoryName) {
-        DocCategoryType docCategoryType = docCategoryTypeDao.findOne(categoryType.getId());
-        DocCategory docCategory = docCategoryDao.findByNameAndType(categoryName, docCategoryType);
+        CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
+        Category category = categoryRepository.findByNameAndType(categoryName, docCategoryType);
 
-        return docCategory == null ? null : OrmToApi.toApi(docCategory);
+        return category == null ? null : EntityConverter.toVO(category);
     }
 
 
     public CategoryDomainObject getCategoryById(int categoryId) {
-        DocCategory docCategory = docCategoryDao.findOne(categoryId);
+        Category category = categoryRepository.findOne(categoryId);
 
-        return docCategory == null ? null : OrmToApi.toApi(docCategory);
+        return category == null ? null : EntityConverter.toVO(category);
     }
 
     public CategoryTypeDomainObject getCategoryTypeByName(String categoryTypeName) {
-        DocCategoryType docCategoryType = docCategoryTypeDao.findByNameIgnoreCase(categoryTypeName);
+        CategoryType categoryType = categoryTypeRepository.findByNameIgnoreCase(categoryTypeName);
 
-        return docCategoryType == null ? null : OrmToApi.toApi(docCategoryType);
+        return categoryType == null ? null : EntityConverter.toVO(categoryType);
     }
 
     public CategoryTypeDomainObject getCategoryTypeById(int categoryTypeId) {
-        DocCategoryType docCategoryType = docCategoryTypeDao.findOne(categoryTypeId);
+        CategoryType categoryType = categoryTypeRepository.findOne(categoryTypeId);
 
-        return docCategoryType == null ? null : OrmToApi.toApi(docCategoryType);
+        return categoryType == null ? null : EntityConverter.toVO(categoryType);
     }
 
 
     public void deleteCategoryTypeFromDb(CategoryTypeDomainObject categoryType) {
-        DocCategoryType docCategoryType = docCategoryTypeDao.findOne(categoryType.getId());
+        CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
 
-        if (docCategoryType != null) docCategoryTypeDao.delete(docCategoryType);
+        if (docCategoryType != null) categoryTypeRepository.delete(docCategoryType);
     }
 
     public CategoryTypeDomainObject addCategoryTypeToDb(CategoryTypeDomainObject categoryType) {
-        DocCategoryType docCategoryType = OrmToApi.toOrm(categoryType);
+        CategoryType docCategoryType = EntityConverter.fromVO(categoryType);
 
         docCategoryType.setId(null);
 
-        return OrmToApi.toApi(docCategoryTypeDao.saveAndFlush(docCategoryType));
+        return EntityConverter.toVO(categoryTypeRepository.saveAndFlush(docCategoryType));
     }
 
     public void updateCategoryType(CategoryTypeDomainObject categoryType) {
-        docCategoryTypeDao.saveAndFlush(OrmToApi.toOrm(categoryType));
+        categoryTypeRepository.saveAndFlush(EntityConverter.fromVO(categoryType));
     }
 
     public void saveCategoryType(CategoryTypeDomainObject categoryType) {
-        docCategoryTypeDao.saveAndFlush(OrmToApi.toOrm(categoryType));
+        categoryTypeRepository.saveAndFlush(EntityConverter.fromVO(categoryType));
     }
 
     public CategoryDomainObject addCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
-        return OrmToApi.toApi(docCategoryDao.saveAndFlush(OrmToApi.toOrm(category)));
+        return EntityConverter.toVO(categoryRepository.saveAndFlush(EntityConverter.fromVO(category)));
     }
 
     public void updateCategory(CategoryDomainObject category) {
-        docCategoryDao.save(OrmToApi.toOrm(category));
+        categoryRepository.save(EntityConverter.fromVO(category));
     }
 
     public void deleteCategoryFromDb(CategoryDomainObject category) {
-        docCategoryDao.delete(category.getId());
+        categoryRepository.delete(category.getId());
     }
 
     public String[] getAllDocumentsOfOneCategory(CategoryDomainObject category) {
-        return docCategoryDao.findCategoryDocIds(category.getId());
+        return categoryRepository.findCategoryDocIds(category.getId());
     }
 
 
     public void deleteOneCategoryFromDocument(DocumentDomainObject document, CategoryDomainObject category) {
-        docCategoryDao.deleteByDocIdAndCategoryId(document.getId(), category.getId());
+        categoryRepository.deleteByDocIdAndCategoryId(document.getId(), category.getId());
     }
 
 
@@ -150,7 +150,7 @@ public class CategoryMapper {
 
     public CategoryDomainObject saveCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
         if (category.getId() == 0) {
-            DocCategory docCategory = docCategoryDao.findByNameAndType(category.getName(), OrmToApi.toOrm(category.getType()));
+            Category docCategory = categoryRepository.findByNameAndType(category.getName(), EntityConverter.fromVO(category.getType()));
 
             if (docCategory != null) {
                 throw new CategoryAlreadyExistsException("A category with name \"" + category.getName()
@@ -160,26 +160,26 @@ public class CategoryMapper {
             }
         }
 
-        return OrmToApi.toApi(docCategoryDao.saveAndFlush(OrmToApi.toOrm(category)));
+        return EntityConverter.toVO(categoryRepository.saveAndFlush(EntityConverter.fromVO(category)));
     }
 
     public Set<CategoryDomainObject> getCategories(Collection<Integer> categoryIds) {
-        List<DocCategory> docCategoryList = docCategoryDao.findAll(categoryIds);
+        List<Category> categoryList = categoryRepository.findAll(categoryIds);
         Set<CategoryDomainObject> categoryDomainObjectSet = new HashSet<>();
 
-        for (DocCategory docCategory : docCategoryList) {
-            categoryDomainObjectSet.add(OrmToApi.toApi(docCategory));
+        for (Category category : categoryList) {
+            categoryDomainObjectSet.add(EntityConverter.toVO(category));
         }
 
         return categoryDomainObjectSet;
     }
 
     public List<CategoryDomainObject> getAllCategories() {
-        List<DocCategory> docCategoryList = docCategoryDao.findAll();
-        List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(docCategoryList.size());
+        List<Category> categoryList = categoryRepository.findAll();
+        List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(categoryList.size());
 
-        for (DocCategory docCategory : docCategoryList) {
-            categoryDomainObjectList.add(OrmToApi.toApi(docCategory));
+        for (Category category : categoryList) {
+            categoryDomainObjectList.add(EntityConverter.toVO(category));
         }
 
         return categoryDomainObjectList;

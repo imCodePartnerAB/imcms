@@ -1,14 +1,14 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.mapping;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
-import com.imcode.imcms.mapping.OrmToApi;
-import com.imcode.imcms.mapping.dao.DocLanguageDao;
-import com.imcode.imcms.mapping.dao.SystemPropertyDao;
-import com.imcode.imcms.mapping.orm.DocLanguage;
-import com.imcode.imcms.mapping.orm.SystemProperty;
+import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.mapping.jpa.SystemProperty;
+import com.imcode.imcms.mapping.jpa.SystemPropertyRepository;
+import com.imcode.imcms.mapping.jpa.doc.Language;
+import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,30 +17,30 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
 
-// todo: add security
+// todo: add security checks
 @Service
-public class DocumentLanguageService {
+public class DocumentLanguageMapper {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
-    private DocLanguageDao languageDao;
+    private LanguageRepository languageRepository;
 
     @Inject
-    private SystemPropertyDao systemDao;
+    private SystemPropertyRepository systemRepository;
 
     public List<DocumentLanguage> getAll() {
-        return Lists.transform(languageDao.findAll(), new Function<DocLanguage, DocumentLanguage>() {
-            public DocumentLanguage apply(DocLanguage input) {
-                return OrmToApi.toApi(input);
+        return Lists.transform(languageRepository.findAll(), new Function<Language, DocumentLanguage>() {
+            public DocumentLanguage apply(Language input) {
+                return EntityConverter.toApi(input);
             }
         });
     }
 
     public DocumentLanguage getByCode(String code) {
-        DocLanguage docLanguage = languageDao.findByCode(code);
+        Language language = languageRepository.findByCode(code);
 
-        return docLanguage == null ? null : OrmToApi.toApi(docLanguage);
+        return language == null ? null : EntityConverter.toApi(language);
     }
 
     public boolean isDefault(DocumentLanguage language) {
@@ -48,7 +48,7 @@ public class DocumentLanguageService {
     }
 
     public DocumentLanguage getDefault() {
-        SystemProperty property = systemDao.findByName("DefaultLanguageId");
+        SystemProperty property = systemRepository.findByName("DefaultLanguageId");
 
         if (property == null) {
             String message = "Configuration error. DefaultLanguageId property is not set.";
@@ -64,7 +64,7 @@ public class DocumentLanguageService {
             throw new IllegalStateException(message);
         }
 
-        DocLanguage language = languageDao.findOne(languageId);
+        Language language = languageRepository.findOne(languageId);
 
         if (language == null) {
             String message = String.format("Configuration error. Default language (id: %d) can not be found.", languageId);
@@ -72,6 +72,6 @@ public class DocumentLanguageService {
             throw new IllegalStateException(message);
         }
 
-        return OrmToApi.toApi(language);
+        return EntityConverter.toApi(language);
     }
 }

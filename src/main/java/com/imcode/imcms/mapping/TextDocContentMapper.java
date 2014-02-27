@@ -1,11 +1,13 @@
 package com.imcode.imcms.mapping;
 
 import com.google.common.base.Optional;
-import com.imcode.imcms.api.*;
+import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.*;
-import com.imcode.imcms.mapping.dao.*;
-import com.imcode.imcms.mapping.orm.DocVersion;
-import com.imcode.imcms.mapping.orm.TextDocMenu;
+import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
+import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import org.apache.commons.lang.NotImplementedException;
@@ -23,31 +25,31 @@ import java.util.Map;
 @Transactional
 // fixme: implment
 // fixme: images: TextDocumentUtils.initImagesSources
-public class TextDocMapperService {
+public class TextDocContentMapper {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Inject
-    private DocVersionDao versionDao;
+    private DocVersionRepository docVersionRepository;
 
     @Inject
-    private TextDocTextDao textDao;
+    private TextRepository textRepository;
 
     @Inject
-    private TextDocImageDao imageDao;
+    private ImageRepository imageRepository;
 
     @Inject
-    private TextDocMenuDao menuDao;
+    private MenuRepository menuRepository;
 
     @Inject
-    TextDocTemplateNamesDao templateNamesDao;
+    TemplateNamesRepository templateNamesRepository;
 
     @Inject
-    private TextDocLoopDao loopDao;
+    private LoopRepository loopRepository;
 
     @Inject
-    private DocLanguageDao languageDao;
+    private LanguageRepository languageRepository;
 
     //fixme: init to doc mapper
     private DocumentGetter menuItemDocumentGetter;
@@ -104,12 +106,12 @@ public class TextDocMapperService {
 
 
     public Map<Integer, MenuDomainObject> getMenus(DocVersionRef docVersionRef) {
-        DocVersion docVersion = versionDao.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
-        List<TextDocMenu> textDocMenus = menuDao.getByDocVersion(docVersion);
+        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        List<Menu> textDocMenus = menuRepository.getByDocVersion(docVersion);
         Map<Integer, MenuDomainObject> menus = new HashMap<>();
 
-        for (TextDocMenu textDocMenu : textDocMenus) {
-            menus.put(textDocMenu.getNo(), initMenuItems(OrmToApi.toApi(textDocMenu)));
+        for (Menu menu : textDocMenus) {
+            menus.put(menu.getNo(), initMenuItems(EntityConverter.toVO(menu)));
         }
 
         return menus;
@@ -128,7 +130,7 @@ public class TextDocMapperService {
     }
 
     public TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
-        return OrmToApi.toApi(templateNamesDao.findOne(docId));
+        return EntityConverter.toVO(templateNamesRepository.findOne(docId));
     }
 
     // get include

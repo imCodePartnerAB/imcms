@@ -4,15 +4,16 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.mapping.container.*;
-import com.imcode.imcms.mapping.dao.NativeQueriesDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.mapping.container.*;
+import com.imcode.imcms.mapping.jpa.doc.DocNativeQueries;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
@@ -59,7 +60,7 @@ public class DocumentMapper implements DocumentGetter {
     private DocLoaderCachingProxy documentLoaderCachingProxy;
 
     @Inject
-    private NativeQueriesDao nativeQueriesDao;
+    private DocNativeQueries docNativeQueries;
 
     @Inject
     private DocumentLoader documentLoader;
@@ -71,7 +72,7 @@ public class DocumentMapper implements DocumentGetter {
     private CategoryMapper categoryMapper;
 
     @Inject
-    private DocMapperService docMapperService;
+    private DocContentMapper docMapperService;
 
     public DocumentMapper() {
     }
@@ -89,13 +90,13 @@ public class DocumentMapper implements DocumentGetter {
 
         documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
 
-        nativeQueriesDao = services.getManagedBean(NativeQueriesDao.class);
+        docNativeQueries = services.getManagedBean(DocNativeQueries.class);
         categoryMapper = services.getManagedBean(CategoryMapper.class);
 
         documentSaver = services.getManagedBean(DocumentSaver.class);
         documentSaver.setDocumentMapper(this);
 
-        docMapperService = services.getManagedBean(DocMapperService.class);
+        docMapperService = services.getManagedBean(DocContentMapper.class);
     }
 
     public void init(ImcmsServices services, Database database) {
@@ -217,15 +218,15 @@ public class DocumentMapper implements DocumentGetter {
         makeDocumentLookNew(document.getMeta(), user);
     }
 
-    void makeDocumentLookNew(Meta meta, UserDomainObject user) {
+    void makeDocumentLookNew(MetaVO metaVO, UserDomainObject user) {
         Date now = new Date();
 
-        meta.setCreatorId(user.getId());
-        setCreatedAndModifiedDatetimes(meta, now);
-        meta.setPublicationStartDatetime(now);
-        meta.setArchivedDatetime(null);
-        meta.setPublicationEndDatetime(null);
-        meta.setPublicationStatus(Document.PublicationStatus.NEW);
+        metaVO.setCreatorId(user.getId());
+        setCreatedAndModifiedDatetimes(metaVO, now);
+        metaVO.setPublicationStartDatetime(now);
+        metaVO.setArchivedDatetime(null);
+        metaVO.setPublicationEndDatetime(null);
+        metaVO.setPublicationStatus(Document.PublicationStatus.NEW);
     }
 
     public DocumentReference getDocumentReference(DocumentDomainObject document) {
@@ -282,7 +283,7 @@ public class DocumentMapper implements DocumentGetter {
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances,
+    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, CommonContentVO> appearances,
                                                               EnumSet<SaveOpts> saveOpts,
                                                               UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
@@ -319,7 +320,7 @@ public class DocumentMapper implements DocumentGetter {
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances, UserDomainObject user)
+    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, CommonContentVO> appearances, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         return saveNewDocument(doc, appearances, EnumSet.noneOf(SaveOpts.class), user);
@@ -340,7 +341,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> appearances, UserDomainObject user)
+    public void saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, CommonContentVO> appearances, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
@@ -434,11 +435,11 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<Integer[]> getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
-        return nativeQueriesDao.getParentDocumentAndMenuIdsForDocument(document.getId());
+        return docNativeQueries.getParentDocumentAndMenuIdsForDocument(document.getId());
     }
 
     public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {
-        List<String[]> result = nativeQueriesDao.getAllMimeTypesWithDescriptions(user.getLanguageIso639_2());
+        List<String[]> result = docNativeQueries.getAllMimeTypesWithDescriptions(user.getLanguageIso639_2());
 
         String[][] mimeTypes = new String[result.size()][];
 
@@ -450,7 +451,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public String[] getAllMimeTypes() {
-        return nativeQueriesDao.getAllMimeTypes().toArray(new String[]{});
+        return docNativeQueries.getAllMimeTypes().toArray(new String[]{});
     }
 
     public void deleteDocument(int docId, UserDomainObject user) {
@@ -464,7 +465,7 @@ public class DocumentMapper implements DocumentGetter {
             imcmsServices.getImageCacheMapper().deleteDocumentImagesCache(document.getId(), textDoc.getImages());
         }
 
-        documentSaver.getDocDao().deleteDocument(document.getId());
+        documentSaver.getDocRepository().deleteDocument(document.getId());
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
 
@@ -472,11 +473,11 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public Map<Integer, String> getAllDocumentTypeIdsAndNamesInUsersLanguage(UserDomainObject user) {
-        return nativeQueriesDao.getAllDocumentTypeIdsAndNamesInUsersLanguage(user.getLanguageIso639_2());
+        return docNativeQueries.getAllDocumentTypeIdsAndNamesInUsersLanguage(user.getLanguageIso639_2());
     }
 
     public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument(DocumentDomainObject document) {
-        List<Integer[]> rows = nativeQueriesDao.getDocumentMenuPairsContainingDocument(document.getId());
+        List<Integer[]> rows = docNativeQueries.getDocumentMenuPairsContainingDocument(document.getId());
 
         TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[rows.size()];
 
@@ -494,7 +495,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<Integer> getParentDocsIds(DocumentDomainObject doc) {
-        return nativeQueriesDao.getParentDocsIds(doc.getId());
+        return docNativeQueries.getParentDocsIds(doc.getId());
     }
 
     public Iterator<DocumentDomainObject> getDocumentsIterator(IntRange idRange) {
@@ -503,7 +504,7 @@ public class DocumentMapper implements DocumentGetter {
 
     // TODO: refactor
     private int[] getDocumentIds(IntRange idRange) {
-        List<Integer> ids = documentSaver.getDocDao().getDocumentIdsInRange(
+        List<Integer> ids = documentSaver.getDocRepository().getDocumentIdsInRange(
                 idRange.getMinimumInteger(),
                 idRange.getMaximumInteger());
 
@@ -513,21 +514,21 @@ public class DocumentMapper implements DocumentGetter {
 
 
     public List<Integer> getAllDocumentIds() {
-        return documentSaver.getDocDao().getAllDocumentIds();
+        return documentSaver.getDocRepository().getAllDocumentIds();
     }
 
     /**
      * @return documents id range or null if there are no documents.
      */
     public IntRange getDocumentIdRange() {
-        Integer[] minMaxPair = documentSaver.getDocDao().getMinMaxDocumentIds();
+        Integer[] minMaxPair = documentSaver.getDocRepository().getMinMaxDocumentIds();
 
         return minMaxPair[0] == null ? null : new IntRange(minMaxPair[0], minMaxPair[1]);
     }
 
     // TODO: refactor
     public Set<String> getAllDocumentAlias() {
-        List<String> aliasesList = documentLoader.getMetaDao().getAllAliases();
+        List<String> aliasesList = documentLoader.getDocRepository().getAllAliases();
         Set<String> aliasesSet = new HashSet<>();
         Transformer transformer = new Transformer() {
             public String transform(Object alias) {
@@ -587,11 +588,11 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public int getLowestDocumentId() {
-        return documentSaver.getDocDao().getMaxDocumentId();
+        return documentSaver.getDocRepository().getMaxDocumentId();
     }
 
     public int getHighestDocumentId() {
-        return documentSaver.getDocDao().getMinDocumentId();
+        return documentSaver.getDocRepository().getMinDocumentId();
     }
 
 
@@ -632,24 +633,24 @@ public class DocumentMapper implements DocumentGetter {
         // todo: put into resource file.
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
-        Meta meta = documentLoader.loadMeta(docVersionRef.getDocId());
-        Map<DocumentLanguage, Optional<DocumentCommonContent>> dccMap = docMapperService.getCommonContents(docVersionRef.getDocId());
+        MetaVO metaVO = documentLoader.loadMeta(docVersionRef.getDocId());
+        Map<DocumentLanguage, Optional<CommonContentVO>> dccMap = docMapperService.getCommonContents(docVersionRef.getDocId());
         List<DocumentDomainObject> newDocs = new LinkedList<>();
 
-        makeDocumentLookNew(meta, user);
-        meta.setId(null);
-        meta.removeAlis();
+        makeDocumentLookNew(metaVO, user);
+        metaVO.setId(null);
+        metaVO.removeAlis();
 
-        for (Map.Entry<DocumentLanguage, Optional<DocumentCommonContent>> e : dccMap.entrySet()) {
+        for (Map.Entry<DocumentLanguage, Optional<CommonContentVO>> e : dccMap.entrySet()) {
             DocumentLanguage language = e.getKey();
-            Optional<DocumentCommonContent> dccOpt = e.getValue();
+            Optional<CommonContentVO> dccOpt = e.getValue();
 
             if (!dccOpt.isPresent()) continue;
 
             DocumentDomainObject newDoc = getCustomDocument(DocRef.of(docVersionRef, language.getCode())).clone();
-            DocumentCommonContent newDcc = DocumentCommonContent.builder(dccOpt.get()).headline(copyHeadlineSuffix + " " + dccOpt.get().getHeadline()).build();
+            CommonContentVO newDcc = CommonContentVO.builder(dccOpt.get()).headline(copyHeadlineSuffix + " " + dccOpt.get().getHeadline()).build();
 
-            newDoc.setMeta(meta);
+            newDoc.setMeta(metaVO);
             newDoc.setCommonContent(newDcc);
 
             newDocs.add(newDoc);
@@ -670,7 +671,7 @@ public class DocumentMapper implements DocumentGetter {
 
     public List<DocumentDomainObject> getDocumentsWithPermissionsForRole(final RoleDomainObject role) {
         return new AbstractList<DocumentDomainObject>() {
-            private List<Integer> documentIds = nativeQueriesDao.getDocumentsWithPermissionsForRole(role.getId().intValue());
+            private List<Integer> documentIds = docNativeQueries.getDocumentsWithPermissionsForRole(role.getId().intValue());
 
             public DocumentDomainObject get(int index) {
                 return getDocument(documentIds.get(index));
@@ -808,14 +809,14 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * @param meta
+     * @param metaVO
      * @param now
      * @since 6.0
      */
-    void setCreatedAndModifiedDatetimes(Meta meta, Date now) {
-        meta.setCreatedDatetime(now);
-        meta.setModifiedDatetime(now);
-        meta.setActualModifiedDatetime(now);
+    void setCreatedAndModifiedDatetimes(MetaVO metaVO, Date now) {
+        metaVO.setCreatedDatetime(now);
+        metaVO.setModifiedDatetime(now);
+        metaVO.setActualModifiedDatetime(now);
     }
 
 
@@ -964,7 +965,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     //todo: delegate to docMapperService?
-    public Map<DocumentLanguage, Optional<DocumentCommonContent>> getCommonContents(int docId) {
+    public Map<DocumentLanguage, Optional<CommonContentVO>> getCommonContents(int docId) {
         return docMapperService.getCommonContents(docId);
     }
 

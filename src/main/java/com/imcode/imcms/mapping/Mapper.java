@@ -1,12 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.imcode.db.Database;
 import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
@@ -15,6 +8,12 @@ import com.imcode.db.commands.UpdateTableWhereColumnEqualsDatabaseCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.db.handlers.SingleObjectHandler;
+import org.apache.commons.lang.StringUtils;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Mapper<E extends Mapper.MapperObject> {
 
