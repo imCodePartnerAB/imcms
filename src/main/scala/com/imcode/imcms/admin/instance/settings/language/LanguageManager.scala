@@ -32,7 +32,7 @@ class LanguageManager {
         // fixme: use service
         languageDao.findByCode(code) match {
           case null => reload()
-          case vo => editAndSave(vo |> EntityConverter.toApi)
+          case vo => editAndSave(vo |> EntityConverter.fromEntity)
         }
       }
     }

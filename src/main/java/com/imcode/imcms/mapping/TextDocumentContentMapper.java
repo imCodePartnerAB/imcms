@@ -25,7 +25,7 @@ import java.util.Map;
 @Transactional
 // fixme: implment
 // fixme: images: TextDocumentUtils.initImagesSources
-public class TextDocContentMapper {
+public class TextDocumentContentMapper {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -111,7 +111,7 @@ public class TextDocContentMapper {
         Map<Integer, MenuDomainObject> menus = new HashMap<>();
 
         for (Menu menu : textDocMenus) {
-            menus.put(menu.getNo(), initMenuItems(EntityConverter.toVO(menu)));
+            menus.put(menu.getNo(), initMenuItems(EntityConverter.fromEntity(menu)));
         }
 
         return menus;
@@ -130,7 +130,7 @@ public class TextDocContentMapper {
     }
 
     public TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
-        return EntityConverter.toVO(templateNamesRepository.findOne(docId));
+        return EntityConverter.fromEntity(templateNamesRepository.findOne(docId));
     }
 
     // get include

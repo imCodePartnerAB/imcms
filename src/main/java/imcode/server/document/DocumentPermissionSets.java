@@ -9,7 +9,7 @@ import java.io.Serializable;
  *
  * @see DocumentPermissionSetTypeDomainObject
  * @see DocumentDomainObject#getPermissionSets()
- * @see DocumentDomainObject#getPermissionSetsForNewDocuments()
+ * @see DocumentDomainObject#getPermissionSetsForNewDocument()
  */
 public class DocumentPermissionSets implements Serializable, Cloneable {
 

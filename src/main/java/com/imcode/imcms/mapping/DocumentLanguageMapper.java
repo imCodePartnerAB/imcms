@@ -32,7 +32,7 @@ public class DocumentLanguageMapper {
     public List<DocumentLanguage> getAll() {
         return Lists.transform(languageRepository.findAll(), new Function<Language, DocumentLanguage>() {
             public DocumentLanguage apply(Language input) {
-                return EntityConverter.toApi(input);
+                return EntityConverter.fromEntity(input);
             }
         });
     }
@@ -40,7 +40,7 @@ public class DocumentLanguageMapper {
     public DocumentLanguage getByCode(String code) {
         Language language = languageRepository.findByCode(code);
 
-        return language == null ? null : EntityConverter.toApi(language);
+        return language == null ? null : EntityConverter.fromEntity(language);
     }
 
     public boolean isDefault(DocumentLanguage language) {
@@ -72,6 +72,6 @@ public class DocumentLanguageMapper {
             throw new IllegalStateException(message);
         }
 
-        return EntityConverter.toApi(language);
+        return EntityConverter.fromEntity(language);
     }
 }

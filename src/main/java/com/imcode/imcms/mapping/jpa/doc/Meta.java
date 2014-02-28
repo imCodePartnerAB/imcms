@@ -9,7 +9,7 @@ import java.util.*;
  * Shared by all versions of the same document.
  */
 @Entity
-@Table(name = "meta")
+@Table
 public class Meta {
 
     /**
@@ -20,7 +20,7 @@ public class Meta {
      * Mapped to doc_permission_set and new_doc_permission_set
      */
     @Embeddable
-    static public class PermisionSetEx {
+    static public class PermissionSetEx {
 
         @Column(name = "set_id")
         private Integer setId;
@@ -42,7 +42,7 @@ public class Meta {
         @Override
         public boolean equals(Object o) {
             return (this == o) ||
-                    ((o instanceof PermisionSetEx) && (hashCode() == o.hashCode()));
+                    ((o instanceof PermissionSetEx) && (hashCode() == o.hashCode()));
         }
 
         @Override
@@ -183,7 +183,7 @@ public class Meta {
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationEndDatetime;
 
-    // These fields were lazy loaded in previous version:
+    
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "document_properties", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "key_name")
@@ -211,7 +211,7 @@ public class Meta {
      * Permission set id mapped to bits.
      */
     // For processing after load:
-    // permisionId in the table actually is not an 'id' but a bit set value.
+    // permisionId in the table actually is not an item 'id' but a bit set value.
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "set_id")
@@ -237,13 +237,13 @@ public class Meta {
     // For processing after load:
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
-    private Set<PermisionSetEx> permisionSetEx = new HashSet<>();
+    private Set<PermissionSetEx> permissionSetEx = new HashSet<>();
 
 
     // For processing after load:
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "new_doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
-    private Set<PermisionSetEx> permisionSetExForNew = new HashSet<>();
+    private Set<PermissionSetEx> permissionSetExForNew = new HashSet<>();
 
 
     /**
@@ -428,20 +428,20 @@ public class Meta {
         this.permissionSetBitsForNewMap = permissionSetBitsForNew;
     }
 
-    public Set<PermisionSetEx> getPermisionSetEx() {
-        return permisionSetEx;
+    public Set<PermissionSetEx> getPermissionSetEx() {
+        return permissionSetEx;
     }
 
-    public void setPermisionSetEx(Set<PermisionSetEx> permisionSetEx) {
-        this.permisionSetEx = permisionSetEx;
+    public void setPermissionSetEx(Set<PermissionSetEx> permissionSetEx) {
+        this.permissionSetEx = permissionSetEx;
     }
 
-    public Set<PermisionSetEx> getPermisionSetExForNew() {
-        return permisionSetExForNew;
+    public Set<PermissionSetEx> getPermissionSetExForNew() {
+        return permissionSetExForNew;
     }
 
-    public void setPermisionSetExForNew(Set<PermisionSetEx> docPermisionSetExForNew) {
-        this.permisionSetExForNew = docPermisionSetExForNew;
+    public void setPermissionSetExForNew(Set<PermissionSetEx> docPermissionSetExForNew) {
+        this.permissionSetExForNew = docPermissionSetExForNew;
     }
 
     public Set<String> getKeywords() {

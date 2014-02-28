@@ -10,15 +10,14 @@ import java.io.Serializable;
  * @see imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings
  * <p/>
  * Permission set with lower type id (FULL) is most privileged.
- * Any permission defined in a system is automatically included into this set.
+ * Any new permission defined in the system is automatically included into that set.
  * <p/>
  * Permission set with higher type id (NONE) has no privileges at all.
  * This set is always empty.
  * <p/>
  * READ permission set defines permissions only for document viewing.
  * <p/>
- * FULL, READ and NONE sets are fixed - i.e each of them contains
- * predefined unmodifiable set of permissions.
+ * FULL, READ and NONE sets are sealed - i.e each of them contains predefined and unmodifiable permissions.
  * Those sets are shared by all documents in a system.
  * <p/>
  * RESTRICTED_1 and RESTRICTED_2 are sets customizable per document,

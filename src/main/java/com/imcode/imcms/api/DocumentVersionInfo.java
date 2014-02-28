@@ -14,32 +14,33 @@ public class DocumentVersionInfo implements Serializable {
     /**
      * Document's doc id.
      */
-    private int docId;
+    private final int docId;
 
     /**
      * Latest version;
      */
-    private DocumentVersion latestVersion;
+    private final DocumentVersion latestVersion;
 
     /**
      * Working version (version no 0).
      */
-    private DocumentVersion workingVersion;
+    private final DocumentVersion workingVersion;
 
     /**
      * Default version.
      */
-    private DocumentVersion defaultVersion;
+    private final DocumentVersion defaultVersion;
 
     /**
      * Version list sorted ascending.
      */
-    private List<DocumentVersion> versions;
+    private final List<DocumentVersion> versions;
 
     /**
      * Versions map.
+     * Map key - version no, value - version.
      */
-    private Map<Integer, DocumentVersion> versionsMap;
+    private final Map<Integer, DocumentVersion> versionsMap;
 
     /**
      * Creates new instance of DocumentVersionSupport.
@@ -48,7 +49,7 @@ public class DocumentVersionInfo implements Serializable {
      * @param versions document versions list.
      */
     public DocumentVersionInfo(int docId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
-        versionsMap = new TreeMap<>();
+        Map<Integer, DocumentVersion> versionsMap = new TreeMap<>();
 
         for (DocumentVersion version : versions) {
             versionsMap.put(version.getNo(), version);

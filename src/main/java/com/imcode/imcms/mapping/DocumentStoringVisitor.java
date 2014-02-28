@@ -223,7 +223,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             ormDcc = new CommonContent();
         }
 
-        CommonContentVO dcc = doc.getCommonContent();
+        DocumentCommonContent dcc = doc.getCommonContent();
 
         ormDcc.setDocId(doc.getId());
         ormDcc.setLanguage(ormLanguage);

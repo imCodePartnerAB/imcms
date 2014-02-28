@@ -3,7 +3,7 @@ package imcms.test
 package fixtures
 
 import com.imcode.imcms.api.DocumentLanguage
-import com.imcode.imcms.mapping.CommonContentVO
+import com.imcode.imcms.mapping.DocumentCommonContent
 import scala.collection.JavaConverters._
 import imcode.server.user.RoleId
 import imcode.server.document.DocumentPermissionSetTypeDomainObject
@@ -49,7 +49,7 @@ object DocFX {
 
       doc.getCommonContent |> {
         m =>
-          CommonContentVO.builder(m)
+          DocumentCommonContent.builder(m)
             .headline("i18n_meta_headline_%d_%s".format(docId, language.getCode))
             .menuText("i18n_meta_menu_text_%d_%s".format(docId, language.getCode))
             .build() |> doc.setCommonContent

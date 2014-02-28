@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
- * Document content version.
+ * Document version.
  */
 public final class DocumentVersion {
 

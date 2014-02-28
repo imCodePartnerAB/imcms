@@ -2,7 +2,7 @@ package com.imcode
 package imcms.api
 
 import com.imcode.imcms.mapping.container.DocRef
-import com.imcode.imcms.mapping.{MetaVO, DocumentMapper}
+import com.imcode.imcms.mapping.{DocumentMeta, DocumentMapper}
 import imcode.server.document.DocumentDomainObject
 import imcode.server.user.UserDomainObject
 import javax.servlet.http.HttpServletRequest
@@ -87,7 +87,7 @@ case class DefaultDocGetterCallback(documentLanguages: DocumentLanguages) extend
         val meta = doc.getMeta
 
         if (!meta.getEnabledLanguages.contains(documentLanguages.preferred)) {
-          if (meta.getDisabledLanguageShowSetting == MetaVO.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE)
+          if (meta.getDisabledLanguageShowSetting == DocumentMeta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE)
             docMapper.getDefaultDocument(docId, documentLanguages.default)
           else
             null.asInstanceOf[A]

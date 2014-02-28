@@ -24,7 +24,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, docLanguageSupport: Docum
     cc.setName(classOf[DocLoaderCachingProxy].getCanonicalName + "." + name)
   }
 
-  val metas = CacheWrapper[DocId, MetaVO](cacheConfiguration("meats"))
+  val metas = CacheWrapper[DocId, DocumentMeta](cacheConfiguration("meats"))
   val versionInfos = CacheWrapper[DocId, DocumentVersionInfo](cacheConfiguration("versionInfos"))
   val workingDocs = CacheWrapper[DocCacheKey, DocumentDomainObject](cacheConfiguration("workingDocs"))
   val defaultDocs = CacheWrapper[DocCacheKey, DocumentDomainObject](cacheConfiguration("defaultDocs"))
@@ -38,7 +38,7 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, docLanguageSupport: Docum
   /**
    * @return doc's meta or null if doc does not exists
    */
-  def getMeta(docId: DocId): MetaVO = metas.getOrPut(docId) { docLoader.loadMeta(docId) }
+  def getMeta(docId: DocId): DocumentMeta = metas.getOrPut(docId) { docLoader.loadMeta(docId) }
 
   /**
    * @return doc's version info or null if doc does not exists
@@ -49,8 +49,8 @@ class DocLoaderCachingProxy(docLoader: DocumentLoader, docLanguageSupport: Docum
       case versions =>
         val workingVersion = versions.get(0)
         val defaultVersion = docLoader.getDocVersionRepository.findDefault(docId)
-        new DocumentVersionInfo(docId, versions.asScala.map(EntityConverter.toApi).asJava, EntityConverter.toApi(workingVersion),
-          EntityConverter.toApi(defaultVersion))
+        new DocumentVersionInfo(docId, versions.asScala.map(EntityConverter.fromEntity).asJava, EntityConverter.fromEntity(workingVersion),
+          EntityConverter.fromEntity(defaultVersion))
     }
   }
 

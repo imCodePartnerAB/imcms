@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Transactional
 @Service
-public class DocContentMapper {
+public class DocumentContentMapper {
 
     @Inject
     private CommonContentRepository commonContentRepository;
@@ -23,13 +23,13 @@ public class DocContentMapper {
     @Inject
     private LanguageRepository languageRepository;
 
-    public Map<DocumentLanguage, Optional<CommonContentVO>> getCommonContents(int docId) {
-        Map<DocumentLanguage, Optional<CommonContentVO>> commonContentMap = new HashMap<>();
+    public Map<DocumentLanguage, Optional<DocumentCommonContent>> getCommonContents(int docId) {
+        Map<DocumentLanguage, Optional<DocumentCommonContent>> commonContentMap = new HashMap<>();
 
         for (Language language : languageRepository.findAll()) {
             commonContentMap.put(
-                    EntityConverter.toApi(language),
-                    Optional.fromNullable(EntityConverter.toVO(commonContentRepository.findByDocIdAndDocLanguage(docId, language)))
+                    EntityConverter.fromEntity(language),
+                    Optional.fromNullable(EntityConverter.fromEntity(commonContentRepository.findByDocIdAndDocLanguage(docId, language)))
             );
         }
 
@@ -37,8 +37,8 @@ public class DocContentMapper {
     }
 
 
-    public CommonContentVO getCommonContents(DocRef docRef) {
-        return EntityConverter.toVO(commonContentRepository.findByDocIdAndDocLanguageCode(
+    public DocumentCommonContent getCommonContents(DocRef docRef) {
+        return EntityConverter.fromEntity(commonContentRepository.findByDocIdAndDocLanguageCode(
                 docRef.getDocId(), docRef.getDocLanguageCode()));
     }
 }

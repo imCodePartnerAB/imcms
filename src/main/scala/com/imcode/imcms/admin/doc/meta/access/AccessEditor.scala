@@ -54,6 +54,7 @@ import com.imcode.imcms.vaadin.Editor
  * An administrator can customize those sets at any time by adding or removing permissions to/from a set
  * except 'view', which is sealed.
  */
+// todo: rename FULL to ALL
 class AccessEditor(doc: DocumentDomainObject, user: UserDomainObject) extends Editor with ImcmsServicesSupport {
   private val meta = doc.getMeta.clone()
   private val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)

@@ -16,10 +16,10 @@ import java.util.*;
  * <p/>
  * Shared by all versions of the same document.
  */
-public class MetaVO implements Serializable, Cloneable {
+public class DocumentMeta implements Serializable, Cloneable {
 
     /**
-     * Document show setting for disabled language.
+     * Document show options for disabled language.
      */
     public static enum DisabledLanguageShowSetting {
         SHOW_IN_DEFAULT_LANGUAGE,
@@ -31,7 +31,7 @@ public class MetaVO implements Serializable, Cloneable {
     private volatile int defaultVersionNo = DocumentVersion.WORKING_VERSION_NO;
 
     /**
-     * Disabled language's content show rule.
+     * Disabled language's content show option.
      */
     private volatile DisabledLanguageShowSetting disabledLanguageShowSetting = DisabledLanguageShowSetting.DO_NOT_SHOW;
 
@@ -83,9 +83,9 @@ public class MetaVO implements Serializable, Cloneable {
 
 
     @Override
-    public MetaVO clone() {
+    public DocumentMeta clone() {
         try {
-            MetaVO clone = (MetaVO) super.clone();
+            DocumentMeta clone = (DocumentMeta) super.clone();
 
             clone.disabledLanguageShowSetting = disabledLanguageShowSetting;
             clone.properties = new HashMap<>(properties);
@@ -274,7 +274,6 @@ public class MetaVO implements Serializable, Cloneable {
         this.enabledLanguages = languages != null ? languages : new HashSet<DocumentLanguage>();
     }
 
-    // Transient properties
     public DocumentPermissionSets getPermissionSets() {
         return permissionSets;
     }
@@ -283,15 +282,11 @@ public class MetaVO implements Serializable, Cloneable {
         this.permissionSets = permissionSets;
     }
 
-    public DocumentPermissionSets getPermissionSetsForNewDocuments() {
+    public DocumentPermissionSets getPermissionSetsForNewDocument() {
         return permissionSetsForNewDocuments;
     }
 
-    public void setPermissionSetsForNew(DocumentPermissionSets permissionSetsForNew) {
-        this.permissionSetsForNewDocuments = permissionSetsForNew;
-    }
-
-    public void setPermissionSetsForNewDocuments(DocumentPermissionSets permissionSetsForNewDocuments) {
+    public void setPermissionSetsForNewDocument(DocumentPermissionSets permissionSetsForNewDocuments) {
         this.permissionSetsForNewDocuments = permissionSetsForNewDocuments;
     }
 
@@ -300,10 +295,6 @@ public class MetaVO implements Serializable, Cloneable {
     }
 
     public void setRoleIdToDocumentPermissionSetTypeMappings(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
-        this.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings;
-    }
-
-    public void setRoleIdsMappedToDocumentPermissionSetTypes(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
         this.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
     }
 

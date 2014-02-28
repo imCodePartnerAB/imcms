@@ -4,7 +4,7 @@ package admin.doc.meta
 
 import com.google.common.base.Optional
 import com.imcode.imcms.api.DocumentLanguage
-import com.imcode.imcms.mapping.CommonContentVO
+import com.imcode.imcms.mapping.DocumentCommonContent
 import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
 
@@ -38,7 +38,7 @@ import com.imcode.imcms.vaadin.Editor
 //   if this doc has custom target, then adds this target to the targets combo-box as a last item
 class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSupport {
 
-  override type Data = (DocumentDomainObject, Map[DocumentLanguage, CommonContentVO])
+  override type Data = (DocumentDomainObject, Map[DocumentLanguage, DocumentCommonContent])
 
   private var appearanceEditorOpt = Option.empty[AppearanceEditor]
   private var lifeCycleEditorOpt = Option.empty[LifeCycleEditor]
@@ -67,10 +67,10 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
 
         case "doc_meta_editor.menu_item.appearance" =>
           if (appearanceEditorOpt.isEmpty) {
-            val commonContentMap: Map[DocumentLanguage, CommonContentVO] = doc.getId match {
+            val commonContentMap: Map[DocumentLanguage, DocumentCommonContent] = doc.getId match {
               case id if id != DocumentDomainObject.ID_NEW =>
                 imcmsServices.getDocumentMapper.getCommonContents(id).asScala.mapValues { dccOpt =>
-                  dccOpt.or(new CommonContentVO())
+                  dccOpt.or(new DocumentCommonContent())
                 }.toMap
               case _ =>
                 Map.empty
@@ -166,8 +166,8 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     }.merge(profileEditorOpt.map(_.collectValues())) {
       case (data@(tdc: TextDocumentDomainObject, _), profile) => data |>> { _ =>
         tdc.setDefaultTemplateId(profile.defaultTemplate)
-        tdc.getPermissionSetsForNewDocuments.setRestricted1(profile.restrictedOnePermSet)
-        tdc.getPermissionSetsForNewDocuments.setRestricted2(profile.restrictedTwoPermSet)
+        tdc.getPermissionSetsForNewDocument.setRestricted1(profile.restrictedOnePermSet)
+        tdc.getPermissionSetsForNewDocument.setRestricted2(profile.restrictedTwoPermSet)
         tdc.setDefaultTemplateIdForRestricted1(profile.restrictedOneTemplate)
         tdc.setDefaultTemplateIdForRestricted2(profile.restrictedTwoTemplate)
       }

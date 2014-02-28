@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta.search
 
-import com.imcode.imcms.mapping.MetaVO
+import com.imcode.imcms.mapping.DocumentMeta
 import scala.collection.JavaConverters._
 
 import com.vaadin.ui._
@@ -14,7 +14,7 @@ import com.imcode.imcms.vaadin.Editor
 /**
  * Doc's search settings editor.
  */
-class SearchSettingsEditor(meta: MetaVO) extends Editor {
+class SearchSettingsEditor(meta: DocumentMeta) extends Editor {
   case class Data(keywords: Set[Keyword], isExcludeFromInnerSearch: Boolean)
 
   private val initialValues = Data(meta.getKeywords.asScala.map(_.toLowerCase).toSet, false)

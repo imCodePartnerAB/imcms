@@ -22,7 +22,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
-import com.imcode.imcms.mapping.MetaVO;
+import com.imcode.imcms.mapping.DocumentMeta;
 
 import javax.persistence.*;
 
@@ -791,11 +791,11 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     private boolean languageIsActive(DocumentDomainObject document) {
         DocumentLanguage currentLanguage = getDocGetterCallback().documentLanguages().preferred();
-        MetaVO meta = document.getMeta();
+        DocumentMeta meta = document.getMeta();
         boolean enabled = meta.getEnabledLanguages().contains(currentLanguage);
 
         return enabled ||
-                meta.getDisabledLanguageShowSetting() == MetaVO.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE;
+                meta.getDisabledLanguageShowSetting() == DocumentMeta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE;
     }
 
     public boolean canSeeDocumentWhenEditingMenus(DocumentDomainObject document) {

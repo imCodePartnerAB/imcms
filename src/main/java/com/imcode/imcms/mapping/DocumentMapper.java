@@ -72,7 +72,7 @@ public class DocumentMapper implements DocumentGetter {
     private CategoryMapper categoryMapper;
 
     @Inject
-    private DocContentMapper docMapperService;
+    private DocumentContentMapper docMapperService;
 
     public DocumentMapper() {
     }
@@ -96,7 +96,7 @@ public class DocumentMapper implements DocumentGetter {
         documentSaver = services.getManagedBean(DocumentSaver.class);
         documentSaver.setDocumentMapper(this);
 
-        docMapperService = services.getManagedBean(DocContentMapper.class);
+        docMapperService = services.getManagedBean(DocumentContentMapper.class);
     }
 
     public void init(ImcmsServices services, Database database) {
@@ -218,15 +218,15 @@ public class DocumentMapper implements DocumentGetter {
         makeDocumentLookNew(document.getMeta(), user);
     }
 
-    void makeDocumentLookNew(MetaVO metaVO, UserDomainObject user) {
+    void makeDocumentLookNew(DocumentMeta documentMeta, UserDomainObject user) {
         Date now = new Date();
 
-        metaVO.setCreatorId(user.getId());
-        setCreatedAndModifiedDatetimes(metaVO, now);
-        metaVO.setPublicationStartDatetime(now);
-        metaVO.setArchivedDatetime(null);
-        metaVO.setPublicationEndDatetime(null);
-        metaVO.setPublicationStatus(Document.PublicationStatus.NEW);
+        documentMeta.setCreatorId(user.getId());
+        setCreatedAndModifiedDatetimes(documentMeta, now);
+        documentMeta.setPublicationStartDatetime(now);
+        documentMeta.setArchivedDatetime(null);
+        documentMeta.setPublicationEndDatetime(null);
+        documentMeta.setPublicationStatus(Document.PublicationStatus.NEW);
     }
 
     public DocumentReference getDocumentReference(DocumentDomainObject document) {
@@ -283,7 +283,7 @@ public class DocumentMapper implements DocumentGetter {
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, CommonContentVO> appearances,
+    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances,
                                                               EnumSet<SaveOpts> saveOpts,
                                                               UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
@@ -320,7 +320,7 @@ public class DocumentMapper implements DocumentGetter {
      * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, CommonContentVO> appearances, UserDomainObject user)
+    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         return saveNewDocument(doc, appearances, EnumSet.noneOf(SaveOpts.class), user);
@@ -341,7 +341,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, CommonContentVO> appearances, UserDomainObject user)
+    public void saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> appearances, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
@@ -633,24 +633,24 @@ public class DocumentMapper implements DocumentGetter {
         // todo: put into resource file.
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
-        MetaVO metaVO = documentLoader.loadMeta(docVersionRef.getDocId());
-        Map<DocumentLanguage, Optional<CommonContentVO>> dccMap = docMapperService.getCommonContents(docVersionRef.getDocId());
+        DocumentMeta documentMeta = documentLoader.loadMeta(docVersionRef.getDocId());
+        Map<DocumentLanguage, Optional<DocumentCommonContent>> dccMap = docMapperService.getCommonContents(docVersionRef.getDocId());
         List<DocumentDomainObject> newDocs = new LinkedList<>();
 
-        makeDocumentLookNew(metaVO, user);
-        metaVO.setId(null);
-        metaVO.removeAlis();
+        makeDocumentLookNew(documentMeta, user);
+        documentMeta.setId(null);
+        documentMeta.removeAlis();
 
-        for (Map.Entry<DocumentLanguage, Optional<CommonContentVO>> e : dccMap.entrySet()) {
+        for (Map.Entry<DocumentLanguage, Optional<DocumentCommonContent>> e : dccMap.entrySet()) {
             DocumentLanguage language = e.getKey();
-            Optional<CommonContentVO> dccOpt = e.getValue();
+            Optional<DocumentCommonContent> dccOpt = e.getValue();
 
             if (!dccOpt.isPresent()) continue;
 
             DocumentDomainObject newDoc = getCustomDocument(DocRef.of(docVersionRef, language.getCode())).clone();
-            CommonContentVO newDcc = CommonContentVO.builder(dccOpt.get()).headline(copyHeadlineSuffix + " " + dccOpt.get().getHeadline()).build();
+            DocumentCommonContent newDcc = DocumentCommonContent.builder(dccOpt.get()).headline(copyHeadlineSuffix + " " + dccOpt.get().getHeadline()).build();
 
-            newDoc.setMeta(metaVO);
+            newDoc.setMeta(documentMeta);
             newDoc.setCommonContent(newDcc);
 
             newDocs.add(newDoc);
@@ -809,14 +809,14 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * @param metaVO
+     * @param documentMeta
      * @param now
      * @since 6.0
      */
-    void setCreatedAndModifiedDatetimes(MetaVO metaVO, Date now) {
-        metaVO.setCreatedDatetime(now);
-        metaVO.setModifiedDatetime(now);
-        metaVO.setActualModifiedDatetime(now);
+    void setCreatedAndModifiedDatetimes(DocumentMeta documentMeta, Date now) {
+        documentMeta.setCreatedDatetime(now);
+        documentMeta.setModifiedDatetime(now);
+        documentMeta.setActualModifiedDatetime(now);
     }
 
 
@@ -965,7 +965,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     //todo: delegate to docMapperService?
-    public Map<DocumentLanguage, Optional<CommonContentVO>> getCommonContents(int docId) {
+    public Map<DocumentLanguage, Optional<DocumentCommonContent>> getCommonContents(int docId) {
         return docMapperService.getCommonContents(docId);
     }
 

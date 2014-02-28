@@ -41,8 +41,8 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
                    restrictedTwoTemplate: String
                    )
 
-  private val restrictedOnePermSet = doc.getPermissionSetsForNewDocuments.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject]
-  private val restrictedTwoPermSet = doc.getPermissionSetsForNewDocuments.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject]
+  private val restrictedOnePermSet = doc.getPermissionSetsForNewDocument.getRestricted1.asInstanceOf[TextDocumentPermissionSetDomainObject]
+  private val restrictedTwoPermSet = doc.getPermissionSetsForNewDocument.getRestricted2.asInstanceOf[TextDocumentPermissionSetDomainObject]
 
   private val restrictedOnePermSetEditor = new TextDocPermSetEditor(restrictedOnePermSet, doc, user)
   private val restrictedTwoPermSetEditor = new TextDocPermSetEditor(restrictedTwoPermSet, doc, user)

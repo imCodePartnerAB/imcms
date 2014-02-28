@@ -54,25 +54,25 @@ public class DocumentLoader {
      * @return loaded meta of null if meta with given id does not exists.
      */
     //fixme: alias
-    public MetaVO loadMeta(int docId) {
+    public DocumentMeta loadMeta(int docId) {
         Meta ormMeta = metaRepository.findOne(docId);
 
         if (ormMeta == null) return null;
 
-        MetaVO metaVO = EntityConverter.toVO(ormMeta);
+        DocumentMeta documentMeta = EntityConverter.fromEntity(ormMeta);
 
-        if (metaVO != null) {
-            metaVO.setActualModifiedDatetime(metaVO.getModifiedDatetime());
+        if (documentMeta != null) {
+            documentMeta.setActualModifiedDatetime(documentMeta.getModifiedDatetime());
 
             Document.PublicationStatus publicationStatus = publicationStatusFromInt(ormMeta.getPublicationStatusInt());
-            metaVO.setPublicationStatus(publicationStatus);
+            documentMeta.setPublicationStatus(publicationStatus);
 
-            initRoleIdToPermissionSetIdMap(metaVO, ormMeta);
-            initDocumentsPermissionSets(metaVO, ormMeta);
-            initDocumentsPermissionSetsForNew(metaVO, ormMeta);
+            initRoleIdToPermissionSetIdMap(documentMeta, ormMeta);
+            initDocumentsPermissionSets(documentMeta, ormMeta);
+            initDocumentsPermissionSetsForNew(documentMeta, ormMeta);
         }
 
-        return metaVO;
+        return documentMeta;
     }
 
     /**
@@ -80,9 +80,9 @@ public class DocumentLoader {
      */
     public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
         CommonContent ormAppearance = commonContentRepository.findByDocIdAndDocLanguageCode(document.getId(), document.getLanguage().getCode());
-        CommonContentVO appearance = ormAppearance != null
-                ? EntityConverter.toVO(ormAppearance)
-                : CommonContentVO.builder().headline("").menuImageURL("").menuText("").build();
+        DocumentCommonContent appearance = ormAppearance != null
+                ? EntityConverter.fromEntity(ormAppearance)
+                : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build();
 
         document.setCommonContent(appearance);
         document.accept(documentInitializingVisitor);
@@ -102,7 +102,7 @@ public class DocumentLoader {
     }
 
     // Moved from  DocumentInitializer.initDocuments
-    private void initRoleIdToPermissionSetIdMap(MetaVO metaVO, Meta ormMeta) {
+    private void initRoleIdToPermissionSetIdMap(DocumentMeta documentMeta, Meta ormMeta) {
         RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
                 new RoleIdToDocumentPermissionSetTypeMappings();
 
@@ -112,28 +112,28 @@ public class DocumentLoader {
                     DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
         }
 
-        metaVO.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);
+        documentMeta.setRoleIdToDocumentPermissionSetTypeMappings(rolePermissionMappings);
     }
 
-    private void initDocumentsPermissionSets(MetaVO metaVO, Meta ormMeta) {
+    private void initDocumentsPermissionSets(DocumentMeta documentMeta, Meta ormMeta) {
         DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-                ormMeta.getPermissionSetBitsMap(), ormMeta.getPermisionSetEx());
+                ormMeta.getPermissionSetBitsMap(), ormMeta.getPermissionSetEx());
 
-        metaVO.setPermissionSets(permissionSets);
+        documentMeta.setPermissionSets(permissionSets);
     }
 
 
-    private void initDocumentsPermissionSetsForNew(MetaVO metaVO, Meta ormMeta) {
+    private void initDocumentsPermissionSetsForNew(DocumentMeta documentMeta, Meta ormMeta) {
         DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-                ormMeta.getPermissionSetBitsForNewMap(), ormMeta.getPermisionSetExForNew());
+                ormMeta.getPermissionSetBitsForNewMap(), ormMeta.getPermissionSetExForNew());
 
-        metaVO.setPermissionSetsForNew(permissionSets);
+        documentMeta.setPermissionSetsForNewDocument(permissionSets);
     }
 
 
     private DocumentPermissionSets createDocumentsPermissionSets(
             Map<Integer, Integer> permissionSetBitsMap,
-            Set<Meta.PermisionSetEx> permissionSetEx) {
+            Set<Meta.PermissionSetEx> permissionSetEx) {
 
         DocumentPermissionSets permissionSets = new DocumentPermissionSets();
 
@@ -147,7 +147,7 @@ public class DocumentLoader {
             }
         }
 
-        for (Meta.PermisionSetEx ex : permissionSetEx) {
+        for (Meta.PermissionSetEx ex : permissionSetEx) {
             Integer setId = ex.getSetId();
             DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
 

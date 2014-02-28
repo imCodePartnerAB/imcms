@@ -38,7 +38,7 @@ public class CategoryMapper {
         List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(categoryList.size());
 
         for (Category category : categoryList) {
-            categoryDomainObjectList.add(EntityConverter.toVO(category));
+            categoryDomainObjectList.add(EntityConverter.fromEntity(category));
         }
 
         return categoryDomainObjectList.toArray(new CategoryDomainObject[categoryDomainObjectList.size()]);
@@ -54,7 +54,7 @@ public class CategoryMapper {
         List<CategoryTypeDomainObject> categoryTypeDomainObjectList = new ArrayList<>(categoryTypeList.size());
 
         for (CategoryType categoryType : categoryTypeList) {
-            categoryTypeDomainObjectList.add(EntityConverter.toVO(categoryType));
+            categoryTypeDomainObjectList.add(EntityConverter.fromEntity(categoryType));
         }
 
         return categoryTypeDomainObjectList.toArray(new CategoryTypeDomainObject[categoryTypeDomainObjectList.size()]);
@@ -65,26 +65,26 @@ public class CategoryMapper {
         CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
         Category category = categoryRepository.findByNameAndType(categoryName, docCategoryType);
 
-        return category == null ? null : EntityConverter.toVO(category);
+        return category == null ? null : EntityConverter.fromEntity(category);
     }
 
 
     public CategoryDomainObject getCategoryById(int categoryId) {
         Category category = categoryRepository.findOne(categoryId);
 
-        return category == null ? null : EntityConverter.toVO(category);
+        return category == null ? null : EntityConverter.fromEntity(category);
     }
 
     public CategoryTypeDomainObject getCategoryTypeByName(String categoryTypeName) {
         CategoryType categoryType = categoryTypeRepository.findByNameIgnoreCase(categoryTypeName);
 
-        return categoryType == null ? null : EntityConverter.toVO(categoryType);
+        return categoryType == null ? null : EntityConverter.fromEntity(categoryType);
     }
 
     public CategoryTypeDomainObject getCategoryTypeById(int categoryTypeId) {
         CategoryType categoryType = categoryTypeRepository.findOne(categoryTypeId);
 
-        return categoryType == null ? null : EntityConverter.toVO(categoryType);
+        return categoryType == null ? null : EntityConverter.fromEntity(categoryType);
     }
 
 
@@ -95,27 +95,27 @@ public class CategoryMapper {
     }
 
     public CategoryTypeDomainObject addCategoryTypeToDb(CategoryTypeDomainObject categoryType) {
-        CategoryType docCategoryType = EntityConverter.fromVO(categoryType);
+        CategoryType docCategoryType = EntityConverter.toEntity(categoryType);
 
         docCategoryType.setId(null);
 
-        return EntityConverter.toVO(categoryTypeRepository.saveAndFlush(docCategoryType));
+        return EntityConverter.fromEntity(categoryTypeRepository.saveAndFlush(docCategoryType));
     }
 
     public void updateCategoryType(CategoryTypeDomainObject categoryType) {
-        categoryTypeRepository.saveAndFlush(EntityConverter.fromVO(categoryType));
+        categoryTypeRepository.saveAndFlush(EntityConverter.toEntity(categoryType));
     }
 
     public void saveCategoryType(CategoryTypeDomainObject categoryType) {
-        categoryTypeRepository.saveAndFlush(EntityConverter.fromVO(categoryType));
+        categoryTypeRepository.saveAndFlush(EntityConverter.toEntity(categoryType));
     }
 
     public CategoryDomainObject addCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
-        return EntityConverter.toVO(categoryRepository.saveAndFlush(EntityConverter.fromVO(category)));
+        return EntityConverter.fromEntity(categoryRepository.saveAndFlush(EntityConverter.toEntity(category)));
     }
 
     public void updateCategory(CategoryDomainObject category) {
-        categoryRepository.save(EntityConverter.fromVO(category));
+        categoryRepository.save(EntityConverter.toEntity(category));
     }
 
     public void deleteCategoryFromDb(CategoryDomainObject category) {
@@ -150,7 +150,7 @@ public class CategoryMapper {
 
     public CategoryDomainObject saveCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
         if (category.getId() == 0) {
-            Category docCategory = categoryRepository.findByNameAndType(category.getName(), EntityConverter.fromVO(category.getType()));
+            Category docCategory = categoryRepository.findByNameAndType(category.getName(), EntityConverter.toEntity(category.getType()));
 
             if (docCategory != null) {
                 throw new CategoryAlreadyExistsException("A category with name \"" + category.getName()
@@ -160,7 +160,7 @@ public class CategoryMapper {
             }
         }
 
-        return EntityConverter.toVO(categoryRepository.saveAndFlush(EntityConverter.fromVO(category)));
+        return EntityConverter.fromEntity(categoryRepository.saveAndFlush(EntityConverter.toEntity(category)));
     }
 
     public Set<CategoryDomainObject> getCategories(Collection<Integer> categoryIds) {
@@ -168,7 +168,7 @@ public class CategoryMapper {
         Set<CategoryDomainObject> categoryDomainObjectSet = new HashSet<>();
 
         for (Category category : categoryList) {
-            categoryDomainObjectSet.add(EntityConverter.toVO(category));
+            categoryDomainObjectSet.add(EntityConverter.fromEntity(category));
         }
 
         return categoryDomainObjectSet;
@@ -179,7 +179,7 @@ public class CategoryMapper {
         List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(categoryList.size());
 
         for (Category category : categoryList) {
-            categoryDomainObjectList.add(EntityConverter.toVO(category));
+            categoryDomainObjectList.add(EntityConverter.fromEntity(category));
         }
 
         return categoryDomainObjectList;

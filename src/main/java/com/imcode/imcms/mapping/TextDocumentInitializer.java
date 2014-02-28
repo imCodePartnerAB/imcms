@@ -32,7 +32,7 @@ public class TextDocumentInitializer {
     private LoopRepository loopRepository;
 
     @Inject
-    private TextDocContentMapper textDocMapper;
+    private TextDocumentContentMapper textDocMapper;
 
     @Inject
     private DocVersionRepository docVersionRepository;
@@ -141,7 +141,7 @@ public class TextDocumentInitializer {
         Map<Integer, Loop> loopsMap = new HashMap<>();
 
         for (com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop : loops) {
-            loopsMap.put(loop.getNo(), EntityConverter.toApi(loop));
+            loopsMap.put(loop.getNo(), EntityConverter.fromEntity(loop));
         }
 
         document.setLoops(loopsMap);

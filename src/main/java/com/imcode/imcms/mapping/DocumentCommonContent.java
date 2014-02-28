@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * Content common to all document types.
  */
-public final class CommonContentVO implements Serializable {
+public final class DocumentCommonContent implements Serializable {
 
     public static class Builder {
         private String headline;
@@ -16,14 +16,14 @@ public final class CommonContentVO implements Serializable {
         public Builder() {
         }
 
-        public Builder(CommonContentVO commonContentVO) {
-            this.headline = commonContentVO.headline;
-            this.menuText = commonContentVO.menuText;
-            this.menuImageURL = commonContentVO.menuImageURL;
+        public Builder(DocumentCommonContent documentCommonContent) {
+            this.headline = documentCommonContent.headline;
+            this.menuText = documentCommonContent.menuText;
+            this.menuImageURL = documentCommonContent.menuImageURL;
         }
 
-        public CommonContentVO build() {
-            return new CommonContentVO(headline, menuText, menuImageURL);
+        public DocumentCommonContent build() {
+            return new DocumentCommonContent(headline, menuText, menuImageURL);
         }
 
 
@@ -47,8 +47,8 @@ public final class CommonContentVO implements Serializable {
         return new Builder();
     }
 
-    public static Builder builder(CommonContentVO commonContentVO) {
-        return new Builder(commonContentVO);
+    public static Builder builder(DocumentCommonContent documentCommonContent) {
+        return new Builder(documentCommonContent);
     }
 
     /**
@@ -67,11 +67,11 @@ public final class CommonContentVO implements Serializable {
      */
     private final String menuImageURL;
 
-    public CommonContentVO() {
+    public DocumentCommonContent() {
         this("", "", "");
     }
 
-    public CommonContentVO(String headline, String menuText, String menuImageURL) {
+    public DocumentCommonContent(String headline, String menuText, String menuImageURL) {
         this.headline = headline;
         this.menuText = menuText;
         this.menuImageURL = menuImageURL;
@@ -79,10 +79,10 @@ public final class CommonContentVO implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof CommonContentVO && equals((CommonContentVO) o));
+        return o == this || (o instanceof DocumentCommonContent && equals((DocumentCommonContent) o));
     }
 
-    private boolean equals(CommonContentVO that) {
+    private boolean equals(DocumentCommonContent that) {
         return Objects.equals(headline, that.headline)
                 && Objects.equals(menuText, that.menuText)
                 && Objects.equals(menuImageURL, that.menuImageURL);

@@ -3,7 +3,7 @@ package imcms.dao
 
 import com.imcode.imcms.mapping.container.DocRef
 import com.imcode.imcms.mapping.jpa.VersionRepository
-import com.imcode.imcms.mapping.CommonContentVO
+import com.imcode.imcms.mapping.DocumentCommonContent
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Include
 import com.imcode.imcms.mapping.jpa.doc.content.{HtmlDocContent, FileDocItem, UrlDocContent}
 import com.imcode.imcms.mapping.jpa.doc._
@@ -131,7 +131,7 @@ class MetaDaoTestConfig {
       TestSetup.hibernate.configurators.addAnnotatedClasses(
         classOf[Property],
         classOf[Meta],
-        classOf[CommonContentVO],
+        classOf[DocumentCommonContent],
         classOf[DocVersion],
         classOf[Language],
         classOf[CategoryDomainObject],

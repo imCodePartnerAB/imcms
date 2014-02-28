@@ -1,15 +1,13 @@
 package imcode.server.document;
 
 import imcode.server.user.RoleId;
-import imcode.util.ShouldNotBeThrownException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 
 /**
  * Represents mapping between roles and permissions sets for a document.
@@ -19,17 +17,17 @@ import org.apache.commons.collections.Transformer;
  */
 public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, Cloneable {
 
-    HashMap<RoleId, DocumentPermissionSetTypeDomainObject> map = new HashMap<>();
+    volatile HashMap<RoleId, DocumentPermissionSetTypeDomainObject> map = new HashMap<>();
 
     @Override
     public RoleIdToDocumentPermissionSetTypeMappings clone() {
         try {
             RoleIdToDocumentPermissionSetTypeMappings clone = (RoleIdToDocumentPermissionSetTypeMappings) super.clone();
-            clone.map = (HashMap<RoleId, DocumentPermissionSetTypeDomainObject>) map.clone();
+            clone.map = new HashMap<>(map);
 
             return clone;
         } catch (CloneNotSupportedException e) {
-            throw new ShouldNotBeThrownException(e);
+            throw new AssertionError(e);
         }
     }
 
@@ -80,8 +78,7 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
         private final RoleId roleId;
         private final DocumentPermissionSetTypeDomainObject documentPermissionSetType;
 
-        public Mapping(RoleId roleId,
-                       DocumentPermissionSetTypeDomainObject documentPermissionSetType) {
+        public Mapping(RoleId roleId, DocumentPermissionSetTypeDomainObject documentPermissionSetType) {
             this.roleId = roleId;
             this.documentPermissionSetType = documentPermissionSetType;
         }

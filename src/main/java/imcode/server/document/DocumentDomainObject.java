@@ -1,10 +1,10 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.mapping.CommonContentVO;
+import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.DocVersionRef;
-import com.imcode.imcms.mapping.MetaVO;
+import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -47,9 +47,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 
-    private volatile MetaVO meta = new MetaVO();
+    private volatile DocumentMeta meta = new DocumentMeta();
 
-    private volatile CommonContentVO commonContent = CommonContentVO.builder().build();
+    private volatile DocumentCommonContent commonContent = DocumentCommonContent.builder().build();
 
     private volatile int versionNo = DocumentVersion.WORKING_VERSION_NO;
 
@@ -167,7 +167,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setHeadline(String v) {
-        setCommonContent(CommonContentVO.builder(getCommonContent()).headline(v).build());
+        setCommonContent(DocumentCommonContent.builder(getCommonContent()).headline(v).build());
     }
 
     public int getId() {
@@ -184,7 +184,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setMenuImage(String v) {
-        setCommonContent(CommonContentVO.builder(getCommonContent()).menuImageURL(v).build());
+        setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuImageURL(v).build());
     }
 
 
@@ -226,7 +226,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 
     public void setMenuText(String v) {
-        setCommonContent(CommonContentVO.builder(getCommonContent()).menuText(v).build());
+        setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuText(v).build());
     }
 
     public Date getModifiedDatetime() {
@@ -282,7 +282,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setRoleIdsMappedToDocumentPermissionSetTypes(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
-        meta.setRoleIdsMappedToDocumentPermissionSetTypes(roleIdToDocumentPermissionSetTypeMappings);
+        meta.setRoleIdToDocumentPermissionSetTypeMappings(roleIdToDocumentPermissionSetTypeMappings);
     }
 
     public Document.PublicationStatus getPublicationStatus() {
@@ -329,7 +329,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return isActiveAtTime(meta, new Date());
     }
 
-    private static boolean isActiveAtTime(MetaVO meta, Date now) {
+    private static boolean isActiveAtTime(DocumentMeta meta, Date now) {
         return isPublishedAtTime(meta, now) && !hasBeenArchivedAtTime(meta, now);
     }
 
@@ -381,7 +381,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return getId();
     }
 
-    private static boolean hasBeenArchivedAtTime(MetaVO meta, Date time) {
+    private static boolean hasBeenArchivedAtTime(DocumentMeta meta, Date time) {
         Date archivedDatetime = meta.getArchivedDatetime();
         return archivedDatetime != null && archivedDatetime.before(time);
     }
@@ -403,18 +403,18 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return getRolePermissionMappings().getPermissionSetTypeForRole(roleId);
     }
 
-    private static boolean isPublishedAtTime(MetaVO meta, Date date) {
+    private static boolean isPublishedAtTime(DocumentMeta meta, Date date) {
         boolean statusIsApproved = Document.PublicationStatus.APPROVED.equals(meta.getPublicationStatus());
 
         return statusIsApproved && publicationHasStartedAtTime(meta, date) && !publicationHasEndedAtTime(meta, date);
     }
 
-    private static boolean publicationHasStartedAtTime(MetaVO meta, Date date) {
+    private static boolean publicationHasStartedAtTime(DocumentMeta meta, Date date) {
         Date publicationStartDatetime = meta.getPublicationStartDatetime();
         return publicationStartDatetime != null && publicationStartDatetime.before(date);
     }
 
-    private static boolean publicationHasEndedAtTime(MetaVO meta, Date date) {
+    private static boolean publicationHasEndedAtTime(DocumentMeta meta, Date date) {
         Date publicationEndDatetime = meta.getPublicationEndDatetime();
         return publicationEndDatetime != null && publicationEndDatetime.before(date);
     }
@@ -423,8 +423,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return meta.getPermissionSets();
     }
 
-    public DocumentPermissionSets getPermissionSetsForNewDocuments() {
-        return meta.getPermissionSetsForNewDocuments();
+    public DocumentPermissionSets getPermissionSetsForNewDocument() {
+        return meta.getPermissionSetsForNewDocument();
     }
 
     public abstract void accept(DocumentVisitor documentVisitor);
@@ -434,7 +434,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public static LifeCyclePhase getLifeCyclePhaseAtTime(DocumentDomainObject doc, Date time) {
-        MetaVO meta = doc.getMeta();
+        DocumentMeta meta = doc.getMeta();
         LifeCyclePhase lifeCyclePhase;
 
         Document.PublicationStatus publicationStatus = meta.getPublicationStatus();
@@ -467,8 +467,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setPermissionSets(permissionSets);
     }
 
-    public void setPermissionSetsForNew(DocumentPermissionSets permissionSetsForNew) {
-        meta.setPermissionSetsForNew(permissionSetsForNew);
+    public void setPermissionSetsForNewDocument(DocumentPermissionSets permissionSetsForNew) {
+        meta.setPermissionSetsForNewDocument(permissionSetsForNew);
     }
 
     public String getAlias() {
@@ -483,11 +483,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return StringUtils.defaultString(getAlias(), getId() + "");
     }
 
-    public MetaVO getMeta() {
+    public DocumentMeta getMeta() {
         return meta;
     }
 
-    public void setMeta(MetaVO meta) {
+    public void setMeta(DocumentMeta meta) {
         Objects.requireNonNull(meta, "meta argument can not be null.");
 
         this.meta = meta.clone();
@@ -504,11 +504,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
 
-    public CommonContentVO getCommonContent() {
+    public DocumentCommonContent getCommonContent() {
         return commonContent;
     }
 
-    public void setCommonContent(CommonContentVO commonContent) {
+    public void setCommonContent(DocumentCommonContent commonContent) {
         Objects.requireNonNull(commonContent, "commonContent argument can not be null.");
 
         this.commonContent = commonContent;

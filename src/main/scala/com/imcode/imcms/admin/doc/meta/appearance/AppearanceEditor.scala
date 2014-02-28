@@ -4,7 +4,7 @@ package admin.doc.meta.appearance
 
 import com.imcode.imcms.api.DocumentLanguage
 import com.imcode.imcms.mapping.jpa.doc.DocRepository
-import com.imcode.imcms.mapping.{CommonContentVO, MetaVO}
+import com.imcode.imcms.mapping.{DocumentCommonContent, DocumentMeta}
 import scala.language.reflectiveCalls
 
 import scala.collection.JavaConverters._
@@ -36,12 +36,12 @@ import com.imcode.imcms.vaadin.Editor
  * @param meta doc's Meta
  * @param commonContentMap doc's common content-s
  */
-class AppearanceEditor(meta: MetaVO, commonContentMap: Map[DocumentLanguage, CommonContentVO]) extends Editor with ImcmsServicesSupport {
+class AppearanceEditor(meta: DocumentMeta, commonContentMap: Map[DocumentLanguage, DocumentCommonContent]) extends Editor with ImcmsServicesSupport {
 
   case class Data(
-    i18nMetas: Map[DocumentLanguage, CommonContentVO],
+    i18nMetas: Map[DocumentLanguage, DocumentCommonContent],
     enabledLanguages: Set[DocumentLanguage],
-    disabledLanguageShowSetting: MetaVO.DisabledLanguageShowSetting,
+    disabledLanguageShowSetting: DocumentMeta.DisabledLanguageShowSetting,
     alias: Option[String],
     target: String
   )
@@ -63,8 +63,8 @@ class AppearanceEditor(meta: MetaVO, commonContentMap: Map[DocumentLanguage, Com
   }
 
   override val view = new AppearanceEditorView |>> { v =>
-    v.languages.cbShowMode.addItem(MetaVO.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
-    v.languages.cbShowMode.addItem(MetaVO.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
+    v.languages.cbShowMode.addItem(DocumentMeta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
+    v.languages.cbShowMode.addItem(DocumentMeta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
 
     for (i18nMetaEditorWidget <- i18nMetaEditorViews) {
       v.languages.lytI18nMetas.addComponent(i18nMetaEditorWidget)
@@ -97,7 +97,7 @@ class AppearanceEditor(meta: MetaVO, commonContentMap: Map[DocumentLanguage, Com
         i18nMetaEditorViews.collect {
           case i18nMetaEditorWidget if i18nMetaEditorWidget.chkEnabled.checked =>
             val language = i18nMetaEditorWidget.language
-            val i18nMeta = CommonContentVO.builder()
+            val i18nMeta = DocumentCommonContent.builder()
               .headline(i18nMetaEditorWidget.txtTitle.trimmedValue)
               .menuImageURL(i18nMetaEditorWidget.embLinkImage.trimmedValue)
               .menuText(i18nMetaEditorWidget.txaMenuText.trimmedValue)

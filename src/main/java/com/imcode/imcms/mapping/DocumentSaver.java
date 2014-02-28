@@ -153,7 +153,7 @@ public class DocumentSaver {
             ormLoop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(loopEntryRef.getEntryNo()));
             loopRepository.save(ormLoop);
         } else {
-            Loop apiLoop = EntityConverter.toApi(ormLoop);
+            Loop apiLoop = EntityConverter.fromEntity(ormLoop);
             int contentNo = loopEntryRef.getEntryNo();
             if (!apiLoop.findEntryIndexByNo(contentNo).isPresent()) {
                 ormLoop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(contentNo));
@@ -187,7 +187,7 @@ public class DocumentSaver {
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         DocumentDomainObject firstDoc = docs.get(0);
-        MetaVO meta = firstDoc.getMeta().clone();
+        DocumentMeta meta = firstDoc.getMeta().clone();
         DocVersion nextDocVersion = docVersionRepository.create(meta.getId(), user.getId());
         DocumentSavingVisitor docSavingVisitor = new DocumentSavingVisitor(null, documentMapper.getImcmsServices(), user);
 
@@ -216,12 +216,12 @@ public class DocumentSaver {
             }
         }
 
-        return EntityConverter.toApi(nextDocVersion);
+        return EntityConverter.fromEntity(nextDocVersion);
     }
 
     //fixme: meta permissions
     @Transactional
-    public void updateDocument(DocumentDomainObject doc, Map<DocumentLanguage, CommonContentVO> appearances, DocumentDomainObject oldDoc,
+    public void updateDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> appearances, DocumentDomainObject oldDoc,
                                UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -238,9 +238,9 @@ public class DocumentSaver {
 
         saveMeta(doc.getMeta());
 
-        for (Map.Entry<DocumentLanguage, CommonContentVO> e : appearances.entrySet()) {
+        for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
             DocumentLanguage language = e.getKey();
-            CommonContentVO dcc = e.getValue();
+            DocumentCommonContent dcc = e.getValue();
             CommonContent ormDcc = commonContentRepository.findByDocIdAndDocLanguageCode(doc.getId(), language.getCode());
             if (ormDcc == null) {
                 ormDcc = new CommonContent();
@@ -278,7 +278,7 @@ public class DocumentSaver {
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         DocumentDomainObject firstDoc = docs.get(0);
-        MetaVO meta = firstDoc.getMeta().clone();
+        DocumentMeta meta = firstDoc.getMeta().clone();
 
         checkDocumentForSave(firstDoc);
 
@@ -344,31 +344,31 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public <T extends DocumentDomainObject> int saveNewDocument(T doc, Map<DocumentLanguage, CommonContentVO> dccMap,
+    public <T extends DocumentDomainObject> int saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> dccMap,
                                                                 EnumSet<DocumentMapper.SaveOpts> saveOpts, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        MetaVO metaVO = doc.getMeta();
+        DocumentMeta documentMeta = doc.getMeta();
 
         checkDocumentForSave(doc);
 
-        documentMapper.setCreatedAndModifiedDatetimes(metaVO, new Date());
+        documentMapper.setCreatedAndModifiedDatetimes(documentMeta, new Date());
 
         if (!user.isSuperAdminOrHasFullPermissionOn(doc)) {
-            metaVO.getPermissionSets().setRestricted1(metaVO.getPermissionSetsForNewDocuments().getRestricted1());
-            metaVO.getPermissionSets().setRestricted2(metaVO.getPermissionSetsForNewDocuments().getRestricted2());
+            documentMeta.getPermissionSets().setRestricted1(documentMeta.getPermissionSetsForNewDocument().getRestricted1());
+            documentMeta.getPermissionSets().setRestricted2(documentMeta.getPermissionSetsForNewDocument().getRestricted2());
         }
 
         newUpdateDocumentRolePermissions(doc, user, null);
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(doc, user, null);
 
-        metaVO.setId(null);
-        metaVO.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
-        metaVO.setDocumentType(doc.getDocumentTypeId());
-        int newDocId = saveMeta(metaVO);
+        documentMeta.setId(null);
+        documentMeta.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
+        documentMeta.setDocumentType(doc.getDocumentTypeId());
+        int newDocId = saveMeta(documentMeta);
 
-        for (Map.Entry<DocumentLanguage, CommonContentVO> e : dccMap.entrySet()) {
-            CommonContentVO dcc = e.getValue();
+        for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
+            DocumentCommonContent dcc = e.getValue();
             CommonContent ormDcc = new CommonContent();
             Language ormLanguage = languageRepository.findByCode(e.getKey().getCode());
 
@@ -395,8 +395,8 @@ public class DocumentSaver {
         if (doc instanceof TextDocumentDomainObject && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
             DocVersion ormDocVersion = docVersionRepository.findByDocIdAndNo(doc.getId(), doc.getVersionNo());
 
-            for (Map.Entry<DocumentLanguage, CommonContentVO> e : dccMap.entrySet()) {
-                CommonContentVO dcc = e.getValue();
+            for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
+                DocumentCommonContent dcc = e.getValue();
                 Language ormLanguage = languageRepository.findByCode(e.getKey().getCode());
 
                 Text text1 = new Text(ormDocVersion, ormLanguage, TextType.PLAIN_TEXT, 1, null, dcc.getHeadline());
@@ -414,26 +414,26 @@ public class DocumentSaver {
     /**
      * @return saved document meta.
      */
-    private int saveMeta(MetaVO metaVO) {
+    private int saveMeta(DocumentMeta documentMeta) {
         Set<Language> enabledLanguages = new HashSet<>();
 
-        for (DocumentLanguage l : metaVO.getEnabledLanguages()) {
+        for (DocumentLanguage l : documentMeta.getEnabledLanguages()) {
             enabledLanguages.add(languageRepository.findByCode(l.getCode()));
         }
 
         Meta ormMeta = new Meta();
-        ormMeta.setArchivedDatetime(metaVO.getArchivedDatetime());
-        ormMeta.setCategoryIds(metaVO.getCategoryIds());
-        ormMeta.setCreatedDatetime(metaVO.getCreatedDatetime());
-        ormMeta.setCreatorId(metaVO.getCreatorId());
-        ormMeta.setDefaultVersionNo(metaVO.getDefaultVersionNo());
-        ormMeta.setDisabledLanguageShowSetting(Meta.DisabledLanguageShowSetting.values()[metaVO.getDisabledLanguageShowSetting().ordinal()]);
-        ormMeta.setDocumentType(metaVO.getDocumentType());
+        ormMeta.setArchivedDatetime(documentMeta.getArchivedDatetime());
+        ormMeta.setCategoryIds(documentMeta.getCategoryIds());
+        ormMeta.setCreatedDatetime(documentMeta.getCreatedDatetime());
+        ormMeta.setCreatorId(documentMeta.getCreatorId());
+        ormMeta.setDefaultVersionNo(documentMeta.getDefaultVersionNo());
+        ormMeta.setDisabledLanguageShowSetting(Meta.DisabledLanguageShowSetting.values()[documentMeta.getDisabledLanguageShowSetting().ordinal()]);
+        ormMeta.setDocumentType(documentMeta.getDocumentType());
         ormMeta.setEnabledLanguages(enabledLanguages);
-        ormMeta.setId(metaVO.getId());
-        ormMeta.setKeywords(metaVO.getKeywords());
-        ormMeta.setLinkableByOtherUsers(metaVO.getLinkableByOtherUsers());
-        ormMeta.setLinkedForUnauthorizedUsers(metaVO.getLinkedForUnauthorizedUsers());
+        ormMeta.setId(documentMeta.getId());
+        ormMeta.setKeywords(documentMeta.getKeywords());
+        ormMeta.setLinkableByOtherUsers(documentMeta.getLinkableByOtherUsers());
+        ormMeta.setLinkedForUnauthorizedUsers(documentMeta.getLinkedForUnauthorizedUsers());
 
         //fixme: move to security section
         //ormMeta.setPermisionSetEx(meta.getPermissionSets());
@@ -441,22 +441,22 @@ public class DocumentSaver {
         //ormMeta.setPermissionSetBitsForNewMap();
         //ormMeta.setPermissionSetBitsMap();
 
-        ormMeta.setProperties(metaVO.getProperties());
-        ormMeta.setPublicationEndDatetime(metaVO.getPublicationEndDatetime());
-        ormMeta.setPublicationStartDatetime(metaVO.getPublicationStartDatetime());
-        ormMeta.setPublicationStatusInt(metaVO.getPublicationStatus().asInt());
-        ormMeta.setPublisherId(metaVO.getPublisherId());
-        ormMeta.setRestrictedOneMorePrivilegedThanRestrictedTwo(metaVO.getRestrictedOneMorePrivilegedThanRestrictedTwo());
+        ormMeta.setProperties(documentMeta.getProperties());
+        ormMeta.setPublicationEndDatetime(documentMeta.getPublicationEndDatetime());
+        ormMeta.setPublicationStartDatetime(documentMeta.getPublicationStartDatetime());
+        ormMeta.setPublicationStatusInt(documentMeta.getPublicationStatus().asInt());
+        ormMeta.setPublisherId(documentMeta.getPublisherId());
+        ormMeta.setRestrictedOneMorePrivilegedThanRestrictedTwo(documentMeta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
 
         //fixme: move to security section
         //ormMeta.setRoleIdToPermissionSetIdMap(meta.getRoleIdToDocumentPermissionSetTypeMappings());
-        ormMeta.setSearchDisabled(metaVO.getSearchDisabled());
-        ormMeta.setTarget(metaVO.getTarget());
+        ormMeta.setSearchDisabled(documentMeta.getSearchDisabled());
+        ormMeta.setTarget(documentMeta.getTarget());
 
         metaRepository.saveAndFlush(ormMeta);
 
         int id = ormMeta.getId();
-        metaVO.setId(id);
+        documentMeta.setId(id);
 
         return id;
     }
