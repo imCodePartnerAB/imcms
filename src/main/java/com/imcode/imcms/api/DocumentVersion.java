@@ -75,8 +75,7 @@ public final class DocumentVersion {
     }
 
     protected boolean equal(DocumentVersion that) {
-        return //that.canEqual(this)
-                Objects.equals(this.no, that.no)
+        return Objects.equals(this.no, that.no)
                         && Objects.equals(this.createdBy, that.createdBy)
                         && Objects.equals(this.createdDt, that.createdDt)
                         && Objects.equals(this.modifiedBy, that.modifiedBy)

@@ -51,6 +51,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     protected LanguageRepository languageRepository;
 
     protected TextRepository textRepository;
+    protected ImageRepository imageRepository;
     protected LoopRepository loopRepository;
     protected MenuRepository menuRepository;
     protected TemplateNamesRepository templateNamesRepository;
@@ -63,6 +64,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         this.docVersionRepository = services.getManagedBean(DocVersionRepository.class);
         this.languageRepository = services.getManagedBean(LanguageRepository.class);
         this.textRepository = services.getManagedBean(TextRepository.class);
+        this.imageRepository = services.getManagedBean(ImageRepository.class);
         this.loopRepository = services.getManagedBean(LoopRepository.class);
         this.menuRepository = services.getManagedBean(MenuRepository.class);
         this.templateNamesRepository = services.getManagedBean(TemplateNamesRepository.class);
@@ -181,7 +183,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             saveTextDocumentText(TextDocTextContainer.of(textDocument.getRef(), e.getKey(), e.getValue()), user);
         }
 
-        for (Map.Entry<LoopItemRef, TextDomainObject> e : textDocument.getLoopTexts().entrySet()) {
+        for (Map.Entry<TextDocumentDomainObject.LoopItemRef, TextDomainObject> e : textDocument.getLoopTexts().entrySet()) {
             saveTextDocumentText(TextDocTextContainer.of(textDocument.getRef(), e.getKey().getItemNo(), e.getValue()), user);
         }
     }
@@ -251,6 +253,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         ormText.setLanguage(language);
         ormText.setDocVersion(docVersion);
+        ormText.setNo(textContainer.getTextNo());
         ormText.setText(text.getText());
         ormText.setType(TextType.values()[text.getType()]);
         com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef = textContainer.getLoopEntryRef();
@@ -260,7 +263,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         textRepository.save(ormText);
 
-        // fixme: implement history
+        // fixme: history
         //TextDocTextHistory textHistory = new TextDocTextHistory(textRef, user);
         //textRepository.saveTextHistory(textHistory);
     }
@@ -271,42 +274,50 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      */
     @Transactional
     public void saveTextDocumentImage(TextDocImageContainer imageContainer, UserDomainObject user) {
+        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(imageContainer.getDocRef().getDocId(), imageContainer.getDocRef().getDocVersionNo());
+        Language language = languageRepository.findByCode(imageContainer.getDocRef().getDocLanguageCode());
+
         ImageDomainObject image = imageContainer.getImage();
 
-        image.setUrl(image.getSource().toStorageString());
-        image.setType(image.getSource().getTypeId());
+        Image ormImage = EntityConverter.toEntity(image);
 
-        // fixme: implement
-        // textDocRepository.saveImage(image);
+        ormImage.setNo(imageContainer.getImageNo());
+        ormImage.setDocVersion(docVersion);
+        ormImage.setLanguage(language);
 
+        com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef = imageContainer.getLoopEntryRef();
+        if (loopEntryRef != null) {
+            ormImage.setLoopEntryRef(new LoopEntryRef(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo()));
+        }
+
+        imageRepository.save(ormImage);
+
+        // fixme:  history
         // TextDocImageHistory textDocImageHistory = new TextDocImageHistory(image, user);
         // textDocRepository.saveImageHistory(textDocImageHistory);
     }
 
 
     @Transactional
-        // fixme: implement
     void updateTextDocumentImages(TextDocumentDomainObject doc, UserDomainObject user) {
-//        DocLanguage language = doc.getLanguage();
-//
-//        textDocRepository.deleteImages(doc.getRef(), language);
-//        textDocRepository.flush();
-//
-//        for (ImageDomainObject image : doc.getImages().values()) {
-//            image.setId(null);
-//            image.setDocRef(doc.getRef());
-//            image.setLanguage(language);
-//
-//            saveTextDocumentImage(image, user);
-//        }
-//
-//        for (ImageDomainObject image : doc.getLoopImages().values()) {
-//            image.setId(null);
-//            image.setDocRef(doc.getRef());
-//            image.setLanguage(language);
-//
-//            saveTextDocumentImage(image, user);
-//        }
+        DocRef docRef = doc.getRef();
+        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+
+        imageRepository.deleteByDocVersionAndDocLanguage(docVersion, language);
+
+        for (Map.Entry<Integer, ImageDomainObject> entry : doc.getImages().entrySet()) {
+            TextDocImageContainer imageContainer = TextDocImageContainer.of(docRef, entry.getKey(), entry.getValue());
+
+            saveTextDocumentImage(imageContainer, user);
+        }
+
+        for (Map.Entry<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> entry : doc.getLoopImages().entrySet()) {
+            TextDocumentDomainObject.LoopItemRef loopItemRef = entry.getKey();
+            TextDocImageContainer imageContainer = TextDocImageContainer.of(docRef, loopItemRef.getEntryRef(), loopItemRef.getItemNo(), entry.getValue());
+
+            saveTextDocumentImage(imageContainer, user);
+        }
     }
 
 
@@ -404,7 +415,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
-    // fixme: implement
     public void updateTextDocumentMenu(TextDocMenuContainer menuWrapper, UserDomainObject user) {
         DocVersion docVersion = docVersionRepository.findByDocIdAndNo(menuWrapper.getDocId(), menuWrapper.getDocVersionNo());
 
@@ -426,7 +436,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         menuRepository.save(ormMenu);
 
-        // fixme: save history
+        // fixme: history
         // TextDocMenuHistory menuHistory = new TextDocMenuHistory(menu, user);
         // textDocRepository.saveMenuHistory(menuHistory);
     }

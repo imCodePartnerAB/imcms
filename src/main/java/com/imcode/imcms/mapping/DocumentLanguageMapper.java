@@ -12,13 +12,16 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import scala.language;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 
 // todo: add security checks
 @Service
+@Transactional
 public class DocumentLanguageMapper {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -37,10 +40,45 @@ public class DocumentLanguageMapper {
         });
     }
 
-    public DocumentLanguage getByCode(String code) {
+    public DocumentLanguage findByCode(String code) {
+        return EntityConverter.fromEntity(languageRepository.findByCode(code));
+    }
+
+    public void deleteByCode(String code) {
+        Language language = languageRepository.findByCode(code);
+        if (language != null) languageRepository.delete(language);
+    }
+
+    public void setDefault(DocumentLanguage language) {
+        setDefault(language.getCode());
+    }
+
+    public void setDefault(String code) {
         Language language = languageRepository.findByCode(code);
 
-        return language == null ? null : EntityConverter.fromEntity(language);
+        if (language != null) {
+            String propertyValue = String.valueOf(language.getId());
+            SystemProperty property = systemRepository.findByName("DefaultLanguageId");
+            if (property == null) {
+                property = new SystemProperty(8, "DefaultLanguageId", propertyValue);
+                systemRepository.save(property);
+            } else {
+                property.setValue(propertyValue);
+            }
+        }
+    }
+
+    public void save(DocumentLanguage language) {
+        Language ormLanguage = languageRepository.findByCode(language.getCode());
+
+        if (ormLanguage != null) {
+            ormLanguage.setName(language.getName());
+            ormLanguage.setName(language.getNativeName());
+        } else {
+            languageRepository.save(
+                new Language(language.getCode(), language.getName(), language.getNativeName())
+            );
+        }
     }
 
     public boolean isDefault(DocumentLanguage language) {

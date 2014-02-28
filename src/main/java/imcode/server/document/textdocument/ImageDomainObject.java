@@ -5,7 +5,6 @@ import imcode.server.Imcms;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.Resize;
-import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -41,12 +40,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
     private volatile String linkUrl = "";
 
     private volatile String name = "";
-
-    // Source type id
-    private volatile Integer type = source.getTypeId();
-
-    // Source storage string
-    private volatile String url = source.toStorageString();
 
     private volatile Long archiveImageId;
 
@@ -100,22 +93,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
         }
 
         return null;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
     }
 
     public int getWidth() {
@@ -233,12 +210,9 @@ public class ImageDomainObject implements Serializable, Cloneable {
     }
 
     public void setSource(ImageSource source) {
-        if (null == source) {
-            throw new NullArgumentException("source");
-        }
+        Objects.requireNonNull(source, "source");
+
         this.source = source;
-        this.type = source.getTypeId();
-        this.url = source.toStorageString();
     }
 
     public boolean isEmpty() {

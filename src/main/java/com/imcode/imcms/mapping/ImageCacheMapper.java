@@ -8,25 +8,29 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-//fixme:  JPA
 @Service
 @Transactional
 public class ImageCacheMapper {
+
     private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
 
-    @Autowired
-    private SessionFactory factory;
+    @Inject
+    private EntityManager entityManager;
+
+    private Session getCurrentSession() {
+        return entityManager.unwrap(Session.class);
+    }
 
 
     public void deleteDocumentImagesCache(int docId, Map<Integer, ImageDomainObject> images) {
@@ -64,7 +68,7 @@ public class ImageCacheMapper {
             return;
         }
 
-        factory.getCurrentSession()
+        getCurrentSession()
                 .getNamedQuery("ImageCache.deleteAllById")
                 .setParameterList("ids", cacheIds)
                 .executeUpdate();
@@ -74,7 +78,7 @@ public class ImageCacheMapper {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public long getTextImageCacheFileSizeTotal() {
-        Number total = (Number) factory.getCurrentSession()
+        Number total = (Number) getCurrentSession()
                 .getNamedQuery("ImageCache.fileSizeTotal")
                 .uniqueResult();
 
@@ -82,7 +86,7 @@ public class ImageCacheMapper {
     }
 
     public void deleteTextImageCacheLFUEntries() {
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         Number count = (Number) session
                 .getNamedQuery("ImageCache.countEntries")
@@ -110,7 +114,7 @@ public class ImageCacheMapper {
     }
 
     public void addImageCache(ImageCacheDomainObject imageCache) {
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         session.getNamedQuery("ImageCache.deleteById")
                 .setString("id", imageCache.getId())
@@ -121,7 +125,7 @@ public class ImageCacheMapper {
     }
 
     public void incrementFrequency(String cacheId) {
-        factory.getCurrentSession()
+        getCurrentSession()
                 .getNamedQuery("ImageCache.incFrequency")
                 .setString("id", cacheId)
                 .setInteger("maxFreq", Integer.MAX_VALUE)
@@ -131,7 +135,7 @@ public class ImageCacheMapper {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ImageDomainObject> getAllDocumentImages() {
 
-        List<ImageDomainObject> images = factory.getCurrentSession()
+        List<ImageDomainObject> images = getCurrentSession()
                 .getNamedQuery("Image.allImages")
                 .list();
 

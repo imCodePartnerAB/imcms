@@ -10,31 +10,32 @@ import imcode.server.user.UserDomainObject;
 import java.util.*;
 
 /**
- * Copies documents permissions to meta.
+ * Copies documents permissions into meta.
  */
+//todo: cleanup legacy SQL code
 public class DocumentPermissionSetMapper {
 
-    public void saveRestrictedDocumentPermissionSets(DocumentDomainObject document, UserDomainObject user,
+    public void saveRestrictedDocumentPermissionSets(Meta ormMeta, DocumentDomainObject document, UserDomainObject user,
                                                      DocumentDomainObject oldDocument) {
         if (null == oldDocument || user.canDefineRestrictedOneFor(oldDocument)) {
-            saveRestrictedDocumentPermissionSet(document, document.getPermissionSets().getRestricted1(), false);
-            saveRestrictedDocumentPermissionSet(document, document.getPermissionSetsForNewDocument().getRestricted1(), true);
+            saveRestrictedDocumentPermissionSet(ormMeta, document, document.getPermissionSets().getRestricted1(), false);
+            saveRestrictedDocumentPermissionSet(ormMeta, document, document.getPermissionSetsForNewDocument().getRestricted1(), true);
         }
         if (null == oldDocument || user.canDefineRestrictedTwoFor(oldDocument)) {
-            saveRestrictedDocumentPermissionSet(document, document.getPermissionSets().getRestricted2(), false);
-            saveRestrictedDocumentPermissionSet(document, document.getPermissionSetsForNewDocument().getRestricted2(), true);
+            saveRestrictedDocumentPermissionSet(ormMeta, document, document.getPermissionSets().getRestricted2(), false);
+            saveRestrictedDocumentPermissionSet(ormMeta, document, document.getPermissionSetsForNewDocument().getRestricted2(), true);
         }
     }
 
 
-    void saveRestrictedDocumentPermissionSet(final DocumentDomainObject document,
-                                             final DocumentPermissionSetDomainObject documentPermissionSet,
-                                             final boolean forNewDocuments) {
+    void saveRestrictedDocumentPermissionSet(Meta ormMeta, DocumentDomainObject document,
+                                             DocumentPermissionSetDomainObject documentPermissionSet,
+                                             boolean forNewDocuments) {
 
-        List permissionPairs = new ArrayList(Arrays.asList(new PermissionPair[]{
-                new PermissionPair(DocumentPermissionSetDomainObject.EDIT_DOCINFO_PERMISSION_ID, documentPermissionSet.getEditDocumentInformation()),
-                new PermissionPair(DocumentPermissionSetDomainObject.EDIT_PERMISSIONS_PERMISSION_ID, documentPermissionSet.getEditPermissions()),
-        }));
+        List<PermissionPair> permissionPairs = new ArrayList<>();
+
+        permissionPairs.add(new PermissionPair(DocumentPermissionSetDomainObject.EDIT_DOCINFO_PERMISSION_ID, documentPermissionSet.getEditDocumentInformation()));
+        permissionPairs.add(new PermissionPair(DocumentPermissionSetDomainObject.EDIT_PERMISSIONS_PERMISSION_ID, documentPermissionSet.getEditPermissions()));
 
         if (document instanceof TextDocumentDomainObject) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) documentPermissionSet;
@@ -48,22 +49,19 @@ public class DocumentPermissionSetMapper {
         }
 
         int permissionBits = 0;
-        for (Iterator iterator = permissionPairs.iterator(); iterator.hasNext(); ) {
-            PermissionPair permissionPair = (PermissionPair) iterator.next();
+        for (PermissionPair permissionPair : permissionPairs) {
             if (permissionPair.hasPermission) {
                 permissionBits |= permissionPair.bit;
             }
         }
 
-        //fixme:
-        Meta meta = null; //document.getMeta();
         Set<Meta.PermissionSetEx> permissionSetEx = forNewDocuments
-                ? meta.getPermissionSetExForNew()
-                : meta.getPermissionSetEx();
+                ? ormMeta.getPermissionSetExForNew()
+                : ormMeta.getPermissionSetEx();
 
         Map<Integer, Integer> permissionSetBitsMap = forNewDocuments
-                ? meta.getPermissionSetBitsForNewMap()
-                : meta.getPermissionSetBitsMap();
+                ? ormMeta.getPermissionSetBitsForNewMap()
+                : ormMeta.getPermissionSetBitsMap();
 
         Integer setId = documentPermissionSet.getType().getId();
 
@@ -81,15 +79,15 @@ public class DocumentPermissionSetMapper {
 
         permissionSetEx = filteredPermissionSetEx;
         if (forNewDocuments) {
-            meta.setPermissionSetExForNew(permissionSetEx);
+            ormMeta.setPermissionSetExForNew(permissionSetEx);
         } else {
-            meta.setPermissionSetEx(permissionSetEx);
+            ormMeta.setPermissionSetEx(permissionSetEx);
         }
 
         //TODO: end of optimize
                 
         /*        
-        final int permissionBits1 = permissionBits;
+        int permissionBits1 = permissionBits;
         database.execute(new TransactionDatabaseCommand() {
             public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
                 sqlDeleteFromExtendedPermissionsTable(document, documentPermissionSet, forNewDocuments, connection);
@@ -138,7 +136,7 @@ public class DocumentPermissionSetMapper {
                                                  + ",?)";
         for ( Iterator iterator = allowedTemplateGroupIds.iterator(); iterator.hasNext(); ) {
             Integer allowedTemplateGroupId = (Integer) iterator.next();
-            final Object[] parameters = new String[] {
+            Object[] parameters = new String[] {
                     "" + document.getId(), "" + textDocumentPermissionSet.getType(),
                     ""
                     + allowedTemplateGroupId.intValue()
@@ -186,7 +184,7 @@ public class DocumentPermissionSetMapper {
                                                   + ",?)";
         for ( Iterator iterator = allowedDocumentTypeIds.iterator(); iterator.hasNext(); ) {
             Integer allowedDocumentTypeId = (Integer) iterator.next();
-            final Object[] parameters = new String[] {
+            Object[] parameters = new String[] {
                     "" + document.getId(), "" + textDocumentPermissionSet.getType(),
                     ""
                     + allowedDocumentTypeId.intValue()

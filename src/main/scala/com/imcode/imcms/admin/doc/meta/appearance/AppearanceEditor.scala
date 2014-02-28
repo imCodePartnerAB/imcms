@@ -41,7 +41,7 @@ class AppearanceEditor(meta: DocumentMeta, commonContentMap: Map[DocumentLanguag
   case class Data(
     i18nMetas: Map[DocumentLanguage, DocumentCommonContent],
     enabledLanguages: Set[DocumentLanguage],
-    disabledLanguageShowSetting: DocumentMeta.DisabledLanguageShowSetting,
+    disabledLanguageShowSetting: DocumentMeta.DisabledLanguageShowMode,
     alias: Option[String],
     target: String
   )
@@ -63,8 +63,8 @@ class AppearanceEditor(meta: DocumentMeta, commonContentMap: Map[DocumentLanguag
   }
 
   override val view = new AppearanceEditorView |>> { v =>
-    v.languages.cbShowMode.addItem(DocumentMeta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
-    v.languages.cbShowMode.addItem(DocumentMeta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
+    v.languages.cbShowMode.addItem(DocumentMeta.DisabledLanguageShowMode.DO_NOT_SHOW, "Show 'Not found' page")
+    v.languages.cbShowMode.addItem(DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE, "Show document in default language")
 
     for (i18nMetaEditorWidget <- i18nMetaEditorViews) {
       v.languages.lytI18nMetas.addComponent(i18nMetaEditorWidget)
@@ -143,7 +143,7 @@ class AppearanceEditor(meta: DocumentMeta, commonContentMap: Map[DocumentLanguag
 
     view.alias.txtAlias.setInputPrompt(meta.getId.asOption.map(_.toString).orNull)
     view.alias.txtAlias.value = meta.getAlias.trimToEmpty
-    view.languages.cbShowMode.select(meta.getDisabledLanguageShowSetting)
+    view.languages.cbShowMode.select(meta.getDisabledLanguageShowMode)
 
     for ((target, targetCaption) <- ListMap("_self" -> "Same frame", "_blank" -> "New window", "_top" -> "Replace all")) {
       view.linkTarget.cbTarget.addItem(target, targetCaption)

@@ -5,7 +5,7 @@ package admin.docadmin
 import com.imcode.imcms.admin.docadmin.menu.MenuEditorParameters
 import com.imcode.imcms.admin.docadmin.text.TextEditorParameters
 import com.imcode.imcms.api._
-import com.imcode.imcms.mapping.container.{DocVersionRef, LoopItemRef, TextDocMenuContainer}
+import com.imcode.imcms.mapping.container.{DocVersionRef, TextDocMenuContainer}
 import java.util.Locale
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.component._
@@ -30,6 +30,7 @@ import com.imcode.imcms.admin.docadmin.image.ImagesEditor
 import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
 import scala.Some
+import imcode.server.document.textdocument.TextDocumentDomainObject.LoopItemRef
 
 // todo: validate params in filter, create params wrapper, pass params into DocAdmin (no need to examine path in init)?
 // todo: template/group

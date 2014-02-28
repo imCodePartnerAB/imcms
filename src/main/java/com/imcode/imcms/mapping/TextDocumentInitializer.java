@@ -12,6 +12,9 @@ import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
+import org.apache.commons.collections4.Closure;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -53,17 +56,12 @@ public class TextDocumentInitializer {
     }
 
     public void initTexts(TextDocumentDomainObject document) {
-        for (TextDocTextContainer textContainer : textDocMapper.getAllTexts(document.getRef())) {
-            LoopEntryRef loopEntryRef = textContainer.getLoopEntryRef();
+        for (Map.Entry<Integer, TextDomainObject> e : textDocMapper.getTexts(document.getRef()).entrySet()) {
+            document.setText(e.getKey(), e.getValue());
+        }
 
-            if (loopEntryRef == null) {
-                document.setText(textContainer.getTextNo(), textContainer.getText());
-            } else {
-                document.setText(
-                        LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), textContainer.getTextNo()),
-                        textContainer.getText()
-                );
-            }
+        for (Map.Entry<TextDocumentDomainObject.LoopItemRef, TextDomainObject> e : textDocMapper.getLoopTexts(document.getRef()).entrySet()) {
+            document.setText(e.getKey(), e.getValue());
         }
     }
 
@@ -101,7 +99,7 @@ public class TextDocumentInitializer {
                 document.setImage(imageContainer.getImageNo(), imageContainer.getImage());
             } else {
                 document.setImage(
-                        LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), imageContainer.getImageNo()),
+                        TextDocumentDomainObject.LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), imageContainer.getImageNo()),
                         imageContainer.getImage()
                 );
             }

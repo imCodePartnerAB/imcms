@@ -101,15 +101,15 @@ request.setAttribute("documentationUrl", documentationUrl);
 			<imcms:include no='1' label='Dynamisk inkludering 1'/>
 
 			
-		  <imcms:contentloop2 no="1">
-			<imcms:text no='2' label='<br/>Text' pre='<div class="text">' post='</div>' />
-			<imcms:image no="33"/>  
-		  </imcms:contentloop2>
+		  <%--<imcms:contentloop2 no="1">--%>
+			<%--<imcms:text no='2' label='<br/>Text' pre='<div class="text">' post='</div>' />--%>
+			<%--<imcms:image no="33"/>  --%>
+		  <%--</imcms:contentloop2>--%>
 
 
-		  <imcms:contentloop2 no="100">
-			<imcms:text no='100' label='<br/>Text' pre='<div class="text">' post='</div>' />
-		  </imcms:contentloop2>
+		  <%--<imcms:contentloop2 no="100">--%>
+			<%--<imcms:text no='100' label='<br/>Text' pre='<div class="text">' post='</div>' />--%>
+		  <%--</imcms:contentloop2>--%>
 
 		  <%--
 			  <imcms:image no='3' label='Bild' pre='<br/><br/>' post='<br/>'/><br/>

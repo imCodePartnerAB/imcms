@@ -39,7 +39,7 @@ trait DocumentIndexService extends Log4jLoggerSupport {
     }
   }
 
-  // fixme: optimize
+  // todo: optimize
   final def count: Try[Long] = query(new SolrQuery("*:*")).map(_.getResults.getNumFound)
 
   /**

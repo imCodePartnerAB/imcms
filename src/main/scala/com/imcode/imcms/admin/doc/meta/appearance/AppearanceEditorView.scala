@@ -13,7 +13,7 @@ import com.imcode.imcms.vaadin.Current
 class AppearanceEditorView extends TabSheet with TabSheetSmallStyle with FullSize {
 
   object languages {
-    val cbShowMode = new ComboBox with SingleSelect[DocumentMeta.DisabledLanguageShowSetting] with FullWidth with NoNullSelection
+    val cbShowMode = new ComboBox with SingleSelect[DocumentMeta.DisabledLanguageShowMode] with FullWidth with NoNullSelection
     val lblShowMode = new Label("When language is disabled") with UndefinedSize
     val lytShowMode = new HorizontalLayout(lblShowMode, cbShowMode) with FullWidth with MiddleLeftAlignment with Spacing with Margin |>> { lyt =>
       lyt.setExpandRatio(cbShowMode, 1.0f)

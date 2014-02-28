@@ -19,9 +19,9 @@ import java.util.*;
 public class DocumentMeta implements Serializable, Cloneable {
 
     /**
-     * Document show options for disabled language.
+     * Document show mode for disabled language.
      */
-    public static enum DisabledLanguageShowSetting {
+    public static enum DisabledLanguageShowMode {
         SHOW_IN_DEFAULT_LANGUAGE,
         DO_NOT_SHOW,
     }
@@ -33,7 +33,7 @@ public class DocumentMeta implements Serializable, Cloneable {
     /**
      * Disabled language's content show option.
      */
-    private volatile DisabledLanguageShowSetting disabledLanguageShowSetting = DisabledLanguageShowSetting.DO_NOT_SHOW;
+    private volatile DisabledLanguageShowMode disabledLanguageShowMode = DisabledLanguageShowMode.DO_NOT_SHOW;
 
     // todo: rename to documentTypeId
     private volatile Integer documentType;
@@ -87,7 +87,7 @@ public class DocumentMeta implements Serializable, Cloneable {
         try {
             DocumentMeta clone = (DocumentMeta) super.clone();
 
-            clone.disabledLanguageShowSetting = disabledLanguageShowSetting;
+            clone.disabledLanguageShowMode = disabledLanguageShowMode;
             clone.properties = new HashMap<>(properties);
             clone.categoryIds = new HashSet<>(categoryIds);
 
@@ -108,7 +108,7 @@ public class DocumentMeta implements Serializable, Cloneable {
 
             return clone;
         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
     }
 
@@ -258,12 +258,12 @@ public class DocumentMeta implements Serializable, Cloneable {
         this.keywords = keywords != null ? keywords : new HashSet<String>();
     }
 
-    public DisabledLanguageShowSetting getDisabledLanguageShowSetting() {
-        return disabledLanguageShowSetting;
+    public DisabledLanguageShowMode getDisabledLanguageShowMode() {
+        return disabledLanguageShowMode;
     }
 
-    public void setDisabledLanguageShowSetting(DisabledLanguageShowSetting disabledLanguageShowSetting) {
-        this.disabledLanguageShowSetting = disabledLanguageShowSetting;
+    public void setDisabledLanguageShowMode(DisabledLanguageShowMode disabledLanguageShowMode) {
+        this.disabledLanguageShowMode = disabledLanguageShowMode;
     }
 
     public Set<DocumentLanguage> getEnabledLanguages() {

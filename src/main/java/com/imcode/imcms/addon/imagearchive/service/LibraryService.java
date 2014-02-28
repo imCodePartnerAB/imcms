@@ -1,41 +1,46 @@
 package com.imcode.imcms.addon.imagearchive.service;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.*;
-
+import com.imcode.imcms.addon.imagearchive.dto.LibrariesDto;
+import com.imcode.imcms.addon.imagearchive.dto.LibraryRolesDto;
+import com.imcode.imcms.addon.imagearchive.entity.Libraries;
+import com.imcode.imcms.addon.imagearchive.entity.LibraryRoles;
+import com.imcode.imcms.addon.imagearchive.entity.Roles;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
+import com.imcode.imcms.api.User;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.imcode.imcms.addon.imagearchive.dto.LibrariesDto;
-import com.imcode.imcms.addon.imagearchive.dto.LibraryRolesDto;
-import com.imcode.imcms.addon.imagearchive.entity.Libraries;
-import com.imcode.imcms.addon.imagearchive.entity.LibraryRoles;
-import com.imcode.imcms.addon.imagearchive.entity.Roles;
-import com.imcode.imcms.api.User;
-import org.hibernate.SessionFactory;
+import javax.persistence.EntityManager;
+import java.io.File;
+import java.io.FileFilter;
+import java.util.*;
 
 
+@Service
 @Transactional
 public class LibraryService {
     @Autowired
     private Facade facade;
 
     @Autowired
-    private SessionFactory factory;
+    private EntityManager entityManager;
+    
+    private Session getCurrentSession() {
+        return entityManager.unwrap(Session.class);
+    }
 
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Libraries findLibraryById(int libraryId) {
 
-        return (Libraries) factory.getCurrentSession()
+        return (Libraries) getCurrentSession()
                 .createQuery(
                         "SELECT lib.id AS id, lib.folderNm AS folderNm, lib.libraryNm AS libraryNm, " +
                                 "lib.filepath AS filepath, lib.libraryType AS libraryType " +
@@ -47,7 +52,7 @@ public class LibraryService {
 
     /* Syncs libraries(their paths, name etc) in database with actual folders in filesystem(Library paths in build properties) */
     public void syncLibraryFolders() {
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         syncOldLibraryFolders();
 
@@ -107,7 +112,7 @@ public class LibraryService {
     }
 
     private void syncOldLibraryFolders() {
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         File[] oldLibraryFiles = facade.getConfig().getOldLibraryPaths();
         Set<File> files = new HashSet<File>();
@@ -185,7 +190,7 @@ public class LibraryService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Libraries> findLibraries() {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .createQuery(
                         "SELECT lib.id AS id, lib.folderNm AS folderNm, lib.libraryNm AS libraryNm, " +
                                 "lib.filepath AS filepath, lib.libraryType AS libraryType FROM Libraries lib " +
@@ -197,7 +202,7 @@ public class LibraryService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Roles> findAvailableRoles(int libraryId) {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .createQuery(
                         "SELECT r.id AS id, r.roleName AS roleName FROM Roles r " +
                                 "WHERE NOT EXISTS (FROM LibraryRoles lr WHERE lr.roleId = r.id AND lr.libraryId = :libraryId) " +
@@ -210,7 +215,7 @@ public class LibraryService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Roles> findRoles() {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .createQuery(
                         "SELECT r.id AS id, r.roleName AS roleName FROM Roles r " +
                                 "ORDER BY r.roleName")
@@ -221,7 +226,7 @@ public class LibraryService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<LibraryRolesDto> findLibraryRoles(int libraryId) {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .getNamedQuery("libraryRoles")
                 .setInteger("libraryId", libraryId)
                 .setResultTransformer(Transformers.aliasToBean(LibraryRolesDto.class))
@@ -230,7 +235,7 @@ public class LibraryService {
 
     public void updateLibraryRoles(int libraryId, String libraryNm, List<LibraryRolesDto> libraryRoles) {
 
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         session.createQuery(
                 "UPDATE Libraries lib SET lib.libraryNm = :libraryNm, lib.updatedDt = current_timestamp() WHERE lib.id = :libraryId")
@@ -325,7 +330,7 @@ public class LibraryService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<LibrariesDto> findLibraries(User user) {
 
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         if (user.isSuperAdmin()) {
             return session.createQuery(
@@ -352,7 +357,7 @@ public class LibraryService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public LibrariesDto findLibraryById(User user, int libraryId) {
 
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         LibrariesDto library = (LibrariesDto) session.createQuery(
                 "SELECT lib.id AS id, lib.libraryNm AS libraryNm, lib.folderNm AS folderNm, " +

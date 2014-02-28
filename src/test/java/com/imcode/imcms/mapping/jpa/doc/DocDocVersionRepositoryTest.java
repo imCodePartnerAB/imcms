@@ -50,7 +50,7 @@ public class DocDocVersionRepositoryTest {
         Meta meta = new Meta();
 
         meta.setDefaultVersionNo(3);
-        meta.setDisabledLanguageShowSetting(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE);
+        meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         meta.setDocumentType(1);
         meta.setCreatorId(1);
         meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(true);

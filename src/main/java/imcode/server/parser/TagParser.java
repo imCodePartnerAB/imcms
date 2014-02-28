@@ -1,7 +1,6 @@
 package imcode.server.parser;
 
 import com.imcode.imcms.mapping.container.LoopEntryRef;
-import com.imcode.imcms.mapping.container.LoopItemRef;
 import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.servlet.ImcmsFilter;
@@ -397,13 +396,13 @@ public class TagParser {
             no = implicitTextNumber++;
             text = loopEntryRef == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), no));
+                    : textDocumentToUse.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), no));
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
             text = loopEntryRef == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), no));
+                    : textDocumentToUse.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), no));
 
             implicitTextNumber = no + 1;
         }
@@ -516,7 +515,7 @@ public class TagParser {
         }
         ImageDomainObject image = loopEntryRef == null
                 ? textDocumentToUse.getImage(imageIndex)
-                : textDocumentToUse.getImage(LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), imageIndex));
+                : textDocumentToUse.getImage(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), imageIndex));
 
         if (image == null) {
             image = DEFAULT_IMAGE;

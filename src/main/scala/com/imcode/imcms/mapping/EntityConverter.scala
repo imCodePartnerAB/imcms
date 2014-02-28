@@ -2,10 +2,11 @@ package com.imcode
 package imcms.mapping
 
 import com.imcode.imcms.api
+import com.imcode.imcms.mapping.container.TextDocImageContainer
 import com.imcode.imcms.mapping.jpa.doc
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContent
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc._
-import imcode.server.document.textdocument.{MenuDomainObject, MenuItemDomainObject, TextDocumentDomainObject, TextDomainObject}
+import imcode.server.document.textdocument._
 
 import scala.collection.JavaConverters._
 import imcode.server.document.{CategoryTypeDomainObject, CategoryDomainObject}
@@ -23,11 +24,15 @@ object EntityConverter {
     .modifiedDt(entity.getModifiedDt)
     .build()
 
-  def fromEntity(entity: doc.Language): api.DocumentLanguage = api.DocumentLanguage.builder
-    .code(entity.getCode)
-    .name(entity.getName)
-    .nativeName(entity.getNativeName)
-    .build()
+  def fromEntity(entity: doc.Language): api.DocumentLanguage = entity match {
+    case null => null
+    case _ =>
+      api.DocumentLanguage.builder
+      .code(entity.getCode)
+      .name(entity.getName)
+      .nativeName(entity.getNativeName)
+      .build()
+  }
 
 
   def fromEntity(entity: CommonContent): DocumentCommonContent = DocumentCommonContent.builder
@@ -42,7 +47,7 @@ object EntityConverter {
     m.setCreatedDatetime(entity.getCreatedDatetime)
     m.setCreatorId(entity.getCreatorId)
     m.setDefaultVersionNo(entity.getDefaultVersionNo)
-    m.setDisabledLanguageShowSetting(DocumentMeta.DisabledLanguageShowSetting.values()(entity.getDisabledLanguageShowSetting.ordinal()))
+    m.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(entity.getDisabledLanguageShowMode.name()))
     m.setDocumentType(entity.getDocumentType)
     m.setEnabledLanguages(entity.getEnabledLanguages.asScala.map(fromEntity).asJava)
     m.setId(entity.getId)
@@ -59,16 +64,47 @@ object EntityConverter {
     //m.setPublicationStatus(entity.getPublicationStatusInt)
     m.setPublisherId(entity.getPublisherId)
     m.setRestrictedOneMorePrivilegedThanRestrictedTwo(entity.getRestrictedOneMorePrivilegedThanRestrictedTwo)
+    //m.setRoleIdToDocumentPermissionSetTypeMappings()
     m.setSearchDisabled(entity.getSearchDisabled)
     m.setTarget(entity.getTarget)
   }
 
-
-  def fromEntity(entity: Text): TextDomainObject = new TextDomainObject |>> { t=>
-    t.setText(entity.getText)
-    t.setType(entity.getType.ordinal())
+  def toEntity(m: DocumentMeta): doc.Meta = new doc.Meta |>> { e =>
+    e.setArchivedDatetime(m.getArchivedDatetime)
+    e.setCategoryIds(m.getCategoryIds)
+    e.setCreatedDatetime(m.getCreatedDatetime)
+    e.setCreatorId(m.getCreatorId)
+    e.setDefaultVersionNo(m.getDefaultVersionNo)
+    e.setDisabledLanguageShowMode(doc.Meta.DisabledLanguageShowMode.valueOf(m.getDisabledLanguageShowMode.name()))
+    e.setDocumentType(m.getDocumentType)
+    //e.setEnabledLanguages()
+    e.setId(m.getId)
+    e.setKeywords(m.getKeywords)
+    e.setLinkableByOtherUsers(m.getLinkableByOtherUsers)
+    e.setLinkedForUnauthorizedUsers(m.getLinkedForUnauthorizedUsers)
+    e.setModifiedDatetime(m.getModifiedDatetime)
+    //e.setPermissionSets(m.getPermissionSets)
+    //e.setPermissionSetsForNew(m.getPermissionSetExForNew)
+    //e.setPermissionSetsForNewDocuments(m.getPermissionSetsForNewDocuments)
+    e.setProperties(m.getProperties)
+    e.setPublicationEndDatetime(m.getPublicationEndDatetime)
+    e.setPublicationStartDatetime(m.getPublicationStartDatetime)
+    e.setPublicationStatus(m.getPublicationStatus.asInt())
+    e.setPublisherId(m.getPublisherId)
+    e.setRestrictedOneMorePrivilegedThanRestrictedTwo(m.getRestrictedOneMorePrivilegedThanRestrictedTwo)
+    //e.setRoleIdToPermissionSetIdMap()
+    e.setSearchDisabled(m.getSearchDisabled)
+    e.setTarget(m.getTarget)
   }
 
+
+  def fromEntity(entity: Text): TextDomainObject = entity match {
+    case null => null
+    case _ => new TextDomainObject |>> { t=>
+      t.setText(entity.getText)
+      t.setType(entity.getType.ordinal())
+    }
+  }
 
   def fromEntity(entity: Loop): api.Loop = {
     val entries = entity.getEntries.asScala.map(e => Int.box(e.getNo) -> Boolean.box(e.isEnabled)).toMap.asJava
@@ -127,5 +163,47 @@ object EntityConverter {
     vo.setSortKey(entity.getSortKey)
     vo.setTreeSortIndex(entity.getTreeSortIndex)
   }
+
+
+  def toEntity(imageContainer: TextDocImageContainer): doc.content.textdoc.Image = {
+
+  }
+
+  //todo: set null vs
+  def toEntity(image: ImageDomainObject): doc.content.textdoc.Image = new doc.content.textdoc.Image |>> { e =>
+    e.setAlign(image.getAlign)
+    e.setAlternateText(image.getAlternateText)
+    e.setBorder(image.getBorder)
+    //e.setCropRegion()
+    e.setFormat(if (image.getFormat == null) 0 else image.getFormat.getOrdinal)
+    e.setGeneratedFilename(image.getGeneratedFilename)
+    e.setHeight(image.getHeight)
+    e.setHorizontalSpace(image.getHorizontalSpace)
+    e.setImageUrl(image.getSource.toStorageString)
+    e.setLinkUrl(image.getLinkUrl)
+
+    e.setLowResolutionUrl(image.getLowResolutionUrl)
+    e.setName(image.getName)
+    e.setResize(if (image.getResize == null) 0 else image.getResize.getOrdinal)
+    e.setRotateAngle(if (image.getRotateDirection == null) 0 else image.getRotateDirection.getAngle)
+    e.setTarget(image.getTarget)
+    e.setType(image.getSource.getTypeId)
+    e.setVerticalSpace(image.getVerticalSpace)
+    e.setWidth(image.getWidth)
+    e.setHeight(image.getHeight)
+
+    //e.setNo(image.get)
+    //e.setDocVersion()
+    //e.setId()
+    //e.setLanguage()
+  }
+
+//  public RotateDirection getRotateDirection() {
+//    return RotateDirection.getByAngleDefaultIfNull(rotateAngle);
+//  }
+//
+//  public void setRotateDirection(RotateDirection dir) {
+//    this.rotateAngle = (short) (dir != null ? dir.getAngle() : 0);
+//  }
 
 }

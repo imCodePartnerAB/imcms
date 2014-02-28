@@ -76,9 +76,9 @@ public class Meta {
     }
 
     /**
-     * Document show setting for disabled language.
+     * Document show mode for disabled language.
      */
-    public static enum DisabledLanguageShowSetting {
+    public static enum DisabledLanguageShowMode {
         SHOW_IN_DEFAULT_LANGUAGE,
         DO_NOT_SHOW,
     }
@@ -97,7 +97,7 @@ public class Meta {
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "disabled_language_show_rule", nullable = false)
-    private DisabledLanguageShowSetting disabledLanguageShowSetting = DisabledLanguageShowSetting.DO_NOT_SHOW;
+    private DisabledLanguageShowMode disabledLanguageShowMode = DisabledLanguageShowMode.DO_NOT_SHOW;
 
     // CHECKED
     // DEPRECATED?
@@ -452,12 +452,12 @@ public class Meta {
         this.keywords = keywords != null ? keywords : new HashSet<String>();
     }
 
-    public DisabledLanguageShowSetting getDisabledLanguageShowSetting() {
-        return disabledLanguageShowSetting;
+    public DisabledLanguageShowMode getDisabledLanguageShowMode() {
+        return disabledLanguageShowMode;
     }
 
-    public void setDisabledLanguageShowSetting(DisabledLanguageShowSetting disabledLanguageShowSetting) {
-        this.disabledLanguageShowSetting = disabledLanguageShowSetting;
+    public void setDisabledLanguageShowMode(DisabledLanguageShowMode disabledLanguageShowMode) {
+        this.disabledLanguageShowMode = disabledLanguageShowMode;
     }
 
     public Set<Language> getEnabledLanguages() {

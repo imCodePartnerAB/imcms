@@ -6,17 +6,23 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RolePermissionDomainObject;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.*;
 
+@Service
 @Transactional
 public class UserService {
+    
     @Autowired
-    private SessionFactory factory;
+    private EntityManager entityManager;
 
+    private Session getCurrentSession() {
+        return entityManager.unwrap(Session.class);
+    }
 
     /*
     Returns a set of role ids that have the given permissions(use/change/any)
@@ -24,7 +30,7 @@ public class UserService {
     */
     public Set<Integer> getRoleIdsWithPermission(User user, List<Integer> categoryIds, RolePermissionDomainObject... permissions) {
         Set<Integer> roleIds = new HashSet<Integer>();
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         for (Role role : user.getRoles()) {
             for (RolePermissionDomainObject permission : permissions) {

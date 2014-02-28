@@ -14,7 +14,7 @@
 %>
 <%@ page import="imcode.server.document.textdocument.ContentLoopRef" %>
 <%@ page import="com.google.common.base.Optional" %>
-<%@ page import="com.imcode.imcms.mapping.container.LoopItemRef" %>
+<%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject.LoopItemRef" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%
 

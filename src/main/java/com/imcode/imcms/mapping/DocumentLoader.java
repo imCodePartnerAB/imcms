@@ -53,7 +53,6 @@ public class DocumentLoader {
      * @param docId document id.
      * @return loaded meta of null if meta with given id does not exists.
      */
-    //fixme: alias
     public DocumentMeta loadMeta(int docId) {
         Meta ormMeta = metaRepository.findOne(docId);
 

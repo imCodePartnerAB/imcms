@@ -9,8 +9,8 @@ import com.imcode.imcms.vaadin.component._
 import com.vaadin.ui.MenuBar
 import com.vaadin.ui.MenuBar.Command
 
-// fixme: change lang should update user
-// fixme: change password should update user
+// todo: change lang should update user
+// todo: change password should update user
 class UberAdminManager {
 
   val view = new UberAdminManagerView |>> { v =>

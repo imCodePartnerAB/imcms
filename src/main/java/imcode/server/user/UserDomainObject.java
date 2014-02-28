@@ -795,7 +795,7 @@ public class UserDomainObject implements Cloneable, Serializable {
         boolean enabled = meta.getEnabledLanguages().contains(currentLanguage);
 
         return enabled ||
-                meta.getDisabledLanguageShowSetting() == DocumentMeta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE;
+                meta.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
     }
 
     public boolean canSeeDocumentWhenEditingMenus(DocumentDomainObject document) {

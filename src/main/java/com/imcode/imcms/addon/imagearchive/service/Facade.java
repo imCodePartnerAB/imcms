@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.imcode.imcms.addon.imagearchive.Config;
 import com.imcode.imcms.addon.imagearchive.service.file.FileService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class Facade {
     @Autowired
     private Config config;

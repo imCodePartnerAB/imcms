@@ -1,31 +1,36 @@
 package com.imcode.imcms.addon.imagearchive.service;
 
-import java.util.List;
-
-import com.imcode.imcms.addon.imagearchive.dto.RoleCategoriesDto;
+import com.imcode.imcms.addon.imagearchive.entity.Categories;
 import com.imcode.imcms.addon.imagearchive.entity.CategoryRoles;
+import com.imcode.imcms.addon.imagearchive.entity.CategoryTypes;
 import com.imcode.imcms.addon.imagearchive.entity.Roles;
+import com.imcode.imcms.addon.imagearchive.service.exception.CategoryExistsException;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.imcode.imcms.addon.imagearchive.entity.Categories;
-import com.imcode.imcms.addon.imagearchive.entity.CategoryTypes;
-import com.imcode.imcms.addon.imagearchive.service.exception.CategoryExistsException;
-import org.hibernate.SessionFactory;
+import javax.persistence.EntityManager;
+import java.util.List;
 
+@Service
 @Transactional
 public class CategoryService {
+    
     @Autowired
-    private SessionFactory factory;
+    private EntityManager entityManager;
+    
+    private Session getCurrentSession() {
+        return entityManager.unwrap(Session.class);
+    }
 
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<CategoryTypes> getCategoryTypes() {
 
-        List<CategoryTypes> types = factory.getCurrentSession()
+        List<CategoryTypes> types = getCurrentSession()
                 .createQuery(
                         "SELECT ct.id AS id, ct.name AS name FROM CategoryTypes ct WHERE ct.imageArchive = TRUE ORDER BY ct.name")
                 .setResultTransformer(Transformers.aliasToBean(CategoryTypes.class))
@@ -36,7 +41,7 @@ public class CategoryService {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<CategoryRoles> findCategoryRoles(Roles role) {
-        List<CategoryRoles> categoryRoles = factory.getCurrentSession()
+        List<CategoryRoles> categoryRoles = getCurrentSession()
                 .createQuery("SELECT cr.categoryId AS categoryId, cr.roleId AS roleId, cr.canUse AS canUse, cr.canChange AS canChange " +
                         "FROM CategoryRoles cr WHERE cr.roleId = :roleId")
                 .setInteger("roleId", role.getId())
@@ -49,7 +54,7 @@ public class CategoryService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public boolean existsCategory(String categoryName, int categoryTypeId) {
 
-        Integer existingCategoryId = (Integer) factory.getCurrentSession()
+        Integer existingCategoryId = (Integer) getCurrentSession()
                 .createQuery(
                         "SELECT c.id FROM Categories c WHERE c.name = :name AND c.type.id = :typeId")
                 .setString("name", categoryName)
@@ -63,7 +68,7 @@ public class CategoryService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public boolean existsCategory(int categoryId, String newCategoryName) {
 
-        Integer existingCategoryId = (Integer) factory.getCurrentSession()
+        Integer existingCategoryId = (Integer) getCurrentSession()
                 .createQuery(
                         "SELECT c.id FROM Categories c " +
                                 "WHERE c.name = :newName AND c.id <> :categoryId AND c.type.name = 'Images'")
@@ -76,7 +81,7 @@ public class CategoryService {
     }
 
     public Categories createCategory(String categoryName, int categoryTypeId) throws CategoryExistsException {
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         Integer typeId = (Integer) session
                 .createQuery("SELECT ct.id FROM CategoryTypes ct WHERE ct.id = :id")
@@ -106,7 +111,7 @@ public class CategoryService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Categories getCategory(int categoryId) {
 
-        Categories category = (Categories) factory.getCurrentSession()
+        Categories category = (Categories) getCurrentSession()
                 .createQuery(
                         "SELECT c.id AS id, c.name AS name, c.typeId AS typeId FROM Categories c WHERE c.id = :id")
                 .setInteger("id", categoryId)
@@ -119,7 +124,7 @@ public class CategoryService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Categories> getCategories() {
 
-        List<Categories> categories = factory.getCurrentSession()
+        List<Categories> categories = getCurrentSession()
                 .createQuery(
                         "SELECT c.id AS id, c.name AS name, c.typeId AS typeId FROM Categories c " +
                                 "WHERE c.type.name = :typeName ORDER BY c.name")
@@ -131,7 +136,7 @@ public class CategoryService {
     }
 
     public void deleteCategory(int categoryId) {
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         session.createQuery("DELETE FROM ImageCategories ic WHERE ic.categoryId = :id")
                 .setInteger("id", categoryId)
@@ -156,7 +161,7 @@ public class CategoryService {
             throw new CategoryExistsException();
         }
 
-        factory.getCurrentSession()
+        getCurrentSession()
                 .createQuery(
                         "UPDATE Categories c SET c.name = :name, c.typeId = :typeId WHERE c.id = :categoryId")
                 .setString("name", categoryName)

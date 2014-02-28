@@ -173,12 +173,12 @@ public class ImageBase extends VersionedDocI18nContent {
         this.loopEntryRef = loopEntryRef;
     }
 
-    public Format getFormat() {
-        return Format.findFormat(format);
+    public int getFormat() {
+        return format;
     }
 
-    public void setFormat(Format format) {
-        this.format = format != null ? format.getOrdinal() : 0;
+    public void setFormat(int format) {
+        this.format = format;
     }
 
     public ImageCropRegion getCropRegion() {
@@ -189,13 +189,7 @@ public class ImageBase extends VersionedDocI18nContent {
         this.cropRegion = cropRegion;
     }
 
-    public RotateDirection getRotateDirection() {
-        return RotateDirection.getByAngleDefaultIfNull(rotateAngle);
-    }
 
-    public void setRotateDirection(RotateDirection dir) {
-        this.rotateAngle = (short) (dir != null ? dir.getAngle() : 0);
-    }
 
     public String getGeneratedFilename() {
         return generatedFilename;
@@ -213,11 +207,19 @@ public class ImageBase extends VersionedDocI18nContent {
         this.name = name;
     }
 
-    public Resize getResize() {
-        return Resize.getByOrdinal(resize);
+    public int getResize() {
+        return resize;
     }
 
-    public void setResize(Resize resize) {
-        this.resize = resize == null ? 0 : resize.getOrdinal();
+    public void setResize(int resize) {
+        this.resize = resize;
+    }
+
+    public int getRotateAngle() {
+        return rotateAngle;
+    }
+
+    public void setRotateAngle(int rotateAngle) {
+        this.rotateAngle = rotateAngle;
     }
 }

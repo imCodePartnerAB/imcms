@@ -1,15 +1,13 @@
 package com.imcode.imcms.addon.imagearchive.util;
 
-import java.util.List;
-
-import org.hibernate.Hibernate;
 import org.hibernate.QueryException;
 import org.hibernate.dialect.function.SQLFunction;
 import org.hibernate.engine.spi.Mapping;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.type.Type;
 
-// todo: check in use
+import java.util.List;
+
 public class SQLServerDialect extends org.hibernate.dialect.SQLServerDialect {
     public SQLServerDialect() {
         registerFunction("current_date", new CurrentDateSQLFunction());

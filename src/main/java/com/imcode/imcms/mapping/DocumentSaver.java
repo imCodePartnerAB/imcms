@@ -219,7 +219,6 @@ public class DocumentSaver {
         return EntityConverter.fromEntity(nextDocVersion);
     }
 
-    //fixme: meta permissions
     @Transactional
     public void updateDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> appearances, DocumentDomainObject oldDoc,
                                UserDomainObject user)
@@ -227,16 +226,16 @@ public class DocumentSaver {
 
         checkDocumentForSave(doc);
 
-        //DocMeta ormMeta = new DocMeta
+        Meta ormMeta = EntityConverter.toEntity(doc.getMeta());
 
         if (user.canEditPermissionsFor(oldDoc)) {
-            newUpdateDocumentRolePermissions(doc, user, oldDoc);
-            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(doc, user, oldDoc);
+            newUpdateDocumentRolePermissions(ormMeta, doc, user, oldDoc);
+            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(ormMeta, doc, user, oldDoc);
         }
 
         DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDoc, documentMapper.getImcmsServices(), user);
 
-        saveMeta(doc.getMeta());
+        saveMeta(ormMeta, doc.getMeta());
 
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
             DocumentLanguage language = e.getKey();
@@ -272,25 +271,25 @@ public class DocumentSaver {
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
-    //fixme: meta persmissions
     @Transactional
     public int saveNewDocsWithSharedMetaAndVersion(List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         DocumentDomainObject firstDoc = docs.get(0);
-        DocumentMeta meta = firstDoc.getMeta().clone();
-
         checkDocumentForSave(firstDoc);
 
+        DocumentMeta meta = firstDoc.getMeta().clone();
         documentMapper.setCreatedAndModifiedDatetimes(meta, new Date());
 
-        newUpdateDocumentRolePermissions(firstDoc, user, null);
+        meta.setId(null);
+        Meta ormMeta = EntityConverter.toEntity(meta);
+
+        newUpdateDocumentRolePermissions(ormMeta, firstDoc, user, null);
 
         // Update permissions
-        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(firstDoc, user, null);
+        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(ormMeta, firstDoc, user, null);
 
-        meta.setId(null);
-        int newDocId = saveMeta(meta);
+        int newDocId = saveMeta(ormMeta, meta).getId();
 
         docRepository.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, Integer.toString(newDocId));
 
@@ -348,24 +347,25 @@ public class DocumentSaver {
                                                                 EnumSet<DocumentMapper.SaveOpts> saveOpts, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        DocumentMeta documentMeta = doc.getMeta();
-
         checkDocumentForSave(doc);
 
+        DocumentMeta documentMeta = doc.getMeta().clone();
         documentMapper.setCreatedAndModifiedDatetimes(documentMeta, new Date());
+        documentMeta.setId(null);
+        documentMeta.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
+        documentMeta.setDocumentType(doc.getDocumentTypeId());
 
         if (!user.isSuperAdminOrHasFullPermissionOn(doc)) {
             documentMeta.getPermissionSets().setRestricted1(documentMeta.getPermissionSetsForNewDocument().getRestricted1());
             documentMeta.getPermissionSets().setRestricted2(documentMeta.getPermissionSetsForNewDocument().getRestricted2());
         }
 
-        newUpdateDocumentRolePermissions(doc, user, null);
-        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(doc, user, null);
+        Meta ormMeta = EntityConverter.toEntity(documentMeta);
 
-        documentMeta.setId(null);
-        documentMeta.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
-        documentMeta.setDocumentType(doc.getDocumentTypeId());
-        int newDocId = saveMeta(documentMeta);
+        newUpdateDocumentRolePermissions(ormMeta, doc, user, null);
+        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(ormMeta, doc, user, null);
+
+        int newDocId = saveMeta(ormMeta, documentMeta).getId();
 
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
             DocumentCommonContent dcc = e.getValue();
@@ -414,98 +414,17 @@ public class DocumentSaver {
     /**
      * @return saved document meta.
      */
-    private int saveMeta(DocumentMeta documentMeta) {
+    private Meta saveMeta(Meta ormMeta, DocumentMeta documentMeta) {
         Set<Language> enabledLanguages = new HashSet<>();
 
         for (DocumentLanguage l : documentMeta.getEnabledLanguages()) {
             enabledLanguages.add(languageRepository.findByCode(l.getCode()));
         }
 
-        Meta ormMeta = new Meta();
-        ormMeta.setArchivedDatetime(documentMeta.getArchivedDatetime());
-        ormMeta.setCategoryIds(documentMeta.getCategoryIds());
-        ormMeta.setCreatedDatetime(documentMeta.getCreatedDatetime());
-        ormMeta.setCreatorId(documentMeta.getCreatorId());
-        ormMeta.setDefaultVersionNo(documentMeta.getDefaultVersionNo());
-        ormMeta.setDisabledLanguageShowSetting(Meta.DisabledLanguageShowSetting.values()[documentMeta.getDisabledLanguageShowSetting().ordinal()]);
-        ormMeta.setDocumentType(documentMeta.getDocumentType());
         ormMeta.setEnabledLanguages(enabledLanguages);
-        ormMeta.setId(documentMeta.getId());
-        ormMeta.setKeywords(documentMeta.getKeywords());
-        ormMeta.setLinkableByOtherUsers(documentMeta.getLinkableByOtherUsers());
-        ormMeta.setLinkedForUnauthorizedUsers(documentMeta.getLinkedForUnauthorizedUsers());
 
-        //fixme: move to security section
-        //ormMeta.setPermisionSetEx(meta.getPermissionSets());
-        //ormMeta.setPermisionSetExForNew();
-        //ormMeta.setPermissionSetBitsForNewMap();
-        //ormMeta.setPermissionSetBitsMap();
-
-        ormMeta.setProperties(documentMeta.getProperties());
-        ormMeta.setPublicationEndDatetime(documentMeta.getPublicationEndDatetime());
-        ormMeta.setPublicationStartDatetime(documentMeta.getPublicationStartDatetime());
-        ormMeta.setPublicationStatusInt(documentMeta.getPublicationStatus().asInt());
-        ormMeta.setPublisherId(documentMeta.getPublisherId());
-        ormMeta.setRestrictedOneMorePrivilegedThanRestrictedTwo(documentMeta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
-
-        //fixme: move to security section
-        //ormMeta.setRoleIdToPermissionSetIdMap(meta.getRoleIdToDocumentPermissionSetTypeMappings());
-        ormMeta.setSearchDisabled(documentMeta.getSearchDisabled());
-        ormMeta.setTarget(documentMeta.getTarget());
-
-        metaRepository.saveAndFlush(ormMeta);
-
-        int id = ormMeta.getId();
-        documentMeta.setId(id);
-
-        return id;
+        return metaRepository.saveAndFlush(ormMeta);
     }
-
-/*
-
-    private DocumentPermissionSets createDocumentsPermissionSets(
-            Map<Integer, Integer> permissionSetBitsMap,
-            Set<DocMeta.PermisionSetEx> permissionSetEx) {
-
-        DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-
-        for (Map.Entry<Integer, Integer> permissionSetBitsEntry : permissionSetBitsMap.entrySet()) {
-            Integer setId = permissionSetBitsEntry.getKey();
-            Integer permissionSetBits = permissionSetBitsEntry.getValue();
-            DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
-
-            if (permissionSetBits != 0 && restricted.isEmpty()) {
-                restricted.setFromBits(permissionSetBits);
-            }
-        }
-
-        for (DocMeta.PermisionSetEx ex : permissionSetEx) {
-            Integer setId = ex.getSetId();
-            DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
-
-            setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());
-        }
-
-        return permissionSets;
-    }
-
-
-    private void setPermissionData(DocumentPermissionSetDomainObject permissionSet, Integer permissionId, Integer permissionData) {
-        if (null != permissionId) {
-            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) permissionSet;
-            switch (permissionId) {
-                case PERM_CREATE_DOCUMENT:
-                    textDocumentPermissionSet.addAllowedDocumentTypeId(permissionData.intValue());
-                    break;
-                case ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE:
-                    textDocumentPermissionSet.addAllowedTemplateGroupId(permissionData.intValue());
-                    break;
-                default:
-            }
-        }
-    }
-
-*/
 
 
     /**
@@ -530,7 +449,7 @@ public class DocumentSaver {
      * @param user        an authorized user
      * @param oldDocument original doc when updating or null when inserting (a new doc)
      */
-    private void newUpdateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,
+    private void newUpdateDocumentRolePermissions(Meta ormMeta, DocumentDomainObject document, UserDomainObject user,
                                                   DocumentDomainObject oldDocument) {
 
         // Original (old) and modified or new document permission set type mapping.
@@ -551,8 +470,8 @@ public class DocumentSaver {
         }
 
         RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappingsArray = mappings.getMappings();
-        //fixme: fix call
-        Map<Integer, Integer> roleIdToPermissionSetIdMap = null;//document.getMeta().getRoleIdToPermissionSetIdMap();
+
+        Map<Integer, Integer> roleIdToPermissionSetIdMap = ormMeta.getRoleIdToPermissionSetIdMap();
 
         for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : mappingsArray) {
             RoleId roleId = mapping.getRoleId();

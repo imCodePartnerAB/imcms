@@ -91,13 +91,6 @@ public class TextRepositoryTest {
         }
     }
 
-    @Test
-    public void testFindByDocVersion() throws Exception {
-        for (DocVersion docVersion : docVersions) {
-            List<Text> texts = textRepository.findByDocVersion(docVersion);
-            assertThat(texts.size(), is(TEXTS_COUNT__PER_VERSION));
-        }
-    }
 
     @Test
     public void testFindByDocVersionAndDocLanguage() throws Exception {

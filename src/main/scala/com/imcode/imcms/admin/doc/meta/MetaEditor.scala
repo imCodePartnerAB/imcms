@@ -133,7 +133,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
     ).merge(appearanceEditorOpt.map(_.collectValues())) {
       case ((dc, _), appearance) => (dc, appearance.i18nMetas) |>> { _ =>
         dc.getMeta.setEnabledLanguages(appearance.enabledLanguages.asJava)
-        dc.getMeta.setDisabledLanguageShowSetting(appearance.disabledLanguageShowSetting)
+        dc.getMeta.setDisabledLanguageShowMode(appearance.disabledLanguageShowSetting)
         dc.getMeta.setAlias(appearance.alias.orNull)
         dc.getMeta.setTarget(appearance.target)
       }

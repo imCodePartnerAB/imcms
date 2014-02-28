@@ -3,9 +3,7 @@ package imcms
 package admin.instance.settings.language
 
 import com.imcode.imcms.api.DocumentLanguage
-import com.imcode.imcms.mapping.jpa.doc.{LanguageRepository, Language}
-import com.imcode.imcms.mapping.jpa.SystemPropertyRepository
-import com.imcode.imcms.mapping.EntityConverter
+import com.imcode.imcms.mapping.{DocumentLanguageMapper}
 import com.imcode.imcms.vaadin.Current
 import scala.util.control.{Exception => Ex}
 import scala.collection.JavaConverters._
@@ -19,8 +17,7 @@ import com.imcode.imcms.vaadin.server._
 
 //todo delete in use message
 class LanguageManager {
-  private val languageDao = Imcms.getServices.getManagedBean(classOf[LanguageRepository])
-  private val systemDao = Imcms.getServices.getManagedBean(classOf[SystemPropertyRepository])
+  private val languageMapper = Imcms.getServices.getManagedBean(classOf[DocumentLanguageMapper])
 
   val view = new LanguageManagerView |>> { v =>
     v.miReload.setCommandHandler { _ => reload() }
@@ -29,10 +26,9 @@ class LanguageManager {
     v.miNew.setCommandHandler { _ => editAndSave(DocumentLanguage.builder().build()) }
     v.miEdit.setCommandHandler { _ =>
       whenSelected(v.tblLanguages) { code =>
-        // fixme: use service
-        languageDao.findByCode(code) match {
+        languageMapper.findByCode(code) match {
           case null => reload()
-          case vo => editAndSave(vo |> EntityConverter.fromEntity)
+          case language => editAndSave(language)
         }
       }
     }
@@ -41,7 +37,7 @@ class LanguageManager {
         new ConfirmationDialog("Delete selected language?") |>> { dlg =>
           dlg.setOkButtonHandler {
             Current.ui.privileged(permission) {
-              Ex.allCatch.either(languageDao.deleteByCode(code)) match {
+              Ex.allCatch.either(languageMapper.deleteByCode(code)) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("Language has been deleted")
                 case Left(ex) =>
@@ -60,11 +56,7 @@ class LanguageManager {
         new ConfirmationDialog("Change default language?") |>> { dlg =>
           dlg.setOkButtonHandler {
             Current.ui.privileged(permission) {
-              val id = languageDao.findByCode(code).getId
-              val property = systemDao.findByName("DefaultLanguageId")
-              property.setValue(id.toString)
-
-              Ex.allCatch.either(systemDao.save(property)) match {
+              Ex.allCatch.either(languageMapper.setDefault(code)) match {
                 case Right(_) =>
                   Current.page.showInfoNotification("Default language has been changed")
                 case Left(ex) =>
@@ -101,30 +93,25 @@ class LanguageManager {
       c.chkEnabled.value = true
 
       dlg.setOkButtonHandler {
-        DocumentLanguage.builder() |> { voc =>
-          // todo: validate
-          voc.code(c.txtCode.value)
-          voc.name(c.txtName.value)
-          voc.nativeName(c.txtNativeName.value)
+        // todo: validate
+        val language = DocumentLanguage.builder()
+          .code(c.txtCode.value)
+          .name(c.txtName.value)
+          .nativeName(c.txtNativeName.value)
+          .build()
 
-          Current.ui.privileged(permission) {
-            val language = new Language
-            // fixme: fil in all fields
-            language.setCode(c.txtCode.trimmedValue)
-            language.setName(c.txtName.trimmedValue)
+        Current.ui.privileged(permission) {
+          Ex.allCatch.either(languageMapper.save(language)) match {
+            case Left(ex) =>
+              // todo: log ex, provide custom dialog with details -> show stack
+              Current.page.showErrorNotification("Internal error, please contact your administrator")
+              throw ex
+            case _ =>
+              (if (isNew) "New language access has been created" else "Language access has been updated") |> { msg =>
+                Current.page.showInfoNotification(msg)
+              }
 
-            Ex.allCatch.either(languageDao.save(language)) match {
-              case Left(ex) =>
-                // todo: log ex, provide custom dialog with details -> show stack
-                Current.page.showErrorNotification("Internal error, please contact your administrator")
-                throw ex
-              case _ =>
-                (if (isNew) "New language access has been created" else "Language access has been updated") |> { msg =>
-                  Current.page.showInfoNotification(msg)
-                }
-
-                reload()
-            }
+              reload()
           }
         }
       }
@@ -136,13 +123,13 @@ class LanguageManager {
   def reload() {
     view.tblLanguages.removeAllItems()
 
-    val default: JInteger = systemDao.findByName("DefaultLanguageId").getValue.toInt
+    val defaultLanguage = languageMapper.getDefault
     for {
-      vo <- languageDao.findAll.asScala
+      language <- languageMapper.getAll
       code = vo.getCode
-      isDefault = default == vo.getId.intValue
+      isDefault = language == defaultLanguage
     } view.tblLanguages.addRow(code,
-      code, vo.getCode, vo.getName, vo.getNativeName, !vo.isEnabled: JBoolean, isDefault: JBoolean, null
+      code, code, language.getName, language.getNativeName, true: JBoolean, isDefault: JBoolean, null
     )
 
     canManage |> { value =>

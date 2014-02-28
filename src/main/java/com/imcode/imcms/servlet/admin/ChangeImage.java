@@ -1,7 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.mapping.container.LoopEntryRef;
-import com.imcode.imcms.mapping.container.LoopItemRef;
 import com.imcode.imcms.mapping.container.TextDocImageContainer;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -65,7 +64,7 @@ public class ChangeImage extends HttpServlet {
          */
         final ImageDomainObject defaultImage = loopEntryRef == null
                 ? document.getImage(imageIndex)
-                : document.getImage(LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), imageIndex));
+                : document.getImage(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), imageIndex));
         final ImageDomainObject image = defaultImage != null
                 ? defaultImage
                 : new ImageDomainObject();

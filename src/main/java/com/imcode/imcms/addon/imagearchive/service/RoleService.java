@@ -1,46 +1,47 @@
 package com.imcode.imcms.addon.imagearchive.service;
 
 import com.imcode.imcms.addon.imagearchive.command.SaveRoleCategoriesCommand;
-import imcode.server.user.RolePermissionDomainObject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.transform.Transformers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.imcode.imcms.addon.imagearchive.entity.Categories;
 import com.imcode.imcms.addon.imagearchive.entity.CategoryRoles;
 import com.imcode.imcms.addon.imagearchive.entity.Exif;
 import com.imcode.imcms.addon.imagearchive.entity.Roles;
 import com.imcode.imcms.api.User;
-import org.hibernate.SessionFactory;
+import imcode.server.user.RolePermissionDomainObject;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.transform.Transformers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import java.util.*;
+
+@Service
 @Transactional
 public class RoleService {
-    @Autowired
-    private SessionFactory factory;
 
     @Autowired
     private Facade facade;
 
+    @Autowired
+    private EntityManager entityManager;
+
+    private Session getCurrentSession() {
+        return entityManager.unwrap(Session.class);
+    }    
+
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Roles findRoleById(int id) {
 
-        return (Roles) factory.getCurrentSession().get(Roles.class, id);
+        return (Roles) getCurrentSession().get(Roles.class, id);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Roles> findRoles() {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .createQuery("FROM Roles r ORDER BY r.roleName")
                 .list();
     }
@@ -48,7 +49,7 @@ public class RoleService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Categories> findRoleCategories(int roleId) {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .createQuery("SELECT c FROM CategoryRoles cr JOIN cr.category c WHERE " +
                         "cr.roleId = :roleId AND c.type.name = 'Images' ORDER BY c.name")
                 .setInteger("roleId", roleId)
@@ -58,7 +59,7 @@ public class RoleService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Categories> findFreeCategories(int roleId) {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .createQuery("SELECT c FROM Categories c WHERE " +
                         "NOT EXISTS (FROM CategoryRoles cr WHERE cr.roleId = :roleId AND cr.categoryId = c.id) " +
                         "AND c.type.name = 'Images' ORDER BY c.name")
@@ -69,7 +70,7 @@ public class RoleService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Categories> findAllCategories() {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .createQuery("SELECT c FROM Categories c WHERE " +
                         " c.type.name = :typeName ORDER BY c.name")
                 .setString("typeName", "Images")
@@ -78,7 +79,7 @@ public class RoleService {
 
     public void assignCategoryRoles(Roles role, List<SaveRoleCategoriesCommand.CategoryRight> categoryRights) {
 
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         StringBuilder deleteBuilder = new StringBuilder(
                 "DELETE FROM CategoryRoles cr WHERE cr.roleId = :roleId ");
@@ -100,7 +101,7 @@ public class RoleService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Categories> findCategories(User user, RolePermissionDomainObject... permissions) {
 
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
         Set<Integer> roleIds;
 
         if (user.isSuperAdmin()) {
@@ -139,7 +140,7 @@ public class RoleService {
             return Collections.EMPTY_LIST;
         }
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .createQuery(
                         "SELECT cr.categoryId FROM CategoryRoles cr WHERE cr.roleId IN (:roleIds) AND cr.category.type.name = 'Images' ")
                 .setParameterList("roleIds", roleIds)
@@ -169,7 +170,7 @@ public class RoleService {
 
         }
 
-        long count = (Long) factory.getCurrentSession()
+        long count = (Long) getCurrentSession()
                 .createQuery(
                         "SELECT count(cr.categoryId) FROM CategoryRoles cr " +
                                 "WHERE cr.categoryId = :categoryId AND cr.roleId IN (:roleIds) AND cr.category.type.name = 'Images'")
@@ -196,7 +197,7 @@ public class RoleService {
 
         }
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .getNamedQuery("artistsByRoleIds")
                 .setParameterList("roleIds", roleIds)
                 .setShort("changedType", Exif.TYPE_CHANGED)

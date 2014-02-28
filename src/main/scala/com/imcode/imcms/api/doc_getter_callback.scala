@@ -87,7 +87,7 @@ case class DefaultDocGetterCallback(documentLanguages: DocumentLanguages) extend
         val meta = doc.getMeta
 
         if (!meta.getEnabledLanguages.contains(documentLanguages.preferred)) {
-          if (meta.getDisabledLanguageShowSetting == DocumentMeta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE)
+          if (meta.getDisabledLanguageShowMode == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE)
             docMapper.getDefaultDocument(docId, documentLanguages.default)
           else
             null.asInstanceOf[A]

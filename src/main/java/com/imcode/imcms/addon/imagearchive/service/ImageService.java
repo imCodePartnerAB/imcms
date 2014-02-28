@@ -1,9 +1,33 @@
 package com.imcode.imcms.addon.imagearchive.service;
 
+import com.imcode.imcms.addon.imagearchive.command.SearchImageCommand;
+import com.imcode.imcms.addon.imagearchive.entity.*;
 import com.imcode.imcms.addon.imagearchive.service.file.FileService;
+import com.imcode.imcms.addon.imagearchive.util.Pagination;
+import com.imcode.imcms.addon.imagearchive.util.Utils;
+import com.imcode.imcms.addon.imagearchive.util.exif.ExifData;
+import com.imcode.imcms.addon.imagearchive.util.exif.ExifUtils;
 import com.imcode.imcms.addon.imagearchive.util.exif.Flash;
+import com.imcode.imcms.api.User;
 import imcode.server.user.RoleDomainObject;
+import imcode.util.image.ImageInfo;
+import imcode.util.image.ImageOp;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.transform.Transformers;
+import org.hibernate.type.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
@@ -12,56 +36,29 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import imcode.util.image.ImageOp;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.transform.Transformers;
-import org.hibernate.type.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.imcode.imcms.addon.imagearchive.command.SearchImageCommand;
-import com.imcode.imcms.addon.imagearchive.entity.Categories;
-import com.imcode.imcms.addon.imagearchive.entity.Exif;
-import com.imcode.imcms.addon.imagearchive.entity.ExifPK;
-import com.imcode.imcms.addon.imagearchive.entity.ImageCategories;
-import com.imcode.imcms.addon.imagearchive.entity.ImageKeywords;
-import com.imcode.imcms.addon.imagearchive.entity.Images;
-import com.imcode.imcms.addon.imagearchive.entity.Keywords;
-import com.imcode.imcms.addon.imagearchive.util.Pagination;
-import com.imcode.imcms.addon.imagearchive.util.Utils;
-import com.imcode.imcms.addon.imagearchive.util.exif.ExifData;
-import com.imcode.imcms.addon.imagearchive.util.exif.ExifUtils;
-import com.imcode.imcms.api.User;
-import imcode.util.image.ImageInfo;
-import org.hibernate.SessionFactory;
-
-
+@Service
 @Transactional
 public class ImageService {
     private static final Pattern LIKE_SPECIAL_PATTERN = Pattern.compile("([%_|])");
-    private static final Log log = LogFactory.getLog(ImageService.class);
+    private static final Logger log = LoggerFactory.getLogger(ImageService.class);
 
     @Autowired
     private Facade facade;
 
     @Autowired
-    private SessionFactory factory;
+    private PlatformTransactionManager txManager;
 
     @Autowired
-    private PlatformTransactionManager txManager;
+    private EntityManager entityManager;
+
+    private Session getCurrentSession() {
+        return entityManager.unwrap(Session.class);
+    }    
 
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Images findById(long imageId, User user) {
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         Query query = session.createQuery("FROM Images im WHERE im.id = :id AND im.status <> :statusUploaded")
                 .setLong("id", imageId)
@@ -104,7 +101,7 @@ public class ImageService {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Exif findExifByPK(long imageId, short type) {
-        return (Exif) factory.getCurrentSession()
+        return (Exif) getCurrentSession()
                 .get(Exif.class, new ExifPK(imageId, type));
     }
 
@@ -242,7 +239,7 @@ public class ImageService {
         image.setHeight(imageInfo.getHeight());
         image.setStatus(Images.STATUS_ACTIVE);
 
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
         session.persist(image);
 
         originalExif.setImageId(image.getId());
@@ -327,7 +324,7 @@ public class ImageService {
         image.setWidth(imageInfo.getWidth());
         image.setHeight(imageInfo.getHeight());
 
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
         session.persist(image);
 
         originalExif.setImageId(image.getId());
@@ -348,7 +345,7 @@ public class ImageService {
     }
 
     public void createImages(List<Object[]> tuples, User user) {
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         for (Object[] tuple : tuples) {
             File tempFile = (File) tuple[0];
@@ -432,7 +429,7 @@ public class ImageService {
     }
 
     public void deleteImage(long imageId) {
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         session.createQuery("DELETE ImageCategories ic WHERE ic.imageId = :imageId")
                 .setLong("imageId", imageId)
@@ -455,7 +452,7 @@ public class ImageService {
 
     public void updateFullData(Images image, List<Integer> categoryIds, List<String> imageKeywords) {
 
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         session.getNamedQuery("updateFullImageData")
                 .setString("imageNm", image.getImageNm())
@@ -540,7 +537,7 @@ public class ImageService {
 
     public void updateData(Images image, List<Integer> categoryIds, List<String> imageKeywords) {
 
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         session.getNamedQuery("updateImageData")
                 .setString("imageNm", image.getImageNm())
@@ -668,7 +665,7 @@ public class ImageService {
 
     public void archiveImage(long imageId) {
 
-        factory.getCurrentSession()
+        getCurrentSession()
                 .createQuery("UPDATE Images im SET im.status = :statusArchived WHERE im.id = :id")
                 .setShort("statusArchived", Images.STATUS_ARCHIVED)
                 .setLong("id", imageId)
@@ -678,7 +675,7 @@ public class ImageService {
 
     public void unarchiveImage(long imageId) {
 
-        factory.getCurrentSession()
+        getCurrentSession()
                 .createQuery("UPDATE Images im SET im.status = :statusArchived WHERE im.id = :id")
                 .setShort("statusArchived", Images.STATUS_ACTIVE)
                 .setLong("id", imageId)
@@ -687,7 +684,7 @@ public class ImageService {
     }
 
     public List<Images> getAllImages() {
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
         Query query = session.createQuery("FROM Images im WHERE im.status <> :statusUploaded")
                 .setShort("statusUploaded", Images.STATUS_UPLOADED);
 
@@ -851,7 +848,7 @@ public class ImageService {
             }
         }
 
-        Query query = factory.getCurrentSession()
+        Query query = getCurrentSession()
                 .createQuery(builder.toString())
                 .setShort("changedType", Exif.TYPE_CHANGED);
 
@@ -950,7 +947,7 @@ public class ImageService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Categories> findImageCategories(long imageId) {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .createQuery(
                         "SELECT c.id AS id, c.name AS name FROM ImageCategories ic INNER JOIN ic.category c " +
                                 "WHERE ic.imageId = :imageId AND c.type.name = 'Images' ORDER BY c.name ")
@@ -962,7 +959,7 @@ public class ImageService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Categories> findAvailableImageCategories(long imageId, User user) {
 
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         if (user.isSuperAdmin()) {
             return session.getNamedQuery("availableImageCategoriesAdmin")
@@ -996,7 +993,7 @@ public class ImageService {
             return false;
         }
 
-        long count = (Long) factory.getCurrentSession().createQuery(
+        long count = (Long) getCurrentSession().createQuery(
                 "SELECT count(DISTINCT cr.categoryId) FROM CategoryRoles cr " +
                         "WHERE cr.roleId IN (:roleIds) AND cr.categoryId IN (:categoryIds) ")
                 .setParameterList("roleIds", roleIds)
@@ -1009,7 +1006,7 @@ public class ImageService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<String> findAvailableKeywords(long imageId) {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .getNamedQuery("availableKeywords")
                 .setLong("imageId", imageId)
                 .list();
@@ -1018,7 +1015,7 @@ public class ImageService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<String> findImageKeywords(long imageId) {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .createQuery(
                         "SELECT k.keywordNm FROM ImageKeywords ik INNER JOIN ik.keyword k " +
                                 "WHERE ik.imageId = :imageId ORDER BY k.keywordNm")
@@ -1029,7 +1026,7 @@ public class ImageService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Keywords> findKeywords() {
 
-        return factory.getCurrentSession()
+        return getCurrentSession()
                 .getNamedQuery("keywordsUsedByImages")
                 .setResultTransformer(Transformers.aliasToBean(Keywords.class))
                 .list();
@@ -1041,7 +1038,7 @@ public class ImageService {
             return true;
         }
 
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         Integer usersId = (Integer) session.createQuery("SELECT im.usersId FROM Images im WHERE im.id = :imageId")
                 .setLong("imageId", imageId)
@@ -1068,7 +1065,7 @@ public class ImageService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public String findImageName(long imageId) {
 
-        return (String) factory.getCurrentSession()
+        return (String) getCurrentSession()
                 .createQuery("SELECT im.imageNm FROM Images im WHERE im.id = :imageId")
                 .setLong("imageId", imageId)
                 .uniqueResult();
@@ -1077,7 +1074,7 @@ public class ImageService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public String findImageAltText(long imageId) {
 
-        return (String) factory.getCurrentSession()
+        return (String) getCurrentSession()
                 .createQuery("SELECT im.altText FROM Images im WHERE im.id = :imageId")
                 .setLong("imageId", imageId)
                 .uniqueResult();
@@ -1086,7 +1083,7 @@ public class ImageService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public void setImageMetaIds(Images image) {
 
-        List<Integer> metaIds = factory.getCurrentSession()
+        List<Integer> metaIds = getCurrentSession()
                 .createSQLQuery(
                         "SELECT DISTINCT i.doc_id FROM imcms_text_doc_images i WHERE i.archive_image_id = :imageId ORDER BY i.doc_id")
                 .setLong("imageId", image.getId())
@@ -1103,7 +1100,7 @@ public class ImageService {
             imageMap.put(image.getId(), image);
         }
 
-        List<BigInteger> result = factory.getCurrentSession()
+        List<BigInteger> result = getCurrentSession()
                 .createSQLQuery(
                         "SELECT DISTINCT i.archive_image_id FROM imcms_text_doc_images i WHERE i.archive_image_id IN (:imageIds)")
                 .setParameterList("imageIds", imageMap.keySet())
@@ -1122,7 +1119,7 @@ public class ImageService {
             imageMap.put(image.getId(), image);
         }
 
-        List<Object[]> result = factory.getCurrentSession()
+        List<Object[]> result = getCurrentSession()
                 .createSQLQuery(
                         "SELECT DISTINCT i.archive_image_id, i.doc_id FROM imcms_text_doc_images i WHERE i.archive_image_id IN (:imageIds) " +
                                 "ORDER BY i.archive_image_id, i.doc_id")
@@ -1145,7 +1142,7 @@ public class ImageService {
     }
 
     public void createKeyword(final String keyword) {
-        Session session = factory.getCurrentSession();
+        Session session = getCurrentSession();
 
         long count = (Long) session.createQuery(
                 "SELECT COUNT(k.id) FROM Keywords k WHERE k.keywordNm = :keyword")

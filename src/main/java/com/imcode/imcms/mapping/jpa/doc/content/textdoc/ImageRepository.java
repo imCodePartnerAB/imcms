@@ -30,4 +30,6 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
 
     //@Query("SELECT l FROM TextDocImage l WHERE AND l.docVersion = ?1 AND l.docLanguage = ?2 AND l.no = ?3 AND l.loopEntry = ?4")
     Image findByDocVersionAndDocLanguageAndNoAndLoopEntry(DocVersion docVersion, Language language, int no, LoopEntryRef loopEntry);
+
+    int deleteByDocVersionAndDocLanguage(DocVersion docVersion, Language language);
 }
