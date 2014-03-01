@@ -8,6 +8,7 @@ import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import scala.Option;

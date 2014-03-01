@@ -240,7 +240,7 @@ public class DocumentSaver {
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
             DocumentLanguage language = e.getKey();
             DocumentCommonContent dcc = e.getValue();
-            CommonContent ormDcc = commonContentRepository.findByDocIdAndDocLanguageCode(doc.getId(), language.getCode());
+            CommonContent ormDcc = commonContentRepository.findByDocIdAndLanguageCode(doc.getId(), language.getCode());
             if (ormDcc == null) {
                 ormDcc = new CommonContent();
             }

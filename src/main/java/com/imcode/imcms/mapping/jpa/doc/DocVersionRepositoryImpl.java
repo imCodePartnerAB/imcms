@@ -13,7 +13,7 @@ import java.util.List;
  * Created by ajosua on 26/02/14.
  */
 @Transactional
-class VersionRepositoryImpl implements VersionRepositoryCustom {
+class DocVersionRepositoryImpl implements DocVersionRepositoryCustom {
 
     @PersistenceContext
     private EntityManager entityManager;

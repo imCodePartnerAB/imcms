@@ -34,7 +34,9 @@ import imcode.util.image.Color;
 import imcode.util.image.Format;
 import imcode.util.image.Gravity;
 import imcode.util.image.ImageOp;
+import org.springframework.stereotype.Service;
 
+@Service
 public class FileService {
     private static final Log log = LogFactory.getLog(FileService.class);
 

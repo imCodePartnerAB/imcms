@@ -177,7 +177,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         DocVersion docVersion = docVersionRepository.findByDocIdAndNo(textDocument.getId(), textDocument.getVersionNo());
         Language language = languageRepository.findByCode(textDocument.getLanguage().getCode());
 
-        textRepository.deleteByDocVersionAndDocLanguage(docVersion, language);
+        textRepository.deleteByDocVersionAndLanguage(docVersion, language);
 
         for (Map.Entry<Integer, TextDomainObject> e : textDocument.getTexts().entrySet()) {
             saveTextDocumentText(TextDocTextContainer.of(textDocument.getRef(), e.getKey(), e.getValue()), user);
@@ -219,7 +219,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     @Transactional
     public void saveDocumentCommonContent(DocumentDomainObject doc, UserDomainObject user) {
         Language ormLanguage = languageRepository.findByCode(doc.getLanguage().getCode());
-        CommonContent ormDcc = commonContentRepository.findByDocIdAndDocLanguage(doc.getId(), ormLanguage);
+        CommonContent ormDcc = commonContentRepository.findByDocIdAndLanguage(doc.getId(), ormLanguage);
 
         if (ormDcc == null) {
             ormDcc = new CommonContent();
@@ -304,7 +304,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         DocVersion docVersion = docVersionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
 
-        imageRepository.deleteByDocVersionAndDocLanguage(docVersion, language);
+        imageRepository.deleteByDocVersionAndLanguage(docVersion, language);
 
         for (Map.Entry<Integer, ImageDomainObject> entry : doc.getImages().entrySet()) {
             TextDocImageContainer imageContainer = TextDocImageContainer.of(docRef, entry.getKey(), entry.getValue());

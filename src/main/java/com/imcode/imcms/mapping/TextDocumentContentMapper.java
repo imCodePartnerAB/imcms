@@ -61,7 +61,7 @@ public class TextDocumentContentMapper {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         final Map<Integer, TextDomainObject> result = new HashMap<>();
 
-        for (Text text : textRepository.findByDocVersionAndDocLanguageAndLoopEntryRefIsNull(version, language)) {
+        for (Text text : textRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNull(version, language)) {
             result.put(text.getNo(), EntityConverter.fromEntity(text));
         }
 
@@ -73,7 +73,7 @@ public class TextDocumentContentMapper {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         final Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> result = new HashMap<>();
 
-        for (Text text : textRepository.findByDocVersionAndDocLanguageAndLoopEntryRefIsNull(version, language)) {
+        for (Text text : textRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNull(version, language)) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.LoopItemRef.of(
                     text.getLoopEntryRef().getLoopNo(), text.getLoopEntryRef().getContentNo(), text.getNo()
             );

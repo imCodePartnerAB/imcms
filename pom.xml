@@ -69,12 +69,12 @@
         <solr.version>4.6.1</solr.version>
         <slf4j.version>1.7.6</slf4j.version>
         <scala.version>2.10.3</scala.version>
-        <springframework.version>4.0.1.RELEASE</springframework.version>
+        <springframework.version>4.0.2.RELEASE</springframework.version>
 
         <!--
             Core & EntityManager version
         -->
-        <hibernate.version>4.3.1.Final</hibernate.version>
+        <hibernate.version>4.3.2.Final</hibernate.version>
         <gwt.version>2.5.1</gwt.version>
         <vaadin.version>7.1.10</vaadin.version>
 
@@ -120,9 +120,9 @@
         <jetty.scanIntervalSeconds>0</jetty.scanIntervalSeconds>
         <jetty.contextPath>/${project.artifactId}</jetty.contextPath>
 
-        <artifact.log4j.threshold>info</artifact.log4j.threshold>
-        <artifact.log4j.hibernate.level>error</artifact.log4j.hibernate.level>
-        <artifact.log4j.console-appender.threshold>off</artifact.log4j.console-appender.threshold>
+        <!--<artifact.log4j.threshold>info</artifact.log4j.threshold>-->
+        <!--<artifact.log4j.hibernate.level>error</artifact.log4j.hibernate.level>-->
+        <!--<artifact.log4j.console-appender.threshold>off</artifact.log4j.console-appender.threshold>-->
     </properties>
 
     <profiles>
@@ -346,11 +346,11 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>3.1</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>cglib</groupId>-->
+            <!--<artifactId>cglib</artifactId>-->
+            <!--<version>3.1</version>-->
+        <!--</dependency>-->
 
 
         <dependency>
@@ -433,8 +433,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.3.1.Final</version>
-            <scope>provided</scope>
+            <version>${hibernate.version}</version>
         </dependency>
 
         <dependency>
@@ -519,7 +518,7 @@
 
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
+            <artifactId>spring-aop</artifactId>
             <version>${springframework.version}</version>
             <exclusions>
                 <exclusion>
@@ -533,6 +532,18 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
             <version>1.5.0.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${springframework.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
 

@@ -19,7 +19,7 @@ public abstract class VersionedDocI18nContent extends VersionedDocContent {
         return language;
     }
 
-    public void setLanguage(Language contentLanguage) {
-        this.language = contentLanguage;
+    public void setLanguage(Language language) {
+        this.language = language;
     }
 }

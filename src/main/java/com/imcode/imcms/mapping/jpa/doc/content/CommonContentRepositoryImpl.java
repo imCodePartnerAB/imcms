@@ -6,9 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-/**
- * Created by ajosua on 26/02/14.
- */
+
 class CommonContentRepositoryImpl implements CommonContentRepositoryCustom {
 
     @PersistenceContext

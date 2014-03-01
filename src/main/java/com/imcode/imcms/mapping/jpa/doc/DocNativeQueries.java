@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +15,7 @@ import java.util.Map;
  * TODO: Rewrite native queries using HQL
  * TODO: test
  */
-@Repository
+@Component
 @Transactional
 public class DocNativeQueries {
 

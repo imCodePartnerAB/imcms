@@ -78,7 +78,7 @@ public class DocumentLoader {
      * Loads and initializes document's content.
      */
     public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
-        CommonContent ormAppearance = commonContentRepository.findByDocIdAndDocLanguageCode(document.getId(), document.getLanguage().getCode());
+        CommonContent ormAppearance = commonContentRepository.findByDocIdAndLanguageCode(document.getId(), document.getLanguage().getCode());
         DocumentCommonContent appearance = ormAppearance != null
                 ? EntityConverter.fromEntity(ormAppearance)
                 : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build();

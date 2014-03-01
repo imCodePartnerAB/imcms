@@ -27,14 +27,14 @@
     <!-- Unique -->
     <query name="DocVersion.findDefault">
     <![CDATA[
-        SELECT v FROM DocMeta m, DocVersion v
+        SELECT v FROM Meta m, DocVersion v
         WHERE m.defaultVersionNo = v.no AND m.id = v.docId AND m.id = ?1
     ]]>
     </query>
 
     <query name="DocVersion.setDefault">
     <![CDATA[
-        UPDATE DocMeta m
+        UPDATE Meta m
         SET m.defaultVersionNo = :defaultVersionNo, m.publisherId = :publisherId
         WHERE m.id = :docId
     ]]>

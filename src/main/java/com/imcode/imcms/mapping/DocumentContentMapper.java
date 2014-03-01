@@ -29,7 +29,7 @@ public class DocumentContentMapper {
         for (Language language : languageRepository.findAll()) {
             commonContentMap.put(
                     EntityConverter.fromEntity(language),
-                    Optional.fromNullable(EntityConverter.fromEntity(commonContentRepository.findByDocIdAndDocLanguage(docId, language)))
+                    Optional.fromNullable(EntityConverter.fromEntity(commonContentRepository.findByDocIdAndLanguage(docId, language)))
             );
         }
 
@@ -38,7 +38,7 @@ public class DocumentContentMapper {
 
 
     public DocumentCommonContent getCommonContents(DocRef docRef) {
-        return EntityConverter.fromEntity(commonContentRepository.findByDocIdAndDocLanguageCode(
+        return EntityConverter.fromEntity(commonContentRepository.findByDocIdAndLanguageCode(
                 docRef.getDocId(), docRef.getDocLanguageCode()));
     }
 }
