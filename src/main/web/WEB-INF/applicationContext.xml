@@ -20,6 +20,7 @@
     <import resource="./beansContext.xml"/>
 
     <context:annotation-config/>
+    <tx:annotation-driven proxy-target-class="true"/>
 
     <jpa:repositories base-package="com.imcode.imcms.mapping.jpa"/>
 
@@ -27,21 +28,13 @@
     <context:property-placeholder location="/WEB-INF/conf/server.properties" system-properties-mode="NEVER" ignore-resource-not-found="true"/>
     <!--ignore-unresolvable="true"-->
 
-    <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"/>
 
-    <bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <!--<property name="entityManagerFactory" ref="entityManagerFactory"/>-->
-    </bean>
-    <!-- fixme: set data-source-->
-    <bean id="entityManager" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean"/>
+    <bean id="entityManager" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+            p:dataSource-ref="dataSource"/>
 
-          <!--p:configLocation="classpath:hibernate.cfg.xml"-->
-          <!--p:dataSource-ref="dataSource"/>-->
-
-
-    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
-        <property name="defaultLocale" value="sv"/>
-    </bean>
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"
+            p:defaultLocale="sv"/>
 
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basenames">
