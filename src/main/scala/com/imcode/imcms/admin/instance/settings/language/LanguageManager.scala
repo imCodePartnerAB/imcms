@@ -125,8 +125,8 @@ class LanguageManager {
 
     val defaultLanguage = languageMapper.getDefault
     for {
-      language <- languageMapper.getAll
-      code = vo.getCode
+      language <- languageMapper.getAll.asScala
+      code = language.getCode
       isDefault = language == defaultLanguage
     } view.tblLanguages.addRow(code,
       code, code, language.getName, language.getNativeName, true: JBoolean, isDefault: JBoolean, null

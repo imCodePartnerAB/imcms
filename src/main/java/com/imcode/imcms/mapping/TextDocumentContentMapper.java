@@ -1,10 +1,9 @@
 package com.imcode.imcms.mapping;
 
-import com.google.common.base.Optional;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.mapping.container.*;
-import com.imcode.imcms.mapping.container.LoopEntryRef;
+import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.mapping.container.DocVersionRef;
 import com.imcode.imcms.mapping.jpa.doc.DocVersion;
 import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.Language;
@@ -12,10 +11,6 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
-import org.apache.commons.collections4.Closure;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +19,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -58,7 +53,7 @@ public class TextDocumentContentMapper {
     @Inject
     private LanguageRepository languageRepository;
 
-    //fixme: init to doc mapper
+    @Inject
     private DocumentGetter menuItemDocumentGetter;
 
     public Map<Integer, TextDomainObject> getTexts(final DocRef docRef) {
@@ -103,11 +98,11 @@ public class TextDocumentContentMapper {
         return result;
     }
 
-    public TextDomainObject getText(DocRef docRef, int textNo) {
+    public Map<DocumentLanguage, TextDomainObject> getLoopTexts(DocVersionRef docVersionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
         throw new NotImplementedException();
     }
 
-    public Map<DocumentLanguage, Optional<TextDomainObject>> getLoopTexts(DocVersionRef docVersionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
+    public TextDomainObject getText(DocRef docRef, int textNo) {
         throw new NotImplementedException();
     }
 
@@ -115,20 +110,24 @@ public class TextDocumentContentMapper {
         throw new NotImplementedException();
     }
 
-
-    public List<TextDocImageContainer> getAllImages(DocRef docRef) {
+    public Map<Integer, ImageDomainObject> getImages(DocRef docRef) {
         throw new NotImplementedException();
     }
 
-    public Map<DocumentLanguage, Optional<ImageDomainObject>> getImages(DocVersionRef docVersionRef, int textNo) {
+    public Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> getLoopImages(DocRef docRef) {
         throw new NotImplementedException();
     }
+
+    public Map<DocumentLanguage, ImageDomainObject> getImages(DocVersionRef docVersionRef, int textNo) {
+        throw new NotImplementedException();
+    }
+
+    public Map<DocumentLanguage, ImageDomainObject> getLoopImages(DocVersionRef docVersionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
+        throw new NotImplementedException();
+    }
+
 
     public ImageDomainObject getImage(DocRef docRef, int textNo) {
-        throw new NotImplementedException();
-    }
-
-    public Map<DocumentLanguage, Optional<ImageDomainObject>> getLoopImages(DocVersionRef docVersionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
         throw new NotImplementedException();
     }
 
@@ -175,4 +174,38 @@ public class TextDocumentContentMapper {
     }
 
     // get include
+
+
+    /**
+     * Inits text doc's image source.
+     */
+    public static ImageDomainObject initImageSource(ImageDomainObject image, Image ormImage) {
+        String url = ormImage.getUrl();
+        Integer type = ormImage.getType();
+
+        Objects.requireNonNull(url);
+        Objects.requireNonNull(type);
+
+        image.setSource(createImageSource(image, url.trim(), type));
+
+        return image;
+    }
+
+    private static ImageSource createImageSource(ImageDomainObject image, String url, int type) {
+        switch (type) {
+            case ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT:
+                throw new IllegalStateException(
+                        String.format("Illegal image source type - IMAGE_TYPE_ID__FILE_DOCUMENT. Image: %s", image)
+                );
+
+            case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH:
+                return new ImagesPathRelativePathImageSource(url);
+
+            case ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE:
+                return new ImageArchiveImageSource(url);
+
+            default:
+                return new NullImageSource();
+        }
+    }
 }

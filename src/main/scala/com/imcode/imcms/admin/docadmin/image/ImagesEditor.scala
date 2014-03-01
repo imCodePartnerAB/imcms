@@ -65,10 +65,10 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
     view.tsImages.removeAllComponents()
     editors.clear()
 
-    // fixme
+    // fixme create language if not exists
     val textDocMapper: TextDocumentContentMapper = ???
     val versionRef = DocVersionRef.buillder.docId(docRef.getDocId).docVersionNo(docRef.getDocVersionNo).build()
-    for ((language, image) <- textDocMapper.getImages(versionRef, imageNo).asScala.map { case (l, i) => l -> i.or(TextDocumentUtils.createDefaultImage()) }) {
+    for ((language, image) <- textDocMapper.getImages(versionRef, imageNo).asScala) {
       val imageEditor = new ImageEditor(Some(image))
       view.tsImages.addTab(imageEditor.view, language.getNativeName, Theme.Icon.Language.flag(language))
       editors += imageEditor

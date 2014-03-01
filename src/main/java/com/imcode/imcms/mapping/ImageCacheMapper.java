@@ -134,7 +134,7 @@ public class ImageCacheMapper {
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ImageDomainObject> getAllDocumentImages() {
-
+        // fixme: init image from db - replace with text doc content mapper
         List<ImageDomainObject> images = getCurrentSession()
                 .getNamedQuery("Image.allImages")
                 .list();

@@ -5,6 +5,8 @@ import imcode.server.document.textdocument.*;
 import java.util.List;
 import java.util.Objects;
 
+// fixme: remove - logic should go into in DocumentContextMapper and EntityConverter
+@Deprecated
 public final class TextDocumentUtils {
 
     private TextDocumentUtils() {
@@ -33,14 +35,6 @@ public final class TextDocumentUtils {
      * Inits text doc's image source.
      */
     public static ImageDomainObject initImageSource(ImageDomainObject image) {
-        String url = image.getUrl();
-        Integer type = image.getType();
-
-        Objects.requireNonNull(url);
-        Objects.requireNonNull(type);
-
-        image.setSource(createImageSource(image, url.trim(), type));
-
         return image;
     }
 

@@ -89,7 +89,7 @@ object EntityConverter {
     e.setProperties(m.getProperties)
     e.setPublicationEndDatetime(m.getPublicationEndDatetime)
     e.setPublicationStartDatetime(m.getPublicationStartDatetime)
-    e.setPublicationStatus(m.getPublicationStatus.asInt())
+    e.setPublicationStatusInt(m.getPublicationStatus.asInt())
     e.setPublisherId(m.getPublisherId)
     e.setRestrictedOneMorePrivilegedThanRestrictedTwo(m.getRestrictedOneMorePrivilegedThanRestrictedTwo)
     //e.setRoleIdToPermissionSetIdMap()
@@ -165,8 +165,9 @@ object EntityConverter {
   }
 
 
+  //fixme: implement
   def toEntity(imageContainer: TextDocImageContainer): doc.content.textdoc.Image = {
-
+    return null
   }
 
   //todo: set null vs
@@ -179,7 +180,7 @@ object EntityConverter {
     e.setGeneratedFilename(image.getGeneratedFilename)
     e.setHeight(image.getHeight)
     e.setHorizontalSpace(image.getHorizontalSpace)
-    e.setImageUrl(image.getSource.toStorageString)
+    e.setUrl(image.getSource.toStorageString)
     e.setLinkUrl(image.getLinkUrl)
 
     e.setLowResolutionUrl(image.getLowResolutionUrl)

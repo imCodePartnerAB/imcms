@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.mapping.container.*;
+import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.DocVersion;
 import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
@@ -9,12 +9,7 @@ import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Include;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.IncludeRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.MenuDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
-import org.apache.commons.collections4.Closure;
-import org.apache.commons.collections4.CollectionUtils;
+import imcode.server.document.textdocument.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -92,17 +87,12 @@ public class TextDocumentInitializer {
 
 
     public void initImages(TextDocumentDomainObject document) {
-        for (TextDocImageContainer imageContainer : textDocMapper.getAllImages(document.getRef())) {
-            LoopEntryRef loopEntryRef = imageContainer.getLoopEntryRef();
+        for (Map.Entry<Integer, ImageDomainObject> e : textDocMapper.getImages(document.getRef()).entrySet()) {
+            document.setImage(e.getKey(), e.getValue());
+        }
 
-            if (loopEntryRef == null) {
-                document.setImage(imageContainer.getImageNo(), imageContainer.getImage());
-            } else {
-                document.setImage(
-                        TextDocumentDomainObject.LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), imageContainer.getImageNo()),
-                        imageContainer.getImage()
-                );
-            }
+        for (Map.Entry<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> e : textDocMapper.getLoopImages(document.getRef()).entrySet()) {
+            document.setImage(e.getKey(), e.getValue());
         }
     }
 

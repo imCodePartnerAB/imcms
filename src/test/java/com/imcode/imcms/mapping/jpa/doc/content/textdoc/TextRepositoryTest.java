@@ -94,12 +94,13 @@ public class TextRepositoryTest {
 
     @Test
     public void testFindByDocVersionAndDocLanguage() throws Exception {
-        for (DocVersion docVersion : docVersions) {
-            for (Language language : languages) {
-                List<Text> texts = textRepository.findByDocVersionAndDocLanguage(docVersion, language);
-                assertThat(texts.size(), is(TEXTS_COUNT__PER_VERSION__PER_LANGUAGE));
-            }
-        }
+        fail();
+//        for (DocVersion docVersion : docVersions) {
+//            for (Language language : languages) {
+//                List<Text> texts = textRepository.findByDocVersionAndDocLanguage(docVersion, language);
+//                assertThat(texts.size(), is(TEXTS_COUNT__PER_VERSION__PER_LANGUAGE));
+//            }
+//        }
     }
 
     @Test

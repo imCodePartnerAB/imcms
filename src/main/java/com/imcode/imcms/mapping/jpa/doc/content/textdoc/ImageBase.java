@@ -1,9 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
 import com.imcode.imcms.mapping.jpa.doc.content.VersionedDocI18nContent;
-import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
-import imcode.util.image.Format;
-import imcode.util.image.Resize;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -39,7 +36,7 @@ public class ImageBase extends VersionedDocI18nContent {
     private String linkUrl = "";
 
     @Column(name = "imgurl")
-    private String imageUrl = "";
+    private String url = "";
 
     @Column(name = "image_name")
     private String name = "";
@@ -149,12 +146,12 @@ public class ImageBase extends VersionedDocI18nContent {
         this.linkUrl = linkUrl;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getUrl() {
+        return url;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public Integer getType() {

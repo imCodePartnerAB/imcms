@@ -24,15 +24,13 @@
 
     <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
 
-    // fixme: replace with JPA
-    <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-        <property name="sessionFactory" ref="sessionFactory"/>
+    <bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <!--<property name="entityManagerFactory" ref="entityManagerFactory"/>-->
     </bean>
-
-    // fixme: replace with JPA
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"
-          p:configLocation="classpath:hibernate.cfg.xml"
-          p:dataSource-ref="dataSource"/>
+    <!-- fixme: set data-source-->
+    <bean id="entityManager" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean"/>
+          <!--p:configLocation="classpath:hibernate.cfg.xml"-->
+          <!--p:dataSource-ref="dataSource"/>-->
 
 
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">

@@ -189,7 +189,8 @@ public class ImageEditPage extends OkCancelPage {
             }
 
             if (fileName != null) {
-                img.setUrl(urlPath);
+                //fixme
+                //img.setUrl(urlPath);
                 setNewSourceAndClearProps(img, source);
             }
             if (imageName != null) {
@@ -309,8 +310,8 @@ public class ImageEditPage extends OkCancelPage {
 
             //fixme:
             //i18nImage.setNo(this.image.getNo());
-            i18nImage.setUrl(imageUrl);
-            i18nImage.setType(imageSource.getTypeId());
+            //i18nImage.setUrl(imageUrl);
+            //i18nImage.setType(imageSource.getTypeId());
             i18nImage.setAlternateText(alternateText);
             i18nImage.setSource(imageSource);
             i18nImage.setFormat(format);
