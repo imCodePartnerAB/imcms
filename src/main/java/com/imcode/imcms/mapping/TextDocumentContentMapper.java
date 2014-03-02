@@ -11,6 +11,7 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
+import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -57,7 +58,6 @@ public class TextDocumentContentMapper {
     @Inject 
     private EntityConverter entityConverter;
 
-
     @Inject
     private DocumentGetter menuItemDocumentGetter;
 
@@ -67,7 +67,7 @@ public class TextDocumentContentMapper {
         final Map<Integer, TextDomainObject> result = new HashMap<>();
 
         for (Text text : textRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNull(version, language)) {
-            result.put(text.getNo(), entityConverter.fromEntity(text));
+            result.put(text.getNo(), toDomainObject(text));
         }
 
         return result;
@@ -83,7 +83,7 @@ public class TextDocumentContentMapper {
                     text.getLoopEntryRef().getLoopNo(), text.getLoopEntryRef().getContentNo(), text.getNo()
             );
 
-            result.put(loopItemRef, entityConverter.fromEntity(text));
+            result.put(loopItemRef, toDomainObject(text));
         }
 
         return result;
@@ -95,7 +95,7 @@ public class TextDocumentContentMapper {
         Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
 
         for (Text text : textRepository.findByDocVersionAndNoAndLoopEntryRefIsNull(version, textNo)) {
-            result.put(entityConverter.fromEntity(text.getLanguage()), entityConverter.fromEntity(text));
+            result.put(entityConverter.fromEntity(text.getLanguage()), toDomainObject(text));
         }
 
         return result;
@@ -107,7 +107,7 @@ public class TextDocumentContentMapper {
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         for (Text text : textRepository.findByDocVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
-            result.put(entityConverter.fromEntity(text.getLanguage()), entityConverter.fromEntity(text));
+            result.put(entityConverter.fromEntity(text.getLanguage()), toDomainObject(text));
         }
 
         return result;
@@ -117,7 +117,7 @@ public class TextDocumentContentMapper {
         DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
 
-        return entityConverter.fromEntity(
+        return toDomainObject(
                 textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryIsNull(version, language, textNo)
         );
     }
@@ -127,7 +127,7 @@ public class TextDocumentContentMapper {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-        return entityConverter.fromEntity(
+        return toDomainObject(
                 textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
         );
     }
@@ -138,7 +138,7 @@ public class TextDocumentContentMapper {
         final Map<Integer, ImageDomainObject> result = new HashMap<>();
 
         for (Image image : imageRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNull(version, language)) {
-            result.put(image.getNo(), entityConverter.fromEntity(image));
+            result.put(image.getNo(), toDomainObject(image));
         }
 
         return result;
@@ -154,7 +154,7 @@ public class TextDocumentContentMapper {
                     image.getLoopEntryRef().getLoopNo(), image.getLoopEntryRef().getContentNo(), image.getNo()
             );
 
-            result.put(loopItemRef, entityConverter.fromEntity(image));
+            result.put(loopItemRef, toDomainObject(image));
         }
 
         return result;
@@ -164,8 +164,8 @@ public class TextDocumentContentMapper {
         DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
 
-        for (Image text : imageRepository.findByDocVersionAndNoAndLoopEntryRefIsNull(version, textNo)) {
-            result.put(entityConverter.fromEntity(text.getLanguage()), entityConverter.fromEntity(text));
+        for (Image image : imageRepository.findByDocVersionAndNoAndLoopEntryRefIsNull(version, textNo)) {
+            result.put(entityConverter.fromEntity(image.getLanguage()), toDomainObject(image));
         }
 
         return result;
@@ -176,8 +176,8 @@ public class TextDocumentContentMapper {
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-        for (Image text : imageRepository.findByDocVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
-            result.put(entityConverter.fromEntity(text.getLanguage()), entityConverter.fromEntity(text));
+        for (Image image : imageRepository.findByDocVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
+            result.put(entityConverter.fromEntity(image.getLanguage()), toDomainObject(image));
         }
 
         return result;
@@ -188,7 +188,7 @@ public class TextDocumentContentMapper {
         DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
 
-        return entityConverter.fromEntity(
+        return toDomainObject(
                 imageRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRefIsNull(version, language, textNo)
         );
     }
@@ -198,7 +198,7 @@ public class TextDocumentContentMapper {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-        return entityConverter.fromEntity(
+        return toDomainObject(
                 imageRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
         );
     }
@@ -234,7 +234,7 @@ public class TextDocumentContentMapper {
         Map<Integer, MenuDomainObject> menus = new HashMap<>();
 
         for (Menu menu : textDocMenus) {
-            menus.put(menu.getNo(), entityConverter.fromEntity(menu));
+            menus.put(menu.getNo(), toDomainObject(menu));
         }
 
         return menus;
@@ -288,4 +288,37 @@ public class TextDocumentContentMapper {
 
         return result;
     }
+
+    private TextDomainObject toDomainObject(Text jpaText) {
+        return jpaText == null
+                ? null
+                : new TextDomainObject(jpaText.getText(), jpaText.getType().ordinal());
+    }
+
+    private MenuDomainObject toDomainObject(Menu jpaMenu) {
+        MenuDomainObject menu = new MenuDomainObject();
+
+        menu.setSortOrder(jpaMenu.getSortOrder());
+
+        for (Map.Entry<Integer, MenuItem> e : jpaMenu.getItems().entrySet()) {
+            MenuItem jpaMenuItem = e.getValue();
+            Integer referencedDocumentId = e.getKey();
+            MenuItemDomainObject menuItemDomainObject = new MenuItemDomainObject();
+            GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, menuItemDocumentGetter);
+
+            menuItemDomainObject.setDocumentReference(gtr);
+            menuItemDomainObject.setSortKey(jpaMenuItem.getSortKey());
+            menuItemDomainObject.setTreeSortIndex(jpaMenuItem.getTreeSortIndex());
+
+            menu.addMenuItemUnchecked(menuItemDomainObject);
+        }
+
+        return menu;
+    }
+
+    //fixme; implement
+    public ImageDomainObject toDomainObject(Image entity) {
+        throw new NotImplementedException();
+    }
+
 }

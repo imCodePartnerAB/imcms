@@ -1,11 +1,8 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.mapping.jpa.doc.DocRepository;
-import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
-import com.imcode.imcms.mapping.jpa.doc.Meta;
-import com.imcode.imcms.mapping.jpa.doc.MetaRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
+import com.imcode.imcms.api.*;
+import com.imcode.imcms.mapping.jpa.doc.*;
+import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.*;
@@ -13,6 +10,7 @@ import imcode.server.user.RoleId;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,6 +42,9 @@ public class DocumentLoader {
     @Inject
     private EntityConverter entityConverter;
 
+    @Inject
+    private DocumentContentMapper contentMapper;
+
     /**
      * Initializes document's fields.
      */
@@ -57,21 +58,21 @@ public class DocumentLoader {
      * @return loaded meta of null if meta with given id does not exists.
      */
     public DocumentMeta loadMeta(int docId) {
-        Meta ormMeta = metaRepository.findOne(docId);
+        Meta jpaMeta = metaRepository.findOne(docId);
 
-        if (ormMeta == null) return null;
+        if (jpaMeta == null) return null;
 
-        DocumentMeta documentMeta = entityConverter.fromEntity(ormMeta);
+        DocumentMeta documentMeta = toDomainObject(jpaMeta);
 
         if (documentMeta != null) {
             documentMeta.setActualModifiedDatetime(documentMeta.getModifiedDatetime());
 
-            Document.PublicationStatus publicationStatus = publicationStatusFromInt(ormMeta.getPublicationStatusInt());
+            Document.PublicationStatus publicationStatus = publicationStatusFromInt(jpaMeta.getPublicationStatusInt());
             documentMeta.setPublicationStatus(publicationStatus);
 
-            initRoleIdToPermissionSetIdMap(documentMeta, ormMeta);
-            initDocumentsPermissionSets(documentMeta, ormMeta);
-            initDocumentsPermissionSetsForNew(documentMeta, ormMeta);
+            initRoleIdToPermissionSetIdMap(documentMeta, jpaMeta);
+            initDocumentsPermissionSets(documentMeta, jpaMeta);
+            initDocumentsPermissionSetsForNew(documentMeta, jpaMeta);
         }
 
         return documentMeta;
@@ -81,12 +82,13 @@ public class DocumentLoader {
      * Loads and initializes document's content.
      */
     public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
-        CommonContent ormAppearance = commonContentRepository.findByDocIdAndLanguageCode(document.getId(), document.getLanguage().getCode());
-        DocumentCommonContent appearance = ormAppearance != null
-                ? entityConverter.fromEntity(ormAppearance)
-                : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build();
+        DocumentCommonContent dcc = contentMapper.getCommonContent(document.getRef());
 
-        document.setCommonContent(appearance);
+        document.setCommonContent(dcc != null
+                ? dcc
+                : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build()
+        );
+
         document.accept(documentInitializingVisitor);
 
         return document;
@@ -173,6 +175,45 @@ public class DocumentLoader {
                 default:
             }
         }
+    }
+
+    private DocumentMeta toDomainObject(Meta jpaMeta) {
+        DocumentMeta metaDO = new DocumentMeta();
+
+        metaDO.setArchivedDatetime(jpaMeta.getArchivedDatetime());
+        metaDO.setCategoryIds(jpaMeta.getCategoryIds());
+        metaDO.setCreatedDatetime(jpaMeta.getCreatedDatetime());
+        metaDO.setCreatorId(jpaMeta.getCreatorId());
+        metaDO.setDefaultVersionNo(jpaMeta.getDefaultVersionNo());
+        metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(jpaMeta.getDisabledLanguageShowMode().name()));
+        metaDO.setDocumentType(jpaMeta.getDocumentType());
+
+        Set<DocumentLanguage> apiLanguages = new HashSet<>();
+
+        for (Language jpaLanguage : jpaMeta.getEnabledLanguages()) {
+            apiLanguages.add(entityConverter.fromEntity(jpaLanguage));
+        }
+
+        metaDO.setEnabledLanguages(apiLanguages);
+        metaDO.setId(jpaMeta.getId());
+        metaDO.setKeywords(jpaMeta.getKeywords());
+        metaDO.setLinkableByOtherUsers(jpaMeta.getLinkableByOtherUsers());
+        metaDO.setLinkedForUnauthorizedUsers(jpaMeta.getLinkedForUnauthorizedUsers());
+        metaDO.setModifiedDatetime(jpaMeta.getModifiedDatetime());
+        //m.setPermissionSets(entity.getPermissionSets)
+        //m.setPermissionSetsForNew(entity.getPermissionSetExForNew)
+        //m.setPermissionSetsForNewDocuments(entity.getPermissionSetsForNewDocuments)
+        metaDO.setProperties(jpaMeta.getProperties());
+        metaDO.setPublicationEndDatetime(jpaMeta.getPublicationEndDatetime());
+        metaDO.setPublicationStartDatetime(jpaMeta.getPublicationStartDatetime());
+        //m.setPublicationStatus(entity.getPublicationStatusInt)
+        metaDO.setPublisherId(jpaMeta.getPublisherId());
+        metaDO.setRestrictedOneMorePrivilegedThanRestrictedTwo(jpaMeta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
+        //m.setRoleIdToDocumentPermissionSetTypeMappings()
+        metaDO.setSearchDisabled(jpaMeta.getSearchDisabled());
+        metaDO.setTarget(jpaMeta.getTarget());
+
+        return metaDO;
     }
 
 

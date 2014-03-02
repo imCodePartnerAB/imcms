@@ -10,6 +10,8 @@ import org.apache.commons.lang.NullArgumentException;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Document's meta.
@@ -65,13 +67,13 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile Date publicationStartDatetime;
     private volatile Date publicationEndDatetime;
 
-    private volatile Map<String, String> properties = new HashMap<>();
+    private volatile Map<String, String> properties = new ConcurrentHashMap<>();
 
-    private volatile Set<Integer> categoryIds = new HashSet<>();
+    private volatile Set<Integer> categoryIds = new ConcurrentSkipListSet<>();
 
-    private volatile Set<DocumentLanguage> enabledLanguages = new HashSet<>();
+    private volatile Set<DocumentLanguage> enabledLanguages = new ConcurrentSkipListSet<>();
 
-    private volatile Set<String> keywords = new HashSet<>();
+    private volatile Set<String> keywords = new ConcurrentSkipListSet<>();
 
     private volatile DocumentPermissionSets permissionSets = new DocumentPermissionSets();
 
@@ -88,11 +90,11 @@ public class DocumentMeta implements Serializable, Cloneable {
             DocumentMeta clone = (DocumentMeta) super.clone();
 
             clone.disabledLanguageShowMode = disabledLanguageShowMode;
-            clone.properties = new HashMap<>(properties);
-            clone.categoryIds = new HashSet<>(categoryIds);
+            clone.properties = new ConcurrentHashMap<>(properties);
+            clone.categoryIds = new ConcurrentSkipListSet<>(categoryIds);
 
-            clone.keywords = new HashSet<>(keywords);
-            clone.enabledLanguages = new HashSet<>(enabledLanguages);
+            clone.keywords = new ConcurrentSkipListSet<>(keywords);
+            clone.enabledLanguages = new ConcurrentSkipListSet<>(enabledLanguages);
 
             if (permissionSets != null) {
                 clone.permissionSets = permissionSets.clone();
@@ -255,7 +257,7 @@ public class DocumentMeta implements Serializable, Cloneable {
     }
 
     public void setKeywords(Set<String> keywords) {
-        this.keywords = keywords != null ? keywords : new HashSet<String>();
+        this.keywords = new ConcurrentSkipListSet<>(keywords != null ? keywords : Collections.<String>emptySet());
     }
 
     public DisabledLanguageShowMode getDisabledLanguageShowMode() {
@@ -271,7 +273,9 @@ public class DocumentMeta implements Serializable, Cloneable {
     }
 
     public void setEnabledLanguages(Set<DocumentLanguage> languages) {
-        this.enabledLanguages = languages != null ? languages : new HashSet<DocumentLanguage>();
+        this.enabledLanguages = new ConcurrentSkipListSet<>(
+                languages != null ? languages : Collections.<DocumentLanguage>emptySet()
+        );
     }
 
     public DocumentPermissionSets getPermissionSets() {

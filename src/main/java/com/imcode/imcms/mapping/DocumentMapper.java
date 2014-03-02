@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.*;
@@ -103,8 +102,6 @@ public class DocumentMapper implements DocumentGetter {
 
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
-
-        documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
 
         documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
 
@@ -632,21 +629,19 @@ public class DocumentMapper implements DocumentGetter {
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
         DocumentMeta documentMeta = documentLoader.loadMeta(docVersionRef.getDocId());
-        Map<DocumentLanguage, Optional<DocumentCommonContent>> dccMap = docMapperService.getCommonContents(docVersionRef.getDocId());
+        Map<DocumentLanguage, DocumentCommonContent> dccMap = docMapperService.getCommonContents(docVersionRef.getDocId());
         List<DocumentDomainObject> newDocs = new LinkedList<>();
 
         makeDocumentLookNew(documentMeta, user);
         documentMeta.setId(null);
         documentMeta.removeAlis();
 
-        for (Map.Entry<DocumentLanguage, Optional<DocumentCommonContent>> e : dccMap.entrySet()) {
+        for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
             DocumentLanguage language = e.getKey();
-            Optional<DocumentCommonContent> dccOpt = e.getValue();
-
-            if (!dccOpt.isPresent()) continue;
+            DocumentCommonContent dcc = e.getValue();
 
             DocumentDomainObject newDoc = getCustomDocument(DocRef.of(docVersionRef, language.getCode())).clone();
-            DocumentCommonContent newDcc = DocumentCommonContent.builder(dccOpt.get()).headline(copyHeadlineSuffix + " " + dccOpt.get().getHeadline()).build();
+            DocumentCommonContent newDcc = DocumentCommonContent.builder(dcc).headline(copyHeadlineSuffix + " " + dcc.getHeadline()).build();
 
             newDoc.setMeta(documentMeta);
             newDoc.setCommonContent(newDcc);
@@ -962,8 +957,8 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    //todo: delegate to docMapperService?
-    public Map<DocumentLanguage, Optional<DocumentCommonContent>> getCommonContents(int docId) {
+
+    public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId) {
         return docMapperService.getCommonContents(docId);
     }
 

@@ -69,9 +69,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
           if (appearanceEditorOpt.isEmpty) {
             val commonContentMap: Map[DocumentLanguage, DocumentCommonContent] = doc.getId match {
               case id if id != DocumentDomainObject.ID_NEW =>
-                imcmsServices.getDocumentMapper.getCommonContents(id).asScala.mapValues { dccOpt =>
-                  dccOpt.or(new DocumentCommonContent())
-                }.toMap
+                imcmsServices.getDocumentMapper.getCommonContents(id).asScala.toMap
               case _ =>
                 Map.empty
             }

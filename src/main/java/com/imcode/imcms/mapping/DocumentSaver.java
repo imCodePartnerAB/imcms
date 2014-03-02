@@ -54,6 +54,9 @@ public class DocumentSaver {
 
     @Inject
     private MetaRepository metaRepository;
+    
+    @Inject 
+    private EntityConverter entityConverter;
 
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
 
@@ -153,7 +156,7 @@ public class DocumentSaver {
             ormLoop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(loopEntryRef.getEntryNo()));
             loopRepository.save(ormLoop);
         } else {
-            Loop apiLoop = EntityConverter.fromEntity(ormLoop);
+            Loop apiLoop = entityConverter.fromEntity(ormLoop);
             int contentNo = loopEntryRef.getEntryNo();
             if (!apiLoop.findEntryIndexByNo(contentNo).isPresent()) {
                 ormLoop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(contentNo));
@@ -216,7 +219,7 @@ public class DocumentSaver {
             }
         }
 
-        return EntityConverter.fromEntity(nextDocVersion);
+        return entityConverter.fromEntity(nextDocVersion);
     }
 
     @Transactional
@@ -226,16 +229,16 @@ public class DocumentSaver {
 
         checkDocumentForSave(doc);
 
-        Meta ormMeta = EntityConverter.toEntity(doc.getMeta());
+        Meta jpaMeta = toJpaObject(doc.getMeta());
 
         if (user.canEditPermissionsFor(oldDoc)) {
-            newUpdateDocumentRolePermissions(ormMeta, doc, user, oldDoc);
-            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(ormMeta, doc, user, oldDoc);
+            newUpdateDocumentRolePermissions(jpaMeta, doc, user, oldDoc);
+            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, doc, user, oldDoc);
         }
 
         DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDoc, documentMapper.getImcmsServices(), user);
 
-        saveMeta(ormMeta, doc.getMeta());
+        metaRepository.saveAndFlush(jpaMeta);
 
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
             DocumentLanguage language = e.getKey();
@@ -282,14 +285,14 @@ public class DocumentSaver {
         documentMapper.setCreatedAndModifiedDatetimes(meta, new Date());
 
         meta.setId(null);
-        Meta ormMeta = EntityConverter.toEntity(meta);
+        Meta jpaMeta = toJpaObject(meta);
 
-        newUpdateDocumentRolePermissions(ormMeta, firstDoc, user, null);
+        newUpdateDocumentRolePermissions(jpaMeta, firstDoc, user, null);
 
         // Update permissions
-        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(ormMeta, firstDoc, user, null);
+        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, firstDoc, user, null);
 
-        int newDocId = saveMeta(ormMeta, meta).getId();
+        int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
 
         docRepository.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, Integer.toString(newDocId));
 
@@ -360,12 +363,12 @@ public class DocumentSaver {
             documentMeta.getPermissionSets().setRestricted2(documentMeta.getPermissionSetsForNewDocument().getRestricted2());
         }
 
-        Meta ormMeta = EntityConverter.toEntity(documentMeta);
+        Meta jpaMeta = toJpaObject(documentMeta);
 
-        newUpdateDocumentRolePermissions(ormMeta, doc, user, null);
-        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(ormMeta, doc, user, null);
+        newUpdateDocumentRolePermissions(jpaMeta, doc, user, null);
+        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, doc, user, null);
 
-        int newDocId = saveMeta(ormMeta, documentMeta).getId();
+        int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
 
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
             DocumentCommonContent dcc = e.getValue();
@@ -412,22 +415,6 @@ public class DocumentSaver {
 
 
     /**
-     * @return saved document meta.
-     */
-    private Meta saveMeta(Meta ormMeta, DocumentMeta documentMeta) {
-        Set<Language> enabledLanguages = new HashSet<>();
-
-        for (DocumentLanguage l : documentMeta.getEnabledLanguages()) {
-            enabledLanguages.add(languageRepository.findByCode(l.getCode()));
-        }
-
-        ormMeta.setEnabledLanguages(enabledLanguages);
-
-        return metaRepository.saveAndFlush(ormMeta);
-    }
-
-
-    /**
      * Various non security checks.
      *
      * @param document
@@ -449,7 +436,7 @@ public class DocumentSaver {
      * @param user        an authorized user
      * @param oldDocument original doc when updating or null when inserting (a new doc)
      */
-    private void newUpdateDocumentRolePermissions(Meta ormMeta, DocumentDomainObject document, UserDomainObject user,
+    private void newUpdateDocumentRolePermissions(Meta jpaMeta, DocumentDomainObject document, UserDomainObject user,
                                                   DocumentDomainObject oldDocument) {
 
         // Original (old) and modified or new document permission set type mapping.
@@ -471,7 +458,7 @@ public class DocumentSaver {
 
         RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappingsArray = mappings.getMappings();
 
-        Map<Integer, Integer> roleIdToPermissionSetIdMap = ormMeta.getRoleIdToPermissionSetIdMap();
+        Map<Integer, Integer> roleIdToPermissionSetIdMap = jpaMeta.getRoleIdToPermissionSetIdMap();
 
         for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : mappingsArray) {
             RoleId roleId = mapping.getRoleId();
@@ -504,6 +491,46 @@ public class DocumentSaver {
                 }
             }
         }
+    }
+
+    // fixme: copy permission
+    private Meta toJpaObject(DocumentMeta metaDO) {
+        Meta jpaMeta = new Meta();
+
+        jpaMeta.setArchivedDatetime(metaDO.getArchivedDatetime());
+        jpaMeta.setCategoryIds(metaDO.getCategoryIds());
+        jpaMeta.setCreatedDatetime(metaDO.getCreatedDatetime());
+        jpaMeta.setCreatorId(metaDO.getCreatorId());
+        jpaMeta.setDefaultVersionNo(metaDO.getDefaultVersionNo());
+        jpaMeta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(metaDO.getDisabledLanguageShowMode().name()));
+        jpaMeta.setDocumentType(metaDO.getDocumentType());
+
+        Set<Language> enabledLanguages = new HashSet<>();
+
+        for (DocumentLanguage l : metaDO.getEnabledLanguages()) {
+            enabledLanguages.add(languageRepository.findByCode(l.getCode()));
+        }
+
+        jpaMeta.setEnabledLanguages(enabledLanguages);
+        jpaMeta.setId(metaDO.getId());
+        jpaMeta.setKeywords(metaDO.getKeywords());
+        jpaMeta.setLinkableByOtherUsers(metaDO.getLinkableByOtherUsers());
+        jpaMeta.setLinkedForUnauthorizedUsers(metaDO.getLinkedForUnauthorizedUsers());
+        jpaMeta.setModifiedDatetime(metaDO.getModifiedDatetime());
+        //e.setPermissionSets(m.getPermissionSets)
+        //e.setPermissionSetsForNew(m.getPermissionSetExForNew)
+        //e.setPermissionSetsForNewDocuments(m.getPermissionSetsForNewDocuments)
+        jpaMeta.setProperties(metaDO.getProperties());
+        jpaMeta.setPublicationEndDatetime(metaDO.getPublicationEndDatetime());
+        jpaMeta.setPublicationStartDatetime(metaDO.getPublicationStartDatetime());
+        jpaMeta.setPublicationStatusInt(metaDO.getPublicationStatus().asInt());
+        jpaMeta.setPublisherId(metaDO.getPublisherId());
+        jpaMeta.setRestrictedOneMorePrivilegedThanRestrictedTwo(metaDO.getRestrictedOneMorePrivilegedThanRestrictedTwo());
+        //e.setRoleIdToPermissionSetIdMap()
+        jpaMeta.setSearchDisabled(metaDO.getSearchDisabled());
+        jpaMeta.setTarget(metaDO.getTarget());
+
+        return jpaMeta;
     }
 
     public DocumentMapper getDocumentMapper() {

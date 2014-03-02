@@ -1,10 +1,9 @@
 package com.imcode.imcms.mapping;
 
-import com.google.common.base.Optional;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.mapping.container.DocRef;
-import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
+import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +12,8 @@ import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
-@Transactional
 @Service
+@Transactional
 public class DocumentContentMapper {
 
     @Inject
@@ -26,22 +25,37 @@ public class DocumentContentMapper {
     @Inject
     private EntityConverter entityConverter;
 
-    public Map<DocumentLanguage, Optional<DocumentCommonContent>> getCommonContents(int docId) {
-        Map<DocumentLanguage, Optional<DocumentCommonContent>> commonContentMap = new HashMap<>();
+    public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId) {
+        Map<DocumentLanguage, DocumentCommonContent> result = new HashMap<>();
 
-        for (Language language : languageRepository.findAll()) {
-            commonContentMap.put(
-                    entityConverter.fromEntity(language),
-                    Optional.fromNullable(entityConverter.fromEntity(commonContentRepository.findByDocIdAndLanguage(docId, language)))
+        for (CommonContent commonContent : commonContentRepository.findByDocId(docId)) {
+            result.put(
+                    entityConverter.fromEntity(commonContent.getLanguage()),
+                    toApiObject(commonContent)
             );
         }
 
-        return commonContentMap;
+        return result;
     }
 
 
-    public DocumentCommonContent getCommonContents(DocRef docRef) {
-        return entityConverter.fromEntity(commonContentRepository.findByDocIdAndLanguageCode(
+    public DocumentCommonContent getCommonContent(DocRef docRef) {
+        return toApiObject(commonContentRepository.findByDocIdAndLanguageCode(
                 docRef.getDocId(), docRef.getDocLanguageCode()));
     }
+
+
+    private DocumentCommonContent toApiObject(CommonContent jpaCommonContent) {
+        return jpaCommonContent == null
+                ? null
+                : DocumentCommonContent.builder()
+                .headline(jpaCommonContent.getHeadline())
+                .menuImageURL(jpaCommonContent.getMenuImageURL())
+                .menuText(jpaCommonContent.getMenuText())
+                .build();
+    }
+
+
+
+
 }

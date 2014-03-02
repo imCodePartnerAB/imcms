@@ -3,14 +3,13 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.mapping.jpa.doc.*;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.CategoryTypeDomainObject;
-import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.*;
-import org.apache.commons.lang.NotImplementedException;
+import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.Language;
+import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TemplateNames;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -22,9 +21,6 @@ import java.util.Map;
  */
 @Service
 public class EntityConverter {
-
-    @Inject
-    private DocumentGetter documentGetter;
 
     @Inject
     private LanguageRepository languageRepository;
@@ -50,91 +46,6 @@ public class EntityConverter {
                 .build();
     }
 
-    public DocumentCommonContent fromEntity(CommonContent entity) {
-        return entity == null
-                ? null
-                : DocumentCommonContent.builder()
-                .headline(entity.getHeadline())
-                .menuImageURL(entity.getMenuImageURL())
-                .menuText(entity.getMenuText())
-                .build();
-    }
-
-    public DocumentMeta fromEntity(Meta entity) {
-        if (entity == null) return null;
-
-        DocumentMeta m = new DocumentMeta();
-
-        m.setArchivedDatetime(entity.getArchivedDatetime());
-        m.setCategoryIds(entity.getCategoryIds());
-        m.setCreatedDatetime(entity.getCreatedDatetime());
-        m.setCreatorId(entity.getCreatorId());
-        m.setDefaultVersionNo(entity.getDefaultVersionNo());
-        m.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(entity.getDisabledLanguageShowMode().name()));
-        m.setDocumentType(entity.getDocumentType());
-        //fixme
-        //m.setEnabledLanguages(entity.getEnabledLanguages().asScala.map(fromEntity).asJava)
-        m.setId(entity.getId());
-        m.setKeywords(entity.getKeywords());
-        m.setLinkableByOtherUsers(entity.getLinkableByOtherUsers());
-        m.setLinkedForUnauthorizedUsers(entity.getLinkedForUnauthorizedUsers());
-        m.setModifiedDatetime(entity.getModifiedDatetime());
-        //m.setPermissionSets(entity.getPermissionSets)
-        //m.setPermissionSetsForNew(entity.getPermissionSetExForNew)
-        //m.setPermissionSetsForNewDocuments(entity.getPermissionSetsForNewDocuments)
-        m.setProperties(entity.getProperties());
-        m.setPublicationEndDatetime(entity.getPublicationEndDatetime());
-        m.setPublicationStartDatetime(entity.getPublicationStartDatetime());
-        //m.setPublicationStatus(entity.getPublicationStatusInt)
-        m.setPublisherId(entity.getPublisherId());
-        m.setRestrictedOneMorePrivilegedThanRestrictedTwo(entity.getRestrictedOneMorePrivilegedThanRestrictedTwo());
-        //m.setRoleIdToDocumentPermissionSetTypeMappings()
-        m.setSearchDisabled(entity.getSearchDisabled());
-        m.setTarget(entity.getTarget());
-
-
-        return m;
-    }
-
-    public Meta toEntity(DocumentMeta m) {
-        Meta e = new Meta();
-
-        e.setArchivedDatetime(m.getArchivedDatetime());
-        e.setCategoryIds(m.getCategoryIds());
-        e.setCreatedDatetime(m.getCreatedDatetime());
-        e.setCreatorId(m.getCreatorId());
-        e.setDefaultVersionNo(m.getDefaultVersionNo());
-        e.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(m.getDisabledLanguageShowMode().name()));
-        e.setDocumentType(m.getDocumentType());
-        //e.setEnabledLanguages()
-        e.setId(m.getId());
-        e.setKeywords(m.getKeywords());
-        e.setLinkableByOtherUsers(m.getLinkableByOtherUsers());
-        e.setLinkedForUnauthorizedUsers(m.getLinkedForUnauthorizedUsers());
-        e.setModifiedDatetime(m.getModifiedDatetime());
-        //e.setPermissionSets(m.getPermissionSets)
-        //e.setPermissionSetsForNew(m.getPermissionSetExForNew)
-        //e.setPermissionSetsForNewDocuments(m.getPermissionSetsForNewDocuments)
-        e.setProperties(m.getProperties());
-        e.setPublicationEndDatetime(m.getPublicationEndDatetime());
-        e.setPublicationStartDatetime(m.getPublicationStartDatetime());
-        e.setPublicationStatusInt(m.getPublicationStatus().asInt());
-        e.setPublisherId(m.getPublisherId());
-        e.setRestrictedOneMorePrivilegedThanRestrictedTwo(m.getRestrictedOneMorePrivilegedThanRestrictedTwo());
-        //e.setRoleIdToPermissionSetIdMap()
-        e.setSearchDisabled(m.getSearchDisabled());
-        e.setTarget(m.getTarget());
-
-        return e;
-    }
-
-
-    public TextDomainObject fromEntity(Text entity) {
-        return entity == null
-                ? null
-                : new TextDomainObject(entity.getText(), entity.getType().ordinal());
-    }
-
     public Loop fromEntity(com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop entity) {
         if (entity == null) return null;
 
@@ -145,41 +56,6 @@ public class EntityConverter {
         }
 
         return Loop.of(entries, entity.getNextEntryNo());
-    }
-
-    public CategoryTypeDomainObject fromEntity(CategoryType entity) {
-        return entity == null
-                ? null
-                : new CategoryTypeDomainObject(
-                    entity.getId(),
-                    entity.getName(),
-                    entity.getMaxChoices(),
-                    entity.isInherited(),
-                    entity.isImageArchive());
-    }
-
-    public CategoryDomainObject fromEntity(Category entity) {
-        return entity == null
-                ? null
-                : new CategoryDomainObject(
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getImageUrl(),
-                fromEntity(entity.getType()));
-    }
-
-
-    public CategoryType toEntity(CategoryTypeDomainObject c) {
-        return new CategoryType(
-                c.getId(), c.getName(), c.getMaxChoices(), c.isInherited(), c.isImageArchive()
-        );
-    }
-
-    public Category toEntity(CategoryDomainObject c) {
-        return new Category(
-                c.getId(), c.getName(), c.getDescription(), c.getImageUrl(), toEntity(c.getType())
-        );
     }
 
     public TextDocumentDomainObject.TemplateNames fromEntity(TemplateNames entity) {
@@ -204,34 +80,6 @@ public class EntityConverter {
         entity.setTemplateName(vo.getTemplateName());
 
         return entity;
-    }
-
-    // todo: fixme!!! - init items
-    public MenuDomainObject fromEntity(Menu entity) {
-        MenuDomainObject menu = new MenuDomainObject();
-
-        menu.setSortOrder(entity.getSortOrder());
-
-        for (Map.Entry<Integer, MenuItem> e : entity.getItems().entrySet()) {
-            MenuItem menuItem = e.getValue();
-            Integer referencedDocumentId = e.getKey();
-            MenuItemDomainObject menuItemDomainObject = new MenuItemDomainObject();
-            GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, documentGetter);
-
-            menuItemDomainObject.setDocumentReference(gtr);
-            menuItemDomainObject.setSortKey(menuItem.getSortKey());
-            menuItemDomainObject.setTreeSortIndex(menuItem.getTreeSortIndex());
-
-            menu.addMenuItemUnchecked(menuItemDomainObject);
-        }
-
-        return menu;
-    }
-
-
-    //fixme; implement
-    public ImageDomainObject fromEntity(Image entity) {
-        throw new NotImplementedException();
     }
 
 
