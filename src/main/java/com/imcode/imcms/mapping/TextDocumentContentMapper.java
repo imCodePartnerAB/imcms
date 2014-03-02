@@ -4,6 +4,7 @@ import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.DocVersionRef;
+import com.imcode.imcms.mapping.container.TextDocImageContainer;
 import com.imcode.imcms.mapping.jpa.doc.DocVersion;
 import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.Language;
@@ -11,7 +12,6 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
-import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -25,7 +25,6 @@ import java.util.Objects;
 
 @Service
 @Transactional
-// fixme: images: TextDocumentUtils.initImagesSources
 public class TextDocumentContentMapper {
 
     @PersistenceContext
@@ -204,6 +203,31 @@ public class TextDocumentContentMapper {
     }
 
 
+    public void saveImage(TextDocImageContainer imageContainer) {
+        DocVersion docVersion = versionRepository.findByDocIdAndNo(imageContainer.getDocRef().getDocId(), imageContainer.getDocRef().getDocVersionNo());
+        Language language = languageRepository.findByCode(imageContainer.getDocRef().getDocLanguageCode());
+
+        ImageDomainObject image = imageContainer.getImage();
+
+        Image jpaImage = toJpaObject(image);
+
+        jpaImage.setNo(imageContainer.getImageNo());
+        jpaImage.setDocVersion(docVersion);
+        jpaImage.setLanguage(language);
+
+        com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef = imageContainer.getLoopEntryRef();
+        if (loopEntryRef != null) {
+            jpaImage.setLoopEntryRef(new LoopEntryRef(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo()));
+        }
+
+        imageRepository.save(jpaImage);
+
+        // fixme:  history
+        // TextDocImageHistory textDocImageHistory = new TextDocImageHistory(image, user);
+        // textDocRepository.saveImageHistory(textDocImageHistory);
+    }
+
+
     public Map<Integer, Loop> getLoops(DocVersionRef docVersionRef) {
         DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
 
@@ -212,7 +236,7 @@ public class TextDocumentContentMapper {
         for (com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop : loopRepository.findByDocVersion(version)) {
             result.put(
                     loop.getNo(),
-                    entityConverter.fromEntity(loop)
+                    toApiObject(loop)
             );
         }
 
@@ -222,9 +246,29 @@ public class TextDocumentContentMapper {
     public Loop getLoop(DocVersionRef docVersionRef, int loopNo) {
         DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
 
-        return entityConverter.fromEntity(
-                loopRepository.findByDocVersionAndNo(version, loopNo)
-        );
+        return toApiObject(loopRepository.findByDocVersionAndNo(version, loopNo));
+    }
+
+
+    public void addLoopEntry(DocRef docRef, com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef) {
+        DocVersion docVersion = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop jpaLoop =
+                loopRepository.findByDocVersionAndNo(docVersion, loopEntryRef.getLoopNo());
+
+        if (jpaLoop == null) {
+            jpaLoop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
+            jpaLoop.setNo(loopEntryRef.getLoopNo());
+            jpaLoop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(loopEntryRef.getEntryNo()));
+            loopRepository.save(jpaLoop);
+        } else {
+            Loop apiLoop = toApiObject(jpaLoop);
+            int contentNo = loopEntryRef.getEntryNo();
+            if (!apiLoop.findEntryIndexByNo(contentNo).isPresent()) {
+                jpaLoop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(contentNo));
+                loopRepository.save(jpaLoop);
+            }
+        }
+
     }
 
 
@@ -246,38 +290,6 @@ public class TextDocumentContentMapper {
     }
 
 
-    /**
-     * Inits text doc's image source.
-     */
-    public static ImageDomainObject initImageSource(ImageDomainObject image, Image ormImage) {
-        String url = ormImage.getUrl();
-        Integer type = ormImage.getType();
-
-        Objects.requireNonNull(url);
-        Objects.requireNonNull(type);
-
-        image.setSource(createImageSource(image, url.trim(), type));
-
-        return image;
-    }
-
-    private static ImageSource createImageSource(ImageDomainObject image, String url, int type) {
-        switch (type) {
-            case ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT:
-                throw new IllegalStateException(
-                        String.format("Illegal image source type - IMAGE_TYPE_ID__FILE_DOCUMENT. Image: %s", image)
-                );
-
-            case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH:
-                return new ImagesPathRelativePathImageSource(url);
-
-            case ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE:
-                return new ImageArchiveImageSource(url);
-
-            default:
-                return new NullImageSource();
-        }
-    }
 
     public Map<Integer, Integer> getIncludes(int docId) {
         Map<Integer, Integer> result = new HashMap<>();
@@ -316,9 +328,117 @@ public class TextDocumentContentMapper {
         return menu;
     }
 
-    //fixme; implement
-    public ImageDomainObject toDomainObject(Image entity) {
-        throw new NotImplementedException();
+
+
+    public ImageDomainObject toDomainObject(Image jpaImage) {
+        if (jpaImage == null) return null;
+
+        ImageDomainObject imageDO = new ImageDomainObject();
+
+        imageDO.setAlign(jpaImage.getAlign());
+        imageDO.setAlternateText(jpaImage.getAlternateText());
+        //fixme: check
+        //imageDO.setArchiveImageId();
+        imageDO.setBorder(jpaImage.getBorder());
+        //imageDO.setCropRegion();
+        imageDO.setGeneratedFilename(jpaImage.getGeneratedFilename());
+        imageDO.setHeight(jpaImage.getHeight());
+        imageDO.setHorizontalSpace(jpaImage.getHorizontalSpace());
+        imageDO.setLinkUrl(jpaImage.getLinkUrl());
+        imageDO.setLowResolutionUrl(jpaImage.getLowResolutionUrl());
+        imageDO.setName(jpaImage.getName());
+        //imageDO.setResize();
+        imageDO.setTarget(jpaImage.getTarget());
+        imageDO.setVerticalSpace(jpaImage.getVerticalSpace());
+        imageDO.setWidth(jpaImage.getWidth());
+
+        return initImageSource(jpaImage, imageDO);
     }
+
+
+    private ImageDomainObject initImageSource(Image jpaImage, ImageDomainObject imageDO) {
+        String url = jpaImage.getUrl();
+        Integer type = jpaImage.getType();
+
+        Objects.requireNonNull(url);
+        Objects.requireNonNull(type);
+
+        imageDO.setSource(createImageSource(imageDO, url.trim(), type));
+
+        return imageDO;
+    }
+
+    private ImageSource createImageSource(ImageDomainObject image, String url, int type) {
+        switch (type) {
+            case ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT:
+                throw new IllegalStateException(
+                        String.format("Illegal image source type - IMAGE_TYPE_ID__FILE_DOCUMENT. Image: %s", image)
+                );
+
+            case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH:
+                return new ImagesPathRelativePathImageSource(url);
+
+            case ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE:
+                return new ImageArchiveImageSource(url);
+
+            default:
+                return new NullImageSource();
+        }
+    }
+
+
+    private Loop toApiObject(com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop jpaLoop) {
+        if (jpaLoop == null) return null;
+
+        Map<Integer, Boolean> entries = new HashMap<>();
+
+        for (com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry jpaEntry : jpaLoop.getEntries()) {
+            entries.put(jpaEntry.getNo(), jpaEntry.isEnabled());
+        }
+
+        return Loop.of(entries, jpaLoop.getNextEntryNo());
+    }
+
+
+
+    //todo: set null vs
+    public Image toJpaObject(ImageDomainObject imageDO) {
+        Image jpaImage = new Image();
+        jpaImage.setAlign(imageDO.getAlign());
+        jpaImage.setAlternateText(imageDO.getAlternateText());
+        jpaImage.setBorder(imageDO.getBorder());
+        //e.setCropRegion()
+        jpaImage.setFormat(imageDO.getFormat() == null ? 0 : imageDO.getFormat().getOrdinal());
+        jpaImage.setGeneratedFilename(imageDO.getGeneratedFilename());
+        jpaImage.setHeight(imageDO.getHeight());
+        jpaImage.setHorizontalSpace(imageDO.getHorizontalSpace());
+        jpaImage.setUrl(imageDO.getSource().toStorageString());
+        jpaImage.setLinkUrl(imageDO.getLinkUrl());
+
+        jpaImage.setLowResolutionUrl(imageDO.getLowResolutionUrl());
+        jpaImage.setName(imageDO.getName());
+        jpaImage.setResize(imageDO.getResize() == null ? 0 : imageDO.getResize().getOrdinal());
+        jpaImage.setRotateAngle(imageDO.getRotateDirection() == null ? 0 : imageDO.getRotateDirection().getAngle());
+        jpaImage.setTarget(imageDO.getTarget());
+        jpaImage.setType(imageDO.getSource().getTypeId());
+        jpaImage.setVerticalSpace(imageDO.getVerticalSpace());
+        jpaImage.setWidth(imageDO.getWidth());
+        jpaImage.setHeight(imageDO.getHeight());
+
+        //e.setNo(image.get)
+        //e.setDocVersion()
+        //e.setId()
+        //e.setLanguage()
+
+        return jpaImage;
+    }
+
+//  public RotateDirection getRotateDirection() {
+//    return RotateDirection.getByAngleDefaultIfNull(rotateAngle);
+//  }
+//
+//  public void setRotateDirection(RotateDirection dir) {
+//    this.rotateAngle = (short) (dir != null ? dir.getAngle() : 0);
+//  }
 
 }

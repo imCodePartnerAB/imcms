@@ -11,6 +11,7 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -132,15 +133,9 @@ public class ImageCacheMapper {
                 .executeUpdate();
     }
 
+    //fixme: implement
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ImageDomainObject> getAllDocumentImages() {
-        // fixme: init image from db - replace with text doc content mapper
-        List<ImageDomainObject> images = getCurrentSession()
-                .getNamedQuery("Image.allImages")
-                .list();
-
-        TextDocumentUtils.initImagesSources(images);
-
-        return images;
+        throw new NotImplementedException();
     }
 }

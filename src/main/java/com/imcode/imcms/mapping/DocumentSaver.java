@@ -58,6 +58,9 @@ public class DocumentSaver {
     @Inject 
     private EntityConverter entityConverter;
 
+    @Inject
+    private TextDocumentContentMapper textDocumentContentMapper;
+
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
 
 
@@ -147,22 +150,7 @@ public class DocumentSaver {
             return;
         }
 
-        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop ormLoop = loopRepository.findByDocVersionAndNo(docVersion, loopEntryRef.getLoopNo());
-
-        if (ormLoop == null) {
-            ormLoop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
-            ormLoop.setNo(loopEntryRef.getLoopNo());
-            ormLoop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(loopEntryRef.getEntryNo()));
-            loopRepository.save(ormLoop);
-        } else {
-            Loop apiLoop = entityConverter.fromEntity(ormLoop);
-            int contentNo = loopEntryRef.getEntryNo();
-            if (!apiLoop.findEntryIndexByNo(contentNo).isPresent()) {
-                ormLoop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(contentNo));
-                loopRepository.save(ormLoop);
-            }
-        }
+        textDocumentContentMapper.addLoopEntry(docRef, loopEntryRef);
     }
 
 

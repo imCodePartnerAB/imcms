@@ -58,6 +58,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     protected IncludeRepository includeRepository;
     protected CommonContentRepository commonContentRepository;
     protected EntityConverter entityConverter;
+    protected TextDocumentContentMapper textDocumentContentMapper;
 
     public DocumentStoringVisitor(ImcmsServices services) {
         this.services = services;
@@ -72,6 +73,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         this.includeRepository = services.getManagedBean(IncludeRepository.class);
         this.commonContentRepository = services.getManagedBean(CommonContentRepository.class);
         this.entityConverter = services.getManagedBean(EntityConverter.class);
+        this.textDocumentContentMapper = services.getManagedBean(TextDocumentContentMapper.class);
     }
 
     /**
@@ -276,27 +278,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      */
     @Transactional
     public void saveTextDocumentImage(TextDocImageContainer imageContainer, UserDomainObject user) {
-        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(imageContainer.getDocRef().getDocId(), imageContainer.getDocRef().getDocVersionNo());
-        Language language = languageRepository.findByCode(imageContainer.getDocRef().getDocLanguageCode());
-
-        ImageDomainObject image = imageContainer.getImage();
-
-        Image ormImage = entityConverter.toEntity(image);
-
-        ormImage.setNo(imageContainer.getImageNo());
-        ormImage.setDocVersion(docVersion);
-        ormImage.setLanguage(language);
-
-        com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef = imageContainer.getLoopEntryRef();
-        if (loopEntryRef != null) {
-            ormImage.setLoopEntryRef(new LoopEntryRef(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo()));
-        }
-
-        imageRepository.save(ormImage);
-
-        // fixme:  history
-        // TextDocImageHistory textDocImageHistory = new TextDocImageHistory(image, user);
-        // textDocRepository.saveImageHistory(textDocImageHistory);
+        textDocumentContentMapper.saveImage(imageContainer);
     }
 
 
