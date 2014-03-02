@@ -25,7 +25,6 @@ import java.util.Objects;
 
 @Service
 @Transactional
-// fixme: implment
 // fixme: images: TextDocumentUtils.initImagesSources
 public class TextDocumentContentMapper {
 
@@ -73,7 +72,7 @@ public class TextDocumentContentMapper {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         final Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> result = new HashMap<>();
 
-        for (Text text : textRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNull(version, language)) {
+        for (Text text : textRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNotNull(version, language)) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.LoopItemRef.of(
                     text.getLoopEntryRef().getLoopNo(), text.getLoopEntryRef().getContentNo(), text.getNo()
             );
@@ -89,8 +88,6 @@ public class TextDocumentContentMapper {
         DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
         Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
 
-
-
         for (Text text : textRepository.findByDocVersionAndNoAndLoopEntryRefIsNull(version, textNo)) {
             result.put(EntityConverter.fromEntity(text.getLanguage()), EntityConverter.fromEntity(text));
         }
@@ -99,49 +96,129 @@ public class TextDocumentContentMapper {
     }
 
     public Map<DocumentLanguage, TextDomainObject> getLoopTexts(DocVersionRef docVersionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        throw new NotImplementedException();
+        DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
+        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
+
+        for (Text text : textRepository.findByDocVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
+            result.put(EntityConverter.fromEntity(text.getLanguage()), EntityConverter.fromEntity(text));
+        }
+
+        return result;
     }
 
     public TextDomainObject getText(DocRef docRef, int textNo) {
-        throw new NotImplementedException();
+        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+
+        return EntityConverter.fromEntity(
+                textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryIsNull(version, language, textNo)
+        );
     }
 
     public TextDomainObject getLoopText(DocRef docRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        throw new NotImplementedException();
+        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
+
+        return EntityConverter.fromEntity(
+                textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
+        );
     }
 
     public Map<Integer, ImageDomainObject> getImages(DocRef docRef) {
-        throw new NotImplementedException();
+        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        final Map<Integer, ImageDomainObject> result = new HashMap<>();
+
+        for (Image image : imageRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNull(version, language)) {
+            result.put(image.getNo(), EntityConverter.fromEntity(image));
+        }
+
+        return result;
     }
 
     public Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> getLoopImages(DocRef docRef) {
-        throw new NotImplementedException();
+        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        final Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> result = new HashMap<>();
+
+        for (Image image : imageRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNotNull(version, language)) {
+            TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.LoopItemRef.of(
+                    image.getLoopEntryRef().getLoopNo(), image.getLoopEntryRef().getContentNo(), image.getNo()
+            );
+
+            result.put(loopItemRef, EntityConverter.fromEntity(image));
+        }
+
+        return result;
     }
 
     public Map<DocumentLanguage, ImageDomainObject> getImages(DocVersionRef docVersionRef, int textNo) {
-        throw new NotImplementedException();
+        DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
+
+        for (Image text : imageRepository.findByDocVersionAndNoAndLoopEntryRefIsNull(version, textNo)) {
+            result.put(EntityConverter.fromEntity(text.getLanguage()), EntityConverter.fromEntity(text));
+        }
+
+        return result;
     }
 
     public Map<DocumentLanguage, ImageDomainObject> getLoopImages(DocVersionRef docVersionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        throw new NotImplementedException();
+        DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
+        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
+
+        for (Image text : imageRepository.findByDocVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
+            result.put(EntityConverter.fromEntity(text.getLanguage()), EntityConverter.fromEntity(text));
+        }
+
+        return result;
     }
 
 
     public ImageDomainObject getImage(DocRef docRef, int textNo) {
-        throw new NotImplementedException();
+        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+
+        return EntityConverter.fromEntity(
+                imageRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRefIsNull(version, language, textNo)
+        );
     }
 
     public ImageDomainObject getLoopImage(DocRef docRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        throw new NotImplementedException();
+        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
+
+        return EntityConverter.fromEntity(
+                imageRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
+        );
     }
 
 
     public Map<Integer, Loop> getLoops(DocVersionRef docVersionRef) {
-        throw new NotImplementedException();
+        DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+
+        Map<Integer, Loop> result = new HashMap<>();
+
+        for (com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop : loopRepository.findByDocVersion(version)) {
+            result.put(
+                    loop.getNo(),
+                    EntityConverter.fromEntity(loop)
+            );
+        }
+
+        return result;
     }
 
-    public Loop getLoop(DocVersionRef docVersionRef, int no) {
-        throw new NotImplementedException();
+    public Loop getLoop(DocVersionRef docVersionRef, int loopNo) {
+        DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+
+        return EntityConverter.fromEntity(
+                loopRepository.findByDocVersionAndNo(version, loopNo)
+        );
     }
 
 
@@ -172,8 +249,6 @@ public class TextDocumentContentMapper {
     public TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
         return EntityConverter.fromEntity(templateNamesRepository.findOne(docId));
     }
-
-    // get include
 
 
     /**

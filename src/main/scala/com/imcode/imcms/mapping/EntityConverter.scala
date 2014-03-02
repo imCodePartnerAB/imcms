@@ -164,6 +164,10 @@ object EntityConverter {
     vo.setTreeSortIndex(entity.getTreeSortIndex)
   }
 
+  //fixme; implement
+  def fromEntity(entity: Image): ImageDomainObject = new ImageDomainObject |>> { vo =>
+  }
+
 
   //fixme: implement
   def toEntity(imageContainer: TextDocImageContainer): doc.content.textdoc.Image = {

@@ -12,11 +12,11 @@ import java.util.List;
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Integer> {
 
-//    //@Query("SELECT l FROM Image l WHERE l.docVersion = ?1")
-//    List<Image> findByDocVersion(DocVersion docVersion);
-//
-//    //@Query("SELECT l FROM Image l WHERE l.docVersion = ?1 AND l.language = ?2")
-//    List<Image> findByDocVersionAndLanguage(DocVersion docVersion, Language language);
+    @Query("SELECT l FROM Image l WHERE l.docVersion = ?1 AND l.language = ?2 AND l.loopEntryRef IS NULL")
+    List<Image> findByDocVersionAndLanguageAndLoopEntryRefIsNull(DocVersion docVersion, Language language);
+
+    @Query("SELECT l FROM Image l WHERE l.docVersion = ?1 AND l.language = ?2 AND l.loopEntryRef = IS NOT NULL")
+    List<Image> findByDocVersionAndLanguageAndLoopEntryRefIsNotNull(DocVersion docVersion, Language language);
 
 
     @Query("SELECT l FROM Image l WHERE l.docVersion = ?1 AND l.no = ?2 AND l.loopEntryRef IS NULL")

@@ -9,7 +9,7 @@
         <properties>
             <!--<property name="hibernate.archive.autodetection" value=""/>-->
             <!--<property name="hibernate.hbm2ddl.auto" value="create-drop"/>-->
-            <!--<property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>-->
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
             <property name="hibernate.ejb.cfgfile" value="hibernate.cfg.xml"/>
         </properties>
 

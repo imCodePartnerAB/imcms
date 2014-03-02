@@ -4,11 +4,12 @@ import com.google.common.base.Objects;
 import com.imcode.imcms.mapping.jpa.User;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Table(name = "imcms_doc_versions")
-public class DocVersion implements Cloneable {
+public class DocVersion implements Cloneable, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

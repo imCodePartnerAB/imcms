@@ -10,11 +10,15 @@ import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.AfterTransaction;
+import org.springframework.test.context.transaction.BeforeTransaction;
 
 
 import javax.inject.Inject;
+import javax.persistence.*;
 import javax.transaction.Transactional;
 
 import java.util.Arrays;
@@ -93,11 +97,11 @@ public class TextRepositoryTest {
 
 
     @Test
-    public void testFindByDocVersionAndDocLanguage() throws Exception {
+    public void testFindByDocVersionAndLanguage() throws Exception {
         fail();
 //        for (DocVersion docVersion : docVersions) {
 //            for (Language language : languages) {
-//                List<Text> texts = textRepository.findByDocVersionAndDocLanguage(docVersion, language);
+//                List<Text> texts = textRepository.findByDocVersionAndLanguage(docVersion, language);
 //                assertThat(texts.size(), is(TEXTS_COUNT__PER_VERSION__PER_LANGUAGE));
 //            }
 //        }
@@ -124,7 +128,7 @@ public class TextRepositoryTest {
     }
 
     @Test
-    public void testFindByDocVersionAndDocLanguageAndNoAndLoopEntryRef() throws Exception {
+    public void testFindByDocVersionAndLanguageAndNoAndLoopEntryRef() throws Exception {
         for (int no = MIN_TEXT_NO; no <= MAX_TEXT_NO; no++) {
             for (Language language : languages) {
                 for (DocVersion docVersion : docVersions) {
@@ -150,13 +154,13 @@ public class TextRepositoryTest {
     }
 
     @Test
-    public void testFindByDocVersionAndDocLanguageAndNoAndLoopEntryRefIsNull() throws Exception {
+    public void testFindByDocVersionAndLanguageAndNoAndLoopEntryRefIsNull() throws Exception {
         fail();
     }
 
 
     @Test
-    public void testDeleteByDocVersionAndDocLanguage() throws Exception {
+    public void testDeleteByDocVersionAndLanguage() throws Exception {
         for (Language language : languages) {
             for (DocVersion docVersion : docVersions) {
                 int deletedCount = textRepository.deleteByDocVersionAndLanguage(docVersion, language);

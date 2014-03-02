@@ -63,7 +63,7 @@ public class CommonContentRepositoryTest {
         recreateCommonContents();
 
         Language se = languageRepository.findByCode("se");
-        CommonContent commonContent = commonContentRepository.findByDocIdAndDocLanguage(1001, se);
+        CommonContent commonContent = commonContentRepository.findByDocIdAndLanguage(1001, se);
 
         assertNotNull(commonContent);
         assertEquals("headline_se", commonContent.getHeadline());
@@ -73,7 +73,7 @@ public class CommonContentRepositoryTest {
     public void testFindByDocIdAndDocLanguageCode() throws Exception {
         recreateCommonContents();
 
-        CommonContent commonContent = commonContentRepository.findByDocIdAndDocLanguageCode(1001, "se");
+        CommonContent commonContent = commonContentRepository.findByDocIdAndLanguageCode(1001, "se");
 
         assertNotNull(commonContent);
         assertEquals("headline_se", commonContent.getHeadline());
