@@ -1,21 +1,11 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
-import com.imcode.imcms.mapping.jpa.doc.DocVersion;
-import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Include;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.IncludeRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -27,16 +17,7 @@ public class TextDocumentInitializer {
     private DocRepository metaRepository;
 
     @Inject
-    private LoopRepository loopRepository;
-
-    @Inject
     private TextDocumentContentMapper textDocMapper;
-
-    @Inject
-    private DocVersionRepository docVersionRepository;
-
-    @Inject
-    private IncludeRepository includeRepository;
 
     /**
      * Initializes text document.
@@ -63,15 +44,7 @@ public class TextDocumentInitializer {
 
 
     public void initIncludes(TextDocumentDomainObject document) {
-        Collection<Include> includes = includeRepository.findByDocId(document.getMeta().getId());
-
-        Map<Integer, Integer> includesMap = new HashMap<>();
-
-        for (Include include : includes) {
-            includesMap.put(include.getNo(), include.getIncludedDocumentId());
-        }
-
-        document.setIncludesMap(includesMap);
+        document.setIncludesMap(textDocMapper.getIncludes(document.getId()));
     }
 
 
@@ -117,22 +90,8 @@ public class TextDocumentInitializer {
         return menu;
     }
 
-
-    /**
-     * @throws IllegalStateException if a content loop is empty i.e. does not have a contents.
-     */
     public void initContentLoops(TextDocumentDomainObject document) {
-        DocRef docRef = document.getRef();
-        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-
-        List<com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop> loops = loopRepository.findByDocVersion(docVersion);
-        Map<Integer, Loop> loopsMap = new HashMap<>();
-
-        for (com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop : loops) {
-            loopsMap.put(loop.getNo(), EntityConverter.fromEntity(loop));
-        }
-
-        document.setLoops(loopsMap);
+        document.setLoops(textDocMapper.getLoops(document.getVersionRef()));
     }
 
     public DocRepository getMetaRepository() {

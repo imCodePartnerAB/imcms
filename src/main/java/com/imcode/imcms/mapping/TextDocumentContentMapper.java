@@ -44,13 +44,17 @@ public class TextDocumentContentMapper {
     private MenuRepository menuRepository;
 
     @Inject
-    TemplateNamesRepository templateNamesRepository;
+    private TemplateNamesRepository templateNamesRepository;
 
     @Inject
     private LoopRepository loopRepository;
 
     @Inject
     private LanguageRepository languageRepository;
+
+    @Inject
+    private IncludeRepository includeRepository;
+
 
     @Inject
     private DocumentGetter menuItemDocumentGetter;
@@ -282,5 +286,15 @@ public class TextDocumentContentMapper {
             default:
                 return new NullImageSource();
         }
+    }
+
+    public Map<Integer, Integer> getIncludes(int docId) {
+        Map<Integer, Integer> result = new HashMap<>();
+
+        for (Include include : includeRepository.findByDocId(docId)) {
+            result.put(include.getNo(), include.getIncludedDocumentId());
+        }
+
+        return result;
     }
 }
