@@ -41,6 +41,9 @@ public class DocumentLoader {
     @Inject
     private CommonContentRepository commonContentRepository;
 
+    @Inject
+    private EntityConverter entityConverter;
+
     /**
      * Initializes document's fields.
      */
@@ -58,7 +61,7 @@ public class DocumentLoader {
 
         if (ormMeta == null) return null;
 
-        DocumentMeta documentMeta = EntityConverter.fromEntity(ormMeta);
+        DocumentMeta documentMeta = entityConverter.fromEntity(ormMeta);
 
         if (documentMeta != null) {
             documentMeta.setActualModifiedDatetime(documentMeta.getModifiedDatetime());
@@ -80,7 +83,7 @@ public class DocumentLoader {
     public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
         CommonContent ormAppearance = commonContentRepository.findByDocIdAndLanguageCode(document.getId(), document.getLanguage().getCode());
         DocumentCommonContent appearance = ormAppearance != null
-                ? EntityConverter.fromEntity(ormAppearance)
+                ? entityConverter.fromEntity(ormAppearance)
                 : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build();
 
         document.setCommonContent(appearance);

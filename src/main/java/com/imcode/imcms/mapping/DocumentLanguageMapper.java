@@ -12,7 +12,6 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import scala.language;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -32,16 +31,19 @@ public class DocumentLanguageMapper {
     @Inject
     private SystemPropertyRepository systemRepository;
 
+    @Inject
+    private EntityConverter entityConverter;
+
     public List<DocumentLanguage> getAll() {
         return Lists.transform(languageRepository.findAll(), new Function<Language, DocumentLanguage>() {
             public DocumentLanguage apply(Language input) {
-                return EntityConverter.fromEntity(input);
+                return entityConverter.fromEntity(input);
             }
         });
     }
 
     public DocumentLanguage findByCode(String code) {
-        return EntityConverter.fromEntity(languageRepository.findByCode(code));
+        return entityConverter.fromEntity(languageRepository.findByCode(code));
     }
 
     public void deleteByCode(String code) {
@@ -110,6 +112,6 @@ public class DocumentLanguageMapper {
             throw new IllegalStateException(message);
         }
 
-        return EntityConverter.fromEntity(language);
+        return entityConverter.fromEntity(language);
     }
 }

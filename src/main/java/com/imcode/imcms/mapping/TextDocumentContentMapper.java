@@ -11,7 +11,6 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
-import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -54,6 +53,9 @@ public class TextDocumentContentMapper {
 
     @Inject
     private IncludeRepository includeRepository;
+    
+    @Inject 
+    private EntityConverter entityConverter;
 
 
     @Inject
@@ -65,7 +67,7 @@ public class TextDocumentContentMapper {
         final Map<Integer, TextDomainObject> result = new HashMap<>();
 
         for (Text text : textRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNull(version, language)) {
-            result.put(text.getNo(), EntityConverter.fromEntity(text));
+            result.put(text.getNo(), entityConverter.fromEntity(text));
         }
 
         return result;
@@ -81,7 +83,7 @@ public class TextDocumentContentMapper {
                     text.getLoopEntryRef().getLoopNo(), text.getLoopEntryRef().getContentNo(), text.getNo()
             );
 
-            result.put(loopItemRef, EntityConverter.fromEntity(text));
+            result.put(loopItemRef, entityConverter.fromEntity(text));
         }
 
         return result;
@@ -93,7 +95,7 @@ public class TextDocumentContentMapper {
         Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
 
         for (Text text : textRepository.findByDocVersionAndNoAndLoopEntryRefIsNull(version, textNo)) {
-            result.put(EntityConverter.fromEntity(text.getLanguage()), EntityConverter.fromEntity(text));
+            result.put(entityConverter.fromEntity(text.getLanguage()), entityConverter.fromEntity(text));
         }
 
         return result;
@@ -105,7 +107,7 @@ public class TextDocumentContentMapper {
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         for (Text text : textRepository.findByDocVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
-            result.put(EntityConverter.fromEntity(text.getLanguage()), EntityConverter.fromEntity(text));
+            result.put(entityConverter.fromEntity(text.getLanguage()), entityConverter.fromEntity(text));
         }
 
         return result;
@@ -115,7 +117,7 @@ public class TextDocumentContentMapper {
         DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
 
-        return EntityConverter.fromEntity(
+        return entityConverter.fromEntity(
                 textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryIsNull(version, language, textNo)
         );
     }
@@ -125,7 +127,7 @@ public class TextDocumentContentMapper {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-        return EntityConverter.fromEntity(
+        return entityConverter.fromEntity(
                 textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
         );
     }
@@ -136,7 +138,7 @@ public class TextDocumentContentMapper {
         final Map<Integer, ImageDomainObject> result = new HashMap<>();
 
         for (Image image : imageRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNull(version, language)) {
-            result.put(image.getNo(), EntityConverter.fromEntity(image));
+            result.put(image.getNo(), entityConverter.fromEntity(image));
         }
 
         return result;
@@ -152,7 +154,7 @@ public class TextDocumentContentMapper {
                     image.getLoopEntryRef().getLoopNo(), image.getLoopEntryRef().getContentNo(), image.getNo()
             );
 
-            result.put(loopItemRef, EntityConverter.fromEntity(image));
+            result.put(loopItemRef, entityConverter.fromEntity(image));
         }
 
         return result;
@@ -163,7 +165,7 @@ public class TextDocumentContentMapper {
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
 
         for (Image text : imageRepository.findByDocVersionAndNoAndLoopEntryRefIsNull(version, textNo)) {
-            result.put(EntityConverter.fromEntity(text.getLanguage()), EntityConverter.fromEntity(text));
+            result.put(entityConverter.fromEntity(text.getLanguage()), entityConverter.fromEntity(text));
         }
 
         return result;
@@ -175,7 +177,7 @@ public class TextDocumentContentMapper {
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         for (Image text : imageRepository.findByDocVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
-            result.put(EntityConverter.fromEntity(text.getLanguage()), EntityConverter.fromEntity(text));
+            result.put(entityConverter.fromEntity(text.getLanguage()), entityConverter.fromEntity(text));
         }
 
         return result;
@@ -186,7 +188,7 @@ public class TextDocumentContentMapper {
         DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
 
-        return EntityConverter.fromEntity(
+        return entityConverter.fromEntity(
                 imageRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRefIsNull(version, language, textNo)
         );
     }
@@ -196,7 +198,7 @@ public class TextDocumentContentMapper {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-        return EntityConverter.fromEntity(
+        return entityConverter.fromEntity(
                 imageRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
         );
     }
@@ -210,7 +212,7 @@ public class TextDocumentContentMapper {
         for (com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop : loopRepository.findByDocVersion(version)) {
             result.put(
                     loop.getNo(),
-                    EntityConverter.fromEntity(loop)
+                    entityConverter.fromEntity(loop)
             );
         }
 
@@ -220,7 +222,7 @@ public class TextDocumentContentMapper {
     public Loop getLoop(DocVersionRef docVersionRef, int loopNo) {
         DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
 
-        return EntityConverter.fromEntity(
+        return entityConverter.fromEntity(
                 loopRepository.findByDocVersionAndNo(version, loopNo)
         );
     }
@@ -232,26 +234,15 @@ public class TextDocumentContentMapper {
         Map<Integer, MenuDomainObject> menus = new HashMap<>();
 
         for (Menu menu : textDocMenus) {
-            menus.put(menu.getNo(), initMenuItems(EntityConverter.fromEntity(menu)));
+            menus.put(menu.getNo(), entityConverter.fromEntity(menu));
         }
 
         return menus;
     }
 
-    private MenuDomainObject initMenuItems(MenuDomainObject menu) {
-        for (Map.Entry<Integer, MenuItemDomainObject> entry : menu.getItemsMap().entrySet()) {
-            Integer referencedDocumentId = entry.getKey();
-            MenuItemDomainObject menuItem = entry.getValue();
-            GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, menuItemDocumentGetter);
-
-            menuItem.setDocumentReference(gtr);
-        }
-
-        return menu;
-    }
 
     public TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
-        return EntityConverter.fromEntity(templateNamesRepository.findOne(docId));
+        return entityConverter.fromEntity(templateNamesRepository.findOne(docId));
     }
 
 

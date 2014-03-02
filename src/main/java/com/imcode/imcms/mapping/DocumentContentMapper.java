@@ -23,13 +23,16 @@ public class DocumentContentMapper {
     @Inject
     private LanguageRepository languageRepository;
 
+    @Inject
+    private EntityConverter entityConverter;
+
     public Map<DocumentLanguage, Optional<DocumentCommonContent>> getCommonContents(int docId) {
         Map<DocumentLanguage, Optional<DocumentCommonContent>> commonContentMap = new HashMap<>();
 
         for (Language language : languageRepository.findAll()) {
             commonContentMap.put(
-                    EntityConverter.fromEntity(language),
-                    Optional.fromNullable(EntityConverter.fromEntity(commonContentRepository.findByDocIdAndLanguage(docId, language)))
+                    entityConverter.fromEntity(language),
+                    Optional.fromNullable(entityConverter.fromEntity(commonContentRepository.findByDocIdAndLanguage(docId, language)))
             );
         }
 
@@ -38,7 +41,7 @@ public class DocumentContentMapper {
 
 
     public DocumentCommonContent getCommonContents(DocRef docRef) {
-        return EntityConverter.fromEntity(commonContentRepository.findByDocIdAndLanguageCode(
+        return entityConverter.fromEntity(commonContentRepository.findByDocIdAndLanguageCode(
                 docRef.getDocId(), docRef.getDocLanguageCode()));
     }
 }

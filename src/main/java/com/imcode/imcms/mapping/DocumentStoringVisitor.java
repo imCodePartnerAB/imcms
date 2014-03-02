@@ -57,6 +57,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     protected TemplateNamesRepository templateNamesRepository;
     protected IncludeRepository includeRepository;
     protected CommonContentRepository commonContentRepository;
+    protected EntityConverter entityConverter;
 
     public DocumentStoringVisitor(ImcmsServices services) {
         this.services = services;
@@ -70,6 +71,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         this.templateNamesRepository = services.getManagedBean(TemplateNamesRepository.class);
         this.includeRepository = services.getManagedBean(IncludeRepository.class);
         this.commonContentRepository = services.getManagedBean(CommonContentRepository.class);
+        this.entityConverter = services.getManagedBean(EntityConverter.class);
     }
 
     /**
@@ -279,7 +281,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         ImageDomainObject image = imageContainer.getImage();
 
-        Image ormImage = EntityConverter.toEntity(image);
+        Image ormImage = entityConverter.toEntity(image);
 
         ormImage.setNo(imageContainer.getImageNo());
         ormImage.setDocVersion(docVersion);
@@ -343,7 +345,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, UserDomainObject user) {
         int docId = textDocument.getId();
 
-        TemplateNames templateNames = EntityConverter.toEntity(textDocument.getTemplateNames());
+        TemplateNames templateNames = entityConverter.toEntity(textDocument.getTemplateNames());
 
         templateNames.setDocId(docId);
 

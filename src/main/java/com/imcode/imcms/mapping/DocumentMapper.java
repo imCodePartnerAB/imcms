@@ -86,8 +86,6 @@ public class DocumentMapper implements DocumentGetter {
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
 
         documentLoader = services.getManagedBean(DocumentLoader.class);
-        documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
-
         documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
 
         docNativeQueries = services.getManagedBean(DocNativeQueries.class);

@@ -1,8 +1,9 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
-import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -10,8 +11,6 @@ import java.util.Map;
 
 @Service
 public class TextDocumentInitializer {
-
-    private DocumentGetter documentGetter;
 
     @Inject
     private DocRepository metaRepository;
@@ -71,23 +70,7 @@ public class TextDocumentInitializer {
 
 
     public void initMenus(TextDocumentDomainObject document) {
-        for (Map.Entry<Integer, MenuDomainObject> e : textDocMapper.getMenus(document.getVersionRef()).entrySet()) {
-            document.setMenu(e.getKey(), initMenuItems(e.getValue(), documentGetter));
-        }
-    }
-
-    @Deprecated
-    private MenuDomainObject initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
-
-        for (Map.Entry<Integer, MenuItemDomainObject> entry : menu.getItemsMap().entrySet()) {
-            Integer referencedDocumentId = entry.getKey();
-            MenuItemDomainObject menuItem = entry.getValue();
-            GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, documentGetter);
-
-            menuItem.setDocumentReference(gtr);
-        }
-
-        return menu;
+        document.setMenus(textDocMapper.getMenus(document.getVersionRef()));
     }
 
     public void initContentLoops(TextDocumentDomainObject document) {
@@ -100,14 +83,5 @@ public class TextDocumentInitializer {
 
     public void setMetaRepository(DocRepository metaRepository) {
         this.metaRepository = metaRepository;
-    }
-
-
-    public DocumentGetter getDocumentGetter() {
-        return documentGetter;
-    }
-
-    public void setDocumentGetter(DocumentGetter documentGetter) {
-        this.documentGetter = documentGetter;
     }
 }
