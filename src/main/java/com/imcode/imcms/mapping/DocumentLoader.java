@@ -16,8 +16,6 @@ import java.util.Set;
 
 /**
  * Loads documents from the database.
- * <p/>
- * Instantiated by spring-framework and initialized in DocumentMapper constructor.
  */
 @Component
 public class DocumentLoader {
@@ -58,24 +56,7 @@ public class DocumentLoader {
      * @return loaded meta of null if meta with given id does not exists.
      */
     public DocumentMeta loadMeta(int docId) {
-        Meta jpaMeta = metaRepository.findOne(docId);
-
-        if (jpaMeta == null) return null;
-
-        DocumentMeta documentMeta = toDomainObject(jpaMeta);
-
-        if (documentMeta != null) {
-            documentMeta.setActualModifiedDatetime(documentMeta.getModifiedDatetime());
-
-            Document.PublicationStatus publicationStatus = publicationStatusFromInt(jpaMeta.getPublicationStatusInt());
-            documentMeta.setPublicationStatus(publicationStatus);
-
-            initRoleIdToPermissionSetIdMap(documentMeta, jpaMeta);
-            initDocumentsPermissionSets(documentMeta, jpaMeta);
-            initDocumentsPermissionSetsForNew(documentMeta, jpaMeta);
-        }
-
-        return documentMeta;
+        return toDomainObject(metaRepository.findOne(docId));
     }
 
     /**
@@ -106,32 +87,32 @@ public class DocumentLoader {
     }
 
     // Moved from  DocumentInitializer.initDocuments
-    private void initRoleIdToPermissionSetIdMap(DocumentMeta documentMeta, Meta ormMeta) {
+    private void initRoleIdToPermissionSetIdMap(DocumentMeta metaDO, Meta jpaMeta) {
         RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
                 new RoleIdToDocumentPermissionSetTypeMappings();
 
-        for (Map.Entry<Integer, Integer> roleIdToPermissionSetId : ormMeta.getRoleIdToPermissionSetIdMap().entrySet()) {
+        for (Map.Entry<Integer, Integer> roleIdToPermissionSetId : jpaMeta.getRoleIdToPermissionSetIdMap().entrySet()) {
             rolePermissionMappings.setPermissionSetTypeForRole(
                     new RoleId(roleIdToPermissionSetId.getKey()),
                     DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
         }
 
-        documentMeta.setRoleIdToDocumentPermissionSetTypeMappings(rolePermissionMappings);
+        metaDO.setRoleIdToDocumentPermissionSetTypeMappings(rolePermissionMappings);
     }
 
-    private void initDocumentsPermissionSets(DocumentMeta documentMeta, Meta ormMeta) {
+    private void initDocumentsPermissionSets(DocumentMeta metaDO, Meta ormMeta) {
         DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
                 ormMeta.getPermissionSetBitsMap(), ormMeta.getPermissionSetEx());
 
-        documentMeta.setPermissionSets(permissionSets);
+        metaDO.setPermissionSets(permissionSets);
     }
 
 
-    private void initDocumentsPermissionSetsForNew(DocumentMeta documentMeta, Meta ormMeta) {
+    private void initDocumentsPermissionSetsForNew(DocumentMeta metaDO, Meta jpaMeta) {
         DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-                ormMeta.getPermissionSetBitsForNewMap(), ormMeta.getPermissionSetExForNew());
+                jpaMeta.getPermissionSetBitsForNewMap(), jpaMeta.getPermissionSetExForNew());
 
-        documentMeta.setPermissionSetsForNewDocument(permissionSets);
+        metaDO.setPermissionSetsForNewDocument(permissionSets);
     }
 
 
@@ -178,6 +159,8 @@ public class DocumentLoader {
     }
 
     private DocumentMeta toDomainObject(Meta jpaMeta) {
+        if (jpaMeta == null) return null;
+
         DocumentMeta metaDO = new DocumentMeta();
 
         metaDO.setArchivedDatetime(jpaMeta.getArchivedDatetime());
@@ -200,18 +183,23 @@ public class DocumentLoader {
         metaDO.setLinkableByOtherUsers(jpaMeta.getLinkableByOtherUsers());
         metaDO.setLinkedForUnauthorizedUsers(jpaMeta.getLinkedForUnauthorizedUsers());
         metaDO.setModifiedDatetime(jpaMeta.getModifiedDatetime());
+        metaDO.setActualModifiedDatetime(jpaMeta.getModifiedDatetime());
         //m.setPermissionSets(entity.getPermissionSets)
         //m.setPermissionSetsForNew(entity.getPermissionSetExForNew)
         //m.setPermissionSetsForNewDocuments(entity.getPermissionSetsForNewDocuments)
         metaDO.setProperties(jpaMeta.getProperties());
         metaDO.setPublicationEndDatetime(jpaMeta.getPublicationEndDatetime());
         metaDO.setPublicationStartDatetime(jpaMeta.getPublicationStartDatetime());
-        //m.setPublicationStatus(entity.getPublicationStatusInt)
+        metaDO.setPublicationStatus(publicationStatusFromInt(jpaMeta.getPublicationStatusInt()));
         metaDO.setPublisherId(jpaMeta.getPublisherId());
         metaDO.setRestrictedOneMorePrivilegedThanRestrictedTwo(jpaMeta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
         //m.setRoleIdToDocumentPermissionSetTypeMappings()
         metaDO.setSearchDisabled(jpaMeta.getSearchDisabled());
         metaDO.setTarget(jpaMeta.getTarget());
+
+        initRoleIdToPermissionSetIdMap(metaDO, jpaMeta);
+        initDocumentsPermissionSets(metaDO, jpaMeta);
+        initDocumentsPermissionSetsForNew(metaDO, jpaMeta);
 
         return metaDO;
     }

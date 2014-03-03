@@ -60,6 +60,35 @@ public class TextDocumentContentMapper {
     @Inject
     private DocumentGetter menuItemDocumentGetter;
 
+    public TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
+        TemplateNames jpaTemplateNames = templateNamesRepository.findOne(docId);
+
+        if (jpaTemplateNames == null) return null;
+
+        TextDocumentDomainObject.TemplateNames templateNamesDO = new TextDocumentDomainObject.TemplateNames();
+
+        templateNamesDO.setDefaultTemplateName(jpaTemplateNames.getDefaultTemplateName());
+        templateNamesDO.setDefaultTemplateNameForRestricted1(jpaTemplateNames.getDefaultTemplateNameForRestricted1());
+        templateNamesDO.setDefaultTemplateNameForRestricted2(jpaTemplateNames.getDefaultTemplateNameForRestricted2());
+        templateNamesDO.setTemplateGroupId(jpaTemplateNames.getTemplateGroupId());
+        templateNamesDO.setTemplateName(jpaTemplateNames.getTemplateName());
+
+        return templateNamesDO;
+    }
+
+    public void saveTemplateNames(int docId, TextDocumentDomainObject.TemplateNames templateNamesDO) {
+        TemplateNames jpaTemplateNames = new TemplateNames();
+
+        jpaTemplateNames.setDocId(docId);
+        jpaTemplateNames.setDefaultTemplateName(templateNamesDO.getDefaultTemplateName());
+        jpaTemplateNames.setDefaultTemplateNameForRestricted1(templateNamesDO.getDefaultTemplateNameForRestricted1());
+        jpaTemplateNames.setDefaultTemplateNameForRestricted2(templateNamesDO.getDefaultTemplateNameForRestricted2());
+        jpaTemplateNames.setTemplateGroupId(templateNamesDO.getTemplateGroupId());
+        jpaTemplateNames.setTemplateName(templateNamesDO.getTemplateName());
+
+        templateNamesRepository.save(jpaTemplateNames);
+    }
+
     public Map<Integer, TextDomainObject> getTexts(final DocRef docRef) {
         DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
@@ -283,13 +312,6 @@ public class TextDocumentContentMapper {
 
         return menus;
     }
-
-
-    public TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
-        return entityConverter.fromEntity(templateNamesRepository.findOne(docId));
-    }
-
-
 
     public Map<Integer, Integer> getIncludes(int docId) {
         Map<Integer, Integer> result = new HashMap<>();

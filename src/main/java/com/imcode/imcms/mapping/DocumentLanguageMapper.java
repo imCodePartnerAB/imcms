@@ -71,11 +71,11 @@ public class DocumentLanguageMapper {
     }
 
     public void save(DocumentLanguage language) {
-        Language ormLanguage = languageRepository.findByCode(language.getCode());
+        Language jpaLanguage = languageRepository.findByCode(language.getCode());
 
-        if (ormLanguage != null) {
-            ormLanguage.setName(language.getName());
-            ormLanguage.setName(language.getNativeName());
+        if (jpaLanguage != null) {
+            jpaLanguage.setName(language.getName());
+            jpaLanguage.setName(language.getNativeName());
         } else {
             languageRepository.save(
                 new Language(language.getCode(), language.getName(), language.getNativeName())

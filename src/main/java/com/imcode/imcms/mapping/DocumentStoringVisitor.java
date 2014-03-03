@@ -325,13 +325,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     @Transactional
     public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, UserDomainObject user) {
-        int docId = textDocument.getId();
-
-        TemplateNames templateNames = entityConverter.toEntity(textDocument.getTemplateNames());
-
-        templateNames.setDocId(docId);
-
-        templateNamesRepository.save(templateNames);
+        textDocumentContentMapper.saveTemplateNames(textDocument.getId(), textDocument.getTemplateNames());
     }
 
 

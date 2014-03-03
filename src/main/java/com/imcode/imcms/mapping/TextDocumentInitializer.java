@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -11,9 +10,6 @@ import java.util.Map;
 
 @Service
 public class TextDocumentInitializer {
-
-    @Inject
-    private DocRepository metaRepository;
 
     @Inject
     private TextDocumentContentMapper textDocMapper;
@@ -75,13 +71,5 @@ public class TextDocumentInitializer {
 
     public void initContentLoops(TextDocumentDomainObject document) {
         document.setLoops(textDocMapper.getLoops(document.getVersionRef()));
-    }
-
-    public DocRepository getMetaRepository() {
-        return metaRepository;
-    }
-
-    public void setMetaRepository(DocRepository metaRepository) {
-        this.metaRepository = metaRepository;
     }
 }
