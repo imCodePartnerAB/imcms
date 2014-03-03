@@ -32,10 +32,6 @@ public class DocumentVersionMapper {
         throw new NotImplementedException();
     }
 
-    public void getDefault(int docId, DocumentVersion documentVersion) {
-        throw new NotImplementedException();
-    }
-
     public DocumentVersion toApiObject(DocVersion jpaVersion) {
         return DocumentVersion.builder()
                 .no(jpaVersion.getNo())
