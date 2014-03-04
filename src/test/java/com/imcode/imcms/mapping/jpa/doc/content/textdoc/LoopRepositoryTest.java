@@ -4,7 +4,7 @@ import com.imcode.imcms.mapping.container.DocVersionRef;
 import com.imcode.imcms.mapping.jpa.JpaConfiguration;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
-import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,8 +47,8 @@ public class LoopRepositoryTest {
         userRepository.deleteAll();
 
         User user = userRepository.saveAndFlush(new User("admin", "admin", "admin@imcode.com"));
-        DocVersion docVersion = docVersionRepository.saveAndFlush(
-                new DocVersion(
+        Version version = docVersionRepository.saveAndFlush(
+                new Version(
                         DOC_VERSION_REF.getDocId(),
                         DOC_VERSION_REF.getDocVersionNo(),
                         user,
@@ -60,7 +60,7 @@ public class LoopRepositoryTest {
         return Arrays.asList(
                 loopRepository.saveAndFlush(
                     new Loop(
-                            docVersion,
+                            version,
                             1,
                             2,
                             Arrays.asList(
@@ -71,7 +71,7 @@ public class LoopRepositoryTest {
 
                 loopRepository.saveAndFlush(
                     new Loop(
-                            docVersion,
+                            version,
                             2,
                             3,
                             Arrays.asList(
@@ -83,7 +83,7 @@ public class LoopRepositoryTest {
 
                 loopRepository.saveAndFlush(
                     new Loop(
-                            docVersion,
+                            version,
                             3,
                             4,
                             Arrays.asList(
@@ -100,8 +100,8 @@ public class LoopRepositoryTest {
     public void textFindByDocVersion() {
         recreateLoops();
 
-        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
-        List<Loop> loops = loopRepository.findByDocVersion(docVersion);
+        Version version = docVersionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
+        List<Loop> loops = loopRepository.findByDocVersion(version);
 
         assertThat(loops.size(), is(3));
     }
@@ -110,10 +110,10 @@ public class LoopRepositoryTest {
     public void textFindByDocVersionAndNo() {
         recreateLoops();
 
-        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
-        Loop loop1 = loopRepository.findByDocVersionAndNo(docVersion, 1);
-        Loop loop2 = loopRepository.findByDocVersionAndNo(docVersion, 2);
-        Loop loop3 = loopRepository.findByDocVersionAndNo(docVersion, 3);
+        Version version = docVersionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
+        Loop loop1 = loopRepository.findByDocVersionAndNo(version, 1);
+        Loop loop2 = loopRepository.findByDocVersionAndNo(version, 2);
+        Loop loop3 = loopRepository.findByDocVersionAndNo(version, 3);
 
         assertNotNull(loop1);
         assertNotNull(loop2);

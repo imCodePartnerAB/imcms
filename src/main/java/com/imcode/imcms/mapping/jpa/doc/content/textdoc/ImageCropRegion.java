@@ -16,6 +16,16 @@ public class ImageCropRegion {
     @Column(name = "crop_y2", nullable = false)
     private int cropY2;
 
+    public ImageCropRegion() {
+    }
+
+    public ImageCropRegion(int cropX1, int cropY1, int cropX2, int cropY2) {
+        this.cropX1 = cropX1;
+        this.cropY1 = cropY1;
+        this.cropX2 = cropX2;
+        this.cropY2 = cropY2;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(cropX1, cropX2, cropY1, cropY2);

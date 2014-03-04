@@ -2,22 +2,28 @@ package com.imcode.imcms.mapping.jpa.doc;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface DocVersionRepository extends JpaRepository<DocVersion, Integer>, DocVersionRepositoryCustom {
+public interface DocVersionRepository extends JpaRepository<Version, Integer>, DocVersionRepositoryCustom {
 
-    List<DocVersion> findByDocId(int docId);
+    @Query(name = "DocVersion.getByDocIdOrderByNo")
+    List<Version> findByDocId(int docId);
 
-    DocVersion findByDocIdAndNo(int docId, int no);
+    Version findByDocIdAndNo(int docId, int no);
+
+    @Query(name = "DocVersion.findWorking")
+    Version findWorking(int docId);
 
     @Query(name = "DocVersion.findDefault")
-    DocVersion findDefault(int docId);
+    Version findDefault(int docId);
 
     @Query(name = "DocVersion.findLatest")
-    DocVersion findLatest(int docId);
+    Version findLatest(int docId);
+
+
+
 }
 

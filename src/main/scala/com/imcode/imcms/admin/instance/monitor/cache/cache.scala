@@ -5,12 +5,12 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 
 import java.util.Date
-import imcms.mapping.DocLoaderCachingProxy
+import imcms.mapping.DocumentLoaderCachingProxy
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.event._
 
-class View(docLoaderCache: DocLoaderCachingProxy) extends VerticalLayout with Margin with Spacing {
+class View(docLoaderCache: DocumentLoaderCachingProxy) extends VerticalLayout with Margin with Spacing {
   val tblMetas = new Table("Metas") with SingleSelect[JInteger] with Selectable with Immediate {
     addContainerProperties(this,
       PropertyDescriptor[JInteger]("Id"),

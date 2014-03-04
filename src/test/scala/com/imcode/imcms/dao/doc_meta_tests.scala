@@ -132,7 +132,7 @@ class MetaDaoTestConfig {
         classOf[Property],
         classOf[Meta],
         classOf[DocumentCommonContent],
-        classOf[DocVersion],
+        classOf[Version],
         classOf[Language],
         classOf[CategoryDomainObject],
         classOf[CategoryTypeDomainObject],

@@ -14,7 +14,7 @@
 	        org.apache.commons.lang.StringUtils,
 	        java.util.List,
 	        com.imcode.imcms.mapping.DocumentMapper,
-	        com.imcode.imcms.mapping.jpa.doc.DocVersion,
+	        com.imcode.imcms.mapping.jpa.doc.Version,
 	        java.util.Set"
 	
 %><%@ taglib uri="imcmsvelocity" prefix="vel"
@@ -207,7 +207,7 @@ if (sFlags != null && sFlags.equals("1")) {
           <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
           <select name="<%=ImcmsConstants.REQUEST_PARAM__DOC_VERSION%>">          
             <% while (iterator.hasNext()) {
-            	DocVersion v = (DocVersion)iterator.next();
+            	Version v = (Version)iterator.next();
             	String sSelected = v.getNo() == versionNo ? " selected=\"selected\"" : "";
                 String displayName = DocumentVersionInfo.isWorkingVersion(v)
                         ? "DRAFT" : "Version " + v.getNo();

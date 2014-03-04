@@ -133,7 +133,7 @@ public class DocumentVersionInfo implements Serializable {
         return versions.size();
     }
 
-    public boolean isDefaultSetToWorking() {
+    public boolean getWorkingIsDefault() {
         return getDefaultVersion().getNo() == getWorkingVersion().getNo();
     }
 }

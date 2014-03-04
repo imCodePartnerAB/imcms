@@ -5,7 +5,8 @@ import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.DocVersionRef;
 import com.imcode.imcms.mapping.container.TextDocImageContainer;
-import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.container.TextDocTextContainer;
+import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
@@ -54,11 +55,11 @@ public class TextDocumentContentMapper {
     @Inject
     private IncludeRepository includeRepository;
     
-    @Inject 
-    private EntityConverter entityConverter;
-
     @Inject
     private DocumentGetter menuItemDocumentGetter;
+
+    @Inject
+    private DocumentLanguageMapper languageMapper;
 
     public TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
         TemplateNames jpaTemplateNames = templateNamesRepository.findOne(docId);
@@ -90,7 +91,7 @@ public class TextDocumentContentMapper {
     }
 
     public Map<Integer, TextDomainObject> getTexts(final DocRef docRef) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         final Map<Integer, TextDomainObject> result = new HashMap<>();
 
@@ -102,7 +103,7 @@ public class TextDocumentContentMapper {
     }
 
     public Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> getLoopTexts(DocRef docRef) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         final Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> result = new HashMap<>();
 
@@ -119,30 +120,30 @@ public class TextDocumentContentMapper {
 
 
     public Map<DocumentLanguage, TextDomainObject> getTexts(DocVersionRef docVersionRef, int textNo) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
         Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
 
         for (Text text : textRepository.findByDocVersionAndNoAndLoopEntryRefIsNull(version, textNo)) {
-            result.put(entityConverter.fromEntity(text.getLanguage()), toDomainObject(text));
+            result.put(languageMapper.toApiObject(text.getLanguage()), toDomainObject(text));
         }
 
         return result;
     }
 
     public Map<DocumentLanguage, TextDomainObject> getLoopTexts(DocVersionRef docVersionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
         Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         for (Text text : textRepository.findByDocVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
-            result.put(entityConverter.fromEntity(text.getLanguage()), toDomainObject(text));
+            result.put(languageMapper.toApiObject(text.getLanguage()), toDomainObject(text));
         }
 
         return result;
     }
 
     public TextDomainObject getText(DocRef docRef, int textNo) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
 
         return toDomainObject(
@@ -151,7 +152,7 @@ public class TextDocumentContentMapper {
     }
 
     public TextDomainObject getLoopText(DocRef docRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
@@ -161,7 +162,7 @@ public class TextDocumentContentMapper {
     }
 
     public Map<Integer, ImageDomainObject> getImages(DocRef docRef) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         final Map<Integer, ImageDomainObject> result = new HashMap<>();
 
@@ -173,7 +174,7 @@ public class TextDocumentContentMapper {
     }
 
     public Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> getLoopImages(DocRef docRef) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         final Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> result = new HashMap<>();
 
@@ -189,23 +190,23 @@ public class TextDocumentContentMapper {
     }
 
     public Map<DocumentLanguage, ImageDomainObject> getImages(DocVersionRef docVersionRef, int textNo) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
 
         for (Image image : imageRepository.findByDocVersionAndNoAndLoopEntryRefIsNull(version, textNo)) {
-            result.put(entityConverter.fromEntity(image.getLanguage()), toDomainObject(image));
+            result.put(languageMapper.toApiObject(image.getLanguage()), toDomainObject(image));
         }
 
         return result;
     }
 
     public Map<DocumentLanguage, ImageDomainObject> getLoopImages(DocVersionRef docVersionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         for (Image image : imageRepository.findByDocVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
-            result.put(entityConverter.fromEntity(image.getLanguage()), toDomainObject(image));
+            result.put(languageMapper.toApiObject(image.getLanguage()), toDomainObject(image));
         }
 
         return result;
@@ -213,7 +214,7 @@ public class TextDocumentContentMapper {
 
 
     public ImageDomainObject getImage(DocRef docRef, int textNo) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
 
         return toDomainObject(
@@ -222,7 +223,7 @@ public class TextDocumentContentMapper {
     }
 
     public ImageDomainObject getLoopImage(DocRef docRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
@@ -233,32 +234,76 @@ public class TextDocumentContentMapper {
 
 
     public void saveImage(TextDocImageContainer imageContainer) {
-        DocVersion docVersion = versionRepository.findByDocIdAndNo(imageContainer.getDocRef().getDocId(), imageContainer.getDocRef().getDocVersionNo());
-        Language language = languageRepository.findByCode(imageContainer.getDocRef().getDocLanguageCode());
+        Image image = toJpaObject(imageContainer);
 
-        ImageDomainObject image = imageContainer.getImage();
+        saveImage(image);
+    }
 
-        Image jpaImage = toJpaObject(image);
+    private void saveImage(Image image) {
+        imageRepository.save(image);
 
-        jpaImage.setNo(imageContainer.getImageNo());
-        jpaImage.setDocVersion(docVersion);
-        jpaImage.setLanguage(language);
-
-        com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef = imageContainer.getLoopEntryRef();
-        if (loopEntryRef != null) {
-            jpaImage.setLoopEntryRef(new LoopEntryRef(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo()));
-        }
-
-        imageRepository.save(jpaImage);
-
-        // fixme:  history
+        // fixme: save history
         // TextDocImageHistory textDocImageHistory = new TextDocImageHistory(image, user);
         // textDocRepository.saveImageHistory(textDocImageHistory);
     }
 
+    public void saveContent(TextDocumentDomainObject doc) {
+        DocRef docRef = doc.getRef();
+        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+
+        replaceImages(doc, version, language);
+    }
+
+    private void replaceImages(TextDocumentDomainObject doc, Version version, Language language) {
+        DocRef docRef = doc.getRef();
+
+        imageRepository.deleteByDocVersionAndLanguage(version, language);
+
+        for (Map.Entry<Integer, ImageDomainObject> entry : doc.getImages().entrySet()) {
+            Image image = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
+
+            saveImage(image);
+        }
+
+        for (Map.Entry<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> entry : doc.getLoopImages().entrySet()) {
+            TextDocumentDomainObject.LoopItemRef loopItemRef = entry.getKey();
+            LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
+
+            Image image = toJpaObject(entry.getValue(), version, language, loopItemRef.getItemNo(), loopEntryRef);
+
+            saveImage(image);
+        }
+    }
+
+
+    public void saveText(TextDocTextContainer textContainer) {
+        Version version = versionRepository.findByDocIdAndNo(textContainer.getDocRef().getDocId(), textContainer.getDocRef().getDocVersionNo());
+        Language language = languageRepository.findByCode(textContainer.getDocRef().getDocLanguageCode());
+
+        TextDomainObject textDO = textContainer.getText();
+        Text jpaText = new Text();
+
+        jpaText.setLanguage(language);
+        jpaText.setVersion(version);
+        jpaText.setNo(textContainer.getTextNo());
+        jpaText.setText(textDO.getText());
+        jpaText.setType(TextType.values()[textDO.getType()]);
+        com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef = textContainer.getLoopEntryRef();
+        if (loopEntryRef != null) {
+            jpaText.setLoopEntryRef(new LoopEntryRef(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo()));
+        }
+
+        textRepository.save(jpaText);
+
+        // fixme: history
+        //TextDocTextHistory textHistory = new TextDocTextHistory(textRef, user);
+        //textRepository.saveTextHistory(textHistory);
+    }
+
 
     public Map<Integer, Loop> getLoops(DocVersionRef docVersionRef) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
 
         Map<Integer, Loop> result = new HashMap<>();
 
@@ -273,16 +318,16 @@ public class TextDocumentContentMapper {
     }
 
     public Loop getLoop(DocVersionRef docVersionRef, int loopNo) {
-        DocVersion version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
 
         return toApiObject(loopRepository.findByDocVersionAndNo(version, loopNo));
     }
 
 
     public void addLoopEntry(DocRef docRef, com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef) {
-        DocVersion docVersion = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop jpaLoop =
-                loopRepository.findByDocVersionAndNo(docVersion, loopEntryRef.getLoopNo());
+                loopRepository.findByDocVersionAndNo(version, loopEntryRef.getLoopNo());
 
         if (jpaLoop == null) {
             jpaLoop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
@@ -302,8 +347,8 @@ public class TextDocumentContentMapper {
 
 
     public Map<Integer, MenuDomainObject> getMenus(DocVersionRef docVersionRef) {
-        DocVersion docVersion = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
-        List<Menu> textDocMenus = menuRepository.getByDocVersion(docVersion);
+        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        List<Menu> textDocMenus = menuRepository.getByDocVersion(version);
         Map<Integer, MenuDomainObject> menus = new HashMap<>();
 
         for (Menu menu : textDocMenus) {
@@ -329,52 +374,52 @@ public class TextDocumentContentMapper {
                 : new TextDomainObject(jpaText.getText(), jpaText.getType().ordinal());
     }
 
-    private MenuDomainObject toDomainObject(Menu jpaMenu) {
-        MenuDomainObject menu = new MenuDomainObject();
+    private MenuDomainObject toDomainObject(Menu menu) {
+        MenuDomainObject menuDO = new MenuDomainObject();
 
-        menu.setSortOrder(jpaMenu.getSortOrder());
+        menuDO.setSortOrder(menu.getSortOrder());
 
-        for (Map.Entry<Integer, MenuItem> e : jpaMenu.getItems().entrySet()) {
-            MenuItem jpaMenuItem = e.getValue();
+        for (Map.Entry<Integer, MenuItem> e : menu.getItems().entrySet()) {
+            MenuItem menuItem = e.getValue();
             Integer referencedDocumentId = e.getKey();
-            MenuItemDomainObject menuItemDomainObject = new MenuItemDomainObject();
+            MenuItemDomainObject menuItemDO = new MenuItemDomainObject();
             GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, menuItemDocumentGetter);
 
-            menuItemDomainObject.setDocumentReference(gtr);
-            menuItemDomainObject.setSortKey(jpaMenuItem.getSortKey());
-            menuItemDomainObject.setTreeSortIndex(jpaMenuItem.getTreeSortIndex());
+            menuItemDO.setDocumentReference(gtr);
+            menuItemDO.setSortKey(menuItem.getSortKey());
+            menuItemDO.setTreeSortIndex(menuItem.getTreeSortIndex());
 
-            menu.addMenuItemUnchecked(menuItemDomainObject);
+            menuDO.addMenuItemUnchecked(menuItemDO);
         }
 
-        return menu;
+        return menuDO;
     }
 
 
 
-    public ImageDomainObject toDomainObject(Image jpaImage) {
-        if (jpaImage == null) return null;
+    public ImageDomainObject toDomainObject(Image image) {
+        if (image == null) return null;
 
         ImageDomainObject imageDO = new ImageDomainObject();
 
-        imageDO.setAlign(jpaImage.getAlign());
-        imageDO.setAlternateText(jpaImage.getAlternateText());
+        imageDO.setAlign(image.getAlign());
+        imageDO.setAlternateText(image.getAlternateText());
         //fixme: check
         //imageDO.setArchiveImageId();
-        imageDO.setBorder(jpaImage.getBorder());
+        imageDO.setBorder(image.getBorder());
         //imageDO.setCropRegion();
-        imageDO.setGeneratedFilename(jpaImage.getGeneratedFilename());
-        imageDO.setHeight(jpaImage.getHeight());
-        imageDO.setHorizontalSpace(jpaImage.getHorizontalSpace());
-        imageDO.setLinkUrl(jpaImage.getLinkUrl());
-        imageDO.setLowResolutionUrl(jpaImage.getLowResolutionUrl());
-        imageDO.setName(jpaImage.getName());
+        imageDO.setGeneratedFilename(image.getGeneratedFilename());
+        imageDO.setHeight(image.getHeight());
+        imageDO.setHorizontalSpace(image.getHorizontalSpace());
+        imageDO.setLinkUrl(image.getLinkUrl());
+        imageDO.setLowResolutionUrl(image.getLowResolutionUrl());
+        imageDO.setName(image.getName());
         //imageDO.setResize();
-        imageDO.setTarget(jpaImage.getTarget());
-        imageDO.setVerticalSpace(jpaImage.getVerticalSpace());
-        imageDO.setWidth(jpaImage.getWidth());
+        imageDO.setTarget(image.getTarget());
+        imageDO.setVerticalSpace(image.getVerticalSpace());
+        imageDO.setWidth(image.getWidth());
 
-        return initImageSource(jpaImage, imageDO);
+        return initImageSource(image, imageDO);
     }
 
 
@@ -423,44 +468,52 @@ public class TextDocumentContentMapper {
 
 
 
-    //todo: set null vs
-    public Image toJpaObject(ImageDomainObject imageDO) {
-        Image jpaImage = new Image();
-        jpaImage.setAlign(imageDO.getAlign());
-        jpaImage.setAlternateText(imageDO.getAlternateText());
-        jpaImage.setBorder(imageDO.getBorder());
-        //e.setCropRegion()
-        jpaImage.setFormat(imageDO.getFormat() == null ? 0 : imageDO.getFormat().getOrdinal());
-        jpaImage.setGeneratedFilename(imageDO.getGeneratedFilename());
-        jpaImage.setHeight(imageDO.getHeight());
-        jpaImage.setHorizontalSpace(imageDO.getHorizontalSpace());
-        jpaImage.setUrl(imageDO.getSource().toStorageString());
-        jpaImage.setLinkUrl(imageDO.getLinkUrl());
+    private Image toJpaObject(TextDocImageContainer imageContainer) {
+        Language language = languageRepository.findByCode(imageContainer.getDocLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(imageContainer.getDocId(), imageContainer.getDocVersionNo());
 
-        jpaImage.setLowResolutionUrl(imageDO.getLowResolutionUrl());
-        jpaImage.setName(imageDO.getName());
-        jpaImage.setResize(imageDO.getResize() == null ? 0 : imageDO.getResize().getOrdinal());
-        jpaImage.setRotateAngle(imageDO.getRotateDirection() == null ? 0 : imageDO.getRotateDirection().getAngle());
-        jpaImage.setTarget(imageDO.getTarget());
-        jpaImage.setType(imageDO.getSource().getTypeId());
-        jpaImage.setVerticalSpace(imageDO.getVerticalSpace());
-        jpaImage.setWidth(imageDO.getWidth());
-        jpaImage.setHeight(imageDO.getHeight());
+        com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRefDO = imageContainer.getLoopEntryRef();
+        LoopEntryRef loopEntryRef = loopEntryRefDO == null
+                ? null
+                : new LoopEntryRef(loopEntryRefDO.getLoopNo(), loopEntryRefDO.getEntryNo());
 
-        //e.setNo(image.get)
-        //e.setDocVersion()
-        //e.setId()
-        //e.setLanguage()
-
-        return jpaImage;
+        return toJpaObject(imageContainer.getImage(), version, language, imageContainer.getImageNo(), loopEntryRef);
     }
 
-//  public RotateDirection getRotateDirection() {
-//    return RotateDirection.getByAngleDefaultIfNull(rotateAngle);
-//  }
-//
-//  public void setRotateDirection(RotateDirection dir) {
-//    this.rotateAngle = (short) (dir != null ? dir.getAngle() : 0);
-//  }
+    private Image toJpaObject(ImageDomainObject imageDO, Version version, Language language, int no, LoopEntryRef loopEntryRef) {
+        ImageDomainObject.CropRegion cropRegionDO = imageDO.getCropRegion();
+        ImageCropRegion cropRegion = cropRegionDO.isValid()
+                ? new ImageCropRegion(cropRegionDO.getCropX1(), cropRegionDO.getCropY1(), cropRegionDO.getCropX2(), cropRegionDO.getCropY2())
+                : new ImageCropRegion(-1, -1, -1, -1);
+
+
+        Image image = new Image();
+
+        image.setNo(no);
+        image.setLanguage(language);
+        image.setVersion(version);
+        image.setLoopEntryRef(loopEntryRef);
+        image.setAlign(imageDO.getAlign());
+        image.setAlternateText(imageDO.getAlternateText());
+        image.setBorder(imageDO.getBorder());
+        image.setCropRegion(cropRegion);
+        image.setFormat(imageDO.getFormat() == null ? 0 : imageDO.getFormat().getOrdinal());
+        image.setGeneratedFilename(imageDO.getGeneratedFilename());
+        image.setHeight(imageDO.getHeight());
+        image.setHorizontalSpace(imageDO.getHorizontalSpace());
+        image.setUrl(imageDO.getSource().toStorageString());
+        image.setLinkUrl(imageDO.getLinkUrl());
+        image.setLowResolutionUrl(imageDO.getLowResolutionUrl());
+        image.setName(imageDO.getName());
+        image.setResize(imageDO.getResize() == null ? 0 : imageDO.getResize().getOrdinal());
+        image.setRotateAngle(imageDO.getRotateDirection() == null ? 0 : imageDO.getRotateDirection().getAngle());
+        image.setTarget(imageDO.getTarget());
+        image.setType(imageDO.getSource().getTypeId());
+        image.setVerticalSpace(imageDO.getVerticalSpace());
+        image.setWidth(imageDO.getWidth());
+        image.setHeight(imageDO.getHeight());
+
+        return image;
+    }
 
 }

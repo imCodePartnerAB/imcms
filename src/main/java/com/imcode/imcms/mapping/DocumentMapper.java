@@ -56,7 +56,7 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Document loader caching proxy. Intercepts calls to DocumentLoader.
      */
-    private DocLoaderCachingProxy documentLoaderCachingProxy;
+    private DocumentLoaderCachingProxy documentLoaderCachingProxy;
 
     @Inject
     private DocNativeQueries docNativeQueries;
@@ -85,7 +85,7 @@ public class DocumentMapper implements DocumentGetter {
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
 
         documentLoader = services.getManagedBean(DocumentLoader.class);
-        documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
+        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
 
         docNativeQueries = services.getManagedBean(DocNativeQueries.class);
         categoryMapper = services.getManagedBean(CategoryMapper.class);
@@ -103,7 +103,7 @@ public class DocumentMapper implements DocumentGetter {
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
 
-        documentLoaderCachingProxy = new DocLoaderCachingProxy(documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
+        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
 
         documentSaver.setDocumentMapper(this);
     }
@@ -560,7 +560,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             return Integer.valueOf(documentIdentity);
         } catch (NumberFormatException e) {
-            return documentLoaderCachingProxy.getDocId(documentIdentity);
+            return documentLoaderCachingProxy.getDocIdByAlias(documentIdentity);
         }
     }
 
@@ -1076,7 +1076,7 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public DocLoaderCachingProxy getDocumentLoaderCachingProxy() {
+    public DocumentLoaderCachingProxy getDocumentLoaderCachingProxy() {
         return documentLoaderCachingProxy;
     }
 

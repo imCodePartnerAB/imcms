@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "imcms_doc_versions")
-public class DocVersion implements Cloneable, Serializable {
+public class Version implements Cloneable, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,10 +36,10 @@ public class DocVersion implements Cloneable, Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
-    public DocVersion() {
+    public Version() {
     }
 
-    public DocVersion(Integer docId, int no, User createdBy, Date createdDt, User modifiedBy, Date modifiedDt) {
+    public Version(Integer docId, int no, User createdBy, Date createdDt, User modifiedBy, Date modifiedDt) {
         this.docId = docId;
         this.no = no;
         this.createdBy = createdBy;
@@ -49,9 +49,9 @@ public class DocVersion implements Cloneable, Serializable {
     }
 
     @Override
-    public DocVersion clone() {
+    public Version clone() {
         try {
-            return (DocVersion) super.clone();
+            return (Version) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -59,10 +59,10 @@ public class DocVersion implements Cloneable, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || (o instanceof DocVersion && (equals((DocVersion) o)));
+        return o == this || (o instanceof Version && (equals((Version) o)));
     }
 
-    private boolean equals(DocVersion that) {
+    private boolean equals(Version that) {
         return Objects.equal(this.id, that.id)
                 && Objects.equal(this.no, that.no)
                 && Objects.equal(this.docId, that.docId)

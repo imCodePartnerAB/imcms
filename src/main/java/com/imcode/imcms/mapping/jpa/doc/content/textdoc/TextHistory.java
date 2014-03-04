@@ -25,7 +25,7 @@ public class TextHistory extends TextBase {
 
     private boolean equals(TextHistory that) {
         return Objects.equals(getId(), that.getId())
-                && Objects.equals(getDocVersion(), that.getDocVersion())
+                && Objects.equals(getVersion(), that.getVersion())
                 && Objects.equals(getLanguage(), that.getLanguage())
                 && Objects.equals(getType(), that.getType())
                 && Objects.equals(getNo(), that.getNo())
@@ -36,7 +36,7 @@ public class TextHistory extends TextBase {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDocVersion(), getLanguage(), getText(), getType(), getNo(),
+        return Objects.hash(getId(), getVersion(), getLanguage(), getText(), getType(), getNo(),
                 getLoopEntryRef(), modifiedBy, modifiedDt);
     }
 

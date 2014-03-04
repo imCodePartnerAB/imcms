@@ -26,37 +26,37 @@ class DocVersionRepositoryImpl implements DocVersionRepositoryCustom {
      */
     //todo: check locking
     @Override
-    public DocVersion create(int docId, int userId) {
+    public Version create(int docId, int userId) {
         User creator = entityManager.getReference(User.class, userId);
 
-        List<DocVersion> latestDocVersionList = entityManager.createNamedQuery("DocVersion.findLatest", DocVersion.class)
+        List<Version> latestVersionList = entityManager.createNamedQuery("DocVersion.findLatest", Version.class)
                 .setParameter(1, docId)
                 .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                 .getResultList();
 
-        DocVersion latestDocVersion = latestDocVersionList.isEmpty() ? null : latestDocVersionList.get(0);
+        Version latestVersion = latestVersionList.isEmpty() ? null : latestVersionList.get(0);
 
-        int no = latestDocVersion != null ? latestDocVersion.getNo() + 1 : 0;
+        int no = latestVersion != null ? latestVersion.getNo() + 1 : 0;
         Date now = new Date();
-        DocVersion docVersion = new DocVersion();
+        Version version = new Version();
 
-        docVersion.setDocId(docId);
-        docVersion.setNo(no);
-        docVersion.setCreatedDt(now);
-        docVersion.setCreatedBy(creator);
-        docVersion.setModifiedDt(now);
-        docVersion.setModifiedBy(creator);
+        version.setDocId(docId);
+        version.setNo(no);
+        version.setCreatedDt(now);
+        version.setCreatedBy(creator);
+        version.setModifiedDt(now);
+        version.setModifiedBy(creator);
 
-        entityManager.persist(docVersion);
+        entityManager.persist(version);
         entityManager.flush();
 
-        return docVersion;
+        return version;
     }
 
     @Override
     //todo: check locking
     public void setDefault(int docId, int docVersionNo, int userId) {
-        DocVersion docVersion = entityManager.createNamedQuery("DocVersion.findByDocIdAndNo", DocVersion.class)
+        Version version = entityManager.createNamedQuery("DocVersion.findByDocIdAndNo", Version.class)
                 .setParameter(1, docId)
                 .setParameter(2, docVersionNo)
                 .setLockMode(LockModeType.PESSIMISTIC_WRITE)

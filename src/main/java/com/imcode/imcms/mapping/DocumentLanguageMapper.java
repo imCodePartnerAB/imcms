@@ -31,19 +31,16 @@ public class DocumentLanguageMapper {
     @Inject
     private SystemPropertyRepository systemRepository;
 
-    @Inject
-    private EntityConverter entityConverter;
-
     public List<DocumentLanguage> getAll() {
         return Lists.transform(languageRepository.findAll(), new Function<Language, DocumentLanguage>() {
             public DocumentLanguage apply(Language input) {
-                return entityConverter.fromEntity(input);
+                return toApiObject(input);
             }
         });
     }
 
     public DocumentLanguage findByCode(String code) {
-        return entityConverter.fromEntity(languageRepository.findByCode(code));
+        return toApiObject(languageRepository.findByCode(code));
     }
 
     public void deleteByCode(String code) {
@@ -112,6 +109,16 @@ public class DocumentLanguageMapper {
             throw new IllegalStateException(message);
         }
 
-        return entityConverter.fromEntity(language);
+        return toApiObject(language);
+    }
+
+    public DocumentLanguage toApiObject(Language jpaLanguage) {
+        return jpaLanguage == null
+                ? null
+                : DocumentLanguage.builder()
+                .code(jpaLanguage.getCode())
+                .name(jpaLanguage.getName())
+                .nativeName(jpaLanguage.getNativeName())
+                .build();
     }
 }

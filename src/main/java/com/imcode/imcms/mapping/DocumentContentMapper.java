@@ -23,14 +23,14 @@ public class DocumentContentMapper {
     private LanguageRepository languageRepository;
 
     @Inject
-    private EntityConverter entityConverter;
+    private DocumentLanguageMapper languageMapper;
 
     public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId) {
         Map<DocumentLanguage, DocumentCommonContent> result = new HashMap<>();
 
         for (CommonContent commonContent : commonContentRepository.findByDocId(docId)) {
             result.put(
-                    entityConverter.fromEntity(commonContent.getLanguage()),
+                    languageMapper.toApiObject(commonContent.getLanguage()),
                     toApiObject(commonContent)
             );
         }

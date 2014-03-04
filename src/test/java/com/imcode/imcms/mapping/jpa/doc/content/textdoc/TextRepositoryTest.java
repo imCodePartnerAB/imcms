@@ -4,21 +4,17 @@ import com.imcode.imcms.mapping.jpa.JpaConfiguration;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.mapping.jpa.doc.Language;
-import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
 
 
 import javax.inject.Inject;
-import javax.persistence.*;
 import javax.transaction.Transactional;
 
 import java.util.Arrays;
@@ -56,7 +52,7 @@ public class TextRepositoryTest {
 
     List<Language> languages;
 
-    List<DocVersion> docVersions;
+    List<Version> versions;
 
     @Before
     public void setUp() {
@@ -66,22 +62,22 @@ public class TextRepositoryTest {
                 languageRepository.saveAndFlush(new Language("se", "Swedish", "Svenska"))
         );
 
-        docVersions = Arrays.asList(
-                docVersionRepository.saveAndFlush(new DocVersion(DOC_ID, 0, user, new Date(), user, new Date())),
-                docVersionRepository.saveAndFlush(new DocVersion(DOC_ID, 1, user, new Date(), user, new Date())),
-                docVersionRepository.saveAndFlush(new DocVersion(DOC_ID, 2, user, new Date(), user, new Date()))
+        versions = Arrays.asList(
+                docVersionRepository.saveAndFlush(new Version(DOC_ID, 0, user, new Date(), user, new Date())),
+                docVersionRepository.saveAndFlush(new Version(DOC_ID, 1, user, new Date(), user, new Date())),
+                docVersionRepository.saveAndFlush(new Version(DOC_ID, 2, user, new Date(), user, new Date()))
         );
 
         // texts with odd no have loop entry with the same loop no and entry no
         for (int no = MIN_TEXT_NO; no <= MAX_TEXT_NO; no++) {
             for (Language language : languages) {
-                for (DocVersion docVersion : docVersions) {
+                for (Version version : versions) {
                     Text text = new Text();
 
                     text.setNo(no);
                     text.setType(TextType.PLAIN_TEXT);
                     text.setLanguage(language);
-                    text.setDocVersion(docVersion);
+                    text.setVersion(version);
 
                     if ((no & 1) == 1) {
                         int loopNo = no;
@@ -111,9 +107,9 @@ public class TextRepositoryTest {
     public void testFindByDocVersionAndNoAndLoopEntryIsNull() throws Exception {
         for (int no = MIN_TEXT_NO; no <= MAX_TEXT_NO; no++) {
             for (Language language : languages) {
-                for (DocVersion docVersion : docVersions) {
+                for (Version version : versions) {
                     Text text = textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryIsNull(
-                            docVersion, language, no
+                            version, language, no
                     );
 
                     if ((no & 1) == 1) {
@@ -131,10 +127,10 @@ public class TextRepositoryTest {
     public void testFindByDocVersionAndLanguageAndNoAndLoopEntryRef() throws Exception {
         for (int no = MIN_TEXT_NO; no <= MAX_TEXT_NO; no++) {
             for (Language language : languages) {
-                for (DocVersion docVersion : docVersions) {
+                for (Version version : versions) {
                     LoopEntryRef entryRef = new LoopEntryRef(no, no);
                     Text text = textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRef(
-                            docVersion, language, no, entryRef
+                            version, language, no, entryRef
                     );
 
                     if ((no & 1) == 1) {
@@ -162,8 +158,8 @@ public class TextRepositoryTest {
     @Test
     public void testDeleteByDocVersionAndLanguage() throws Exception {
         for (Language language : languages) {
-            for (DocVersion docVersion : docVersions) {
-                int deletedCount = textRepository.deleteByDocVersionAndLanguage(docVersion, language);
+            for (Version version : versions) {
+                int deletedCount = textRepository.deleteByDocVersionAndLanguage(version, language);
 
                 assertThat(deletedCount, equalTo(TEXTS_COUNT__PER_VERSION__PER_LANGUAGE));
             }

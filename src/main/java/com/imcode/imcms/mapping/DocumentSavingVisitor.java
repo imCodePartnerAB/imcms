@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import imcode.server.ImcmsServices;
@@ -36,11 +36,11 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction   
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
-        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
         HtmlDocContent htmlReference = new HtmlDocContent();
 
         htmlReference.setHtml(document.getHtml());
-        htmlReference.setDocVersion(docVersion);
+        htmlReference.setVersion(version);
 
         docRepository.deleteHtmlReference(document.getRef());
         docRepository.saveHtmlReference(htmlReference);
@@ -48,10 +48,10 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction   
     public void visitUrlDocument(UrlDocumentDomainObject document) {
-        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
         UrlDocContent reference = new UrlDocContent();
 
-        reference.setDocVersion(docVersion);
+        reference.setVersion(version);
 
         reference.setUrl(document.getUrl());
         reference.setUrlTarget("");

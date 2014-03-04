@@ -38,7 +38,7 @@ public class DocumentLoader {
     private CommonContentRepository commonContentRepository;
 
     @Inject
-    private EntityConverter entityConverter;
+    private DocumentLanguageMapper languageMapper;
 
     @Inject
     private DocumentContentMapper contentMapper;
@@ -174,7 +174,7 @@ public class DocumentLoader {
         Set<DocumentLanguage> apiLanguages = new HashSet<>();
 
         for (Language jpaLanguage : jpaMeta.getEnabledLanguages()) {
-            apiLanguages.add(entityConverter.fromEntity(jpaLanguage));
+            apiLanguages.add(languageMapper.toApiObject(jpaLanguage));
         }
 
         metaDO.setEnabledLanguages(apiLanguages);

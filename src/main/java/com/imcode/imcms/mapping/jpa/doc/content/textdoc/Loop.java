@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
-import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.VersionedDocContent;
 
 import javax.persistence.*;
@@ -94,16 +94,16 @@ public class Loop extends VersionedDocContent {
     public Loop() {
     }
 
-    public Loop(Integer id, DocVersion docVersion, Integer no, Integer nextEntryNo, List<Entry> entries) {
+    public Loop(Integer id, Version version, Integer no, Integer nextEntryNo, List<Entry> entries) {
         setId(id);
-        setDocVersion(docVersion);
+        setVersion(version);
         this.no = no;
         this.nextEntryNo = nextEntryNo;
         this.entries = new LinkedList<>(entries);
     }
 
-    public Loop(DocVersion docVersion, Integer no, Integer nextEntryNo, List<Entry> entries) {
-        this(null, docVersion, no, nextEntryNo, entries);
+    public Loop(Version version, Integer no, Integer nextEntryNo, List<Entry> entries) {
+        this(null, version, no, nextEntryNo, entries);
     }
 
 
@@ -119,7 +119,7 @@ public class Loop extends VersionedDocContent {
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("id", getId())
-                .add("docVersion", getDocVersion())
+                .add("docVersion", getVersion())
                 .add("no", no)
                 .add("vsn", vsn)
                 .add("entries", entries).toString();
@@ -127,7 +127,7 @@ public class Loop extends VersionedDocContent {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDocVersion(), no, entries, vsn);
+        return Objects.hash(getId(), getVersion(), no, entries, vsn);
     }
 
 
@@ -138,7 +138,7 @@ public class Loop extends VersionedDocContent {
 
     private boolean equals(Loop that) {
         return Objects.equals(getId(), that.getId())
-                && Objects.equals(getDocVersion(), that.getDocVersion())
+                && Objects.equals(getVersion(), that.getVersion())
                 && Objects.equals(no, that.no)
                 && Objects.equals(vsn, that.vsn)
                 && Objects.equals(entries, that.entries);

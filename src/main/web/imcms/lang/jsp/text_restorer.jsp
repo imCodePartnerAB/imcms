@@ -21,6 +21,7 @@
 %>
 <%@ page import="imcode.server.Imcms" %>
 <%@ page import="com.imcode.imcms.mapping.jpa.doc.Language" %>
+<%@ page import="com.imcode.imcms.mapping.jpa.doc.*" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"
 %><%!
 
@@ -61,7 +62,7 @@ try {
 	isSwe =	imcmsSystem.getCurrentUser().getLanguage().getIsoCode639_2().equals("swe");
 } catch (Exception e) {}
 
-Language currentLanguage = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
+com.imcode.imcms.mapping.jpa.doc.Language currentLanguage = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
 
 
 //DateFormat df  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;

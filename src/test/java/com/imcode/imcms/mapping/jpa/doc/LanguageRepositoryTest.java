@@ -1,8 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
 import com.imcode.imcms.mapping.jpa.JpaConfiguration;
-import com.imcode.imcms.mapping.jpa.doc.Language;
-import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

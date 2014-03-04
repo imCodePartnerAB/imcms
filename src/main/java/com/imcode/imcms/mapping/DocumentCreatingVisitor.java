@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
-import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import imcode.server.ImcmsServices;
@@ -27,9 +27,9 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     @Transactional
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
         HtmlDocContent reference = new HtmlDocContent();
-        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
-        reference.setDocVersion(docVersion);
+        reference.setVersion(version);
         reference.setHtml(document.getHtml());
 
         DocRepository repository = services.getManagedBean(DocRepository.class);
@@ -40,9 +40,9 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     @Transactional
     public void visitUrlDocument(UrlDocumentDomainObject document) {
         UrlDocContent reference = new UrlDocContent();
-        DocVersion docVersion = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
-        reference.setDocVersion(docVersion);
+        reference.setVersion(version);
         reference.setUrlTarget("");
         reference.setUrlText("");
         reference.setUrlLanguagePrefix("");

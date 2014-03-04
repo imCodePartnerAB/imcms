@@ -25,6 +25,14 @@
     </query>
 
     <!-- Unique -->
+    <query name="DocVersion.findWorking">
+        <![CDATA[
+        SELECT DocVersion v
+        WHERE v.no = 0 AND v.docId = ?1
+    ]]>
+    </query>
+
+    <!-- Unique -->
     <query name="DocVersion.findDefault">
     <![CDATA[
         SELECT v FROM Meta m, DocVersion v
@@ -41,9 +49,9 @@
     </query>
 
     <!-- Collection -->
-    <query name="DocVersion.getByDocId">
+    <query name="DocVersion.getByDocIdOrderByNo">
     <![CDATA[
-        SELECT v FROM DocVersion v WHERE v.docId = ?1
+        SELECT v FROM DocVersion v WHERE v.docId = ?1 ORDER BY v.no
     ]]>
     </query>
 

@@ -3,8 +3,6 @@ package com.imcode.imcms.mapping.jpa.doc.content;
 import com.imcode.imcms.mapping.jpa.JpaConfiguration;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

@@ -2,7 +2,6 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.*;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
@@ -55,11 +54,11 @@ public class DocumentSaver {
     @Inject
     private MetaRepository metaRepository;
     
-    @Inject 
-    private EntityConverter entityConverter;
-
     @Inject
     private TextDocumentContentMapper textDocumentContentMapper;
+
+    @Inject
+    private DocumentVersionMapper versionMapper;
 
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
 
@@ -156,9 +155,9 @@ public class DocumentSaver {
 
     @Transactional
     public void changeDocumentDefaultVersion(int docId, int newDefaultDocVersionNo, UserDomainObject publisher) {
-        DocVersion currentDefaultDocVersion = docVersionRepository.findDefault(docId);
+        Version currentDefaultVersion = docVersionRepository.findDefault(docId);
 
-        if (currentDefaultDocVersion.getNo() != newDefaultDocVersionNo) {
+        if (currentDefaultVersion.getNo() != newDefaultDocVersionNo) {
             docVersionRepository.setDefault(docId, newDefaultDocVersionNo, publisher.getId());
 
             docRepository.touch(DocVersionRef.of(docId, newDefaultDocVersionNo), publisher);
@@ -179,7 +178,7 @@ public class DocumentSaver {
 
         DocumentDomainObject firstDoc = docs.get(0);
         DocumentMeta meta = firstDoc.getMeta().clone();
-        DocVersion nextDocVersion = docVersionRepository.create(meta.getId(), user.getId());
+        DocumentVersion nextDocVersion = versionMapper.create(meta.getId(), user.getId());
         DocumentSavingVisitor docSavingVisitor = new DocumentSavingVisitor(null, documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc : docs) {
@@ -207,7 +206,7 @@ public class DocumentSaver {
             }
         }
 
-        return entityConverter.fromEntity(nextDocVersion);
+        return nextDocVersion;
     }
 
     @Transactional
@@ -284,12 +283,12 @@ public class DocumentSaver {
 
         docRepository.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, Integer.toString(newDocId));
 
-        DocVersion copyDocVersion = docVersionRepository.create(newDocId, user.getId());
+        Version copyVersion = docVersionRepository.create(newDocId, user.getId());
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc : docs) {
             doc.setMeta(meta);
-            doc.setVersionNo(copyDocVersion.getNo());
+            doc.setVersionNo(copyVersion.getNo());
             docCreatingVisitor.saveDocumentCommonContent(doc, user);
         }
 
@@ -374,8 +373,8 @@ public class DocumentSaver {
 
         docRepository.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, String.valueOf(newDocId));
 
-        DocVersion docVersion = docVersionRepository.create(newDocId, user.getId());
-        doc.setVersionNo(docVersion.getNo());
+        Version version = docVersionRepository.create(newDocId, user.getId());
+        doc.setVersionNo(version.getNo());
         doc.setId(newDocId);
 
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
@@ -384,14 +383,14 @@ public class DocumentSaver {
 
         // todo: refactor
         if (doc instanceof TextDocumentDomainObject && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
-            DocVersion ormDocVersion = docVersionRepository.findByDocIdAndNo(doc.getId(), doc.getVersionNo());
+            Version ormVersion = docVersionRepository.findByDocIdAndNo(doc.getId(), doc.getVersionNo());
 
             for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
                 DocumentCommonContent dcc = e.getValue();
                 Language ormLanguage = languageRepository.findByCode(e.getKey().getCode());
 
-                Text text1 = new Text(ormDocVersion, ormLanguage, TextType.PLAIN_TEXT, 1, null, dcc.getHeadline());
-                Text text2 = new Text(ormDocVersion, ormLanguage, TextType.PLAIN_TEXT, 1, null, dcc.getMenuText());
+                Text text1 = new Text(ormVersion, ormLanguage, TextType.PLAIN_TEXT, 1, null, dcc.getHeadline());
+                Text text2 = new Text(ormVersion, ormLanguage, TextType.PLAIN_TEXT, 1, null, dcc.getMenuText());
 
                 textRepository.save(text1);
                 textRepository.save(text2);

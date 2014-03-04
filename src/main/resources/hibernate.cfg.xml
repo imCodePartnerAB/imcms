@@ -9,7 +9,7 @@
         <property name="hibernate.archive.autodetection"/>
 
         <mapping class="com.imcode.imcms.mapping.jpa.doc.Meta"/>
-        <mapping class="com.imcode.imcms.mapping.jpa.doc.DocVersion"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.Version"/>
         <mapping class="com.imcode.imcms.mapping.jpa.doc.Language"/>
         <mapping class="com.imcode.imcms.mapping.jpa.doc.Property"/>
         <mapping class="com.imcode.imcms.mapping.jpa.doc.Category"/>

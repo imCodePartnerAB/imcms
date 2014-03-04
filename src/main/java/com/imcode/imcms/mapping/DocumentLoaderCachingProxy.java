@@ -4,20 +4,16 @@ import com.google.common.base.Supplier;
 import com.imcode.imcms.api.DocumentLanguageSupport;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
-import com.imcode.imcms.mapping.jpa.doc.DocVersion;
-import imcode.server.document.DocumentDomainObject;
-import net.sf.ehcache.config.CacheConfiguration;
-import net.sf.ehcache.CacheManager;
-
 import com.imcode.imcms.mapping.container.DocRef;
+import imcode.server.document.DocumentDomainObject;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.config.CacheConfiguration;
 
 import javax.inject.Inject;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 
-public class DocLoaderCachingProxy {
+public class DocumentLoaderCachingProxy {
 
     private static class DocCacheKey {
         private final int docId;
@@ -63,7 +59,7 @@ public class DocLoaderCachingProxy {
 
     //fixme - inject
     @Inject
-    EntityConverter entityConverter;
+    private DocumentVersionMapper versionMapper;
 
     private final DocumentLoader docLoader;
     private final DocumentLanguageSupport docLanguageSupport;
@@ -78,7 +74,7 @@ public class DocLoaderCachingProxy {
 
     private final CacheManager cacheManager = CacheManager.create();
 
-    public DocLoaderCachingProxy(DocumentLoader docLoader, DocumentLanguageSupport docLanguageSupport, int size) {
+    public DocumentLoaderCachingProxy(DocumentLoader docLoader, DocumentLanguageSupport docLanguageSupport, int size) {
         this.docLoader = docLoader;
         this.docLanguageSupport = docLanguageSupport;
         this.size = size;
@@ -102,37 +98,9 @@ public class DocLoaderCachingProxy {
         cc.setMaxEntriesLocalHeap(size);
         cc.setOverflowToDisk(false);
         cc.setEternal(true);
-        cc.setName(DocLoaderCachingProxy.class.getCanonicalName() + "." + name);
+        cc.setName(DocumentLoaderCachingProxy.class.getCanonicalName() + "." + name);
 
         return cc;
-    }
-
-    public CacheManager cacheManager() {
-        return cacheManager;
-    }
-
-    public CacheWrapper<Integer, DocumentMeta> metas() {
-        return metas;
-    }
-
-    public CacheWrapper<Integer, DocumentVersionInfo> versionInfos() {
-        return versionInfos;
-    }
-
-    public CacheWrapper<DocCacheKey, DocumentDomainObject> workingDocs() {
-        return workingDocs;
-    }
-
-    public CacheWrapper<DocCacheKey, DocumentDomainObject> defaultDocs() {
-        return defaultDocs;
-    }
-
-    public CacheWrapper<String, Integer> aliasesToIds() {
-        return aliasesToIds;
-    }
-
-    public CacheWrapper<Integer, String> idsToAliases() {
-        return idsToAliases;
     }
 
     /**
@@ -152,22 +120,7 @@ public class DocLoaderCachingProxy {
     public DocumentVersionInfo getDocVersionInfo(final int docId) {
         return versionInfos.getOrPut(docId, new Supplier<DocumentVersionInfo>() {
             public DocumentVersionInfo get() {
-                List<DocVersion> jpaVersions = docLoader.getDocVersionRepository().findByDocId(docId);
-
-                if (jpaVersions.isEmpty()) {
-                    return null;
-                }
-
-                DocVersion jpaWorkingVersion = jpaVersions.get(0);
-                DocVersion jpaDefaultVersion = docLoader.getDocVersionRepository().findDefault(docId);
-
-                List<DocumentVersion> versions = new LinkedList<>();
-                for (DocVersion jpaVersion : jpaVersions) {
-                    versions.add(entityConverter.fromEntity(jpaVersion));
-                }
-
-                return new DocumentVersionInfo(docId, versions, entityConverter.fromEntity(jpaWorkingVersion),
-                        entityConverter.fromEntity(jpaDefaultVersion));
+                return versionMapper.getInfo(docId);
             }
         });
     }
@@ -175,7 +128,7 @@ public class DocLoaderCachingProxy {
     /**
      * @return doc's id or null if doc does not exists or alias is not set
      */
-    public Integer getDocId(final String docAlias) {
+    public Integer getDocIdByAlias(final String docAlias) {
         return aliasesToIds.getOrPut(docAlias, new Supplier<Integer>() {
             public Integer get() {
                 Integer docId = docLoader.getDocRepository().getDocIdByAlias(docAlias);

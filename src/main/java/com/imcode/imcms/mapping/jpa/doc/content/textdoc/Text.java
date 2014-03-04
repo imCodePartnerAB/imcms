@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
-import com.imcode.imcms.mapping.jpa.doc.DocVersion;
+import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 
 import javax.persistence.Entity;
@@ -15,8 +15,8 @@ public class Text extends TextBase {
 
     }
 
-    public Text(DocVersion docVersion, Language language, TextType type, int no, LoopEntryRef loopEntryRef, String text) {
-        setDocVersion(docVersion);
+    public Text(Version version, Language language, TextType type, int no, LoopEntryRef loopEntryRef, String text) {
+        setVersion(version);
         setLanguage(language);
         setType(type);
         setNo(no);
@@ -30,7 +30,7 @@ public class Text extends TextBase {
 
     private boolean equals(Text that) {
         return Objects.equals(getId(), that.getId())
-                && Objects.equals(getDocVersion(), that.getDocVersion())
+                && Objects.equals(getVersion(), that.getVersion())
                 && Objects.equals(getLanguage(), that.getLanguage())
                 && Objects.equals(getType(), that.getType())
                 && Objects.equals(getNo(), that.getNo())
@@ -39,6 +39,6 @@ public class Text extends TextBase {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDocVersion(), getLanguage(), getText(), getType(), getNo(), getLoopEntryRef());
+        return Objects.hash(getId(), getVersion(), getLanguage(), getText(), getType(), getNo(), getLoopEntryRef());
     }
 }
