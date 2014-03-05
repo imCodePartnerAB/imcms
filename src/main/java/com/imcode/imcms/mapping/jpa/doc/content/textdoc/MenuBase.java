@@ -1,13 +1,13 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
-import com.imcode.imcms.mapping.jpa.doc.content.VersionedDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.VersionedContent;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
-public class MenuBase extends VersionedDocContent {
+public class MenuBase extends VersionedContent {
 
     @NotNull
     @Column(name = "no")

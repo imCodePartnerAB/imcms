@@ -108,7 +108,7 @@ public class TextRepositoryTest {
         for (int no = MIN_TEXT_NO; no <= MAX_TEXT_NO; no++) {
             for (Language language : languages) {
                 for (Version version : versions) {
-                    Text text = textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryIsNull(
+                    Text text = textRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(
                             version, language, no
                     );
 
@@ -129,7 +129,7 @@ public class TextRepositoryTest {
             for (Language language : languages) {
                 for (Version version : versions) {
                     LoopEntryRef entryRef = new LoopEntryRef(no, no);
-                    Text text = textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRef(
+                    Text text = textRepository.findByVersionAndLanguageAndNoAndLoopEntryRef(
                             version, language, no, entryRef
                     );
 
@@ -159,7 +159,7 @@ public class TextRepositoryTest {
     public void testDeleteByDocVersionAndLanguage() throws Exception {
         for (Language language : languages) {
             for (Version version : versions) {
-                int deletedCount = textRepository.deleteByDocVersionAndLanguage(version, language);
+                int deletedCount = textRepository.deleteByVersionAndLanguage(version, language);
 
                 assertThat(deletedCount, equalTo(TEXTS_COUNT__PER_VERSION__PER_LANGUAGE));
             }

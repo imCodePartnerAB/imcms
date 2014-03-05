@@ -55,7 +55,7 @@ public class DocumentSaver {
     private MetaRepository metaRepository;
     
     @Inject
-    private TextDocumentContentLoader textDocumentContentLoader;
+    private TextDocumentContentSaver textDocumentContentSaver;
 
     @Inject
     private DocumentVersionMapper versionMapper;
@@ -86,10 +86,7 @@ public class DocumentSaver {
      */
     @Transactional
     public void saveText(TextDocTextContainer textContainer, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createLoopEntry(textContainer.getDocRef(), textContainer.getLoopEntryRef());
-
-        new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(textContainer, user);
-
+        textDocumentContentSaver.saveText(textContainer, user);
         docRepository.touch(textContainer.getDocRef(), user);
     }
 
@@ -103,11 +100,10 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void saveMenu(TextDocMenuContainer menuWrapper, UserDomainObject user)
+    public void saveMenu(TextDocMenuContainer conteiner, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(menuWrapper, user);
-
-        docRepository.touch(menuWrapper.getDocVersionRef(), user);
+        textDocumentContentSaver.saveMenu(conteiner, user);
+        docRepository.touch(conteiner.getDocVersionRef(), user);
     }
 
 
@@ -131,25 +127,8 @@ public class DocumentSaver {
 
     @Transactional
     public void saveImage(TextDocImageContainer imageContainer, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        createLoopEntry(imageContainer.getDocRef(), imageContainer.getLoopEntryRef());
-
-        DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
-
-        storingVisitor.saveTextDocumentImage(imageContainer, user);
-
+        textDocumentContentSaver.saveImage(imageContainer, user);
         docRepository.touch(imageContainer.getDocRef(), user);
-    }
-
-    /**
-     * Creates content loop if item references non-saved enclosing content loop.
-     */
-    @Transactional
-    public void createLoopEntry(DocRef docRef, LoopEntryRef loopEntryRef) {
-        if (loopEntryRef == null) {
-            return;
-        }
-
-        textDocumentContentLoader.addLoopEntry(docRef, loopEntryRef);
     }
 
 
@@ -185,7 +164,7 @@ public class DocumentSaver {
             doc.setMeta(meta);
             doc.setVersionNo(nextDocVersion.getNo());
 
-            docSavingVisitor.saveDocumentCommonContent(doc, user);
+            docSavingVisitor.saveCommonContent(doc, user);
         }
 
         // Currently only text doc has i18n content.
@@ -193,16 +172,16 @@ public class DocumentSaver {
             firstDoc.accept(docSavingVisitor);
         } else {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject) firstDoc;
-
-            docSavingVisitor.updateTextDocumentContentLoops(textDoc, user);
-            docSavingVisitor.updateTextDocumentMenus(textDoc, user);
-            docSavingVisitor.updateTextDocumentTemplateNames(textDoc, user);
-            docSavingVisitor.updateTextDocumentIncludes(textDoc);
+            //fixme - assign doc id, version
+            textDocumentContentSaver.saveLoops(textDoc, user);
+            textDocumentContentSaver.saveMenus(textDoc, user);
+            textDocumentContentSaver.saveTemplateNames(textDoc, user);
+            textDocumentContentSaver.saveIncludes(textDoc, user);
 
             for (DocumentDomainObject doc : docs) {
                 textDoc = (TextDocumentDomainObject) doc;
-                docSavingVisitor.updateTextDocumentTexts(textDoc, user);
-                docSavingVisitor.updateTextDocumentImages(textDoc, user);
+                textDocumentContentSaver.saveTexts(textDoc, user);
+                textDocumentContentSaver.saveImages(textDoc, user);
             }
         }
 
@@ -289,7 +268,7 @@ public class DocumentSaver {
         for (DocumentDomainObject doc : docs) {
             doc.setMeta(meta);
             doc.setVersionNo(copyVersion.getNo());
-            docCreatingVisitor.saveDocumentCommonContent(doc, user);
+            docCreatingVisitor.saveCommonContent(doc, user);
         }
 
         // Currently only text docs contain non-common i18n content
@@ -299,16 +278,16 @@ public class DocumentSaver {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject) firstDoc;
 
             // loops, menus, template-names and includes are shared
-            docCreatingVisitor.updateTextDocumentContentLoops(textDoc, user);
-            docCreatingVisitor.updateTextDocumentMenus(textDoc, user);
-            docCreatingVisitor.updateTextDocumentTemplateNames(textDoc, user);
-            docCreatingVisitor.updateTextDocumentIncludes(textDoc);
+            textDocumentContentSaver.saveLoops(textDoc, user);
+            textDocumentContentSaver.saveMenus(textDoc, user);
+            textDocumentContentSaver.saveTemplateNames(textDoc, user);
+            textDocumentContentSaver.saveIncludes(textDoc, user);
 
             // i18n content
             for (DocumentDomainObject doc : docs) {
                 textDoc = (TextDocumentDomainObject) doc;
-                docCreatingVisitor.updateTextDocumentTexts(textDoc, user);
-                docCreatingVisitor.updateTextDocumentImages(textDoc, user);
+                textDocumentContentSaver.saveTexts(textDoc, user);
+                textDocumentContentSaver.saveImages(textDoc, user);
             }
         }
 

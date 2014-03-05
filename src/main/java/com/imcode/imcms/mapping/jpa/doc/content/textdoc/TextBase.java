@@ -1,12 +1,12 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
-import com.imcode.imcms.mapping.jpa.doc.content.VersionedDocI18nContent;
+import com.imcode.imcms.mapping.jpa.doc.content.VersionedI18nContent;
 
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
-public class TextBase extends VersionedDocI18nContent {
+public class TextBase extends VersionedI18nContent {
 
     @NotNull
     private Integer no;

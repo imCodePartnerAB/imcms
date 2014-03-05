@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
-import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlContent;
+import com.imcode.imcms.mapping.jpa.doc.content.UrlContent;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -37,7 +37,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     // runs inside transaction   
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
         Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
-        HtmlDocContent htmlReference = new HtmlDocContent();
+        HtmlContent htmlReference = new HtmlContent();
 
         htmlReference.setHtml(document.getHtml());
         htmlReference.setVersion(version);
@@ -49,7 +49,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     // runs inside transaction   
     public void visitUrlDocument(UrlDocumentDomainObject document) {
         Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
-        UrlDocContent reference = new UrlDocContent();
+        UrlContent reference = new UrlContent();
 
         reference.setVersion(version);
 
@@ -64,18 +64,18 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     }
 
     // runs inside transaction 
-    public void visitTextDocument(final TextDocumentDomainObject textDocument) {
+    public void visitTextDocument(TextDocumentDomainObject document) {
         // NB! Content loops must be created before texts and images they possibly contain.
-        updateTextDocumentContentLoops(textDocument, savingUser);
-        updateTextDocumentTemplateNames(textDocument, savingUser);
-        updateTextDocumentTexts(textDocument, savingUser);
-        updateTextDocumentImages(textDocument, savingUser);
-        updateTextDocumentIncludes(textDocument);
+        textDocumentContentSaver.saveLoops(document, savingUser);
+        textDocumentContentSaver.saveTemplateNames(document, savingUser);
+        textDocumentContentSaver.saveTexts(document, savingUser);
+        textDocumentContentSaver.saveImages(document, savingUser);
+        textDocumentContentSaver.saveIncludes(document, savingUser);
 
-        boolean menusChanged = !textDocument.getMenus().equals(((TextDocumentDomainObject) oldDocument).getMenus());
+        boolean menusChanged = !document.getMenus().equals(((TextDocumentDomainObject) oldDocument).getMenus());
 
         if (menusChanged) {
-            updateTextDocumentMenus(textDocument, savingUser);
+            textDocumentContentSaver.saveMenus(document, savingUser);
         }
     }
 

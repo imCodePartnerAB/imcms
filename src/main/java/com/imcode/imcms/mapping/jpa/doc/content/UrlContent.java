@@ -9,7 +9,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "imcms_url_docs")
-public class UrlDocContent extends VersionedDocContent {
+public class UrlContent extends VersionedContent {
 
     @Column(name = "frame_name")
     private String urlFrameName;

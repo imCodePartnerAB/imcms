@@ -6,7 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
-public abstract class VersionedDocContent {
+public abstract class VersionedContent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

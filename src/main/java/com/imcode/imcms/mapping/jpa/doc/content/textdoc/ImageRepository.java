@@ -11,26 +11,34 @@ import java.util.List;
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Integer> {
 
-    @Query("SELECT l FROM Image l WHERE l.docVersion = ?1 AND l.language = ?2 AND l.loopEntryRef IS NULL")
-    List<Image> findByDocVersionAndLanguageAndLoopEntryRefIsNull(Version version, Language language);
+    @Query("SELECT i FROM Image i WHERE i.docVersion = ?1 AND i.language = ?2 AND i.loopEntryRef IS NULL")
+    List<Image> findByVersionAndLanguageWhereLoopEntryRefIsNull(Version version, Language language);
 
-    @Query("SELECT l FROM Image l WHERE l.docVersion = ?1 AND l.language = ?2 AND l.loopEntryRef = IS NOT NULL")
-    List<Image> findByDocVersionAndLanguageAndLoopEntryRefIsNotNull(Version version, Language language);
-
-
-    @Query("SELECT l FROM Image l WHERE l.docVersion = ?1 AND l.no = ?2 AND l.loopEntryRef IS NULL")
-    List<Image> findByDocVersionAndNoAndLoopEntryRefIsNull(Version version, int no);
-
-    //@Query("SELECT l FROM Image l WHERE l.docVersion = ?1 AND l.no = ?2 AND l.loopEntryRef = ?3")
-    List<Image> findByDocVersionAndNoAndLoopEntryRef(Version version, int no, LoopEntryRef loopEntryRef);
+    @Query("SELECT i FROM Image i WHERE i.docVersion = ?1 AND i.language = ?2 AND i.loopEntryRef = IS NOT NULL")
+    List<Image> findByVersionAndLanguageWhereLoopEntryRefIsNotNull(Version version, Language language);
 
 
-    @Query("SELECT l FROM Image l WHERE l.docVersion = ?1 AND l.language = ?2 AND l.no = ?3 AND l.loopEntryRef IS NULL")
-    Image findByDocVersionAndLanguageAndNoAndLoopEntryRefIsNull(Version version, Language language, int no);
+    @Query("SELECT i FROM Image i WHERE i.docVersion = ?1 AND i.no = ?2 AND i.loopEntryRef IS NULL")
+    List<Image> findByVersionAndNoWhereLoopEntryRefIsNull(Version version, int no);
 
-    //@Query("SELECT l FROM Image l WHERE l.docVersion = ?1 AND l.language = ?2 AND l.no = ?3 AND l.loopEntryRef = ?4")
-    Image findByDocVersionAndLanguageAndNoAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
+    //@Query("SELECT i FROM Image i WHERE i.docVersion = ?1 AND i.no = ?2 AND i.loopEntryRef = ?3")
+    List<Image> findByVersionAndNoAndLoopEntryRef(Version version, int no, LoopEntryRef loopEntryRef);
+
+
+    @Query("SELECT i FROM Image i WHERE i.docVersion = ?1 AND i.language = ?2 AND i.no = ?3 AND i.loopEntryRef IS NULL")
+    Image findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(Version version, Language language, int no);
+
+    @Query("SELECT i FROM Image i WHERE i.docVersion = ?1 AND i.language = ?2 AND i.no = ?3 AND i.loopEntryRef = ?4")
+    Image findByVersionAndLanguageAndNoAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
+
+
+    @Query("SELECT i.id FROM Image i WHERE i.docVersion = ?1 AND i.language = ?2 AND i.no = ?3 AND i.loopEntryRef IS NULL")
+    Integer findIdByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(Version version, Language language, int no);
+
+    @Query("SELECT i.id FROM Image i WHERE i.docVersion = ?1 AND i.language = ?2 AND i.no = ?3 AND i.loopEntryRef = ?4")
+    Integer findIdByVersionAndLanguageAndNoAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
+
 
     @Query("DELETE FROM Image i WHERE i.docVersion = ?1 AND i.language = ?2")
-    int deleteByDocVersionAndLanguage(Version version, Language language);
+    int deleteByVersionAndLanguage(Version version, Language language);
 }

@@ -12,31 +12,35 @@ import java.util.List;
 @Repository
 public interface TextRepository extends JpaRepository<Text, Integer> {
 
-    @Query("SELECT l FROM Text l WHERE l.docVersion = ?1 AND l.language = ?2 AND l.loopEntryRef IS NULL")
-    List<Text> findByDocVersionAndLanguageAndLoopEntryRefIsNull(Version version, Language language);
+    @Query("SELECT t FROM Text t WHERE t.docVersion = ?1 AND t.language = ?2 AND t.loopEntryRef IS NULL")
+    List<Text> findByVersionAndLanguageWhereLoopEntryRefIsNull(Version version, Language language);
 
-    @Query("SELECT l FROM Text l WHERE l.docVersion = ?1 AND l.language = ?2 AND l.loopEntryRef IS NOT NULL")
-    List<Text> findByDocVersionAndLanguageAndLoopEntryRefIsNotNull(Version version, Language language);
-
-    @Query("SELECT l FROM Text l WHERE l.docVersion = ?1 AND l.language = ?2 AND l.loopEntryRef = ?3")
-    List<Text> findByDocVersionAndLanguageAndLoopEntryRef(Version version, Language language, LoopEntryRef loopEntryRef);
+    @Query("SELECT t FROM Text t WHERE t.docVersion = ?1 AND t.language = ?2 AND t.loopEntryRef IS NOT NULL")
+    List<Text> findByVersionAndLanguageWhereLoopEntryRefIsNotNull(Version version, Language language);
 
 
-    @Query("SELECT l FROM Text l WHERE l.docVersion = ?1 AND l.no = ?2 AND l.loopEntryRef IS NULL")
-    List<Text> findByDocVersionAndNoAndLoopEntryRefIsNull(Version version, int no);
+    @Query("SELECT t FROM Text t WHERE t.docVersion = ?1 AND t.no = ?2 AND t.loopEntryRef IS NULL")
+    List<Text> findByVersionAndNoWhereLoopEntryRefIsNull(Version version, int no);
 
-    @Query("SELECT l FROM Text l WHERE l.docVersion = ?1 AND l.no = ?2 AND l.loopEntryRef = ?3")
-    List<Text> findByDocVersionAndNoAndLoopEntryRef(Version version, int no, LoopEntryRef loopEntryRef);
+    @Query("SELECT t FROM Text t WHERE t.docVersion = ?1 AND t.no = ?2 AND t.loopEntryRef = ?3")
+    List<Text> findByVersionAndNoAndLoopEntryRef(Version version, int no, LoopEntryRef loopEntryRef);
 
 
-    @Query("SELECT l FROM Text l WHERE l.docVersion = ?1 AND l.language = ?2 AND l.no = ?3 AND l.loopEntryRef IS NULL")
-    Text findByDocVersionAndLanguageAndNoAndLoopEntryIsNull(Version version, Language language, int no);
+    @Query("SELECT t FROM Text t WHERE t.docVersion = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef IS NULL")
+    Text findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(Version version, Language language, int no);
 
-    @Query("SELECT l FROM Text l WHERE l.docVersion = ?1 AND l.language = ?2 AND l.no = ?3 AND l.loopEntryRef = ?4")
-    Text findByDocVersionAndLanguageAndNoAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
+    @Query("SELECT t FROM Text t WHERE t.docVersion = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef = ?4")
+    Text findByVersionAndLanguageAndNoAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
+
+
+    @Query("SELECT t FROM Text t WHERE t.docVersion = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef IS NULL")
+    Integer findIdByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(Version version, Language language, int no);
+
+    @Query("SELECT t FROM Text t WHERE t.docVersion = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef = ?4")
+    Integer findIdByVersionAndLanguageAndNoAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
 
 
     @Modifying
-    @Query("DELETE FROM Text l WHERE l.docVersion = ?1 AND l.language = ?2")
-    int deleteByDocVersionAndLanguage(Version version, Language language);
+    @Query("DELETE FROM Text t WHERE t.docVersion = ?1 AND t.language = ?2")
+    int deleteByVersionAndLanguage(Version version, Language language);
 }

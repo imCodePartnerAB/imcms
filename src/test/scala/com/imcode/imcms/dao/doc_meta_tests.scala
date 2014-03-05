@@ -5,7 +5,7 @@ import com.imcode.imcms.mapping.container.DocRef
 import com.imcode.imcms.mapping.jpa.VersionRepository
 import com.imcode.imcms.mapping.DocumentCommonContent
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Include
-import com.imcode.imcms.mapping.jpa.doc.content.{HtmlDocContent, FileDocItem, UrlDocContent}
+import com.imcode.imcms.mapping.jpa.doc.content.{HtmlContent, FileItem, UrlContent}
 import com.imcode.imcms.mapping.jpa.doc._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -97,7 +97,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
   ".saveFileReferences" in {
     val docIdentity = DocRefFX.Default
-    val fileRef = new FileDocItem |>> { ref =>
+    val fileRef = new FileItem |>> { ref =>
       ref.setDocRef(docIdentity)
     }
 
@@ -136,9 +136,9 @@ class MetaDaoTestConfig {
         classOf[Language],
         classOf[CategoryDomainObject],
         classOf[CategoryTypeDomainObject],
-        classOf[FileDocItem],
-        classOf[UrlDocContent],
-        classOf[HtmlDocContent],
+        classOf[FileItem],
+        classOf[UrlContent],
+        classOf[HtmlContent],
         classOf[Include]
       ),
       TestSetup.hibernate.configurators.addXmlFiles("com/imcode/imcms/hbm/Document.hbm.xml")

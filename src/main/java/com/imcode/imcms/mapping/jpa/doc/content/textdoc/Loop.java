@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
 import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.mapping.jpa.doc.content.VersionedDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.VersionedContent;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -17,7 +17,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "imcms_text_doc_content_loops")
-public class Loop extends VersionedDocContent {
+public class Loop extends VersionedContent {
 
     @Embeddable
     public static class Entry {
@@ -121,13 +121,12 @@ public class Loop extends VersionedDocContent {
                 .add("id", getId())
                 .add("docVersion", getVersion())
                 .add("no", no)
-                .add("vsn", vsn)
                 .add("entries", entries).toString();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getVersion(), no, entries, vsn);
+        return Objects.hash(getId(), getVersion(), no, entries);
     }
 
 
@@ -140,7 +139,6 @@ public class Loop extends VersionedDocContent {
         return Objects.equals(getId(), that.getId())
                 && Objects.equals(getVersion(), that.getVersion())
                 && Objects.equals(no, that.no)
-                && Objects.equals(vsn, that.vsn)
                 && Objects.equals(entries, that.entries);
     }
 
@@ -150,14 +148,6 @@ public class Loop extends VersionedDocContent {
 
     public void setNo(Integer no) {
         this.no = no;
-    }
-
-    public int getVsn() {
-        return vsn;
-    }
-
-    public void setVsn(int vsn) {
-        this.vsn = vsn;
     }
 
     public List<Entry> getEntries() {

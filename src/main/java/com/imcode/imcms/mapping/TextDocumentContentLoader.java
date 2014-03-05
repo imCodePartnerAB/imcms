@@ -80,7 +80,7 @@ public class TextDocumentContentLoader {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         final Map<Integer, TextDomainObject> result = new HashMap<>();
 
-        for (Text text : textRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNull(version, language)) {
+        for (Text text : textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)) {
             result.put(text.getNo(), toDomainObject(text));
         }
 
@@ -92,7 +92,7 @@ public class TextDocumentContentLoader {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         final Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> result = new HashMap<>();
 
-        for (Text text : textRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNotNull(version, language)) {
+        for (Text text : textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.LoopItemRef.of(
                     text.getLoopEntryRef().getLoopNo(), text.getLoopEntryRef().getContentNo(), text.getNo()
             );
@@ -108,7 +108,7 @@ public class TextDocumentContentLoader {
         Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
         Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
 
-        for (Text text : textRepository.findByDocVersionAndNoAndLoopEntryRefIsNull(version, textNo)) {
+        for (Text text : textRepository.findByVersionAndNoWhereLoopEntryRefIsNull(version, textNo)) {
             result.put(languageMapper.toApiObject(text.getLanguage()), toDomainObject(text));
         }
 
@@ -120,7 +120,7 @@ public class TextDocumentContentLoader {
         Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-        for (Text text : textRepository.findByDocVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
+        for (Text text : textRepository.findByVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
             result.put(languageMapper.toApiObject(text.getLanguage()), toDomainObject(text));
         }
 
@@ -132,7 +132,7 @@ public class TextDocumentContentLoader {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
 
         return toDomainObject(
-                textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryIsNull(version, language, textNo)
+                textRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, textNo)
         );
     }
 
@@ -142,7 +142,7 @@ public class TextDocumentContentLoader {
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         return toDomainObject(
-                textRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
+                textRepository.findByVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
         );
     }
 
@@ -151,7 +151,7 @@ public class TextDocumentContentLoader {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         final Map<Integer, ImageDomainObject> result = new HashMap<>();
 
-        for (Image image : imageRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNull(version, language)) {
+        for (Image image : imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)) {
             result.put(image.getNo(), toDomainObject(image));
         }
 
@@ -163,7 +163,7 @@ public class TextDocumentContentLoader {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
         final Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> result = new HashMap<>();
 
-        for (Image image : imageRepository.findByDocVersionAndLanguageAndLoopEntryRefIsNotNull(version, language)) {
+        for (Image image : imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.LoopItemRef.of(
                     image.getLoopEntryRef().getLoopNo(), image.getLoopEntryRef().getContentNo(), image.getNo()
             );
@@ -178,7 +178,7 @@ public class TextDocumentContentLoader {
         Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
 
-        for (Image image : imageRepository.findByDocVersionAndNoAndLoopEntryRefIsNull(version, textNo)) {
+        for (Image image : imageRepository.findByVersionAndNoWhereLoopEntryRefIsNull(version, textNo)) {
             result.put(languageMapper.toApiObject(image.getLanguage()), toDomainObject(image));
         }
 
@@ -190,7 +190,7 @@ public class TextDocumentContentLoader {
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-        for (Image image : imageRepository.findByDocVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
+        for (Image image : imageRepository.findByVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
             result.put(languageMapper.toApiObject(image.getLanguage()), toDomainObject(image));
         }
 
@@ -203,7 +203,7 @@ public class TextDocumentContentLoader {
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
 
         return toDomainObject(
-                imageRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRefIsNull(version, language, textNo)
+                imageRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, textNo)
         );
     }
 
@@ -213,7 +213,7 @@ public class TextDocumentContentLoader {
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         return toDomainObject(
-                imageRepository.findByDocVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
+                imageRepository.findByVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
         );
     }
 

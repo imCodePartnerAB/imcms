@@ -2,13 +2,12 @@ package com.imcode.imcms.mapping.jpa.doc;
 
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.DocVersionRef;
-import com.imcode.imcms.mapping.jpa.doc.content.FileDocItem;
-import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
-import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.FileItem;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlContent;
+import com.imcode.imcms.mapping.jpa.doc.content.UrlContent;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import scala.Option;
@@ -103,14 +102,14 @@ public class DocRepository {
                 .executeUpdate();
     }
 
-    public List<FileDocItem> getFileDocItems(DocRef docIdentity) {
-        return entityManager.createNamedQuery("FileDoc.getReferences", FileDocItem.class)
+    public List<FileItem> getFileDocItems(DocRef docIdentity) {
+        return entityManager.createNamedQuery("FileDoc.getReferences", FileItem.class)
                 .setParameter("docIdentity", docIdentity)
                 .getResultList();
     }
 
 
-    public FileDocItem saveFileReference(FileDocItem fileDocItem) {
+    public FileItem saveFileReference(FileItem fileDocItem) {
         return entityManager.merge(fileDocItem);
     }
 
@@ -122,26 +121,26 @@ public class DocRepository {
     }
 
 
-    public HtmlDocContent getHtmlDocContent(DocRef docIdentity) {
-        return entityManager.createNamedQuery("HtmlDoc.getReference", HtmlDocContent.class)
+    public HtmlContent getHtmlDocContent(DocRef docIdentity) {
+        return entityManager.createNamedQuery("HtmlDoc.getReference", HtmlContent.class)
                 .setParameter("docIdentity", docIdentity)
                 .getSingleResult();
     }
 
 
-    public HtmlDocContent saveHtmlReference(HtmlDocContent reference) {
+    public HtmlContent saveHtmlReference(HtmlContent reference) {
         return entityManager.merge(reference);
     }
 
 
-    public UrlDocContent getUrlDocContent(DocRef docIdentity) {
-        return entityManager.createNamedQuery("UrlDoc.getReference", UrlDocContent.class)
+    public UrlContent getUrlDocContent(DocRef docIdentity) {
+        return entityManager.createNamedQuery("UrlDoc.getReference", UrlContent.class)
                 .setParameter("docIdentity", docIdentity)
                 .getSingleResult();
     }
 
 
-    public UrlDocContent saveUrlReference(UrlDocContent reference) {
+    public UrlContent saveUrlReference(UrlContent reference) {
         return entityManager.merge(reference);
     }
 

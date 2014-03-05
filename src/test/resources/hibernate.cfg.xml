@@ -23,9 +23,9 @@
         <mapping class="com.imcode.imcms.mapping.jpa.IPAccess"/>
 
         <mapping class="com.imcode.imcms.mapping.jpa.doc.content.CommonContent"/>
-        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.FileDocItem"/>
-        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent"/>
-        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.FileItem"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.HtmlContent"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.UrlContent"/>
 
         <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Text"/>
         <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image"/>

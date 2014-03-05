@@ -2,8 +2,8 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
-import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlContent;
+import com.imcode.imcms.mapping.jpa.doc.content.UrlContent;
 import imcode.server.ImcmsServices;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Creates or updates document content.
  */
-//todo: init using spring
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
     private UserDomainObject currentUser;
@@ -24,9 +23,8 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         this.currentUser = currentUser;
     }
 
-    @Transactional
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
-        HtmlDocContent reference = new HtmlDocContent();
+        HtmlContent reference = new HtmlContent();
         Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
         reference.setVersion(version);
@@ -37,9 +35,8 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         repository.saveHtmlReference(reference);
     }
 
-    @Transactional
     public void visitUrlDocument(UrlDocumentDomainObject document) {
-        UrlDocContent reference = new UrlDocContent();
+        UrlContent reference = new UrlContent();
         Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
         reference.setVersion(version);
@@ -54,13 +51,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         repository.saveUrlReference(reference);
     }
 
-    @Transactional
-    public void visitTextDocument(final TextDocumentDomainObject textDocument) {
-        updateTextDocumentContentLoops(textDocument, currentUser);
-        updateTextDocumentTemplateNames(textDocument, currentUser);
-        updateTextDocumentTexts(textDocument, currentUser);
-        updateTextDocumentImages(textDocument, currentUser);
-        updateTextDocumentIncludes(textDocument);
-        updateTextDocumentMenus(textDocument, currentUser);
+    public void visitTextDocument(TextDocumentDomainObject document) {
+        textDocumentContentSaver.saveContent(document, currentUser);
     }
 }
