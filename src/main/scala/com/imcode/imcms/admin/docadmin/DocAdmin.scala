@@ -362,7 +362,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
       }
 
       // fixme - create text if no exists
-      val textDocMapper: TextDocumentContentMapper = ???
+      val textDocMapper: TextDocumentContentLoader = ???
       val texts = (loopItemRefOpt match {
         case Some(loopItemRef) => textDocMapper.getLoopTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), loopItemRef)
         case _ => textDocMapper.getTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo)

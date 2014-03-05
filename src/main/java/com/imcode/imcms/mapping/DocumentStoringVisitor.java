@@ -56,7 +56,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     protected TemplateNamesRepository templateNamesRepository;
     protected IncludeRepository includeRepository;
     protected CommonContentRepository commonContentRepository;
-    protected TextDocumentContentMapper textDocumentContentMapper;
+    protected TextDocumentContentLoader textDocumentContentLoader;
 
     public DocumentStoringVisitor(ImcmsServices services) {
         this.services = services;
@@ -70,7 +70,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         this.templateNamesRepository = services.getManagedBean(TemplateNamesRepository.class);
         this.includeRepository = services.getManagedBean(IncludeRepository.class);
         this.commonContentRepository = services.getManagedBean(CommonContentRepository.class);
-        this.textDocumentContentMapper = services.getManagedBean(TextDocumentContentMapper.class);
+        this.textDocumentContentLoader = services.getManagedBean(TextDocumentContentLoader.class);
     }
 
     /**
@@ -246,7 +246,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      */
     @Transactional
     public void saveTextDocumentText(TextDocTextContainer textContainer, UserDomainObject user) {
-        textDocumentContentMapper.saveText(textContainer);
+        textDocumentContentLoader.saveText(textContainer);
     }
 
 
@@ -255,12 +255,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      */
     @Transactional
     public void saveTextDocumentImage(TextDocImageContainer imageContainer, UserDomainObject user) {
-        textDocumentContentMapper.saveImage(imageContainer);
+        textDocumentContentLoader.saveImage(imageContainer);
     }
 
 
     @Transactional
-    void updateTextDocumentImages(TextDocumentDomainObject doc, UserDomainObject user) {
+    public void updateTextDocumentImages(TextDocumentDomainObject doc, UserDomainObject user) {
         DocRef docRef = doc.getRef();
         Version version = docVersionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
         Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
@@ -302,7 +302,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     @Transactional
     public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, UserDomainObject user) {
-        textDocumentContentMapper.saveTemplateNames(textDocument.getId(), textDocument.getTemplateNames());
+        textDocumentContentLoader.saveTemplateNames(textDocument.getId(), textDocument.getTemplateNames());
     }
 
 

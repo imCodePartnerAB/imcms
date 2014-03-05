@@ -55,7 +55,7 @@ public class DocumentSaver {
     private MetaRepository metaRepository;
     
     @Inject
-    private TextDocumentContentMapper textDocumentContentMapper;
+    private TextDocumentContentLoader textDocumentContentLoader;
 
     @Inject
     private DocumentVersionMapper versionMapper;
@@ -149,7 +149,7 @@ public class DocumentSaver {
             return;
         }
 
-        textDocumentContentMapper.addLoopEntry(docRef, loopEntryRef);
+        textDocumentContentLoader.addLoopEntry(docRef, loopEntryRef);
     }
 
 

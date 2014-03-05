@@ -12,7 +12,7 @@ import java.util.Map;
 public class TextDocumentInitializer {
 
     @Inject
-    private TextDocumentContentMapper textDocMapper;
+    private TextDocumentContentLoader textDocMapper;
 
     /**
      * Initializes text document.
