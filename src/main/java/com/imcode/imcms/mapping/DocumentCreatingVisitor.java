@@ -12,7 +12,7 @@ import imcode.server.user.UserDomainObject;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Creates or updates document content.
+ * Creates new document content.
  */
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 

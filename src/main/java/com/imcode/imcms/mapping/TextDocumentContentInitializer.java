@@ -9,10 +9,10 @@ import javax.inject.Inject;
 import java.util.Map;
 
 @Service
-public class TextDocumentInitializer {
+public class TextDocumentContentInitializer {
 
     @Inject
-    private TextDocumentContentSaver textDocMapper;
+    private TextDocumentContentLoader contentLoader;
 
     /**
      * Initializes text document.
@@ -27,11 +27,11 @@ public class TextDocumentInitializer {
     }
 
     public void initTexts(TextDocumentDomainObject document) {
-        for (Map.Entry<Integer, TextDomainObject> e : textDocMapper.getTexts(document.getRef()).entrySet()) {
+        for (Map.Entry<Integer, TextDomainObject> e : contentLoader.getTexts(document.getRef()).entrySet()) {
             document.setText(e.getKey(), e.getValue());
         }
 
-        for (Map.Entry<TextDocumentDomainObject.LoopItemRef, TextDomainObject> e : textDocMapper.getLoopTexts(document.getRef()).entrySet()) {
+        for (Map.Entry<TextDocumentDomainObject.LoopItemRef, TextDomainObject> e : contentLoader.getLoopTexts(document.getRef()).entrySet()) {
             document.setText(e.getKey(), e.getValue());
         }
     }
@@ -39,12 +39,12 @@ public class TextDocumentInitializer {
 
 
     public void initIncludes(TextDocumentDomainObject document) {
-        document.setIncludesMap(textDocMapper.getIncludes(document.getId()));
+        document.setIncludesMap(contentLoader.getIncludes(document.getId()));
     }
 
 
     public void initTemplateNames(TextDocumentDomainObject document) {
-        TextDocumentDomainObject.TemplateNames templateNames = textDocMapper.getTemplateNames(document.getMeta().getId());
+        TextDocumentDomainObject.TemplateNames templateNames = contentLoader.getTemplateNames(document.getMeta().getId());
 
         if (templateNames == null) {
             templateNames = new TextDocumentDomainObject.TemplateNames();
@@ -55,21 +55,21 @@ public class TextDocumentInitializer {
 
 
     public void initImages(TextDocumentDomainObject document) {
-        for (Map.Entry<Integer, ImageDomainObject> e : textDocMapper.getImages(document.getRef()).entrySet()) {
+        for (Map.Entry<Integer, ImageDomainObject> e : contentLoader.getImages(document.getRef()).entrySet()) {
             document.setImage(e.getKey(), e.getValue());
         }
 
-        for (Map.Entry<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> e : textDocMapper.getLoopImages(document.getRef()).entrySet()) {
+        for (Map.Entry<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> e : contentLoader.getLoopImages(document.getRef()).entrySet()) {
             document.setImage(e.getKey(), e.getValue());
         }
     }
 
 
     public void initMenus(TextDocumentDomainObject document) {
-        document.setMenus(textDocMapper.getMenus(document.getVersionRef()));
+        document.setMenus(contentLoader.getMenus(document.getVersionRef()));
     }
 
     public void initContentLoops(TextDocumentDomainObject document) {
-        document.setLoops(textDocMapper.getLoops(document.getVersionRef()));
+        document.setLoops(contentLoader.getLoops(document.getVersionRef()));
     }
 }

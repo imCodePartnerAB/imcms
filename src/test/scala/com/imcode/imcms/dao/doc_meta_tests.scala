@@ -1,7 +1,7 @@
 package com.imcode
 package imcms.dao
 
-import com.imcode.imcms.mapping.container.DocRef
+import com.imcode.imcms.mapping.container.{DocVersionRef, DocRef}
 import com.imcode.imcms.mapping.jpa.VersionRepository
 import com.imcode.imcms.mapping.DocumentCommonContent
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Include
@@ -79,7 +79,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
       val meta = createMeta()
       val version = versionRepository.create(meta.getId, UserFX.mkSuperAdmin.getId)
 
-      metaRepository.touch(DocRef.of(meta.getId, 0), UserFX.mkDefaultUser, dt)
+      metaRepository.touch(DocVersionRef.of(meta.getId, 0), UserFX.mkDefaultUser, dt)
 
       val updatedMeta = metaRepository.findMeta(meta.getId)
       val updatedVersion = versionRepository.findByDocIdAndNo(meta.getId, 0)

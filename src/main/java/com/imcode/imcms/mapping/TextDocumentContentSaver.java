@@ -132,23 +132,47 @@ public class TextDocumentContentSaver {
 
     /**
      * Saves existing document image.
-     * @param imageContainer
+     * @param container
      * @param userDomainObject
      */
     //fixme: create enclosing loop
-    public void saveImage(TextDocImageContainer imageContainer, UserDomainObject userDomainObject) {
+    public void saveImage(TextDocImageContainer container, UserDomainObject userDomainObject) {
         User user = userRepository.getOne(userDomainObject.getId());
-        Image image = toJpaObject(imageContainer);
+        Image image = toJpaObject(container);
 
         saveImage(image, user);
     }
 
-    //fixme: create enclosing loop
-    public void saveText(TextDocTextContainer textContainer,  UserDomainObject userDomainObject) {
+    public void saveImages(TextDocImagesContainer container, UserDomainObject userDomainObject) {
         User user = userRepository.getOne(userDomainObject.getId());
-        Text text = toJpaObject(textContainer);
+        Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getDocVersionNo());
+
+        for (Map.Entry<com.imcode.imcms.api.DocumentLanguage, ImageDomainObject> e : container.getImages().entrySet()) {
+            Language language = languageRepository.findByCode(e.getKey().getCode());
+            Image image = toJpaObject(e.getValue(), version, language, container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
+
+            saveImage(image, user);
+        }
+    }
+
+    //fixme: create enclosing loop
+    public void saveText(TextDocTextContainer container,  UserDomainObject userDomainObject) {
+        User user = userRepository.getOne(userDomainObject.getId());
+        Text text = toJpaObject(container);
 
         saveText(text, user);
+    }
+
+    public void saveTexts(TextDocTextsContainer container, UserDomainObject userDomainObject) {
+        User user = userRepository.getOne(userDomainObject.getId());
+        Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getDocVersionNo());
+
+        for (Map.Entry<com.imcode.imcms.api.DocumentLanguage, TextDomainObject> e : container.getTexts().entrySet()) {
+            Language language = languageRepository.findByCode(e.getKey().getCode());
+            Text text = toJpaObject(e.getValue(), version, language, container.getTextNo(), toJpaObject(container.getLoopEntryRef()));
+
+            saveText(text, user);
+        }
     }
 
 

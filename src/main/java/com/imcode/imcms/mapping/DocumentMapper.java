@@ -30,7 +30,6 @@ import java.io.FileFilter;
 import java.util.*;
 
 /**
- * Note:
  * Spring is used to instantiate but not to initialize the instance.
  * Init must be called to complete initialization.
  */
@@ -76,6 +75,9 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentMapper() {
     }
 
+    /**
+     * @deprecated init should be used instead
+     */
     @Deprecated
     public DocumentMapper(ImcmsServices services, Database database) {
         this.imcmsServices = services;
@@ -96,9 +98,10 @@ public class DocumentMapper implements DocumentGetter {
         docMapperService = services.getManagedBean(DocumentContentMapper.class);
     }
 
-    public void init(ImcmsServices services, Database database) {
+    public void init(ImcmsServices services, Database database, DocumentIndex documentIndex) {
         this.imcmsServices = services;
         this.database = database;
+        this.documentIndex = documentIndex;
 
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
@@ -355,13 +358,13 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveTextDocMenu(TextDocMenuContainer menuWrapper, UserDomainObject user)
+    public void saveTextDocMenu(TextDocMenuContainer container, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         try {
-            documentSaver.saveMenu(menuWrapper, user);
+            documentSaver.saveMenu(container, user);
         } finally {
-            invalidateDocument(menuWrapper.getDocId());
+            invalidateDocument(container.getDocId());
         }
     }
 
@@ -819,15 +822,15 @@ public class DocumentMapper implements DocumentGetter {
      * <p/>
      * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
      *
-     * @param textContainer - text being saved
+     * @param container - text being saved
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      */
-    public synchronized void saveTextDocText(TextDocTextContainer textContainer, UserDomainObject user)
+    public synchronized void saveTextDocText(TextDocTextContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         try {
-            documentSaver.saveText(textContainer, user);
+            documentSaver.saveText(container, user);
         } finally {
-            invalidateDocument(textContainer.getDocId());
+            invalidateDocument(container.getDocId());
         }
     }
 
@@ -838,23 +841,16 @@ public class DocumentMapper implements DocumentGetter {
      * <p/>
      * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
      *
-     * @param containers - texts being saved
+     * @param container - texts being saved
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      * @see com.imcode.imcms.servlet.tags.LoopTag
      */
-    public synchronized void saveTextDocTexts(Collection<TextDocTextContainer> containers, UserDomainObject user)
+    public synchronized void saveTextDocTexts(TextDocTextsContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         try {
-            documentSaver.saveTexts(containers, user);
+            documentSaver.saveTexts(container, user);
         } finally {
-            Set<Integer> docIds = Sets.newHashSet();
-            for (TextDocTextContainer textContainer : containers) {
-                docIds.add(textContainer.getDocId());
-            }
-
-            for (Integer docId : docIds) {
-                invalidateDocument(docId);
-            }
+            invalidateDocument(container.getDocId());
         }
     }
 
@@ -866,20 +862,12 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.LoopTag
      * @since 6.0
      */
-    public synchronized void saveTextDocImages(Collection<TextDocImageContainer> containers, UserDomainObject user)
+    public synchronized void saveTextDocImages(TextDocImagesContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-
         try {
-            documentSaver.saveImages(containers, user);
+            documentSaver.saveImages(container, user);
         } finally {
-            Set<Integer> docIds = Sets.newHashSet();
-            for (TextDocImageContainer image : containers) {
-                docIds.add(image.getDocId());
-            }
-
-            for (Integer docId : docIds) {
-                invalidateDocument(docId);
-            }
+            invalidateDocument(container.getDocId());
         }
     }
 
@@ -892,11 +880,11 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.LoopTag
      * @since 6.0
      */
-    public synchronized void saveTextDocImage(TextDocImageContainer image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public synchronized void saveTextDocImage(TextDocImageContainer container, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         try {
-            documentSaver.saveImage(image, user);
+            documentSaver.saveImage(container, user);
         } finally {
-            invalidateDocument(image.getDocRef().getDocId());
+            invalidateDocument(container.getDocRef().getDocId());
         }
     }
 
@@ -1029,7 +1017,6 @@ public class DocumentMapper implements DocumentGetter {
             Imcms.getServices().getDocumentMapper().changeDocumentDefaultVersion(document.getId(), docVersionNo, user);
         }
     }
-
 
     private static class FileDocumentFileFilter implements FileFilter {
 

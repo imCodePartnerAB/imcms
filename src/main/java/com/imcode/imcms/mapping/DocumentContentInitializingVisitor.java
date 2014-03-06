@@ -22,10 +22,10 @@ import java.util.Collection;
  * Document's fields are queried from a database.
  */
 @Service
-public class DocumentInitializingVisitor extends DocumentVisitor {
+public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
     @Inject
-    private TextDocumentInitializer textDocumentInitializer;
+    private TextDocumentContentInitializer textDocumentContentInitializer;
 
     @Inject
     private DocRepository metaRepository;
@@ -37,7 +37,7 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
      * ?? If file is missing in FS this is not an error.
      * ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
-    public void visitFileDocument(final FileDocumentDomainObject doc) {
+    public void visitFileDocument(FileDocumentDomainObject doc) {
         Collection<FileItem> fileDocItems = metaRepository.getFileDocItems(doc.getRef());
 
         for (FileItem item : fileDocItems) {
@@ -80,8 +80,8 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
         doc.setUrl(reference.getUrl());
     }
 
-    public void visitTextDocument(final TextDocumentDomainObject document) {
-        textDocumentInitializer.initialize(document);
+    public void visitTextDocument(TextDocumentDomainObject document) {
+        textDocumentContentInitializer.initialize(document);
     }
 
     public DocRepository getMetaRepository() {
@@ -92,11 +92,11 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
         this.metaRepository = metaRepository;
     }
 
-    public TextDocumentInitializer getTextDocumentInitializer() {
-        return textDocumentInitializer;
+    public TextDocumentContentInitializer getTextDocumentContentInitializer() {
+        return textDocumentContentInitializer;
     }
 
-    public void setTextDocumentInitializer(TextDocumentInitializer textDocumentInitializer) {
-        this.textDocumentInitializer = textDocumentInitializer;
+    public void setTextDocumentContentInitializer(TextDocumentContentInitializer textDocumentContentInitializer) {
+        this.textDocumentContentInitializer = textDocumentContentInitializer;
     }
 }

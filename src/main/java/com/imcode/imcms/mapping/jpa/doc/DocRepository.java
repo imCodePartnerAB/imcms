@@ -32,16 +32,6 @@ public class DocRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    /**
-     * Updates doc's access and modified date-time.
-     */
-    public void touch(DocRef docIdentity, UserDomainObject user) {
-        touch(docIdentity, user, new Date());
-    }
-
-    public void touch(DocRef docIdentity, UserDomainObject user, Date date) {
-        touch(docIdentity.getDocId(), docIdentity.getDocVersionNo(), user.getId(), date);
-    }
 
     public void touch(DocVersionRef docIdentity, UserDomainObject user) {
         touch(docIdentity, user, new Date());

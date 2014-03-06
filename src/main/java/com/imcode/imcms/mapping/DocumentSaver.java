@@ -10,7 +10,6 @@ import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Text;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextType;
-import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
@@ -58,6 +57,9 @@ public class DocumentSaver {
     private TextDocumentContentSaver textDocumentContentSaver;
 
     @Inject
+    private DocumentContentMapper documentContentMapper;
+
+    @Inject
     private DocumentVersionMapper versionMapper;
 
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
@@ -85,50 +87,41 @@ public class DocumentSaver {
      * @throws IllegalStateException if a text refers non-existing content loop.
      */
     @Transactional
-    public void saveText(TextDocTextContainer textContainer, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        textDocumentContentSaver.saveText(textContainer, user);
-        docRepository.touch(textContainer.getDocRef(), user);
+    public void saveText(TextDocTextContainer container, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        textDocumentContentSaver.saveText(container, user);
+        docRepository.touch(container.getDocVersionRef(), user);
     }
 
     @Transactional
-    public void saveTexts(Collection<TextDocTextContainer> texts, UserDomainObject user)
+    public void saveTexts(TextDocTextsContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        for (TextDocTextContainer textContainer : texts) {
-            saveText(textContainer, user);
-        }
+        textDocumentContentSaver.saveTexts(container, user);
+        docRepository.touch(container.getDocVersionRef(), user);
     }
 
-
     @Transactional
-    public void saveMenu(TextDocMenuContainer conteiner, UserDomainObject user)
+    public void saveImages(TextDocImagesContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        textDocumentContentSaver.saveMenu(conteiner, user);
-        docRepository.touch(conteiner.getDocVersionRef(), user);
+        textDocumentContentSaver.saveImages(container, user);
+        docRepository.touch(container.getDocVersionRef(), user);
     }
 
 
-    /**
-     * Saves changed text-document image(s).
-     * If an image is enclosed into unsaved content loop then this content loop is also saved.
-     *
-     * @param images
-     * @param user
-     * @throws NoPermissionInternalException
-     * @throws DocumentSaveException
-     */
     @Transactional
-    public void saveImages(Collection<TextDocImageContainer> images, UserDomainObject user)
+    public void saveMenu(TextDocMenuContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        for (TextDocImageContainer imageContainer : images) {
-            saveImage(imageContainer, user);
-        }
+        textDocumentContentSaver.saveMenu(container, user);
+        docRepository.touch(container.getDocVersionRef(), user);
     }
 
 
+
+
+
     @Transactional
-    public void saveImage(TextDocImageContainer imageContainer, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        textDocumentContentSaver.saveImage(imageContainer, user);
-        docRepository.touch(imageContainer.getDocRef(), user);
+    public void saveImage(TextDocImageContainer container, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        textDocumentContentSaver.saveImage(container, user);
+        docRepository.touch(container.getDocVersionRef(), user);
     }
 
 
@@ -164,7 +157,7 @@ public class DocumentSaver {
             doc.setMeta(meta);
             doc.setVersionNo(nextDocVersion.getNo());
 
-            docSavingVisitor.saveCommonContent(doc, user);
+            documentContentMapper.saveCommonContent(doc, user);
         }
 
         // Currently only text doc has i18n content.
@@ -172,7 +165,7 @@ public class DocumentSaver {
             firstDoc.accept(docSavingVisitor);
         } else {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject) firstDoc;
-            //fixme - assign doc id, version
+            //fixme: - assign doc id, version
             textDocumentContentSaver.saveLoops(textDoc, user);
             textDocumentContentSaver.saveMenus(textDoc, user);
             textDocumentContentSaver.saveTemplateNames(textDoc, user);
@@ -229,7 +222,7 @@ public class DocumentSaver {
 
         doc.accept(savingVisitor);
         updateModifiedDtIfNotSetExplicitly(doc);
-        docRepository.touch(doc.getRef(), user, doc.getModifiedDatetime());
+        docRepository.touch(doc.getVersionRef(), user, doc.getModifiedDatetime());
     }
 
 
@@ -268,7 +261,8 @@ public class DocumentSaver {
         for (DocumentDomainObject doc : docs) {
             doc.setMeta(meta);
             doc.setVersionNo(copyVersion.getNo());
-            docCreatingVisitor.saveCommonContent(doc, user);
+
+            documentContentMapper.saveCommonContent(doc, user);
         }
 
         // Currently only text docs contain non-common i18n content

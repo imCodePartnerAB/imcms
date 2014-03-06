@@ -148,26 +148,10 @@ class DocumentStoringVisitor extends DocumentVisitor {
         return filename;
     }
 
-
-    public void saveCommonContent(DocumentDomainObject doc, UserDomainObject user) {
-        Language jpaLanguage = languageRepository.findByCode(doc.getLanguage().getCode());
-        CommonContent jpaDcc = commonContentRepository.findByDocIdAndLanguage(doc.getId(), jpaLanguage);
-
-        if (jpaDcc == null) {
-            jpaDcc = new CommonContent();
-        }
-
-        DocumentCommonContent dcc = doc.getCommonContent();
-
-        jpaDcc.setDocId(doc.getId());
-        jpaDcc.setLanguage(jpaLanguage);
-        jpaDcc.setHeadline(dcc.getHeadline());
-        jpaDcc.setMenuText(dcc.getMenuText());
-        jpaDcc.setMenuImageURL(dcc.getMenuImageURL());
-
-        commonContentRepository.save(jpaDcc);
-    }
-
+    /**
+     * Saves or updates file document
+     * @param fileDocument
+     */
     public void visitFileDocument(FileDocumentDomainObject fileDocument) {
         docRepository.deleteFileReferences(fileDocument.getRef());
 
