@@ -203,19 +203,19 @@ public class DocumentLoaderCachingProxy {
      * @return custom doc or null if doc does not exists
      */
     public <T extends DocumentDomainObject> T getCustomDoc(DocRef docRef) {
-        DocumentMeta meta = getMeta(docRef.getDocId());
+        DocumentMeta meta = getMeta(docRef.getId());
 
         if (meta == null) {
             return null;
         }
 
-        DocumentVersionInfo versionInfo = getDocVersionInfo(docRef.getDocId());
+        DocumentVersionInfo versionInfo = getDocVersionInfo(docRef.getId());
         DocumentVersion version = versionInfo.getDefaultVersion();
         T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
         doc.setMeta(meta.clone());
         doc.setVersionNo(version.getNo());
-        doc.setLanguage(docLanguageSupport.getByCode(docRef.getDocLanguageCode()));
+        doc.setLanguage(docLanguageSupport.getByCode(docRef.getLanguageCode()));
 
         return docLoader.loadAndInitContent(doc);
     }

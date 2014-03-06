@@ -2,19 +2,19 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.*;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Text;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextType;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -96,43 +96,37 @@ public class DocumentSaver {
     public void saveTexts(TextDocTextsContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         textDocumentContentSaver.saveTexts(container, user);
-        docRepository.touch(container.getDocVersionRef(), user);
+        docRepository.touch(container.getVersionRef(), user);
     }
 
     @Transactional
     public void saveImages(TextDocImagesContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         textDocumentContentSaver.saveImages(container, user);
-        docRepository.touch(container.getDocVersionRef(), user);
+        docRepository.touch(container.getVersionRef(), user);
     }
-
 
     @Transactional
     public void saveMenu(TextDocMenuContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         textDocumentContentSaver.saveMenu(container, user);
-        docRepository.touch(container.getDocVersionRef(), user);
+        docRepository.touch(container.getVersionRef(), user);
     }
-
-
-
-
 
     @Transactional
     public void saveImage(TextDocImageContainer container, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         textDocumentContentSaver.saveImage(container, user);
-        docRepository.touch(container.getDocVersionRef(), user);
+        docRepository.touch(container.getVersionRef(), user);
     }
 
-
     @Transactional
-    public void changeDocumentDefaultVersion(int docId, int newDefaultDocVersionNo, UserDomainObject publisher) {
+    public void changeDocumentDefaultVersion(int docId, int newDefaultVersionNo, UserDomainObject publisher) {
         Version currentDefaultVersion = versionRepository.findDefault(docId);
 
-        if (currentDefaultVersion.getNo() != newDefaultDocVersionNo) {
-            versionRepository.setDefault(docId, newDefaultDocVersionNo, publisher.getId());
+        if (currentDefaultVersion.getNo() != newDefaultVersionNo) {
+            versionRepository.setDefault(docId, newDefaultVersionNo, publisher.getId());
 
-            docRepository.touch(DocVersionRef.of(docId, newDefaultDocVersionNo), publisher);
+            docRepository.touch(VersionRef.of(docId, newDefaultVersionNo), publisher);
         }
     }
 
@@ -150,35 +144,28 @@ public class DocumentSaver {
 
         DocumentDomainObject firstDoc = docs.get(0);
         DocumentMeta meta = firstDoc.getMeta().clone();
-        DocumentVersion nextDocVersion = versionMapper.create(meta.getId(), user.getId());
-        DocumentSavingVisitor docSavingVisitor = new DocumentSavingVisitor(null, documentMapper.getImcmsServices(), user);
+        DocumentVersion nextVersion = versionMapper.create(meta.getId(), user.getId());
+        DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc : docs) {
             doc.setMeta(meta);
-            doc.setVersionNo(nextDocVersion.getNo());
+            doc.setVersionNo(nextVersion.getNo());
 
             documentContentMapper.saveCommonContent(doc, user);
         }
 
         // Currently only text doc has i18n content.
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
-            firstDoc.accept(docSavingVisitor);
+            firstDoc.accept(docCreatingVisitor);
         } else {
-            TextDocumentDomainObject textDoc = (TextDocumentDomainObject) firstDoc;
-            //fixme: - assign doc id, version
-            textDocumentContentSaver.saveLoops(textDoc, user);
-            textDocumentContentSaver.saveMenus(textDoc, user);
-            textDocumentContentSaver.saveTemplateNames(textDoc, user);
-            textDocumentContentSaver.saveIncludes(textDoc, user);
+            textDocumentContentSaver.createSharedContent((TextDocumentDomainObject) firstDoc, user);
 
             for (DocumentDomainObject doc : docs) {
-                textDoc = (TextDocumentDomainObject) doc;
-                textDocumentContentSaver.saveTexts(textDoc, user);
-                textDocumentContentSaver.saveImages(textDoc, user);
+                textDocumentContentSaver.createI18nContent((TextDocumentDomainObject) doc, user);
             }
         }
 
-        return nextDocVersion;
+        return nextVersion;
     }
 
     @Transactional
@@ -269,19 +256,10 @@ public class DocumentSaver {
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
             firstDoc.accept(docCreatingVisitor);
         } else {
-            TextDocumentDomainObject textDoc = (TextDocumentDomainObject) firstDoc;
+            textDocumentContentSaver.createSharedContent((TextDocumentDomainObject) firstDoc, user);
 
-            // loops, menus, template-names and includes are shared
-            textDocumentContentSaver.saveLoops(textDoc, user);
-            textDocumentContentSaver.saveMenus(textDoc, user);
-            textDocumentContentSaver.saveTemplateNames(textDoc, user);
-            textDocumentContentSaver.saveIncludes(textDoc, user);
-
-            // i18n content
             for (DocumentDomainObject doc : docs) {
-                textDoc = (TextDocumentDomainObject) doc;
-                textDocumentContentSaver.saveTexts(textDoc, user);
-                textDocumentContentSaver.saveImages(textDoc, user);
+                textDocumentContentSaver.createI18nContent((TextDocumentDomainObject) doc, user);
             }
         }
 
@@ -312,36 +290,36 @@ public class DocumentSaver {
 
         checkDocumentForSave(doc);
 
-        DocumentMeta documentMeta = doc.getMeta().clone();
-        documentMapper.setCreatedAndModifiedDatetimes(documentMeta, new Date());
-        documentMeta.setId(null);
-        documentMeta.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
-        documentMeta.setDocumentType(doc.getDocumentTypeId());
+        DocumentMeta metaDO = doc.getMeta().clone();
+        documentMapper.setCreatedAndModifiedDatetimes(metaDO, new Date());
+        metaDO.setId(null);
+        metaDO.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
+        metaDO.setDocumentType(doc.getDocumentTypeId());
 
         if (!user.isSuperAdminOrHasFullPermissionOn(doc)) {
-            documentMeta.getPermissionSets().setRestricted1(documentMeta.getPermissionSetsForNewDocument().getRestricted1());
-            documentMeta.getPermissionSets().setRestricted2(documentMeta.getPermissionSetsForNewDocument().getRestricted2());
+            metaDO.getPermissionSets().setRestricted1(metaDO.getPermissionSetsForNewDocument().getRestricted1());
+            metaDO.getPermissionSets().setRestricted2(metaDO.getPermissionSetsForNewDocument().getRestricted2());
         }
 
-        Meta jpaMeta = toJpaObject(documentMeta);
+        Meta jpaMeta = toJpaObject(metaDO);
 
         newUpdateDocumentRolePermissions(jpaMeta, doc, user, null);
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, doc, user, null);
 
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
 
-        for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
-            DocumentCommonContent dcc = e.getValue();
-            CommonContent ormDcc = new CommonContent();
-            Language ormLanguage = languageRepository.findByCode(e.getKey().getCode());
+        for (Map.Entry<DocumentLanguage, DocumentCommonContent> entry : dccMap.entrySet()) {
+            DocumentCommonContent dcc = entry.getValue();
+            CommonContent jpaDcc = new CommonContent();
+            Language jpaLanguage = languageRepository.findByCode(entry.getKey().getCode());
 
-            ormDcc.setDocId(newDocId);
-            ormDcc.setHeadline(dcc.getHeadline());
-            ormDcc.setMenuImageURL(dcc.getMenuImageURL());
-            ormDcc.setMenuText(dcc.getMenuText());
-            ormDcc.setLanguage(ormLanguage);
+            jpaDcc.setDocId(newDocId);
+            jpaDcc.setHeadline(dcc.getHeadline());
+            jpaDcc.setMenuImageURL(dcc.getMenuImageURL());
+            jpaDcc.setMenuText(dcc.getMenuText());
+            jpaDcc.setLanguage(jpaLanguage);
 
-            commonContentRepository.save(ormDcc);
+            commonContentRepository.save(jpaDcc);
         }
 
         docRepository.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, String.valueOf(newDocId));
@@ -351,23 +329,29 @@ public class DocumentSaver {
         doc.setId(newDocId);
 
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
-
         doc.accept(docCreatingVisitor);
 
-        // todo: refactor
         if (doc instanceof TextDocumentDomainObject && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
-            Version ormVersion = versionRepository.findByDocIdAndNo(doc.getId(), doc.getVersionNo());
+            Map<DocumentLanguage, TextDomainObject> texts1 = new HashMap<>();
+            Map<DocumentLanguage, TextDomainObject> texts2 = new HashMap<>();
 
-            for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
-                DocumentCommonContent dcc = e.getValue();
-                Language ormLanguage = languageRepository.findByCode(e.getKey().getCode());
+            for (Map.Entry<DocumentLanguage, DocumentCommonContent> entry : dccMap.entrySet()) {
+                DocumentLanguage language = entry.getKey();
+                DocumentCommonContent dcc = entry.getValue();
 
-                Text text1 = new Text(ormVersion, ormLanguage, TextType.PLAIN_TEXT, 1, null, dcc.getHeadline());
-                Text text2 = new Text(ormVersion, ormLanguage, TextType.PLAIN_TEXT, 1, null, dcc.getMenuText());
-
-                textRepository.save(text1);
-                textRepository.save(text2);
+                texts1.put(language, new TextDomainObject(dcc.getHeadline()));
+                texts2.put(language, new TextDomainObject(dcc.getMenuText()));
             }
+
+            textDocumentContentSaver.saveTexts(
+                    TextDocTextsContainer.of(VersionRef.of(version.getDocId(), version.getNo()), 1, texts1),
+                    user
+            );
+
+            textDocumentContentSaver.saveTexts(
+                    TextDocTextsContainer.of(VersionRef.of(version.getDocId(), version.getNo()), 2, texts2),
+                    user
+            );
         }
 
         return newDocId;

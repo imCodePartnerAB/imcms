@@ -5,7 +5,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "imcms_html_docs")
-public class HtmlContent extends VersionedContent {
+public class HtmlDocContent extends VersionedContent {
 
     private String html;
 

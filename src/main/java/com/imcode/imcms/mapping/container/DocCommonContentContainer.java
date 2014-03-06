@@ -6,24 +6,24 @@ import java.util.Objects;
 
 public class DocCommonContentContainer {
 
-    public static DocCommonContentContainer of(DocVersionRef docVersionRef, DocumentCommonContent documentCommonContent) {
-        return new DocCommonContentContainer(docVersionRef, documentCommonContent);
+    public static DocCommonContentContainer of(VersionRef versionRef, DocumentCommonContent documentCommonContent) {
+        return new DocCommonContentContainer(versionRef, documentCommonContent);
     }
 
-    private final DocVersionRef docVersionRef;
+    private final VersionRef versionRef;
 
     private final DocumentCommonContent documentCommonContent;
 
-    public DocCommonContentContainer(DocVersionRef docVersionRef, DocumentCommonContent documentCommonContent) {
-        Objects.requireNonNull(docVersionRef);
+    public DocCommonContentContainer(VersionRef versionRef, DocumentCommonContent documentCommonContent) {
+        Objects.requireNonNull(versionRef);
         Objects.requireNonNull(documentCommonContent);
 
-        this.docVersionRef = docVersionRef;
+        this.versionRef = versionRef;
         this.documentCommonContent = documentCommonContent;
     }
 
-    public DocVersionRef getDocVersionRef() {
-        return docVersionRef;
+    public VersionRef getVersionRef() {
+        return versionRef;
     }
 
     public DocumentCommonContent getCommonContent() {
@@ -31,10 +31,10 @@ public class DocCommonContentContainer {
     }
 
     public int getDocId() {
-        return docVersionRef.getDocId();
+        return versionRef.getDocId();
     }
 
-    public int getDocVersionNo() {
-        return docVersionRef.getDocVersionNo();
+    public int getVersionNo() {
+        return versionRef.getNo();
     }
 }

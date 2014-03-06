@@ -9,19 +9,19 @@ import java.util.Objects;
  */
 public class TextDocMenuContainer {
 
-    public static TextDocMenuContainer of(DocVersionRef docVersionRef, int menuNo, MenuDomainObject menu) {
-        return new TextDocMenuContainer(docVersionRef, menuNo, menu);
+    public static TextDocMenuContainer of(VersionRef versionRef, int menuNo, MenuDomainObject menu) {
+        return new TextDocMenuContainer(versionRef, menuNo, menu);
     }
 
-    private final DocVersionRef docVersionRef;
+    private final VersionRef versionRef;
     private final int menuNo;
     private final MenuDomainObject menu;
 
-    public TextDocMenuContainer(DocVersionRef docVersionRef, int menuNo, MenuDomainObject menu) {
-        Objects.requireNonNull(docVersionRef);
+    public TextDocMenuContainer(VersionRef versionRef, int menuNo, MenuDomainObject menu) {
+        Objects.requireNonNull(versionRef);
         Objects.requireNonNull(menu);
 
-        this.docVersionRef = docVersionRef;
+        this.versionRef = versionRef;
         this.menuNo = menuNo;
         this.menu = menu;
     }
@@ -34,16 +34,16 @@ public class TextDocMenuContainer {
         return menu;
     }
 
-    public DocVersionRef getDocVersionRef() {
-        return docVersionRef;
+    public VersionRef getVersionRef() {
+        return versionRef;
     }
 
     public int getDocId() {
-        return docVersionRef.getDocId();
+        return versionRef.getDocId();
     }
 
-    public int getDocVersionNo() {
-        return docVersionRef.getDocVersionNo();
+    public int getVersionNo() {
+        return versionRef.getNo();
     }
 }
 

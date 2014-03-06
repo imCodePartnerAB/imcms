@@ -3,7 +3,7 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.DocRef;
-import com.imcode.imcms.mapping.container.DocVersionRef;
+import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.Language;
@@ -76,8 +76,8 @@ public class TextDocumentContentLoader {
     }
 
     public Map<Integer, TextDomainObject> getTexts(final DocRef docRef) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
         final Map<Integer, TextDomainObject> result = new HashMap<>();
 
         for (Text text : textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)) {
@@ -88,13 +88,13 @@ public class TextDocumentContentLoader {
     }
 
     public Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> getLoopTexts(DocRef docRef) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
         final Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> result = new HashMap<>();
 
         for (Text text : textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.LoopItemRef.of(
-                    text.getLoopEntryRef().getLoopNo(), text.getLoopEntryRef().getContentNo(), text.getNo()
+                    text.getLoopEntryRef().getLoopNo(), text.getLoopEntryRef().getEntryNo(), text.getNo()
             );
 
             result.put(loopItemRef, toDomainObject(text));
@@ -104,8 +104,8 @@ public class TextDocumentContentLoader {
     }
 
 
-    public Map<DocumentLanguage, TextDomainObject> getTexts(DocVersionRef docVersionRef, int textNo) {
-        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+    public Map<DocumentLanguage, TextDomainObject> getTexts(VersionRef versionRef, int textNo) {
+        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
         Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
 
         for (Text text : textRepository.findByVersionAndNoWhereLoopEntryRefIsNull(version, textNo)) {
@@ -115,8 +115,8 @@ public class TextDocumentContentLoader {
         return result;
     }
 
-    public Map<DocumentLanguage, TextDomainObject> getLoopTexts(DocVersionRef docVersionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+    public Map<DocumentLanguage, TextDomainObject> getLoopTexts(VersionRef versionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
+        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
         Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
@@ -128,8 +128,8 @@ public class TextDocumentContentLoader {
     }
 
     public TextDomainObject getText(DocRef docRef, int textNo) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return toDomainObject(
                 textRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, textNo)
@@ -137,8 +137,8 @@ public class TextDocumentContentLoader {
     }
 
     public TextDomainObject getLoopText(DocRef docRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         return toDomainObject(
@@ -147,8 +147,8 @@ public class TextDocumentContentLoader {
     }
 
     public Map<Integer, ImageDomainObject> getImages(DocRef docRef) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
         final Map<Integer, ImageDomainObject> result = new HashMap<>();
 
         for (Image image : imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)) {
@@ -159,13 +159,13 @@ public class TextDocumentContentLoader {
     }
 
     public Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> getLoopImages(DocRef docRef) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
         final Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> result = new HashMap<>();
 
         for (Image image : imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.LoopItemRef.of(
-                    image.getLoopEntryRef().getLoopNo(), image.getLoopEntryRef().getContentNo(), image.getNo()
+                    image.getLoopEntryRef().getLoopNo(), image.getLoopEntryRef().getEntryNo(), image.getNo()
             );
 
             result.put(loopItemRef, toDomainObject(image));
@@ -174,8 +174,8 @@ public class TextDocumentContentLoader {
         return result;
     }
 
-    public Map<DocumentLanguage, ImageDomainObject> getImages(DocVersionRef docVersionRef, int textNo) {
-        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+    public Map<DocumentLanguage, ImageDomainObject> getImages(VersionRef versionRef, int textNo) {
+        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
 
         for (Image image : imageRepository.findByVersionAndNoWhereLoopEntryRefIsNull(version, textNo)) {
@@ -185,8 +185,8 @@ public class TextDocumentContentLoader {
         return result;
     }
 
-    public Map<DocumentLanguage, ImageDomainObject> getLoopImages(DocVersionRef docVersionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+    public Map<DocumentLanguage, ImageDomainObject> getLoopImages(VersionRef versionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
+        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
@@ -199,8 +199,8 @@ public class TextDocumentContentLoader {
 
 
     public ImageDomainObject getImage(DocRef docRef, int textNo) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return toDomainObject(
                 imageRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, textNo)
@@ -208,8 +208,8 @@ public class TextDocumentContentLoader {
     }
 
     public ImageDomainObject getLoopImage(DocRef docRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         return toDomainObject(
@@ -219,12 +219,12 @@ public class TextDocumentContentLoader {
 
 
 
-    public Map<Integer, Loop> getLoops(DocVersionRef docVersionRef) {
-        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+    public Map<Integer, Loop> getLoops(VersionRef versionRef) {
+        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
         Map<Integer, Loop> result = new HashMap<>();
 
-        for (com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop : loopRepository.findByDocVersion(version)) {
+        for (com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop : loopRepository.findByVersion(version)) {
             result.put(
                     loop.getNo(),
                     toApiObject(loop)
@@ -234,17 +234,17 @@ public class TextDocumentContentLoader {
         return result;
     }
 
-    public Loop getLoop(DocVersionRef docVersionRef, int loopNo) {
-        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+    public Loop getLoop(VersionRef versionRef, int loopNo) {
+        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
-        return toApiObject(loopRepository.findByDocVersionAndNo(version, loopNo));
+        return toApiObject(loopRepository.findByVersionAndNo(version, loopNo));
     }
 
 
 
-    public Map<Integer, MenuDomainObject> getMenus(DocVersionRef docVersionRef) {
-        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
-        List<Menu> textDocMenus = menuRepository.getByDocVersion(version);
+    public Map<Integer, MenuDomainObject> getMenus(VersionRef versionRef) {
+        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
+        List<Menu> textDocMenus = menuRepository.getByVersion(version);
         Map<Integer, MenuDomainObject> menus = new HashMap<>();
 
         for (Menu menu : textDocMenus) {

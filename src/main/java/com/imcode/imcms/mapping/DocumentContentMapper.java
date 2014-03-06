@@ -46,7 +46,7 @@ public class DocumentContentMapper {
     @Transactional(Transactional.TxType.SUPPORTS)
     public DocumentCommonContent getCommonContent(DocRef docRef) {
         return toApiObject(commonContentRepository.findByDocIdAndLanguageCode(
-                docRef.getDocId(), docRef.getDocLanguageCode()));
+                docRef.getId(), docRef.getLanguageCode()));
     }
 
 

@@ -54,7 +54,7 @@ class TextsEditor(texts: Map[Int, TextDomainObject]) extends Editor {
 //        no: JInteger,
 //        text.getType.toString,
 //        text.getLoopItemRef.asOption.map(_.getLoopNo).get: JInteger,
-//        text.getLoopItemRef.asOption.map(_.getContentNo).get: JInteger,
+//        text.getLoopItemRef.asOption.map(_.getEntryNo).get: JInteger,
 //        text.getText
 //      )
     }

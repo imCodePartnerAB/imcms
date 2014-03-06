@@ -1,9 +1,9 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.FileItem;
-import com.imcode.imcms.mapping.jpa.doc.content.HtmlContent;
-import com.imcode.imcms.mapping.jpa.doc.content.UrlContent;
+import com.imcode.imcms.mapping.jpa.doc.content.FileDocFile;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -38,9 +38,9 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
      * ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
     public void visitFileDocument(FileDocumentDomainObject doc) {
-        Collection<FileItem> fileDocItems = metaRepository.getFileDocItems(doc.getRef());
+        Collection<FileDocFile> fileDocItems = metaRepository.getFileDocContent(doc.getRef());
 
-        for (FileItem item : fileDocItems) {
+        for (FileDocFile item : fileDocItems) {
             String fileId = item.getFileId();
             FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
 
@@ -71,12 +71,12 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
 
     public void visitHtmlDocument(HtmlDocumentDomainObject doc) {
-        HtmlContent html = metaRepository.getHtmlDocContent(doc.getRef());
+        HtmlDocContent html = metaRepository.getHtmlDocContent(doc.getRef());
         doc.setHtml(html.getHtml());
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject doc) {
-        UrlContent reference = metaRepository.getUrlDocContent(doc.getRef());
+        UrlDocContent reference = metaRepository.getUrlDocContent(doc.getRef());
         doc.setUrl(reference.getUrl());
     }
 

@@ -11,24 +11,24 @@ import java.util.Objects;
  */
 public class TextDocTextsContainer {
 
-    public static TextDocTextsContainer of(DocVersionRef docVersionRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
-        return new TextDocTextsContainer(docVersionRef, null, textNo, texts);
+    public static TextDocTextsContainer of(VersionRef versionRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
+        return new TextDocTextsContainer(versionRef, null, textNo, texts);
     }
 
-    public static TextDocTextsContainer of(DocVersionRef docVersionRef, LoopEntryRef loopEntryRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
-        return new TextDocTextsContainer(docVersionRef, loopEntryRef, textNo, texts);
+    public static TextDocTextsContainer of(VersionRef versionRef, LoopEntryRef loopEntryRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
+        return new TextDocTextsContainer(versionRef, loopEntryRef, textNo, texts);
     }
 
-    private final DocVersionRef docVersionRef;
+    private final VersionRef versionRef;
     private final int textNo;
     private final LoopEntryRef loopEntryRef;
     private final Map<DocumentLanguage, TextDomainObject> texts;
 
-    public TextDocTextsContainer(DocVersionRef docVersionRef, LoopEntryRef loopEntryRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
-        Objects.requireNonNull(docVersionRef);
+    public TextDocTextsContainer(VersionRef versionRef, LoopEntryRef loopEntryRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
+        Objects.requireNonNull(versionRef);
         Objects.requireNonNull(texts);
 
-        this.docVersionRef = docVersionRef;
+        this.versionRef = versionRef;
         this.loopEntryRef = loopEntryRef;
         this.textNo = textNo;
         this.texts = texts;
@@ -38,8 +38,8 @@ public class TextDocTextsContainer {
         return textNo;
     }
 
-    public DocVersionRef getDocVersionRef() {
-        return docVersionRef;
+    public VersionRef getVersionRef() {
+        return versionRef;
     }
 
     public boolean isLoopEntryItem() {
@@ -50,11 +50,11 @@ public class TextDocTextsContainer {
         return loopEntryRef;
     }
     public int getDocId() {
-        return docVersionRef.getDocId();
+        return versionRef.getDocId();
     }
 
-    public int getDocVersionNo() {
-        return docVersionRef.getDocVersionNo();
+    public int getVersionNo() {
+        return versionRef.getNo();
     }
 
     public Map<DocumentLanguage, TextDomainObject> getTexts() {

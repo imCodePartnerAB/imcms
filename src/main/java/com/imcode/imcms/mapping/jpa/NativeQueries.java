@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping.jpa.doc;
+package com.imcode.imcms.mapping.jpa;
 
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -12,12 +12,12 @@ import java.util.Map;
 
 /**
  * Native queries - moved from the DocumentMapper.
- * TODO: Rewrite native queries using HQL
+ * TODO: Rewrite native queries using QL
  * TODO: test
  */
 @Component
 @Transactional
-public class DocNativeQueries {
+public class NativeQueries {
 
     @PersistenceContext
     private EntityManager entityManager;

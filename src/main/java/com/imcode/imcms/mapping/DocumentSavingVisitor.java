@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.mapping.jpa.doc.content.HtmlContent;
-import com.imcode.imcms.mapping.jpa.doc.content.UrlContent;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -34,22 +34,22 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         savingUser = user;
     }
 
-    // runs inside transaction   
+    // runs inside transaction
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
         Version version = versionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
-        HtmlContent htmlReference = new HtmlContent();
+        HtmlDocContent htmlReference = new HtmlDocContent();
 
         htmlReference.setHtml(document.getHtml());
         htmlReference.setVersion(version);
 
-        docRepository.deleteHtmlReference(document.getRef());
-        docRepository.saveHtmlReference(htmlReference);
+        docRepository.deleteHtmlDocContent(document.getRef());
+        docRepository.saveHtmlDocContent(htmlReference);
     }
 
-    // runs inside transaction   
+    // runs inside transaction
     public void visitUrlDocument(UrlDocumentDomainObject document) {
         Version version = versionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
-        UrlContent reference = new UrlContent();
+        UrlDocContent reference = new UrlDocContent();
 
         reference.setVersion(version);
 
@@ -59,24 +59,13 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         reference.setUrlLanguagePrefix("");
         reference.setUrlFrameName("");
 
-        docRepository.deleteUrlReference(document.getRef());
-        docRepository.saveUrlReference(reference);
+        docRepository.deleteUrlDocContent(document.getRef());
+        docRepository.saveUrlDocContent(reference);
     }
 
-    // runs inside transaction 
+    // runs inside transaction
     public void visitTextDocument(TextDocumentDomainObject document) {
-        // NB! Content loops must be created before texts and images they possibly contain.
-        textDocumentContentSaver.saveLoops(document, savingUser);
-        textDocumentContentSaver.saveTemplateNames(document, savingUser);
-        textDocumentContentSaver.saveTexts(document, savingUser);
-        textDocumentContentSaver.saveImages(document, savingUser);
-        textDocumentContentSaver.saveIncludes(document, savingUser);
-
-        boolean menusChanged = !document.getMenus().equals(((TextDocumentDomainObject) oldDocument).getMenus());
-
-        if (menusChanged) {
-            textDocumentContentSaver.saveMenus(document, savingUser);
-        }
+        textDocumentContentSaver.updateContent(document, savingUser);
     }
 
     public UserDomainObject getSavingUser() {

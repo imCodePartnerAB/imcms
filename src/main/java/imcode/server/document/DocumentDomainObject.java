@@ -3,7 +3,7 @@ package imcode.server.document;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.container.DocRef;
-import com.imcode.imcms.mapping.container.DocVersionRef;
+import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -92,8 +92,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return DocRef.of(getId(), getVersionNo(), getLanguage().getCode());
     }
 
-    public DocVersionRef getVersionRef() {
-        return DocVersionRef.of(getId(), getVersionNo());
+    public VersionRef getVersionRef() {
+        return VersionRef.of(getId(), getVersionNo());
     }
 
     /**

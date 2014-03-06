@@ -13,80 +13,80 @@ public final class DocRef {
     }
 
     public static class Builder {
-        private int docId;
-        private int docVersionNo;
-        private String docLanguageCode;
+        private int id;
+        private int versionNo;
+        private String languageCode;
 
         public Builder() {
         }
 
         public Builder(DocRef docRef) {
-            this.docId = docRef.docId;
-            this.docVersionNo = docRef.docVersionNo;
-            this.docLanguageCode = docRef.docLanguageCode;
+            this.id = docRef.id;
+            this.versionNo = docRef.versionNo;
+            this.languageCode = docRef.languageCode;
         }
 
-        public Builder docId(int docId) {
-            this.docId = docId;
+        public Builder id(int docId) {
+            this.id = docId;
             return this;
         }
 
-        public Builder docVersionNo(int docVersionNo) {
-            this.docVersionNo = docVersionNo;
+        public Builder versionNo(int versionNo) {
+            this.versionNo = versionNo;
             return this;
         }
 
-        public Builder docLanguageCode(String docLanguageCode) {
-            this.docLanguageCode = docLanguageCode;
+        public Builder languageCode(String languageCode) {
+            this.languageCode = languageCode;
             return this;
         }
 
-        public Builder docVersionRef(DocVersionRef docVersionRef) {
-            Objects.requireNonNull(docVersionRef);
+        public Builder versionRef(VersionRef versionRef) {
+            Objects.requireNonNull(versionRef);
 
-            this.docId = docVersionRef.getDocId();
-            this.docVersionNo = docVersionRef.getDocVersionNo();
+            this.id = versionRef.getDocId();
+            this.versionNo = versionRef.getNo();
 
             return this;
         }
 
         public DocRef build() {
-            return DocRef.of(docId, docVersionNo, docLanguageCode);
+            return DocRef.of(id, versionNo, languageCode);
         }
 
     }
 
-    public static DocRef of(DocVersionRef docVersionRef, String docLanguageCode) {
-        Objects.requireNonNull(docVersionRef);
+    public static DocRef of(VersionRef versionRef, String languageCode) {
+        Objects.requireNonNull(versionRef);
 
-        return new DocRef(docVersionRef.getDocId(), docVersionRef.getDocVersionNo(), docLanguageCode);
+        return new DocRef(versionRef.getDocId(), versionRef.getNo(), languageCode);
     }
 
-    public static DocRef of(int docId, int docVersionNo, String docLanguageCode) {
-        return new DocRef(docId, docVersionNo, docLanguageCode);
+    public static DocRef of(int id, int versionNo, String languageCode) {
+        return new DocRef(id, versionNo, languageCode);
     }
 
-    private final int docId;
+    private final int id;
 
-    private final int docVersionNo;
+    private final int versionNo;
 
-    private final String docLanguageCode;
+    private final String languageCode;
 
     private final int cachedHashCode;
 
     private final String cachedToString;
 
-    public DocRef(int docId, int docVersionNo, String docLanguageCode) {
-        Objects.requireNonNull(docLanguageCode);
+    public DocRef(int id, int versionNo, String languageCode) {
+        Objects.requireNonNull(languageCode);
 
-        this.docId = docId;
-        this.docVersionNo = docVersionNo;
-        this.docLanguageCode = docLanguageCode;
-        this.cachedHashCode = Objects.hash(docId, docVersionNo);
+        this.id = id;
+        this.versionNo = versionNo;
+        this.languageCode = languageCode;
+        this.cachedHashCode = Objects.hash(id, versionNo);
         this.cachedToString = com.google.common.base.Objects.toStringHelper(this)
-                .add("id", docId)
-                .add("docVersionNo", docVersionNo)
-                .add("docLanguageCode", docLanguageCode)
+                .add("id", id)
+                .add("versionNo", versionNo)
+                .add("languageCode", languageCode)
                 .toString();
     }
 
@@ -96,9 +96,9 @@ public final class DocRef {
     }
 
     private boolean equals(DocRef that) {
-        return docId == that.docId
-                && docVersionNo == that.docVersionNo
-                && Objects.equals(docLanguageCode, that.docLanguageCode);
+        return id == that.id
+                && versionNo == that.versionNo
+                && Objects.equals(languageCode, that.languageCode);
     }
 
     @Override
@@ -111,20 +111,20 @@ public final class DocRef {
         return cachedToString;
     }
 
-    public int getDocId() {
-        return docId;
+    public int getId() {
+        return id;
     }
 
-    public int getDocVersionNo() {
-        return docVersionNo;
+    public int getVersionNo() {
+        return versionNo;
     }
 
-    public String getDocLanguageCode() {
-        return docLanguageCode;
+    public String getLanguageCode() {
+        return languageCode;
     }
 
-    public DocVersionRef getDocVersionRef() {
-        return DocVersionRef.of(docId, docVersionNo);
+    public VersionRef getVersionRef() {
+        return VersionRef.of(id, versionNo);
     }
 }
 

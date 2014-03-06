@@ -11,31 +11,31 @@ import java.util.Objects;
  */
 public class TextDocImagesContainer {
 
-    public static TextDocImagesContainer of(DocVersionRef docVersionRef, int imageNo, Map<DocumentLanguage, ImageDomainObject> images) {
-        return new TextDocImagesContainer(docVersionRef, null, imageNo, images);
+    public static TextDocImagesContainer of(VersionRef versionRef, int imageNo, Map<DocumentLanguage, ImageDomainObject> images) {
+        return new TextDocImagesContainer(versionRef, null, imageNo, images);
     }
 
-    public static TextDocImagesContainer of(DocVersionRef docVersionRef, LoopEntryRef loopEntryRef, int imageNo, Map<DocumentLanguage, ImageDomainObject> images) {
-        return new TextDocImagesContainer(docVersionRef, loopEntryRef, imageNo, images);
+    public static TextDocImagesContainer of(VersionRef versionRef, LoopEntryRef loopEntryRef, int imageNo, Map<DocumentLanguage, ImageDomainObject> images) {
+        return new TextDocImagesContainer(versionRef, loopEntryRef, imageNo, images);
     }
 
-    private final DocVersionRef docVersionRef;
+    private final VersionRef versionRef;
     private final int imageNo;
     private final LoopEntryRef loopEntryRef;
     private final Map<DocumentLanguage, ImageDomainObject> images;
 
-    public TextDocImagesContainer(DocVersionRef docVersionRef, LoopEntryRef loopEntryRef, int imageNo, Map<DocumentLanguage, ImageDomainObject> images) {
-        Objects.requireNonNull(docVersionRef);
+    public TextDocImagesContainer(VersionRef versionRef, LoopEntryRef loopEntryRef, int imageNo, Map<DocumentLanguage, ImageDomainObject> images) {
+        Objects.requireNonNull(versionRef);
         Objects.requireNonNull(images);
 
-        this.docVersionRef = docVersionRef;
+        this.versionRef = versionRef;
         this.loopEntryRef = loopEntryRef;
         this.imageNo = imageNo;
         this.images = images;
     }
 
-    public DocVersionRef getDocVersionRef() {
-        return docVersionRef;
+    public VersionRef getVersionRef() {
+        return versionRef;
     }
 
     public boolean isLoopEntryItem() {
@@ -46,11 +46,11 @@ public class TextDocImagesContainer {
         return loopEntryRef;
     }
     public int getDocId() {
-        return docVersionRef.getDocId();
+        return versionRef.getDocId();
     }
 
-    public int getDocVersionNo() {
-        return docVersionRef.getDocVersionNo();
+    public int getVersionNo() {
+        return versionRef.getNo();
     }
 
     public Map<DocumentLanguage, ImageDomainObject> getImages() {

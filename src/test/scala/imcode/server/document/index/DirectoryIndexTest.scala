@@ -1,7 +1,7 @@
 package imcode.server.document.index
 
 import com.imcode.imcms.api.DocumentVersion
-import com.imcode.imcms.mapping.container.DocVersionRef
+import com.imcode.imcms.mapping.container.VersionRef
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
@@ -125,11 +125,11 @@ class DirectoryIndexFixture {
       i18nMetas.getOrElse(Seq(doc.getCommonContent)).asJava
     )
 
-    Mockito.when(textDocMapperMock.getTexts(DocVersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    Mockito.when(textDocMapperMock.getTexts(VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       texts.getOrElse(Seq(doc.getTexts.values.asScala, doc.getLoopTexts.values.asScala).flatten).asJava
     )
 
-    Mockito.when(textDocMapperMock.getImages(DocVersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
+    Mockito.when(textDocMapperMock.getImages(VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
       images.getOrElse(Seq(doc.getImages.values.asScala, doc.getLoopImages.values.asScala).flatten).asJava
     )
   }

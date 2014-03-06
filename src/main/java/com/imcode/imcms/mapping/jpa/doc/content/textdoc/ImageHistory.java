@@ -20,6 +20,37 @@ public class ImageHistory extends ImageBase {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
+    public ImageHistory() {
+    }
+
+    public ImageHistory(Image image, User modifiedBy) {
+        setAlign(image.getAlign());
+        setAlternateText(image.getAlternateText());
+        setBorder(image.getBorder());
+        setCropRegion(image.getCropRegion());
+        setFormat(image.getFormat());
+        setGeneratedFilename(image.getGeneratedFilename());
+        setHeight(image.getHeight());
+        setHorizontalSpace(image.getHorizontalSpace());
+        setLinkUrl(image.getLinkUrl());
+        setLoopEntryRef(image.getLoopEntryRef());
+        setLowResolutionUrl(image.getLowResolutionUrl());
+        setName(image.getName());
+        setNo(image.getNo());
+        setResize(image.getResize());
+        setRotateAngle(image.getRotateAngle());
+        setTarget(image.getTarget());
+        setType(image.getType());
+        setUrl(image.getUrl());
+        setVerticalSpace(image.getVerticalSpace());
+        setWidth(image.getWidth());
+        setLanguage(image.getLanguage());
+        setVersion(image.getVersion());
+
+        setModifiedBy(modifiedBy);
+        setModifiedDt(new Date());
+    }
+
     public User getModifiedBy() {
         return modifiedBy;
     }

@@ -13,14 +13,14 @@ public class LoopEntryRef implements Serializable, Cloneable {
     private int loopNo;
 
     @Column(name = "content_no")
-    private int contentNo;
+    private int entryNo;
 
     public LoopEntryRef() {
     }
 
-    public LoopEntryRef(int loopNo, int contentNo) {
+    public LoopEntryRef(int loopNo, int entryNo) {
         this.loopNo = loopNo;
-        this.contentNo = contentNo;
+        this.entryNo = entryNo;
     }
 
     @Override
@@ -29,24 +29,24 @@ public class LoopEntryRef implements Serializable, Cloneable {
     }
 
     private boolean equals(LoopEntryRef that) {
-        return loopNo == that.loopNo && contentNo == that.contentNo;
+        return loopNo == that.loopNo && entryNo == that.entryNo;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(loopNo, contentNo);
+        return Objects.hashCode(loopNo, entryNo);
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this).add("contentNo", contentNo).add("loopNo", loopNo).toString();
+        return Objects.toStringHelper(this).add("entryNo", entryNo).add("loopNo", loopNo).toString();
     }
 
     public int getLoopNo() {
         return loopNo;
     }
 
-    public int getContentNo() {
-        return contentNo;
+    public int getEntryNo() {
+        return entryNo;
     }
 }

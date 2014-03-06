@@ -41,7 +41,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
         new InformationDialog("Please select a text document you want to use as a template".i).show()
 
       case selection => selection.head |> { ref =>
-        (imcmsServices.getDocumentMapper.getDefaultDocument(ref.getDocId, ref.getDocLanguageCode) : DocumentDomainObject) match {
+        (imcmsServices.getDocumentMapper.getDefaultDocument(ref.getId, ref.getLanguageCode) : DocumentDomainObject) match {
           case null => showMissingDocNotification()
 
           case selectedDoc if !selectedDoc.isInstanceOf[TextDocumentDomainObject] =>
@@ -88,7 +88,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
       new ConfirmationDialog("Delete selected document(s)?".i) |>> { dlg =>
         dlg.setOkButtonHandler {
           try {
-            refs.foreach(ref => imcmsServices.getDocumentMapper.deleteDocument(ref.getDocId, projection.user))
+            refs.foreach(ref => imcmsServices.getDocumentMapper.deleteDocument(ref.getId, projection.user))
             Current.page.showInfoNotification("Documents has been deleted".i)
             dlg.close()
           } finally {
@@ -102,17 +102,17 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
   def showSelectedDoc() {
     whenSingleton(projection.selection) { ref =>
-      DocOpener.openDoc(ref.getDocId)
+      DocOpener.openDoc(ref.getId)
     }
   }
 
 
   def copySelectedDoc() {
     whenSingleton(projection.selection) { ref =>
-      (imcmsServices.getDocumentMapper.getDefaultDocument(ref.getDocId, ref.getDocLanguageCode) : DocumentDomainObject) match {
+      (imcmsServices.getDocumentMapper.getDefaultDocument(ref.getId, ref.getLanguageCode) : DocumentDomainObject) match {
         case null => showMissingDocNotification()
         case doc =>
-          imcmsServices.getDocumentMapper.copyDocumentsWithSharedMetaAndVersion(ref.getDocVersionRef, projection.user)
+          imcmsServices.getDocumentMapper.copyDocumentsWithSharedMetaAndVersion(ref.getVersionRef, projection.user)
           projection.reload()
           Current.page.showInfoNotification("Document has been copied".i)
       }
@@ -122,7 +122,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
   def editSelectedDoc() {
     whenSingleton(projection.selection) { ref =>
-      (imcmsServices.getDocumentMapper.getWorkingDocument(ref.getDocId, ref.getDocLanguageCode) : DocumentDomainObject) match {
+      (imcmsServices.getDocumentMapper.getWorkingDocument(ref.getId, ref.getLanguageCode) : DocumentDomainObject) match {
         case null => showMissingDocNotification()
         case doc =>
           val dialog = new DocEditorDialog(s"Edit document ${doc.getId}".i, doc)

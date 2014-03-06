@@ -12,8 +12,8 @@ import java.util.List;
 public interface MenuRepository extends JpaRepository<Menu, Integer> {
 
     @Modifying
-    @Query("DELETE FROM Menu m WHERE m.docVersion = ?1")
-    void deleteByDocVersion(Version version);
+    @Query("DELETE FROM Menu m WHERE m.version = ?1")
+    void deleteByVersion(Version version);
 
-    List<Menu> getByDocVersion(Version version);
+    List<Menu> getByVersion(Version version);
 }

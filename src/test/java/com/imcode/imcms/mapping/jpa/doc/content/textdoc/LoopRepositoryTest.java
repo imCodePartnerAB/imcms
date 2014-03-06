@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
-import com.imcode.imcms.mapping.container.DocVersionRef;
+import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.JpaConfiguration;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.*;
 @Transactional
 public class LoopRepositoryTest {
 
-    static final DocVersionRef DOC_VERSION_REF = new DocVersionRef(1001, 0);
+    static final VersionRef DOC_VERSION_REF = new VersionRef(1001, 0);
 
     @Inject
     UserRepository userRepository;
@@ -50,7 +50,7 @@ public class LoopRepositoryTest {
         Version version = versionRepository.saveAndFlush(
                 new Version(
                         DOC_VERSION_REF.getDocId(),
-                        DOC_VERSION_REF.getDocVersionNo(),
+                        DOC_VERSION_REF.getNo(),
                         user,
                         new Date(),
                         user, new Date()
@@ -100,8 +100,8 @@ public class LoopRepositoryTest {
     public void textFindByDocVersion() {
         recreateLoops();
 
-        Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
-        List<Loop> loops = loopRepository.findByDocVersion(version);
+        Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
+        List<Loop> loops = loopRepository.findByVersion(version);
 
         assertThat(loops.size(), is(3));
     }
@@ -110,10 +110,10 @@ public class LoopRepositoryTest {
     public void textFindByDocVersionAndNo() {
         recreateLoops();
 
-        Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
-        Loop loop1 = loopRepository.findByDocVersionAndNo(version, 1);
-        Loop loop2 = loopRepository.findByDocVersionAndNo(version, 2);
-        Loop loop3 = loopRepository.findByDocVersionAndNo(version, 3);
+        Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
+        Loop loop1 = loopRepository.findByVersionAndNo(version, 1);
+        Loop loop2 = loopRepository.findByVersionAndNo(version, 2);
+        Loop loop3 = loopRepository.findByVersionAndNo(version, 3);
 
         assertNotNull(loop1);
         assertNotNull(loop2);

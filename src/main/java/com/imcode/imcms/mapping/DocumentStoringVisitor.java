@@ -4,7 +4,7 @@ import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.*;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.FileItem;
+import com.imcode.imcms.mapping.jpa.doc.content.FileDocFile;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
@@ -53,7 +53,7 @@ class DocumentStoringVisitor extends DocumentVisitor {
      * @param fileDocumentFile
      * @param fileId
      */
-    protected void saveFileDocumentFile(DocVersionRef docVersionRef, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
+    protected void saveFileDocumentFile(VersionRef versionRef, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
                                         String fileId) {
         try {
             InputStreamSource inputStreamSource = fileDocumentFile.getInputStreamSource();
@@ -61,14 +61,14 @@ class DocumentStoringVisitor extends DocumentVisitor {
             try {
                 in = inputStreamSource.getInputStream();
             } catch (FileNotFoundException e) {
-                throw new UnhandledException("The file for filedocument " + docVersionRef
+                throw new UnhandledException("The file for filedocument " + versionRef
                         + " has disappeared.", e);
             }
             if (null == in) {
                 return;
             }
 
-            File file = getFileForFileDocumentFile(docVersionRef, fileId);
+            File file = getFileForFileDocumentFile(versionRef, fileId);
 
             FileInputStreamSource fileInputStreamSource = new FileInputStreamSource(file);
             boolean sameFileOnDisk = file.exists() && inputStreamSource.equals(fileInputStreamSource);
@@ -97,9 +97,9 @@ class DocumentStoringVisitor extends DocumentVisitor {
     /**
      * Returns file for FileDocumentFile.
      */
-    public static File getFileForFileDocumentFile(DocVersionRef docVersionRef, String fileId) {
+    public static File getFileForFileDocumentFile(VersionRef versionRef, String fileId) {
         File filePath = Imcms.getServices().getConfig().getFilePath();
-        String filename = getFilenameForFileDocumentFile(docVersionRef, fileId);
+        String filename = getFilenameForFileDocumentFile(versionRef, fileId);
 
         return new File(filePath, filename);
     }
@@ -121,9 +121,9 @@ class DocumentStoringVisitor extends DocumentVisitor {
      * @param fileId
      * @return FileDocumentFile filename
      */
-    public static String getFilenameForFileDocumentFile(DocVersionRef docVersionRef, String fileId) {
-        int docId = docVersionRef.getDocId();
-        int docVersionNo = docVersionRef.getDocVersionNo();
+    public static String getFilenameForFileDocumentFile(VersionRef versionRef, String fileId) {
+        int docId = versionRef.getDocId();
+        int docVersionNo = versionRef.getNo();
 
         String filename = "" + docId;
 
@@ -143,9 +143,9 @@ class DocumentStoringVisitor extends DocumentVisitor {
      * @param fileDocument
      */
     public void visitFileDocument(FileDocumentDomainObject fileDocument) {
-        docRepository.deleteFileReferences(fileDocument.getRef());
+        docRepository.deleteFileDocContent(fileDocument.getRef());
 
-        Version version = versionRepository.findByDocIdAndNo(fileDocument.getRef().getDocId(), fileDocument.getRef().getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(fileDocument.getId(), fileDocument.getVersionNo());
 
         for (Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> entry : fileDocument.getFiles().entrySet()) {
             String fileId = entry.getKey();
@@ -157,15 +157,15 @@ class DocumentStoringVisitor extends DocumentVisitor {
             }
 
             boolean isDefaultFile = fileId.equals(fileDocument.getDefaultFileId());
-            FileItem fileRef = new FileItem();
-            fileRef.setVersion(version);
-            fileRef.setFileId(fileId);
-            fileRef.setFilename(filename);
-            fileRef.setDefaultFileId(isDefaultFile);
-            fileRef.setMimeType(fileDocumentFile.getMimeType());
-            fileRef.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
+            FileDocFile fileDocFile = new FileDocFile();
+            fileDocFile.setVersion(version);
+            fileDocFile.setFileId(fileId);
+            fileDocFile.setFilename(filename);
+            fileDocFile.setDefaultFileId(isDefaultFile);
+            fileDocFile.setMimeType(fileDocumentFile.getMimeType());
+            fileDocFile.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
 
-            docRepository.saveFileReference(fileRef);
+            docRepository.saveFileDocFile(fileDocFile);
 
             saveFileDocumentFile(fileDocument.getVersionRef(), fileDocumentFile, fileId);
         }

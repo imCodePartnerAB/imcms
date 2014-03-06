@@ -183,7 +183,7 @@ public class ImageEditPage extends OkCancelPage {
 
         for (TextDocImageContainer wrapper : images) {
             ImageDomainObject img = wrapper.getImage();
-            boolean save = shareImages || wrapper.getDocLanguageCode().equals(lang);
+            boolean save = shareImages || wrapper.getLanguageCode().equals(lang);
             if (!save) {
                 continue;
             }
@@ -277,7 +277,7 @@ public class ImageEditPage extends OkCancelPage {
             ImageDomainObject i18nImage = images.get(i).getImage();
 
 
-            String suffix = "_" + images.get(i).getDocLanguageCode();
+            String suffix = "_" + images.get(i).getLanguageCode();
             String alternateText = req.getParameter(REQUEST_PARAMETER__IMAGE_ALT
                     + suffix);
 
@@ -464,7 +464,7 @@ public class ImageEditPage extends OkCancelPage {
                 // TODO i18n: refactor
                 for (TextDocImageContainer wrapper : images) {
                     ImageDomainObject i18nImage = wrapper.getImage();
-                    if (shareImages || wrapper.getDocLanguageCode().equals(i18nCode)) {
+                    if (shareImages || wrapper.getLanguageCode().equals(i18nCode)) {
                         setNewSourceAndClearProps(i18nImage, new ImagesPathRelativePathImageSource(imageUrl));
                     }
 
@@ -491,7 +491,7 @@ public class ImageEditPage extends OkCancelPage {
     public ImageDomainObject getImageByLangCode(String langCode) {
         for (TextDocImageContainer wrapper : images) {
             ImageDomainObject img = wrapper.getImage();
-            if (wrapper.getDocLanguageCode().equals(langCode)) {
+            if (wrapper.getLanguageCode().equals(langCode)) {
                 return img;
             }
         }
@@ -506,7 +506,7 @@ public class ImageEditPage extends OkCancelPage {
 
         ImageDomainObject img = null;
         for (TextDocImageContainer wrapper : images) {
-            if (wrapper.getDocLanguageCode().equals(langCode)) {
+            if (wrapper.getLanguageCode().equals(langCode)) {
                 img = wrapper.getImage();
                 break;
             }
@@ -637,7 +637,7 @@ public class ImageEditPage extends OkCancelPage {
         String[] codes = new String[images.size()];
 
         for (int i = 0, len = images.size(); i < len; ++i) {
-            codes[i] = images.get(i).getDocLanguageCode();
+            codes[i] = images.get(i).getLanguageCode();
         }
 
         return StringUtils.join(codes, ',');

@@ -52,20 +52,20 @@ public class TextDocImageContainer {
         return loopEntryRef;
     }
 
-    public DocVersionRef getDocVersionRef() {
-        return docRef.getDocVersionRef();
+    public VersionRef getVersionRef() {
+        return docRef.getVersionRef();
     }
 
     public int getDocId() {
-        return docRef.getDocId();
+        return docRef.getId();
     }
 
-    public int getDocVersionNo() {
-        return docRef.getDocVersionNo();
+    public int getVersionNo() {
+        return docRef.getVersionNo();
     }
 
-    public String getDocLanguageCode() {
-        return docRef.getDocLanguageCode();
+    public String getLanguageCode() {
+        return docRef.getLanguageCode();
     }
 }
 

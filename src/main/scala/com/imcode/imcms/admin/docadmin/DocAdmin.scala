@@ -5,7 +5,7 @@ package admin.docadmin
 import com.imcode.imcms.admin.docadmin.menu.MenuEditorParameters
 import com.imcode.imcms.admin.docadmin.text.TextEditorParameters
 import com.imcode.imcms.api._
-import com.imcode.imcms.mapping.container.{DocVersionRef, TextDocMenuContainer}
+import com.imcode.imcms.mapping.container.{VersionRef, TextDocMenuContainer}
 import java.util.Locale
 import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.component._
@@ -364,8 +364,8 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
       // fixme - create text if no exists
       val textDocMapper: TextDocumentContentSaver = ???
       val texts = (loopItemRefOpt match {
-        case Some(loopItemRef) => textDocMapper.getLoopTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), loopItemRef)
-        case _ => textDocMapper.getTexts(DocVersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo)
+        case Some(loopItemRef) => textDocMapper.getLoopTexts(VersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), loopItemRef)
+        case _ => textDocMapper.getTexts(VersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo)
       }).asScala.map {
         case (language, text) => language -> text
       }

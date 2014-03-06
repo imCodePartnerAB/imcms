@@ -2,8 +2,8 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.mapping.jpa.doc.content.HtmlContent;
-import com.imcode.imcms.mapping.jpa.doc.content.UrlContent;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import imcode.server.ImcmsServices;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
@@ -23,7 +23,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     }
 
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
-        HtmlContent reference = new HtmlContent();
+        HtmlDocContent reference = new HtmlDocContent();
         Version version = versionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
         reference.setVersion(version);
@@ -31,11 +31,11 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
         DocRepository repository = services.getManagedBean(DocRepository.class);
 
-        repository.saveHtmlReference(reference);
+        repository.saveHtmlDocContent(reference);
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject document) {
-        UrlContent reference = new UrlContent();
+        UrlDocContent reference = new UrlDocContent();
         Version version = versionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
         reference.setVersion(version);
@@ -47,10 +47,10 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
         DocRepository repository = services.getManagedBean(DocRepository.class);
 
-        repository.saveUrlReference(reference);
+        repository.saveUrlDocContent(reference);
     }
 
     public void visitTextDocument(TextDocumentDomainObject document) {
-        textDocumentContentSaver.saveContent(document, currentUser);
+        textDocumentContentSaver.createContent(document, currentUser);
     }
 }

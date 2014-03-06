@@ -15,7 +15,7 @@ import javax.persistence.*;
                 @JoinColumn(name = "meta_id", referencedColumnName = "doc_id"),
                 @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
         })
-public class FileItem extends VersionedContent {
+public class FileDocFile extends VersionedContent {
 
     @Column(name = "filename")
     private String filename;

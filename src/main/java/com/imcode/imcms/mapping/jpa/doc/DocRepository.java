@@ -1,10 +1,10 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
 import com.imcode.imcms.mapping.container.DocRef;
-import com.imcode.imcms.mapping.container.DocVersionRef;
-import com.imcode.imcms.mapping.jpa.doc.content.FileItem;
-import com.imcode.imcms.mapping.jpa.doc.content.HtmlContent;
-import com.imcode.imcms.mapping.jpa.doc.content.UrlContent;
+import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.mapping.jpa.doc.content.FileDocFile;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringUtils;
@@ -33,12 +33,12 @@ public class DocRepository {
     private EntityManager entityManager;
 
 
-    public void touch(DocVersionRef docIdentity, UserDomainObject user) {
+    public void touch(VersionRef docIdentity, UserDomainObject user) {
         touch(docIdentity, user, new Date());
     }
 
-    public void touch(DocVersionRef docIdentity, UserDomainObject user, Date date) {
-        touch(docIdentity.getDocId(), docIdentity.getDocVersionNo(), user.getId(), date);
+    public void touch(VersionRef docIdentity, UserDomainObject user, Date date) {
+        touch(docIdentity.getDocId(), docIdentity.getNo(), user.getId(), date);
     }
 
     private void touch(int docId, int docVersionNo, int userId, Date dt) {
@@ -79,58 +79,58 @@ public class DocRepository {
 
 
 
-    public int deleteHtmlReference(DocRef docIdentity) {
+    public int deleteHtmlDocContent(DocRef docIdentity) {
         return entityManager.createQuery("delete from HtmlReference r where r.docIdentity = :docIdentity")
                 .setParameter("docIdentity", docIdentity)
                 .executeUpdate();
     }
 
 
-    public int deleteUrlReference(DocRef docIdentity) {
+    public int deleteUrlDocContent(DocRef docIdentity) {
         return entityManager.createQuery("delete from UrlReference r where r.docIdentity = :docIdentity")
                 .setParameter("docIdentity", docIdentity)
                 .executeUpdate();
     }
 
-    public List<FileItem> getFileDocItems(DocRef docIdentity) {
-        return entityManager.createNamedQuery("FileDoc.getReferences", FileItem.class)
+    public List<FileDocFile> getFileDocContent(DocRef docIdentity) {
+        return entityManager.createNamedQuery("FileDoc.getReferences", FileDocFile.class)
                 .setParameter("docIdentity", docIdentity)
                 .getResultList();
     }
 
 
-    public FileItem saveFileReference(FileItem fileDocItem) {
+    public FileDocFile saveFileDocFile(FileDocFile fileDocItem) {
         return entityManager.merge(fileDocItem);
     }
 
 
-    public int deleteFileReferences(DocRef docIdentity) {
+    public int deleteFileDocContent(DocRef docIdentity) {
         return entityManager.createNamedQuery("FileDoc.deleteAllReferences")
                 .setParameter("docIdentity", docIdentity)
                 .executeUpdate();
     }
 
 
-    public HtmlContent getHtmlDocContent(DocRef docIdentity) {
-        return entityManager.createNamedQuery("HtmlDoc.getReference", HtmlContent.class)
+    public HtmlDocContent getHtmlDocContent(DocRef docIdentity) {
+        return entityManager.createNamedQuery("HtmlDoc.getReference", HtmlDocContent.class)
                 .setParameter("docIdentity", docIdentity)
                 .getSingleResult();
     }
 
 
-    public HtmlContent saveHtmlReference(HtmlContent reference) {
-        return entityManager.merge(reference);
+    public HtmlDocContent saveHtmlDocContent(HtmlDocContent content) {
+        return entityManager.merge(content);
     }
 
 
-    public UrlContent getUrlDocContent(DocRef docIdentity) {
-        return entityManager.createNamedQuery("UrlDoc.getReference", UrlContent.class)
+    public UrlDocContent getUrlDocContent(DocRef docIdentity) {
+        return entityManager.createNamedQuery("UrlDoc.getReference", UrlDocContent.class)
                 .setParameter("docIdentity", docIdentity)
                 .getSingleResult();
     }
 
 
-    public UrlContent saveUrlReference(UrlContent reference) {
+    public UrlDocContent saveUrlDocContent(UrlDocContent reference) {
         return entityManager.merge(reference);
     }
 

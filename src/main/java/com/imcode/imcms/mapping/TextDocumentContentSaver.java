@@ -4,10 +4,10 @@ import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
-import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import imcode.server.document.textdocument.*;
@@ -28,6 +28,10 @@ import java.util.Map;
 @Transactional
 public class TextDocumentContentSaver {
 
+    private enum SaveMode {
+        CREATE, UPDATE
+    }
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -38,7 +42,13 @@ public class TextDocumentContentSaver {
     private TextRepository textRepository;
 
     @Inject
+    private TextHistoryRepository textHistoryRepository;
+
+    @Inject
     private ImageRepository imageRepository;
+
+    @Inject
+    private ImageHistoryRepository imageHistoryRepository;
 
     @Inject
     private MenuRepository menuRepository;
@@ -54,7 +64,7 @@ public class TextDocumentContentSaver {
 
     @Inject
     private IncludeRepository includeRepository;
-    
+
     @Inject
     private DocumentGetter menuItemDocumentGetter;
 
@@ -66,53 +76,77 @@ public class TextDocumentContentSaver {
 
 
     /**
-     * Saves existing document content.
+     * Saves new document content.
+     *
      * @param doc
      * @param userDomainObject
      */
-    public void saveContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
+    public void createContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
         DocRef docRef = doc.getRef();
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
         User user = userRepository.getOne(userDomainObject.getId());
 
-        saveLoops(doc, version, user);
-        saveTexts(doc, version, language, user);
-        saveImages(doc, version, language, user);
-        saveMenus(doc, version, user);
+        // loops must be created before loop items (texts and images)
+        saveLoops(doc, version);
+        saveTexts(doc, version, language, user, SaveMode.CREATE);
+        saveImages(doc, version, language, user, SaveMode.CREATE);
+        saveMenus(doc, version, user, SaveMode.CREATE);
 
-        saveTemplateNames(doc, userDomainObject);
-        saveIncludes(doc, userDomainObject);
+        saveTemplateNames(doc.getId(), doc.getTemplateNames());
+        saveIncludes(doc.getId(), doc.getIncludesMap());
     }
 
-    // private ???
-    public void saveLoops(TextDocumentDomainObject textDocument, UserDomainObject userDomainObject) {
-        DocVersionRef versionRef = textDocument.getVersionRef();
+    public void createSharedContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
+        DocRef docRef = doc.getRef();
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         User user = userRepository.getOne(userDomainObject.getId());
 
-        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getDocVersionNo());
-        List<com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop> loops = loopRepository.findByDocVersion(version);
-        loopRepository.delete(loops);
-
-        for (Map.Entry<Integer, Loop> loopAndNo : textDocument.getLoops().entrySet()) {
-            Loop loop = loopAndNo.getValue();
-            com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop ormLoop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
-            List<com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry> ormItems = new LinkedList<>();
-
-            for (Map.Entry<Integer, Boolean> loopEntry : loop.getEntries().entrySet()) {
-                ormItems.add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(loopEntry.getKey(), loopEntry.getValue()));
-            }
-
-            ormLoop.setNo(loopAndNo.getKey());
-            ormLoop.setEntries(ormItems);
-
-            loopRepository.save(ormLoop);
-        }
+        saveLoops(doc, version);
+        saveMenus(doc, version, user, SaveMode.CREATE);
+        saveTemplateNames(doc.getId(), doc.getTemplateNames());
+        saveIncludes(doc.getId(), doc.getIncludesMap());
     }
 
-    private void saveLoops(TextDocumentDomainObject textDocument, Version version, User user) {
-        loopRepository.delete(loopRepository.findByDocVersion(version));
+    public void createI18nContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
+        DocRef docRef = doc.getRef();
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        User user = userRepository.getOne(userDomainObject.getId());
 
+        saveTexts(doc, version, language, user, SaveMode.CREATE);
+        saveImages(doc, version, language, user, SaveMode.CREATE);
+    }
+
+    /**
+     * Updates existing document content.
+     *
+     * @param doc
+     * @param userDomainObject
+     */
+    public void updateContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
+        DocRef docRef = doc.getRef();
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        User user = userRepository.getOne(userDomainObject.getId());
+
+        // loop items must be deleted before loops (texts and images)
+        textRepository.deleteByVersionAndLanguage(version, language);
+        imageRepository.deleteByVersionAndLanguage(version, language);
+        menuRepository.deleteByVersion(version);
+        // loops must be re-created before loop items (texts and images)
+        loopRepository.deleteByVersion(version);
+
+        saveLoops(doc, version);
+        saveTexts(doc, version, language, user, SaveMode.UPDATE);
+        saveImages(doc, version, language, user, SaveMode.UPDATE);
+        saveMenus(doc, version, user, SaveMode.CREATE);
+
+        saveTemplateNames(doc.getId(), doc.getTemplateNames());
+        saveIncludes(doc.getId(), doc.getIncludesMap());
+    }
+
+    private void saveLoops(TextDocumentDomainObject textDocument, Version version) {
         for (Map.Entry<Integer, Loop> loopAndNo : textDocument.getLoops().entrySet()) {
             Loop loopDO = loopAndNo.getValue();
             com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
@@ -132,98 +166,50 @@ public class TextDocumentContentSaver {
 
     /**
      * Saves existing document image.
+     *
      * @param container
      * @param userDomainObject
      */
-    //fixme: create enclosing loop
     public void saveImage(TextDocImageContainer container, UserDomainObject userDomainObject) {
         User user = userRepository.getOne(userDomainObject.getId());
         Image image = toJpaObject(container);
 
-        saveImage(image, user);
+        saveImage(image, user, SaveMode.UPDATE);
     }
 
     public void saveImages(TextDocImagesContainer container, UserDomainObject userDomainObject) {
         User user = userRepository.getOne(userDomainObject.getId());
-        Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getVersionNo());
 
         for (Map.Entry<com.imcode.imcms.api.DocumentLanguage, ImageDomainObject> e : container.getImages().entrySet()) {
             Language language = languageRepository.findByCode(e.getKey().getCode());
             Image image = toJpaObject(e.getValue(), version, language, container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
 
-            saveImage(image, user);
+            saveImage(image, user, SaveMode.UPDATE);
         }
     }
 
-    //fixme: create enclosing loop
-    public void saveText(TextDocTextContainer container,  UserDomainObject userDomainObject) {
+    public void saveText(TextDocTextContainer container, UserDomainObject userDomainObject) {
         User user = userRepository.getOne(userDomainObject.getId());
         Text text = toJpaObject(container);
 
-        saveText(text, user);
+        saveText(text, user, SaveMode.UPDATE);
     }
 
     public void saveTexts(TextDocTextsContainer container, UserDomainObject userDomainObject) {
         User user = userRepository.getOne(userDomainObject.getId());
-        Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getVersionNo());
 
         for (Map.Entry<com.imcode.imcms.api.DocumentLanguage, TextDomainObject> e : container.getTexts().entrySet()) {
             Language language = languageRepository.findByCode(e.getKey().getCode());
             Text text = toJpaObject(e.getValue(), version, language, container.getTextNo(), toJpaObject(container.getLoopEntryRef()));
 
-            saveText(text, user);
+            saveText(text, user, SaveMode.UPDATE);
         }
     }
 
 
-    /**
-     * Saves existing document images.
-     * @param doc
-     * @param userDomainObject
-     */
-    //fixme: create enclosing loop
-    public void saveImages(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
-        DocRef docRef = doc.getRef();
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
-        User user = userRepository.getOne(userDomainObject.getId());
-
-        saveImages(doc, version, language, user);
-    }
-
-    //fixme: create enclosing loop
-    public void saveTexts(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
-        DocRef docRef = doc.getRef();
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        Language language = languageRepository.findByCode(docRef.getDocLanguageCode());
-        User user = userRepository.getOne(userDomainObject.getId());
-
-        saveTexts(doc, version, language, user);
-    }
-
-
-    public void saveIncludes(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
-        int docId = doc.getId();
-
-        includeRepository.deleteByDocId(docId);
-
-        for (Map.Entry<Integer, Integer> entry : doc.getIncludesMap().entrySet()) {
-            Include include = new Include();
-            include.setId(null);
-            include.setDocId(docId);
-            include.setNo(entry.getKey());
-            include.setIncludedDocumentId(entry.getValue());
-
-            includeRepository.save(include);
-        }
-    }
-
-    public void saveTemplateNames(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
-        saveTemplateNames(doc.getId(), doc.getTemplateNames());
-    }
-
-
-    public void saveTemplateNames(int docId, TextDocumentDomainObject.TemplateNames templateNamesDO) {
+    private void saveTemplateNames(int docId, TextDocumentDomainObject.TemplateNames templateNamesDO) {
         TemplateNames templateNames = new TemplateNames();
 
         templateNames.setDocId(docId);
@@ -236,22 +222,27 @@ public class TextDocumentContentSaver {
         templateNamesRepository.save(templateNames);
     }
 
-    public void saveMenus(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
-        DocVersionRef docVersionRef = doc.getVersionRef();
-        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
-        User user = userRepository.getOne(userDomainObject.getId());
+    private void saveIncludes(int docId, Map<Integer, Integer> includes) {
+        includeRepository.deleteByDocId(docId);
 
-        saveMenus(doc, version, user);
+        for (Map.Entry<Integer, Integer> entry : includes.entrySet()) {
+            Include include = new Include();
+            include.setId(null);
+            include.setDocId(docId);
+            include.setNo(entry.getKey());
+            include.setIncludedDocumentId(entry.getValue());
+
+            includeRepository.save(include);
+        }
     }
 
-    // fixme: try replce
     public void saveMenu(TextDocMenuContainer container, UserDomainObject userDomainObject) {
-        DocVersionRef docVersionRef = container.getDocVersionRef();
-        Version version = versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo());
+        VersionRef versionRef = container.getVersionRef();
+        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
         User user = userRepository.getOne(userDomainObject.getId());
         Menu menu = toJpaObject(container.getMenu(), version, container.getMenuNo());
 
-        saveMenu(menu, user);
+        saveMenu(menu, user, SaveMode.UPDATE);
 
     }
 
@@ -275,16 +266,14 @@ public class TextDocumentContentSaver {
     }
 
 
-    private void saveMenus(TextDocumentDomainObject doc, Version version, User user) {
-        menuRepository.deleteByDocVersion(version);
-
+    private void saveMenus(TextDocumentDomainObject doc, Version version, User user, SaveMode saveMode) {
         for (Map.Entry<Integer, MenuDomainObject> entry : doc.getMenus().entrySet()) {
             Menu menu = toJpaObject(entry.getValue(), version, entry.getKey());
-            saveMenu(menu, user);
+            saveMenu(menu, user, saveMode);
         }
     }
 
-    private void saveMenu(Menu menu, User user) {
+    private void saveMenu(Menu menu, User user, SaveMode saveMode) {
         menuRepository.save(menu);
 
         // fixme: history
@@ -293,14 +282,11 @@ public class TextDocumentContentSaver {
     }
 
 
-
-    private void saveImages(TextDocumentDomainObject doc, Version version, Language language, User user) {
-        imageRepository.deleteByVersionAndLanguage(version, language);
-
+    private void saveImages(TextDocumentDomainObject doc, Version version, Language language, User user, SaveMode saveMode) {
         for (Map.Entry<Integer, ImageDomainObject> entry : doc.getImages().entrySet()) {
             Image image = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
 
-            saveImage(image, user);
+            saveImage(image, user, saveMode);
         }
 
         for (Map.Entry<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> entry : doc.getLoopImages().entrySet()) {
@@ -309,18 +295,16 @@ public class TextDocumentContentSaver {
 
             Image image = toJpaObject(entry.getValue(), version, language, loopItemRef.getItemNo(), loopEntryRef);
 
-            saveImage(image, user);
+            saveImage(image, user, saveMode);
         }
     }
 
 
-    private void saveTexts(TextDocumentDomainObject doc, Version version, Language language, User user) {
-        textRepository.deleteByVersionAndLanguage(version, language);
-
+    private void saveTexts(TextDocumentDomainObject doc, Version version, Language language, User user, SaveMode saveMode) {
         for (Map.Entry<Integer, TextDomainObject> entry : doc.getTexts().entrySet()) {
             Text text = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
 
-            saveText(text, user);
+            saveText(text, user, saveMode);
         }
 
         for (Map.Entry<TextDocumentDomainObject.LoopItemRef, TextDomainObject> entry : doc.getLoopTexts().entrySet()) {
@@ -329,66 +313,75 @@ public class TextDocumentContentSaver {
 
             Text text = toJpaObject(entry.getValue(), version, language, loopItemRef.getItemNo(), loopEntryRef);
 
-            saveText(text, user);
+            saveText(text, user, saveMode);
         }
     }
 
 
-    private void saveImage(Image image, User user) {
+    private void saveImage(Image image, User user, SaveMode saveMode) {
+        if (saveMode == SaveMode.UPDATE) {
+            LoopEntryRef loopEntryRef = image.getLoopEntryRef();
+            Integer id = loopEntryRef == null
+                    ? imageRepository.findIdByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(image.getVersion(), image.getLanguage(), image.getNo())
+                    : imageRepository.findIdByVersionAndLanguageAndNoAndLoopEntryRef(image.getVersion(), image.getLanguage(), image.getNo(), loopEntryRef);
+
+            image.setId(id);
+        }
+
+        addLoopEntryIfNotExists(image.getVersion(), image.getLoopEntryRef());
         imageRepository.save(image);
-
-        // fixme: save history
-        // TextDocImageHistory textDocImageHistory = new TextDocImageHistory(image, user);
-        // textDocRepository.saveImageHistory(textDocImageHistory);
+        imageHistoryRepository.save(new ImageHistory(image, user));
     }
 
 
+    private void saveText(Text text, User user, SaveMode saveMode) {
+        if (saveMode == SaveMode.UPDATE) {
+            LoopEntryRef loopEntryRef = text.getLoopEntryRef();
+            Integer id = loopEntryRef == null
+                    ? textRepository.findIdByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(text.getVersion(), text.getLanguage(), text.getNo())
+                    : textRepository.findIdByVersionAndLanguageAndNoAndLoopEntryRef(text.getVersion(), text.getLanguage(), text.getNo(), loopEntryRef);
 
-    private void saveText(Text text, User user) {
+            text.setId(id);
+        }
+
+        addLoopEntryIfNotExists(text.getVersion(), text.getLoopEntryRef());
+
         textRepository.save(text);
-
-        // fixme: history
-        //TextDocTextHistory textHistory = new TextDocTextHistory(textRef, user);
-        //textRepository.saveTextHistory(textHistory);
+        textHistoryRepository.save(new TextHistory(text, user));
     }
 
+    private void addLoopEntryIfNotExists(Version version, LoopEntryRef entryRef) {
+        if (entryRef == null) return;
 
-    public void addLoopEntry(DocRef docRef, com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getDocId(), docRef.getDocVersionNo());
-        com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop jpaLoop =
-                loopRepository.findByDocVersionAndNo(version, loopEntryRef.getLoopNo());
+        com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop = loopRepository.findByVersionAndNo(
+                version, entryRef.getLoopNo());
 
-        if (jpaLoop == null) {
-            jpaLoop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
-            jpaLoop.setNo(loopEntryRef.getLoopNo());
-            jpaLoop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(loopEntryRef.getEntryNo()));
-            loopRepository.save(jpaLoop);
+        int entryNo = entryRef.getEntryNo();
+
+        if (loop == null) {
+            loop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
+            loop.setNextEntryNo(entryNo + 1);
+            loop.setVersion(version);
+            loop.setNo(entryRef.getLoopNo());
+            loop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo));
+
+            loopRepository.save(loop);
         } else {
-            //fixme:
-            Loop apiLoop = null;//toApiObject(jpaLoop);
-            int contentNo = loopEntryRef.getEntryNo();
-            if (!apiLoop.findEntryIndexByNo(contentNo).isPresent()) {
-                jpaLoop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(contentNo));
-                loopRepository.save(jpaLoop);
+            if (!loop.containsEntry(entryRef.getEntryNo())) {
+                loop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo));
+                loop.setNextEntryNo(Math.max(loop.getNextEntryNo(), entryNo + 1));
+
+                loopRepository.save(loop);
             }
         }
-
     }
 
-
-
     private Text toJpaObject(TextDocTextContainer container) {
-        Language language = languageRepository.findByCode(container.getDocLanguageCode());
-        Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getDocVersionNo());
+        Language language = languageRepository.findByCode(container.getLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getVersionNo());
         LoopEntryRef loopEntryRef = toJpaObject(container.getLoopEntryRef());
-        Text text = toJpaObject(container.getText(), version, language, container.getTextNo(), loopEntryRef);
-        Integer textId = loopEntryRef == null
-                ? textRepository.findIdByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, container.getTextNo())
-                : textRepository.findIdByVersionAndLanguageAndNoAndLoopEntryRef(version, language, container.getTextNo(), loopEntryRef);
 
-        text.setId(textId);
-
-        return text;
+        return toJpaObject(container.getText(), version, language, container.getTextNo(), loopEntryRef);
     }
 
     private Text toJpaObject(TextDomainObject textDO, Version version, Language language, int no, LoopEntryRef loopEntryRef) {
@@ -406,17 +399,11 @@ public class TextDocumentContentSaver {
 
 
     private Image toJpaObject(TextDocImageContainer container) {
-        Language language = languageRepository.findByCode(container.getDocLanguageCode());
-        Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getDocVersionNo());
+        Language language = languageRepository.findByCode(container.getLanguageCode());
+        Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getVersionNo());
         LoopEntryRef loopEntryRef = toJpaObject(container.getLoopEntryRef());
-        Image image = toJpaObject(container.getImage(), version, language, container.getImageNo(), loopEntryRef);
-        Integer imageId = loopEntryRef == null
-                ? imageRepository.findIdByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, container.getImageNo())
-                : imageRepository.findIdByVersionAndLanguageAndNoAndLoopEntryRef(version, language, container.getImageNo(), loopEntryRef);
 
-        image.setId(imageId);
-
-        return image;
+        return toJpaObject(container.getImage(), version, language, container.getImageNo(), loopEntryRef);
     }
 
     private Image toJpaObject(ImageDomainObject imageDO, Version version, Language language, int no, LoopEntryRef loopEntryRef) {
@@ -454,7 +441,6 @@ public class TextDocumentContentSaver {
 
         return image;
     }
-
 
 
     private LoopEntryRef toJpaObject(com.imcode.imcms.mapping.container.LoopEntryRef source) {

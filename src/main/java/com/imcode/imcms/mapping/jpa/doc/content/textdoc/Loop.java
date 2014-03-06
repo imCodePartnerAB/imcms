@@ -142,6 +142,14 @@ public class Loop extends VersionedContent {
                 && Objects.equals(entries, that.entries);
     }
 
+    public boolean containsEntry(int entryNo) {
+        for (Entry entry : entries) {
+            if (entry.no == entryNo) return true;
+        }
+
+        return false;
+    }
+
     public Integer getNo() {
         return no;
     }

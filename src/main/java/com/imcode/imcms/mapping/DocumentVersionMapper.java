@@ -3,7 +3,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
-import com.imcode.imcms.mapping.container.DocVersionRef;
+import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import org.springframework.stereotype.Service;
@@ -20,8 +20,8 @@ public class DocumentVersionMapper {
     @Inject
     private VersionRepository versionRepository;
 
-    public DocumentVersion get(DocVersionRef docVersionRef) {
-        return toApiObject(versionRepository.findByDocIdAndNo(docVersionRef.getDocId(), docVersionRef.getDocVersionNo()));
+    public DocumentVersion get(VersionRef versionRef) {
+        return toApiObject(versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo()));
     }
 
     public List<DocumentVersion> getAll(int docId) {
