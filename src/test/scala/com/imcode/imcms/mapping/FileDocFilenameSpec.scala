@@ -11,7 +11,7 @@ import DocumentStoringVisitor.getFilenameForFileDocumentFile
 import Version.WORKING_VERSION_NO
 
 @RunWith(classOf[JUnitRunner])
-class FilenameSpec extends WordSpec {
+class FileDocFilenameSpec extends WordSpec {
 
   "the result of getFilenameForFileDocumentFile invocation" when {
     "doc version is a working version and file id is a blank" should {
