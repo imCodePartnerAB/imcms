@@ -22,10 +22,10 @@ import static org.hamcrest.CoreMatchers.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {JpaConfiguration.class})
 @Transactional
-public class DocVersionRepositoryTest {
+public class VersionRepositoryTest {
 
     @Inject
-    DocVersionRepository docVersionRepository;
+    VersionRepository versionRepository;
 
     @Inject
     MetaRepository metaRepository;
@@ -41,7 +41,7 @@ public class DocVersionRepositoryTest {
     int docId;
 
     public List<Version> recreateVersions() {
-        docVersionRepository.deleteAll();
+        versionRepository.deleteAll();
         userRepository.deleteAll();
 
         User user = userRepository.saveAndFlush(new User("admin", "admin", "admin@imcode.com"));
@@ -65,12 +65,12 @@ public class DocVersionRepositoryTest {
 
 
         return Arrays.asList(
-            docVersionRepository.saveAndFlush(new Version(docId, 0, user, now, user, now)),
-            docVersionRepository.saveAndFlush(new Version(docId, 1, user, now, user, now)),
-            docVersionRepository.saveAndFlush(new Version(docId, 2, user, now, user, now)),
-            docVersionRepository.saveAndFlush(new Version(docId, 3, user, now, user, now)),
-            docVersionRepository.saveAndFlush(new Version(docId, 4, user, now, user, now)),
-            docVersionRepository.saveAndFlush(new Version(docId, 5, user, now, user, now))
+            versionRepository.saveAndFlush(new Version(docId, 0, user, now, user, now)),
+            versionRepository.saveAndFlush(new Version(docId, 1, user, now, user, now)),
+            versionRepository.saveAndFlush(new Version(docId, 2, user, now, user, now)),
+            versionRepository.saveAndFlush(new Version(docId, 3, user, now, user, now)),
+            versionRepository.saveAndFlush(new Version(docId, 4, user, now, user, now)),
+            versionRepository.saveAndFlush(new Version(docId, 5, user, now, user, now))
         );
     }
 
@@ -78,22 +78,22 @@ public class DocVersionRepositoryTest {
     public void testFindByDocId() throws Exception {
         List<Version> versions = recreateVersions();
 
-        assertThat(docVersionRepository.findByDocId(docId).size(), is(6));
+        assertThat(versionRepository.findByDocId(docId).size(), is(6));
     }
 
     @Test
     public void testFindByDocIdAndNo() throws Exception {
         List<Version> versions = recreateVersions();
 
-        assertThat(docVersionRepository.findByDocIdAndNo(docId, 0), equalTo(versions.get(0)));
-        assertThat(docVersionRepository.findByDocIdAndNo(docId, 1), equalTo(versions.get(1)));
+        assertThat(versionRepository.findByDocIdAndNo(docId, 0), equalTo(versions.get(0)));
+        assertThat(versionRepository.findByDocIdAndNo(docId, 1), equalTo(versions.get(1)));
     }
 
     @Test
     public void testFindLatestVersion() {
         recreateVersions();
 
-        Version version = docVersionRepository.findLatest(docId);
+        Version version = versionRepository.findLatest(docId);
 
         assertNotNull(version);
         assertThat(version.getDocId(), is(docId));
@@ -104,7 +104,7 @@ public class DocVersionRepositoryTest {
     public void testFindDefaultVersion() {
         recreateVersions();
 
-        Version version = docVersionRepository.findDefault(docId);
+        Version version = versionRepository.findDefault(docId);
 
         assertNotNull(version);
         assertThat(version.getDocId(), is(docId));
@@ -115,7 +115,7 @@ public class DocVersionRepositoryTest {
     public void testCreate() {
         recreateVersions();
 
-        Version version = docVersionRepository.create(docId, userId);
+        Version version = versionRepository.create(docId, userId);
 
         assertNotNull(version);
         assertThat(version.getDocId(), is(docId));
@@ -127,11 +127,11 @@ public class DocVersionRepositoryTest {
     public void testSetDefault() {
         recreateVersions();
 
-        assertThat(docVersionRepository.findDefault(docId).getNo(), is(3));
+        assertThat(versionRepository.findDefault(docId).getNo(), is(3));
 
-        docVersionRepository.setDefault(docId, 4, userId);
+        versionRepository.setDefault(docId, 4, userId);
 
-        Version version = docVersionRepository.findDefault(docId);
+        Version version = versionRepository.findDefault(docId);
 
         assertNotNull(version);
         assertThat(version.getDocId(), is(docId));

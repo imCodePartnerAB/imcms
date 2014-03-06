@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DocVersionRepository extends JpaRepository<Version, Integer>, DocVersionRepositoryCustom {
+public interface VersionRepository extends JpaRepository<Version, Integer>, DocVersionRepositoryCustom {
 
     @Query(name = "DocVersion.getByDocIdOrderByNo")
     List<Version> findByDocId(int docId);

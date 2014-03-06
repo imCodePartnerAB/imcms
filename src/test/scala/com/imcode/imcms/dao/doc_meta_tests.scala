@@ -28,7 +28,7 @@ import org.joda.time.DateTime
 class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
 
 	var metaRepository: DocRepository = _
-  var versionRepository: DocVersionRepository = _
+  var versionRepository: VersionRepository = _
 
   override def beforeAll() = db.recreate()
 
@@ -38,7 +38,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
     val ctx = TestSetup.spring.createCtx(classOf[MetaDaoTestConfig])
 
     metaRepository = ctx.getBean(classOf[DocRepository])
-    versionRepository = ctx.getBean(classOf[DocVersionRepository])
+    versionRepository = ctx.getBean(classOf[VersionRepository])
   }
 
 //  def createMeta() = new DocMeta |>> { m =>
@@ -118,7 +118,7 @@ class MetaDaoTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEac
 class MetaDaoTestConfig {
 
   @Bean(autowire = Autowire.BY_TYPE)
-  def versionRepository = new DocVersionRepository
+  def versionRepository = new VersionRepository
 
   @Bean(autowire = Autowire.BY_TYPE)
   def metaRepository = new DocRepository

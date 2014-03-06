@@ -6,41 +6,41 @@
 <hibernate-mapping>
 
     <!-- Unique -->
-    <query name="DocVersion.findByDocIdAndNo">
+    <query name="Version.findByDocIdAndNo">
     <![CDATA[
-        SELECT v FROM DocVersion v WHERE v.docId = ?1 AND v.no = ?2
+        SELECT v FROM Version v WHERE v.docId = ?1 AND v.no = ?2
     ]]>
     </query>
 
 
     <!-- Unique -->
-    <query name="DocVersion.findLatest">
+    <query name="Version.findLatest">
     <![CDATA[
-        SELECT v FROM DocVersion v
+        SELECT v FROM Version v
         WHERE v.id = (
-            SELECT max(v.id) FROM DocVersion v
+            SELECT max(v.id) FROM Version v
             WHERE v.docId = ?1
         )
     ]]>
     </query>
 
     <!-- Unique -->
-    <query name="DocVersion.findWorking">
+    <query name="Version.findWorking">
         <![CDATA[
-        SELECT DocVersion v
+        SELECT Version v
         WHERE v.no = 0 AND v.docId = ?1
     ]]>
     </query>
 
     <!-- Unique -->
-    <query name="DocVersion.findDefault">
+    <query name="Version.findDefault">
     <![CDATA[
-        SELECT v FROM Meta m, DocVersion v
+        SELECT v FROM Meta m, Version v
         WHERE m.defaultVersionNo = v.no AND m.id = v.docId AND m.id = ?1
     ]]>
     </query>
 
-    <query name="DocVersion.setDefault">
+    <query name="Version.setDefault">
     <![CDATA[
         UPDATE Meta m
         SET m.defaultVersionNo = :defaultVersionNo, m.publisherId = :publisherId
@@ -49,9 +49,9 @@
     </query>
 
     <!-- Collection -->
-    <query name="DocVersion.getByDocIdOrderByNo">
+    <query name="Version.getByDocIdOrderByNo">
     <![CDATA[
-        SELECT v FROM DocVersion v WHERE v.docId = ?1 ORDER BY v.no
+        SELECT v FROM Version v WHERE v.docId = ?1 ORDER BY v.no
     ]]>
     </query>
 

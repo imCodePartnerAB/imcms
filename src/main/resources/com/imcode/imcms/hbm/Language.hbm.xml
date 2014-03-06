@@ -6,9 +6,9 @@
 <hibernate-mapping>
 
   <!-- Unique -->
-  <query name="DocLanguage.getByCode">
+  <query name="Language.getByCode">
       <![CDATA[
-	  SELECT l FROM DocLanguage l WHERE l.code = :code
+	  SELECT l FROM Language l WHERE l.code = :code
     ]]>
   </query>
 

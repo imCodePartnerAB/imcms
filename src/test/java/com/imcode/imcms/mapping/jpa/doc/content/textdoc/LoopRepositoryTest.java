@@ -5,7 +5,7 @@ import com.imcode.imcms.mapping.jpa.JpaConfiguration;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,7 +33,7 @@ public class LoopRepositoryTest {
     UserRepository userRepository;
 
     @Inject
-    DocVersionRepository docVersionRepository;
+    VersionRepository versionRepository;
 
     @Inject
     LoopRepository loopRepository;
@@ -43,11 +43,11 @@ public class LoopRepositoryTest {
 
     public List<Loop> recreateLoops() {
         loopRepository.deleteAll();
-        docVersionRepository.deleteAll();
+        versionRepository.deleteAll();
         userRepository.deleteAll();
 
         User user = userRepository.saveAndFlush(new User("admin", "admin", "admin@imcode.com"));
-        Version version = docVersionRepository.saveAndFlush(
+        Version version = versionRepository.saveAndFlush(
                 new Version(
                         DOC_VERSION_REF.getDocId(),
                         DOC_VERSION_REF.getDocVersionNo(),
@@ -100,7 +100,7 @@ public class LoopRepositoryTest {
     public void textFindByDocVersion() {
         recreateLoops();
 
-        Version version = docVersionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
         List<Loop> loops = loopRepository.findByDocVersion(version);
 
         assertThat(loops.size(), is(3));
@@ -110,7 +110,7 @@ public class LoopRepositoryTest {
     public void textFindByDocVersionAndNo() {
         recreateLoops();
 
-        Version version = docVersionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getDocVersionNo());
         Loop loop1 = loopRepository.findByDocVersionAndNo(version, 1);
         Loop loop2 = loopRepository.findByDocVersionAndNo(version, 2);
         Loop loop3 = loopRepository.findByDocVersionAndNo(version, 3);

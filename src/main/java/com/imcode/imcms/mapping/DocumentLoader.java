@@ -29,7 +29,7 @@ public class DocumentLoader {
     private DocRepository docRepository;
 
     @Inject
-    private DocVersionRepository docVersionRepository;
+    private VersionRepository versionRepository;
 
     @Inject
     private MetaRepository metaRepository;
@@ -210,12 +210,12 @@ public class DocumentLoader {
         this.docRepository = docRepository;
     }
 
-    public DocVersionRepository getDocVersionRepository() {
-        return docVersionRepository;
+    public VersionRepository getVersionRepository() {
+        return versionRepository;
     }
 
-    public void setDocVersionRepository(DocVersionRepository docVersionRepository) {
-        this.docVersionRepository = docVersionRepository;
+    public void setVersionRepository(VersionRepository versionRepository) {
+        this.versionRepository = versionRepository;
     }
 
     public MetaRepository getMetaRepository() {

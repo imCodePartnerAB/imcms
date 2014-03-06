@@ -36,7 +36,7 @@ public class DocumentSaver {
     private DocRepository docRepository;
 
     @Inject
-    private DocVersionRepository docVersionRepository;
+    private VersionRepository versionRepository;
 
     @Inject
     private LanguageRepository languageRepository;
@@ -127,10 +127,10 @@ public class DocumentSaver {
 
     @Transactional
     public void changeDocumentDefaultVersion(int docId, int newDefaultDocVersionNo, UserDomainObject publisher) {
-        Version currentDefaultVersion = docVersionRepository.findDefault(docId);
+        Version currentDefaultVersion = versionRepository.findDefault(docId);
 
         if (currentDefaultVersion.getNo() != newDefaultDocVersionNo) {
-            docVersionRepository.setDefault(docId, newDefaultDocVersionNo, publisher.getId());
+            versionRepository.setDefault(docId, newDefaultDocVersionNo, publisher.getId());
 
             docRepository.touch(DocVersionRef.of(docId, newDefaultDocVersionNo), publisher);
         }
@@ -255,7 +255,7 @@ public class DocumentSaver {
 
         docRepository.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, Integer.toString(newDocId));
 
-        Version copyVersion = docVersionRepository.create(newDocId, user.getId());
+        Version copyVersion = versionRepository.create(newDocId, user.getId());
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc : docs) {
@@ -346,7 +346,7 @@ public class DocumentSaver {
 
         docRepository.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, String.valueOf(newDocId));
 
-        Version version = docVersionRepository.create(newDocId, user.getId());
+        Version version = versionRepository.create(newDocId, user.getId());
         doc.setVersionNo(version.getNo());
         doc.setId(newDocId);
 
@@ -356,7 +356,7 @@ public class DocumentSaver {
 
         // todo: refactor
         if (doc instanceof TextDocumentDomainObject && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
-            Version ormVersion = docVersionRepository.findByDocIdAndNo(doc.getId(), doc.getVersionNo());
+            Version ormVersion = versionRepository.findByDocIdAndNo(doc.getId(), doc.getVersionNo());
 
             for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
                 DocumentCommonContent dcc = e.getValue();
@@ -509,11 +509,11 @@ public class DocumentSaver {
         this.docRepository = docRepository;
     }
 
-    public DocVersionRepository getDocVersionRepository() {
-        return docVersionRepository;
+    public VersionRepository getVersionRepository() {
+        return versionRepository;
     }
 
-    public void setDocVersionRepository(DocVersionRepository docVersionRepository) {
-        this.docVersionRepository = docVersionRepository;
+    public void setVersionRepository(VersionRepository versionRepository) {
+        this.versionRepository = versionRepository;
     }
 }

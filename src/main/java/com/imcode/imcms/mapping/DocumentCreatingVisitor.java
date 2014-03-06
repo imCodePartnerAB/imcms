@@ -9,7 +9,6 @@ import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Creates new document content.
@@ -25,7 +24,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
         HtmlContent reference = new HtmlContent();
-        Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
         reference.setVersion(version);
         reference.setHtml(document.getHtml());
@@ -37,7 +36,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
     public void visitUrlDocument(UrlDocumentDomainObject document) {
         UrlContent reference = new UrlContent();
-        Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
 
         reference.setVersion(version);
         reference.setUrlTarget("");

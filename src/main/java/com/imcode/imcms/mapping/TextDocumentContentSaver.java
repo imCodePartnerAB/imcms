@@ -4,7 +4,7 @@ import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
-import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
@@ -32,7 +32,7 @@ public class TextDocumentContentSaver {
     private EntityManager entityManager;
 
     @Inject
-    private DocVersionRepository versionRepository;
+    private VersionRepository versionRepository;
 
     @Inject
     private TextRepository textRepository;

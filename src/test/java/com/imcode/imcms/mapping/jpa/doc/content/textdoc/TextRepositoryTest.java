@@ -6,7 +6,7 @@ import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
-import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +39,7 @@ public class TextRepositoryTest {
 
 
     @Inject
-    DocVersionRepository docVersionRepository;
+    VersionRepository versionRepository;
 
     @Inject
     LanguageRepository languageRepository;
@@ -63,9 +63,9 @@ public class TextRepositoryTest {
         );
 
         versions = Arrays.asList(
-                docVersionRepository.saveAndFlush(new Version(DOC_ID, 0, user, new Date(), user, new Date())),
-                docVersionRepository.saveAndFlush(new Version(DOC_ID, 1, user, new Date(), user, new Date())),
-                docVersionRepository.saveAndFlush(new Version(DOC_ID, 2, user, new Date(), user, new Date()))
+                versionRepository.saveAndFlush(new Version(DOC_ID, 0, user, new Date(), user, new Date())),
+                versionRepository.saveAndFlush(new Version(DOC_ID, 1, user, new Date(), user, new Date())),
+                versionRepository.saveAndFlush(new Version(DOC_ID, 2, user, new Date(), user, new Date()))
         );
 
         // texts with odd no have loop entry with the same loop no and entry no

@@ -5,7 +5,7 @@ import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.DocVersionRef;
 import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.mapping.jpa.doc.DocVersionRepository;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
@@ -30,7 +30,7 @@ public class TextDocumentContentLoader {
     private EntityManager entityManager;
 
     @Inject
-    private DocVersionRepository versionRepository;
+    private VersionRepository versionRepository;
 
     @Inject
     private TextRepository textRepository;

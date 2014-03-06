@@ -36,7 +36,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction   
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
-        Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
         HtmlContent htmlReference = new HtmlContent();
 
         htmlReference.setHtml(document.getHtml());
@@ -48,7 +48,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction   
     public void visitUrlDocument(UrlDocumentDomainObject document) {
-        Version version = docVersionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
         UrlContent reference = new UrlContent();
 
         reference.setVersion(version);

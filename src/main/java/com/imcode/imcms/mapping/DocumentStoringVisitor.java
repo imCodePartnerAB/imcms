@@ -1,31 +1,21 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.*;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.FileItem;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.*;
-import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,7 +34,7 @@ class DocumentStoringVisitor extends DocumentVisitor {
     private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
 
     protected DocRepository docRepository;
-    protected DocVersionRepository docVersionRepository;
+    protected VersionRepository versionRepository;
     protected LanguageRepository languageRepository;
     protected CommonContentRepository commonContentRepository;
     protected TextDocumentContentSaver textDocumentContentSaver;
@@ -52,7 +42,7 @@ class DocumentStoringVisitor extends DocumentVisitor {
     public DocumentStoringVisitor(ImcmsServices services) {
         this.services = services;
         this.docRepository = services.getManagedBean(DocRepository.class);
-        this.docVersionRepository = services.getManagedBean(DocVersionRepository.class);
+        this.versionRepository = services.getManagedBean(VersionRepository.class);
         this.languageRepository = services.getManagedBean(LanguageRepository.class);
         this.commonContentRepository = services.getManagedBean(CommonContentRepository.class);
     }
@@ -155,7 +145,7 @@ class DocumentStoringVisitor extends DocumentVisitor {
     public void visitFileDocument(FileDocumentDomainObject fileDocument) {
         docRepository.deleteFileReferences(fileDocument.getRef());
 
-        Version version = docVersionRepository.findByDocIdAndNo(fileDocument.getRef().getDocId(), fileDocument.getRef().getDocVersionNo());
+        Version version = versionRepository.findByDocIdAndNo(fileDocument.getRef().getDocId(), fileDocument.getRef().getDocVersionNo());
 
         for (Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> entry : fileDocument.getFiles().entrySet()) {
             String fileId = entry.getKey();
