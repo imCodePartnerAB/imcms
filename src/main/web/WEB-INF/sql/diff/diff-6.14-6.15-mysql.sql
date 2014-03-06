@@ -29,7 +29,7 @@ INSERT INTO imcms_text_doc_contents_new
 ALTER TABLE imcms_text_doc_images_history
     DROP FOREIGN KEY fk__imcms_text_doc_images_history__content;
 
--- An attempt to drop both indexe and key in one statement leads to server crash and data corruption.
+-- An attempt to drop both indexed and key in one statement leads to server crash and data corruption.
 ALTER TABLE imcms_text_doc_texts_history
     DROP FOREIGN KEY fk__imcms_text_doc_texts_history__content;
 

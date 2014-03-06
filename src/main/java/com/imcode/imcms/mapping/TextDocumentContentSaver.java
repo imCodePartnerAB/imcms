@@ -23,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-//fixme: before saving loop items - create loops/entries if required
 @Service
 @Transactional
 public class TextDocumentContentSaver {
@@ -52,6 +51,9 @@ public class TextDocumentContentSaver {
 
     @Inject
     private MenuRepository menuRepository;
+
+    @Inject
+    private MenuHistoryRepository menuHistoryRepository;
 
     @Inject
     private TemplateNamesRepository templateNamesRepository;
@@ -88,7 +90,7 @@ public class TextDocumentContentSaver {
         User user = userRepository.getOne(userDomainObject.getId());
 
         // loops must be created before loop items (texts and images)
-        saveLoops(doc, version);
+        createLoops(doc, version);
         saveTexts(doc, version, language, user, SaveMode.CREATE);
         saveImages(doc, version, language, user, SaveMode.CREATE);
         saveMenus(doc, version, user, SaveMode.CREATE);
@@ -102,7 +104,7 @@ public class TextDocumentContentSaver {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         User user = userRepository.getOne(userDomainObject.getId());
 
-        saveLoops(doc, version);
+        createLoops(doc, version);
         saveMenus(doc, version, user, SaveMode.CREATE);
         saveTemplateNames(doc.getId(), doc.getTemplateNames());
         saveIncludes(doc.getId(), doc.getIncludesMap());
@@ -137,7 +139,7 @@ public class TextDocumentContentSaver {
         // loops must be re-created before loop items (texts and images)
         loopRepository.deleteByVersion(version);
 
-        saveLoops(doc, version);
+        createLoops(doc, version);
         saveTexts(doc, version, language, user, SaveMode.UPDATE);
         saveImages(doc, version, language, user, SaveMode.UPDATE);
         saveMenus(doc, version, user, SaveMode.CREATE);
@@ -146,7 +148,7 @@ public class TextDocumentContentSaver {
         saveIncludes(doc.getId(), doc.getIncludesMap());
     }
 
-    private void saveLoops(TextDocumentDomainObject textDocument, Version version) {
+    private void createLoops(TextDocumentDomainObject textDocument, Version version) {
         for (Map.Entry<Integer, Loop> loopAndNo : textDocument.getLoops().entrySet()) {
             Loop loopDO = loopAndNo.getValue();
             com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
@@ -274,11 +276,13 @@ public class TextDocumentContentSaver {
     }
 
     private void saveMenu(Menu menu, User user, SaveMode saveMode) {
-        menuRepository.save(menu);
+        if (saveMode == SaveMode.UPDATE) {
+            Integer id = menuRepository.findIdByVersionAndNo(menu.getVersion(), menu.getNo());
+            menu.setId(id);
+        }
 
-        // fixme: history
-        // TextDocMenuHistory menuHistory = new TextDocMenuHistory(menu, user);
-        // textDocRepository.saveMenuHistory(menuHistory);
+        menuRepository.saveAndFlush(menu);
+        menuHistoryRepository.save(new MenuHistory(menu, user));
     }
 
 
@@ -328,7 +332,7 @@ public class TextDocumentContentSaver {
             image.setId(id);
         }
 
-        addLoopEntryIfNotExists(image.getVersion(), image.getLoopEntryRef());
+        createLoopEntryIfNotExists(image.getVersion(), image.getLoopEntryRef());
         imageRepository.save(image);
         imageHistoryRepository.save(new ImageHistory(image, user));
     }
@@ -344,13 +348,13 @@ public class TextDocumentContentSaver {
             text.setId(id);
         }
 
-        addLoopEntryIfNotExists(text.getVersion(), text.getLoopEntryRef());
+        createLoopEntryIfNotExists(text.getVersion(), text.getLoopEntryRef());
 
         textRepository.save(text);
         textHistoryRepository.save(new TextHistory(text, user));
     }
 
-    private void addLoopEntryIfNotExists(Version version, LoopEntryRef entryRef) {
+    private void createLoopEntryIfNotExists(Version version, LoopEntryRef entryRef) {
         if (entryRef == null) return;
 
         com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop = loopRepository.findByVersionAndNo(

@@ -244,7 +244,7 @@ public class TextDocumentContentLoader {
 
     public Map<Integer, MenuDomainObject> getMenus(VersionRef versionRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
-        List<Menu> textDocMenus = menuRepository.getByVersion(version);
+        List<Menu> textDocMenus = menuRepository.findByVersion(version);
         Map<Integer, MenuDomainObject> menus = new HashMap<>();
 
         for (Menu menu : textDocMenus) {
