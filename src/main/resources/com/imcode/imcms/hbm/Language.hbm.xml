@@ -8,7 +8,7 @@
   <!-- Unique -->
   <query name="Language.findByCode">
       <![CDATA[
-	  SELECT l FROM Language l WHERE l.code = :code
+	  SELECT l FROM Language l WHERE l.code = ?1
     ]]>
   </query>
 

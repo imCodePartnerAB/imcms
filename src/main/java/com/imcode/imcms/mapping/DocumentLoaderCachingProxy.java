@@ -128,7 +128,7 @@ public class DocumentLoaderCachingProxy {
     public Integer getDocIdByAlias(final String docAlias) {
         return aliasesToIds.getOrPut(docAlias, new Supplier<Integer>() {
             public Integer get() {
-                Integer docId = loader.getDocRepository().getDocIdByAlias(docAlias);
+                Integer docId = loader.getPropertyRepository().findDocumentIdByAlias(docAlias);
 
                 if (docId != null) {
                     idsToAliases.put(docId, docAlias);

@@ -55,15 +55,6 @@ public class DocRepository {
     }
 
 
-    public Integer getDocIdByAlias(String alias) {
-        return entityManager.createQuery("DocumentProperty.getDocumentIdByAlias", Integer.class)
-                .setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
-                .setParameter("value", alias.toLowerCase())
-                .getSingleResult();
-    }
-
-
-
     public void insertPropertyIfNotExists(int docId, String name, String value) {
         Property property = propertyRepository.findByDocIdAndName(docId, name);
 

@@ -29,6 +29,9 @@ public class DocumentLoader {
     private DocRepository docRepository;
 
     @Inject
+    private PropertyRepository propertyRepository;
+
+    @Inject
     private VersionRepository versionRepository;
 
     @Inject
@@ -240,5 +243,13 @@ public class DocumentLoader {
 
     public void setDocumentContentInitializingVisitor(DocumentContentInitializingVisitor documentContentInitializingVisitor) {
         this.documentContentInitializingVisitor = documentContentInitializingVisitor;
+    }
+
+    public PropertyRepository getPropertyRepository() {
+        return propertyRepository;
+    }
+
+    public void setPropertyRepository(PropertyRepository propertyRepository) {
+        this.propertyRepository = propertyRepository;
     }
 }
