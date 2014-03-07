@@ -5,6 +5,7 @@ import com.imcode.imcms.api.*;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.NativeQueries;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -71,6 +72,12 @@ public class DocumentMapper implements DocumentGetter {
     @Inject
     private DocumentContentMapper documentContentMapper;
 
+    @Inject
+    private DocumentVersionMapper documentVersionMapper;
+
+    @Inject
+    private MenuRepository menuRepository;
+
     public DocumentMapper() {
     }
 
@@ -86,7 +93,7 @@ public class DocumentMapper implements DocumentGetter {
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
 
         documentLoader = services.getManagedBean(DocumentLoader.class);
-        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
+        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
 
         nativeQueries = services.getManagedBean(NativeQueries.class);
         categoryMapper = services.getManagedBean(CategoryMapper.class);
@@ -105,7 +112,7 @@ public class DocumentMapper implements DocumentGetter {
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
 
-        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
+        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
 
         documentSaver.setDocumentMapper(this);
     }
@@ -432,7 +439,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<Integer[]> getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
-        return nativeQueries.getParentDocumentAndMenuIdsForDocument(document.getId());
+        return menuRepository.getParentDocumentAndMenuIdsForDocument(document.getId(), document.getVersionNo());
     }
 
     public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {
@@ -474,7 +481,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument(DocumentDomainObject document) {
-        List<Integer[]> rows = nativeQueries.getDocumentMenuPairsContainingDocument(document.getId());
+        List<Integer[]> rows = menuRepository.getDocumentMenuPairsContainingDocument(document.getId(), document.getVersionNo());
 
         TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[rows.size()];
 
@@ -492,7 +499,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<Integer> getParentDocsIds(DocumentDomainObject doc) {
-        return nativeQueries.getParentDocsIds(doc.getId());
+        return menuRepository.getParentDocsIds(doc.getId(), doc.getVersionNo());
     }
 
     public Iterator<DocumentDomainObject> getDocumentsIterator(IntRange idRange) {

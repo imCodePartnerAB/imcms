@@ -25,10 +25,10 @@ public class DocumentVersionMapper {
     }
 
     public List<DocumentVersion> getAll(int docId) {
-        List<Version> jpaVersions = versionRepository.findByDocId(docId);
+        List<Version> versions = versionRepository.findByDocId(docId);
         List<DocumentVersion> result = new LinkedList<>();
-        for (Version jpaVersion : jpaVersions) {
-            result.add(toApiObject(jpaVersion));
+        for (Version version : versions) {
+            result.add(toApiObject(version));
         }
 
         return result;

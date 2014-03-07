@@ -4,22 +4,4 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
  
 <hibernate-mapping>
-
-  <!-- ==================================================================== -->
-  <!-- Menus -->
-  <!-- ==================================================================== -->
-  <!-- List -->
-  <query name="Menu.getMenusByDocRef">
-    <![CDATA[
-    SELECT m FROM Menu m WHERE m.docIdentity = :docIdentity
-    ]]>
-  </query>
-
-  <!-- Unique -->
-  <query name="Menu.getMenuByDocRefAndNo">
-    <![CDATA[
-    SELECT m FROM Menu m WHERE m.docIdentity = :docIdentity AND m.no = :no
-    ]]>
-  </query>
-
 </hibernate-mapping>

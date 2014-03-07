@@ -6,9 +6,9 @@ import javax.persistence.*;
 import java.util.Objects;
 
 /**
- * Document appearance.
+ * Document common content.
  */
-@Entity(name = "Appearance")
+@Entity
 @Table(name = "imcms_doc_i18n_meta")
 public class CommonContent {
 

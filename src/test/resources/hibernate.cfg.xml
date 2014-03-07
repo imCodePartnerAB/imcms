@@ -32,9 +32,9 @@
         <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Menu"/>
         <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop"/>
         <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.Include"/>
-        <!--<mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextHistory"/>-->
-        <!--<mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.ImageHistory"/>-->
-        <!--<mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuHistory"/>-->
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextHistory"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.ImageHistory"/>
+        <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuHistory"/>
         <mapping class="com.imcode.imcms.mapping.jpa.doc.content.textdoc.TemplateNames"/>
 
         <!--<mapping class="imcode.server.document.textdocument.ImageCacheDomainObject"/>-->
@@ -58,7 +58,7 @@
 
         <!-- Named queries -->
         <!--<mapping resource="com/imcode/imcms/hbm/Document.hbm.xml"/>-->
-        <mapping resource="com/imcode/imcms/hbm/DocVersion.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/Version.hbm.xml"/>
         <!--<mapping resource="com/imcode/imcms/hbm/DocLanguage.hbm.xml"/>-->
         <!--<mapping resource="com/imcode/imcms/hbm/TextDocLoop.hbm.xml"/>-->
         <!--<mapping resource="com/imcode/imcms/hbm/TextDocText.hbm.xml"/>-->

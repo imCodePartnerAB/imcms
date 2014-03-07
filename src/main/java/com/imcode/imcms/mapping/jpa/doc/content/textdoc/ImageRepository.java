@@ -15,7 +15,7 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef IS NULL")
     List<Image> findByVersionAndLanguageWhereLoopEntryRefIsNull(Version version, Language language);
 
-    @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef = IS NOT NULL")
+    @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef IS NOT NULL")
     List<Image> findByVersionAndLanguageWhereLoopEntryRefIsNotNull(Version version, Language language);
 
 

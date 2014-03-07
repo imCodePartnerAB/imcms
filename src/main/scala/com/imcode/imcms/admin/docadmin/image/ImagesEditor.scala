@@ -6,7 +6,7 @@ import _root_.imcode.server.document.textdocument.ImageDomainObject
 
 import com.google.common.base.Optional
 import com.imcode.imcms.mapping.container.{DocRef, VersionRef}
-import com.imcode.imcms.mapping.TextDocumentContentSaver
+import com.imcode.imcms.mapping.{TextDocumentContentLoader, TextDocumentContentSaver}
 import com.imcode.imcms.vaadin.{Current, Editor}
 import com.imcode.imcms.vaadin.component._
 
@@ -66,7 +66,7 @@ class ImagesEditor(docRef: DocRef, imageNo: Int) extends Editor with ImcmsServic
     editors.clear()
 
     // fixme create language if not exists
-    val textDocMapper: TextDocumentContentSaver = ???
+    val textDocMapper: TextDocumentContentLoader = ???
     val versionRef = VersionRef.buillder.docId(docRef.getId).no(docRef.getVersionNo).build()
     for ((language, image) <- textDocMapper.getImages(versionRef, imageNo).asScala) {
       val imageEditor = new ImageEditor(Some(image))

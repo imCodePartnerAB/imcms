@@ -7,23 +7,21 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface VersionRepository extends JpaRepository<Version, Integer>, DocVersionRepositoryCustom {
+public interface VersionRepository extends JpaRepository<Version, Integer>, VersionRepositoryCustom {
 
-    @Query(name = "DocVersion.getByDocIdOrderByNo")
+    @Query(name = "Version.findByDocIdAndNoOrderByNo")
     List<Version> findByDocId(int docId);
 
+    @Query(name = "Version.findByDocIdAndNo")
     Version findByDocIdAndNo(int docId, int no);
 
-    @Query(name = "DocVersion.findWorking")
+    @Query(name = "Version.findWorking")
     Version findWorking(int docId);
 
-    @Query(name = "DocVersion.findDefault")
+    @Query(name = "Version.findDefault")
     Version findDefault(int docId);
 
-    @Query(name = "DocVersion.findLatest")
+    @Query(name = "Version.findLatest")
     Version findLatest(int docId);
-
-
-
 }
 

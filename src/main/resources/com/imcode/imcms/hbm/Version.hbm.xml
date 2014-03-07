@@ -12,6 +12,12 @@
     ]]>
     </query>
 
+    <!-- Collection -->
+    <query name="Version.findByDocIdOrderByNo">
+        <![CDATA[
+        SELECT v FROM Version v WHERE v.docId = ?1 ORDER BY v.no
+    ]]>
+    </query>
 
     <!-- Unique -->
     <query name="Version.findLatest">
@@ -27,7 +33,7 @@
     <!-- Unique -->
     <query name="Version.findWorking">
         <![CDATA[
-        SELECT Version v
+        SELECT v FROM Version v
         WHERE v.no = 0 AND v.docId = ?1
     ]]>
     </query>
@@ -45,13 +51,6 @@
         UPDATE Meta m
         SET m.defaultVersionNo = :defaultVersionNo, m.publisherId = :publisherId
         WHERE m.id = :docId
-    ]]>
-    </query>
-
-    <!-- Collection -->
-    <query name="Version.getByDocIdOrderByNo">
-    <![CDATA[
-        SELECT v FROM Version v WHERE v.docId = ?1 ORDER BY v.no
     ]]>
     </query>
 

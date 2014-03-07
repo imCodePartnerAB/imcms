@@ -4,40 +4,4 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-
-    <!-- Bulk delete -->
-    <query name="TextDocText.deleteBy_docVersion_and_docLanguage">
-    <![CDATA[
-    DELETE FROM TextDocText t WHERE t.docVersion = :docVersion AND t.docLanguage = :docLanguage
-    ]]>
-  </query>
-
-  <!-- Collection -->
-  <query name="Text.getByI18nDocRef">
-    <![CDATA[
-    SELECT t FROM Text t WHERE t.i18nDocRef = :i18nDocRef
-    ]]>
-  </query>
-
-  <!-- Collection -->
-  <query name="Text.getByDocRef">
-    <![CDATA[
-    SELECT t FROM Text t WHERE t.i18nDocRef.docIdentity = :docIdentity
-    ]]>
-  </query>
-
-    <!-- Collection -->
-  <query name="Text.getByDocRefAndNo">
-    <![CDATA[
-    SELECT t FROM Text t WHERE t.i18nDocRef.docIdentity = :docIdentity AND t.no = :no
-    ]]>
-  </query>
-
-    <!-- Unique result -->
-  <query name="Text.getByI18nDocRefAndNo">
-    <![CDATA[
-    SELECT t FROM Text t WHERE t.i18nDocRef = :i18nDocRef AND t.no = :no
-    ]]>
-  </query>
-
 </hibernate-mapping>

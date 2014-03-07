@@ -9,11 +9,8 @@ import javax.persistence.PersistenceContext;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by ajosua on 26/02/14.
- */
 @Transactional
-class DocVersionRepositoryImpl implements DocVersionRepositoryCustom {
+class VersionRepositoryImpl implements VersionRepositoryCustom {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -29,7 +26,7 @@ class DocVersionRepositoryImpl implements DocVersionRepositoryCustom {
     public Version create(int docId, int userId) {
         User creator = entityManager.getReference(User.class, userId);
 
-        List<Version> latestVersionList = entityManager.createNamedQuery("DocVersion.findLatest", Version.class)
+        List<Version> latestVersionList = entityManager.createNamedQuery("Version.findLatest", Version.class)
                 .setParameter(1, docId)
                 .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                 .getResultList();
@@ -56,7 +53,7 @@ class DocVersionRepositoryImpl implements DocVersionRepositoryCustom {
     @Override
     //todo: check locking
     public void setDefault(int docId, int docVersionNo, int userId) {
-        Version version = entityManager.createNamedQuery("DocVersion.findByDocIdAndNo", Version.class)
+        Version version = entityManager.createNamedQuery("Version.findByDocIdAndNo", Version.class)
                 .setParameter(1, docId)
                 .setParameter(2, docVersionNo)
                 .setLockMode(LockModeType.PESSIMISTIC_WRITE)
@@ -64,7 +61,7 @@ class DocVersionRepositoryImpl implements DocVersionRepositoryCustom {
 
         User user = entityManager.getReference(User.class, userId);
 
-        entityManager.createNamedQuery("DocVersion.setDefault")
+        entityManager.createNamedQuery("Version.setDefault")
                 .setParameter("docId", docId)
                 .setParameter("defaultVersionNo", docVersionNo)
                 .setParameter("publisherId", userId)

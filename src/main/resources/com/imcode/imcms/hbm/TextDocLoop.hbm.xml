@@ -4,20 +4,4 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-
-  <!-- Unique -->
-  <query name="ContentLoop.getByDocRefAndNo">
-    <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.docIdentity = :docIdentity AND l.no = :no
-    ]]>
-  </query>
-
-
-  <!-- List -->
-  <query name="ContentLoop.getByDocRef">
-    <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.docIdentity = :docIdentity
-    ]]>
-  </query>
-    
 </hibernate-mapping>

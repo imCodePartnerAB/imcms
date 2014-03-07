@@ -6,7 +6,7 @@
 <hibernate-mapping>
 
   <!-- Unique -->
-  <query name="Language.getByCode">
+  <query name="Language.findByCode">
       <![CDATA[
 	  SELECT l FROM Language l WHERE l.code = :code
     ]]>

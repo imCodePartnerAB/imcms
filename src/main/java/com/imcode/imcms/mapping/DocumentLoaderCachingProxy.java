@@ -9,7 +9,6 @@ import imcode.server.document.DocumentDomainObject;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -57,12 +56,9 @@ public class DocumentLoaderCachingProxy {
         }
     }
 
-    //fixme - inject
-    @Inject
-    private DocumentVersionMapper versionMapper;
-
-    private final DocumentLoader docLoader;
-    private final DocumentLanguageSupport docLanguageSupport;
+    private final DocumentVersionMapper versionMapper;
+    private final DocumentLoader loader;
+    private final DocumentLanguageSupport languageSupport;
     private final int size;
 
     private final CacheWrapper<Integer, DocumentMeta> metas;
@@ -74,9 +70,10 @@ public class DocumentLoaderCachingProxy {
 
     private final CacheManager cacheManager = CacheManager.create();
 
-    public DocumentLoaderCachingProxy(DocumentLoader docLoader, DocumentLanguageSupport docLanguageSupport, int size) {
-        this.docLoader = docLoader;
-        this.docLanguageSupport = docLanguageSupport;
+    public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper, DocumentLoader loader, DocumentLanguageSupport languageSupport, int size) {
+        this.versionMapper = versionMapper;
+        this.loader = loader;
+        this.languageSupport = languageSupport;
         this.size = size;
 
         metas = CacheWrapper.of(cacheConfiguration("meats"));
@@ -109,7 +106,7 @@ public class DocumentLoaderCachingProxy {
     public DocumentMeta getMeta(final int docId) {
         return metas.getOrPut(docId, new Supplier<DocumentMeta>() {
             public DocumentMeta get() {
-                return docLoader.loadMeta(docId);
+                return loader.loadMeta(docId);
             }
         });
     }
@@ -131,7 +128,7 @@ public class DocumentLoaderCachingProxy {
     public Integer getDocIdByAlias(final String docAlias) {
         return aliasesToIds.getOrPut(docAlias, new Supplier<Integer>() {
             public Integer get() {
-                Integer docId = docLoader.getDocRepository().getDocIdByAlias(docAlias);
+                Integer docId = loader.getDocRepository().getDocIdByAlias(docAlias);
 
                 if (docId != null) {
                     idsToAliases.put(docId, docAlias);
@@ -161,9 +158,9 @@ public class DocumentLoaderCachingProxy {
 
                 doc.setMeta(meta.clone());
                 doc.setVersionNo(version.getNo());
-                doc.setLanguage(docLanguageSupport.getByCode(docLanguageCode));
+                doc.setLanguage(languageSupport.getByCode(docLanguageCode));
 
-                return docLoader.loadAndInitContent(doc);
+                return loader.loadAndInitContent(doc);
             }
         });
 
@@ -190,9 +187,9 @@ public class DocumentLoaderCachingProxy {
 
                 doc.setMeta(meta.clone());
                 doc.setVersionNo(version.getNo());
-                doc.setLanguage(docLanguageSupport.getByCode(docLanguageCode));
+                doc.setLanguage(languageSupport.getByCode(docLanguageCode));
 
-                return docLoader.loadAndInitContent(doc);
+                return loader.loadAndInitContent(doc);
             }
         });
 
@@ -215,9 +212,9 @@ public class DocumentLoaderCachingProxy {
 
         doc.setMeta(meta.clone());
         doc.setVersionNo(version.getNo());
-        doc.setLanguage(docLanguageSupport.getByCode(docRef.getLanguageCode()));
+        doc.setLanguage(languageSupport.getByCode(docRef.getLanguageCode()));
 
-        return docLoader.loadAndInitContent(doc);
+        return loader.loadAndInitContent(doc);
     }
 
 
@@ -225,7 +222,7 @@ public class DocumentLoaderCachingProxy {
         metas.remove(docId);
         versionInfos.remove(docId);
 
-        for (String code : docLanguageSupport.getCodes()) {
+        for (String code : languageSupport.getCodes()) {
             DocCacheKey key = new DocCacheKey(docId, code);
 
             workingDocs.remove(key);

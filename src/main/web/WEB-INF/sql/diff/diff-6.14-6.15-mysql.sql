@@ -5,7 +5,7 @@ SET @schema_version__major_new = 6;
 SET @schema_version__minor_new = 15;
 
 ALTER TABLE imcms_text_doc_content_loops
-    DROP COLUMN next_content_no;
+    DROP COLUMN version;
 
 CREATE TABLE imcms_text_doc_contents_new(
     id serial,

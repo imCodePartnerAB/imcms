@@ -275,13 +275,14 @@ public class DefaultImcmsServices implements ImcmsServices {
     // todo: implement rebuild scheduler ...getConfig().getIndexingSchedulePeriodInMinutes()...
     // todo: Search Terms Logging: Do not parse and write query term into db every time - queue and write in a separate worker
     private void initDocumentMapper() {
-        documentMapper = new DocumentMapper(this, this.getDatabase());
+        documentMapper = getManagedBean(DocumentMapper.class);
+        documentMapper.init(this, getDatabase(), null);
+        //documentMapper = new DocumentMapper(this, this.getDatabase());
 
-        DocumentIndex documentIndexService = DocumentIndexFactory.create(this);
-        documentMapper.setDocumentIndex(
-                new LoggingDocumentIndex(database,
-                        new PhaseQueryFixingDocumentIndex(documentIndexService)));
+        DocumentIndex documentIndexService = new LoggingDocumentIndex(database,
+                        new PhaseQueryFixingDocumentIndex(DocumentIndexFactory.create(this)));
 
+        documentMapper.setDocumentIndex(documentIndexService);
     }
 
     private void initTemplateMapper() {

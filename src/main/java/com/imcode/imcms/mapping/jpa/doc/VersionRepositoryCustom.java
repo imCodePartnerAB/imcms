@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
-interface DocVersionRepositoryCustom {
+interface VersionRepositoryCustom {
 
     Version create(int docId, int userId);
 
