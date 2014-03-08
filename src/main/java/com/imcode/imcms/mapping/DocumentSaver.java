@@ -42,12 +42,6 @@ public class DocumentSaver {
     private LanguageRepository languageRepository;
 
     @Inject
-    private TextRepository textRepository;
-
-    @Inject
-    private LoopRepository loopRepository;
-
-    @Inject
     private CommonContentRepository commonContentRepository;
 
     @Inject
@@ -437,17 +431,17 @@ public class DocumentSaver {
         }
     }
 
-    // fixme: copy permission
+    // todo: check permission
     private Meta toJpaObject(DocumentMeta metaDO) {
-        Meta jpaMeta = new Meta();
+        Meta meta = new Meta();
 
-        jpaMeta.setArchivedDatetime(metaDO.getArchivedDatetime());
-        jpaMeta.setCategoryIds(metaDO.getCategoryIds());
-        jpaMeta.setCreatedDatetime(metaDO.getCreatedDatetime());
-        jpaMeta.setCreatorId(metaDO.getCreatorId());
-        jpaMeta.setDefaultVersionNo(metaDO.getDefaultVersionNo());
-        jpaMeta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(metaDO.getDisabledLanguageShowMode().name()));
-        jpaMeta.setDocumentType(metaDO.getDocumentType());
+        meta.setArchivedDatetime(metaDO.getArchivedDatetime());
+        meta.setCategoryIds(metaDO.getCategoryIds());
+        meta.setCreatedDatetime(metaDO.getCreatedDatetime());
+        meta.setCreatorId(metaDO.getCreatorId());
+        meta.setDefaultVersionNo(metaDO.getDefaultVersionNo());
+        meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(metaDO.getDisabledLanguageShowMode().name()));
+        meta.setDocumentType(metaDO.getDocumentType());
 
         Set<Language> enabledLanguages = new HashSet<>();
 
@@ -455,26 +449,26 @@ public class DocumentSaver {
             enabledLanguages.add(languageRepository.findByCode(l.getCode()));
         }
 
-        jpaMeta.setEnabledLanguages(enabledLanguages);
-        jpaMeta.setId(metaDO.getId());
-        jpaMeta.setKeywords(metaDO.getKeywords());
-        jpaMeta.setLinkableByOtherUsers(metaDO.getLinkableByOtherUsers());
-        jpaMeta.setLinkedForUnauthorizedUsers(metaDO.getLinkedForUnauthorizedUsers());
-        jpaMeta.setModifiedDatetime(metaDO.getModifiedDatetime());
+        meta.setEnabledLanguages(enabledLanguages);
+        meta.setId(metaDO.getId());
+        meta.setKeywords(metaDO.getKeywords());
+        meta.setLinkableByOtherUsers(metaDO.getLinkableByOtherUsers());
+        meta.setLinkedForUnauthorizedUsers(metaDO.getLinkedForUnauthorizedUsers());
+        meta.setModifiedDatetime(metaDO.getModifiedDatetime());
         //e.setPermissionSets(m.getPermissionSets)
         //e.setPermissionSetsForNew(m.getPermissionSetExForNew)
         //e.setPermissionSetsForNewDocuments(m.getPermissionSetsForNewDocuments)
-        jpaMeta.setProperties(metaDO.getProperties());
-        jpaMeta.setPublicationEndDatetime(metaDO.getPublicationEndDatetime());
-        jpaMeta.setPublicationStartDatetime(metaDO.getPublicationStartDatetime());
-        jpaMeta.setPublicationStatusInt(metaDO.getPublicationStatus().asInt());
-        jpaMeta.setPublisherId(metaDO.getPublisherId());
-        jpaMeta.setRestrictedOneMorePrivilegedThanRestrictedTwo(metaDO.getRestrictedOneMorePrivilegedThanRestrictedTwo());
+        meta.setProperties(metaDO.getProperties());
+        meta.setPublicationEndDatetime(metaDO.getPublicationEndDatetime());
+        meta.setPublicationStartDatetime(metaDO.getPublicationStartDatetime());
+        meta.setPublicationStatusInt(metaDO.getPublicationStatus().asInt());
+        meta.setPublisherId(metaDO.getPublisherId());
+        meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(metaDO.getRestrictedOneMorePrivilegedThanRestrictedTwo());
         //e.setRoleIdToPermissionSetIdMap()
-        jpaMeta.setSearchDisabled(metaDO.getSearchDisabled());
-        jpaMeta.setTarget(metaDO.getTarget());
+        meta.setSearchDisabled(metaDO.getSearchDisabled());
+        meta.setTarget(metaDO.getTarget());
 
-        return jpaMeta;
+        return meta;
     }
 
     public DocumentMapper getDocumentMapper() {

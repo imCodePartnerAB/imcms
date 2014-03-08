@@ -1,19 +1,16 @@
 package com.imcode.imcms.servlet.tags;
 
+import com.imcode.imcms.mapping.container.LoopEntryRef;
 import imcode.server.parser.TagParser;
 
 public class TextTag extends SimpleImcmsTag {
 
 
     protected String getContent(TagParser tagParser) {
-//        ContentLoopTag2 clTag = (ContentLoopTag2)findAncestorWithClass(this, ContentLoopTag2.class);
-//        ContentLoop loop =  clTag == null ? null : clTag.getLoop();
-//        Content content = clTag == null ? null : clTag.getCurrentContent();
-//
-//
-//        return tagParser.tagText(attributes, loop, content);
-        //fixme:
-        return tagParser.tagText(attributes, null);
+        LoopTag loopTag = (LoopTag)findAncestorWithClass(this, LoopTag.class);
+        LoopEntryRef loopEntry = loopTag == null ? null : loopTag.getLoopEntryRef();
+
+        return tagParser.tagText(attributes, loopEntry);
     }
 
     public void setRows(int rows) {

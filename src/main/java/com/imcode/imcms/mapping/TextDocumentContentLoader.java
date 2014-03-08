@@ -11,6 +11,7 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
+import imcode.util.image.Resize;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -292,25 +293,28 @@ public class TextDocumentContentLoader {
     }
 
 
-
-    public ImageDomainObject toDomainObject(Image image) {
+    private ImageDomainObject toDomainObject(Image image) {
         if (image == null) return null;
 
         ImageDomainObject imageDO = new ImageDomainObject();
 
         imageDO.setAlign(image.getAlign());
         imageDO.setAlternateText(image.getAlternateText());
-        //fixme: check
-        //imageDO.setArchiveImageId();
+        imageDO.setArchiveImageId(image.getArchiveImageId());
         imageDO.setBorder(image.getBorder());
-        //imageDO.setCropRegion();
+
+        ImageCropRegion cropRegion = image.getCropRegion();
+        ImageDomainObject.CropRegion cropRegionDO = new ImageDomainObject.CropRegion(
+                cropRegion.getCropX1(), cropRegion.getCropY1(), cropRegion.getCropX2(), cropRegion.getCropY2()
+        );
+        imageDO.setCropRegion(cropRegionDO);
         imageDO.setGeneratedFilename(image.getGeneratedFilename());
         imageDO.setHeight(image.getHeight());
         imageDO.setHorizontalSpace(image.getHorizontalSpace());
         imageDO.setLinkUrl(image.getLinkUrl());
         imageDO.setLowResolutionUrl(image.getLowResolutionUrl());
         imageDO.setName(image.getName());
-        //imageDO.setResize();
+        imageDO.setResize(Resize.getByOrdinal(image.getResize()));
         imageDO.setTarget(image.getTarget());
         imageDO.setVerticalSpace(image.getVerticalSpace());
         imageDO.setWidth(image.getWidth());

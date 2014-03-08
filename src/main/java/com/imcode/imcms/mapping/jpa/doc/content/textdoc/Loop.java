@@ -86,11 +86,6 @@ public class Loop extends VersionedContent {
     @Column(name = "next_content_no")
     private Integer nextEntryNo;
 
-//    //fixme: remove
-//    @javax.persistence.Version
-//    @Column(name = "version")
-//    private int vsn;
-
     public Loop() {
     }
 

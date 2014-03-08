@@ -11,7 +11,11 @@ public final class Loop {
     }
 
     public static Loop empty() {
-        return new Loop();
+        return new Loop(Collections.<Integer, Boolean>emptyMap(), 1);
+    }
+
+    public static Loop singleton() {
+        return new Loop(Collections.singletonMap(1, true), 2);
     }
 
     private final Map<Integer, Boolean> entries;
@@ -19,10 +23,6 @@ public final class Loop {
     private final int nextEntryNo;
 
     private final int cachedHashCode;
-
-    public Loop() {
-        this(Collections.<Integer, Boolean>emptyMap(), 1);
-    }
 
     public Loop(Map<Integer, Boolean> entries, int nextEntryNo) {
         this.entries = Collections.unmodifiableMap(new LinkedHashMap<>(entries));

@@ -280,7 +280,7 @@ public class ImcmsImageUtils {
             builder.append("&meta_id=");
             builder.append(metaId);
 
-            //fixme: provide image no
+            //fixme: provide image no, language and optionally loop-entry-ref
             Integer imageIndex = null;//image.getNo();
             if (imageIndex != null) {
                 builder.append("&no=");

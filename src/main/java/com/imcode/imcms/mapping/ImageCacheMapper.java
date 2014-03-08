@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.servlet.ImageCacheManager;
-import imcode.server.document.TextDocumentUtils;
 import imcode.server.document.textdocument.FileDocumentImageSource;
 import imcode.server.document.textdocument.ImageCacheDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -133,7 +132,7 @@ public class ImageCacheMapper {
                 .executeUpdate();
     }
 
-    //fixme: implement
+    //fixme: implement - document version?
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<ImageDomainObject> getAllDocumentImages() {
         throw new NotImplementedException();

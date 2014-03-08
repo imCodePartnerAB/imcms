@@ -4,6 +4,7 @@ import com.imcode.imcms.mapping.jpa.doc.content.VersionedI18nContent;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
 public class ImageBase extends VersionedI18nContent {
@@ -57,6 +58,10 @@ public class ImageBase extends VersionedI18nContent {
     private LoopEntryRef loopEntryRef;
 
     private int resize;
+
+    @NotNull
+    @Column(name = "archive_image_id", nullable = false)
+    private Long archiveImageId;
 
     public Integer getNo() {
         return no;
@@ -186,8 +191,6 @@ public class ImageBase extends VersionedI18nContent {
         this.cropRegion = cropRegion;
     }
 
-
-
     public String getGeneratedFilename() {
         return generatedFilename;
     }
@@ -218,5 +221,13 @@ public class ImageBase extends VersionedI18nContent {
 
     public void setRotateAngle(int rotateAngle) {
         this.rotateAngle = rotateAngle;
+    }
+
+    public long getArchiveImageId() {
+        return archiveImageId;
+    }
+
+    public void setArchiveImageId(long archiveImageId) {
+        this.archiveImageId = archiveImageId;
     }
 }
