@@ -22,7 +22,7 @@ import _root_.imcode.server.document.textdocument._
 import _root_.imcode.server.{ImcmsConstants, Imcms}
 import _root_.imcode.server.user.UserDomainObject
 import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
-import imcode.server.document.{TextDocumentUtils, DocumentDomainObject, NoPermissionToEditDocumentException}
+import imcode.server.document.{DocumentDomainObject, NoPermissionToEditDocumentException}
 
 import com.imcode.imcms.admin.docadmin.menu.{MenuEditorParameters, MenuEditor}
 import com.imcode.imcms.admin.docadmin.text.{TextEditor, TextEditorParameters}

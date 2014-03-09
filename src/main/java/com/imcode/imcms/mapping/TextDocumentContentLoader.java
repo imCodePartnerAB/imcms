@@ -1,14 +1,15 @@
 package com.imcode.imcms.mapping;
 
+import com.google.common.base.Optional;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.mapping.container.DocRef;
-import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import imcode.util.image.Resize;
@@ -175,11 +176,17 @@ public class TextDocumentContentLoader {
         return result;
     }
 
-    public Map<DocumentLanguage, ImageDomainObject> getImages(VersionRef versionRef, int textNo) {
+    public Map<DocumentLanguage, ImageDomainObject> getImages(VersionRef versionRef, int imageNo, Optional<com.imcode.imcms.mapping.container.LoopEntryRef> loopEntryRefOpt) {
+        return loopEntryRefOpt.isPresent()
+                ? getLoopImages(versionRef, TextDocumentDomainObject.LoopItemRef.of(imageNo, loopEntryRefOpt.get()))
+                : getImages(versionRef, imageNo);
+    }
+
+    public Map<DocumentLanguage, ImageDomainObject> getImages(VersionRef versionRef, int imageNo) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
 
-        for (Image image : imageRepository.findByVersionAndNoWhereLoopEntryRefIsNull(version, textNo)) {
+        for (Image image : imageRepository.findByVersionAndNoWhereLoopEntryRefIsNull(version, imageNo)) {
             result.put(languageMapper.toApiObject(image.getLanguage()), toDomainObject(image));
         }
 
@@ -198,13 +205,18 @@ public class TextDocumentContentLoader {
         return result;
     }
 
+    public ImageDomainObject getImage(DocRef docRef, int imageNo, Optional<com.imcode.imcms.mapping.container.LoopEntryRef> loopEntryRefOpt) {
+        return loopEntryRefOpt.isPresent()
+                ? getLoopImage(docRef, TextDocumentDomainObject.LoopItemRef.of(imageNo, loopEntryRefOpt.get()))
+                : getImage(docRef, imageNo);
+    }
 
-    public ImageDomainObject getImage(DocRef docRef, int textNo) {
+    public ImageDomainObject getImage(DocRef docRef, int imageNo) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         Language language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return toDomainObject(
-                imageRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, textNo)
+                imageRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, imageNo)
         );
     }
 

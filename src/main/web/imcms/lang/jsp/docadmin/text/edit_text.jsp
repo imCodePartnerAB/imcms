@@ -1,6 +1,4 @@
-<%@ page import="com.imcode.imcms.mapping.jpa.Entry,
-                 com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop,
-                 imcode.server.Imcms,
+<%@ page import="imcode.server.Imcms,
                  imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Html,
@@ -8,6 +6,7 @@
                  org.apache.commons.lang.StringUtils" %>
 <%@ page import="org.apache.commons.lang.math.NumberUtils" %>
 <%@ page import="java.net.URLEncoder" %>
+<%@ page import="com.imcode.imcms.mapping.container.LoopEntryRef" %>
 <%
 
     DocumentDomainObject document = (DocumentDomainObject) request.getAttribute("document");
@@ -34,12 +33,10 @@
         url += "&rows=" + rows;
     }
 
-    Entry loopContent = (Entry) request.getAttribute("tag.text.loop.content");
+    LoopEntryRef loopEntryRef = (LoopEntryRef) request.getAttribute("loopEntryRef");
 
-    if (loopContent != null) {
-        Loop loop = (Loop) request.getAttribute("tag.text.loop");
-
-        url += String.format("contentRef=%d_%d", loop.getNo(), loopContent.getNo());
+    if (loopEntryRef != null) {
+        url += String.format("loopEntryRef=%d_%d", loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo());
     }
 %>
 

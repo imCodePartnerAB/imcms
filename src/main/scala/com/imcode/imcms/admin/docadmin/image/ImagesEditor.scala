@@ -16,7 +16,6 @@ import scala.collection.JavaConverters._
 
 import com.vaadin.server._
 import com.vaadin.ui.Button
-import imcode.server.document.TextDocumentUtils
 
 
 // ImageEditParams:

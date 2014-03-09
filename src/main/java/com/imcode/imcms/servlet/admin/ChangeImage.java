@@ -1,7 +1,11 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.google.common.base.Optional;
+import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.TextDocumentContentLoader;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
-import com.imcode.imcms.mapping.container.TextDocImageContainer;
+import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -12,10 +16,11 @@ import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuExcept
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
+import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -47,8 +52,8 @@ public class ChangeImage extends HttpServlet {
         final UserDomainObject user = Utility.getLoggedOnUser(request);
         final DocumentMapper documentMapper = imcref.getDocumentMapper();
         final Integer documentId = Integer.parseInt(request.getParameter("meta_id"));
-        //fixme: check params name
-        String loopEntryRefStr = request.getParameter("loop_entry");
+
+        String loopEntryRefStr = request.getParameter("loop_entry_ref");
         LoopEntryRef loopEntryRef = LoopEntryRef.of(loopEntryRefStr).orNull();
 
         final TextDocumentDomainObject document = documentMapper.getDocument(documentId);
@@ -92,15 +97,14 @@ public class ChangeImage extends HttpServlet {
         Handler<ImageEditResult> imageCommand = new Handler<ImageEditResult>() {
             public void handle(ImageEditResult editResult) {
                 boolean shareImages = editResult.isShareImages();
-                List<TextDocImageContainer> images = editResult.getEditedImages();
+                TextDocImagesContainer images = editResult.getEditedImages();
 
                 ImcmsServices services = Imcms.getServices();
                 String firstGeneratedFilename = null;
 
-                for (int i = 0, len = images.size(); i < len; ++i) {
-                    ImageDomainObject editImage = images.get(i).getImage();
-
-                    boolean first = (i == 0);
+                for (ListIterator<ImageDomainObject> i = new LinkedList<>(images.getImages().values()).listIterator(); i.hasNext();) {
+                    boolean first = i.nextIndex() == 0;
+                    ImageDomainObject editImage = i.next();
 
                     if (first || !shareImages) {
                         editImage.generateFilename();
@@ -115,14 +119,13 @@ public class ChangeImage extends HttpServlet {
                 }
 
                 try {
-                    //fixme:
-                    //services.getDocumentMapper().saveTextDocImages(images, user);
+                    services.getDocumentMapper().saveTextDocImages(images, user);
                 } catch (NoPermissionToEditDocumentException e) {
                     throw new ShouldHaveCheckedPermissionsEarlierException(e);
                 } catch (NoPermissionToAddDocumentToMenuException e) {
                     throw new ConcurrentDocumentModificationException(e);
-                    //} catch (DocumentSaveException e) {
-                    //    throw new ShouldNotBeThrownException(e);
+                    } catch (DocumentSaveException e) {
+                        throw new ShouldNotBeThrownException(e);
                 }
                 services.updateMainLog("ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
                         " in  " + "[" + document.getId() + "] modified by user: [" +
@@ -132,13 +135,22 @@ public class ChangeImage extends HttpServlet {
 
         };
 
-        //fixme:
-        List<TextDocImageContainer> images = null;//textDocRepository.getImages(document.getRef(), imageIndex, Option.apply(contentLoopRef), true);
+        Map<DocumentLanguage, ImageDomainObject> images = imcref.getManagedBean(TextDocumentContentLoader.class).getImages(
+                document.getVersionRef(), imageIndex, Optional.fromNullable(loopEntryRef)
+        );
+
+        for (DocumentLanguage language : imcref.getDocumentLanguageSupport().getAll()) {
+            if (!images.containsKey(language)) {
+                images.put(language, new ImageDomainObject());
+            }
+        }
 
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true, forcedWidth, forcedHeight);
 
-        imageEditPage.setImages(images);
+        TextDocImagesContainer container = TextDocImagesContainer.of(document.getVersionRef(), loopEntryRef, imageIndex, images);
+
+        imageEditPage.setImagesContainer(container);
         imageEditPage.forward(request, response);
     }
 }

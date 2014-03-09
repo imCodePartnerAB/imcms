@@ -5,7 +5,6 @@ import imcode.server.parser.TagParser;
 
 public class TextTag extends SimpleImcmsTag {
 
-
     protected String getContent(TagParser tagParser) {
         LoopTag loopTag = (LoopTag)findAncestorWithClass(this, LoopTag.class);
         LoopEntryRef loopEntry = loopTag == null ? null : loopTag.getLoopEntryRef();

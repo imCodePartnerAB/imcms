@@ -35,7 +35,7 @@ assert null != image;
 UserDomainObject user = Utility.getLoggedOnUser(request);
 
 pageContext.setAttribute("imageEditPage", imageEditPage);
-pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
+pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().size());
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
@@ -285,7 +285,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
             </td>
         </tr>
         		
-		<c:forEach items="${imageEditPage.images}" var="image" varStatus="status">
+		<c:forEach items="${imageEditPage.imagesContainer}" var="image" varStatus="status">
 				<tr>
 					<td colspan="2" style="padding-bottom:3px;">
 					<table border="0" cellspacing="0" cellpadding="0">

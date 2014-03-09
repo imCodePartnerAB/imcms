@@ -429,8 +429,7 @@ public class TagParser {
             request.setAttribute("rows", attributes.getProperty("rows"));
 
             if (loopEntryRef != null) {
-                //fixme: check receiver
-                request.setAttribute("tag.text.loop", loopEntryRef);
+                request.setAttribute("loopEntryRef", loopEntryRef);
             }
 
             try {
@@ -558,11 +557,8 @@ public class TagParser {
             replaceTags.add(imageWidth);
             replaceTags.add("#image_height#");
             replaceTags.add(imageHeight);
-            //fixme: check receiver
-            replaceTags.add("#loop__entry_ref#");
+            replaceTags.add("#loop_ref#");
             replaceTags.add(loopEntryRef != null ? loopEntryRef.toString() : "");
-            //replaceTags.add("#content_no#");
-            //replaceTags.add(content != null ? Integer.toString(content.getNo()) : "");
 
             imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
         }

@@ -1,38 +1,33 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.mapping.container.TextDocImageContainer;
-
-import java.util.List;
+import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 
 public class ImageEditResult {
+
     private boolean shareImages;
-    private List<TextDocImageContainer> editedImages;
-    private List<TextDocImageContainer> origImages;
+    private TextDocImagesContainer editedImages;
+    private TextDocImagesContainer origImages;
 
-
-    public ImageEditResult() {
-    }
-
-    public ImageEditResult(boolean shareImages, List<TextDocImageContainer> origImages, List<TextDocImageContainer> editedImages) {
+    public ImageEditResult(boolean shareImages, TextDocImagesContainer origImages, TextDocImagesContainer editedImages) {
         this.shareImages = shareImages;
         this.origImages = origImages;
         this.editedImages = editedImages;
     }
 
 
-    public List<TextDocImageContainer> getEditedImages() {
+    public TextDocImagesContainer getEditedImages() {
         return editedImages;
     }
 
-    public void setEditedImages(List<TextDocImageContainer> editedImages) {
+    public void setEditedImages(TextDocImagesContainer editedImages) {
         this.editedImages = editedImages;
     }
 
-    public List<TextDocImageContainer> getOrigImages() {
+    public TextDocImagesContainer getOrigImages() {
         return origImages;
     }
 
-    public void setOrigImages(List<TextDocImageContainer> origImages) {
+    public void setOrigImages(TextDocImagesContainer origImages) {
         this.origImages = origImages;
     }
 
