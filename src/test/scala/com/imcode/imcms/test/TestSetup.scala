@@ -1,13 +1,13 @@
 package com.imcode
 package imcms.test
 
+import com.imcode.imcms.test.TestConfig
 import java.io.File
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource
 import org.hibernate.cfg.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.context.annotation._
 import org.springframework.context.ApplicationContext
-import com.imcode.imcms.test.config.TestConfig
 import org.springframework.context.support.FileSystemXmlApplicationContext
 import org.apache.commons.io.FileUtils
 import _root_.imcode.server.Imcms
@@ -38,33 +38,6 @@ class TestSetup extends TestDb with TestSolr {
 
     def createCtx(annotatedClass: Class[_]) = new AnnotationConfigApplicationContext(annotatedClass)
   }
-
-  object hibernate {
-    type Configurator = Configuration => Configuration
-
-    object configurators {
-      val Dialect: Configurator = _.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect")
-      val Cache: Configurator =  _.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.HashtableCacheProvider")
-      val Hbm2ddlAutoCreateDrop: Configurator = _.setProperty("hibernate.hbm2ddl.auto", "create-drop")
-      val Production: Configurator = _.configure()
-      val Sql: Configurator =
-        _.setProperty("hibernate.use_sql_comments", "true")
-         .setProperty("hibernate.show_sql", "true")
-         .setProperty("hibernate.format_sql", "true")
-
-      val Basic: Configurator = Dialect andThen Cache
-      val BasicWithSql: Configurator = Basic andThen Sql
-
-      def addAnnotatedClasses(annotatedClasses: Class[_]*)(configuration: Configuration) = configuration |>> { _ =>
-        annotatedClasses.foreach(configuration.addAnnotatedClass)
-      }
-
-      def addXmlFiles(xmlFiles: String*)(configuration: Configuration) = configuration |>> { _ =>
-        xmlFiles.foreach(xmlFile => classLoader.getResource(xmlFile).getFile |> configuration.addFile)
-      }
-    }
-  }
-
 
   object imcms {
     def init(start: Boolean = false, prepareDbOnStart: Boolean = false) {
