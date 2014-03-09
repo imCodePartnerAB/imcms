@@ -1,45 +1,34 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.mapping.container.TextDocImageContainer;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
+import com.imcode.imcms.servlet.admin.ImageCropPage.CropResult;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
-import imcode.server.document.textdocument.NullImageSource;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
-
-import java.io.IOException;
-import java.util.*;
+import imcode.util.image.Format;
+import imcode.util.image.ImageInfo;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.admin.ImageCropPage.CropResult;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
-import imcode.server.document.textdocument.ImageArchiveImageSource;
-import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
-import imcode.util.image.Format;
-import imcode.util.image.ImageInfo;
-
+import java.io.IOException;
 import java.net.URLEncoder;
-
-import org.apache.commons.lang.math.NumberUtils;
+import java.util.*;
 
 public class ImageEditPage extends OkCancelPage {
 

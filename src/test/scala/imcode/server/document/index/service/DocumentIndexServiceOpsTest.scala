@@ -73,7 +73,7 @@ class DocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll with B
 
       ops.rebuildIndex(solrServerMock){p => progress :+= p; Thread.sleep(2000)}
 
-      assertEquals("progress callablck invokation count", 11, progress.length)
+      assertEquals("progress callback invocation count", 11, progress.length)
       assertTrue("progress callback value is incremented on every call starting from 0",
         progress.zipWithIndex.forall { case (IndexRebuildProgress(_, _, 10, indexed), expectedIndexed) => indexed == expectedIndexed }
       )
@@ -94,7 +94,7 @@ class DocumentIndexServiceOpsTest extends WordSpec with BeforeAndAfterAll with B
       // clear interrupted flag
       Thread.interrupted()
 
-      assertEquals("progress callablck invokation count", 6, progress.length)
+      assertEquals("progress callback invocation count", 6, progress.length)
       assertTrue("progress callback value is incremented on every call starting from 0",
         progress.zipWithIndex.forall { case (IndexRebuildProgress(_, _, 10, indexed), expectedIndexed) => indexed == expectedIndexed }
       )
