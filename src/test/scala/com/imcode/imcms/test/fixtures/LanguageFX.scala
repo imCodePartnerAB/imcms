@@ -10,8 +10,8 @@ object LanguageFX {
   val HostNameEn = "imcode.com"
   val HostNameSe = "imcode.se"
 
-  def mkEnglish: DocumentLanguage = DocumentLanguage.builder().code("en").name("English").nativeName("English").enabled(true).build
-  def mkSwedish: DocumentLanguage = DocumentLanguage.builder().code("sv").name("Swedish").nativeName("Svenska").enabled(true).build
+  def mkEnglish: DocumentLanguage = DocumentLanguage.builder().code("en").name("English").nativeName("English").build
+  def mkSwedish: DocumentLanguage = DocumentLanguage.builder().code("sv").name("Swedish").nativeName("Svenska").build
 
   def mkLanguages: Seq[DocumentLanguage] = Seq(mkEnglish, mkSwedish)
 

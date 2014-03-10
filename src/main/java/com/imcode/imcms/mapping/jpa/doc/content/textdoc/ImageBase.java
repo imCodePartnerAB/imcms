@@ -59,8 +59,7 @@ public class ImageBase extends VersionedI18nContent {
 
     private int resize;
 
-    @NotNull
-    @Column(name = "archive_image_id", nullable = false)
+    @Column(name = "archive_image_id")
     private Long archiveImageId;
 
     public Integer getNo() {
@@ -223,11 +222,11 @@ public class ImageBase extends VersionedI18nContent {
         this.rotateAngle = rotateAngle;
     }
 
-    public long getArchiveImageId() {
+    public Long getArchiveImageId() {
         return archiveImageId;
     }
 
-    public void setArchiveImageId(long archiveImageId) {
+    public void setArchiveImageId(Long archiveImageId) {
         this.archiveImageId = archiveImageId;
     }
 }

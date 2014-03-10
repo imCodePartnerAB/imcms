@@ -23,6 +23,9 @@ public class CategoryDomainObject implements Comparable<CategoryDomainObject>, S
     private String imageUrl = "";
     private CategoryTypeDomainObject type;
 
+    public CategoryDomainObject() {
+    }
+
     public CategoryDomainObject(int id, String name, String description, String imageUrl, CategoryTypeDomainObject type) {
         this.id = id;
         this.description = description;

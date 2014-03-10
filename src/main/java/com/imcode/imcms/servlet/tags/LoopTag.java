@@ -80,7 +80,7 @@ public class LoopTag extends BodyTagSupport {
         loop = document.getContentLoop(no);
 
         if (loop == null) {
-            loop = loop.singleton();
+            loop = Loop.singleton();
 
             document.setContentLoop(no, loop);
         }

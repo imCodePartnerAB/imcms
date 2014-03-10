@@ -76,7 +76,7 @@
         -->
         <hibernate.version>4.3.2.Final</hibernate.version>
         <gwt.version>2.5.1</gwt.version>
-        <vaadin.version>7.1.10</vaadin.version>
+        <vaadin.version>7.1.11</vaadin.version>
 
         <tomcat.version>7.0.52</tomcat.version>
 
@@ -741,7 +741,7 @@
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>ckeditor-wrapper-for-vaadin</artifactId>
-            <version>7.8.7</version>
+            <version>7.9.0</version>
         </dependency>
 
         <!-- ============================ -->
@@ -1006,11 +1006,11 @@
                     </execution>
 
                     <!--<execution>-->
-                    <!--<id>compile-scala-test-classes-fist</id>-->
-                    <!--<phase>process-test-resources</phase>-->
-                    <!--<goals>-->
-                    <!--<goal>testCompile</goal>-->
-                    <!--</goals>-->
+                        <!--<id>compile-scala-test-classes-fist</id>-->
+                        <!--<phase>process-test-resources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>testCompile</goal>-->
+                        <!--</goals>-->
                     <!--</execution>-->
                 </executions>
             </plugin>

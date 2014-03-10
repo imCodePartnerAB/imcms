@@ -8,7 +8,6 @@ import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
 import com.imcode.imcms.test.TestSetup
 import org.scalatest.mock.MockitoSugar.mock
 import com.imcode.imcms.mapping._
-import com.imcode.imcms.dao.TextDocDao
 import org.mockito.Mockito
 import org.mockito.Matchers._
 import com.imcode._
@@ -18,9 +17,10 @@ import org.mockito.invocation.InvocationOnMock
 import scala.collection.JavaConverters._
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import org.apache.solr.core.CoreContainer
-import org.apache.solr.client.solrj.SolrQuery
+import org.apache.solr.client.solrj.{SolrServer, SolrQuery}
 import imcode.server.document.textdocument.{ImageDomainObject, TextDomainObject, TextDocumentDomainObject}
 import imcode.server.document.index.service.impl.{DocumentIndexer, DocumentContentIndexer}
+import imcode.server.{PhaseQueryFixingDocumentIndex, LoggingDocumentIndex}
 
 @RunWith(classOf[JUnitRunner])
 class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -84,53 +84,4 @@ class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndA
 
   }
 
-}
-
-
-/**
- * REMOVE ???
- */
-class DirectoryIndexFixture {
-
-  // Mockito.when(...getDocumentMenuPairsContainingDocument).thenReturn(...)
-
-  private val documentMapperMock = mock[DocumentMapper]
-  private val categoryMapperMock = mock[CategoryMapper]
-  private val textDocMapperMock = mock[TextDocumentContentSaver]
-
-  Mockito.when(categoryMapperMock.getCategories(anyCollectionOf(classOf[JInteger]))).thenAnswer(new Answer[JSet[CategoryDomainObject]]() {
-     def answer(invocation: InvocationOnMock): JSet[CategoryDomainObject] = {
-       val categoriesIds = invocation.getArguments()(0).asInstanceOf[JCollection[JInteger]].asScala
-
-       Set.empty[CategoryDomainObject].asJava
-     }
-  })
-
-  val docIndexer = new DocumentIndexer |>> { di =>
-    di.documentMapper = documentMapperMock
-    di.categoryMapper = categoryMapperMock
-    di.contentIndexer = new DocumentContentIndexer(_ => true)
-  }
-
-
-  def addTextDocMock(doc: TextDocumentDomainObject,
-                     i18nMetas: Option[Seq[DocumentCommonContent]] = None,
-                     texts: Option[Seq[TextDomainObject]] = None,
-                     images: Option[Seq[ImageDomainObject]] = None) {
-
-    val docId = doc.getId ensuring (_ != DocumentDomainObject.ID_NEW, "document must not be new")
-
-    Mockito.when(documentMapperMock.getDefaultDocument[TextDocumentDomainObject](docId)).thenReturn(doc)
-    Mockito.when(documentMapperMock.getCommonContents(docId)).thenReturn(
-      i18nMetas.getOrElse(Seq(doc.getCommonContent)).asJava
-    )
-
-    Mockito.when(textDocMapperMock.getTexts(VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
-      texts.getOrElse(Seq(doc.getTexts.values.asScala, doc.getLoopTexts.values.asScala).flatten).asJava
-    )
-
-    Mockito.when(textDocMapperMock.getImages(VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO))).thenReturn(
-      images.getOrElse(Seq(doc.getImages.values.asScala, doc.getLoopImages.values.asScala).flatten).asJava
-    )
-  }
 }

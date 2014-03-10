@@ -1,10 +1,8 @@
 package com.imcode
 package imcms.test
 
-import com.imcode.imcms.test.TestConfig
 import java.io.File
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource
-import org.hibernate.cfg.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.context.annotation._
 import org.springframework.context.ApplicationContext
