@@ -297,6 +297,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.EditLink</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.EditLink</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.LogOut</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.LogOut</servlet-class>
     </servlet>
@@ -549,6 +554,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.EditImage</servlet-name>
         <url-pattern>/servlet/EditImage</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.EditLink</servlet-name>
+        <url-pattern>/servlet/EditLink</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

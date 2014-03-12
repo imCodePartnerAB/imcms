@@ -1,5 +1,6 @@
 package imcode.server;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.db.DB;
@@ -118,7 +119,7 @@ public class Imcms {
                 throw new IllegalStateException("Spring application context is not set.");
             }
 
-            users = new InheritableThreadLocal<UserDomainObject>();
+            users = new InheritableThreadLocal<>();
 
             if (prepareDatabaseOnStart) {
                 prepareDatabase();
@@ -237,34 +238,45 @@ public class Imcms {
     }
 
     /**
-     * Creates and initializes Document I18N support.
+     * Creates and initializes languages.
+     *
      * Reads languages from the database.
+     * Adds a new language if there are no languages in the database.
+     * Sets default language if it is not already set.
+     * todo: use language property defined in the conf file as default.
      */
     private static DocumentLanguageSupport createDocumentLanguageSupport() {
-        logger.info("Creating i18n support.");
+        logger.info("Creating document languages support.");
 
-        DocumentLanguageMapper dls = applicationContext.getBean(DocumentLanguageMapper.class);
-        List<DocumentLanguage> languages = dls.getAll();
+        DocumentLanguageMapper dlm = applicationContext.getBean(DocumentLanguageMapper.class);
+        List<DocumentLanguage> languages = dlm.getAll();
+
+        if (languages.size() == 0) {
+            logger.warn("No document languages defined. Adding new (default) language.");
+            DocumentLanguage language = DocumentLanguage.builder()
+                    .code("eng")
+                    .name("English")
+                    .nativeName("English")
+                    .build();
+
+            dlm.save(language);
+            dlm.setDefault(language);
+        } else {
+            DocumentLanguage defaultLanguage = dlm.getDefault();
+            if (defaultLanguage == null) {
+                defaultLanguage = Optional.fromNullable(dlm.findByCode("eng")).or(languages.get(0));
+
+                logger.warn("Default document language is not set. Setting it to " + defaultLanguage);
+
+                dlm.setDefault(defaultLanguage);
+            }
+        }
 
         Map<String, DocumentLanguage> languagesByCodes = Maps.newHashMap();
         Map<String, DocumentLanguage> languagesByHosts = Maps.newHashMap();
 
         for (DocumentLanguage language : languages) {
             languagesByCodes.put(language.getCode(), language);
-        }
-
-        if (languagesByCodes.size() == 0) {
-            String msg = "I18n configuration error. No document languages defined.";
-            logger.fatal(msg);
-            throw new DocumentLanguageException(msg);
-        }
-
-        DocumentLanguage defaultLanguage = dls.getDefault();
-
-        if (defaultLanguage == null) {
-            String msg = String.format("I18n configuration error. Default language is not configured.");
-            logger.fatal(msg);
-            throw new DocumentLanguageException(msg);
         }
 
         // Read "virtual" hosts mapped to languages.
@@ -299,8 +311,7 @@ public class Imcms {
             }
         }
 
-
-        return new DocumentLanguageSupport(languages, languagesByHosts, defaultLanguage);
+        return new DocumentLanguageSupport(languages, languagesByHosts, dlm.getDefault());
     }
 
     /**

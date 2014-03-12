@@ -1,34 +1,27 @@
 package imcode.server.user;
 
+import com.imcode.db.DatabaseCommand;
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.DatabaseException;
+import com.imcode.db.commands.*;
+import com.imcode.db.exceptions.IntegrityConstraintViolationException;
+import com.imcode.db.exceptions.StringTruncationException;
+import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.ImcmsServices;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
-
-import com.imcode.db.DatabaseCommand;
-import com.imcode.db.DatabaseConnection;
-import com.imcode.db.DatabaseException;
-import com.imcode.db.commands.CompositeDatabaseCommand;
-import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
-import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.commands.TransactionDatabaseCommand;
-import com.imcode.db.exceptions.IntegrityConstraintViolationException;
-import com.imcode.db.exceptions.StringTruncationException;
-import com.imcode.imcms.db.StringArrayResultSetHandler;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegistry, Authenticator, RoleGetter {
 

@@ -18,7 +18,6 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 
-// todo: add security checks
 @Service
 @Transactional
 public class DocumentLanguageMapper {
@@ -72,7 +71,7 @@ public class DocumentLanguageMapper {
 
         if (jpaLanguage != null) {
             jpaLanguage.setName(language.getName());
-            jpaLanguage.setName(language.getNativeName());
+            jpaLanguage.setNativeName(language.getNativeName());
         } else {
             languageRepository.save(
                 new Language(language.getCode(), language.getName(), language.getNativeName())
