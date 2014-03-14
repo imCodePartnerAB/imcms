@@ -31,6 +31,17 @@
     </query>
 
     <!-- Unique -->
+    <query name="Version.findLatestNo">
+        <![CDATA[
+        SELECT v.no FROM Version v
+        WHERE v.id = (
+            SELECT max(v.id) FROM Version v
+            WHERE v.docId = ?1
+        )
+    ]]>
+    </query>
+
+    <!-- Unique -->
     <query name="Version.findWorking">
         <![CDATA[
         SELECT v FROM Version v
@@ -46,10 +57,10 @@
     ]]>
     </query>
 
-    <query name="Version.setDefault">
+    <query name="Version.updateDefaultNo">
     <![CDATA[
         UPDATE Meta m
-        SET m.defaultVersionNo = :defaultVersionNo, m.publisherId = :publisherId
+        SET m.defaultVersionNo = :no, m.publisherId = :publisherId
         WHERE m.id = :docId
     ]]>
     </query>

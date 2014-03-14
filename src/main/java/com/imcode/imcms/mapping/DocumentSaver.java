@@ -2,13 +2,10 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.*;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextRepository;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
@@ -118,7 +115,7 @@ public class DocumentSaver {
         Version currentDefaultVersion = versionRepository.findDefault(docId);
 
         if (currentDefaultVersion.getNo() != newDefaultVersionNo) {
-            versionRepository.setDefault(docId, newDefaultVersionNo, publisher.getId());
+            versionRepository.updateDefaultNo(docId, newDefaultVersionNo, publisher.getId());
 
             docRepository.touch(VersionRef.of(docId, newDefaultVersionNo), publisher);
         }

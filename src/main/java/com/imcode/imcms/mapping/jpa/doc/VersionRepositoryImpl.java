@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping.jpa.doc;
 import com.imcode.imcms.mapping.jpa.User;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
@@ -15,25 +16,20 @@ class VersionRepositoryImpl implements VersionRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Inject
+    private VersionRepository versionRepository;
+
     /**
      * Creates and returns a new version of a document.
      * If document does not have version creates version with number 0 otherwise creates version with next version number.
      *
      * @return new document version.
      */
-    //todo: check locking
     @Override
     public Version create(int docId, int userId) {
         User creator = entityManager.getReference(User.class, userId);
-
-        List<Version> latestVersionList = entityManager.createNamedQuery("Version.findLatest", Version.class)
-                .setParameter(1, docId)
-                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                .getResultList();
-
-        Version latestVersion = latestVersionList.isEmpty() ? null : latestVersionList.get(0);
-
-        int no = latestVersion != null ? latestVersion.getNo() + 1 : 0;
+        Integer latestNo = versionRepository.findLatestNoForUpdate(docId);
+        int no = latestNo == null ? 0 : latestNo + 1;
         Date now = new Date();
         Version version = new Version();
 
@@ -48,23 +44,5 @@ class VersionRepositoryImpl implements VersionRepositoryCustom {
         entityManager.flush();
 
         return version;
-    }
-
-    @Override
-    //todo: check locking
-    public void setDefault(int docId, int docVersionNo, int userId) {
-        Version version = entityManager.createNamedQuery("Version.findByDocIdAndNo", Version.class)
-                .setParameter(1, docId)
-                .setParameter(2, docVersionNo)
-                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                .getSingleResult();
-
-        User user = entityManager.getReference(User.class, userId);
-
-        entityManager.createNamedQuery("Version.setDefault")
-                .setParameter("docId", docId)
-                .setParameter("defaultVersionNo", docVersionNo)
-                .setParameter("publisherId", userId)
-                .executeUpdate();
     }
 }

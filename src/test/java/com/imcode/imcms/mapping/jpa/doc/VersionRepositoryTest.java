@@ -129,7 +129,7 @@ public class VersionRepositoryTest {
 
         assertThat(versionRepository.findDefault(docId).getNo(), is(3));
 
-        versionRepository.setDefault(docId, 4, userId);
+        versionRepository.updateDefaultNo(docId, 4, userId);
 
         Version version = versionRepository.findDefault(docId);
 
