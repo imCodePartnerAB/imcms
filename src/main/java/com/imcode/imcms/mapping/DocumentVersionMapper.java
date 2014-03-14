@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
-import javax.transaction.Transactional;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +31,7 @@ public class DocumentVersionMapper {
         return toApiObject(versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo()));
     }
 
-    @Transactional(Transactional.TxType.SUPPORTS)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public List<DocumentVersion> getAll(int docId) {
         List<Version> versions = versionRepository.findByDocId(docId);
         List<DocumentVersion> result = new LinkedList<>();
@@ -40,17 +42,17 @@ public class DocumentVersionMapper {
         return result;
     }
 
-    @Transactional(Transactional.TxType.SUPPORTS)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public DocumentVersion getDefault(int docId) {
         return toApiObject(versionRepository.findDefault(docId));
     }
 
-    @Transactional(Transactional.TxType.SUPPORTS)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public DocumentVersion getWorking(int docId) {
         return toApiObject(versionRepository.findWorking(docId));
     }
 
-    @Transactional(Transactional.TxType.SUPPORTS)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public DocumentVersionInfo getInfo(int docId) {
         List<DocumentVersion> versions = getAll(docId);
 

@@ -18,7 +18,7 @@
     <!--
      imCMS setup:
      com.imcode.imcms.servlet.ImcmsLog4jConfigListener must be registered first.
-     com.imcode.imcms.servlet.mcmsInitListener must be registered immediately next to
+     com.imcode.imcms.servlet.ImcmsInitListener must be registered immediately next to
         org.springframework.web.context.ContextLoaderListener.
     -->
 

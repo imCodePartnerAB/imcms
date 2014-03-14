@@ -18,7 +18,8 @@ public class TextHistory extends TextBase {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
-    public TextHistory() {}
+    public TextHistory() {
+    }
 
     public TextHistory(Text text, User modifiedBy) {
         setVersion(text.getVersion());

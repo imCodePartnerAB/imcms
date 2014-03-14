@@ -43,7 +43,7 @@ public class DocumentSaver {
 
     @Inject
     private MetaRepository metaRepository;
-    
+
     @Inject
     private TextDocumentContentSaver textDocumentContentSaver;
 
@@ -52,6 +52,9 @@ public class DocumentSaver {
 
     @Inject
     private DocumentVersionMapper versionMapper;
+
+    @Inject
+    private PropertyRepository propertyRepository;
 
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
 
@@ -416,14 +419,10 @@ public class DocumentSaver {
         String alias = document.getAlias();
 
         if (alias != null) {
-            Property property = docRepository.getAliasProperty(alias);
-            if (property != null) {
-                Integer documentId = document.getId();
-
-                if (!property.getDocId().equals(documentId)) {
-                    throw new AliasAlreadyExistsInternalException(
-                            String.format("Alias %s is already in use by document %d.", alias, documentId));
-                }
+            Integer documentId = propertyRepository.findDocIdByAlias(alias);
+            if (documentId != null && !documentId.equals(document.getId())) {
+                throw new AliasAlreadyExistsInternalException(
+                        String.format("Alias %s is already in use by document %d.", alias, documentId));
             }
         }
     }

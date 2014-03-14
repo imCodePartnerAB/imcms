@@ -9,7 +9,7 @@ import java.util.*;
  * Shared by all versions of the same document.
  */
 @Entity
-@Table
+@Table(name = "meta")
 public class Meta {
 
     /**
@@ -183,7 +183,7 @@ public class Meta {
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationEndDatetime;
 
-    
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "document_properties", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "key_name")

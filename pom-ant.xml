@@ -82,11 +82,6 @@
                      excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern},${swfpattern}"/>
         </copy>
 
-        <!-- ??? filter hibernate dialect ??? -->
-        <!--<copy todir="${build.dir}/classes" filtering="true" encoding="utf-8">-->
-            <!--<fileset dir="src/main/resources" includes="hibernate.cfg.xml"/>-->
-        <!--</copy>-->
-
         <copy todir="${build.webapp.dir}">
             <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**"
                      includes="${imagespattern},${swfpattern}"/>

@@ -18,14 +18,16 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @Service
-@Transactional(Transactional.TxType.SUPPORTS)
+@Transactional(propagation = Propagation.SUPPORTS)
 public class TextDocumentContentLoader {
 
     @PersistenceContext

@@ -5,8 +5,7 @@
 <hibernate-configuration>
 
     <session-factory>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
-        <property name="hibernate.archive.autodetection"/>
+        <property name="hibernate.dialect">${hibernate-dialect}</property>
 
         <mapping class="com.imcode.imcms.mapping.jpa.doc.Meta"/>
         <mapping class="com.imcode.imcms.mapping.jpa.doc.Version"/>
@@ -54,7 +53,7 @@
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.LibraryRoles"/>
 
         <!-- Named queries -->
-        <!--<mapping resource="com/imcode/imcms/hbm/Document.hbm.xml"/>-->
+        <mapping resource="com/imcode/imcms/hbm/Document.hbm.xml"/>
         <mapping resource="com/imcode/imcms/hbm/Version.hbm.xml"/>
         <mapping resource="com/imcode/imcms/hbm/Language.hbm.xml"/>
         <mapping resource="com/imcode/imcms/hbm/TextDocLoop.hbm.xml"/>

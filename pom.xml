@@ -74,7 +74,7 @@
         <!--
             Core & EntityManager version
         -->
-        <hibernate.version>4.3.2.Final</hibernate.version>
+        <hibernate.version>4.3.4.Final</hibernate.version>
         <gwt.version>2.5.1</gwt.version>
         <vaadin.version>7.1.11</vaadin.version>
 
@@ -424,22 +424,29 @@
         <!--<version>4.2</version>-->
         <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.hibernate</groupId>-->
+            <!--<artifactId>hibernate-core</artifactId>-->
+            <!--<version>${hibernate.version}</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
             <version>${hibernate.version}</version>
+            <exclusions>
+                <!-- Workaround: scalac bug - parse error Transactional.class -->
+                <exclusion>
+                    <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+                    <groupId>org.jboss.spec.javax.transaction</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.0.3.Final</version>
+            <version>5.1.0.Final</version>
         </dependency>
 
         <dependency>
@@ -794,10 +801,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Workaround: scalac bug - compiler is unable to parse Transactional.class -->
         <dependency>
             <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
-            <version>1.1</version>
+            <artifactId>javax.transaction-api</artifactId>
+            <version>1.2</version>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
@@ -877,6 +886,17 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <includes>
+                    <include>hibernate.cfg.xml</include>
+                </includes>
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>hibernate.cfg.xml</exclude>
+                </excludes>
             </resource>
         </resources>
 
@@ -885,6 +905,10 @@
                 <directory>src/test/resources</directory>
             </testResource>
         </testResources>
+
+        <filters>
+            <filter>build.properties</filter>
+        </filters>
 
         <pluginManagement>
             <plugins>

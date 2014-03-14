@@ -11,7 +11,9 @@ import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +30,7 @@ public class DocumentContentMapper {
     @Inject
     private DocumentLanguageMapper languageMapper;
 
-    @Transactional(Transactional.TxType.SUPPORTS)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId) {
         Map<DocumentLanguage, DocumentCommonContent> result = new HashMap<>();
 
@@ -43,7 +45,7 @@ public class DocumentContentMapper {
     }
 
 
-    @Transactional(Transactional.TxType.SUPPORTS)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public DocumentCommonContent getCommonContent(DocRef docRef) {
         return toApiObject(commonContentRepository.findByDocIdAndLanguageCode(
                 docRef.getId(), docRef.getLanguageCode()));

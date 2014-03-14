@@ -2,15 +2,11 @@ package com.imcode.imcms.mapping.jpa.doc;
 
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
-import com.imcode.imcms.mapping.jpa.doc.content.FileDocFile;
-import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
-import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
-import imcode.server.document.DocumentDomainObject;
+import com.imcode.imcms.mapping.jpa.doc.content.*;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import scala.Option;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -28,6 +24,15 @@ public class DocRepository {
 
     @Inject
     private PropertyRepository propertyRepository;
+
+    @Inject
+    private HtmlDocContentRepository htmlDocContentRepository;
+
+    @Inject
+    private UrlDocContentRepository urlDocContentRepository;
+
+    @Inject
+    private FileDocFileRepository fileDocFileRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -69,24 +74,17 @@ public class DocRepository {
     }
 
 
-
-    public int deleteHtmlDocContent(DocRef docIdentity) {
-        return entityManager.createQuery("delete from HtmlReference r where r.docIdentity = :docIdentity")
-                .setParameter("docIdentity", docIdentity)
-                .executeUpdate();
+    public void deleteHtmlDocContent(DocRef docIdentity) {
+        htmlDocContentRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
 
-    public int deleteUrlDocContent(DocRef docIdentity) {
-        return entityManager.createQuery("delete from UrlReference r where r.docIdentity = :docIdentity")
-                .setParameter("docIdentity", docIdentity)
-                .executeUpdate();
+    public void deleteUrlDocContent(DocRef docIdentity) {
+        urlDocContentRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
     public List<FileDocFile> getFileDocContent(DocRef docIdentity) {
-        return entityManager.createNamedQuery("FileDoc.getReferences", FileDocFile.class)
-                .setParameter("docIdentity", docIdentity)
-                .getResultList();
+        return fileDocFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
 
@@ -95,17 +93,13 @@ public class DocRepository {
     }
 
 
-    public int deleteFileDocContent(DocRef docIdentity) {
-        return entityManager.createNamedQuery("FileDoc.deleteAllReferences")
-                .setParameter("docIdentity", docIdentity)
-                .executeUpdate();
+    public void deleteFileDocContent(DocRef docIdentity) {
+        fileDocFileRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
 
     public HtmlDocContent getHtmlDocContent(DocRef docIdentity) {
-        return entityManager.createNamedQuery("HtmlDoc.getReference", HtmlDocContent.class)
-                .setParameter("docIdentity", docIdentity)
-                .getSingleResult();
+        return htmlDocContentRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
 
@@ -115,36 +109,12 @@ public class DocRepository {
 
 
     public UrlDocContent getUrlDocContent(DocRef docIdentity) {
-        return entityManager.createNamedQuery("UrlDoc.getReference", UrlDocContent.class)
-                .setParameter("docIdentity", docIdentity)
-                .getSingleResult();
+        return urlDocContentRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
 
     public UrlDocContent saveUrlDocContent(UrlDocContent reference) {
         return entityManager.merge(reference);
-    }
-
-
-    public List<String> getAllAliases() {
-        return entityManager.createNamedQuery("DocumentProperty.getAllAliases", String.class)
-                .setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
-                .getResultList();
-    }
-
-
-    public Property getAliasProperty(String alias) {
-        return entityManager.createNamedQuery("DocumentProperty.getAliasProperty", Property.class)
-                .setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
-                .setParameter("value", alias)
-                .getSingleResult();
-
-    }
-
-    public Option<Integer> getDocIdByAliasOpt(String alias) {
-        Property property = getAliasProperty(alias);
-
-        return Option.apply(property.getDocId());
     }
 
 

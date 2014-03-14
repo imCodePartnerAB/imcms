@@ -24,7 +24,7 @@ public class Text extends TextBase {
     }
 
     @Override
-        public boolean equals(Object obj) {
+    public boolean equals(Object obj) {
         return obj == this || (obj instanceof Text && equals((Text) obj));
     }
 

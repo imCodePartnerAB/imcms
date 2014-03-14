@@ -3,7 +3,7 @@ package imcms
 package admin.doc.meta.appearance
 
 import com.imcode.imcms.api.DocumentLanguage
-import com.imcode.imcms.mapping.jpa.doc.DocRepository
+import com.imcode.imcms.mapping.jpa.doc.{PropertyRepository, Property, DocRepository}
 import com.imcode.imcms.mapping.{DocumentCommonContent, DocumentMeta}
 import scala.language.reflectiveCalls
 
@@ -71,12 +71,12 @@ class AppearanceEditor(meta: DocumentMeta, commonContentMap: Map[DocumentLanguag
     }
 
     v.alias.txtAlias.addValidator(new Validator {
-      val metaRepository = imcmsServices.getManagedBean(classOf[DocRepository])
+      val propertyRepository = imcmsServices.getManagedBean(classOf[PropertyRepository])
 
       def findDocIdByAlias(): Option[Int] =
         for {
           alias <- v.alias.txtAlias.trimmedValueOpt
-          docId <- metaRepository.getDocIdByAliasOpt(alias)
+          docId <- propertyRepository.findDocIdByAlias(alias) |> opt
           if meta.getId != docId
         } yield docId
 

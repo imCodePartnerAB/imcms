@@ -12,11 +12,11 @@ import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
-@Transactional(rollbackOn = Throwable.class)
+@Transactional(rollbackFor = Throwable.class)
 public class CategoryMapper {
 
     /*

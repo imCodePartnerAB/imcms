@@ -115,7 +115,7 @@ public class User {
 
     @NotNull
     @Column(name = "language")
-    private String languageIso639_2;
+    private String languageIso639_2 = "";
 
     @NotNull
     private boolean external;

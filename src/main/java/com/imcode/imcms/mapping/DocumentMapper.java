@@ -5,6 +5,7 @@ import com.imcode.imcms.api.*;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.NativeQueries;
+import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
@@ -77,6 +78,9 @@ public class DocumentMapper implements DocumentGetter {
 
     @Inject
     private MenuRepository menuRepository;
+
+    @Inject
+    private PropertyRepository propertyRepository;
 
     public DocumentMapper() {
     }
@@ -530,18 +534,8 @@ public class DocumentMapper implements DocumentGetter {
         return minMaxPair[0] == null ? null : new IntRange(minMaxPair[0], minMaxPair[1]);
     }
 
-    // TODO: refactor
-    public Set<String> getAllDocumentAlias() {
-        List<String> aliasesList = documentLoader.getDocRepository().getAllAliases();
-        Set<String> aliasesSet = new HashSet<>();
-        Transformer transformer = new Transformer() {
-            public String transform(Object alias) {
-                return ((String) alias).toLowerCase();
-            }
-        };
-
-        return (Set<String>) CollectionUtils.collect(
-                aliasesList, transformer, aliasesSet);
+    public List<String> getAllDocumentAlias() {
+        return propertyRepository.findAllAliases();
     }
 
     /**

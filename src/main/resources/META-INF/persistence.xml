@@ -7,13 +7,8 @@
     <persistence-unit name="com.imcode.imcms">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
-            <!--<property name="hibernate.archive.autodetection" value=""/>-->
-            <!--<property name="hibernate.hbm2ddl.auto" value="create-drop"/>-->
-            <!--<property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>-->
             <property name="hibernate.ejb.cfgfile" value="hibernate.cfg.xml"/>
+            <property name="hibernate.archive.autodetection" value=""/>
         </properties>
-
     </persistence-unit>
 </persistence>
-
-

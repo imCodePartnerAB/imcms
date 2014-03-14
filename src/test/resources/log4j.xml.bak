@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true" reset="true" threshold="info">
 
     <!-- The errorlog (captures everything that doesn't go to one of the above. -->
