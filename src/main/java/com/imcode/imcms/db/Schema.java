@@ -19,6 +19,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -51,7 +52,7 @@ public final class Schema {
             NodeList diffsNL = (NodeList) xpath.compile("/schema/diffs/diff").evaluate(document, XPathConstants.NODESET);
 
             List<String> initScripts = IntStream.range(0, initScriptsNL.getLength())
-                    .mapToObj(i -> diffsNL.item(i).getTextContent())
+                    .mapToObj(i -> initScriptsNL.item(i).getTextContent().trim())
                     .collect(Collectors.toList());
 
             Set<Diff> diffs = IntStream.range(0, diffsNL.getLength())
@@ -63,7 +64,7 @@ public final class Schema {
                             NodeList scriptsNL = (NodeList) xpath.compile("script").evaluate(node, XPathConstants.NODESET);
 
                             List<String> scripts = IntStream.range(0, scriptsNL.getLength())
-                                    .mapToObj(i -> scriptsNL.item(i).getTextContent())
+                                    .mapToObj(i -> scriptsNL.item(i).getTextContent().trim())
                                     .collect(Collectors.toList());
 
                             return new Diff(Version.parse(from), Version.parse(to), scripts);
@@ -93,27 +94,32 @@ public final class Schema {
 
     public Schema(Version version, Init init, Set<Diff> diffs, String scriptsDir) {
         Validate.isTrue(diffs.size() == diffs.stream().map(Diff::getFrom).distinct().count(),
-                "'diffs' 'from' values must must be distinct: %s", diffs);
+                "diffs from version value must be distinct: %s", diffs);
 
-        Validate.isTrue(
-                diffs.stream()
-                        .map(diff -> diffsChainFrom(diff.getFrom()))
-                        .allMatch(chain -> chain.get(chain.size() - 1).getTo().equals(version)),
-                "every diffs-chain's last 'diff.to' must be equal to 'version'."
-        );
+        diffs.forEach(diff -> {
+            LinkedList<Diff> chain = diffsChainFrom(diffs, diff.getFrom());
+            Diff lastDiff = chain.getLast();
+
+            Validate.isTrue(lastDiff.getTo().equals(version),
+                    "Diffs' chain %s must end (diff.to value) with version %s.", chain, lastDiff);
+        });
 
         this.version = version;
         this.init = init;
-        this.diffs = null;
+        this.diffs = diffs;
         this.scriptsDir = scriptsDir;
     }
 
-    public List<Diff> diffsChainFrom(Version from) {
-        List<Diff> chain = new LinkedList<>();
+    public List<Diff> diffsChainFrom(Version version) {
+        return diffsChainFrom(diffs, version);
+    }
+
+    private static LinkedList<Diff> diffsChainFrom(Set<Diff> diffs, Version from) {
+        LinkedList<Diff> chain = new LinkedList<>();
         Version current = from;
 
         while (current != null) {
-            Diff diff = diffs.stream().filter(d -> d.getFrom().equals(from)).findFirst().orElse(null);
+            Diff diff = findDiffByFrom(diffs, current).orElse(null);
 
             if (diff == null) {
                 current = null;
@@ -125,6 +131,11 @@ public final class Schema {
 
         return chain;
     }
+
+    private static Optional<Diff> findDiffByFrom(Set<Diff> diffs, Version from) {
+        return diffs.stream().filter(d -> d.getFrom().equals(from)).findAny();
+    }
+
 
     public Version getVersion() {
         return version;
@@ -143,7 +154,7 @@ public final class Schema {
     }
 
     public Schema setScriptsDir(String newScriptsDir) {
-        return new Schema(version, init, diffs, newScriptsDir);
+        return new Schema(version, init, diffs, newScriptsDir.trim());
     }
 
     @Override

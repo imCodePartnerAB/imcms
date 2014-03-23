@@ -14,7 +14,9 @@ public final class Version implements Comparable<Version> {
     }
 
     public static Version parse(String s) {
-        Matcher matcher = Pattern.compile("([1-9][0-9]*)\\.([0-9]+)").matcher(s);
+        Objects.requireNonNull(s);
+
+        Matcher matcher = Pattern.compile("([1-9][0-9]*)\\.([0-9]+)").matcher(s.trim());
 
         if (!matcher.find()) {
             throw new IllegalArgumentException(String.format("Version must be in format major.minor, but was %s.", s));
