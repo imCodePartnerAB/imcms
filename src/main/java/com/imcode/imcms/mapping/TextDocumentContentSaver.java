@@ -149,21 +149,21 @@ public class TextDocumentContentSaver {
     }
 
     private void createLoops(TextDocumentDomainObject textDocument, Version version) {
-        for (Map.Entry<Integer, Loop> loopAndNo : textDocument.getLoops().entrySet()) {
-            Loop loopDO = loopAndNo.getValue();
+        textDocument.getLoops().forEach((loopNo, loopDO) -> {
             com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
             List<com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry> items = new LinkedList<>();
 
-            for (Map.Entry<Integer, Boolean> loopDOEntry : loopDO.getEntries().entrySet()) {
-                items.add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(loopDOEntry.getKey(), loopDOEntry.getValue()));
-            }
+            loopDO.getEntries().forEach((entryNo, enabled) -> {
+                items.add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo, enabled));
+            });
 
             loop.setVersion(version);
-            loop.setNo(loopAndNo.getKey());
+            loop.setNo(loopNo);
             loop.setEntries(items);
+            loop.setNextEntryNo(items.stream().mapToInt(i -> i.getNo()).max().orElse(0));
 
             loopRepository.save(loop);
-        }
+        });
     }
 
     /**
@@ -189,6 +189,13 @@ public class TextDocumentContentSaver {
 
             saveImage(image, user, SaveMode.UPDATE);
         }
+
+        container.getImages().forEach((languageDO, imageDO) -> {
+            Language language = languageRepository.findByCode(languageDO.getCode());
+            Image image = toJpaObject(imageDO, version, language, container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
+
+            saveImage(image, user, SaveMode.UPDATE);
+        });
     }
 
     public void saveText(TextDocTextContainer container, UserDomainObject userDomainObject) {
@@ -202,12 +209,12 @@ public class TextDocumentContentSaver {
         User user = userRepository.getOne(userDomainObject.getId());
         Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getVersionNo());
 
-        for (Map.Entry<com.imcode.imcms.api.DocumentLanguage, TextDomainObject> e : container.getTexts().entrySet()) {
-            Language language = languageRepository.findByCode(e.getKey().getCode());
-            Text text = toJpaObject(e.getValue(), version, language, container.getTextNo(), toJpaObject(container.getLoopEntryRef()));
+        container.getTexts().forEach((languageDO, textDO) -> {
+            Language language = languageRepository.findByCode(languageDO.getCode());
+            Text text = toJpaObject(textDO, version, language, container.getTextNo(), toJpaObject(container.getLoopEntryRef()));
 
             saveText(text, user, SaveMode.UPDATE);
-        }
+        });
     }
 
 
@@ -227,15 +234,15 @@ public class TextDocumentContentSaver {
     private void saveIncludes(int docId, Map<Integer, Integer> includes) {
         includeRepository.deleteByDocId(docId);
 
-        for (Map.Entry<Integer, Integer> entry : includes.entrySet()) {
+        includes.forEach((no, includedDocId) -> {
             Include include = new Include();
             include.setId(null);
             include.setDocId(docId);
-            include.setNo(entry.getKey());
-            include.setIncludedDocumentId(entry.getValue());
+            include.setNo(no);
+            include.setIncludedDocumentId(includedDocId);
 
             includeRepository.save(include);
-        }
+        });
     }
 
     public void saveMenu(TextDocMenuContainer container, UserDomainObject userDomainObject) {
@@ -252,12 +259,12 @@ public class TextDocumentContentSaver {
         Menu menu = new Menu();
         Map<Integer, MenuItem> menuItems = new HashMap<>();
 
-        for (Map.Entry<Integer, MenuItemDomainObject> e : menuDO.getItemsMap().entrySet()) {
+        menuDO.getItemsMap().forEach((menuItemNo, menuItemDO) -> {
             MenuItem menuItem = new MenuItem();
-            menuItem.setSortKey(e.getValue().getSortKey());
-            menuItem.setTreeSortIndex(e.getValue().getTreeSortIndex());
-            menuItems.put(e.getKey(), menuItem);
-        }
+            menuItem.setSortKey(menuItemDO.getSortKey());
+            menuItem.setTreeSortIndex(menuItemDO.getTreeSortIndex());
+            menuItems.put(menuItemNo, menuItem);
+        });
 
         menu.setVersion(version);
         menu.setNo(no);
@@ -269,10 +276,10 @@ public class TextDocumentContentSaver {
 
 
     private void saveMenus(TextDocumentDomainObject doc, Version version, User user, SaveMode saveMode) {
-        for (Map.Entry<Integer, MenuDomainObject> entry : doc.getMenus().entrySet()) {
-            Menu menu = toJpaObject(entry.getValue(), version, entry.getKey());
+        doc.getMenus().forEach((menuNo, menuDO) -> {
+            Menu menu = toJpaObject(menuDO, version, menuNo);
             saveMenu(menu, user, saveMode);
-        }
+        });
     }
 
     private void saveMenu(Menu menu, User user, SaveMode saveMode) {

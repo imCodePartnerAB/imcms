@@ -19,8 +19,8 @@ import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -68,6 +68,7 @@ public class ImageEditPage extends OkCancelPage {
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
     static final LocalizedMessage ERROR_MESSAGE__FILE_NOT_IMAGE = new LocalizedMessage("error/servlet/images/file_not_image");
     public static final Format[] ALLOWED_FORMATS = new Format[]{Format.GIF, Format.JPEG, Format.PNG};
+    public static final String REQUEST_PARAMETER__LINK_TARGET = REQUEST_PARAMETER__TARGET;
 
     public static final String REQUEST_PARAMETER__SHARE_IMAGE = "share_image";
 

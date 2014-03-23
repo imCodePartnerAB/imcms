@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
 import java.util.Objects;

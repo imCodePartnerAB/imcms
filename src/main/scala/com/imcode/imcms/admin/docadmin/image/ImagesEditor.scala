@@ -4,7 +4,7 @@ package admin.docadmin.image
 
 import _root_.imcode.server.document.textdocument.ImageDomainObject
 
-import com.google.common.base.Optional
+import java.util.Optional
 import com.imcode.imcms.mapping.container.{DocRef, VersionRef}
 import com.imcode.imcms.mapping.{TextDocumentContentLoader, TextDocumentContentSaver}
 import com.imcode.imcms.vaadin.{Current, Editor}

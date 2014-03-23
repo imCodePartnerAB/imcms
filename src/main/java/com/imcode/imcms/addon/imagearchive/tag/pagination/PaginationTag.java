@@ -12,7 +12,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -116,7 +116,7 @@ public class PaginationTag extends BodyTagSupport {
     private void renderPagingControl(boolean enabled, int page, String controlText, StringBuilder builder) {
         if (!enabled) {
             builder.append("<span>");
-            builder.append(StringEscapeUtils.escapeHtml(controlText));
+            builder.append(StringEscapeUtils.escapeHtml4(controlText));
             builder.append("</span> ");
         } else {
             HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
@@ -136,7 +136,7 @@ public class PaginationTag extends BodyTagSupport {
 
 
             builder.append(">");
-            builder.append(StringEscapeUtils.escapeHtml(controlText));
+            builder.append(StringEscapeUtils.escapeHtml4(controlText));
             builder.append("</a> ");
         }
     }

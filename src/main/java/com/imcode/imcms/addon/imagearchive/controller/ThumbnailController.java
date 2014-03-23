@@ -6,7 +6,7 @@ import com.imcode.imcms.addon.imagearchive.service.file.ThumbSize;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
 import com.imcode.imcms.api.ContentManagementSystem;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

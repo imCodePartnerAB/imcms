@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.collections.iterators.TransformIterator;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.or.ObjectRenderer;
 
 public class FakeRequestRenderer implements ObjectRenderer {

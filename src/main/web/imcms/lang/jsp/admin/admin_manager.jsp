@@ -3,7 +3,7 @@
                  imcode.server.document.DocumentTypeDomainObject,
                  imcode.util.jscalendar.JSCalendar,
                  java.util.Iterator,
-                 java.util.List, com.imcode.imcms.api.ContentManagementSystem, com.imcode.db.DataSourceDatabase, com.imcode.imcms.mapping.ProfileMapper, imcode.server.document.Profile, org.apache.commons.lang.StringEscapeUtils"%>
+                 java.util.List, com.imcode.imcms.api.ContentManagementSystem, com.imcode.db.DataSourceDatabase, com.imcode.imcms.mapping.ProfileMapper, imcode.server.document.Profile, org.apache.commons.lang3.StringEscapeUtils"%>
 <%@page contentType="text/html; charset=UTF-8" %><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
@@ -120,7 +120,7 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
                 ProfileMapper profileMapper = new ProfileMapper(database);
                 List<Profile> profiles = profileMapper.getAll();
                 for ( Profile profile : profiles ) {
-                    %><option value="<%= StringEscapeUtils.escapeHtml(profile.getDocumentName()) %>"><%= StringEscapeUtils.escapeHtml(profile.getName()) %></option><%
+                    %><option value="<%= StringEscapeUtils.escapeHtml4(profile.getDocumentName()) %>"><%= StringEscapeUtils.escapeHtml4(profile.getName()) %></option><%
                 }
             %>
         </select>

@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class EditLink extends HttpServlet {
 
@@ -118,7 +118,7 @@ public class EditLink extends HttpServlet {
 //import javax.servlet.http.HttpServletRequest;
 //import javax.servlet.http.HttpServletResponse;
 //
-//import org.apache.commons.lang.StringUtils;
+//import org.apache.commons.lang3.StringUtils;
 //
 //import com.imcode.imcms.flow.DispatchCommand;
 //

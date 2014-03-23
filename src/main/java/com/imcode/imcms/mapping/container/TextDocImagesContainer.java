@@ -25,13 +25,10 @@ public class TextDocImagesContainer {
     private final Map<DocumentLanguage, ImageDomainObject> images;
 
     public TextDocImagesContainer(VersionRef versionRef, LoopEntryRef loopEntryRef, int imageNo, Map<DocumentLanguage, ImageDomainObject> images) {
-        Objects.requireNonNull(versionRef);
-        Objects.requireNonNull(images);
-
-        this.versionRef = versionRef;
+        this.versionRef = Objects.requireNonNull(versionRef);
+        this.images = Objects.requireNonNull(images);
         this.loopEntryRef = loopEntryRef;
         this.imageNo = imageNo;
-        this.images = images;
     }
 
     public VersionRef getVersionRef() {
@@ -45,6 +42,7 @@ public class TextDocImagesContainer {
     public LoopEntryRef getLoopEntryRef() {
         return loopEntryRef;
     }
+
     public int getDocId() {
         return versionRef.getDocId();
     }

@@ -26,8 +26,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.collections.functors.NullPredicate;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
@@ -86,11 +86,11 @@ public class TemplateMapper {
 
             boolean selected = selectedTemplate != null && selectedTemplate.equals(template);
             temps += "<option value=\""
-                    + StringEscapeUtils.escapeHtml(template.getName())
+                    + StringEscapeUtils.escapeHtml4(template.getName())
                     + "\""
                     + (selected ? " selected" : "")
                     + ">"
-                    + StringEscapeUtils.escapeHtml(template.getName()) + "</option>";
+                    + StringEscapeUtils.escapeHtml4(template.getName()) + "</option>";
         }
         return temps;
     }
@@ -102,11 +102,11 @@ public class TemplateMapper {
         for (TemplateDomainObject template : templates) {
             List tags = new ArrayList();
             tags.add("#template_name#");
-            tags.add(StringEscapeUtils.escapeHtml(template.getName()));
+            tags.add(StringEscapeUtils.escapeHtml4(template.getName()));
             tags.add("#docs#");
             tags.add("" + templateMapper.getCountOfDocumentsUsingTemplate(template));
             tags.add("#template_id#");
-            tags.add(StringEscapeUtils.escapeHtml(template.getName()));
+            tags.add(StringEscapeUtils.escapeHtml4(template.getName()));
             htmlStr += services.getAdminTemplate("template_list_row.html", user, tags);
         }
         return htmlStr;

@@ -1,5 +1,5 @@
 <%@ page import="imcode.server.document.DocumentDomainObject,
-                 org.apache.commons.lang.StringEscapeUtils"%>
+                 org.apache.commons.lang3.StringEscapeUtils"%>
 <%@page contentType="text/html; charset=UTF-8"%><%@taglib uri="imcmsvelocity" prefix="vel" %>
 <%
     String label = (String)request.getAttribute( "label" );
@@ -39,7 +39,7 @@ INPUT.imcmsFormBtnSmall {
     <% if (validId) { %>
         <a href="$contextPath/servlet/GetDoc?meta_id=<%= includedDocumentIdString %>" class="imcms_label">
     <% } %>
-    <%= StringEscapeUtils.escapeHtml( label )%>
+    <%= StringEscapeUtils.escapeHtml4( label )%>
     <% if (validId) { %>
         </a>
     <% } %>

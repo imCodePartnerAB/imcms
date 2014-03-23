@@ -4,7 +4,7 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.mapping.DocumentMapper;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -203,7 +203,7 @@ public class LinkEditPage extends OkCancelPage {
 //import javax.servlet.http.HttpServletRequest;
 //import javax.servlet.http.HttpServletResponse;
 //
-//import org.apache.commons.lang.StringUtils;
+//import org.apache.commons.lang3.StringUtils;
 //
 //import com.imcode.imcms.flow.DispatchCommand;
 //import com.imcode.imcms.flow.EditDocumentInformationPageFlow;

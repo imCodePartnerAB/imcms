@@ -7,7 +7,7 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.Html"%>
 <%@ page import="imcode.util.Utility"%>
-<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
+<%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.Map"%>
 <%@ page import="com.imcode.imcms.flow.OkCancelPage"%>
@@ -85,18 +85,18 @@ if (null != listDocumentAliasPage.aliasInSelectedRange) { %>
 	<td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
 </tr>
 <tr valign="top">
-    <td><a name="alias" href="$contextPath/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml(document.getAlias()) %></a></td>
+    <td><a name="alias" href="$contextPath/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %></a></td>
 	<td align="center"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
     <%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
 	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
-	<%= StringEscapeUtils.escapeHtml((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
+	<%= StringEscapeUtils.escapeHtml4((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
 	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
 	<a name="<%= document.getId() %>" href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>"><%=
-		document.getId() %> - <%= StringEscapeUtils.escapeHtml( document.getHeadline() ) %></a></td>
+		document.getId() %> - <%= StringEscapeUtils.escapeHtml4( document.getHeadline() ) %></a></td>
 	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
-	<%= StringEscapeUtils.escapeHtml(userService.getUser(document.getCreatorId()).getFirstName()) + " " + StringEscapeUtils.escapeHtml(userService.getUser(document.getCreatorId()).getLastName()) %></td>
+	<%= StringEscapeUtils.escapeHtml4(userService.getUser(document.getCreatorId()).getFirstName()) + " " + StringEscapeUtils.escapeHtml4(userService.getUser(document.getCreatorId()).getLastName()) %></td>
 	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
-	<%= document.getPublisherId() != null ? StringEscapeUtils.escapeHtml(userService.getUser(document.getPublisherId()).getFirstName()) + " " + StringEscapeUtils.escapeHtml(userService.getUser(document.getPublisherId()).getLastName()) : "" %></td>
+	<%= document.getPublisherId() != null ? StringEscapeUtils.escapeHtml4(userService.getUser(document.getPublisherId()).getFirstName()) + " " + StringEscapeUtils.escapeHtml4(userService.getUser(document.getPublisherId()).getLastName()) : "" %></td>
 </tr><%
 	} %>
 <tr>

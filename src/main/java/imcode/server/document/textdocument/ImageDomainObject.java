@@ -5,7 +5,7 @@ import imcode.server.Imcms;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.Resize;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -210,9 +210,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
     }
 
     public void setSource(ImageSource source) {
-        Objects.requireNonNull(source, "source");
-
-        this.source = source;
+        this.source = Objects.requireNonNull(source, "image source can not be null");
     }
 
     public boolean isEmpty() {

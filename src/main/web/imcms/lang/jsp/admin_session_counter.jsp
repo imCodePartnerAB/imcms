@@ -1,4 +1,4 @@
-<%@ page import="org.apache.commons.lang.StringEscapeUtils,
+<%@ page import="org.apache.commons.lang3.StringEscapeUtils,
                  imcode.util.jscalendar.JSCalendar,
                  com.imcode.imcms.servlet.superadmin.AdminCounter,
                  com.imcode.imcms.servlet.SearchDocumentsPage,

@@ -3,7 +3,7 @@ package com.imcode.imcms.addon.imagearchive.tag.func;
 import com.imcode.imcms.addon.imagearchive.dto.LibraryEntryDto;
 import com.imcode.imcms.addon.imagearchive.entity.Images;
 import com.imcode.imcms.addon.imagearchive.service.Facade;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sanselan.common.RationalNumber;
 import org.apache.sanselan.common.RationalNumberUtilities;
 import org.springframework.web.context.WebApplicationContext;

@@ -8,7 +8,7 @@ import com.imcode.imcms.addon.imagearchive.entity.Roles;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
 import com.imcode.imcms.api.User;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;

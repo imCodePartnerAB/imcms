@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.doc.meta
 
-import com.google.common.base.Optional
+import java.util.Optional
 import com.imcode.imcms.api.DocumentLanguage
 import com.imcode.imcms.mapping.DocumentCommonContent
 import com.imcode.imcms.vaadin.Current

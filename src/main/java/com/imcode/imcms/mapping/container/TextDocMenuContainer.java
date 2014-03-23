@@ -18,12 +18,9 @@ public class TextDocMenuContainer {
     private final MenuDomainObject menu;
 
     public TextDocMenuContainer(VersionRef versionRef, int menuNo, MenuDomainObject menu) {
-        Objects.requireNonNull(versionRef);
-        Objects.requireNonNull(menu);
-
-        this.versionRef = versionRef;
+        this.versionRef = Objects.requireNonNull(versionRef);
+        this.menu = Objects.requireNonNull(menu);
         this.menuNo = menuNo;
-        this.menu = menu;
     }
 
     public int getMenuNo() {

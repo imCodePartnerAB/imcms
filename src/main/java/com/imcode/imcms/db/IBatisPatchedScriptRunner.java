@@ -15,8 +15,6 @@
  */
 package com.imcode.imcms.db;
 
-import org.apache.ibatis.jdbc.RuntimeSqlException;
-
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -28,7 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Adds support for MySQL DELIMITER COMMAND.
+ * Supports MySQL script DELIMITER command.
  */
 public class IBatisPatchedScriptRunner {
 

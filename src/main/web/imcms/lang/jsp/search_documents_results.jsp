@@ -6,8 +6,8 @@
                  imcode.util.Html,
                  com.imcode.imcms.flow.Page"
         contentType="text/html; charset=UTF-8" %><%@ page import="java.util.List"%>
-<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
-<%@ page import="org.apache.commons.lang.ObjectUtils"%>
+<%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
+<%@ page import=org.apache.commons.lang3..ObjectUtils"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage)Page.fromRequest(request);
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
@@ -62,7 +62,7 @@
 						<tr valign="top"<%= ((i - firstDocumentIndex) % 2 == 0) ? " bgcolor=\"#FFFFFF\"" : "" %>><%
                             String alias = document.getAlias();
                             if ( alias != null ) { %>
-                            <td><a name="alias" href="<%= request.getContextPath() + "/" + document.getAlias() %>" title="<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml(document.getAlias()) %></a></td>
+                            <td><a name="alias" href="<%= request.getContextPath() + "/" + document.getAlias() %>" title="<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %></a></td>
                             <% }else { %>
                             <td>&nbsp;</td> <%}%>
                             <td><%

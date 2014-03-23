@@ -1,6 +1,6 @@
 <%@ page import="com.imcode.imcms.api.*,
 java.util.*,
-                 org.apache.commons.lang.StringUtils" errorPage="error.jsp" %>
+                 org.apache.commons.lang3.StringUtils" errorPage="error.jsp" %>
 <%
 ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
 User currentLoggedinUser = imcmsSystem.getCurrentUser();

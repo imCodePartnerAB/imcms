@@ -1,6 +1,5 @@
 package imcode.server;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.db.DB;
@@ -264,7 +263,7 @@ public class Imcms {
         } else {
             DocumentLanguage defaultLanguage = dlm.getDefault();
             if (defaultLanguage == null) {
-                defaultLanguage = Optional.fromNullable(dlm.findByCode("eng")).or(languages.get(0));
+                defaultLanguage = Optional.ofNullable(dlm.findByCode("eng")).orElseGet(() -> languages.get(0));
 
                 logger.warn("Default document language is not set. Setting it to " + defaultLanguage);
 

@@ -1,4 +1,4 @@
-<%@ tag import="org.apache.commons.lang.StringEscapeUtils"%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ tag import="org.apache.commons.lang3.StringEscapeUtils"%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@attribute name="name" required="true" %>
 <%@attribute name="target" required="true" %>
 <table border="0" cellspacing="0" cellpadding="0" id="${name}">
@@ -27,7 +27,7 @@
         <input type="text" name="${name}" size="9" maxlength="20" style="width:120"
                value="<%
         if (null != target) {
-            %><%= StringEscapeUtils.escapeHtml( target ) %><%
+            %><%= StringEscapeUtils.escapeHtml4( target ) %><%
         } %>"></td>
     </tr>
 </table>

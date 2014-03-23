@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.servlet.superadmin.AdminProfiles, imcode.server.document.Profile, org.apache.commons.lang.StringEscapeUtils, java.util.List" contentType="text/html; charset=UTF-8"%><%
+<%@ page import="com.imcode.imcms.servlet.superadmin.AdminProfiles, imcode.server.document.Profile, org.apache.commons.lang3.StringEscapeUtils, java.util.List" contentType="text/html; charset=UTF-8"%><%
     List<Profile> profiles = (List<Profile>) request.getAttribute("profiles");
     %><%@taglib prefix="vel" uri="imcmsvelocity"%><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><vel:velocity>
 <html>
@@ -25,8 +25,8 @@
             <%
             for ( Profile profile : profiles) {
                 %><tr>
-                    <td><%= StringEscapeUtils.escapeHtml(profile.getName()) %></td>
-                    <td><%= StringEscapeUtils.escapeHtml(profile.getDocumentName()) %></td>
+                    <td><%= StringEscapeUtils.escapeHtml4(profile.getName()) %></td>
+                    <td><%= StringEscapeUtils.escapeHtml4(profile.getDocumentName()) %></td>
                     <td align="right">
                         <input type="submit" class="imcmsFormBtnSmall" name="<%= AdminProfiles.Parameter.EDIT_PREFIX+profile.getId().toString() %>" value="<fmt:message key="profile/edit"/>"/>
                         <input type="submit" class="imcmsFormBtnSmall" name="<%= AdminProfiles.Parameter.DELETE_PREFIX+profile.getId( ).toString() %>" value="<fmt:message key="profile/delete"/>"/>

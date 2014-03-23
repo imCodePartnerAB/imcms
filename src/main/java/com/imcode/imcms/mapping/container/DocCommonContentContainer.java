@@ -15,11 +15,8 @@ public class DocCommonContentContainer {
     private final DocumentCommonContent documentCommonContent;
 
     public DocCommonContentContainer(VersionRef versionRef, DocumentCommonContent documentCommonContent) {
-        Objects.requireNonNull(versionRef);
-        Objects.requireNonNull(documentCommonContent);
-
-        this.versionRef = versionRef;
-        this.documentCommonContent = documentCommonContent;
+        this.versionRef = Objects.requireNonNull(versionRef);
+        this.documentCommonContent = Objects.requireNonNull(documentCommonContent);
     }
 
     public VersionRef getVersionRef() {

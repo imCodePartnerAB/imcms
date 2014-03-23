@@ -21,8 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.collections.MultiMap;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
@@ -104,7 +104,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
             }
         }
 
-        firstDocumentIndex = Math.max(0, NumberUtils.stringToInt(request.getParameter(REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX)));
+        firstDocumentIndex = Math.max(0, NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX)));
 
         boolean gotNewFirstDocumentIndex = Utility.parameterIsSet(request, REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX);
         boolean notBrowsingResultList = !gotNewFirstDocumentIndex || documentsFound == null;

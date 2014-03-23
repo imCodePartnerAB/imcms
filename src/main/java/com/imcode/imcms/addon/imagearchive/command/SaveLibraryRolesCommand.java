@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class SaveLibraryRolesCommand implements Serializable {
     private static final long serialVersionUID = 7135495070544485257L;

@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.google.common.base.Optional;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.*;
@@ -21,10 +20,11 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+
+import java.util.*;
+
+import static java.util.stream.Collectors.reducing;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
@@ -82,18 +82,15 @@ public class TextDocumentContentLoader {
     public Map<Integer, TextDomainObject> getTexts(final DocRef docRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         Language language = languageRepository.findByCode(docRef.getLanguageCode());
-        final Map<Integer, TextDomainObject> result = new HashMap<>();
 
-        for (Text text : textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)) {
-            result.put(text.getNo(), toDomainObject(text));
-        }
-
-        return result;
+        return textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)
+                .stream().collect(toMap(Text::getNo, this::toDomainObject));
     }
 
     public Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> getLoopTexts(DocRef docRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         Language language = languageRepository.findByCode(docRef.getLanguageCode());
+
         final Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> result = new HashMap<>();
 
         for (Text text : textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
@@ -153,13 +150,10 @@ public class TextDocumentContentLoader {
     public Map<Integer, ImageDomainObject> getImages(DocRef docRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         Language language = languageRepository.findByCode(docRef.getLanguageCode());
-        final Map<Integer, ImageDomainObject> result = new HashMap<>();
 
-        for (Image image : imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)) {
-            result.put(image.getNo(), toDomainObject(image));
-        }
+        return imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)
+                .stream().collect(toMap(Image::getNo, this::toDomainObject));
 
-        return result;
     }
 
     public Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> getLoopImages(DocRef docRef) {
@@ -237,16 +231,7 @@ public class TextDocumentContentLoader {
     public Map<Integer, Loop> getLoops(VersionRef versionRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
-        Map<Integer, Loop> result = new HashMap<>();
-
-        for (com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop : loopRepository.findByVersion(version)) {
-            result.put(
-                    loop.getNo(),
-                    toApiObject(loop)
-            );
-        }
-
-        return result;
+        return loopRepository.findByVersion(version).stream().collect(toMap(loop -> loop.getNo(), this::toApiObject));
     }
 
     public Loop getLoop(VersionRef versionRef, int loopNo) {
@@ -259,24 +244,13 @@ public class TextDocumentContentLoader {
 
     public Map<Integer, MenuDomainObject> getMenus(VersionRef versionRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
-        List<Menu> textDocMenus = menuRepository.findByVersion(version);
-        Map<Integer, MenuDomainObject> menus = new HashMap<>();
 
-        for (Menu menu : textDocMenus) {
-            menus.put(menu.getNo(), toDomainObject(menu));
-        }
-
-        return menus;
+        return menuRepository.findByVersion(version).stream().collect(toMap(Menu::getNo, this::toDomainObject));
     }
 
     public Map<Integer, Integer> getIncludes(int docId) {
-        Map<Integer, Integer> result = new HashMap<>();
-
-        for (Include include : includeRepository.findByDocId(docId)) {
-            result.put(include.getNo(), include.getIncludedDocumentId());
-        }
-
-        return result;
+        return includeRepository.findByDocId(docId)
+                .stream().collect(toMap(Include::getNo, Include::getIncludedDocumentId));
     }
 
     private TextDomainObject toDomainObject(Text jpaText) {
@@ -290,9 +264,7 @@ public class TextDocumentContentLoader {
 
         menuDO.setSortOrder(menu.getSortOrder());
 
-        for (Map.Entry<Integer, MenuItem> e : menu.getItems().entrySet()) {
-            MenuItem menuItem = e.getValue();
-            Integer referencedDocumentId = e.getKey();
+        menu.getItems().forEach((referencedDocumentId, menuItem) -> {
             MenuItemDomainObject menuItemDO = new MenuItemDomainObject();
             GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, menuItemDocumentGetter);
 
@@ -301,7 +273,7 @@ public class TextDocumentContentLoader {
             menuItemDO.setTreeSortIndex(menuItem.getTreeSortIndex());
 
             menuDO.addMenuItemUnchecked(menuItemDO);
-        }
+        });
 
         return menuDO;
     }
@@ -371,11 +343,8 @@ public class TextDocumentContentLoader {
     private Loop toApiObject(com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop jpaLoop) {
         if (jpaLoop == null) return null;
 
-        Map<Integer, Boolean> entries = new HashMap<>();
-
-        for (com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry jpaEntry : jpaLoop.getEntries()) {
-            entries.put(jpaEntry.getNo(), jpaEntry.isEnabled());
-        }
+        Map<Integer, Boolean> entries = jpaLoop.getEntries()
+                .stream().collect(toMap(entry -> entry.getNo(), entry -> entry.isEnabled()));
 
         return Loop.of(entries, jpaLoop.getNextEntryNo());
     }

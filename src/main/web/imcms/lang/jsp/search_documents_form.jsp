@@ -9,9 +9,9 @@
                  imcode.util.ToDoubleObjectStringPairTransformer,
                  imcode.util.Utility,
                  imcode.util.jscalendar.JSCalendar,
-                 org.apache.commons.lang.ArrayUtils"%>
-<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
-<%@ page import="org.apache.commons.lang.StringUtils"%>
+                 org.apache.commons.lang3.ArrayUtils"%>
+<%@ page import=org.apache.commons.lang3..StringEscapeUtils"%>
+<%@ page importorg.apache.commons.lang3.g.StringUtils"%>
 <%@ page import="java.util.Arrays"%>
 <%@ page import="java.util.Set"%>
 <%@ page contentType="text/html; charset=UTF-8" %>
@@ -33,7 +33,7 @@
     <table border="0" cellspacing="0" cellpadding="2" width="656">
         <tr>
             <td width="120" height="24"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/2 ?></td>
-            <td width="536" colspan="3"><input type="text" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__QUERY_STRING %>" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString( searchDocumentsPage.getQueryString() ) ) %>" size="20" maxlength="255" style="width:100%"></td>
+            <td width="536" colspan="3"><input type="text" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__QUERY_STRING %>" value="<%= StringEscapeUtils.escapeHtml4(StringUtils.defaultString( searchDocumentsPage.getQueryString() ) ) %>" size="20" maxlength="255" style="width:100%"></td>
         </tr>
         <tr>
             <td colspan="4"><img src="<%= IMG_PATH %>/1x1_cccccc.gif" width="100%" height="1" vspace="8"></td>

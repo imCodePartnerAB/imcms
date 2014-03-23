@@ -5,7 +5,7 @@ import imcode.server.Imcms;
 import java.beans.PropertyEditorSupport;
 import java.io.File;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class FileEditor extends PropertyEditorSupport {
 

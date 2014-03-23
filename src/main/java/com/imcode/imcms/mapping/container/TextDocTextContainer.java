@@ -23,13 +23,10 @@ public class TextDocTextContainer {
     private final TextDomainObject text;
 
     public TextDocTextContainer(DocRef docRef, LoopEntryRef loopEntryRef, int textNo, TextDomainObject text) {
-        Objects.requireNonNull(docRef);
-        Objects.requireNonNull(text);
-
-        this.docRef = docRef;
+        this.docRef =  Objects.requireNonNull(docRef);
+        this.text =  Objects.requireNonNull(text);
         this.loopEntryRef = loopEntryRef;
         this.textNo = textNo;
-        this.text = text;
     }
 
     public int getTextNo() {

@@ -23,13 +23,10 @@ public class TextDocImageContainer {
     private final ImageDomainObject image;
 
     public TextDocImageContainer(DocRef docRef, LoopEntryRef loopEntryRef, int imageNo, ImageDomainObject image) {
-        Objects.requireNonNull(docRef);
-        Objects.requireNonNull(image);
-
-        this.docRef = docRef;
+        this.docRef = Objects.requireNonNull(docRef);
+        this.image = Objects.requireNonNull(image);
         this.loopEntryRef = loopEntryRef;
         this.imageNo = imageNo;
-        this.image = image;
     }
 
     public int getImageNo() {

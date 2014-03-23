@@ -1,5 +1,5 @@
 <%@ page import="com.imcode.imcms.servlet.VerifyUser"%><%@ page import="imcode.server.user.UserDomainObject"%><%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage"%>
-<%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
+<%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
 <vel:velocity>
@@ -56,9 +56,9 @@
         String next_meta = request.getParameter(VerifyUser.REQUEST_PARAMETER__NEXT_META);
         String next_url = request.getParameter(VerifyUser.REQUEST_PARAMETER__NEXT_URL);
     if( null != next_meta )  { %>
-    <input type="hidden" name="<%= VerifyUser.REQUEST_PARAMETER__NEXT_META %>" value="<%=StringEscapeUtils.escapeHtml(next_meta)%>">
+    <input type="hidden" name="<%= VerifyUser.REQUEST_PARAMETER__NEXT_META %>" value="<%=StringEscapeUtils.escapeHtml4(next_meta)%>">
     <%}else if( null != next_url ) { %>
-    <input type="hidden" name="<%= VerifyUser.REQUEST_PARAMETER__NEXT_URL %>" value="<%=StringEscapeUtils.escapeHtml(next_url)%>">
+    <input type="hidden" name="<%= VerifyUser.REQUEST_PARAMETER__NEXT_URL %>" value="<%=StringEscapeUtils.escapeHtml4(next_url)%>">
 	<%}%>
     <tr>
 		<td><span class="imcmsAdmText"><? templates/login/index.html/5 ?></span></td>

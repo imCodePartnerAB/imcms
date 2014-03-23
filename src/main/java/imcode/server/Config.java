@@ -5,7 +5,7 @@ import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.*;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Base application configuration.

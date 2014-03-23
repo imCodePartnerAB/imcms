@@ -1,6 +1,6 @@
 package com.imcode.imcms.addon.imagearchive.validator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 

@@ -18,8 +18,8 @@ import imcode.util.Html;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
@@ -172,7 +172,7 @@ public class TagParser {
             return Utility.getContents(path, metaIdHeaderHttpServletRequest, documentRequest.getHttpServletResponse());
         } catch (Exception ex) {
             LOG.warn("imcms:include path " + path + " failed.", ex);
-            return "<!-- imcms:include path failed: " + StringEscapeUtils.escapeHtml(ex.toString()) + " -->";
+            return "<!-- imcms:include path failed: " + StringEscapeUtils.escapeHtml4(ex.toString()) + " -->";
         }
     }
 
@@ -280,7 +280,7 @@ public class TagParser {
             }
         } catch (Exception ex) {
             LOG.warn("imcms:include url " + urlStr + " failed.", ex);
-            return "<!-- imcms:include url failed: " + StringEscapeUtils.escapeHtml(ex.toString()) + " -->";
+            return "<!-- imcms:include url failed: " + StringEscapeUtils.escapeHtml4(ex.toString()) + " -->";
         }
     }
 
@@ -872,7 +872,7 @@ public class TagParser {
         while (patternMatcher.contains(attributes_input, attributesPattern)) {
             MatchResult attribute_matres = patternMatcher.getMatch();
             String escapedValue = attribute_matres.group(3);
-            String value = StringEscapeUtils.unescapeHtml(escapedValue);
+            String value = StringEscapeUtils.unescapeHtml4(escapedValue);
             value = tagVelocity(value);
             attributes.setProperty(attribute_matres.group(1), value);
         }
@@ -883,7 +883,7 @@ public class TagParser {
     public static class VelocityTagUtil {
 
         public String escapeHtml(String s) {
-            return StringEscapeUtils.escapeHtml(s);
+            return StringEscapeUtils.escapeHtml4(s);
         }
     }
 

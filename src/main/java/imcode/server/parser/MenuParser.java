@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.oro.text.regex.PatternMatcher;
 import org.apache.oro.text.regex.Perl5Matcher;
@@ -270,7 +270,7 @@ public class MenuParser {
         final String imagesRoot = contextPath + Imcms.getServices().getConfig().getImageUrl();
 
         String imageTag = imageUrl != null && imageUrl.length() > 0
-                ? "<img src=\"" + imagesRoot + StringEscapeUtils.escapeHtml(imageUrl) + "\" border=\"0\">" : "";
+                ? "<img src=\"" + imagesRoot + StringEscapeUtils.escapeHtml4(imageUrl) + "\" border=\"0\">" : "";
         String headline = document.getHeadline();
         if (StringUtils.isBlank(headline)) {
             headline = "&nbsp;";
@@ -301,7 +301,7 @@ public class MenuParser {
         tags.setProperty("#menuitemheadline#", headline);
         tags.setProperty("#menuitemtext#", document.getMenuText());
         tags.setProperty("#menuitemimage#", imageTag);
-        tags.setProperty("#menuitemimageurl#", StringEscapeUtils.escapeHtml(imageUrl));
+        tags.setProperty("#menuitemimageurl#", StringEscapeUtils.escapeHtml4(imageUrl));
         tags.setProperty("#menuitemtarget#", document.getTarget());
         tags.setProperty("#menuitemdatecreated#", createdDate);
         tags.setProperty("#menuitemdatemodified#", modifiedDate);

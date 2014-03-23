@@ -21,7 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.oro.text.perl.Perl5Util;
 
@@ -189,24 +189,24 @@ public class Html {
 
         StringBuffer option = new StringBuffer();
 
-        option.append("<option value=\"").append(StringEscapeUtils.escapeHtml(elementValue)).append("\"");
+        option.append("<option value=\"").append(StringEscapeUtils.escapeHtml4(elementValue)).append("\"");
         if (selected) {
             option.append(" selected");
         }
-        option.append(">").append(StringEscapeUtils.escapeHtml(content)).append("</option>");
+        option.append(">").append(StringEscapeUtils.escapeHtml4(content)).append("</option>");
         return option.toString();
     }
 
     public static String hidden(String name, String value) {
-        return "<input type=\"hidden\" name=\"" + StringEscapeUtils.escapeHtml(name) + "\" value=\""
-                + StringEscapeUtils.escapeHtml(value)
+        return "<input type=\"hidden\" name=\"" + StringEscapeUtils.escapeHtml4(name) + "\" value=\""
+                + StringEscapeUtils.escapeHtml4(value)
                 + "\">";
     }
 
     public static String radio(String name, String value, boolean selected) {
         return
-                "<input type=\"radio\" name=\"" + StringEscapeUtils.escapeHtml(name) + "\" value=\""
-                        + StringEscapeUtils.escapeHtml(value) + "\"" + (selected ? " checked" : "") + ">";
+                "<input type=\"radio\" name=\"" + StringEscapeUtils.escapeHtml4(name) + "\" value=\""
+                        + StringEscapeUtils.escapeHtml4(value) + "\"" + (selected ? " checked" : "") + ">";
 
     }
 

@@ -163,7 +163,7 @@ public class DocumentSaver {
     }
 
     @Transactional
-    public void updateDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> appearances, DocumentDomainObject oldDoc,
+    public void updateDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContentMap, DocumentDomainObject oldDoc,
                                UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -180,9 +180,7 @@ public class DocumentSaver {
 
         metaRepository.saveAndFlush(jpaMeta);
 
-        for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : appearances.entrySet()) {
-            DocumentLanguage language = e.getKey();
-            DocumentCommonContent dcc = e.getValue();
+        commonContentMap.forEach((language, dcc) -> {
             CommonContent ormDcc = commonContentRepository.findByDocIdAndLanguageCode(doc.getId(), language.getCode());
             if (ormDcc == null) {
                 ormDcc = new CommonContent();
@@ -199,7 +197,7 @@ public class DocumentSaver {
                 ormDcc.setLanguage(ormLanguage);
                 commonContentRepository.save(ormDcc);
             }
-        }
+        });
 
         doc.accept(savingVisitor);
         updateModifiedDtIfNotSetExplicitly(doc);
@@ -302,10 +300,9 @@ public class DocumentSaver {
 
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
 
-        for (Map.Entry<DocumentLanguage, DocumentCommonContent> entry : dccMap.entrySet()) {
-            DocumentCommonContent dcc = entry.getValue();
+        dccMap.forEach((language, dcc) -> {
             CommonContent jpaDcc = new CommonContent();
-            Language jpaLanguage = languageRepository.findByCode(entry.getKey().getCode());
+            Language jpaLanguage = languageRepository.findByCode(language.getCode());
 
             jpaDcc.setDocId(newDocId);
             jpaDcc.setHeadline(dcc.getHeadline());
@@ -314,7 +311,7 @@ public class DocumentSaver {
             jpaDcc.setLanguage(jpaLanguage);
 
             commonContentRepository.save(jpaDcc);
-        }
+        });
 
         docRepository.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, String.valueOf(newDocId));
 
@@ -329,13 +326,10 @@ public class DocumentSaver {
             Map<DocumentLanguage, TextDomainObject> texts1 = new HashMap<>();
             Map<DocumentLanguage, TextDomainObject> texts2 = new HashMap<>();
 
-            for (Map.Entry<DocumentLanguage, DocumentCommonContent> entry : dccMap.entrySet()) {
-                DocumentLanguage language = entry.getKey();
-                DocumentCommonContent dcc = entry.getValue();
-
+            dccMap.forEach((language, dcc) -> {
                 texts1.put(language, new TextDomainObject(dcc.getHeadline()));
                 texts2.put(language, new TextDomainObject(dcc.getMenuText()));
-            }
+            });
 
             textDocumentContentSaver.saveTexts(
                     TextDocTextsContainer.of(VersionRef.of(version.getDocId(), version.getNo()), 1, texts1),

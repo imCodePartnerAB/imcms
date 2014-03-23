@@ -7,12 +7,12 @@
 	        java.sql.ResultSet,
 	        java.sql.Connection,
 	        java.sql.PreparedStatement,
-	        org.apache.commons.lang.StringUtils,
+	        org.apache.commons.lang3.StringUtils,
 	        imcode.server.document.textdocument.TextDomainObject,
 	        imcode.util.Parser,
 	        java.util.Locale,
 	        com.imcode.imcms.api.*,
-	        org.apache.commons.lang.StringEscapeUtils,
+	       org.apache.commons.lang3..StringEscapeUtils,
 	        java.net.URLEncoder"
 	
 	contentType="text/html; charset=UTF-8"
@@ -26,9 +26,9 @@
 %><%!
 
 private String colorCodeSimple(String html) {
-	html = StringEscapeUtils.unescapeHtml(html) ;
+	html = StringEscapeUtils.unescapeHtml4(html) ;
 	html = html.replaceAll("(<[^>]+?>)", "#SPAN#$1#/SPAN#") ;
-	html = StringEscapeUtils.escapeHtml(html) ;
+	html = StringEscapeUtils.escapeHtml4(html) ;
 	html = html
 				.replaceAll("#SPAN#", "<span>")
 				.replaceAll("#/SPAN#", "</span>") ;
@@ -244,14 +244,14 @@ try {
 
 <div id="htmlContent"><%
 if (viewAsHtml) { %>
-<pre><%= colorCodeSimple(StringEscapeUtils.escapeHtml(sContent)) %></pre><%
+<pre><%= colorCodeSimple(StringEscapeUtils.escapeHtml4(sContent)) %></pre><%
 } else { %>
 <%= sContent %><%
 }
 %></div>
 
 <form action="">
-<input type="hidden" name="theContent" id="theContent" value="<%= StringEscapeUtils.escapeHtml(sContentRaw) %>" />
+<input type="hidden" name="theContent" id="theContent" value="<%= StringEscapeUtils.escapeHtml4(sContentRaw) %>" />
 </form>
 
 <%

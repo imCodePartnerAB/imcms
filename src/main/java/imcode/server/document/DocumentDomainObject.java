@@ -10,7 +10,7 @@ import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
@@ -498,9 +498,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setLanguage(DocumentLanguage language) {
-        Objects.requireNonNull(language, "language argument can not be null.");
-
-        this.language = language;
+        this.language = Objects.requireNonNull(language, "language argument can not be null.");;
     }
 
 
@@ -509,9 +507,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setCommonContent(DocumentCommonContent commonContent) {
-        Objects.requireNonNull(commonContent, "commonContent argument can not be null.");
-
-        this.commonContent = commonContent;
+        this.commonContent = Objects.requireNonNull(commonContent, "commonContent argument can not be null.");
     }
 
     public boolean isNew() {

@@ -10,8 +10,8 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.sanselan.ImageFormat;
@@ -128,7 +128,7 @@ public class ExifUtils {
 
                     String value = userComment.length() > imageDescription.length() ? userComment : imageDescription;
                     if (containsHtmlEntities(value)) {
-                        value = StringEscapeUtils.unescapeHtml(value);
+                        value = StringEscapeUtils.unescapeHtml4(value);
                     }
 
                     data.setDescription(value);
@@ -136,7 +136,7 @@ public class ExifUtils {
                     imageDescription = imageDescription.trim();
 
                     if (containsHtmlEntities(imageDescription)) {
-                        imageDescription = StringEscapeUtils.unescapeHtml(imageDescription);
+                        imageDescription = StringEscapeUtils.unescapeHtml4(imageDescription);
                     }
 
                     data.setDescription(imageDescription);
@@ -144,7 +144,7 @@ public class ExifUtils {
                     userComment = userComment.trim();
 
                     if (containsHtmlEntities(userComment)) {
-                        userComment = StringEscapeUtils.unescapeHtml(userComment);
+                        userComment = StringEscapeUtils.unescapeHtml4(userComment);
                     }
 
                     data.setDescription(userComment);
@@ -154,7 +154,7 @@ public class ExifUtils {
                 copyright = copyright.trim();
 
                 if (containsHtmlEntities(copyright)) {
-                    copyright = StringEscapeUtils.unescapeHtml(copyright);
+                    copyright = StringEscapeUtils.unescapeHtml4(copyright);
                 }
 
                 data.setCopyright(copyright);
@@ -163,7 +163,7 @@ public class ExifUtils {
                 artist = artist.trim();
 
                 if (containsHtmlEntities(artist)) {
-                    artist = StringEscapeUtils.unescapeHtml(artist);
+                    artist = StringEscapeUtils.unescapeHtml4(artist);
                 }
 
                 data.setArtist(artist);
@@ -180,7 +180,7 @@ public class ExifUtils {
                 manufacturer = manufacturer.trim();
 
                 if (containsHtmlEntities(manufacturer)) {
-                    manufacturer = StringEscapeUtils.unescapeHtml(manufacturer);
+                    manufacturer = StringEscapeUtils.unescapeHtml4(manufacturer);
                 }
 
                 data.setManufacturer(manufacturer);
@@ -190,7 +190,7 @@ public class ExifUtils {
                 model = model.trim();
 
                 if (containsHtmlEntities(model)) {
-                    model = StringEscapeUtils.unescapeHtml(model);
+                    model = StringEscapeUtils.unescapeHtml4(model);
                 }
 
                 data.setModel(model);

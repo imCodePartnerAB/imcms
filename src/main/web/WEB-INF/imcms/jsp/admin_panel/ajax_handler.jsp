@@ -12,12 +12,13 @@
 	        imcode.server.document.textdocument.TextDocumentDomainObject,
 	        imcode.server.parser.ParserParameters,
 	        imcode.server.user.UserDomainObject,
-	        imcode.util.Utility, org.apache.commons.lang.StringUtils, java.util.List, java.util.Set, com.imcode.imcms.servlet.Version, org.apache.commons.lang.StringEscapeUtils, org.apache.oro.text.perl.Perl5Util, org.apache.oro.text.perl.MalformedPerl5PatternException, imcode.util.Html, imcode.server.document.*, java.util.ArrayList, imcode.server.ImcmsServices, java.util.Iterator, org.apache.commons.collections.iterators.ReverseListIterator"
+	        imcode.util.Utility, org.apache.commons.lang3.StringUtils, java.util.List, java.util.Set, com.imcode.imcms.servlet.Version,org.apache.commons.lang3..StringEscapeUtils, org.apache.oro.text.perl.Perl5Util, org.apache.oro.text.perl.MalformedPerl5PatternException, imcode.util.Html, imcode.server.document.*, java.util.ArrayList, imcode.server.ImcmsServices, java.util.Iterator, org.apache.commons.collections.iterators.ReverseListIterator"
 	
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
 	
 %>
+<%@ page import="com.imcode.imcms.api.DocumentLanguage" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%!
 
@@ -156,10 +157,10 @@ int versionNo = document.getVersionNo();
 /* *******************************************************************************************
 *         Get languages                                                                     *
 ******************************************************************************************* */
-List<Language> languages = Imcms.getServices().getDocumentLanguageSupport().getAll();
-Set<Language> enabledLanguages = document.getMeta().getEnabledLanguages();
-Language defaultLanguage = Imcms.getServices().getDocumentLanguageSupport().getDefault();
-Language currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
+List<DocumentLanguage> languages = Imcms.getServices().getDocumentLanguageSupport().getAll();
+Set<DocumentLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
+    DocumentLanguage defaultLanguage = Imcms.getServices().getDocumentLanguageSupport().getDefault();
+    DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
 
 
 
@@ -183,7 +184,7 @@ if ("adminPanelHtml".equals(get)) { %>
                 <ul>
                     <li id="statusIcon"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></li><%
                 boolean hasManyLanguages = (languages.size() > 6) ;
-                for (Language lang: languages) {
+                for (DocumentLanguage lang: languages) {
                     String langCode       = lang.getCode() ;
                     String langName       = lang.getName() ;
                     String langNameNative = lang.getNativeName() ;
@@ -217,7 +218,7 @@ if ("adminPanelHtml".equals(get)) { %>
             </tr>
             <tr>
                 <td id="imcmsToolBarVersionTd"><span class="imcmsToolTip" title="<%=
-                StringEscapeUtils.escapeHtml(imcmsVersionComplete) %>"><%= imcmsVersionShort %></span></td>
+                StringEscapeUtils.escapeHtml4(imcmsVersionComplete) %>"><%= imcmsVersionShort %></span></td>
             </tr>
             </table>
             <div class="tabsDiv">
@@ -342,7 +343,7 @@ if ("adminPanelHtml".equals(get)) { %>
                         while (iterator.hasNext()) {
                             DocumentVersion v = (DocumentVersion)iterator.next() ;
                             String sSelected = v.getNo() == versionNo ? " selected=\"selected\"" : "" ;
-                            String displayName = DocumentVersionInfo.isWorkingVersion(v) ? "DRAFT" : "Version " + v.getNo().toString() ;
+                            String displayName = DocumentVersionInfo.isWorkingVersion(v) ? "DRAFT" : "Version " + Integer.toString(v.getNo());
                             if (DocumentVersionInfo.isDefaultVersion(v)) {
                                 displayName += " (default)" ;    
                             } %>

@@ -3,8 +3,8 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.HttpSessionUtils,
                  imcode.util.Utility,
-                 org.apache.commons.lang.StringEscapeUtils,
-                 org.apache.commons.lang.StringUtils,
+                 org.apache.commons.lang3.StringEscapeUtils,
+                org.apache.commons.lang3..StringUtils,
                  com.imcode.imcms.servlet.superadmin.UserEditorPage,
                  imcode.server.Imcms,
                  imcode.server.user.RoleDomainObject,
@@ -50,7 +50,7 @@
         <td width="70%">
         <table border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td><input type="text" name="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" size="20" maxlength="20" value="<%= StringEscapeUtils.escapeHtml(userBrowserPage.getSearchString()) %>"></td>
+            <td><input type="text" name="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" size="20" maxlength="20" value="<%= StringEscapeUtils.escapeHtml4(userBrowserPage.getSearchString()) %>"></td>
             <td class="imcmsAdmDim">&nbsp; <? templates/sv/AdminChangeUser.htm/1001 ?></td>
         </tr>
         </table></td>

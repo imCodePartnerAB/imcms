@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class SaveRoleCategoriesCommand implements Serializable {
     private static final long serialVersionUID = 8195144106210986876L;

@@ -15,7 +15,7 @@ import imcode.util.Html;
 import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.regex.*;

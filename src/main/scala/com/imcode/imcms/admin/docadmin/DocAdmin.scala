@@ -314,9 +314,9 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
   /*
           <div id="editor"><%
             if (rows == 1) { %>
-              <input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%;" /><%
+              <input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml4( textEditPage.getTextString() ) %>" style="width:100%;" /><%
             } else { %>
-              <textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width: 100%;"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
+              <textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width: 100%;"><%= StringEscapeUtils.escapeHtml4( textEditPage.getTextString() ) %></textarea><%
             } %>
           </div>
      */

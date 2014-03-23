@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.imcode.util.HumanReadable;
@@ -449,7 +449,7 @@ public class FileAdmin extends HttpServlet {
         vec.add("#filelist#");
         vec.add(optionlist.toString());
         vec.add("#files#");
-        vec.add(StringEscapeUtils.escapeHtml(files.toString()));
+        vec.add(StringEscapeUtils.escapeHtml4(files.toString()));
         vec.add("#source#");
         vec.add(getContextRelativeAbsolutePathToDirectory(sourceDir));
         vec.add("#dir1#");
@@ -694,9 +694,9 @@ public class FileAdmin extends HttpServlet {
             String filename = filelist[i].getName();
             String fileNameAndSize = filename + " [" + formatedFileSize + "]";
             optionlist.append("<option value=\"");
-            optionlist.append(StringEscapeUtils.escapeHtml(filename));
+            optionlist.append(StringEscapeUtils.escapeHtml4(filename));
             optionlist.append("\">");
-            optionlist.append(StringEscapeUtils.escapeHtml(fileNameAndSize));
+            optionlist.append(StringEscapeUtils.escapeHtml4(fileNameAndSize));
             optionlist.append("</option>");
         }
         return optionlist.toString();
@@ -704,8 +704,8 @@ public class FileAdmin extends HttpServlet {
 
     private String getDirectoryOption(String value, String text) {
         return "<option style=\"background-color:#f0f0f0\" value=\""
-                + StringEscapeUtils.escapeHtml(value) + "\">"
-                + StringEscapeUtils.escapeHtml(text) + "</option>";
+                + StringEscapeUtils.escapeHtml4(value) + "\">"
+                + StringEscapeUtils.escapeHtml4(text) + "</option>";
     }
 
     private Comparator getFileComparator() {

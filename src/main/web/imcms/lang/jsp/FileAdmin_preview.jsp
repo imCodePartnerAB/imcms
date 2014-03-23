@@ -8,7 +8,7 @@
 	        java.io.BufferedReader,
 	        java.io.File,
 	        java.io.FileInputStream,
-	        java.io.InputStreamReader, java.text.DecimalFormat, org.apache.commons.lang.StringEscapeUtils, java.io.IOException"
+	        java.io.InputStreamReader, java.text.DecimalFormat, org.apache.commons.lang3.StringEscapeUtils, java.io.IOException"
         contentType="text/html; charset=UTF-8"
 	
 %><%
@@ -95,7 +95,7 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 	theButtons = "<table border=0 bgcolor=\"#d6d3ce\" align=\"right\">\n<tr>" ;
 	if (hasGetElementById && !hasDocumentAll && !isMac) {
 		hasInlineButtons = true ;
-         theButtons += "\n   <td><a href=\"#\" onClick=\"find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"Sök!\"></a></td>" ;
+         theButtons += "\n   <td><a href=\"#\" onClick=\"find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"Sï¿½k!\"></a></td>" ;
 	}
 	if (isMac) {
 		hasInlineButtons = true ;
@@ -143,7 +143,7 @@ try {
 if (frame.equalsIgnoreCase("MAIN")) { %>
 <html>
 <head>
-<title><%= StringEscapeUtils.escapeHtml(file) %></title>
+<title><%= StringEscapeUtils.escapeHtml4(file) %></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
@@ -187,7 +187,7 @@ if (isImage) {
 } else if (frame.equalsIgnoreCase("TOP")) { %>
 <html>
 <head>
-<title><%= StringEscapeUtils.escapeHtml(file) %></title>
+<title><%= StringEscapeUtils.escapeHtml4(file) %></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
@@ -334,7 +334,7 @@ function findIt(str) {
 	%>
 <html>
 <head>
-<title><%= StringEscapeUtils.escapeHtml(file) %></title>
+<title><%= StringEscapeUtils.escapeHtml4(file) %></title>
 
 </head>
 	<%

@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.google.common.base.Optional;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.mapping.TextDocumentContentLoader;
@@ -27,14 +26,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
 import imcode.util.ImcmsImageUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 
 /**
@@ -54,7 +53,7 @@ public class ChangeImage extends HttpServlet {
         final Integer documentId = Integer.parseInt(request.getParameter("meta_id"));
 
         String loopEntryRefStr = request.getParameter("loop_entry_ref");
-        LoopEntryRef loopEntryRef = LoopEntryRef.of(loopEntryRefStr).orNull();
+        LoopEntryRef loopEntryRef = LoopEntryRef.of(loopEntryRefStr).orElse(null);
 
         final TextDocumentDomainObject document = documentMapper.getDocument(documentId);
 
@@ -136,7 +135,7 @@ public class ChangeImage extends HttpServlet {
         };
 
         Map<DocumentLanguage, ImageDomainObject> images = imcref.getManagedBean(TextDocumentContentLoader.class).getImages(
-                document.getVersionRef(), imageIndex, Optional.fromNullable(loopEntryRef)
+                document.getVersionRef(), imageIndex, Optional.ofNullable(loopEntryRef)
         );
 
         for (DocumentLanguage language : imcref.getDocumentLanguageSupport().getAll()) {

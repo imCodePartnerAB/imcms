@@ -2,7 +2,7 @@ package com.imcode.imcms.addon.imagearchive.validator;
 
 import com.imcode.imcms.addon.imagearchive.command.SaveLibraryRolesCommand;
 import com.imcode.imcms.addon.imagearchive.util.ValidatorUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 

@@ -18,8 +18,8 @@ import org.apache.commons.collections.*;
 import org.apache.commons.collections.iterators.ObjectArrayIterator;
 import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
@@ -212,7 +212,7 @@ public class Utility {
     }
 
     public static String formatUser(UserDomainObject user) {
-        return StringEscapeUtils.escapeHtml(user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName() + ")");
+        return StringEscapeUtils.escapeHtml4(user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName() + ")");
     }
 
     public static String getAbsolutePathToDocument(HttpServletRequest request, DocumentDomainObject document) {

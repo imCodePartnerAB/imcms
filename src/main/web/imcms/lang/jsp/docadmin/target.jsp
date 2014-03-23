@@ -1,6 +1,6 @@
 <%@ page
 	
-	import="org.apache.commons.lang.StringEscapeUtils"
+	import="org.apache.commons.lang3.StringEscapeUtils"
     contentType="text/html; charset=UTF-8"    
 	
 %><%
@@ -37,7 +37,7 @@ String target = (String)request.getAttribute( "target" ) ;
 	<td class="imcmsAdmText" nowrap>&nbsp;<label for="target3"><? install/htdocs/sv/jsp/docadmin/url_document.jsp/1006 ?></label> &nbsp;</td>
 	<td colspan="4"><input type="text" name="target" id="target4" size="17" maxlength="50" value="<%
 	if (null != target) {
-		%><%= StringEscapeUtils.escapeHtml( target ) %><%
+		%><%= StringEscapeUtils.escapeHtml4( target ) %><%
 	} %>"></td>
 </tr>
 </table>

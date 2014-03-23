@@ -3,7 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.util.ImcmsImageUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Properties;
@@ -134,7 +134,7 @@ public class Image {
     }
 
     public String toHtmlUrl(String contextPath) {
-        return StringEscapeUtils.escapeHtml(ImcmsImageUtils.getImageUrl(internalImage, contextPath));
+        return StringEscapeUtils.escapeHtml4(ImcmsImageUtils.getImageUrl(internalImage, contextPath));
     }
 
     public String toHtmlTag(HttpServletRequest request, Properties attributes, boolean absolute) {

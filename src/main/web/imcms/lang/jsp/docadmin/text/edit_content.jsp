@@ -2,9 +2,9 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.Html,
                  imcode.util.Utility,
-                 org.apache.commons.lang.StringEscapeUtils,
-                 org.apache.commons.lang.math.NumberUtils,
-                 java.net.URLEncoder, org.apache.commons.lang.StringUtils"%><%
+                 org.apache.commons.lang3.StringEscapeUtils,
+                org.apache.commons.lang3..math.NumberUtils,
+                 java.net.URLEncoderorg.apache.commons.lang3.g.StringUtils"%><%
 
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute( "document" ) ;
     Integer textIndex = (Integer)request.getAttribute( "textIndex" ) ;
@@ -28,6 +28,6 @@
     if (null != rows && NumberUtils.isDigits( rows )) {
         url += "&rows="+rows ;
     }
-%><a href="<%= StringEscapeUtils.escapeHtml( url ) %>" class="imcms_label"><%= label %><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/red.gif" border="0"></a>
+%><a href="<%= StringEscapeUtils.escapeHtml4( url ) %>" class="imcms_label"><%= label %><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/red.gif" border="0"></a>
 <%= content %>
-<a href="<%= StringEscapeUtils.escapeHtml( url ) %>"><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/ico_txt.gif" border="0"></a>
+<a href="<%= StringEscapeUtils.escapeHtml4( url ) %>"><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/ico_txt.gif" border="0"></a>

@@ -2,7 +2,7 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.util.CompositeList;
-import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;

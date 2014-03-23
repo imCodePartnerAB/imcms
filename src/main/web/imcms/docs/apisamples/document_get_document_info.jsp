@@ -1,5 +1,5 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
-<%@ page import="org.apache.commons.lang.ObjectUtils"%>
+<%@ page import="org.apache.commons.lang3.ObjectUtils"%>
 
 <%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );

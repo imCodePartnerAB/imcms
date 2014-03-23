@@ -37,7 +37,7 @@ import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
 import org.apache.commons.lang.math.IntRange;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -82,8 +82,8 @@ public class LinkCheck extends HttpServlet {
 
         int lowestDocumentId = documentMapper.getLowestDocumentId();
         int highestDocumentId = documentMapper.getHighestDocumentId();
-        int startId = NumberUtils.stringToInt(request.getParameter(REQUEST_PARAMETER__START_ID), lowestDocumentId);
-        int endId = NumberUtils.stringToInt(request.getParameter(REQUEST_PARAMETER__END_ID), highestDocumentId);
+        int startId = NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__START_ID), lowestDocumentId);
+        int endId = NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__END_ID), highestDocumentId);
         IntRange range = new IntRange(startId, endId);
         range = new IntRange(Math.max(range.getMinimumInteger(), lowestDocumentId), Math.min(range.getMaximumInteger(), highestDocumentId));
 

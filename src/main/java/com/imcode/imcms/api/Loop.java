@@ -1,6 +1,9 @@
 package com.imcode.imcms.api;
 
-import com.google.common.base.Optional;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.*;
 
@@ -32,9 +35,10 @@ public final class Loop {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("nextEntryNo", nextEntryNo)
-                .add("entries", entries).toString();
+        return new ToStringBuilder(this)
+                .append("entries", entries)
+                .append("nextEntryNo", nextEntryNo)
+                .toString();
     }
 
     @Override
@@ -70,6 +74,6 @@ public final class Loop {
             if (nos.next() == no) return Optional.of(i);
         }
 
-        return Optional.absent();
+        return Optional.empty();
     }
 }

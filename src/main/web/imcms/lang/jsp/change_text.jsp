@@ -6,7 +6,7 @@
 	        imcode.server.LanguageMapper,
 	        imcode.server.document.textdocument.TextDomainObject,
 	        imcode.util.Utility,
-	        org.apache.commons.lang.StringEscapeUtils,
+	        org.apache.commons.lang3.StringEscapeUtils,
 	        java.util.ArrayList,
 	        java.util.Arrays,
 	        java.util.List,
@@ -112,21 +112,21 @@
     <input type="hidden" name="meta_id" value="<%= textEditPage.getDocumentId() %>" />
     <input type="hidden" name="txt_no" value="<%= textEditPage.getTextIndex() %>" /><%
     if (null != textEditPage.getLabel() && !"".equals(textEditPage.getLabel())) { %>
-    <input type="hidden" name="label" value="<%= StringEscapeUtils.escapeHtml(textEditPage.getLabel()) %>" /><%
+    <input type="hidden" name="label" value="<%= StringEscapeUtils.escapeHtml4(textEditPage.getLabel()) %>" /><%
     }
     if (null != textEditPage.getFormats()) {
         for (String format : textEditPage.getFormats()) { %>
-    <input type="hidden" name="format" value="<%= StringEscapeUtils.escapeHtml(format) %>" /><%
+    <input type="hidden" name="format" value="<%= StringEscapeUtils.escapeHtml4(format) %>" /><%
         }
     }
     if (null != textEditPage.getWidth() && !"".equals(textEditPage.getWidth())) { %>
-    <input type="hidden" name="width" value="<%= StringEscapeUtils.escapeHtml(textEditPage.getWidth()) %>" /><%
+    <input type="hidden" name="width" value="<%= StringEscapeUtils.escapeHtml4(textEditPage.getWidth()) %>" /><%
     }
     if (rows > 0) { %>
     <input type="hidden" name="rows"  value="<%=rows%>" /><%
     }
     if (null != textEditPage.getReturnUrl() && !"".equals(textEditPage.getReturnUrl())) { %>
-    <input type="hidden" name="<%= ImcmsConstants.REQUEST_PARAM__RETURN_URL %>" value="<%= StringEscapeUtils.escapeHtml(textEditPage.getReturnUrl()) %>" /><%
+    <input type="hidden" name="<%= ImcmsConstants.REQUEST_PARAM__RETURN_URL %>" value="<%= StringEscapeUtils.escapeHtml4(textEditPage.getReturnUrl()) %>" /><%
     } %>
 
     #gui_outer_start()
@@ -188,12 +188,12 @@
             <table border="0" cellspacing="0" cellpadding="2" width="100%;">
                 <tr valign="top">
                     <td width="80%">
-                        <div id="theLabel"><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></div>
+                        <div id="theLabel"><%= StringEscapeUtils.escapeHtml4( textEditPage.getLabel() ) %></div>
                         <div id="messageDiv" style="display:none; color:#cc0000; padding:10px 0;"></div></td>
 
                     <td width="20%" align="right" style="padding-top:3px; padding-left:15px; white-space:nowrap;">
                         <label for="validationActive" class="toolTip" title="<%=
-			StringEscapeUtils.escapeHtml(isSwe ?
+			StringEscapeUtils.escapeHtml4(isSwe ?
 					"Om denna är ikryssad körs automatiskt en<br/>" +
 					"validering på texten när en ändring registerats.<br/>" +
 					"En validering körs alltid när sidan laddats.<br/>" +
@@ -213,7 +213,7 @@
                         validationIsActive ? " checked=\"checked\"" : "" %> style="vertical-align:-2px;" />
                             <%= isSwe ? "Validera automatiskt" : "Validate automatically" %></label>
                         <button id="validateBtn" class="imcmsFormBtnSmall imcmsFormBtnMedium toolTip iconValidate_pending" style="width:110px; margin-left:10px;"
-                                title="<%= StringEscapeUtils.escapeHtml(isSwe ?
+                                title="<%= StringEscapeUtils.escapeHtml4(isSwe ?
 					"Validera texten och visa resultat av<br/>" +
 					"W3C-valideringen i ett popupfönster.<br/>" +
 					"Genom resultatet kan du se vilken rad<br/>" +
@@ -248,10 +248,10 @@
     <td colspan="2" class="imcmsAdmForm">
         <div id="editor"><%
             if (1 == rows) { %>
-            <input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%; font: 11px 'Courier New', Courier, monospace;" /><%
+            <input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml4( textEditPage.getTextString() ) %>" style="width:100%; font: 11px 'Courier New', Courier, monospace;" /><%
             } else { %>
             <textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width:<%= width > 0 ? (width + 6) + "px" : "100%" %>; font: 11px 'Courier New', Courier, monospace;"><%=
-            StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
+            StringEscapeUtils.escapeHtml4( textEditPage.getTextString() ) %></textarea><%
                 } %>
         </div></td>
 </tr>
@@ -295,9 +295,9 @@
     <form action="#dummy"><%
         // jQuery's changed check got different content if I only used type='hidden' or display:none
         if (1 == rows) { %>
-        <input type="text" id="savedHtml" style="position:absolute; top:-1000px;" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" /><%
+        <input type="text" id="savedHtml" style="position:absolute; top:-1000px;" value="<%= StringEscapeUtils.escapeHtml4( textEditPage.getTextString() ) %>" /><%
         } else { %>
-        <textarea id="savedHtml" cols="1" rows="<%= (rows > 1) ? rows : 25 %>" style="position:absolute; top:-1000px;"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
+        <textarea id="savedHtml" cols="1" rows="<%= (rows > 1) ? rows : 25 %>" style="position:absolute; top:-1000px;"><%= StringEscapeUtils.escapeHtml4( textEditPage.getTextString() ) %></textarea><%
             } %>
     </form>
 </vel:velocity>

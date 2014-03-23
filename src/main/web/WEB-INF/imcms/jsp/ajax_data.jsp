@@ -6,14 +6,13 @@
 	        java.sql.ResultSet,
 	        java.text.SimpleDateFormat,
 	        java.util.Date,
-	        org.apache.commons.lang.StringUtils, org.json.simple.JSONObject, imcode.server.ImcmsServices, imcode.server.Imcms, imcode.server.user.UserDomainObject, imcode.util.Utility, com.imcode.imcms.mapping.DocumentMapper, imcode.server.document.textdocument.TextDocumentDomainObject, imcode.server.document.TextDocumentPermissionSetDomainObject, imcode.server.document.textdocument.TextDomainObject, imcode.server.document.NoPermissionToEditDocumentException, imcode.util.ShouldHaveCheckedPermissionsEarlierException, imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException, imcode.server.document.ConcurrentDocumentModificationException, com.imcode.imcms.mapping.DocumentSaveException, imcode.util.ShouldNotBeThrownException, org.apache.commons.lang.StringEscapeUtils, java.net.URLEncoder"
+	        org.apache.commons.lang3.StringUtils, org.json.simple.JSONObject, imcode.server.ImcmsServices, imcode.server.Imcms, imcode.server.user.UserDomainObject, imcode.util.Utility, com.imcode.imcms.mapping.DocumentMapper, imcode.server.document.textdocument.TextDocumentDomainObject, imcode.server.document.TextDocumentPermissionSetDomainObject, imcode.server.document.textdocument.TextDomainObject, imcode.server.document.NoPermissionToEditDocumentException, imcode.util.ShouldHaveCheckedPermissionsEarlierException, imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException, imcode.server.document.ConcurrentDocumentModificationException, com.imcode.imcms.mapping.DocumentSaveException, imcode.util.ShouldNotBeThrownException,org.apache.commons.lang3..StringEscapeUtils, java.net.URLEncoder"
 
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
 
 %>
-<%@ page import="imcode.server.document.textdocument.ContentLoopRef" %>
-<%@ page import="com.google.common.base.Optional" %>
+<%@ page import="java.util.Optional" %>
 <%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject.LoopItemRef" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%
@@ -56,7 +55,7 @@ if ("getHelpTextInlineEditing".equals(action)) {
     Optional<LoopItemRef> contentRefOpt = LoopItemRef.of(request.getParameter("content_ref"));
 	boolean doLog = (null != request.getParameter("do_log")) ;
 	text = text
-		.replace(StringEscapeUtils.escapeHtml("<?imcms:contextpath?>"), "<?imcms:contextpath?>")
+		.replace(StringEscapeUtils.escapeHtml4("<?imcms:contextpath?>"), "<?imcms:contextpath?>")
 		.replace(URLEncoder.encode("<?imcms:contextpath?>", Imcms.ISO_8859_1_ENCODING), "<?imcms:contextpath?>")
 		.replace(URLEncoder.encode("<?imcms:contextpath?>", Imcms.UTF_8_ENCODING), "<?imcms:contextpath?>")
 		.replace("%3C?imcms:contextpath?%3E", "<?imcms:contextpath?>") ;
@@ -68,21 +67,20 @@ if ("getHelpTextInlineEditing".equals(action)) {
 	TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor(document) ;
 	
 	if (permissionSet.getEditTexts()) {
-        TextDomainObject textDO = document.getText(txt_no, contentRefOpt.orNull());
+        //fixme:
+        TextDomainObject textDO = null;//document.getText(txt_no, contentRefOpt.orNull());
         if (textDO != null) {
             textDO = textDO.clone();
         } else {
             textDO = new TextDomainObject() ;
-            textDO.setNo(txt_no);
-            textDO.setDocRef(document.getRef());
-            textDO.setLoopItemRef(contentRefOpt.orNull());
         }
 
         textDO.setText(text);
         textDO.setType(format);
 
 		try {
-            documentMapper.saveTextDocText(textDO, user);
+            //fixme:
+            //documentMapper.saveTextDocText(textDO, user);
 
 			if (doLog) {
 				imcref.updateMainLog("Text " + txt_no + " in [" + meta_id + "] modified by user: [" + user.getFullName() + "]") ;
@@ -95,9 +93,10 @@ if ("getHelpTextInlineEditing".equals(action)) {
 		} catch ( NoPermissionToAddDocumentToMenuException e ) {
 			jsonObject.put("isSaved", false) ;
 			jsonObject.put("error", e.getMessage()) ;
-		} catch (DocumentSaveException e) {
-			jsonObject.put("isSaved", false) ;
-			jsonObject.put("error", e.getMessage()) ;
+// fixme:
+//		} catch (DocumentSaveException e) {
+//			jsonObject.put("isSaved", false) ;
+//			jsonObject.put("error", e.getMessage()) ;
 		}
 	} else {
 		jsonObject.put("isSaved", false) ;

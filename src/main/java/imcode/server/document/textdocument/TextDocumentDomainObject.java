@@ -10,6 +10,7 @@ import imcode.server.document.DocumentVisitor;
 
 import java.util.*;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -526,22 +527,22 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             this.cachedHashCode = Objects.hash(loopNo, entryNo, itemNo);
         }
 
-        public static com.google.common.base.Optional<LoopItemRef> of(String loopNo, String contentNo, String itemNo) {
+        public static Optional<LoopItemRef> of(String loopNo, String contentNo, String itemNo) {
             Integer loopNoInt = Ints.tryParse(loopNo);
             Integer contentNoInt = Ints.tryParse(contentNo);
             Integer itemNoInt = Ints.tryParse(itemNo);
 
-            return com.google.common.base.Optional.fromNullable(
+            return Optional.ofNullable(
                     loopNoInt != null && contentNoInt != null && itemNo != null
                             ? LoopItemRef.of(loopNoInt, contentNoInt, itemNoInt)
                             : null
             );
         }
 
-        public static com.google.common.base.Optional<LoopItemRef> of(String ref) {
+        public static Optional<LoopItemRef> of(String ref) {
             Matcher matcher = Pattern.compile("(\\d+)_(\\d+)_(\\d+)").matcher(Strings.nullToEmpty(ref).trim());
 
-            return com.google.common.base.Optional.fromNullable(
+            return Optional.ofNullable(
                     matcher.find()
                             ? LoopItemRef.of(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)))
                             : null

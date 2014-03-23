@@ -12,7 +12,7 @@ import imcode.server.document.FileDocumentDomainObject;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.*;

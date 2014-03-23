@@ -15,8 +15,8 @@
 	        imcode.util.Html,
 	        imcode.util.ImcmsImageUtils,
 	        imcode.util.Utility,
-	        org.apache.commons.lang.StringEscapeUtils,
-	        org.apache.commons.lang.StringUtils,
+	        org.apache.commons.lang3.StringEscapeUtils,
+	       org.apache.commons.lang3..StringUtils,
 	        java.util.Properties"
 	
 	contentType="text/html; charset=UTF-8"
@@ -35,7 +35,7 @@ assert null != image;
 UserDomainObject user = Utility.getLoggedOnUser(request);
 
 pageContext.setAttribute("imageEditPage", imageEditPage);
-pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().size());
+pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().getImages().size());
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
@@ -305,7 +305,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().size(
 				if (!i18nImage.isEmpty()) {
 					%>
 					<tr>
-					  <td style="padding-bottom:10px;"><%="<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"%></td>
+					  <td style="padding-bottom:10px;"><%="<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml4(imageEditPage.getLabel()) + "</i></div>"%></td>
 						<td style="padding-bottom:10px;" align="center">						
 						<div id="previewDiv${suffix}"><%
 							String imageTag = (!i18nImage.isEmpty()) ? ImcmsImageUtils.getImagePreviewHtmlTag(i18nImage, request, new Properties()) : "" ;
@@ -353,7 +353,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().size(
 						<td colspan="2"><input type="text" id="ImageUrl${suffix}"
 							name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>${suffix}"
 							size="50" maxlength="255" style="width:260px;"
-							value="<%= StringUtils.isBlank(path) ? "" : StringEscapeUtils.escapeHtml(request.getContextPath()+path) %>"></td>
+							value="<%= StringUtils.isBlank(path) ? "" : StringEscapeUtils.escapeHtml4(request.getContextPath()+path) %>"></td>
 
                         <%-- Browse image button --%>
 						<td style="padding-left:10px;"><input type="submit"
@@ -388,7 +388,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().size(
 					<% %>
 					id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>${suffix}"
 					<% %> size="92" maxlength="255" style="width: 100%"
-					value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(i18nImage.getAlternateText())) %>"></td>
+					value="<%= StringEscapeUtils.escapeHtml4(StringUtils.defaultString(i18nImage.getAlternateText())) %>"></td>
 			</tr>
 
             <c:set var="cropRegion" value="${image.cropRegion}"/>
@@ -517,7 +517,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().size(
 			<td><input type="text"<%
 				%> name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"<%
 				%> id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"<%
-				%> size="50" maxlength="<%= ImageDomainObject.IMAGE_NAME_LENGTH %>" style="width:350px;" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) %>"></td>
+				%> size="50" maxlength="<%= ImageDomainObject.IMAGE_NAME_LENGTH %>" style="width:350px;" value="<%= StringEscapeUtils.escapeHtml4(StringUtils.defaultString(image.getName())) %>"></td>
 		</tr>
 		<tr>
 			<td nowrap><? templates/sv/change_img.html/16 ?></td>
@@ -620,7 +620,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().size(
 			</td>
 			<td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_URL %>"
 			           size="92" maxlength="255" style="width:100%;"
-			           value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLinkUrl())) %>"
+			           value="<%= StringEscapeUtils.escapeHtml4(StringUtils.defaultString(image.getLinkUrl())) %>"
 			           onfocus="checkLinkOnFocus()" onblur="checkLinkOnBlur()"></td>
 		</tr>
 		<tr>
@@ -644,7 +644,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().size(
 					</select></td>
 					<td>&nbsp;&nbsp;</td>
 					<td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_TARGET %>"size="10" maxlength="20"
-					           value="<%= StringEscapeUtils.escapeHtml(targetOther ? target : "") %>"></td>
+					           value="<%= StringEscapeUtils.escapeHtml4(targetOther ? target : "") %>"></td>
 				</tr>
 			</table>
 			</td>
@@ -667,7 +667,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().size(
 			<td><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="1" height="1" alt=""></td>
 		</tr>
 	</table>
-	<input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_LOWSRC %>" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLowResolutionUrl())) %>">
+	<input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_LOWSRC %>" value="<%= StringEscapeUtils.escapeHtml4(StringUtils.defaultString(image.getLowResolutionUrl())) %>">
 	</form>
 	#gui_bottom() 
 	#gui_outer_end()

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpSession;
 
 import com.imcode.imcms.servlet.admin.ImageEditPage;
 import imcode.util.Utility;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

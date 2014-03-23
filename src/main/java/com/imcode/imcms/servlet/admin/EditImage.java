@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import imcode.util.ImcmsImageUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.Map;

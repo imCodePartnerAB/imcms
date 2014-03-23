@@ -5,7 +5,7 @@
 	        com.imcode.imcms.api.ContentManagementSystem,
 	        com.imcode.imcms.flow.OkCancelPage,
 	        com.imcode.imcms.servlet.admin.LinkEditPage,
-	        org.apache.commons.lang.StringEscapeUtils, com.imcode.imcms.servlet.admin.EditLink, com.imcode.imcms.servlet.AjaxServlet, org.apache.commons.lang.StringUtils"
+	        org.apache.commons.lang3.StringEscapeUtils, com.imcode.imcms.servlet.admin.EditLink, com.imcode.imcms.servlet.AjaxServlet,org.apache.commons.lang3..StringUtils"
 	
 	contentType="text/html; charset=UTF-8"
   pageEncoding="UTF-8"
@@ -89,9 +89,9 @@ td.imcmsAdmText {
 
 </vel:velocity><%
 if (DEBUG) { %>
-HREF:	<input type="text" id="<%= HREF.toString() %>" name="<%= HREF.toString() %>" value="<%= StringEscapeUtils.escapeHtml(href) %>" style="width:500px;" /><%
+HREF:	<input type="text" id="<%= HREF.toString() %>" name="<%= HREF.toString() %>" value="<%= StringEscapeUtils.escapeHtml4(href) %>" style="width:500px;" /><%
 } else { %>
-<input type="hidden" id="<%= HREF.toString() %>" name="<%= HREF.toString() %>" value="<%= StringEscapeUtils.escapeHtml(href) %>" /><%
+<input type="hidden" id="<%= HREF.toString() %>" name="<%= HREF.toString() %>" value="<%= StringEscapeUtils.escapeHtml4(href) %>" /><%
 } %>
 <table border="0" cellspacing="2" cellpadding="0" style="width:630px;">
 <tr>
@@ -114,7 +114,7 @@ HREF:	<input type="text" id="<%= HREF.toString() %>" name="<%= HREF.toString() %
 		<td align="right" id="pathStart" style="padding-right:3px;">&nbsp;</td>
 	</tr>
 	</table></td>
-	<td id="tdInput"><input type="text" id="<%= HREF.toString() %>dummy" value="<%= StringEscapeUtils.escapeHtml(href) %>"
+	<td id="tdInput"><input type="text" id="<%= HREF.toString() %>dummy" value="<%= StringEscapeUtils.escapeHtml4(href) %>"
 	           maxlength="300" size="60" style="width:100%;"/></td>
 	<td align="right"><input type="submit" class="imcmsFormBtnSmall toolTip" name="SEARCH" id="searchBtn"
 	                         value="<fmt:message key="global/Search"/>"
@@ -122,7 +122,7 @@ HREF:	<input type="text" id="<%= HREF.toString() %>" name="<%= HREF.toString() %
 </tr>
 <tr>
 	<td class="imcmsAdmText"><fmt:message key="edit/link/title" /></td>
-	<td><input type="text" id="<%= TITLE.toString() %>" name="<%= TITLE.toString() %>" value="<%= StringEscapeUtils.escapeHtml(title) %>"
+	<td><input type="text" id="<%= TITLE.toString() %>" name="<%= TITLE.toString() %>" value="<%= StringEscapeUtils.escapeHtml4(title) %>"
 	           maxlength="300" size="60" style="width:100%;"/></td>
 	<td>&nbsp;</td>
 </tr><%
@@ -155,7 +155,7 @@ if (linkEditPage.isTargetEditable()) { %>
 	<td>
 	<input type="text" name="<%= TARGET.toString() %>" size="9" maxlength="20" style="width:120px;" value="<%
 	if (null != target) {
-		%><%= StringEscapeUtils.escapeHtml( target ) %><%
+		%><%= StringEscapeUtils.escapeHtml4( target ) %><%
 	} %>"></td>
 	</tr>
 	</table></td>
@@ -176,19 +176,19 @@ if (linkEditPage.isTargetEditable()) { %>
 	<tr>
 		<td class="imcmsAdmText" nowrap="nowrap"><fmt:message key="edit/link/cssClass" /></td>
 		<td><input type="text" id="<%= CLASS.toString() %>" name="<%= CLASS.toString() %>" size="20" maxlength="50" style="width:100%;"
-							 value="<%= StringEscapeUtils.escapeHtml(cssClass) %>" /></td>
+							 value="<%= StringEscapeUtils.escapeHtml4(cssClass) %>" /></td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap="nowrap"><fmt:message key="edit/link/cssStyle" /></td>
 		<td><input type="text" id="<%= STYLE.toString() %>" name="<%= STYLE.toString() %>" size="20" maxlength="50" style="width:100%;"
-							 value="<%= StringEscapeUtils.escapeHtml(cssStyle) %>" /></td>
+							 value="<%= StringEscapeUtils.escapeHtml4(cssStyle) %>" /></td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap="nowrap"><fmt:message key="edit/link/otherParams" /></td>
 		<td><input type="text" id="<%= OTHER.toString() %>" name="<%= OTHER.toString() %>" size="20" maxlength="50" style="width:100%;"
-							 value="<%= StringEscapeUtils.escapeHtml(otherParams) %>" /></td>
+							 value="<%= StringEscapeUtils.escapeHtml4(otherParams) %>" /></td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>

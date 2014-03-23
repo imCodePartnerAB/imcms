@@ -4,7 +4,7 @@
 	        imcode.server.Imcms,
 	        com.imcode.imcms.servlet.admin.EditImage,
 	        com.imcode.imcms.servlet.admin.EditLink,
-	        org.apache.commons.lang.StringUtils"
+	        org.apache.commons.lang3.StringUtils"
 	
 	contentType="text/javascript"
 	pageEncoding="UTF-8"

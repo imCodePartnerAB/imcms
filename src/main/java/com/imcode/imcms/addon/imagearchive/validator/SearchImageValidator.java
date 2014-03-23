@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.imcode.imcms.addon.imagearchive.tag.func.Functions;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 

@@ -1,5 +1,5 @@
 <%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject,
-                 org.apache.commons.lang.StringEscapeUtils,
+                 org.apache.commons.lang3.StringEscapeUtils,
                  com.imcode.imcms.servlet.admin.AdminDoc,
                  imcode.server.ImcmsConstants,
                  imcode.server.user.UserDomainObject,
@@ -51,7 +51,7 @@
                 <td align="center"><%= Html.getLinkedStatusIconTemplate( textDocument, user, request ) %></td>
                 <td>
                     <a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= textDocument.getId() %>&<%= AdminDoc.PARAMETER__DISPATCH_FLAGS %>=<%= ImcmsConstants.DISPATCH_FLAG__EDIT_MENU %>&editmenu=<%= menuIndex %>">
-                        <%= textDocument.getId() %>: "<%= StringEscapeUtils.escapeHtml(textDocument.getHeadline()) %>"
+                        <%= textDocument.getId() %>: "<%= StringEscapeUtils.escapeHtml4(textDocument.getHeadline()) %>"
                         -
                         <? web/imcms/lang/jsp/document_references.jsp/heading_menu ?> <%= menuIndex %>
                     </a>

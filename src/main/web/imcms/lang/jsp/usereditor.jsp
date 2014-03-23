@@ -1,7 +1,7 @@
 <%@ page import="com.imcode.imcms.flow.OkCancelPage"%><%@ page  import="com.imcode.imcms.flow.Page"%>
 <%@ page import="com.imcode.imcms.servlet.superadmin.UserEditorPage"%><%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage"%>
 <%@ page import="imcode.server.user.UserDomainObject"%><%@  page import="imcode.util.DateConstants"%>
-<%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
+<%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@ page import="java.text.SimpleDateFormat, imcode.server.Imcms"%>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%
@@ -91,7 +91,7 @@ function activateUseradmin_roles(){
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/8 ?></td>
-	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__LOGIN_NAME %>" size="25" maxlength="50" value="<%= StringEscapeUtils.escapeHtml(editedUser.getLoginName()) %>"></td>
+	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__LOGIN_NAME %>" size="25" maxlength="50" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getLoginName()) %>"></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText" nowrap><? templates/sv/AdminUserResp.htm/10 ?> <span class="imcmsAdmDim"><? templates/sv/AdminUserResp.htm/11 ?></span> &nbsp;</td>
@@ -106,42 +106,42 @@ function activateUseradmin_roles(){
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/14 ?></td>
-	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__FIRST_NAME %>" size="25" maxlength="25" value="<%= StringEscapeUtils.escapeHtml(editedUser.getFirstName()) %>"></td>
+	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__FIRST_NAME %>" size="25" maxlength="25" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getFirstName()) %>"></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/16 ?></td>
-	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__LAST_NAME %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml(editedUser.getLastName()) %>"></td>
+	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__LAST_NAME %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getLastName()) %>"></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/18 ?></td>
-	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__TITLE %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml(editedUser.getTitle()) %>"></td>
+	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__TITLE %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getTitle()) %>"></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/20 ?></td>
-	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__COMPANY %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml(editedUser.getCompany())%>"></td>
+	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__COMPANY %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getCompany())%>"></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/22 ?></td>
-	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__ADDRESS %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml(editedUser.getAddress())%>"></td>
+	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__ADDRESS %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getAddress())%>"></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/24 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__ZIP %>" size="7" maxlength="30" value="<%= StringEscapeUtils.escapeHtml(editedUser.getZip())%>"></td>
+		<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__ZIP %>" size="7" maxlength="30" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getZip())%>"></td>
 		<td>&nbsp;</td>
-		<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__CITY %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml(editedUser.getCity())%>"></td>
+		<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__CITY %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getCity())%>"></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/27 ?></td>
-	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__DISTRICT %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml(editedUser.getProvince())%>"></td>
+	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__DISTRICT %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getProvince())%>"></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/29 ?></td>
-	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__COUNTRY %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml(editedUser.getCountry())%>"></td>
+	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__COUNTRY %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getCountry())%>"></td>
 </tr>
 <tr>
     <td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/30 ?></td>
@@ -184,7 +184,7 @@ function activateUseradmin_roles(){
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/36 ?></td>
-	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__EMAIL %>" size="50" maxlength="50" value="<%= StringEscapeUtils.escapeHtml(editedUser.getEmailAddress())%>"></td>
+	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__EMAIL %>" size="50" maxlength="50" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getEmailAddress())%>"></td>
 </tr>
 <tr>
 	<td colspan="2">#gui_hr( "blue" )</td>

@@ -77,11 +77,9 @@ public final class DocRef {
     private final String cachedToString;
 
     public DocRef(int id, int versionNo, String languageCode) {
-        Objects.requireNonNull(languageCode);
-
         this.id = id;
         this.versionNo = versionNo;
-        this.languageCode = languageCode;
+        this.languageCode = Objects.requireNonNull(languageCode);
         this.cachedHashCode = Objects.hash(id, versionNo);
         this.cachedToString = com.google.common.base.Objects.toStringHelper(this)
                 .add("id", id)

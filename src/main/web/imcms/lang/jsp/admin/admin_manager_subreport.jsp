@@ -1,7 +1,7 @@
 <%@ page import="imcode.server.document.DocumentDomainObject,
                  com.imcode.imcms.util.l10n.LocalizedMessage,
                  imcode.util.Utility,
-                 org.apache.commons.lang.StringEscapeUtils,
+                 org.apache.commons.lang3.StringEscapeUtils,
                  java.util.List"%>
 <%@page contentType="text/html; charset=UTF-8" %>
 <jsp:useBean id="subreport" scope="request" class="com.imcode.imcms.servlet.beans.AdminManagerSubreport"/>
@@ -16,7 +16,7 @@
         <td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
     </tr>
     <tr>
-        <td><span class="imcmsAdmHeading" ><%= StringEscapeUtils.escapeHtml( subreportHeading.toLocalizedString( request ) ) %><br>(<%= documents.size() %> <? web/imcms/lang/jsp/admin/admin_manager.jsp/10 ?>)</span></td>
+        <td><span class="imcmsAdmHeading" ><%= StringEscapeUtils.escapeHtml4( subreportHeading.toLocalizedString( request ) ) %><br>(<%= documents.size() %> <? web/imcms/lang/jsp/admin/admin_manager.jsp/10 ?>)</span></td>
         <td align="right">
             <table border="0" cellspacing="0" cellpadding="0">
                 <tr>

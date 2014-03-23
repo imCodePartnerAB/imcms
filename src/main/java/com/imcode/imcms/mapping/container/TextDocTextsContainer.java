@@ -25,13 +25,10 @@ public class TextDocTextsContainer {
     private final Map<DocumentLanguage, TextDomainObject> texts;
 
     public TextDocTextsContainer(VersionRef versionRef, LoopEntryRef loopEntryRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
-        Objects.requireNonNull(versionRef);
-        Objects.requireNonNull(texts);
-
-        this.versionRef = versionRef;
+        this.versionRef = Objects.requireNonNull(versionRef);
+        this.texts = Objects.requireNonNull(texts);
         this.loopEntryRef = loopEntryRef;
         this.textNo = textNo;
-        this.texts = texts;
     }
 
     public int getTextNo() {

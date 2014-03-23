@@ -138,11 +138,7 @@ public class Loop extends VersionedContent {
     }
 
     public boolean containsEntry(int entryNo) {
-        for (Entry entry : entries) {
-            if (entry.no == entryNo) return true;
-        }
-
-        return false;
+        return entries.stream().anyMatch(entry -> entry.no == entryNo);
     }
 
     public Integer getNo() {

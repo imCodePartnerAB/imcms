@@ -1,25 +1,23 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.db.DatabaseCommand;
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.DatabaseException;
 import com.imcode.imcms.db.Schema;
-import com.vaadin.sass.internal.util.StringUtil;
 import imcode.server.Imcms;
-
-import java.io.*;
-import java.net.URL;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-
-import com.imcode.db.DatabaseCommand;
-import com.imcode.db.DatabaseConnection;
-import com.imcode.db.DatabaseException;
-import org.apache.commons.lang3.StringUtils;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
 /**
  * Move version info to the manifest file
@@ -65,7 +63,7 @@ public class Version extends HttpServlet {
 
     private String getRequiredDbVersion() {
         try {
-            return Schema.load(getClass().getClassLoader().getResource(DB_SCHEMA_FILE)).version().toString();
+            return Schema.load(getClass().getClassLoader().getResource(DB_SCHEMA_FILE)).getVersion().toString();
         } catch (Exception e) {
             System.out.println(e);
             return null;

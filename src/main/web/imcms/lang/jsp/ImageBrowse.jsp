@@ -1,5 +1,5 @@
 <%@ page import="com.imcode.imcms.servlet.admin.ImageBrowse,
-                 org.apache.commons.lang.StringEscapeUtils,
+                 org.apache.commons.lang3.StringEscapeUtils,
                  com.imcode.imcms.servlet.admin.ImageBrowser,
                  imcode.util.HttpSessionUtils,
                  imcode.server.Imcms,
@@ -126,7 +126,7 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
 #gui_bottom()
 #gui_outer_end()
 <% if (null != imageBrowsePage.getImageUrl()) { %>
-<div align="center" id="previewDiv"><img src="<%= StringEscapeUtils.escapeHtml( Utility.escapeUrl(request.getContextPath() + Imcms.getServices().getConfig().getImageUrl() + imageBrowsePage.getImageUrl() )) %>"></div>
+<div align="center" id="previewDiv"><img src="<%= StringEscapeUtils.escapeHtml4( Utility.escapeUrl(request.getContextPath() + Imcms.getServices().getConfig().getImageUrl() + imageBrowsePage.getImageUrl() )) %>"></div>
 <% } %>
 
 <script language="JavaScript">

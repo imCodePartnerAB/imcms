@@ -4,7 +4,7 @@ import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.content.*;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +53,7 @@ public class DocRepository {
                 .executeUpdate();
 
         entityManager.createQuery("UPDATE Version v SET v.modifiedDt = :modifiedDt, v.modifiedBy = :modifiedBy WHERE v.docId = :docId AND v.no = :docVersionNo")
+                .setParameter("modifiedBy", userId)
                 .setParameter("modifiedDt", dt)
                 .setParameter("docId", docId)
                 .setParameter("docVersionNo", docVersionNo)

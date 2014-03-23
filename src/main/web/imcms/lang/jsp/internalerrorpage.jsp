@@ -1,4 +1,4 @@
-<%@ page isErrorPage="true" import="java.io.*, org.apache.commons.lang.StringEscapeUtils"%>
+<%@ page isErrorPage="true" import="java.io.*, org.apache.commons.lang3.StringEscapeUtils"%>
 <%@ page contentType="text/html; charset=UTF8" %>  
 <html>
 <head>
@@ -24,7 +24,7 @@
 <%
     String errorMessage = (String)request.getAttribute("javax.servlet.error.message");
     if( null != errorMessage ) {
-        out.println( StringEscapeUtils.escapeHtml(errorMessage) );
+        out.println( StringEscapeUtils.escapeHtml4(errorMessage) );
     }
 %>
 <? install/htdocs/sv/jsp/internalerrorpage.jsp/exception ?>
@@ -33,7 +33,7 @@
     if( null != exceptionFromRequest ) {
         StringWriter writer = new StringWriter();
         exceptionFromRequest.printStackTrace(new PrintWriter(writer));
-        out.println(StringEscapeUtils.escapeHtml(writer.toString()));
+        out.println(StringEscapeUtils.escapeHtml4(writer.toString()));
     }
 %>
 </pre>

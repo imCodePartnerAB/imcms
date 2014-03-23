@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import com.imcode.imcms.mapping.DocumentMapper;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Edit textdocument in a document.

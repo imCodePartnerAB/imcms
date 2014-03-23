@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;

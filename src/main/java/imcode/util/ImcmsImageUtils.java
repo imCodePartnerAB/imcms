@@ -15,8 +15,8 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.ImcmsFilter;
@@ -66,9 +66,9 @@ public class ImcmsImageUtils {
         if (image.getSize() > 0) {
 
             if (StringUtils.isNotBlank(image.getLinkUrl())) {
-                imageTagBuffer.append("<a href=\"").append(StringEscapeUtils.escapeHtml(image.getLinkUrl())).append("\"");
+                imageTagBuffer.append("<a href=\"").append(StringEscapeUtils.escapeHtml4(image.getLinkUrl())).append("\"");
                 if (!"".equals(image.getTarget())) {
-                    imageTagBuffer.append(" target=\"").append(StringEscapeUtils.escapeHtml(image.getTarget())).append("\"");
+                    imageTagBuffer.append(" target=\"").append(StringEscapeUtils.escapeHtml4(image.getTarget())).append("\"");
                 }
                 imageTagBuffer.append('>');
             }
@@ -85,10 +85,10 @@ public class ImcmsImageUtils {
                 urlEscapedImageUrl = requestURL.substring(0, StringUtils.ordinalIndexOf(requestURL.toString(), "/", 3)) + urlEscapedImageUrl;
             }
 
-            imageTagBuffer.append("<img src=\"").append(StringEscapeUtils.escapeHtml(urlEscapedImageUrl)).append("\"");
+            imageTagBuffer.append("<img src=\"").append(StringEscapeUtils.escapeHtml4(urlEscapedImageUrl)).append("\"");
 
-            imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml(image.getAlternateText())).append("\"");
-            imageTagBuffer.append(" title=\"").append(StringEscapeUtils.escapeHtml(image.getAlternateText())).append("\"");
+            imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml4(image.getAlternateText())).append("\"");
+            imageTagBuffer.append(" title=\"").append(StringEscapeUtils.escapeHtml4(image.getAlternateText())).append("\"");
 
             String id = image.getName();
             String idAttribute = attributes.getProperty("id");
@@ -96,17 +96,17 @@ public class ImcmsImageUtils {
                 id = idAttribute;
             }
             if (StringUtils.isNotBlank(id)) {
-                imageTagBuffer.append(" id=\"").append(StringEscapeUtils.escapeHtml(id)).append("\"");
+                imageTagBuffer.append(" id=\"").append(StringEscapeUtils.escapeHtml4(id)).append("\"");
             }
 
             String classAttribute = attributes.getProperty("class");
             if (null != classAttribute) {
-                imageTagBuffer.append(" class=\"").append(StringEscapeUtils.escapeHtml(classAttribute)).append("\"");
+                imageTagBuffer.append(" class=\"").append(StringEscapeUtils.escapeHtml4(classAttribute)).append("\"");
             }
 
             String usemapAttribute = attributes.getProperty("usemap");
             if (null != usemapAttribute) {
-                imageTagBuffer.append(" usemap=\"").append(StringEscapeUtils.escapeHtml(usemapAttribute)).append("\"");
+                imageTagBuffer.append(" usemap=\"").append(StringEscapeUtils.escapeHtml4(usemapAttribute)).append("\"");
             }
 
             StringBuilder styleBuffer = new StringBuilder();
@@ -130,13 +130,13 @@ public class ImcmsImageUtils {
                     .append(image.getHorizontalSpace()).append("px;");
 
             if (StringUtils.isNotBlank(image.getAlign()) && "left".equals(image.getAlign())) {
-                styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
+                styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml4(image.getAlign())).append(";");
             }
             if (StringUtils.isNotBlank(image.getAlign()) && "right".equals(image.getAlign())) {
-                styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
+                styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml4(image.getAlign())).append(";");
             }
             if (StringUtils.isNotBlank(image.getAlign()) && !"none".equals(image.getAlign())) {
-                styleBuffer.append(" vertical-align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
+                styleBuffer.append(" vertical-align: ").append(StringEscapeUtils.escapeHtml4(image.getAlign())).append(";");
             }
 
             String styleAttribute = attributes.getProperty("style");
@@ -144,7 +144,7 @@ public class ImcmsImageUtils {
                 styleBuffer.append(" ").append(styleAttribute);
             }
 
-            imageTagBuffer.append(" style=\"").append(StringEscapeUtils.escapeHtml(styleBuffer.toString())).append("\"");
+            imageTagBuffer.append(" style=\"").append(StringEscapeUtils.escapeHtml4(styleBuffer.toString())).append("\"");
 
             imageTagBuffer.append(" />");
             if (StringUtils.isNotBlank(image.getLinkUrl())) {

@@ -7,7 +7,7 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.Html,
                  imcode.util.Utility,
-                 org.apache.commons.lang.StringEscapeUtils"%><%@ page import="java.util.Iterator"%>
+                 org.apache.commons.lang3.StringEscapeUtils"%><%@ page import="java.util.Iterator"%>
 <%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%><%
 
 LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
@@ -83,7 +83,7 @@ if (doCheckLinks) {
 			DocumentDomainObject document = link.getDocument() ; %>
 <tr><%String alias = document.getAlias();
     if ( alias != null ) { %>
-    <td><a name="alias" href="<%= request.getContextPath() + "/" + document.getAlias() %>"><%= StringEscapeUtils.escapeHtml(document.getAlias()) %></a></td>
+    <td><a name="alias" href="<%= request.getContextPath() + "/" + document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %></a></td>
     <% }else { %>
     <td>&nbsp;</td> <%}%>
     <td nowrap><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td><%
@@ -95,7 +95,7 @@ if (doCheckLinks) {
 				document.getId() %>&<%=
 				AdminDoc.PARAMETER__DISPATCH_FLAGS%>=<%=
 				ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT %>"><%=
-				document.getId() %> - <%= StringEscapeUtils.escapeHtml( document.getHeadline() ) %></a></td>
+				document.getId() %> - <%= StringEscapeUtils.escapeHtml4( document.getHeadline() ) %></a></td>
 	<td nowrap><%
 				if (documentMenuPairsContainingUrlDocument.length > 0) {
 					%><a href="<%= request.getContextPath() %>/servlet/DocumentReferences?<%=
@@ -127,10 +127,10 @@ if (doCheckLinks) {
 					document.getId() %>&img=<%=
 					textDocumentElementLink.getIndex()%>"><%
 				}
-				%><%= document.getId() %> - <%= textDocumentElementLink.getIndex() %> - <%= StringEscapeUtils.escapeHtml( document.getHeadline() ) %></a></td>
+				%><%= document.getId() %> - <%= textDocumentElementLink.getIndex() %> - <%= StringEscapeUtils.escapeHtml4( document.getHeadline() ) %></a></td>
 	<td>&nbsp;</td><%
 			} %>
-	<td><a href="<%= StringEscapeUtils.escapeHtml( link.fixSchemeLessUrl() ) %>"><%= StringEscapeUtils.escapeHtml( link.getUrl() ) %></a></td>
+	<td><a href="<%= StringEscapeUtils.escapeHtml4( link.fixSchemeLessUrl() ) %>"><%= StringEscapeUtils.escapeHtml4( link.getUrl() ) %></a></td>
     <% if (link.isCheckable()) { %>
 	<td align="center"><img src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/<%
 			%>btn_checked_<%= (link.isHostFound()) ? "1" : "0" %>.gif"></td>

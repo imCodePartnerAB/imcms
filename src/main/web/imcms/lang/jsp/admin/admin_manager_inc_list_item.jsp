@@ -1,10 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8"
-        import="org.apache.commons.lang.StringEscapeUtils,
+        import="org.apache.commons.lang3.StringEscapeUtils,
                  imcode.server.document.DocumentDomainObject,
                  imcode.util.Utility,
                  imcode.util.Html,
                  imcode.server.user.UserDomainObject"%>
-<%@ page import="org.apache.commons.lang.ObjectUtils"%>
+<%@ page import=org.apache.commons.lang3..ObjectUtils"%>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request"/>
 <%
@@ -17,7 +17,7 @@
 <tr valign="top"<%= listItemBean.getIndex() % 2 != 1 ? " bgcolor=\"#ffffff\"" : "" %>><%
     String alias = document.getAlias();
     if ( alias != null ) { %>
-    <td><a name="alias" href="$contextPath/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml(document.getAlias()) %></a></td>
+    <td><a name="alias" href="$contextPath/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %></a></td>
     <% }else { %>
     <td>&nbsp;</td> <%}%>
     <td align="center"><%= linkedStatusIcon %></td>
@@ -33,8 +33,8 @@
     <%= document.getDocumentType().getName().toLocalizedString(request) %></td>
     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="3"><br>
         <a href="$contextPath/<%= ObjectUtils.defaultIfNull(alias, document.getId())%>" target="<%= document.getTarget() %>"<%
-				%> title="<%=ObjectUtils.defaultIfNull(alias, document.getId())%>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a><br>
-        <%= StringEscapeUtils.escapeHtml(document.getMenuText() ) %></td>
+				%> title="<%=ObjectUtils.defaultIfNull(alias, document.getId())%>"><%= StringEscapeUtils.escapeHtml4(document.getHeadline()) %></a><br>
+        <%= StringEscapeUtils.escapeHtml4(document.getMenuText() ) %></td>
     <td align="left"><img src="<%= imagesPath %>/1x1.gif" width="1" height="3">
         <jsp:useBean id="expandableDatesBean" class="com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean" scope="request"/>
         <jsp:setProperty name="expandableDatesBean" property="document" value="<%= document %>"/>

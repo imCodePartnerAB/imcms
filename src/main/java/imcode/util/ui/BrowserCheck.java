@@ -1,6 +1,6 @@
 package imcode.util.ui;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.http.HttpServletRequest;

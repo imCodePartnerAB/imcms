@@ -3,7 +3,7 @@ package com.imcode.imcms.api.contrib;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.TextDocument;
 import imcode.util.DateConstants;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
