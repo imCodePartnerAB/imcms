@@ -26,7 +26,7 @@ import java.util.stream.IntStream;
 
 public final class Schema {
 
-    public static Schema load(File file) {
+    public static Schema fromFile(File file) {
         try {
             return formXml(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
         } catch (IOException e) {
@@ -34,8 +34,8 @@ public final class Schema {
         }
     }
 
-    public static Schema load(URL url) {
-        return load(new File(url.getFile()));
+    public static Schema fromUrl(URL url) {
+        return fromFile(new File(url.getFile()));
     }
 
     public static Schema formXml(String xml) {

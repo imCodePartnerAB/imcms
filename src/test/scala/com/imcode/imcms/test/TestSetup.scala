@@ -92,8 +92,8 @@ trait TestDb { test: TestSetup =>
     def recreate() {
       test.env.getRequiredProperty("DBName") |> { dbName =>
         new DB(createDataSource(DataSourceUrlType.WithoutDBName)) |> { db =>
-          db.jdbcTemplate.update("DROP DATABASE IF EXISTS %s" format dbName)
-          db.jdbcTemplate.update("CREATE DATABASE %s" format dbName)
+          db.getJdbcTemplate.update(s"DROP DATABASE IF EXISTS $dbName")
+          db.getJdbcTemplate.update(s"CREATE DATABASE $dbName")
         }
       }
     }
@@ -110,7 +110,7 @@ trait TestDb { test: TestSetup =>
       if (recreateBeforePrepare) recreate()
 
       val scriptsDir = test.path("src/main/web/WEB-INF/sql")
-      val schema = Schema.load(test.file("src/main/resources/schema.xml")).setScriptsDir(scriptsDir)
+      val schema = Schema.fromFile(test.file("src/main/resources/schema.xml")).setScriptsDir(scriptsDir)
 
       new DB(createDataSource()).prepare(schema)
     }

@@ -30,14 +30,14 @@ public final class DB {
         return tables().isEmpty();
     }
 
-    public Version version() {
+    public Version getVersion() {
         String versionStr = jdbcTemplate.queryForObject("SELECT concat(major, '.', minor) FROM database_version", String.class);
 
         return Version.parse(versionStr);
     }
 
     public synchronized void updateVersion(Version newVersion) {
-        logger.info("Updating database version from {} to {}.", version(), newVersion);
+        logger.info("Updating database version from {} to {}.", getVersion(), newVersion);
         jdbcTemplate.update("UPDATE database_version SET major=?, minor=?", newVersion.getMajor(), newVersion.getMinor());
     }
 
@@ -46,7 +46,7 @@ public final class DB {
     }
 
     private Version update(Schema schema) {
-        Version dbVersion = version();
+        Version dbVersion = getVersion();
         Version requiredVersion = schema.getVersion();
 
         switch (dbVersion.compareTo(requiredVersion)) {
@@ -82,7 +82,7 @@ public final class DB {
                     updateVersion(diff.getTo());
                 });
 
-                Version updatedDbVersion = version();
+                Version updatedDbVersion = getVersion();
                 logger.info("Database has been updated. Database version is {}.", updatedDbVersion);
 
                 return updatedDbVersion;
@@ -127,5 +127,9 @@ public final class DB {
 
     public synchronized void runScripts(Collection<String> scripts) {
         runScripts(scripts.stream());
+    }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
     }
 }

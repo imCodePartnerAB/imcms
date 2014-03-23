@@ -328,7 +328,7 @@ public class Imcms {
         }
 
         logger.info(String.format("Loading database schema config from %s.", schemaConfFileURL));
-        Schema schema = Schema.load(schemaConfFileURL);
+        Schema schema = Schema.fromUrl(schemaConfFileURL);
 
         DataSource dataSource = applicationContext.getBean("dataSource", DataSource.class);
         DB db = new DB(dataSource);

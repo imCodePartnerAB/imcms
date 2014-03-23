@@ -63,7 +63,7 @@ public class Version extends HttpServlet {
 
     private String getRequiredDbVersion() {
         try {
-            return Schema.load(getClass().getClassLoader().getResource(DB_SCHEMA_FILE)).getVersion().toString();
+            return Schema.fromUrl(getClass().getClassLoader().getResource(DB_SCHEMA_FILE)).getVersion().toString();
         } catch (Exception e) {
             System.out.println(e);
             return null;
