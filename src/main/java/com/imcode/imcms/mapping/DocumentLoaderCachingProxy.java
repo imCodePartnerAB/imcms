@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.google.common.base.Supplier;
 import com.imcode.imcms.api.DocumentLanguageSupport;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
@@ -9,8 +8,9 @@ import imcode.server.document.DocumentDomainObject;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 
-import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class DocumentLoaderCachingProxy {
 
@@ -83,9 +83,8 @@ public class DocumentLoaderCachingProxy {
         aliasesToIds = CacheWrapper.of(cacheConfiguration("aliasesToIds"));
         idsToAliases = CacheWrapper.of(cacheConfiguration("idsToAliases"));
 
-        for (CacheWrapper<?, ?> cacheWrapper : Arrays.asList(metas, versionInfos, workingDocs, defaultDocs, aliasesToIds, idsToAliases)) {
-            cacheManager.addCache(cacheWrapper.cache());
-        }
+        Stream.of(metas, versionInfos, workingDocs, defaultDocs, aliasesToIds, idsToAliases)
+                .forEach(cacheWrapper -> cacheManager.addCache(cacheWrapper.cache()));
     }
 
 
@@ -104,96 +103,79 @@ public class DocumentLoaderCachingProxy {
      * @return doc's meta or null if doc does not exists
      */
     public DocumentMeta getMeta(final int docId) {
-        return metas.getOrPut(docId, new Supplier<DocumentMeta>() {
-            public DocumentMeta get() {
-                return loader.loadMeta(docId);
-            }
-        });
+        return metas.getOrPut(docId, () -> loader.loadMeta(docId));
     }
 
     /**
      * @return doc's version info or null if doc does not exists
      */
     public DocumentVersionInfo getDocVersionInfo(final int docId) {
-        return versionInfos.getOrPut(docId, new Supplier<DocumentVersionInfo>() {
-            public DocumentVersionInfo get() {
-                return versionMapper.getInfo(docId);
-            }
-        });
+        return versionInfos.getOrPut(docId, () -> versionMapper.getInfo(docId));
     }
 
     /**
      * @return doc's id or null if doc does not exists or alias is not set
      */
     public Integer getDocIdByAlias(final String docAlias) {
-        return aliasesToIds.getOrPut(docAlias, new Supplier<Integer>() {
-            public Integer get() {
-                Integer docId = loader.getPropertyRepository().findDocIdByAlias(docAlias);
+        return aliasesToIds.getOrPut(docAlias, () -> {
+            Integer docId = loader.getPropertyRepository().findDocIdByAlias(docAlias);
 
-                if (docId != null) {
-                    idsToAliases.put(docId, docAlias);
-                }
-
-                return docId;
+            if (docId != null) {
+                idsToAliases.put(docId, docAlias);
             }
+
+            return docId;
         });
     }
 
     /**
      * @return working doc or null if doc does not exists
      */
+    @SuppressWarnings("unchecked")
     public <T extends DocumentDomainObject> T getWorkingDoc(final int docId, final String docLanguageCode) {
-        @SuppressWarnings("unchecked")
-        T doc = (T) workingDocs.getOrPut(new DocCacheKey(docId, docLanguageCode), new Supplier<DocumentDomainObject>() {
-            public DocumentDomainObject get() {
-                DocumentMeta meta = getMeta(docId);
+        return (T) workingDocs.getOrPut(new DocCacheKey(docId, docLanguageCode), () -> {
+            DocumentMeta meta = getMeta(docId);
 
-                if (meta == null) {
-                    return null;
-                }
-
-                DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
-                DocumentVersion version = versionInfo.getWorkingVersion();
-                DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
-
-                doc.setMeta(meta.clone());
-                doc.setVersionNo(version.getNo());
-                doc.setLanguage(languageSupport.getByCode(docLanguageCode));
-
-                return loader.loadAndInitContent(doc);
+            if (meta == null) {
+                return null;
             }
-        });
 
-        return doc;
+            DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
+            DocumentVersion version = versionInfo.getWorkingVersion();
+            DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+
+            doc.setMeta(meta.clone());
+            doc.setVersionNo(version.getNo());
+            doc.setLanguage(languageSupport.getByCode(docLanguageCode));
+
+            return loader.loadAndInitContent(doc);
+        });
     }
 
 
     /**
      * @return default doc or null if doc does not exists
      */
+    @SuppressWarnings("unchecked")
     public <T extends DocumentDomainObject> T getDefaultDoc(final int docId, final String docLanguageCode) {
-        @SuppressWarnings("unchecked")
-        T doc = (T) workingDocs.getOrPut(new DocCacheKey(docId, docLanguageCode), new Supplier<DocumentDomainObject>() {
-            public DocumentDomainObject get() {
-                DocumentMeta meta = getMeta(docId);
+        return (T) workingDocs.getOrPut(new DocCacheKey(docId, docLanguageCode), () -> {
+            DocumentMeta meta = getMeta(docId);
 
-                if (meta == null) {
-                    return null;
-                }
-
-                DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
-                DocumentVersion version = versionInfo.getDefaultVersion();
-                DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
-
-                doc.setMeta(meta.clone());
-                doc.setVersionNo(version.getNo());
-                doc.setLanguage(languageSupport.getByCode(docLanguageCode));
-
-                return loader.loadAndInitContent(doc);
+            if (meta == null) {
+                return null;
             }
-        });
 
-        return doc;
+            DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
+            DocumentVersion version = versionInfo.getDefaultVersion();
+            DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+
+            doc.setMeta(meta.clone());
+            doc.setVersionNo(version.getNo());
+            doc.setLanguage(languageSupport.getByCode(docLanguageCode));
+
+            return loader.loadAndInitContent(doc);
+
+        });
     }
 
     /**
@@ -222,19 +204,17 @@ public class DocumentLoaderCachingProxy {
         metas.remove(docId);
         versionInfos.remove(docId);
 
-        for (String code : languageSupport.getCodes()) {
+        languageSupport.getCodes().forEach(code -> {
             DocCacheKey key = new DocCacheKey(docId, code);
 
             workingDocs.remove(key);
             defaultDocs.remove(key);
-        }
+        });
 
-        String alias = idsToAliases.get(docId);
-
-        if (alias != null) {
+        Optional.ofNullable(idsToAliases.get(docId)).ifPresent(alias -> {
             idsToAliases.remove(docId);
             aliasesToIds.remove(alias);
-        }
+        });
     }
 }
 

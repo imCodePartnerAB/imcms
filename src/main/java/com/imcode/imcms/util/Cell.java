@@ -20,12 +20,11 @@ public interface Cell<T> {
     T get();
 
     default T updateAndGet(Consumer<T> consumer) {
-        T value = get();
-        consumer.accept(value);
-        return value;
+        return update(consumer).get();
     }
 
-    default void update(Consumer<T> consumer) {
+    default Cell<T> update(Consumer<T> consumer) {
         consumer.accept(get());
+        return this;
     }
 }
