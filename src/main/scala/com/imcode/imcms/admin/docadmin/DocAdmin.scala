@@ -375,7 +375,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
       }
 
       // Current language
-      val preferredLanguage = Imcms.getUser.getDocGetterCallback.documentLanguages.preferred
+      val preferredLanguage = Imcms.getUser.getDocGetterCallback.documentLanguages.getPreferred
 
       val (format, canChangeFormat) = (showModeText, showModeHtml) match {
         case (true, false) => (TextDomainObject.Format.PLAIN_TEXT, false)

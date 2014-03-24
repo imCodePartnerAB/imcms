@@ -790,7 +790,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     private boolean languageIsActive(DocumentDomainObject document) {
-        DocumentLanguage currentLanguage = getDocGetterCallback().documentLanguages().preferred();
+        DocumentLanguage currentLanguage = getDocGetterCallback().documentLanguages().getPreferred();
         DocumentMeta meta = document.getMeta();
         boolean enabled = meta.getEnabledLanguages().contains(currentLanguage);
 
@@ -872,7 +872,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     /**
      * @return if this user was authenticated by IP.
      * @see imcode.server.Config#isDenyMultipleUserLogin()
-     * @see com.imcode.imcms.servlet.ImcmsFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+     * @see com.imcode.imcms.servlet.ImcmsSetupFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
     public boolean isAuthenticatedByIp() {
         return authenticatedByIp;

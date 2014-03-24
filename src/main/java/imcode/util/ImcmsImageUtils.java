@@ -1,5 +1,6 @@
 package imcode.util;
 
+import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -19,7 +20,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.ImcmsFilter;
 import imcode.server.document.textdocument.ImageArchiveImageSource;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
@@ -338,7 +338,7 @@ public class ImcmsImageUtils {
         if (StringUtils.isNotBlank(imageUrl)) {
             ImcmsServices services = Imcms.getServices();
             DocumentMapper documentMapper = services.getDocumentMapper();
-            String documentIdString = ImcmsFilter.getDocumentIdString(services, imageUrl);
+            String documentIdString = ImcmsSetupFilter.getDocumentIdString(services, imageUrl);
             DocumentDomainObject document = documentMapper.getDocument(documentIdString);
             if (document instanceof FileDocumentDomainObject) {
                 imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));

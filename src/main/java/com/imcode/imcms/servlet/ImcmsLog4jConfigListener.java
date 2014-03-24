@@ -17,12 +17,23 @@ import java.util.regex.Matcher;
 
 public class ImcmsLog4jConfigListener implements ServletContextListener {
 
-    // all occurrences of ${com.imcode.imcms.path} must be replaced with real WEB_APP root path.
-    private static String WEBAPP_ROOT_RE = "(?i)\\$\\{\\s*com\\.imcode\\.imcms\\.path\\s*\\}";
-
+    @Override
     public void contextInitialized(ServletContextEvent event) {
         ServletContext servletContext = event.getServletContext();
         File webappRoot = new File(servletContext.getRealPath("/"));
+        Logger logger = initLog4j(webappRoot);
+
+        logEnvironment(servletContext, logger);
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent event) {
+        LogManager.shutdown();
+    }
+
+    Logger initLog4j(File webappRoot) {
+        // all occurrences of ${com.imcode.imcms.path} must be replaced with real WEB_APP root path.
+        String WEBAPP_ROOT_RE = "(?i)\\$\\{\\s*com\\.imcode\\.imcms\\.path\\s*\\}";
         File log4jConfFile = new File(webappRoot, "WEB-INF/conf/log4j.xml");
 
         if (!log4jConfFile.exists()) {
@@ -42,25 +53,16 @@ public class ImcmsLog4jConfigListener implements ServletContextListener {
             throw new RuntimeException("Error occurred while reading log4.xml file", e);
         }
 
-        logEnvironment(servletContext, Logger.getLogger(getClass()));
+        return Logger.getLogger(getClass());
     }
 
 
-    public void contextDestroyed(ServletContextEvent event) {
-        LogManager.shutdown();
-    }
-
-
-    public void logEnvironment(ServletContext servletContext, Logger logger) {
+    void logEnvironment(ServletContext servletContext, Logger logger) {
         logger.info("Servlet Engine: " + servletContext.getServerInfo());
         logger.info("System properties:");
-        for (String name : System.getProperties().stringPropertyNames()) {
-            logger.info("\t" + name + ": " + System.getProperty(name));
-        }
+        System.getProperties().forEach((key, value) -> logger.info("\t" + key + ": " + value));
 
         logger.info("Environment:");
-        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
-            logger.info("\t" + entry.getKey() + ": " + entry.getValue());
-        }
+        System.getenv().forEach((key, value) -> logger.info("\t" + key + ": " + value));
     }
 }

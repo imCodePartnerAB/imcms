@@ -16,5 +16,4 @@ public class Cells {
     public static <T> Cell<T> of(T value) {
         return () -> value;
     }
-
 }

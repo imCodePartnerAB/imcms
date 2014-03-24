@@ -85,7 +85,7 @@ public class Imcms {
     /**
      * Users associated with servlet requests.
      *
-     * @see com.imcode.imcms.servlet.ImcmsFilter
+     * @see com.imcode.imcms.servlet.ImcmsSetupFilter
      */
     private static InheritableThreadLocal<UserDomainObject> users = new InheritableThreadLocal<UserDomainObject>();
 

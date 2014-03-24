@@ -3,7 +3,7 @@ package imcode.server.parser;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.servlet.ImcmsFilter;
+import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import com.imcode.util.CountingIterator;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
@@ -239,14 +239,14 @@ public class TagParser {
             urlConnection.setRequestProperty("User-Agent",
                     documentRequest.getHttpServletRequest().getHeader("User-agent"));
             if (null != attributes.getProperty("sendsessionid")) {
-                urlConnection.addRequestProperty("Cookie", ImcmsFilter.JSESSIONID_COOKIE_NAME + "="
+                urlConnection.addRequestProperty("Cookie", ImcmsSetupFilter.JSESSIONID_COOKIE_NAME + "="
                         + sessionId);
             }
             if (null != attributes.getProperty("sendcookies")) {
                 Cookie[] requestCookies = documentRequest.getHttpServletRequest().getCookies();
                 for (int i = 0; requestCookies != null && i < requestCookies.length; ++i) {
                     Cookie theCookie = requestCookies[i];
-                    if (!ImcmsFilter.JSESSIONID_COOKIE_NAME.equals(theCookie.getName())) {
+                    if (!ImcmsSetupFilter.JSESSIONID_COOKIE_NAME.equals(theCookie.getName())) {
                         urlConnection.addRequestProperty("Cookie", theCookie.getName() + "="
                                 + theCookie.getValue());
                     }

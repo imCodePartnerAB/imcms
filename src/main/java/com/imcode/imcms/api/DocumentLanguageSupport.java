@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * Document language support.
  *
- * @see com.imcode.imcms.servlet.ImcmsFilter
+ * @see com.imcode.imcms.servlet.ImcmsSetupFilter
  */
 public class DocumentLanguageSupport {
 

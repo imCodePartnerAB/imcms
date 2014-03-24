@@ -86,7 +86,7 @@ public class GetDoc extends HttpServlet {
     /**
      * This method is called from viewDoc and from ImcmsFilter.handleDocumentUrl only.
      *
-     * @see ImcmsFilter
+     * @see ImcmsSetupFilter
      */
     public static void viewDoc(DocumentDomainObject document, HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         NDC.push("" + document.getId());

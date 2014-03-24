@@ -12,6 +12,7 @@ import _root_.imcode.server.Imcms
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import imcode.server.document.index.service.SolrServerFactory
 import scala.reflect.ClassTag
+import scala.collection.JavaConverters._
 
 object TestSetup extends TestSetup
 
@@ -21,8 +22,9 @@ class TestSetup extends TestDb with TestSolr {
 
   val basedir: String = classLoader.getResource("log4j.xml") match {
     case null => sys.error("Not configured")
-    case testClassesLog4jConfUrl => new File(testClassesLog4jConfUrl.getFile).getParentFile |> { testClassesDir =>
-      testClassesDir.getParentFile.getParentFile.getCanonicalPath
+    case testClassesLog4jConfUrl => new File(testClassesLog4jConfUrl.getFile).getParentFile |> {
+      testClassesDir =>
+        testClassesDir.getParentFile.getParentFile.getCanonicalPath
     }
   }
 
@@ -39,8 +41,9 @@ class TestSetup extends TestDb with TestSolr {
 
   object imcms {
     def init(start: Boolean = false, prepareDbOnStart: Boolean = false) {
-      dir("target/test-classes") |> { path =>
-        Imcms.setPath(path, path)
+      dir("target/test-classes") |> {
+        path =>
+          Imcms.setPath(path, path)
       }
 
       Imcms.setSQLScriptsPath(path("src/main/web/WEB-INF/sql"))
@@ -72,7 +75,8 @@ object DataSourceAutocommit extends Enumeration {
 }
 
 
-trait TestDb { test: TestSetup =>
+trait TestDb {
+  test: TestSetup =>
 
   object db {
 
@@ -81,27 +85,31 @@ trait TestDb { test: TestSetup =>
     def createDataSource(urlType: DataSourceUrlType.Value = DataSourceUrlType.WithDBName,
                          autocommit: DataSourceAutocommit.Value = DataSourceAutocommit.No): BasicDataSource = {
 
-      test.spring.ctx.getBean(classOf[BasicDataSource]) |>> { ds =>
-        ds.setUrl(test.env.getRequiredProperty(
-          if (urlType == DataSourceUrlType.WithDBName) "JdbcUrl" else "JdbcUrlWithoutDBName"))
+      test.spring.ctx.getBean(classOf[BasicDataSource]) |>> {
+        ds =>
+          ds.setUrl(test.env.getRequiredProperty(
+            if (urlType == DataSourceUrlType.WithDBName) "JdbcUrl" else "JdbcUrlWithoutDBName"))
 
-        ds.setDefaultAutoCommit(autocommit == DataSourceAutocommit.Yes)
+          ds.setDefaultAutoCommit(autocommit == DataSourceAutocommit.Yes)
       }
     }
 
     def recreate() {
-      test.env.getRequiredProperty("DBName") |> { dbName =>
-        new DB(createDataSource(DataSourceUrlType.WithoutDBName)) |> { db =>
-          db.getJdbcTemplate.update(s"DROP DATABASE IF EXISTS $dbName")
-          db.getJdbcTemplate.update(s"CREATE DATABASE $dbName")
-        }
+      test.env.getRequiredProperty("DBName") |> {
+        dbName =>
+          new DB(createDataSource(DataSourceUrlType.WithoutDBName)) |> {
+            db =>
+              db.getJdbcTemplate.update(s"DROP DATABASE IF EXISTS $dbName")
+              db.getJdbcTemplate.update(s"CREATE DATABASE $dbName")
+          }
       }
     }
 
 
     def runScripts(script: String, scripts: String*) {
-      new DB(createDataSource(autocommit=DataSourceAutocommit.Yes)) |> { db =>
-        db.runScripts((script +: scripts).map(test.path))
+      new DB(createDataSource(autocommit = DataSourceAutocommit.Yes)) |> {
+        db =>
+          db.runScripts((script +: scripts).map(test.path).asJava)
       }
     }
 
@@ -115,10 +123,12 @@ trait TestDb { test: TestSetup =>
       new DB(createDataSource()).prepare(schema)
     }
   }
+
 }
 
 
-trait TestSolr { test: TestSetup =>
+trait TestSolr {
+  test: TestSetup =>
 
   object solr {
     val home: String = test.path("target/test-classes/WEB-INF/solr")
@@ -136,8 +146,9 @@ trait TestSolr { test: TestSetup =>
     }
 
     def deleteCoreDataDir() {
-      new File(home, "core/data") |> { dir =>
-        if (dir.exists() && !dir.delete()) sys.error("Unable to delete SOLr data dir %s.".format(dir))
+      new File(home, "core/data") |> {
+        dir =>
+          if (dir.exists() && !dir.delete()) sys.error("Unable to delete SOLr data dir %s.".format(dir))
       }
     }
 
@@ -149,9 +160,10 @@ trait TestSolr { test: TestSetup =>
       SolrServerFactory.createEmbeddedSolrServer(home)
     }
   }
+
 }
 
 
 object SpringUtils {
-  def bean[A : ClassTag](ctx: ApplicationContext): A = ctx.getBean(scala.reflect.classTag[A].runtimeClass.asInstanceOf[Class[A]])
+  def bean[A: ClassTag](ctx: ApplicationContext): A = ctx.getBean(scala.reflect.classTag[A].runtimeClass.asInstanceOf[Class[A]])
 }

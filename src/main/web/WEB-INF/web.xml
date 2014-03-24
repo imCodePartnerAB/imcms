@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<web-app
-        xmlns="http://java.sun.com/xml/ns/javaee"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-        metadata-complete="true"
-        version="3.0">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         id="imCMS"
+         version="3.0"
+         metadata-complete="true">
 
     <context-param>
         <description>Vaadin production mode</description>
@@ -17,8 +18,7 @@
 
     <!--
      imCMS setup:
-     com.imcode.imcms.servlet.ImcmsLog4jConfigListener must be registered first.
-     com.imcode.imcms.servlet.ImcmsInitListener must be registered immediately next to
+        com.imcode.imcms.servlet.ImcmsLog4jConfigListener must be registered first prior to
         org.springframework.web.context.ContextLoaderListener.
     -->
 
@@ -28,10 +28,6 @@
 
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-
-    <listener>
-        <listener-class>com.imcode.imcms.servlet.ImcmsInitListener</listener-class>
     </listener>
 
     <!-- Reads request input using UTF-8 encoding -->
@@ -49,9 +45,9 @@
     </filter>
 
     <filter>
-        <display-name>Imcms Filter</display-name>
-        <filter-name>ImcmsFilter</filter-name>
-        <filter-class>com.imcode.imcms.servlet.ImcmsFilter</filter-class>
+        <display-name>Imcms Setup Filter</display-name>
+        <filter-name>ImcmsSetupFilter</filter-name>
+        <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
     </filter>
 
     <filter>
@@ -100,7 +96,7 @@
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>ImcmsFilter</filter-name>
+        <filter-name>ImcmsSetupFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
@@ -131,23 +127,23 @@
     </filter-mapping>
 
     <!--<security-constraint>-->
-        <!--<web-resource-collection>-->
-            <!--<web-resource-name>secured</web-resource-name>-->
-            <!--<url-pattern>/*</url-pattern>-->
-        <!--</web-resource-collection>-->
-        <!--<user-data-constraint>-->
-            <!--<transport-guarantee>CONFIDENTIAL</transport-guarantee>-->
-        <!--</user-data-constraint>-->
+    <!--<web-resource-collection>-->
+    <!--<web-resource-name>secured</web-resource-name>-->
+    <!--<url-pattern>/*</url-pattern>-->
+    <!--</web-resource-collection>-->
+    <!--<user-data-constraint>-->
+    <!--<transport-guarantee>CONFIDENTIAL</transport-guarantee>-->
+    <!--</user-data-constraint>-->
     <!--</security-constraint>-->
 
     <!--<security-constraint>-->
-        <!--<web-resource-collection>-->
-            <!--<web-resource-name>secured</web-resource-name>-->
-            <!--<url-pattern>/*</url-pattern>-->
-        <!--</web-resource-collection>-->
-        <!--<user-data-constraint>-->
-            <!--<transport-guarantee>CONFIDENTIAL</transport-guarantee>-->
-        <!--</user-data-constraint>-->
+    <!--<web-resource-collection>-->
+    <!--<web-resource-name>secured</web-resource-name>-->
+    <!--<url-pattern>/*</url-pattern>-->
+    <!--</web-resource-collection>-->
+    <!--<user-data-constraint>-->
+    <!--<transport-guarantee>CONFIDENTIAL</transport-guarantee>-->
+    <!--</user-data-constraint>-->
     <!--</security-constraint>-->
 
     <servlet>
@@ -607,7 +603,6 @@
     </servlet-mapping>
 
 
-
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
         <url-pattern>/servlet/SaveInclude</url-pattern>
@@ -826,5 +821,8 @@
         <location>/imcms/503.jsp</location>
     </error-page>
 
-    <!-- todo: add 500 -->
+    <error-page>
+        <error-code>500</error-code>
+        <location>/imcms/internalerrorpage.jsp</location>
+    </error-page>
 </web-app>
