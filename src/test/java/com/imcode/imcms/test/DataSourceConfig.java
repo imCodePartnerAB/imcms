@@ -1,6 +1,7 @@
 package com.imcode.imcms.test;
 
 import com.imcode.imcms.util.Cell;
+import com.imcode.imcms.util.Cells;
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,12 +21,12 @@ public class DataSourceConfig {
 
     @Bean
     public DataSource dataSource() {
-        return Cell.updateAndGet(dataSourcePrototype(), ds -> ds.setUrl(env.getRequiredProperty("JdbcUrl")));
+        return Cells.updateAndGet(dataSourcePrototype(), ds -> ds.setUrl(env.getRequiredProperty("JdbcUrl")));
     }
 
     @Bean
     public DataSource dataSourceWithoutDbName() {
-        return Cell.updateAndGet(dataSourcePrototype(), ds -> ds.setUrl(env.getRequiredProperty("JdbcUrlWithoutDBName")));
+        return Cells.updateAndGet(dataSourcePrototype(), ds -> ds.setUrl(env.getRequiredProperty("JdbcUrlWithoutDBName")));
     }
 
     @Bean
@@ -36,7 +37,7 @@ public class DataSourceConfig {
     @Scope("prototype")
     @Bean(destroyMethod = "close")
     public BasicDataSource dataSourcePrototype() {
-        return Cell.updateAndGet(new BasicDataSource(), ds -> {
+        return Cells.updateAndGet(new BasicDataSource(), ds -> {
             ds.setDriverClassName(env.getRequiredProperty("JdbcDriver"));
             ds.setUsername(env.getRequiredProperty("User"));
             ds.setPassword(env.getRequiredProperty("Password"));

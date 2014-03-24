@@ -2,6 +2,7 @@ package com.imcode.imcms.db;
 
 import com.imcode.imcms.test.DataSourceConfig;
 import com.imcode.imcms.util.Cell;
+import com.imcode.imcms.util.Cells;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,7 +32,7 @@ public class DBTest {
     String databaseName;
 
     void recreateDb() {
-        Cell.with(new JdbcTemplate(dataSourceWithoutDbName), template -> {
+        Cells.with(new JdbcTemplate(dataSourceWithoutDbName), template -> {
             template.execute(String.format("DROP DATABASE IF EXISTS %1$s", databaseName));
             template.execute(String.format("CREATE DATABASE %1$s", databaseName));
         });

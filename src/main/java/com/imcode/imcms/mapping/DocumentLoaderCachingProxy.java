@@ -174,7 +174,6 @@ public class DocumentLoaderCachingProxy {
             doc.setLanguage(languageSupport.getByCode(docLanguageCode));
 
             return loader.loadAndInitContent(doc);
-
         });
     }
 
