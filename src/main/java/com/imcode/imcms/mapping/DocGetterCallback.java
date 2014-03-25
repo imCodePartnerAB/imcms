@@ -5,6 +5,8 @@ import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.DocRef;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,6 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DocGetterCallback {
 
+    private static final Logger logger = LoggerFactory.getLogger(DocGetterCallback.class);
+
     private interface Callback {
         DocumentDomainObject getDoc(int docId, DocumentMapper docMapper);
     }
@@ -36,13 +40,22 @@ public class DocGetterCallback {
 
     private Map<Integer, Callback> callbacks = new ConcurrentHashMap<>();
 
-    private Callback workingDocCallback =
-            (docId, docMapper) -> docMapper.getWorkingDocument(docId, language);
+    private Callback workingDocCallback = (docId, docMapper) -> {
+        logger.trace("Working doc requested - docId: {} language: {}.", docId, language);
+        return docMapper.getWorkingDocument(docId, language);
+    };
+
+    private Callback unchekedDefaultDocCallback = (docId, docMapper) -> {
+        logger.trace("Default doc (unchecked) requested - docId: {} language: {}.", docId, language);
+        return docMapper.getDefaultDocument(docId, language);
+    };
 
     private Callback defaultDocCallback = (docId, docMapper) -> {
+        logger.trace("Default doc requested - docId: {} language: {}.", docId, language);
+
         DocumentDomainObject doc = docMapper.getDefaultDocument(docId, language);
 
-        if (doc != null && !isDefaultLanguage && user.isSuperAdmin()) {
+        if (doc != null && !isDefaultLanguage) {
             DocumentMeta meta = doc.getMeta();
 
             if (!meta.getEnabledLanguages().contains(language)) {
@@ -55,21 +68,17 @@ public class DocGetterCallback {
         return doc;
     };
 
-    private final Callback c = new Callback() {
-        @Override
-        public DocumentDomainObject getDoc(int docId, DocumentMapper docMapper) {
-            user.addRoleId(null);
-            return null;
-        }
-    };
-
     public DocGetterCallback(UserDomainObject user) {
         this.user = user;
     }
 
     @SuppressWarnings("unchecked")
     public <T extends DocumentDomainObject> T getDoc(int docId, DocumentMapper docMapper) {
-        return (T) callbacks.getOrDefault(docId, defaultDocCallback).getDoc(docId, docMapper);
+        Callback callback = user.isDefaultUser()
+                ? defaultDocCallback
+                : callbacks.getOrDefault(docId, unchekedDefaultDocCallback);
+
+        return (T) callback.getDoc(docId, docMapper);
     }
 
     public void setDefault(int docId) {
@@ -77,16 +86,22 @@ public class DocGetterCallback {
     }
 
     public void setWorking(int docId) {
-        callbacks.put(docId, workingDocCallback);
+        if (!user.isDefaultUser()) {
+            callbacks.put(docId, workingDocCallback);
+        }
     }
 
     public void setCustom(int docId, int versionNo) {
-        callbacks.put(docId, versionNo == DocumentVersion.WORKING_VERSION_NO ? workingDocCallback : createCustomDocCallback(versionNo));
+        if (!user.isDefaultUser()) {
+            callbacks.put(docId, versionNo == DocumentVersion.WORKING_VERSION_NO ? workingDocCallback : createCustomDocCallback(versionNo));
+        }
     }
 
     private Callback createCustomDocCallback(int versionNo) {
-        return (docId, docMapper) ->
-                docMapper.getCustomDocument(DocRef.of(docId, versionNo, language.getCode()));
+        return (docId, docMapper) -> {
+            logger.trace("Custom doc requested -  docId: {}, versionNo: {}, language: {}.", docId, versionNo, language);
+            return docMapper.getCustomDocument(DocRef.of(docId, versionNo, language.getCode()));
+        };
     }
 
     public DocumentLanguage getLanguage() {
@@ -98,6 +113,3 @@ public class DocGetterCallback {
         this.isDefaultLanguage = isDefaultLanguage;
     }
 }
-
-
-

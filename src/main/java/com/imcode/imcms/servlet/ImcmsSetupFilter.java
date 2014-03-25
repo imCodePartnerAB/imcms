@@ -26,9 +26,12 @@ import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * Front filter.
@@ -219,31 +222,27 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     public static void updateUserDocGetterCallback(HttpServletRequest request, ImcmsServices services, UserDomainObject user) {
-        DocGetterCallback docGetterCallback = Optional.ofNullable(user.getDocGetterCallback()).orElseGet(() -> {
-            DocGetterCallback dgc = new DocGetterCallback(user);
-            user.setDocGetterCallback(dgc);
-            return dgc;
-        });
+        DocGetterCallback docGetterCallback = user.getDocGetterCallback();
+
         DocumentLanguages dls = services.getDocumentLanguages();
         DocumentLanguage defaultLanguage = dls.getDefault();
-        DocumentLanguage preferredLanguage = Optional
-                .of(StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)))
-                .map(dls::getByCode)
-                .orElse(null);
+        DocumentLanguage preferredLanguage = dls.getByCode(
+                StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE))
+        );
 
         if (preferredLanguage == null) {
             preferredLanguage = docGetterCallback.getLanguage();
+
+            if (preferredLanguage == null) {
+                preferredLanguage = dls.getForHost(request.getServerName());
+
+                if (preferredLanguage == null) {
+                    preferredLanguage = defaultLanguage;
+                }
+            }
         }
 
-        if (preferredLanguage == null) {
-            preferredLanguage = dls.getForHost(request.getServerName());
-        }
-
-        if (preferredLanguage == null) {
-            preferredLanguage = defaultLanguage;
-        }
-
-        docGetterCallback.setLanguage(preferredLanguage, preferredLanguage == defaultLanguage);
+        docGetterCallback.setLanguage(preferredLanguage, dls.isDefault(preferredLanguage));
 
         Integer docId = Ints.tryParse(StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)));
         String versionStr = StringUtils.trimToNull(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION));
@@ -259,9 +258,10 @@ public class ImcmsSetupFilter implements Filter {
                     break;
 
                 default:
-                    Optional.ofNullable(Ints.tryParse(versionStr)).ifPresent(versionNo ->
-                                    docGetterCallback.setCustom(docId, versionNo)
-                    );
+                    Integer versionNo = Ints.tryParse(versionStr);
+                    if (versionNo != null) {
+                        docGetterCallback.setCustom(docId, versionNo);
+                    }
             }
         }
     }

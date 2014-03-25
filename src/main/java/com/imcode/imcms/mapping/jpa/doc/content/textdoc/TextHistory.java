@@ -25,6 +25,7 @@ public class TextHistory extends TextBase {
         setVersion(text.getVersion());
         setLanguage(text.getLanguage());
         setNo(text.getNo());
+        setText(text.getText());
         setType(text.getType());
         setLoopEntryRef(text.getLoopEntryRef());
         setModifiedBy(modifiedBy);

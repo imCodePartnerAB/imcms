@@ -143,7 +143,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     private volatile PasswordReset passwordReset = null;
 
     @Transient
-    private volatile DocGetterCallback docGetterCallback;
+    private final DocGetterCallback docGetterCallback = new DocGetterCallback(this);
 
     public UserDomainObject() {
     }
@@ -347,10 +347,6 @@ public class UserDomainObject implements Cloneable, Serializable {
      */
     public DocGetterCallback getDocGetterCallback() {
         return docGetterCallback;
-    }
-
-    public void setDocGetterCallback(DocGetterCallback callback) {
-        this.docGetterCallback = callback;
     }
 
     /**

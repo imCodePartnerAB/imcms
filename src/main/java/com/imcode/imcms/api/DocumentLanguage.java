@@ -54,7 +54,7 @@ public final class DocumentLanguage implements Serializable {
     private final String nativeName;
 
     /**
-     * @param code       language ISO 639-2 code.
+     * @param code       language ISO-639-1 code.
      * @param name       language name
      * @param nativeName language native name
      */
@@ -95,7 +95,7 @@ public final class DocumentLanguage implements Serializable {
     }
 
     /**
-     * @return language ISO 639-2 code.
+     * @return language ISO-639-1 code.
      */
     public String getCode() {
         return code;
