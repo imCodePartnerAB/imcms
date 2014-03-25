@@ -1,9 +1,9 @@
 <%@ page
 	
-	import="org.apache.commons.lang3.StringEscapeUtils,
+	import="org.apache.commons.lang.StringEscapeUtils,
 	        imcode.server.document.textdocument.ImageDomainObject,
 	        com.imcode.imcms.servlet.admin.EditImage,
-	       org.apache.commons.lang3..StringUtils,
+	       org.apache.commons.lang.StringUtils,
 	        imcode.util.ImcmsImageUtils"
 	
   pageEncoding="UTF-8"

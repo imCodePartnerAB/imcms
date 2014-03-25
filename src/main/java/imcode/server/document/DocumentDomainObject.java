@@ -124,7 +124,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 throw new IllegalArgumentException(errorMessage);
         }
 
-        document.setLanguage(Imcms.getServices().getDocumentLanguageSupport().getDefault());
+        document.setLanguage(Imcms.getServices().getDocumentLanguages().getDefault());
         document.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
 
         return (T) document;

@@ -6,7 +6,24 @@
 	        java.sql.ResultSet,
 	        java.text.SimpleDateFormat,
 	        java.util.Date,
-	        org.apache.commons.lang3.StringUtils, org.json.simple.JSONObject, imcode.server.ImcmsServices, imcode.server.Imcms, imcode.server.user.UserDomainObject, imcode.util.Utility, com.imcode.imcms.mapping.DocumentMapper, imcode.server.document.textdocument.TextDocumentDomainObject, imcode.server.document.TextDocumentPermissionSetDomainObject, imcode.server.document.textdocument.TextDomainObject, imcode.server.document.NoPermissionToEditDocumentException, imcode.util.ShouldHaveCheckedPermissionsEarlierException, imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException, imcode.server.document.ConcurrentDocumentModificationException, com.imcode.imcms.mapping.DocumentSaveException, imcode.util.ShouldNotBeThrownException,org.apache.commons.lang3..StringEscapeUtils, java.net.URLEncoder"
+	        org.apache.commons.lang3.StringUtils,
+	        org.json.simple.JSONObject,
+	        imcode.server.ImcmsServices,
+	        imcode.server.Imcms,
+	        imcode.server.user.UserDomainObject,
+	        imcode.util.Utility,
+	        com.imcode.imcms.mapping.DocumentMapper,
+	        imcode.server.document.textdocument.TextDocumentDomainObject,
+	        imcode.server.document.TextDocumentPermissionSetDomainObject,
+	        imcode.server.document.textdocument.TextDomainObject,
+	        imcode.server.document.NoPermissionToEditDocumentException,
+	        imcode.util.ShouldHaveCheckedPermissionsEarlierException,
+	        imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException,
+	        imcode.server.document.ConcurrentDocumentModificationException,
+	        com.imcode.imcms.mapping.DocumentSaveException,
+	        imcode.util.ShouldNotBeThrownException,
+	        org.apache.commons.lang3.StringEscapeUtils,
+	        java.net.URLEncoder"
 
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"

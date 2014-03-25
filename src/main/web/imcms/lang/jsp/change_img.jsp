@@ -16,7 +16,7 @@
 	        imcode.util.ImcmsImageUtils,
 	        imcode.util.Utility,
 	        org.apache.commons.lang3.StringEscapeUtils,
-	       org.apache.commons.lang3..StringUtils,
+	       org.apache.commons.lang3.StringUtils,
 	        java.util.Properties"
 	
 	contentType="text/html; charset=UTF-8"

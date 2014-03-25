@@ -588,7 +588,7 @@
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_2.10</artifactId>
-            <version>2.0</version>
+            <version>2.1.0</version>
             <scope>test</scope>
             <!--
                 Technically, exclusions section is not required.
@@ -610,26 +610,26 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>org.scalacheck</groupId>
-            <artifactId>scalacheck_2.10</artifactId>
-            <version>1.11.0</version>
-            <scope>test</scope>
-            <!--
-                Technically, exclusions section is not required.
-                It is introduced to suppress scala plugin 'multiple scala versions' warning.
-            -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>scala-library</artifactId>
-                    <groupId>org.scala-lang</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>scala-actors</artifactId>
-                    <groupId>org.scala-lang</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.scalacheck</groupId>-->
+            <!--<artifactId>scalacheck_2.10</artifactId>-->
+            <!--<version>1.11.0</version>-->
+            <!--<scope>test</scope>-->
+            <!--&lt;!&ndash;-->
+                <!--Technically, exclusions section is not required.-->
+                <!--It is introduced to suppress scala plugin 'multiple scala versions' warning.-->
+            <!--&ndash;&gt;-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>scala-library</artifactId>-->
+                    <!--<groupId>org.scala-lang</groupId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<artifactId>scala-actors</artifactId>-->
+                    <!--<groupId>org.scala-lang</groupId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.solr</groupId>
@@ -993,13 +993,13 @@
                         </goals>
                     </execution>
 
-                    <!--<execution>-->
-                        <!--<id>compile-scala-test-classes-fist</id>-->
-                        <!--<phase>process-test-resources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>testCompile</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
+                    <execution>
+                        <id>compile-scala-test-classes-fist</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -1159,6 +1159,10 @@
                             </excludes>
                             <mergeFragment>false</mergeFragment>
                             <webAppSourceDirectory>${build.webapp.dir}</webAppSourceDirectory>
+                            <jspc>
+                                <compilerSourceVM>1.8</compilerSourceVM>
+                                <compilerTargetVM>1.8</compilerTargetVM>
+                            </jspc>
                         </configuration>
                     </execution>
                 </executions>

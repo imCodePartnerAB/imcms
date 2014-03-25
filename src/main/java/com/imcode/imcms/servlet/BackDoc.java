@@ -1,25 +1,21 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.DocumentLanguageSupport;
 import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.api.DefaultDocGetterCallback;
-import com.imcode.imcms.api.DocGetterCallback;
+import com.imcode.imcms.mapping.DocGetterCallback;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.util.Utility;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Stack;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.imcode.imcms.mapping.DocumentMapper;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Stack;
 
 public class BackDoc extends HttpServlet {
 
@@ -47,10 +43,8 @@ public class BackDoc extends HttpServlet {
         if (null != lastTextDocument) {
             redirectToDocumentId(req, res, lastTextDocument.getId());
         } else {
-            DocumentLanguageSupport documentLanguageSupport = imcref.getDocumentLanguageSupport();
-            DocumentLanguages documentLanguages = new DocumentLanguages(documentLanguageSupport.getDefault(), documentLanguageSupport.getDefault());
-            DocGetterCallback callback = new DefaultDocGetterCallback(documentLanguages);
-            Imcms.getUser().setDocGetterCallback(callback);
+            DocumentLanguages dls = imcref.getDocumentLanguages();
+            Imcms.getUser().getDocGetterCallback().setLanguage(dls.getDefault(), true);
             redirectToDocumentId(req, res, imcref.getSystemData().getStartDocument());
         }
     }

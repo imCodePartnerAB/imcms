@@ -10,7 +10,7 @@
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
-    com.imcode.imcms.mapping.jpa.doc.Language language = DocumentLanguageSupport.getCurrentLanguage();
+    com.imcode.imcms.mapping.jpa.doc.Language language = DocumentLanguages.getCurrentLanguage();
 
     document.setHeadline(language, "Test headline text");
     document.setMenuText(language, "Test menu text");

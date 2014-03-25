@@ -1,29 +1,26 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.servlet;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
-
+import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.test.fixtures.LanguageFX;
-import com.imcode.imcms.test.fixtures.UserFX;
-import imcode.server.ImcmsServices;
 import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import org.junit.Before;
 import org.junit.Test;
 
-
 import javax.servlet.http.HttpServletRequest;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DocGetterCallbackTest {
 
-    DocumentLanguageSupport dls = LanguageFX.mkI18nSupport();
+    DocumentLanguages dls = LanguageFX.mkI18nSupport();
     ImcmsServices services = mock(ImcmsServices.class);
 
     @Before
     public void beforeTest() {
-        when(services.getDocumentLanguageSupport()).thenReturn(dls);
+        when(services.getDocumentLanguages()).thenReturn(dls);
     }
 
     @Test
@@ -36,10 +33,7 @@ public class DocGetterCallbackTest {
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn(null);
         when(request.getServerName()).thenReturn("127.0.0.1");
 
-        DocGetterCallbacks.updateUserDocGetterCallback(request, services, user);
-        assertTrue(user.getDocGetterCallback() instanceof DefaultDocGetterCallback);
-
-        //assertThat(user.getDocGetterCallback(), isA(DefaultDocGetterCallback.class));
+        ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }
 
     @Test
@@ -51,10 +45,7 @@ public class DocGetterCallbackTest {
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn(null);
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn(null);
 
-        DocGetterCallbacks.updateUserDocGetterCallback(request, services, user);
-        assertTrue(user.getDocGetterCallback() instanceof DefaultDocGetterCallback);
-
-        assertEquals(LanguageFX.mkSwedish(), user.getDocGetterCallback().documentLanguages().getPreferred());
+        ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }
 
     @Test
@@ -67,8 +58,7 @@ public class DocGetterCallbackTest {
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("0");
         when(request.getServerName()).thenReturn("127.0.0.1");
 
-        DocGetterCallbacks.updateUserDocGetterCallback(request, services, user);
-        assertTrue(user.getDocGetterCallback() instanceof DefaultDocGetterCallback);
+        ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }
 
     @Test
@@ -81,8 +71,7 @@ public class DocGetterCallbackTest {
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("2");
         when(request.getServerName()).thenReturn("127.0.0.1");
 
-        DocGetterCallbacks.updateUserDocGetterCallback(request, services, user);
-        assertTrue(user.getDocGetterCallback() instanceof DefaultDocGetterCallback);
+        ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }
 
     @Test
@@ -95,12 +84,7 @@ public class DocGetterCallbackTest {
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("0");
         when(request.getServerName()).thenReturn("127.0.0.1");
 
-        DocGetterCallbacks.updateUserDocGetterCallback(request, services, user);
-
-        assertTrue(user.getDocGetterCallback() instanceof WorkingDocGetterCallback);
-        WorkingDocGetterCallback gdc = (WorkingDocGetterCallback) user.getDocGetterCallback();
-
-        assertEquals(1001, gdc.getSelectedDocId());
+        ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }
 
     @Test
@@ -113,12 +97,6 @@ public class DocGetterCallbackTest {
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("2");
         when(request.getServerName()).thenReturn("127.0.0.1");
 
-        DocGetterCallbacks.updateUserDocGetterCallback(request, services, user);
-
-        assertTrue(user.getDocGetterCallback() instanceof CustomDocGetterCallback);
-        CustomDocGetterCallback gdc = (CustomDocGetterCallback) user.getDocGetterCallback();
-
-        assertEquals(1001, gdc.getSelectedDocId());
-        assertEquals(2, gdc.getSelectedDocVersionNo());
+        ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }
 }

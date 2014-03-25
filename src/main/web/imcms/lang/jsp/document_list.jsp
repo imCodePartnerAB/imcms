@@ -8,7 +8,7 @@
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  java.util.*,
                  java.net.URLEncoder,
-                org.apache.commons.lang3..ObjectUtils,
+                org.apache.commons.lang3.ObjectUtils,
                  imcode.util.Html,
                  imcode.server.document.DocumentComparator"%><%@ page import="com.imcode.imcms.mapping.DocumentMapper"%>
 <%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>

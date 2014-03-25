@@ -1,8 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.mapping.container.DocRef;
-import com.imcode.imcms.mapping.container.TextDocImageContainer;
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import imcode.server.Imcms;
@@ -10,7 +8,6 @@ import imcode.server.document.textdocument.ImageDomainObject;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,7 +18,6 @@ import com.imcode.imcms.flow.DispatchCommand;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -54,7 +50,7 @@ public class EditImage extends HttpServlet {
 
         //fixme: language
         // Page should contain at least one image to edit.
-        Map<DocumentLanguage, ImageDomainObject> images = Collections.singletonMap(Imcms.getServices().getDocumentLanguageSupport().getDefault(), image);
+        Map<DocumentLanguage, ImageDomainObject> images = Collections.singletonMap(Imcms.getServices().getDocumentLanguages().getDefault(), image);
 
         //fixme: image no
         imageEditPage.setImagesContainer(TextDocImagesContainer.of(VersionRef.of(metaId, 0), null, 0, images));

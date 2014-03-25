@@ -1,6 +1,6 @@
 package imcode.server;
 
-import com.imcode.imcms.api.DocumentLanguageSupport;
+import com.imcode.imcms.api.DocumentLanguages;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -257,7 +257,7 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public DocumentLanguageSupport getDocumentLanguageSupport() {
+    public DocumentLanguages getDocumentLanguages() {
         return null;
     }
 }

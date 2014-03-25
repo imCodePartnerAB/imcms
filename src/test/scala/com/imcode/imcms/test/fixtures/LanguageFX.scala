@@ -4,7 +4,7 @@ package fixtures
 
 import com.imcode.imcms.api.DocumentLanguage
 import scala.collection.JavaConverters._
-import com.imcode.imcms.api.DocumentLanguageSupport
+import com.imcode.imcms.api.DocumentLanguages
 
 object LanguageFX {
   val HostNameEn = "imcode.com"
@@ -15,12 +15,12 @@ object LanguageFX {
 
   def mkLanguages: Seq[DocumentLanguage] = Seq(mkEnglish, mkSwedish)
 
-  def mkI18nSupport(defaultLanguage: DocumentLanguage): DocumentLanguageSupport =
-    new DocumentLanguageSupport(
+  def mkI18nSupport(defaultLanguage: DocumentLanguage): DocumentLanguages =
+    new DocumentLanguages(
       mkLanguages.asJava,
       Map(HostNameEn -> mkEnglish, HostNameSe -> mkSwedish).asJava,
       defaultLanguage
     )
 
-  def mkI18nSupport(): DocumentLanguageSupport = mkI18nSupport(mkEnglish)
+  def mkI18nSupport(): DocumentLanguages = mkI18nSupport(mkEnglish)
 }

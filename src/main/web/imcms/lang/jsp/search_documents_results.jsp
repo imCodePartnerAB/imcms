@@ -7,7 +7,7 @@
                  com.imcode.imcms.flow.Page"
         contentType="text/html; charset=UTF-8" %><%@ page import="java.util.List"%>
 <%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
-<%@ page import=org.apache.commons.lang3..ObjectUtils"%>
+<%@ page import="org.apache.commons.lang3.ObjectUtils"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage)Page.fromRequest(request);
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;

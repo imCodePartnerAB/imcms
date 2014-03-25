@@ -165,7 +165,7 @@ public class Imcms {
                 fileLoader,
                 new DefaultProcedureExecutor(database, fileLoader),
                 applicationContext,
-                createDocumentLanguageSupport());
+                createDocumentLanguages());
 
         services.getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
         return services;
@@ -244,7 +244,7 @@ public class Imcms {
      * Sets default language if it is not already set.
      * todo: use language property defined in the conf file as default.
      */
-    private static DocumentLanguageSupport createDocumentLanguageSupport() {
+    private static DocumentLanguages createDocumentLanguages() {
         logger.info("Creating document languages support.");
 
         DocumentLanguageMapper dlm = applicationContext.getBean(DocumentLanguageMapper.class);
@@ -310,7 +310,7 @@ public class Imcms {
             }
         }
 
-        return new DocumentLanguageSupport(languages, languagesByHosts, dlm.getDefault());
+        return new DocumentLanguages(languages, languagesByHosts, dlm.getDefault());
     }
 
     /**

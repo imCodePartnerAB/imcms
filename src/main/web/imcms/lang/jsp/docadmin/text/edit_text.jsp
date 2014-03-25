@@ -4,7 +4,7 @@
                  imcode.util.Html,
                  imcode.util.Utility,
                  org.apache.commons.lang3.StringUtils" %>
-<%@ page import=org.apache.commons.lang3..math.NumberUtils" %>
+<%@ page import="org.apache.commons.lang3.math.NumberUtils" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="com.imcode.imcms.mapping.container.LoopEntryRef" %>
 <%

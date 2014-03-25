@@ -1,7 +1,7 @@
 <%@ page import="com.imcode.imcms.servlet.superadmin.AdminCategories,
                  imcode.server.document.CategoryDomainObject,
                  org.apache.commons.lang3.StringEscapeUtils,
-                org.apache.commons.lang3..ObjectUtils"%><%
+                org.apache.commons.lang3.ObjectUtils"%><%
 boolean showLine  = (categoryToEdit != null && categoryToEdit.getName() != null) ;
 String subHeading = inDeleteCategoryMode ? "<? install/htdocs/sv/jsp/category_admin/remove_category ?>" : "<? install/htdocs/sv/jsp/category_admin/edit_category ?>" ;
 %><%

@@ -1,6 +1,6 @@
 package imcode.server;
 
-import com.imcode.imcms.api.DocumentLanguageSupport;
+import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
@@ -103,7 +103,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
-    private DocumentLanguageSupport documentLanguageSupport;
+    private DocumentLanguages documentLanguages;
     private ApplicationContext applicationContext;
 
 
@@ -125,13 +125,13 @@ public class DefaultImcmsServices implements ImcmsServices {
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
                                 ApplicationContext applicationContext,
-                                DocumentLanguageSupport documentLanguageSupport) {
+                                DocumentLanguages documentLanguages) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
         this.fileLoader = fileLoader;
         this.applicationContext = applicationContext;
-        this.documentLanguageSupport = documentLanguageSupport;
+        this.documentLanguages = documentLanguages;
 
         initConfig(props);
         initSso();
@@ -869,12 +869,12 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.documentMapper = documentMapper;
     }
 
-    public DocumentLanguageSupport getDocumentLanguageSupport() {
-        return documentLanguageSupport;
+    public DocumentLanguages getDocumentLanguages() {
+        return documentLanguages;
     }
 
-    public void setDocumentLanguageSupport(DocumentLanguageSupport documentLanguageSupport) {
-        this.documentLanguageSupport = documentLanguageSupport;
+    public void setDocumentLanguages(DocumentLanguages documentLanguages) {
+        this.documentLanguages = documentLanguages;
     }
 
     @Override

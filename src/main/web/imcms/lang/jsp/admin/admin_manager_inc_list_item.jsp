@@ -4,7 +4,7 @@
                  imcode.util.Utility,
                  imcode.util.Html,
                  imcode.server.user.UserDomainObject"%>
-<%@ page import=org.apache.commons.lang3..ObjectUtils"%>
+<%@ page import="org.apache.commons.lang3.ObjectUtils"%>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request"/>
 <%

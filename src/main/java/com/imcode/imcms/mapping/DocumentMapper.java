@@ -17,8 +17,6 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang.math.IntRange;
@@ -97,7 +95,7 @@ public class DocumentMapper implements DocumentGetter {
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
 
         documentLoader = services.getManagedBean(DocumentLoader.class);
-        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
+        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, services.getDocumentLanguages(), documentCacheMaxSize);
 
         nativeQueries = services.getManagedBean(NativeQueries.class);
         categoryMapper = services.getManagedBean(CategoryMapper.class);
@@ -116,7 +114,7 @@ public class DocumentMapper implements DocumentGetter {
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
 
-        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, services.getDocumentLanguageSupport(), documentCacheMaxSize);
+        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, services.getDocumentLanguages(), documentCacheMaxSize);
 
         documentSaver.setDocumentMapper(this);
     }
@@ -264,7 +262,7 @@ public class DocumentMapper implements DocumentGetter {
         DocumentLanguage language = docClone.getLanguage();
 
         if (language == null) {
-            language = imcmsServices.getDocumentLanguageSupport().getDefault();
+            language = imcmsServices.getDocumentLanguages().getDefault();
             docClone.setLanguage(language);
         }
 
@@ -392,7 +390,7 @@ public class DocumentMapper implements DocumentGetter {
 
         List<DocumentDomainObject> docs = new LinkedList<>();
 
-        for (DocumentLanguage language : imcmsServices.getDocumentLanguageSupport().getAll()) {
+        for (DocumentLanguage language : imcmsServices.getDocumentLanguages().getAll()) {
             DocRef docRef = DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO, language.getCode());
             DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(docRef);
             docs.add(doc);
@@ -686,7 +684,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId) {
-        return getDefaultDocument(docId, imcmsServices.getDocumentLanguageSupport().getDefault());
+        return getDefaultDocument(docId, imcmsServices.getDocumentLanguages().getDefault());
     }
 
 
@@ -696,7 +694,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getWorkingDocument(int docId) {
-        return getWorkingDocument(docId, imcmsServices.getDocumentLanguageSupport().getDefault());
+        return getWorkingDocument(docId, imcmsServices.getDocumentLanguages().getDefault());
     }
 
 
@@ -707,7 +705,7 @@ public class DocumentMapper implements DocumentGetter {
     public <T extends DocumentDomainObject> T getCustomDocumentInDefaultLanguage(DocRef docRef) {
         return getCustomDocument(
                 DocRef.buillder(docRef)
-                        .languageCode(imcmsServices.getDocumentLanguageSupport().getDefault().getCode())
+                        .languageCode(imcmsServices.getDocumentLanguages().getDefault().getCode())
                         .build()
         );
     }
@@ -721,13 +719,14 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @param docId document id.
      */
+    @SuppressWarnings("unchecked")
     public <T extends DocumentDomainObject> T getDocument(int docId) {
         UserDomainObject user = Imcms.getUser();
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
 
         return callback == null
                 ? (T) getDefaultDocument(docId)
-                : (T) callback.getDoc(docId, user, this);
+                : (T) callback.getDoc(docId, this);
     }
 
     /**
@@ -901,8 +900,8 @@ public class DocumentMapper implements DocumentGetter {
         UserDomainObject user = Imcms.getUser();
         DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
         DocumentLanguage language = callback != null
-                ? callback.documentLanguages().getPreferred()
-                : imcmsServices.getDocumentLanguageSupport().getDefault();
+                ? callback.getLanguage()
+                : imcmsServices.getDocumentLanguages().getDefault();
 
         List<DocumentDomainObject> docs = new LinkedList<>();
 

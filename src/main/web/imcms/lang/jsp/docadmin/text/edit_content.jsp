@@ -3,8 +3,9 @@
                  imcode.util.Html,
                  imcode.util.Utility,
                  org.apache.commons.lang3.StringEscapeUtils,
-                org.apache.commons.lang3..math.NumberUtils,
-                 java.net.URLEncoderorg.apache.commons.lang3.g.StringUtils"%><%
+                org.apache.commons.lang3.math.NumberUtils,
+                 java.net.URLEncoder,
+                 org.apache.commons.lang3.StringUtils"%><%
 
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute( "document" ) ;
     Integer textIndex = (Integer)request.getAttribute( "textIndex" ) ;

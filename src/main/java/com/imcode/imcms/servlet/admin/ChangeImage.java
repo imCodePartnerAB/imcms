@@ -138,7 +138,7 @@ public class ChangeImage extends HttpServlet {
                 document.getVersionRef(), imageIndex, Optional.ofNullable(loopEntryRef)
         );
 
-        for (DocumentLanguage language : imcref.getDocumentLanguageSupport().getAll()) {
+        for (DocumentLanguage language : imcref.getDocumentLanguages().getAll()) {
             if (!images.containsKey(language)) {
                 images.put(language, new ImageDomainObject());
             }

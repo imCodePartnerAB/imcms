@@ -4,7 +4,7 @@
                  imcode.util.HttpSessionUtils,
                  imcode.util.Utility,
                  org.apache.commons.lang3.StringEscapeUtils,
-                org.apache.commons.lang3..StringUtils,
+                org.apache.commons.lang3.StringUtils,
                  com.imcode.imcms.servlet.superadmin.UserEditorPage,
                  imcode.server.Imcms,
                  imcode.server.user.RoleDomainObject,

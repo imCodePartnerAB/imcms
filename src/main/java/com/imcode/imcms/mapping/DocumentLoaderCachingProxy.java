@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.DocumentLanguageSupport;
+import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.mapping.container.DocRef;
@@ -58,7 +58,7 @@ public class DocumentLoaderCachingProxy {
 
     private final DocumentVersionMapper versionMapper;
     private final DocumentLoader loader;
-    private final DocumentLanguageSupport languageSupport;
+    private final DocumentLanguages documentLanguages;
     private final int size;
 
     private final CacheWrapper<Integer, DocumentMeta> metas;
@@ -70,10 +70,10 @@ public class DocumentLoaderCachingProxy {
 
     private final CacheManager cacheManager = CacheManager.create();
 
-    public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper, DocumentLoader loader, DocumentLanguageSupport languageSupport, int size) {
+    public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper, DocumentLoader loader, DocumentLanguages documentLanguages, int size) {
         this.versionMapper = versionMapper;
         this.loader = loader;
-        this.languageSupport = languageSupport;
+        this.documentLanguages = documentLanguages;
         this.size = size;
 
         metas = CacheWrapper.of(cacheConfiguration("meats"));
@@ -146,7 +146,7 @@ public class DocumentLoaderCachingProxy {
 
             doc.setMeta(meta.clone());
             doc.setVersionNo(version.getNo());
-            doc.setLanguage(languageSupport.getByCode(docLanguageCode));
+            doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
 
             return loader.loadAndInitContent(doc);
         });
@@ -171,7 +171,7 @@ public class DocumentLoaderCachingProxy {
 
             doc.setMeta(meta.clone());
             doc.setVersionNo(version.getNo());
-            doc.setLanguage(languageSupport.getByCode(docLanguageCode));
+            doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
 
             return loader.loadAndInitContent(doc);
         });
@@ -193,7 +193,7 @@ public class DocumentLoaderCachingProxy {
 
         doc.setMeta(meta.clone());
         doc.setVersionNo(version.getNo());
-        doc.setLanguage(languageSupport.getByCode(docRef.getLanguageCode()));
+        doc.setLanguage(documentLanguages.getByCode(docRef.getLanguageCode()));
 
         return loader.loadAndInitContent(doc);
     }
@@ -203,7 +203,7 @@ public class DocumentLoaderCachingProxy {
         metas.remove(docId);
         versionInfos.remove(docId);
 
-        languageSupport.getCodes().forEach(code -> {
+        documentLanguages.getCodes().forEach(code -> {
             DocCacheKey key = new DocCacheKey(docId, code);
 
             workingDocs.remove(key);

@@ -12,7 +12,7 @@
 	        imcode.util.Parser,
 	        java.util.Locale,
 	        com.imcode.imcms.api.*,
-	       org.apache.commons.lang3..StringEscapeUtils,
+	       org.apache.commons.lang3.StringEscapeUtils,
 	        java.net.URLEncoder"
 	
 	contentType="text/html; charset=UTF-8"
@@ -62,7 +62,7 @@ try {
 	isSwe =	imcmsSystem.getCurrentUser().getLanguage().getIsoCode639_2().equals("swe");
 } catch (Exception e) {}
 
-com.imcode.imcms.mapping.jpa.doc.Language currentLanguage = Imcms.getUser().getDocGetterCallback().contentLanguages().preferred();
+DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().getLanguage();
 
 
 //DateFormat df  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;

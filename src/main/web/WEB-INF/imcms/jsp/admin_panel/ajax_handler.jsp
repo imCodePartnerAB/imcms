@@ -12,7 +12,7 @@
 	        imcode.server.document.textdocument.TextDocumentDomainObject,
 	        imcode.server.parser.ParserParameters,
 	        imcode.server.user.UserDomainObject,
-	        imcode.util.Utility, org.apache.commons.lang3.StringUtils, java.util.List, java.util.Set, com.imcode.imcms.servlet.Version,org.apache.commons.lang3..StringEscapeUtils, org.apache.oro.text.perl.Perl5Util, org.apache.oro.text.perl.MalformedPerl5PatternException, imcode.util.Html, imcode.server.document.*, java.util.ArrayList, imcode.server.ImcmsServices, java.util.Iterator, org.apache.commons.collections.iterators.ReverseListIterator"
+	        imcode.util.Utility, org.apache.commons.lang3.StringUtils, java.util.List, java.util.Set, com.imcode.imcms.servlet.Version,org.apache.commons.lang3.StringEscapeUtils, org.apache.oro.text.perl.Perl5Util, org.apache.oro.text.perl.MalformedPerl5PatternException, imcode.util.Html, imcode.server.document.*, java.util.ArrayList, imcode.server.ImcmsServices, java.util.Iterator, org.apache.commons.collections.iterators.ReverseListIterator"
 	
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
@@ -157,10 +157,10 @@ int versionNo = document.getVersionNo();
 /* *******************************************************************************************
 *         Get languages                                                                     *
 ******************************************************************************************* */
-List<DocumentLanguage> languages = Imcms.getServices().getDocumentLanguageSupport().getAll();
+List<DocumentLanguage> languages = Imcms.getServices().getDocumentLanguages().getAll();
 Set<DocumentLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
-    DocumentLanguage defaultLanguage = Imcms.getServices().getDocumentLanguageSupport().getDefault();
-    DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().documentLanguages().preferred();
+    DocumentLanguage defaultLanguage = Imcms.getServices().getDocumentLanguages().getDefault();
+    DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().getLanguage();
 
 
 

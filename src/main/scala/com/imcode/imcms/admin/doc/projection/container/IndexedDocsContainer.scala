@@ -177,7 +177,7 @@ with ImcmsServicesSupport {
       doc.setPublicationStartDatetime(fields.publicationStartDt())
       doc.setPublicationEndDatetime(fields.publicationEndDt())
       doc.setPublicationStatus(Document.PublicationStatus.of(fields.publicationStatusId()))
-      doc.setLanguage(imcmsServices.getDocumentLanguageSupport.getByCode(fields.languageCode()))
+      doc.setLanguage(imcmsServices.getDocumentLanguages.getByCode(fields.languageCode()))
     }
 
     private val properties = scala.collection.mutable.Map.empty[AnyRef, Property[AnyRef]]

@@ -2,7 +2,7 @@
                  com.imcode.imcms.servlet.DocumentFinder,
                  com.imcode.imcms.servlet.SearchDocumentsPage,
                  imcode.util.jscalendar.JSCalendar,
-                 org.apache.commons.lang3.StringEscapeUtils"
+                 org.apache.commons.lang.StringEscapeUtils"
         contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
 <%

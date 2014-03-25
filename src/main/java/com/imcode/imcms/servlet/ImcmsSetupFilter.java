@@ -1,7 +1,11 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.DocGetterCallbacks;
+import com.google.common.primitives.Ints;
+import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.mapping.DocGetterCallback;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -22,12 +26,14 @@ import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 
 /**
  * Front filter.
  * <p>
+ *
  * @see imcode.server.Imcms
  */
 public class ImcmsSetupFilter implements Filter {
@@ -134,7 +140,7 @@ public class ImcmsSetupFilter implements Filter {
             Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
             Imcms.setUser(user);
-            DocGetterCallbacks.updateUserDocGetterCallback(request, Imcms.getServices(), user);
+            ImcmsSetupFilter.updateUserDocGetterCallback(request, Imcms.getServices(), user);
 
             Utility.initRequestWithApi(request, user);
 
@@ -209,6 +215,54 @@ public class ImcmsSetupFilter implements Filter {
             cookie.setDomain(domain);
             cookie.setPath("/");
             ((HttpServletResponse) response).addCookie(cookie);
+        }
+    }
+
+    public static void updateUserDocGetterCallback(HttpServletRequest request, ImcmsServices services, UserDomainObject user) {
+        DocGetterCallback docGetterCallback = Optional.ofNullable(user.getDocGetterCallback()).orElseGet(() -> {
+            DocGetterCallback dgc = new DocGetterCallback(user);
+            user.setDocGetterCallback(dgc);
+            return dgc;
+        });
+        DocumentLanguages dls = services.getDocumentLanguages();
+        DocumentLanguage defaultLanguage = dls.getDefault();
+        DocumentLanguage preferredLanguage = Optional
+                .of(StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)))
+                .map(dls::getByCode)
+                .orElse(null);
+
+        if (preferredLanguage == null) {
+            preferredLanguage = docGetterCallback.getLanguage();
+        }
+
+        if (preferredLanguage == null) {
+            preferredLanguage = dls.getForHost(request.getServerName());
+        }
+
+        if (preferredLanguage == null) {
+            preferredLanguage = defaultLanguage;
+        }
+
+        docGetterCallback.setLanguage(preferredLanguage, preferredLanguage == defaultLanguage);
+
+        Integer docId = Ints.tryParse(StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)));
+        String versionStr = StringUtils.trimToNull(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION));
+
+        if (docId != null && versionStr != null) {
+            switch (versionStr.toLowerCase()) {
+                case ImcmsConstants.REQUEST_PARAM_VALUE__DOC_VERSION__ALIAS_DEFAULT:
+                    docGetterCallback.setDefault(docId);
+                    break;
+
+                case ImcmsConstants.REQUEST_PARAM_VALUE__DOC_VERSION__ALIAS_WORKING:
+                    docGetterCallback.setWorking(docId);
+                    break;
+
+                default:
+                    Optional.ofNullable(Ints.tryParse(versionStr)).ifPresent(versionNo ->
+                                    docGetterCallback.setCustom(docId, versionNo)
+                    );
+            }
         }
     }
 }
