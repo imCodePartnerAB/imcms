@@ -124,14 +124,14 @@ public class AdminDoc extends HttpServlet {
         final ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession();
-        Stack<BackDoc.HistoryElement> history = (Stack<BackDoc.HistoryElement>) session.getAttribute("history");
+        Stack<Integer> history = (Stack<Integer>) session.getAttribute("history");
         if (history == null) {
-            history = new Stack<BackDoc.HistoryElement>();
+            history = new Stack<>();
             session.setAttribute("history", history);
         }
 
-        if (history.empty() || !history.peek().docId.equals(meta_id)) {
-            history.push(new BackDoc.HistoryElement(meta_id, user.getDocGetterCallback()));
+        if (history.empty() || !history.peek().equals(meta_id)) {
+            history.push(meta_id);
         }
 
         DocumentDomainObject document = imcref.getDocumentMapper().getDocument(meta_id);

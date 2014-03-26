@@ -174,7 +174,7 @@ public class TextDocumentContentLoader {
 
     public Map<DocumentLanguage, ImageDomainObject> getImages(VersionRef versionRef, int imageNo, Optional<com.imcode.imcms.mapping.container.LoopEntryRef> loopEntryRefOpt) {
         return loopEntryRefOpt.isPresent()
-                ? getLoopImages(versionRef, TextDocumentDomainObject.LoopItemRef.of(imageNo, loopEntryRefOpt.get()))
+                ? getLoopImages(versionRef, TextDocumentDomainObject.LoopItemRef.of(loopEntryRefOpt.get(), imageNo))
                 : getImages(versionRef, imageNo);
     }
 
@@ -203,7 +203,7 @@ public class TextDocumentContentLoader {
 
     public ImageDomainObject getImage(DocRef docRef, int imageNo, Optional<com.imcode.imcms.mapping.container.LoopEntryRef> loopEntryRefOpt) {
         return loopEntryRefOpt.isPresent()
-                ? getLoopImage(docRef, TextDocumentDomainObject.LoopItemRef.of(imageNo, loopEntryRefOpt.get()))
+                ? getLoopImage(docRef, TextDocumentDomainObject.LoopItemRef.of(loopEntryRefOpt.get(), imageNo))
                 : getImage(docRef, imageNo);
     }
 

@@ -19,17 +19,6 @@ import java.util.Stack;
 
 public class BackDoc extends HttpServlet {
 
-    public static class HistoryElement implements Serializable {
-        public final Integer docId;
-
-        public final DocGetterCallback docGetterCallback;
-
-        public HistoryElement(Integer docId, DocGetterCallback docGetterCallback) {
-            this.docId = docId;
-            this.docGetterCallback = docGetterCallback;
-        }
-    }
-
     /**
      * doGet()
      */
@@ -37,7 +26,7 @@ public class BackDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         Utility.setDefaultHtmlContentType(res);
 
-        Stack<HistoryElement> history = (Stack<HistoryElement>) req.getSession().getAttribute("history");
+        Stack<Integer> history = (Stack<Integer>) req.getSession().getAttribute("history");
         DocumentDomainObject lastTextDocument = getNextToLastTextDocumentFromHistory(history, imcref);
 
         if (null != lastTextDocument) {
@@ -58,19 +47,16 @@ public class BackDoc extends HttpServlet {
         response.sendRedirect(Utility.getAbsolutePathToDocument(request, document));
     }
 
-    // todo: refactor
-    public static DocumentDomainObject getNextToLastTextDocumentFromHistory(Stack<HistoryElement> history, ImcmsServices imcref) {
+    public static DocumentDomainObject getNextToLastTextDocumentFromHistory(Stack<Integer> history, ImcmsServices imcref) {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        HistoryElement he = history.pop();
-        Imcms.getUser().setDocGetterCallback(he.docGetterCallback);
-        DocumentDomainObject document = documentMapper.getDocument(he.docId); // remove top document from stack ( this is current text document )
+        DocumentDomainObject document = documentMapper.getDocument(history.pop()); // remove top document from stack ( this is current text document )
 
-        while (!history.empty()) {
-            he = history.pop();
-            Imcms.getUser().setDocGetterCallback(he.docGetterCallback);
-            document = documentMapper.getDocument(he.docId);
-            if (isTextDocument(document)) {
-                break;
+        if (null != history && !history.empty()) {
+            while (!history.empty()) {
+                document = documentMapper.getDocument(history.pop());
+                if (isTextDocument(document)) {
+                    break;
+                }
             }
         }
 
@@ -80,5 +66,4 @@ public class BackDoc extends HttpServlet {
     private static boolean isTextDocument(DocumentDomainObject document) {
         return DocumentTypeDomainObject.TEXT == document.getDocumentType();
     }
-
 }

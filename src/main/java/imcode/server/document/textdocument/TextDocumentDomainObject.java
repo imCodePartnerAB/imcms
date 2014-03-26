@@ -511,8 +511,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             return new LoopItemRef(loopNo, entryNo, itemNo);
         }
 
-        public static LoopItemRef of(int loopNo, LoopEntryRef loopEntryRef) {
-            return new LoopItemRef(loopNo, loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo());
+        public static LoopItemRef of(LoopEntryRef loopEntryRef, int itemNo) {
+            return new LoopItemRef(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), itemNo);
         }
 
         private final int loopNo;

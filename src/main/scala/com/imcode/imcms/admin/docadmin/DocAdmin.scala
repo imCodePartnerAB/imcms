@@ -2,35 +2,24 @@ package com.imcode
 package imcms
 package admin.docadmin
 
-import com.imcode.imcms.admin.docadmin.menu.MenuEditorParameters
-import com.imcode.imcms.admin.docadmin.text.TextEditorParameters
-import com.imcode.imcms.api._
-import com.imcode.imcms.mapping.container.{VersionRef, TextDocMenuContainer}
+import com.imcode.imcms.mapping.container.TextDocMenuContainer
 import java.util.Locale
-import scala.collection.JavaConverters._
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.admin.doc.DocEditor
 import com.vaadin.ui._
 import com.vaadin.server._
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.component.dialog.ConfirmationDialog
-import com.imcode.imcms.mapping._
 import com.imcode.imcms.ImcmsServicesSupport
-import org.apache.commons.lang3.StringEscapeUtils
 
 import _root_.imcode.server.document.textdocument._
-import _root_.imcode.server.{ImcmsConstants, Imcms}
-import _root_.imcode.server.user.UserDomainObject
-import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
-import imcode.server.document.{DocumentDomainObject, NoPermissionToEditDocumentException}
+import _root_.imcode.server.ImcmsConstants
+import imcode.server.document.DocumentDomainObject
 
 import com.imcode.imcms.admin.docadmin.menu.{MenuEditorParameters, MenuEditor}
-import com.imcode.imcms.admin.docadmin.text.{TextEditor, TextEditorParameters}
 import com.imcode.imcms.admin.docadmin.image.ImagesEditor
 import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
-import scala.Some
-import imcode.server.document.textdocument.TextDocumentDomainObject.LoopItemRef
 
 // todo: validate params in filter, create params wrapper, pass params into DocAdmin (no need to examine path in init)?
 // todo: template/group
@@ -78,11 +67,6 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
               )
 
               wrapTextDocMenuEditor(MenuEditorParameters(textDoc, menuNo, title, returnUrl))
-          }
-        } orElse {
-          condOpt(pathInfo, doc, request.getParameter("txt")) {
-            case ("/text", textDoc: TextDocumentDomainObject, NonNegInt(textNo)) =>
-              wrapTextDocTextEditor(request, textDoc, textNo)
           }
         } orElse {
           condOpt(pathInfo, doc, request.getParameter("img")) {
@@ -213,213 +197,6 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
 
             if (close) {
               Current.page.open(params.returnUrl, "_self")
-            }
-        }
-      }
-  }
-
-
-  // [+] Text can be inside or outside of a content loop
-  // [+] Request params: rows, mode, formats, optionally content loop, filter, label
-  // [-] Load doc and check permissions
-  // TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentMapper.getDocument(documentId);
-  // TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(textDocument);
-  //
-  // if (!textDocumentPermissionSet.getEditTexts()) {    // Checking to see if user may edit this
-  //    AdminDoc.adminDoc(documentId, user, request, res, getServletContext());
-  //
-  //    return;
-  // }
-
-  // [+] Select or create text in current language, set editor label
-  //  int textIndex = Integer.parseInt(request.getParameter("txt"));
-  //  String label = null == request.getParameter("label") ? "" : request.getParameter("label");
-  //
-  //  I18nLanguage language = Imcms.getUser().getDocGetterCallback().languages().preferred();
-  //  TextDomainObject text = contentRef == null
-  //  ? textDocument.getText(textIndex)
-  //    : textDocument.getText(textIndex, contentRef);
-  //
-  //  Integer metaId = textDocument.getId();
-  //
-  //  if (text == null) {
-  //    text = new TextDomainObject();
-  //    text.setDocRef(DocRef.of(metaId, textDocument.getVersionNo()));
-  //    text.setNo(textIndex);
-  //    text.setLanguage(language);
-  //    text.setType(TextDomainObject.TEXT_TYPE_HTML);
-  //    text.setContentRef(contentRef);
-  //  }
-
-  // [+] editor/text formats
-  //  boolean showModeEditor = formats.isEmpty();
-  //  boolean showModeText   = formats.contains("text") || showModeEditor;
-  //  boolean showModeHtml   = formats.contains("html") || formats.contains("none") || showModeEditor ;
-  //  boolean editorHidden   = getCookie("imcms_hide_editor", request).equals("true") ;
-  //  int rows = (request.getParameter("rows") != null && request.getParameter("rows").matches("^\\d+$")) ? Integer.parseInt(request.getParameter("rows")) : 0 ;
-  //
-  // [-]
-  //  if (rows > 0) {
-  //    showModeEditor = false;
-  //  }
-  //
-  //  [-]
-  //  Cookie?
-  // <title><? templates/sv/change_text.html/1 ?></title>
-  //         <script src="<%= request.getContextPath() %>/imcms/$language/scripts/imcms_admin.js.jsp"
-  //
-  //     <% if (showModeEditor && !editorHidden) { %>
-  //            JS XINA
-
-  // if TEXT_TYPE == text type html && !editor hidden
-  //  String returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
-  //  if (returnUrl != null) {
-  //    %>
-  //    <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__RETURN_URL%>" value="<%=returnUrl%>">
-  //      <%
-  //        }
-  //        %>
-
-  // [-]
-  // History / RESTORE
-  // [-]
-  // if rows == 1 show text field, else text area if rows not defined default to 25
-  // NB! showModeEditor = false if rows > 0
-  //
-  // ?????? editorHidden - show original i.e. w/o editoc controls ??? ?????
-
-  // [+] Save text
-  // -check permissionSet.getEditTexts()
-  // -save text
-  // -imcref.updateMainLog("Text " + txt_no + " in [" + meta_id + "] modified by user: [" + user.getFullName()+ "]");
-  // - handle save exs:
-  //  try {
-  //    documentMapper.saveTextDocText(text, user);
-  //  } catch (NoPermissionToEditDocumentException e) {
-  //    throw new ShouldHaveCheckedPermissionsEarlierException(e);
-  //  } catch (NoPermissionToAddDocumentToMenuException e) {
-  //    throw new ConcurrentDocumentModificationException(e);
-  //  } catch (DocumentSaveException e) {
-  //    throw new ShouldNotBeThrownException(e);
-  //  }
-
-  // [-] Fix edit_text.jsp - location, language, loop attrs.
-  // [-] Delete ChangeText servet
-  // [-] Delete SaveText servet
-  // [-] Delete change_text.jsp + resources
-  // [-] Remove Xina, install CKEditor
-  //
-  // [-] Detect type using text format
-  // [-] Escape HTML
-  /*
-          <div id="editor"><%
-            if (rows == 1) { %>
-              <input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml4( textEditPage.getTextString() ) %>" style="width:100%;" /><%
-            } else { %>
-              <textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width: 100%;"><%= StringEscapeUtils.escapeHtml4( textEditPage.getTextString() ) %></textarea><%
-            } %>
-          </div>
-     */
-  // [+] label
-  // [-] validate
-  // [!] Return URL
-  // check ImcmsConstants.REQUEST_PARAM__RETURN_URL
-  //if (returnURL != null) {
-  //res.sendRedirect(returnURL);
-  //} else {
-  //res.sendRedirect("AdminDoc?meta_id=" + meta_id + "&flags="
-  //+ imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS);
-  //}
-
-  // [-] <%= showModeEditor ? "Editor/" : "" %>HTML
-  def wrapTextDocTextEditor(request: VaadinRequest, doc: TextDocumentDomainObject, textNo: Int): EditorContainerView = new EditorContainerView |>> {
-    w =>
-      val title = request.getParameter("label").trimToNull match {
-        case null => s"Document ${doc.getId} text no $textNo"
-        case label => label |> StringEscapeUtils.escapeHtml4
-      }
-
-      w.setTitle(title)
-
-      val formats = request.getParameterMap.get("format") match {
-        case null => Set.empty[String]
-        case array => array.toSet
-      }
-
-      val rowsCountOpt = request.getParameter("rows") |> {
-        case NonNegInt(rows) => Some(rows)
-        case _ => None
-      }
-
-      val showModeText = formats.isEmpty || formats.contains("text")
-      val showModeHtml = formats.isEmpty || formats.contains("html") || formats.contains("none")
-      val showModeEditor = formats.isEmpty && rowsCountOpt.isEmpty
-
-      val LoopItemRefRE = """(\d+)_(\d+)_(\d+)""".r
-      val loopItemRefOpt = request.getParameter("contentRef") match {
-        case LoopItemRefRE(loopNo, contentNo, itemNo) => LoopItemRef.of(loopNo.toInt, contentNo.toInt, itemNo.toInt) |> opt
-        case _ => None
-      }
-
-      // fixme - create text if no exists
-      val textDocMapper: TextDocumentContentLoader = ???
-      val texts = (loopItemRefOpt match {
-        case Some(loopItemRef) => textDocMapper.getLoopTexts(VersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), loopItemRef)
-        case _ => textDocMapper.getTexts(VersionRef.of(doc.getId, DocumentVersion.WORKING_VERSION_NO), textNo)
-      }).asScala.map {
-        case (language, text) => language -> text
-      }
-
-      for ((language, text) <- texts) {
-        text.setType(TextDomainObject.TEXT_TYPE_HTML)
-      }
-
-      // Current language
-      val preferredLanguage = Imcms.getUser.getDocGetterCallback.getLanguage
-
-      val (format, canChangeFormat) = (showModeText, showModeHtml) match {
-        case (true, false) => (TextDomainObject.Format.PLAIN_TEXT, false)
-        case (false, true) => (TextDomainObject.Format.HTML, false)
-        case _ => (TextDomainObject.Format.values()(texts.head._2.getType), true)
-      }
-
-      val editor = new TextEditor(texts.values.toSeq, TextEditorParameters(format, rowsCountOpt, canChangeFormat, showModeEditor))
-
-      w.mainComponent = editor.view
-      editor.view.setSize(900, 600)
-
-      w.buttons.btnSave.addClickHandler {
-        _ =>
-          save(closeAfterSave = false)
-      }
-      w.buttons.btnSaveAndClose.addClickHandler {
-        _ =>
-          save(closeAfterSave = true)
-      }
-
-      w.buttons.btnClose.addClickHandler {
-        _ =>
-          closeEditor()
-      }
-
-      def closeEditor() {
-        Current.page.open(Current.contextPath, "_self")
-      }
-
-      def save(closeAfterSave: Boolean) {
-        editor.collectValues().right.get |> {
-          texts =>
-          // -check permissionSet.getEditTexts()
-            try {
-              //fixme:
-              //imcmsServices.getDocumentMapper.saveTextDocTexts(texts.asJava, Current.imcmsUser)
-              val user = new UserDomainObject() // todo: fixme
-              imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
-              if (closeAfterSave) closeEditor()
-            } catch {
-              case e: NoPermissionToEditDocumentException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
-              case e: NoPermissionToAddDocumentToMenuException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
-              case e: DocumentSaveException => throw new ShouldNotBeThrownException(e)
             }
         }
       }

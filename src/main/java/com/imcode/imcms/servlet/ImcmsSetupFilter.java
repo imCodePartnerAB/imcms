@@ -26,12 +26,8 @@ import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 /**
  * Front filter.

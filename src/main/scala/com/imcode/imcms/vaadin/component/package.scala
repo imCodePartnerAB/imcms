@@ -70,20 +70,41 @@ package object component {
 
 
   def updateDisabled[A <: Component](component: A)(fn: A => Unit) {
-    component.setEnabled(true)
-    try {
+    if (component.isEnabled) {
       fn(component)
-    } finally {
-      component.setEnabled(false)
+    } else {
+      component.setEnabled(true)
+      try {
+        fn(component)
+      } finally {
+        component.setEnabled(false)
+      }
+    }
+  }
+
+  def updateDisabledMenuItem[A <: MenuBar#MenuItem](component: A)(fn: A => Unit) {
+    if (component.isEnabled) {
+      fn(component)
+    } else {
+      component.setEnabled(true)
+      try {
+        fn(component)
+      } finally {
+        component.setEnabled(false)
+      }
     }
   }
 
   def updateReadOnly[A <: Component](component: A)(fn: A => Unit) {
-    component.setReadOnly(false)
-    try {
+    if (!component.isReadOnly) {
       fn(component)
-    } finally {
-      component.setReadOnly(true)
+    } else {
+      component.setReadOnly(false)
+      try {
+        fn(component)
+      } finally {
+        component.setReadOnly(true)
+      }
     }
   }
 

@@ -84,7 +84,7 @@ public class GetDoc extends HttpServlet {
     }
 
     /**
-     * This method is called from viewDoc and from ImcmsFilter.handleDocumentUrl only.
+     * This method is called from viewDoc and from ImcmsSetupFilter.handleDocumentUrl only.
      *
      * @see ImcmsSetupFilter
      */
@@ -116,15 +116,16 @@ public class GetDoc extends HttpServlet {
             return;
         }
 
-        Stack<BackDoc.HistoryElement> history = (Stack<BackDoc.HistoryElement>) req.getSession().getAttribute("history");
+        @SuppressWarnings("unchecked")
+        Stack<Integer> history = (Stack<Integer>) req.getSession().getAttribute("history");
         if (history == null) {
-            history = new Stack<BackDoc.HistoryElement>();
+            history = new Stack<>();
             req.getSession().setAttribute("history", history);
         }
 
         Integer docId = document.getId();
-        if (isTextDocument(document) && (history.empty() || !history.peek().docId.equals(docId))) {
-            history.push(new BackDoc.HistoryElement(docId, user.getDocGetterCallback()));
+        if (isTextDocument(document) && (history.empty() || !history.peek().equals(docId))) {
+            history.push(docId);
         }
 
         String referrer = req.getHeader(HTTP_HEADER_REFERRER);

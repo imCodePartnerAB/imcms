@@ -2,11 +2,11 @@ package com.imcode
 package imcms
 package admin.docadmin.text
 
-import com.vaadin.ui._
+import com.vaadin.ui.{Label, MenuBar, TabSheet, VerticalLayout}
 import com.imcode.imcms.vaadin.component._
 
-
 class TextEditorView extends VerticalLayout with Spacing with FullSize {
+
   val mb = new MenuBar with FullWidth
   val miFormat = mb.addItem("Format")
   val miFormatHtml = miFormat.addItem("HTML") |>> {

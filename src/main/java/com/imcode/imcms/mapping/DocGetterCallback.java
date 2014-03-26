@@ -26,11 +26,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DocGetterCallback {
 
-    private static final Logger logger = LoggerFactory.getLogger(DocGetterCallback.class);
-
     private interface Callback {
         DocumentDomainObject getDoc(int docId, DocumentMapper docMapper);
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(DocGetterCallback.class);
 
     private volatile DocumentLanguage language;
 
@@ -41,17 +41,17 @@ public class DocGetterCallback {
     private Map<Integer, Callback> callbacks = new ConcurrentHashMap<>();
 
     private Callback workingDocCallback = (docId, docMapper) -> {
-        logger.trace("Working doc requested - docId: {} language: {}.", docId, language);
+        logger.trace("Working doc requested - user: {}, docId: {}, language: {}.", user, docId, language);
         return docMapper.getWorkingDocument(docId, language);
     };
 
-    private Callback unchekedDefaultDocCallback = (docId, docMapper) -> {
-        logger.trace("Default doc (unchecked) requested - docId: {} language: {}.", docId, language);
+    private Callback uncheckedDefaultDocCallback = (docId, docMapper) -> {
+        logger.trace("Default doc (unchecked) requested - user: {}, docId: {}, language: {}.", user, docId, language);
         return docMapper.getDefaultDocument(docId, language);
     };
 
     private Callback defaultDocCallback = (docId, docMapper) -> {
-        logger.trace("Default doc requested - docId: {} language: {}.", docId, language);
+        logger.trace("Default doc requested - user: {}, docId: {}, language: {}.", docId, language);
 
         DocumentDomainObject doc = docMapper.getDefaultDocument(docId, language);
 
@@ -76,7 +76,7 @@ public class DocGetterCallback {
     public <T extends DocumentDomainObject> T getDoc(int docId, DocumentMapper docMapper) {
         Callback callback = user.isDefaultUser()
                 ? defaultDocCallback
-                : callbacks.getOrDefault(docId, unchekedDefaultDocCallback);
+                : callbacks.getOrDefault(docId, uncheckedDefaultDocCallback);
 
         return (T) callback.getDoc(docId, docMapper);
     }
@@ -99,7 +99,7 @@ public class DocGetterCallback {
 
     private Callback createCustomDocCallback(int versionNo) {
         return (docId, docMapper) -> {
-            logger.trace("Custom doc requested -  docId: {}, versionNo: {}, language: {}.", docId, versionNo, language);
+            logger.trace("Custom doc requested - user: {},  docId: {}, versionNo: {}, language: {}.", user, docId, versionNo, language);
             return docMapper.getCustomDocument(DocRef.of(docId, versionNo, language.getCode()));
         };
     }

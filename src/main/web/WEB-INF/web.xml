@@ -113,7 +113,7 @@
     <filter-mapping>
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
         <url-pattern>/*</url-pattern>
-        <!--<url-pattern>/web/archive/*</url-pattern>-->
+        <url-pattern>/web/archive/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
@@ -172,6 +172,24 @@
         <init-param>
             <param-name>UI</param-name>
             <param-value>com.imcode.imcms.admin.docadmin.DocAdmin</param-value>
+        </init-param>
+
+        <init-param>
+            <description>Widget Set to Use</description>
+            <param-name>widgetset</param-name>
+            <param-value>com.imcode.imcms.AppWidgetSet</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet>
+        <servlet-name>vaadin-docadmin-text</servlet-name>
+        <servlet-class>
+            com.vaadin.server.VaadinServlet
+        </servlet-class>
+
+        <init-param>
+            <param-name>UI</param-name>
+            <param-value>com.imcode.imcms.admin.docadmin.text.TextEditorUI</param-value>
         </init-param>
 
         <init-param>
@@ -694,10 +712,16 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>vaadin-docadmin-text</servlet-name>
+        <url-pattern>/docadmin/text/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>vaadin-docadmin</servlet-name>
         <url-pattern>/docadmin/*</url-pattern>
         <url-pattern>/VAADIN/*</url-pattern>
     </servlet-mapping>
+
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
