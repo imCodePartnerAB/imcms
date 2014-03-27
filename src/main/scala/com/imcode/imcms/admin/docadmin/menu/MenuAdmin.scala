@@ -14,6 +14,7 @@ import com.imcode.imcms.vaadin.component.dialog.ConfirmationDialog
 import com.imcode.imcms.ImcmsServicesSupport
 
 import com.imcode.imcms.vaadin.Current
+import imcode.server.ImcmsConstants
 
 @com.vaadin.annotations.Theme("imcms")
 class MenuAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
@@ -22,105 +23,65 @@ class MenuAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
     getLoadingIndicatorConfiguration.setFirstDelay(1)
 
+    val contextPath = Current.contextPath
+    val docId = request.getParameter("meta_id").toInt
+    val menuNo = request.getParameter("menu_no")
+    val title = request.getParameter("label").trimToOption.getOrElse("menu_editor.title".f(docId, menuNo))
+    val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
+      s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}&editmenu=$menuNo"
+    )
 
+    val doc = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
+    val menu = doc.getMenu(menuNo)
+    val editor = new MenuEditor(doc, menu) |>> {
+      _.view.setSize(900, 600)
+    }
+    val view = new EditorContainerView(title)
 
-  }
+    def close() {
+      Current.page.open(returnUrl, "_self")
+    }
 
-  //  private def mkContent(request: VaadinRequest): Component = {
-  //    import PartialFunction.condOpt
-  //
-  //    val contextPath = Current.contextPath
-  //    val pathInfo = request.getPathInfo
-  //    val docOpt =
-  //      for {
-  //        docId <- request.getParameter("meta_id") |> NonNegInt.unapply
-  //        doc <- imcmsServices.getDocumentMapper.getDocument[DocumentDomainObject](docId).asOption
-  //      } yield doc
-  //
-  //    val titleOpt = request.getParameter("label").trimToOption
-  //    val returnUrlOpt = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption
-  //
-  //    docOpt.flatMap {
-  //      doc =>
-  //        val docId = doc.getId
-  //
-  //        condOpt(pathInfo) {
-  //          case null | "" | "/" => wrapDocEditor(request, doc)
-  //        } orElse {
-  //          condOpt(pathInfo, doc, request.getParameter("menu_no")) {
-  //            case ("/menu", textDoc: TextDocumentDomainObject, NonNegInt(menuNo)) =>
-  //              val title = titleOpt.getOrElse("menu_editor.title".f(docId, menuNo))
-  //              val returnUrl = returnUrlOpt.getOrElse(
-  //                s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}&editmenu=$menuNo"
-  //              )
-  //
-  //              wrapTextDocMenuEditor(MenuEditorParameters(textDoc, menuNo, title, returnUrl))
-  //          }
-  //        } orElse {
-  //          condOpt(pathInfo, doc, request.getParameter("img")) {
-  //            case ("/image", textDoc: TextDocumentDomainObject, NonNegInt(imageNo)) =>
-  //              wrapTextDocImageEditor(request, textDoc, imageNo)
-  //          }
-  //        }
-  //    } getOrElse {
-  //      new Label("N/A")
-  //    }
-  //  }
+    def save(close: Boolean) {
+      editor.collectValues().right.get |> {
+        menu =>
+          imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocMenuContainer.of(doc.getVersionRef, menuNo, menu), Current.imcmsUser)
+          Current.page.showInfoNotification("menu_editor.notification.saved".i)
 
-  def wrapTextDocMenuEditor(params: MenuEditorParameters) = new EditorContainerView(params.title) |>> {
-    w =>
-      val doc = params.doc
-      val docId = doc.getId
-      val menuNo = params.menuNo
-      val menu = params.doc.getMenu(menuNo)
-
-      val editor = new MenuEditor(doc, menu) |>> {
-        _.view.setSize(900, 600)
-      }
-
-      w.mainComponent = editor.view
-
-      w.buttons.btnReset.addClickHandler {
-        _ =>
-          editor.resetValues()
-      }
-
-      w.buttons.btnSaveAndClose.addClickHandler {
-        _ =>
-          save(close = true)
-      }
-
-      w.buttons.btnClose.addClickHandler {
-        _ =>
-          val editedMenu = editor.collectValues().right.get
-          if (editedMenu.getSortOrder == menu.getSortOrder && editedMenu.getMenuItems.deep == menu.getMenuItems.deep) {
-            closeEditor()
-          } else {
-            new ConfirmationDialog("menu_editor_dlg.confirmation.close_without_saving.title".i,
-              "menu_editor_dlg.confirmation.close_without_saving.message".i) |>> {
-              dlg =>
-                dlg.setOkButtonHandler {
-                  closeEditor()
-                  dlg.close()
-                }
-            } |> Current.ui.addWindow
+          if (close) {
+            Current.page.open(params.returnUrl, "_self")
           }
       }
+    }
 
-      def closeEditor() {
-        Current.page.open(params.returnUrl, "_self")
-      }
+    view.mainComponent = editor.view
+    view.buttons.btnReset.addClickHandler {
+      _ => editor.resetValues()
+    }
+    view.buttons.btnSave.addClickHandler {
+      _ => save(close = false)
+    }
+    view.buttons.btnSaveAndClose.addClickHandler {
+      _ => save(close = true)
+    }
+    view.buttons.btnClose.addClickHandler {
+      _ =>
+        val editedMenu = editor.collectValues().right.get
+        if (editedMenu.getSortOrder == menu.getSortOrder && editedMenu.getMenuItems.deep == menu.getMenuItems.deep) {
+          close()
+        } else {
+          val dlg = new ConfirmationDialog(
+            "menu_editor_dlg.confirmation.close_without_saving.title".i,
+            "menu_editor_dlg.confirmation.close_without_saving.message".i
+          )
 
-      def save(close: Boolean) {
-        editor.collectValues().right.get |> {
-          menu =>
-            imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocMenuContainer.of(doc.getVersionRef, menuNo, menu), Current.imcmsUser)
-            Current.page.showInfoNotification("menu_editor.notification.saved".i)
+          dlg.setOkButtonHandler {
+            closeEditor()
+            dlg.close()
+          }
 
-            if (close) {
-              Current.page.open(params.returnUrl, "_self")
-            }
+          Current.ui.addWindow(dlg)
         }
-      }
+    }
   }
 }
