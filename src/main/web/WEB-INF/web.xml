@@ -189,7 +189,43 @@
 
         <init-param>
             <param-name>UI</param-name>
-            <param-value>com.imcode.imcms.admin.docadmin.text.TextEditorUI</param-value>
+            <param-value>com.imcode.imcms.admin.docadmin.text.TextAdmin</param-value>
+        </init-param>
+
+        <init-param>
+            <description>Widget Set to Use</description>
+            <param-name>widgetset</param-name>
+            <param-value>com.imcode.imcms.AppWidgetSet</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet>
+        <servlet-name>vaadin-docadmin-image</servlet-name>
+        <servlet-class>
+            com.vaadin.server.VaadinServlet
+        </servlet-class>
+
+        <init-param>
+            <param-name>UI</param-name>
+            <param-value>com.imcode.imcms.admin.docadmin.image.ImageAdmin</param-value>
+        </init-param>
+
+        <init-param>
+            <description>Widget Set to Use</description>
+            <param-name>widgetset</param-name>
+            <param-value>com.imcode.imcms.AppWidgetSet</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet>
+        <servlet-name>vaadin-docadmin-menu</servlet-name>
+        <servlet-class>
+            com.vaadin.server.VaadinServlet
+        </servlet-class>
+
+        <init-param>
+            <param-name>UI</param-name>
+            <param-value>com.imcode.imcms.admin.docadmin.menu.MenuAdmin</param-value>
         </init-param>
 
         <init-param>
@@ -273,11 +309,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.ChangeImage</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.ChangeImage</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.ChangeText</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.ChangeText</servlet-class>
     </servlet>
 
     <servlet>
@@ -536,11 +567,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.ChangeText</servlet-name>
-        <url-pattern>/servlet/ChangeText</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher</servlet-name>
         <url-pattern>/servlet/DocumentPageFlowDispatcher</url-pattern>
     </servlet-mapping>
@@ -715,6 +741,17 @@
         <servlet-name>vaadin-docadmin-text</servlet-name>
         <url-pattern>/docadmin/text/*</url-pattern>
     </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>vaadin-docadmin-menu</servlet-name>
+        <url-pattern>/docadmin/menu/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>vaadin-docadmin-image</servlet-name>
+        <url-pattern>/docadmin/image/*</url-pattern>
+    </servlet-mapping>
+
 
     <servlet-mapping>
         <servlet-name>vaadin-docadmin</servlet-name>

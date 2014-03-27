@@ -18,11 +18,15 @@ import imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarl
 import com.imcode.imcms.vaadin.component._
 
 @com.vaadin.annotations.Theme("imcms")
-class TextEditorUI extends UI with ImcmsServicesSupport {
+class TextAdmin extends UI with ImcmsServicesSupport {
 
   val LoopEntryRefRE = """(\d+)_(\d+)""".r
 
   override def init(request: VaadinRequest) {
+    getLoadingIndicatorConfiguration.setFirstDelay(1)
+    getLoadingIndicatorConfiguration.setSecondDelay(2)
+    getLoadingIndicatorConfiguration.setThirdDelay(3)
+
     val contextPath = Current.contextPath
     val pathInfo = request.getPathInfo
 
@@ -78,25 +82,6 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
   //    return;
   // }
 
-  // [+] Select or create text in current language, set editor label
-  //  int textIndex = Integer.parseInt(request.getParameter("txt"));
-  //  String label = null == request.getParameter("label") ? "" : request.getParameter("label");
-  //
-  //  I18nLanguage language = Imcms.getUser().getDocGetterCallback().languages().preferred();
-  //  TextDomainObject text = contentRef == null
-  //  ? textDocument.getText(textIndex)
-  //    : textDocument.getText(textIndex, contentRef);
-  //
-  //  Integer metaId = textDocument.getId();
-  //
-  //  if (text == null) {
-  //    text = new TextDomainObject();
-  //    text.setDocRef(DocRef.of(metaId, textDocument.getVersionNo()));
-  //    text.setNo(textIndex);
-  //    text.setLanguage(language);
-  //    text.setType(TextDomainObject.TEXT_TYPE_HTML);
-  //    text.setContentRef(contentRef);
-  //  }
 
   // [+] editor/text formats
   //  boolean showModeEditor = formats.isEmpty();
@@ -151,9 +136,6 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
   //  }
 
   // [-] Fix edit_text.jsp - location, language, loop attrs.
-  // [-] Delete ChangeText servet
-  // [-] Delete SaveText servet
-  // [-] Delete change_text.jsp + resources
   // [-] Remove Xina, install CKEditor
   //
   // [-] Detect type using text format
