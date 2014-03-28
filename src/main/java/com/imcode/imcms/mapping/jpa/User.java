@@ -14,7 +14,7 @@ import java.util.Objects;
 @Table(name = "users")
 public class User {
 
-    enum PasswordType {
+    public enum PasswordType {
         UNENCRYPTED, ENCRYPTED
     }
 
@@ -100,7 +100,7 @@ public class User {
     private String country = "";
 
     @Column(name = "county_council")
-    private String countryCouncil = "";
+    private String province = "";
 
     @Email
     @NotNull
@@ -168,7 +168,7 @@ public class User {
                 && Objects.equals(this.city, that.city)
                 && Objects.equals(this.zip, that.zip)
                 && Objects.equals(this.country, that.country)
-                && Objects.equals(this.countryCouncil, that.countryCouncil)
+                && Objects.equals(this.province, that.province)
                 && Objects.equals(this.active, that.active)
                 && Objects.equals(this.createDate, that.createDate)
                 && Objects.equals(this.languageIso639_2, that.languageIso639_2)
@@ -274,12 +274,12 @@ public class User {
         this.country = country;
     }
 
-    public String getCountryCouncil() {
-        return countryCouncil;
+    public String getProvince() {
+        return province;
     }
 
-    public void setCountryCouncil(String countryCouncil) {
-        this.countryCouncil = countryCouncil;
+    public void setProvince(String province) {
+        this.province = province;
     }
 
     public String getEmail() {

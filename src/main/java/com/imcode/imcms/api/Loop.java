@@ -1,8 +1,5 @@
 package com.imcode.imcms.api;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.*;
@@ -13,12 +10,16 @@ public final class Loop {
         return new Loop(entries, nextContentNo);
     }
 
+    public static Loop of(Map<Integer, Boolean> entries) {
+        return Loop.of(entries, entries.keySet().stream().mapToInt(Integer::intValue).max().orElse(0) + 1);
+    }
+
     public static Loop empty() {
-        return new Loop(Collections.<Integer, Boolean>emptyMap(), 1);
+        return Loop.of(Collections.emptyMap());
     }
 
     public static Loop singleton() {
-        return new Loop(Collections.singletonMap(1, true), 2);
+        return Loop.of(Collections.singletonMap(1, true));
     }
 
     private final Map<Integer, Boolean> entries;
@@ -28,6 +29,13 @@ public final class Loop {
     private final int cachedHashCode;
 
     public Loop(Map<Integer, Boolean> entries, int nextEntryNo) {
+        int minAllowedNextEntryNo = entries.keySet().stream().mapToInt(Integer::intValue).max().orElse(0) + 1;
+        if (nextEntryNo < minAllowedNextEntryNo) {
+            throw new IllegalArgumentException(
+                    String.format("nextEntryNo must be >= %d but was %d, entries: %s",
+                            minAllowedNextEntryNo, nextEntryNo, entries));
+        }
+
         this.entries = Collections.unmodifiableMap(new LinkedHashMap<>(entries));
         this.nextEntryNo = nextEntryNo;
         this.cachedHashCode = Objects.hash(entries, nextEntryNo);

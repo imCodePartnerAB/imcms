@@ -36,7 +36,6 @@ public class LoopTag extends BodyTagSupport {
         }
     }
 
-
     /**
      * Loop number in a TextDocument.
      */
@@ -69,6 +68,7 @@ public class LoopTag extends BodyTagSupport {
      * @return
      * @throws JspException
      */
+    @Override
     public int doStartTag() throws JspException {
         result = new StringBuilder();
         request = (HttpServletRequest) pageContext.getRequest();
@@ -77,12 +77,12 @@ public class LoopTag extends BodyTagSupport {
         document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
         editMode = parserParameters.isContentLoopMode();
 
-        loop = document.getContentLoop(no);
+        loop = document.getLoop(no);
 
         if (loop == null) {
             loop = Loop.singleton();
 
-            document.setContentLoop(no, loop);
+            document.setLoop(no, loop);
         }
 
         loopIterator = new LoopIterator(loop);
@@ -92,6 +92,7 @@ public class LoopTag extends BodyTagSupport {
                 : EVAL_BODY_INCLUDE;
     }
 
+    @Override
     public int doAfterBody() throws JspException {
 //        if (editMode) {
 //            BodyContent bodyContent = getBodyContent();
@@ -121,7 +122,7 @@ public class LoopTag extends BodyTagSupport {
         return loopIterator.getNextEntryNo() != null ? EVAL_BODY_AGAIN : SKIP_BODY;
     }
 
-
+    @Override
     public int doEndTag() throws JspException {
 //        if (editMode) {
 //            try {

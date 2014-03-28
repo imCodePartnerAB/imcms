@@ -7,9 +7,10 @@ import com.imcode.db.commands.*;
 import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
+import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.ImcmsServices;
-import imcode.util.DateConstants;
 import imcode.util.Utility;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -19,8 +20,6 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegistry, Authenticator, RoleGetter {
@@ -33,17 +32,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     private static final String SPROC_DEL_PHONE_NR = "DelPhoneNr";
 
-    private static final int USER_EXTERN_ID = 2;
-
-    private static final String SQL_SELECT_USERS = "SELECT user_id, login_name, login_password, first_name, last_name, "
-            + "title, company, address, city, zip, country, county_council, "
-            + "email, language, active, "
-            + "create_date, external, session_id, "
-            + "login_password_is_encrypted, "
-            + "login_password_reset_id, "
-            + "login_password_reset_ts "
-            + "FROM users";
-
     public static final String SQL_ROLES_COLUMNS = "roles.role_id, roles.role_name, roles.admin_role, roles.permissions";
     private static final String SQL_SELECT_ALL_ROLES = "SELECT " + SQL_ROLES_COLUMNS + " FROM roles";
     private static final String SQL_SELECT_ALL_ROLES_EXCEPT_USERS_ROLE = SQL_SELECT_ALL_ROLES
@@ -54,14 +42,14 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public static final String SQL_INSERT_INTO_ROLES = "INSERT INTO roles (role_name, permissions, admin_role) VALUES(?,?,0)";
     private static final String TABLE__USERADMIN_ROLE_CROSSREF = "useradmin_role_crossref";
-    private static final String SQL__SELECT_USER_BY_ID = SQL_SELECT_USERS
-            + " WHERE user_id = ?";
 
     private static final String SQL_UPDATE_USER_SESSION = "update users set session_id = ? where user_id = ?";
 
     private static final String SQL_SELECT_USER_SESSION = "select session_id from users where user_id = ?";
 
     private final ImcmsServices services;
+
+    private final UserRepository userRepository;
 
     /**
      * @since 4.0.7
@@ -71,6 +59,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public ImcmsAuthenticatorAndUserAndRoleMapper(ImcmsServices services, LoginPasswordManager userLoginPasswordManager) {
         this.services = services;
         this.loginPasswordManager = userLoginPasswordManager;
+        this.userRepository = services.getManagedBean(UserRepository.class);
     }
 
     /**
@@ -94,7 +83,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
      * @since 4.0.7
      */
     public UserDomainObject getUserByEmail(String email) {
-        return email == null ? null : getUserFromSqlRow(sqlSelectUserByEmail(email));
+        return email == null ? null : toDomainObject(userRepository.findByEmailUnique(email));
     }
 
     /**
@@ -138,7 +127,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
      * @since 4.1.3
      */
     public UserDomainObject getUserByPasswordResetId(String resetId) {
-        UserDomainObject user = getUserFromSqlRow(sqlSelectUserByPasswordResetId(resetId));
+        UserDomainObject user = toDomainObject(userRepository.findByPasswordResetId(resetId));
 
         return (user == null || isPasswordResetExpired(user.getPasswordReset().getTime())
                 || (user.isSuperAdmin() && !services.getConfig().isSuperadminLoginPasswordResetAllowed()))
@@ -147,7 +136,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public UserDomainObject getUser(String loginName) {
-        return StringUtils.isBlank(loginName) ? null : getUserFromSqlRow(sqlSelectUserByName(loginName));
+        return StringUtils.isBlank(loginName) ? null : toDomainObject(userRepository.findByLogin(loginName));
     }
 
     /**
@@ -156,7 +145,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
      * @since 4.1.3
      */
     public UserDomainObject getUserByLoginIgnoreCase(String login) {
-        return StringUtils.isBlank(login) ? null : getUserFromSqlRow(sqlSelectUserByLoginIgnoreCase(login));
+        return StringUtils.isBlank(login) ? null : toDomainObject(userRepository.findByLoginIgnoreCase(login));
     }
 
     /**
@@ -170,62 +159,45 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         return interval > services.getSystemData().getUserLoginPasswordResetExpirationInterval();
     }
 
-    private String[] sqlSelectUserByName(String loginName) {
-        final Object[] parameters = new String[]{loginName.trim()};
-        return (String[]) services.getDatabase().execute(new SqlQueryCommand(SQL_SELECT_USERS
-                + " WHERE login_name = ?", parameters, Utility.STRING_ARRAY_HANDLER));
-    }
-
-    private String[] sqlSelectUserByLoginIgnoreCase(String login) {
-        final Object[] parameters = new String[]{login.trim().toLowerCase()};
-        return (String[]) services.getDatabase().execute(
-                new SqlQueryCommand(SQL_SELECT_USERS + " WHERE LOWER(login_name) = ?", parameters, Utility.STRING_ARRAY_HANDLER));
-    }
-
-    private UserDomainObject getUserFromSqlRow(String[] sqlResult) {
-        UserDomainObject user;
-
-        if (sqlResult.length == 0) {
-            user = null;
-        } else {
-            user = new UserDomainObject(Integer.parseInt(sqlResult[0]));
-            initUserFromSqlData(user, sqlResult);
-            initUserRoles(user);
-            initUserPhoneNumbers(user);
-            initUserUserAdminRoles(user);
+    private UserDomainObject toDomainObject(User user) {
+        if (user == null) {
+            return null;
         }
-        return user;
-    }
 
-    void initUserFromSqlData(UserDomainObject user, String[] sqlResult) {
-        user.setLoginName(sqlResult[1]);
-        user.setPassword(sqlResult[2].trim(), "1".equals(sqlResult[18])
-                ? UserDomainObject.PasswordType.ENCRYPTED
-                : UserDomainObject.PasswordType.UNENCRYPTED);
+        UserDomainObject userDO = new UserDomainObject();
+        userDO.setActive(user.isActive());
+        userDO.setAddress(user.getAddress());
+        //userDO.setAuthenticatedByIp();
+        userDO.setCity(user.getCity());
+        userDO.setCompany(user.getCompany());
+        userDO.setCountry(user.getCountry());
+        //todo: check date
+        //DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
+        userDO.setCreateDate(user.getCreateDate());
+        //userDO.setCurrentContextPath();
+        userDO.setEmailAddress(user.getEmail());
+        userDO.setFirstName(user.getFirstName());
+        userDO.setId(user.getId());
+        userDO.setImcmsExternal(user.isExternal());
+        userDO.setLanguageIso639_2(ObjectUtils.defaultIfNull(user.getLanguageIso639_2(), services.getLanguageMapper().getDefaultLanguage()));
+        userDO.setLastName(user.getLastName());
+        userDO.setPassword(user.getPassword(), UserDomainObject.PasswordType.valueOf(user.getPasswordType().name()));
+        Optional.ofNullable(user.getPasswordReset()).ifPresent(passwordReset ->
+                        userDO.setPasswordReset(passwordReset.getId(), passwordReset.getTimestamp())
+        );
+        userDO.setProvince(user.getProvince());
+        //userDO.setRoleIds();
+        userDO.setSessionId(user.getSessionId());
+        //userDO.setTemplateGroup();
+        userDO.setTitle(user.getTitle());
+        //userDO.setUserAdminRolesIds();
+        userDO.setZip(user.getZip());
 
-        user.setFirstName(sqlResult[3]);
-        user.setLastName(sqlResult[4]);
-        user.setTitle(sqlResult[5]);
-        user.setCompany(sqlResult[6]);
-        user.setAddress(sqlResult[7]);
-        user.setCity(sqlResult[8]);
-        user.setZip(sqlResult[9]);
-        user.setCountry(sqlResult[10]);
-        user.setProvince(sqlResult[11]);
-        user.setEmailAddress(sqlResult[12]);
-        user.setLanguageIso639_2((String) ObjectUtils.defaultIfNull(sqlResult[13], services.getLanguageMapper().getDefaultLanguage()));
-        user.setActive(0 != Integer.parseInt(sqlResult[14]));
-        DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
-        user.setCreateDate(Utility.parseDateFormat(dateFormat, sqlResult[15]));
-        user.setImcmsExternal(0 != Integer.parseInt(sqlResult[16]));
-        user.setSessionId(sqlResult[17]);
+        initUserRoles(userDO);
+        initUserPhoneNumbers(userDO);
+        initUserUserAdminRoles(userDO);
 
-        String passwordResetId = sqlResult[19];
-        String passwordResetTs = sqlResult[20];
-
-        if (passwordResetId != null && passwordResetTs != null) {
-            user.setPasswordReset(passwordResetId, Long.parseLong(passwordResetTs));
-        }
+        return userDO;
     }
 
     private RoleId[] getRoleReferencesForUser(UserDomainObject user) {
@@ -254,80 +226,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
      * @return An object representing the user with the given id.
      */
     public UserDomainObject getUser(int userId) {
-        return getUserFromSqlRow(sqlSelectUserById(userId));
+        return toDomainObject(userRepository.findById(userId));
     }
 
-    private String[][] sqlSelectAllUsers(boolean includeUserExtern, boolean includeInactiveUsers) {
-        List whereTests = new ArrayList();
-        if (!includeUserExtern) {
-            whereTests.add("user_id != " + USER_EXTERN_ID);
-        }
-        if (!includeInactiveUsers) {
-            whereTests.add("active = 1");
-        }
-        String sqlStr = SQL_SELECT_USERS;
-        if (whereTests.size() > 0) {
-            sqlStr += " WHERE " + StringUtils.join(whereTests.iterator(), " AND ");
-        }
-        try {
-            final Object[] parameters = new String[0];
-            return (String[][]) services.getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-        } catch (DatabaseException e) {
-            throw new UnhandledException(e);
-        }
-    }
-
-    private String[][] sqlSelectUsersByEmail(String email) {
-        List<String> whereTests = new ArrayList<String>();
-
-        whereTests.add("LOWER(email) = '" + email.trim().toLowerCase() + "'");
-
-        String sqlStr = SQL_SELECT_USERS;
-        sqlStr += " WHERE " + StringUtils.join(whereTests.iterator(), " AND ");
-
-        try {
-            final Object[] parameters = new String[0];
-            return (String[][]) services.getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-        } catch (DatabaseException e) {
-            throw new UnhandledException(e);
-        }
-    }
-
-    String[] sqlSelectUserById(int userId) {
-
-        try {
-            final Object[] parameters = new String[]{"" + userId};
-            return (String[]) services.getDatabase().execute(new SqlQueryCommand(SQL__SELECT_USER_BY_ID, parameters, Utility.STRING_ARRAY_HANDLER));
-        } catch (DatabaseException e) {
-            throw new UnhandledException(e);
-        }
-    }
-
-    String[] sqlSelectUserByPasswordResetId(String resetId) {
-        try {
-            final Object[] parameters = new String[]{resetId};
-            return (String[]) services.getDatabase().execute(new SqlQueryCommand(sqlSelectUserByPasswordResetId(), parameters, Utility.STRING_ARRAY_HANDLER));
-        } catch (DatabaseException e) {
-            throw new UnhandledException(e);
-        }
-    }
-
-    String[] sqlSelectUserByEmail(String email) {
-        try {
-            final Object[] parameters = new String[]{email};
-            return (String[]) services.getDatabase().execute(new SqlQueryCommand(sqlSelectUserByEmail(), parameters, Utility.STRING_ARRAY_HANDLER));
-        } catch (DatabaseException e) {
-            throw new UnhandledException(e);
-        }
-    }
-
-    private static String sqlSelectUserByPasswordResetId() {
-        return SQL_SELECT_USERS + " WHERE login_password_reset_id = ?";
-    }
-
-    private static String sqlSelectUserByEmail() {
-        return SQL_SELECT_USERS + " WHERE email = ?";
-    }
 
     public void saveUser(String loginName, UserDomainObject userToSave) {
         UserDomainObject imcmsUser = getUser(loginName);
@@ -440,7 +341,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private void sqlUpdateUserUserAdminRoles(UserDomainObject user) {
         DeleteWhereColumnsEqualDatabaseCommand deleteAllUserAdminRolesForUserCommand = new DeleteWhereColumnsEqualDatabaseCommand(TABLE__USERADMIN_ROLE_CROSSREF, "user_id",
                 ""
-                        + user.getId());
+                        + user.getId()
+        );
         CompositeDatabaseCommand updateUserAdminRolesCommand = new CompositeDatabaseCommand(deleteAllUserAdminRolesForUserCommand);
         RoleId[] userAdminRolesReferences = user.getUserAdminRoleIds();
         for (RoleId userAdminRoleId : userAdminRolesReferences) {
@@ -559,17 +461,18 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public UserDomainObject[] getUsers(boolean includeUserExtern, boolean includeInactiveUsers) {
-        String[][] allUsersSqlResult = sqlSelectAllUsers(includeUserExtern, includeInactiveUsers);
-        return getUsersFromSqlRows(allUsersSqlResult);
+        return userRepository.findAll(includeUserExtern, includeInactiveUsers).stream()
+                .map(this::toDomainObject)
+                .toArray(UserDomainObject[]::new);
     }
 
     /**
      * @since 4.1.3
      */
     public UserDomainObject[] getUsersByEmail(String email) {
-        return StringUtils.isBlank(email)
-                ? new UserDomainObject[]{}
-                : getUsersFromSqlRows(sqlSelectUsersByEmail(email));
+        return userRepository.findByEmail(email).stream()
+                .map(this::toDomainObject)
+                .toArray(UserDomainObject[]::new);
     }
 
     public UserDomainObject[] getAllUsersWithRole(RoleDomainObject role) {
@@ -712,29 +615,11 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public UserDomainObject[] findUsersByNamePrefix(String namePrefix, boolean includeInactiveUsers) {
-        try {
-            String sql = SQL_SELECT_USERS + " WHERE user_id != " + USER_EXTERN_ID
-                    + " AND ( login_name LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR title LIKE ? OR email LIKE ? OR company LIKE ? )";
-            if (!includeInactiveUsers) {
-                sql += " AND active = 1";
-            }
-            sql += " ORDER BY last_name, first_name";
-            String like = namePrefix + "%";
-            final Object[] parameters = new String[]{like, like, like, like, like, like};
-            String[][] sqlRows = (String[][]) services.getDatabase().execute(new SqlQueryCommand(sql, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-            return getUsersFromSqlRows(sqlRows);
-        } catch (DatabaseException e) {
-            throw new UnhandledException(e);
-        }
+        return userRepository.findByNamePrefix(namePrefix, includeInactiveUsers).stream()
+                .map(this::toDomainObject)
+                .toArray(UserDomainObject[]::new);
     }
 
-    private UserDomainObject[] getUsersFromSqlRows(String[][] sqlRows) {
-        UserDomainObject[] users = new UserDomainObject[sqlRows.length];
-        for (int i = 0; i < sqlRows.length; i++) {
-            users[i] = getUserFromSqlRow(sqlRows[i]);
-        }
-        return users;
-    }
 
     public void initUserPhoneNumbers(UserDomainObject user) {
         PhoneNumber[] phoneNbr = getUserPhoneNumbers(user.getId());
@@ -781,7 +666,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             String[][] phoneNumberData = (String[][]) services.getDatabase().execute(new SqlQueryCommand(
                     "SELECT   phones.number, phones.phonetype_id\n"
                             + "FROM   phones\n"
-                            + "WHERE  phones.user_id = ?", parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+                            + "WHERE  phones.user_id = ?", parameters, Utility.STRING_ARRAY_ARRAY_HANDLER
+            ));
             List phoneNumbers = new ArrayList();
             for (int i = 0; i < phoneNumberData.length; i++) {
                 String[] row = phoneNumberData[i];

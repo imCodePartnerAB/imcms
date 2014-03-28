@@ -502,10 +502,10 @@ public class TextDocument extends Document {
     }
 
     public Loop getLoop(int no) {
-        return getInternal().getContentLoop(no);
+        return getInternal().getLoop(no);
     }
 
     public void setLoop(int no, Loop loop) {
-        getInternal().setContentLoop(no, loop);
+        getInternal().setLoop(no, loop);
     }
 }

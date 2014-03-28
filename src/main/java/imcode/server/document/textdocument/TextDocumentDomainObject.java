@@ -474,7 +474,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         this.loops = new ConcurrentHashMap<>(loops);
     }
 
-    public Loop getContentLoop(int no) {
+    public Loop getLoop(int no) {
         return loops.get(no);
     }
 
@@ -485,7 +485,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @param loop content loop to set.
      * @returncontentLoop set to this document.
      */
-    public Loop setContentLoop(int no, Loop loop) {
+    public Loop setLoop(int no, Loop loop) {
         loops.put(no, loop);
 
         return loop;

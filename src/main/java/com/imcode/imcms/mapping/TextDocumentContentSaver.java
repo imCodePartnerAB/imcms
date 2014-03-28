@@ -10,6 +10,7 @@ import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
+import com.imcode.imcms.util.Cells;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,11 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
 import org.springframework.transaction.annotation.Transactional;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -164,6 +165,15 @@ public class TextDocumentContentSaver {
 
             loopRepository.save(loop);
         });
+    }
+
+    public void saveLoop(TextDocLoopContainer container) {
+        Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getVersionNo());
+        Integer id = loopRepository.findIdByVersionAndNo(version, container.getLoopNo());
+        com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop = toJpaObject(container);
+        loop.setId(id);
+
+        loopRepository.save(loop);
     }
 
     /**
@@ -458,6 +468,26 @@ public class TextDocumentContentSaver {
         return source == null
                 ? null
                 : new LoopEntryRef(source.getLoopNo(), source.getEntryNo());
+    }
+
+    private com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop toJpaObject(TextDocLoopContainer container) {
+        return toJpaObject(container.getVersionRef(), container.getLoopNo(), container.getLoop());
+    }
+
+    private com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop toJpaObject(VersionRef versionRef, int loopNo, Loop loopDO) {
+        List<com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry> entries = new LinkedList<>();
+
+        loopDO.getEntries().forEach((entryNo, enabled) -> {
+            entries.add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo, enabled));
+        });
+
+        return Cells.updateAndGet(
+                new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop(),
+                l -> {
+                    l.setEntries(entries);
+                    l.setNo(loopNo);
+                }
+        );
     }
 
 }

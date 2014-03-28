@@ -2,29 +2,16 @@ package imcode.server.user;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.mapping.DocGetterCallback;
+import com.imcode.imcms.mapping.DocumentMeta;
 import imcode.server.Imcms;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
-import imcode.server.document.TemplateGroupDomainObject;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
+import imcode.server.document.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
-import com.imcode.imcms.mapping.DocumentMeta;
-
-import javax.persistence.*;
+import java.io.Serializable;
+import java.util.*;
 
 public class UserDomainObject implements Cloneable, Serializable {
 
@@ -63,20 +50,14 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public static final int DEFAULT_USER_ID = 2;
 
-    @Id
-    @Column(name = "user_id")
     protected volatile int id;
 
-    @Column(name = "login_name")
     private volatile String loginName = "";
 
-    @Column(name = "login_password")
     private volatile String password;
 
-    @Column(name = "first_name")
     private volatile String firstName = "";
 
-    @Column(name = "last_name")
     private volatile String lastName = "";
 
     private volatile String title = "";
@@ -86,63 +67,48 @@ public class UserDomainObject implements Cloneable, Serializable {
     private volatile String zip = "";
     private volatile String country = "";
 
-    @Transient
     private volatile String province = "";
 
-    @Column(name = "email")
     private volatile String emailAddress = "";
+
     private volatile boolean active = true;
 
-    @Column(name = "create_date")
     private volatile Date createDate;
 
-    @Column(name = "language")
     private volatile String languageIso639_2;
 
-    @Transient
     private volatile TemplateGroupDomainObject templateGroup;
 
-    @Column(name = "external")
     private volatile boolean imcmsExternal;
 
-    @Transient
     private volatile HashSet<PhoneNumber> phoneNumbers = new HashSet<>();
 
-    @Transient
     private volatile RoleIds roleIds = UserDomainObject.createRolesSetWithUserRole();
 
-    @Transient
     protected volatile RoleIds userAdminRoleIds = new RoleIds();
 
     /**
      * Http session id.
      */
-    @Column(name = "session_id")
     private volatile String sessionId;
 
-    @Transient
     private volatile boolean authenticatedByIp;
 
     /**
      * todo: FIXME - Kludge to get context path into template methods *
      */
-    @Transient
     private volatile String currentContextPath;
 
     /**
      * @since 4.0.7
      */
-    @Enumerated
-    @Column(name = "login_password_is_encrypted")
     private volatile PasswordType passwordType = PasswordType.UNENCRYPTED;
 
     /**
      * @since 4.0.7
      */
-    @Transient
     private volatile PasswordReset passwordReset = null;
 
-    @Transient
     private final DocGetterCallback docGetterCallback = new DocGetterCallback(this);
 
     public UserDomainObject() {

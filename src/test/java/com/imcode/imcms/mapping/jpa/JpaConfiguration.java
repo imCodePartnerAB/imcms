@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping.jpa;
 
+import com.imcode.imcms.util.Cells;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +12,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.imcode.imcms.mapping.jpa")
-@ComponentScan(basePackages = {"com.imcode.imcms.mapping.jpa"})
+@EnableJpaRepositories(basePackageClasses = com.imcode.imcms.mapping.jpa.JpaConfiguration.class)
+@ComponentScan(basePackageClasses = com.imcode.imcms.mapping.jpa.JpaConfiguration.class)
 public class JpaConfiguration {
 
     @Bean
@@ -22,6 +23,6 @@ public class JpaConfiguration {
 
     @Bean
     public LocalEntityManagerFactoryBean entityManagerFactory() {
-        return new LocalEntityManagerFactoryBean();
+        return Cells.updateAndGet(new LocalEntityManagerFactoryBean(), b -> b.setPersistenceUnitName("com.imcode.imcms"));
     }
 }

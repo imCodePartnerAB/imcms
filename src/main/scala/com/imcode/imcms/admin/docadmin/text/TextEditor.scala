@@ -40,7 +40,7 @@ class TextEditor(versionRef: VersionRef, loopEntryRefOpt: Option[LoopEntryRef], 
         updateDisabledMenuItem(v.miFormatPlain)(_.setChecked(textDO.getType == TextDomainObject.Format.PLAIN_TEXT.ordinal()))
 
         textDO.getType |> {
-          case TextDomainObject.Format.HTML => ("Format: HTML", Theme.Icon.TextFormatHtml16)
+          case TextDomainObject.TEXT_TYPE_HTML => ("Format: HTML", Theme.Icon.TextFormatHtml16)
           case _ => ("Format: Plain text", Theme.Icon.TextFormatPlain16)
         } |> {
           case (formatTypeName, formatTypeIcon) =>
@@ -128,7 +128,7 @@ class TextEditor(versionRef: VersionRef, loopEntryRefOpt: Option[LoopEntryRef], 
     view.tsTexts.replaceComponent(field, createFieldFor(textDO))
 
     textDO.getType |> {
-      case TextDomainObject.Format.HTML => ("Format: HTML", Theme.Icon.TextFormatHtml16)
+      case TextDomainObject.TEXT_TYPE_HTML => ("Format: HTML", Theme.Icon.TextFormatHtml16)
       case _ => ("Format: Plain text", Theme.Icon.TextFormatPlain16)
     } |> {
       case (formatTypeName, formatTypeIcon) =>

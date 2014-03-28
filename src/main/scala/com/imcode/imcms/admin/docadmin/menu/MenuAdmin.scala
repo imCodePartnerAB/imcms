@@ -15,6 +15,7 @@ import com.imcode.imcms.ImcmsServicesSupport
 
 import com.imcode.imcms.vaadin.Current
 import imcode.server.ImcmsConstants
+import imcode.server.document.textdocument.TextDocumentDomainObject
 
 @com.vaadin.annotations.Theme("imcms")
 class MenuAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
@@ -25,13 +26,13 @@ class MenuAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
 
     val contextPath = Current.contextPath
     val docId = request.getParameter("meta_id").toInt
-    val menuNo = request.getParameter("menu_no")
+    val menuNo = request.getParameter("menu_no").toInt
     val title = request.getParameter("label").trimToOption.getOrElse("menu_editor.title".f(docId, menuNo))
     val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
       s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}&editmenu=$menuNo"
     )
 
-    val doc = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
+    val doc: TextDocumentDomainObject = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
     val menu = doc.getMenu(menuNo)
     val editor = new MenuEditor(doc, menu) |>> {
       _.view.setSize(900, 600)
@@ -49,7 +50,7 @@ class MenuAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
           Current.page.showInfoNotification("menu_editor.notification.saved".i)
 
           if (close) {
-            Current.page.open(params.returnUrl, "_self")
+            Current.page.open(returnUrl, "_self")
           }
       }
     }
@@ -76,12 +77,14 @@ class MenuAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
           )
 
           dlg.setOkButtonHandler {
-            closeEditor()
+            close()
             dlg.close()
           }
 
           Current.ui.addWindow(dlg)
         }
     }
+
+    setContent(view)
   }
 }

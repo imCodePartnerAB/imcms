@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * Refers to text doc loop entry.
@@ -27,13 +28,13 @@ public class LoopEntryRef {
         this.cachedHashCode = Objects.hash(loopNo, entryNo);
     }
 
-    public static Optional<LoopEntryRef> of(String loopNo, String contentNo) {
-        Integer loopNoInt = Ints.tryParse(loopNo);
-        Integer contentNoInt = Ints.tryParse(contentNo);
+    public static Optional<LoopEntryRef> of(String loopNoStr, String entryNoStr) {
+        Integer loopNo = Ints.tryParse(loopNoStr);
+        Integer entryNo = Ints.tryParse(entryNoStr);
 
         return Optional.ofNullable(
-                loopNoInt != null && contentNoInt != null
-                        ? LoopEntryRef.of(loopNoInt, contentNoInt)
+                loopNo != null && entryNo != null
+                        ? LoopEntryRef.of(loopNo, entryNo)
                         : null
         );
     }

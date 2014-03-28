@@ -621,7 +621,7 @@ public class ImageService {
                 }
             }
 
-            List<Integer> keywordIds = new ArrayList<>(newKeywordNames.size() + existingKeywords.size());
+            List<Long> keywordIds = new ArrayList<>(newKeywordNames.size() + existingKeywords.size());
             for (String k : newKeywordNames) {
                 Keywords keyword = new Keywords();
                 keyword.setKeywordNm(k);
@@ -653,7 +653,7 @@ public class ImageService {
                         .executeUpdate();
             }
 
-            for (Integer id : keywordIds) {
+            for (Long id : keywordIds) {
                 ImageKeywords ik = new ImageKeywords();
                 ik.setKeywordId(id);
                 ik.setImageId(imageId);

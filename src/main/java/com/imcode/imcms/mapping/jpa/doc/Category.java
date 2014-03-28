@@ -19,6 +19,7 @@ public class Category implements Cloneable {
     @Column(name = "image")
     private String imageUrl = "";
 
+    //fixme check: manyToOne???
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "category_type_id", nullable = false)
     private CategoryType type;

@@ -9,7 +9,7 @@
     <uri>imcms</uri>
 
     <tag>
-        <name>contentloop2</name>
+        <name>contentloop</name>
         <tag-class>com.imcode.imcms.servlet.tags.LoopTag</tag-class>
         <body-content>JSP</body-content>
 

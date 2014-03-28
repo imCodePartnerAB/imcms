@@ -18,7 +18,7 @@ public class Keywords implements Serializable {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue
-    private int id;
+    private long id;
 
     @Column(name = "keyword_nm", length = 50, nullable = false)
     private String keywordNm;
@@ -39,7 +39,7 @@ public class Keywords implements Serializable {
         this.createdDt = createdDt;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

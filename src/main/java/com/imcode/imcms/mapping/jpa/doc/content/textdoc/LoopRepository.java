@@ -20,4 +20,8 @@ public interface LoopRepository extends JpaRepository<Loop, Integer> {
     @Modifying
     @Query("DELETE FROM Loop l WHERE l.version = ?1")
     int deleteByVersion(Version version);
+
+    @Query("SELECT l.id FROM Loop l WHERE l.version = ?1 AND l.no = ?2")
+    Integer findIdByVersionAndNo(Version version, int no);
+
 }
