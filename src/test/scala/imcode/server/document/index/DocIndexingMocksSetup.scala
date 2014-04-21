@@ -1,18 +1,20 @@
 package imcode.server.document.index
 
+import _root_.java.util.function.Predicate
 import com.imcode._
 import com.imcode.imcms.api.DocumentLanguage
 import scala.collection.JavaConverters._
 import org.scalatest.mock.MockitoSugar._
 import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
 import scala.collection.mutable.{Map => MMap}
-import imcode.server.document.{DocumentDomainObject, CategoryDomainObject}
+import imcode.server.document.{FileDocumentDomainObject, DocumentDomainObject, CategoryDomainObject}
 import org.mockito.Matchers._
 import org.mockito.Mockito
 import imcode.server.ImcmsServices
 import com.imcode.imcms.test._
 import com.imcode.imcms.test.fixtures.LanguageFX
 import imcode.server.document.index.service.impl.{DocumentIndexer, DocumentContentIndexer}
+import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
 
 
 class DocIndexingMocksSetup {
@@ -73,9 +75,11 @@ class DocIndexingMocksSetup {
 
 
   val docIndexer = new DocumentIndexer |>> { di =>
-    di.documentMapper = documentMapperMock
-    di.categoryMapper = categoryMapperMock
-    di.contentIndexer = new DocumentContentIndexer(_ => true)
+    di.setDocumentMapper( documentMapperMock)
+    di.setCategoryMapper( categoryMapperMock)
+    di.setContentIndexer( new DocumentContentIndexer(new Predicate[FileDocumentDomainObject.FileDocumentFile] {
+      override def test(t: FileDocumentFile): Boolean = true
+    }))
   }
 
   // DocumentIndexer uses category id, name and type id, name as string index fields

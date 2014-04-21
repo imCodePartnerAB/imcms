@@ -1,6 +1,15 @@
-    <%@ page
-        import="imcode.server.document.textdocument.TextDocumentDomainObject, imcode.server.user.UserDomainObject, imcode.util.Utility, imcode.server.parser.ParserParameters" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page
+
+        import="imcode.server.document.textdocument.TextDocumentDomainObject,
+                imcode.server.user.UserDomainObject,
+                imcode.server.parser.ParserParameters"
+
+        pageEncoding="UTF-8"
+
+        %>
 <%
+
     ParserParameters parserParameters = ParserParameters.fromRequest(request);
     TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
     Integer menuIndex = (Integer) request.getAttribute("menuIndex");
@@ -10,18 +19,23 @@
     String content = (String) request.getAttribute("content");
     UserDomainObject user = parserParameters.getDocumentRequest().getUser();
 
-    String editorUrl = String.format("%s/docadmin/menu?meta_id=%d&menu_no=%d", request.getContextPath(), document.getId(), menuIndex);
+    int metaId = document.getId();
+    String cp = request.getContextPath();
+    String lang = user.getLanguageIso639_2();
+
+    //String editorUrl = String.format("%s/docadmin/menu?meta_id=%d&menu_no=%d", request.getContextPath(), document.getId(), menuIndex);
+    pageContext.setAttribute("docId", metaId);
+    pageContext.setAttribute("menuNo", menuIndex);
+
 %>
 
-<a href="<%=editorUrl%>" class="imcms_label">
-    <%= label %> [<%= defaultUserCount %>/<%= userCount %>]&nbsp;
-    <img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/red.gif"
-         border="0" alt="edit menu <%= menuIndex%>" align="bottom"/>
-</a>
+<c:url value='/servlet/ChangeMenu?docId=${docId}&menuNo=${menuNo}"' var="editorUrl"/>
 
+<a href="${editorUrl}" class="imcms_label"><%--
+    --%><%= label %> [<%= defaultUserCount %>/<%= userCount %>]&nbsp;<%--
+    --%><img src="<%= cp %>/imcms/<%= lang %>/images/admin/red.gif" alt="edit menu <%= menuIndex%>" align="bottom"
+             style="border:0 !important;"/></a>
 <%= content %>
-
-<a href="<%=editorUrl%>">
-    <img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/ico_txt.gif"
-         border="0" alt="edit menu <%= menuIndex%>"/>
-</a>
+<a href="${editorUrl}"><%--
+    --%><img src="<%= cp %>/imcms/<%= lang %>/images/admin/ico_txt.gif" alt="edit menu <%= menuIndex%>"
+             style="border:0 !important;"/></a>

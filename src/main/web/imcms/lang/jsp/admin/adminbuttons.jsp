@@ -199,6 +199,11 @@ if (sFlags != null && sFlags.equals("1")) {
 } else {
 	Iterator iterator = new ReverseListIterator(docVersionInfo.getVersions());
 %>
+
+<!-- vaadin adminbuttons -->
+<jsp:include page="adminbuttons_vaadin.jsp"/>
+<!-- end of vaadin adminbuttons -->
+
 <tr>
   <td>
     <table bolder="1">    
@@ -316,9 +321,10 @@ if (sFlags != null && sFlags.equals("1")) {
             }
         }
         if( documentPermissionSet.getEditDocumentInformation() ) {
-                %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=1" id="admHrefDokinfo"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/dokinfo.gif"<%
-            %> alt="<? templates/sv/adminbuttons/adminbutton_1.html/2001 ?>"<%
-            %> title="<? templates/sv/adminbuttons/adminbutton_1.html/2001 ?>" id="admBtnDokinfo" border="0" /></a><%
+    %><a href="javascript:editDocProperties();"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/dokinfo.gif"<%
+    %> alt="<? templates/sv/adminbuttons/adminbutton_1.html/2001 ?>"<%
+    %> title="<? templates/sv/adminbuttons/adminbutton_1.html/2001 ?>" id="admBtnDokinfo" border="0" /></a><%
+
         }
         if( documentPermissionSet.getEditPermissions() ) {
                 %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=4" id="admHrefRattigheter"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/rattigheter.gif"<%

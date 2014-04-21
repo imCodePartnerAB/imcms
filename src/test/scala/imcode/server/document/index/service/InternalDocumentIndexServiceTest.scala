@@ -24,7 +24,7 @@ class InternalDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll w
     ms.addDocuments(DocFX.mkTextDocs(DocFX.DefaultId, 10))
     ms.addCategories(CategoryFX.mkCategories(): _*)
 
-    new DocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
+    new DocumentIndexServiceOps(ms.docIndexer.getDocumentMapper, ms.docIndexer)
   }
 
   "InternalDocumentIndexService" should {

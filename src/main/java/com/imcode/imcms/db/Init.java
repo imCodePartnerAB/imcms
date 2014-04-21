@@ -1,7 +1,6 @@
 package com.imcode.imcms.db;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +27,9 @@ public final class Init {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("version", version)
-                .append("scripts", scripts)
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("version", version)
+                .add("scripts", scripts)
                 .toString();
     }
 }

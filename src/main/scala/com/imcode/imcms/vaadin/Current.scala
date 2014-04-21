@@ -3,7 +3,7 @@ package imcms.vaadin
 
 import com.vaadin.server._
 import com.vaadin.ui.{JavaScript, UI}
-import javax.servlet.http.HttpSession
+import _root_.javax.servlet.http.{HttpServletRequest, HttpSession}
 import javax.servlet.ServletContext
 import imcode.server.user.UserDomainObject
 import imcode.util.Utility

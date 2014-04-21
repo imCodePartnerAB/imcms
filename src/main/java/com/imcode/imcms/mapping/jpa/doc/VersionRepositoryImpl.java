@@ -5,10 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import java.util.Date;
-import java.util.List;
 
 @Transactional
 class VersionRepositoryImpl implements VersionRepositoryCustom {

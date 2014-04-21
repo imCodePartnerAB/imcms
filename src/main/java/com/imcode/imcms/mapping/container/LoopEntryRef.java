@@ -1,13 +1,11 @@
 package com.imcode.imcms.mapping.container;
 
 import com.google.common.base.Strings;
-import com.google.common.primitives.Ints;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 /**
  * Refers to text doc loop entry.
@@ -28,18 +26,7 @@ public class LoopEntryRef {
         this.cachedHashCode = Objects.hash(loopNo, entryNo);
     }
 
-    public static Optional<LoopEntryRef> of(String loopNoStr, String entryNoStr) {
-        Integer loopNo = Ints.tryParse(loopNoStr);
-        Integer entryNo = Ints.tryParse(entryNoStr);
-
-        return Optional.ofNullable(
-                loopNo != null && entryNo != null
-                        ? LoopEntryRef.of(loopNo, entryNo)
-                        : null
-        );
-    }
-
-    public static Optional<LoopEntryRef> of(String ref) {
+    public static Optional<LoopEntryRef> parse(String ref) {
         Matcher matcher = Pattern.compile("(\\d+)_(\\d+)").matcher(Strings.nullToEmpty(ref).trim());
 
         return Optional.ofNullable(

@@ -53,7 +53,7 @@ public class ChangeImage extends HttpServlet {
         final Integer documentId = Integer.parseInt(request.getParameter("meta_id"));
 
         String loopEntryRefStr = request.getParameter("loop_entry_ref");
-        LoopEntryRef loopEntryRef = LoopEntryRef.of(loopEntryRefStr).orElse(null);
+        LoopEntryRef loopEntryRef = LoopEntryRef.parse(loopEntryRefStr).orElse(null);
 
         final TextDocumentDomainObject document = documentMapper.getDocument(documentId);
 

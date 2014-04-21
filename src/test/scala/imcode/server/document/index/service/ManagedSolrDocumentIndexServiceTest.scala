@@ -27,7 +27,7 @@ class ManagedSolrDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAl
 
     ms.addDocuments(DocFX.mkTextDocs(DocFX.DefaultId, 10))
 
-    new DocumentIndexServiceOps(ms.docIndexer.documentMapper, ms.docIndexer)
+    new DocumentIndexServiceOps(ms.docIndexer.getDocumentMapper, ms.docIndexer)
   }
 
 

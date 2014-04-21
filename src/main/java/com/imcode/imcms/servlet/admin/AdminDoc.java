@@ -18,6 +18,7 @@ import imcode.util.Utility;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 
 import javax.servlet.ServletContext;
@@ -53,7 +54,7 @@ public class AdminDoc extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         int metaId = Integer.parseInt(req.getParameter(PARAMETER__META_ID));
-        int flags = Integer.parseInt((String) ObjectUtils.defaultIfNull(req.getParameter(PARAMETER__DISPATCH_FLAGS), "0"));
+        int flags = Integer.parseInt(Objects.toString(req.getParameter(PARAMETER__DISPATCH_FLAGS), "0"));
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         UserDomainObject user = Utility.getLoggedOnUser(req);
@@ -71,9 +72,8 @@ public class AdminDoc extends HttpServlet {
             // todo: PERM_EDIT_TEXT_DOCUMENT_TEMPLATE
             // forward foes not work ... some problems with vaadin bootstrap js.
             String contextPath = req.getContextPath();
-            if (contextPath == "/") contextPath = "";
+            if (contextPath.equals("/")) contextPath = "";
             pageFlow.dispatch(req, res);
-
         } else {
             Utility.setDefaultHtmlContentType(res);
             int meta_id = Integer.parseInt(req.getParameter("meta_id"));

@@ -1,7 +1,5 @@
 package com.imcode.imcms.api;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import java.util.*;
 
 public final class Loop {
@@ -33,7 +31,8 @@ public final class Loop {
         if (nextEntryNo < minAllowedNextEntryNo) {
             throw new IllegalArgumentException(
                     String.format("nextEntryNo must be >= %d but was %d, entries: %s",
-                            minAllowedNextEntryNo, nextEntryNo, entries));
+                            minAllowedNextEntryNo, nextEntryNo, entries)
+            );
         }
 
         this.entries = Collections.unmodifiableMap(new LinkedHashMap<>(entries));
@@ -43,9 +42,9 @@ public final class Loop {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("entries", entries)
-                .append("nextEntryNo", nextEntryNo)
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("entries", entries)
+                .add("nextEntryNo", nextEntryNo)
                 .toString();
     }
 

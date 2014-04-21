@@ -10,19 +10,22 @@ import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
-import com.imcode.imcms.util.Cells;
-import imcode.server.document.textdocument.*;
+import com.imcode.imcms.util.Value;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -474,6 +477,7 @@ public class TextDocumentContentSaver {
         return toJpaObject(container.getVersionRef(), container.getLoopNo(), container.getLoop());
     }
 
+    //fixme: assign version, check existing
     private com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop toJpaObject(VersionRef versionRef, int loopNo, Loop loopDO) {
         List<com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry> entries = new LinkedList<>();
 
@@ -481,7 +485,7 @@ public class TextDocumentContentSaver {
             entries.add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo, enabled));
         });
 
-        return Cells.updateAndGet(
+        return Value.update(
                 new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop(),
                 l -> {
                     l.setEntries(entries);

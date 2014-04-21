@@ -1,8 +1,9 @@
 package imcode.server.document.index.service.impl
 
-import com.imcode._
-import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service._
+import java.util.function.Consumer
+import java.util.Optional
+import com.imcode._
 import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 import org.apache.solr.client.solrj.response.QueryResponse
 import java.lang.{InterruptedException, Thread}
@@ -70,14 +71,18 @@ class ManagedSolrDocumentIndexService(
     new IndexRebuildTask {
       val progressRef = new AtomicReference[IndexRebuildProgress]
       val futureTask = new FutureTask[Unit](Threads.mkCallable {
-        serviceOps.rebuildIndex(solrServerWriter) { progress =>
-          progressRef.set(progress)
-        }
+        serviceOps.rebuildIndex(
+          solrServerWriter,
+          new Consumer[IndexRebuildProgress] {
+            override def accept(p: IndexRebuildProgress): Unit = progressRef.set(p)
+          }
+        )
       })
 
-      override def progress(): Option[IndexRebuildProgress] = progressRef.get.asOption
+      override def progress(): Optional[IndexRebuildProgress] = Optional.ofNullable(progressRef.get())
 
       override def future(): Future[_] = futureTask
+
     } |>> indexRebuildTaskRef.set |>> { indexRebuildTaskImpl =>
       new Thread { indexRebuildThread =>
         private def submitStartNewIndexUpdateThread(): Unit = Threads.spawnDaemon {

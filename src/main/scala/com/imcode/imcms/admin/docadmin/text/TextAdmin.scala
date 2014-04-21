@@ -2,6 +2,8 @@ package com.imcode
 package imcms
 package admin.docadmin.text
 
+import java.nio.charset.StandardCharsets
+import java.util.Locale
 import com.imcode.imcms.admin.docadmin.EditorContainerView
 import com.imcode.imcms.api.DocumentVersion
 import com.imcode.imcms.ImcmsServicesSupport
@@ -9,37 +11,51 @@ import com.imcode.imcms.mapping.container.{LoopEntryRef, VersionRef}
 import com.imcode.imcms.mapping.DocumentSaveException
 import com.imcode.imcms.vaadin.Current
 import com.imcode.NonNegInt
-import com.vaadin.server.VaadinRequest
+import com.vaadin.server.{Page, VaadinRequest}
 import com.vaadin.ui.UI
-import imcode.server.document.NoPermissionToEditDocumentException
-import imcode.server.ImcmsConstants
-import imcode.server.document.textdocument.{NoPermissionToAddDocumentToMenuException, TextDomainObject}
-import imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
+import _root_.imcode.server.document.NoPermissionToEditDocumentException
+import _root_.imcode.server.ImcmsConstants
+import _root_.imcode.server.document.textdocument.{NoPermissionToAddDocumentToMenuException, TextDomainObject}
+import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
 import com.imcode.imcms.vaadin.component._
+import org.apache.http.client.utils.URLEncodedUtils
+import scala.collection.JavaConverters._
 
 @com.vaadin.annotations.Theme("imcms")
 class TextAdmin extends UI with ImcmsServicesSupport {
 
   val LoopEntryRefRE = """(\d+)_(\d+)""".r
 
+  def mkRequestParamFn(request: VaadinRequest): (String => String) = {
+    val embeddedModeParms = URLEncodedUtils.parse(Page.getCurrent.getLocation.getQuery, StandardCharsets.UTF_8).asScala.map { pair =>
+      pair.getName -> pair.getValue
+    }.toMap
+
+    name => Option(request.getParameter(name).trimToNull).orElse(embeddedModeParms.get(name)).orNull
+  }
+
   override def init(request: VaadinRequest) {
     getLoadingIndicatorConfiguration.setFirstDelay(1)
     getLoadingIndicatorConfiguration.setSecondDelay(2)
     getLoadingIndicatorConfiguration.setThirdDelay(3)
 
+    setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
+    getLoadingIndicatorConfiguration.setFirstDelay(1)
+
+    val requestParam = mkRequestParamFn(request)
+
     val contextPath = Current.contextPath
     val pathInfo = request.getPathInfo
 
-    val docId = request.getParameter("meta_id").toInt
-    val titleOpt = request.getParameter("label").trimToOption
-    val returnUrlOpt = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption
-    val textNo = request.getParameter("txt").toInt
+    val docId = requestParam("meta_id").toInt
+    val titleOpt = requestParam("label").trimToOption
+    val returnUrlOpt = requestParam(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption
+    val textNo = requestParam("txt").toInt
     val versioRef = VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO)
-    val loopEntryRefOpt = request.getParameter("loopEntryRef").trimToEmpty match {
+    val loopEntryRefOpt = requestParam("loopEntryRef").trimToEmpty match {
       case LoopEntryRefRE(NonNegInt(loopNo), NonNegInt(entryNo)) => Some(LoopEntryRef.of(loopNo, entryNo))
       case _ => None
     }
-
 
     val formats = request.getParameterMap.get("format") match {
       case null => Set.empty[String]
@@ -63,7 +79,7 @@ class TextAdmin extends UI with ImcmsServicesSupport {
 
     val opts = TextEditorOpts(format, rowsCountOpt, canChangeFormat, showModeEditor)
 
-     val editor = new TextEditor(versioRef, loopEntryRefOpt, textNo, opts)
+    val editor = new TextEditor(versioRef, loopEntryRefOpt, textNo, opts)
 
     setContent(wrapTextDocTextEditor(editor))
   }

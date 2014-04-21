@@ -8,8 +8,8 @@ import com.imcode.imcms.vaadin.component._
 
 class EditorContainerView(title: String = null) extends CustomComponent with FullSize {
   private val lytContent = new VerticalLayout with FullSize
-  private val lytComponents = new GridLayout(1, 3) with Spacing with Margin with UndefinedSize
-  private val pnlTitle = new Panel(title) with FullHeight
+  private val lytComponents = new GridLayout(1, 3) with Spacing with FullSize
+  private val lblTitle = new Label(title) with UndefinedSize
   private val lytButtons = new HorizontalLayout with Spacing with UndefinedSize
 
   lytContent.addComponent(lytComponents)
@@ -25,9 +25,10 @@ class EditorContainerView(title: String = null) extends CustomComponent with Ful
 
   lytButtons.addComponents(buttons.btnSave, buttons.btnSaveAndClose, buttons.btnClose, buttons.btnReset)
 
-  lytComponents.addComponent(pnlTitle, 0, 0)
+  lytComponents.addComponent(lblTitle, 0, 0)
   lytComponents.addComponent(lytButtons, 0, 2)
   lytComponents.setComponentAlignment(lytButtons, Alignment.TOP_CENTER)
+  lytComponents.setRowExpandRatio(1, 1.0f)
 
   def mainComponent: Component = lytComponents.getComponent(0, 1)
   def mainComponent_=(component: Component) {
@@ -38,6 +39,6 @@ class EditorContainerView(title: String = null) extends CustomComponent with Ful
   }
 
   def setTitle(title: String) {
-    pnlTitle.setCaption(title)
+    lblTitle.setValue(title)
   }
 }

@@ -43,13 +43,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public static final String SQL_INSERT_INTO_ROLES = "INSERT INTO roles (role_name, permissions, admin_role) VALUES(?,?,0)";
     private static final String TABLE__USERADMIN_ROLE_CROSSREF = "useradmin_role_crossref";
 
-    private static final String SQL_UPDATE_USER_SESSION = "update users set session_id = ? where user_id = ?";
-
-    private static final String SQL_SELECT_USER_SESSION = "select session_id from users where user_id = ?";
-
     private final ImcmsServices services;
 
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
 
     /**
      * @since 4.0.7
@@ -239,17 +235,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
 
     public void updateUserSessionId(final UserDomainObject loggedInUser) {
-        services.getDatabase().execute(new SqlUpdateCommand(SQL_UPDATE_USER_SESSION,
-                new Object[]{loggedInUser.getSessionId(), loggedInUser.getId()}
-        ));
+        userRepository.updateSessionId(loggedInUser.getId(), loggedInUser.getSessionId());
     }
 
 
     public String getUserSessionId(final UserDomainObject loggedInUser) {
-        return (String) services.getDatabase().execute(new SqlQueryCommand(SQL_SELECT_USER_SESSION,
-                new Object[]{loggedInUser.getId()},
-                Utility.SINGLE_STRING_HANDLER
-        ));
+        return userRepository.findSessionId(loggedInUser.getId());
     }
 
     /**

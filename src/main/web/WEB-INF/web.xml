@@ -62,16 +62,6 @@
 
     <filter>
         <description>
-            Restricts access to the DocAdmin
-        </description>
-
-        <display-name>DocAdmin Filter</display-name>
-        <filter-name>DocAdminFilter</filter-name>
-        <filter-class>com.imcode.imcms.admin.docadmin.DocAdminFilter</filter-class>
-    </filter>
-
-    <filter>
-        <description>
             Restricts access to mapped resources to users who are in the superadmin role.
             Currently API samples only.
         </description>
@@ -118,12 +108,7 @@
 
     <filter-mapping>
         <filter-name>UberAdminFilter</filter-name>
-        <url-pattern>/admin/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>DocAdminFilter</filter-name>
-        <url-pattern>/docadmin/*</url-pattern>
+        <url-pattern>/imcms/admin/*</url-pattern>
     </filter-mapping>
 
     <!--<security-constraint>-->
@@ -145,11 +130,6 @@
     <!--<transport-guarantee>CONFIDENTIAL</transport-guarantee>-->
     <!--</user-data-constraint>-->
     <!--</security-constraint>-->
-
-    <servlet>
-        <servlet-name>AdapterServlet</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.AdapterServlet</servlet-class>
-    </servlet>
 
     <servlet>
         <servlet-name>vaadin-uberadmin</servlet-name>
@@ -182,24 +162,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>vaadin-docadmin-text</servlet-name>
-        <servlet-class>
-            com.vaadin.server.VaadinServlet
-        </servlet-class>
-
-        <init-param>
-            <param-name>UI</param-name>
-            <param-value>com.imcode.imcms.admin.docadmin.text.TextAdmin</param-value>
-        </init-param>
-
-        <init-param>
-            <description>Widget Set to Use</description>
-            <param-name>widgetset</param-name>
-            <param-value>com.imcode.imcms.AppWidgetSet</param-value>
-        </init-param>
-    </servlet>
-
-    <servlet>
         <servlet-name>vaadin-docadmin-image</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
@@ -218,7 +180,7 @@
     </servlet>
 
     <servlet>
-        <servlet-name>vaadin-docadmin-menu</servlet-name>
+        <servlet-name>ChangeMenuUI</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
         </servlet-class>
@@ -234,6 +196,25 @@
             <param-value>com.imcode.imcms.AppWidgetSet</param-value>
         </init-param>
     </servlet>
+
+    <servlet>
+        <servlet-name>ChangeTextUI</servlet-name>
+        <servlet-class>
+            com.vaadin.server.VaadinServlet
+        </servlet-class>
+
+        <init-param>
+            <param-name>UI</param-name>
+            <param-value>com.imcode.imcms.admin.docadmin.menu.TextAdmin</param-value>
+        </init-param>
+
+        <init-param>
+            <description>Widget Set to Use</description>
+            <param-name>widgetset</param-name>
+            <param-value>com.imcode.imcms.AppWidgetSet</param-value>
+        </init-param>
+    </servlet>
+
 
     <servlet>
         <servlet-name>web</servlet-name>
@@ -309,6 +290,16 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.ChangeImage</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.ChangeImage</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeMenu</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.ChangeMenu</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeText</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.ChangeText</servlet-class>
     </servlet>
 
     <servlet>
@@ -482,11 +473,6 @@
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>AdapterServlet</servlet-name>
-        <url-pattern>/servlet/ChangeMenu</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>web</servlet-name>
         <url-pattern>/web/*</url-pattern>
     </servlet-mapping>
@@ -564,6 +550,16 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.ChangeImage</servlet-name>
         <url-pattern>/servlet/ChangeImage</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeMenu</servlet-name>
+        <url-pattern>/servlet/ChangeMenu</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeText</servlet-name>
+        <url-pattern>/servlet/ChangeText</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -734,28 +730,28 @@
 
     <servlet-mapping>
         <servlet-name>vaadin-uberadmin</servlet-name>
-        <url-pattern>/admin/*</url-pattern>
+        <url-pattern>/imcms/admin/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>vaadin-docadmin-text</servlet-name>
-        <url-pattern>/docadmin/text/*</url-pattern>
+        <servlet-name>ChangeTextUI</servlet-name>
+        <url-pattern>/imcms/docadmin/text/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>vaadin-docadmin-menu</servlet-name>
-        <url-pattern>/docadmin/menu/*</url-pattern>
+        <servlet-name>ChangeMenuUI</servlet-name>
+        <url-pattern>/imcms/docadmin/menu/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>vaadin-docadmin-image</servlet-name>
-        <url-pattern>/docadmin/image/*</url-pattern>
+        <url-pattern>/imcms/docadmin/image/*</url-pattern>
     </servlet-mapping>
 
 
     <servlet-mapping>
         <servlet-name>vaadin-docadmin</servlet-name>
-        <url-pattern>/docadmin/*</url-pattern>
+        <url-pattern>/imcms/docadmin/*</url-pattern>
         <url-pattern>/VAADIN/*</url-pattern>
     </servlet-mapping>
 
