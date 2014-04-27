@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.docadmin.menu
 
-import com.imcode.imcms.vaadin.component.dialog.Dialog
+import com.imcode.imcms.vaadin.component.dialog.{EditorDialog, Dialog}
 import com.imcode.imcms.vaadin.Current
 import com.vaadin.ui._
 
@@ -101,7 +101,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
 
           case selectedDoc =>
             val dialog = new DocEditorDialog("doc.edit_properties.title".f(docId), selectedDoc)
-            Dialog.bind(dialog) { case (modifiedDoc, i18nMetas) =>
+            EditorDialog.bind(dialog) { case (modifiedDoc, i18nMetas) =>
               imcmsServices.getDocumentMapper.saveDocument(modifiedDoc, i18nMetas.asJava, Current.imcmsUser)
               updateMenuView()
             }

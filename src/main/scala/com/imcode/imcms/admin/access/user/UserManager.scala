@@ -44,7 +44,7 @@ class UserManager extends ImcmsServicesSupport {
     val dialogTitle = if (user.isNew) "user_dlg.new.caption".i else "user_dlg.edit.caption".f(user.getLoginName)
     val dialog = new OkCancelDialog(dialogTitle) with OKCaptionIsSave
 
-    Dialog.asOKEditorDialog(dialog, editor) { editedUser =>
+    EditorDialog.bind(dialog, editor) { editedUser =>
       val roleMapper = imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper
       if (user.isNew) roleMapper.addUser(editedUser) else roleMapper.saveUser(editedUser)
       usersProjection.reset()

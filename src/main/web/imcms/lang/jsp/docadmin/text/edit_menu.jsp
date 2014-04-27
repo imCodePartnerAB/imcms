@@ -23,10 +23,8 @@
     String cp = request.getContextPath();
     String lang = user.getLanguageIso639_2();
 
-    //String editorUrl = String.format("%s/docadmin/menu?meta_id=%d&menu_no=%d", request.getContextPath(), document.getId(), menuIndex);
     pageContext.setAttribute("docId", metaId);
     pageContext.setAttribute("menuNo", menuIndex);
-
 %>
 
 <c:url value='/servlet/ChangeMenu?docId=${docId}&menuNo=${menuNo}"' var="editorUrl"/>

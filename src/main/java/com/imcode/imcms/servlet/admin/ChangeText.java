@@ -31,6 +31,6 @@ public class ChangeText extends HttpServlet {
             return;
         }
 
-        request.getRequestDispatcher("/WEB-INF/imcms/jsp/docadmin/change_text.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/imcms/jsp/docadmin/text/change_text.jsp").forward(request, response);
     }
 }

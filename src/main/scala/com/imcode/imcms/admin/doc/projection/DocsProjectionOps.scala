@@ -6,7 +6,7 @@ import com.imcode.imcms.vaadin.Current
 import _root_.imcode.server.document._
 import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
 import com.imcode.imcms.admin.doc.{DocEditorDialog, DocOpener}
-import com.imcode.imcms.vaadin.component.dialog.{Dialog, InformationDialog, ConfirmationDialog}
+import com.imcode.imcms.vaadin.component.dialog.{EditorDialog, Dialog, InformationDialog, ConfirmationDialog}
 
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.server._
@@ -58,7 +58,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
             val newDoc = imcmsServices.getDocumentMapper.createDocumentOfTypeFromParent(newDocType, selectedDoc, projection.user)
 
             val dialog = new DocEditorDialog(dlgCaption, newDoc)
-            Dialog.bind(dialog) { case (editedDoc, i18nMetas) =>
+            EditorDialog.bind(dialog) { case (editedDoc, i18nMetas) =>
               val saveOpts = dialog.editor.contentEditor match {
                 case contentEditor: NewTextDocContentEditor if contentEditor.view.chkCopyDocCommonContentIntoTextFields.checked =>
                   java.util.EnumSet.of(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)
@@ -127,7 +127,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
         case doc =>
           val dialog = new DocEditorDialog(s"Edit document ${doc.getId}".i, doc)
 
-          Dialog.bind(dialog) { case (editedDoc, i18nMetas) =>
+          EditorDialog.bind(dialog) { case (editedDoc, i18nMetas) =>
             imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, projection.user)
             Current.page.showInfoNotification("Document has been saved".i)
             projection.reload()

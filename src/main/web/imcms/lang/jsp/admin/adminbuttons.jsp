@@ -14,7 +14,6 @@
 	        org.apache.commons.lang3.StringUtils,
 	        java.util.List,
 	        com.imcode.imcms.mapping.DocumentMapper,
-	        com.imcode.imcms.mapping.jpa.doc.Version,
 	        java.util.Set"
 	
 %><%@ taglib uri="imcmsvelocity" prefix="vel"
@@ -72,7 +71,6 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 <%@page import="org.apache.commons.collections.iterators.ReverseListIterator"%>
 <%@page import="java.util.Iterator"%>
 <%@ page import="imcode.server.ImcmsConstants" %>
-<%@ page import="com.imcode.imcms.mapping.jpa.doc.Language" %>
 <%@ page import="com.imcode.imcms.api.DocumentVersionInfo" %>
 <%@ page import="com.imcode.imcms.api.DocumentLanguage" %>
 <%@ page import="com.imcode.imcms.api.DocumentVersion" %>
@@ -201,7 +199,7 @@ if (sFlags != null && sFlags.equals("1")) {
 %>
 
 <!-- vaadin adminbuttons -->
-<jsp:include page="adminbuttons_vaadin.jsp"/>
+<%--<jsp:include page="adminbuttons_vaadin.jsp"/>--%>
 <!-- end of vaadin adminbuttons -->
 
 <tr>
@@ -321,7 +319,7 @@ if (sFlags != null && sFlags.equals("1")) {
             }
         }
         if( documentPermissionSet.getEditDocumentInformation() ) {
-    %><a href="javascript:editDocProperties();"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/dokinfo.gif"<%
+    %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=1"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/dokinfo.gif"<%
     %> alt="<? templates/sv/adminbuttons/adminbutton_1.html/2001 ?>"<%
     %> title="<? templates/sv/adminbuttons/adminbutton_1.html/2001 ?>" id="admBtnDokinfo" border="0" /></a><%
 

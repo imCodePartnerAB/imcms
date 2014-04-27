@@ -14,23 +14,28 @@ import com.imcode.imcms.ImcmsServicesSupport
 import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
 import imcode.server.document.DocumentDomainObject
+import imcode.server.ImcmsConstants
 
-// todo: validate params in filter, create params wrapper, pass params into DocAdmin (no need to examine path in init)?
-// todo: template/group
-// todo: add [im]cms path element: /[im]cms/sysadmin/...; [im]cms/docadmin/...
 @com.vaadin.annotations.Theme("imcms")
-class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
+class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
 
   override def init(request: VaadinRequest) {
+    getLoadingIndicatorConfiguration.setFirstDelay(1)
+    getLoadingIndicatorConfiguration.setSecondDelay(2)
+    getLoadingIndicatorConfiguration.setThirdDelay(3)
+
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
     getLoadingIndicatorConfiguration.setFirstDelay(1)
 
-    val docId = request.getParameter("meta_id").toInt
+    val requestParams = new RequestParams(request)
+
+    val docId = requestParams("meta_id").toInt
     val doc: DocumentDomainObject = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
     val editor = new DocEditor(doc)
-    val container = new EditorContainerView("doc.edit_properties.title".f(doc.getId))
-
-    editor.view.setSize(900, 600)
+    val container = new EditorContainerView("doc.edit_properties.title".f(doc.getId.toString))
+    val returnUrl = requestParams(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
+      s"${Current.contextPath}/servlet/AdminDoc?meta_id=$docId"
+    )
 
     container.mainComponent = editor.view
     container.buttons.btnSave.addClickHandler {
@@ -50,7 +55,7 @@ class DocAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
 
     container.buttons.btnClose.addClickHandler {
       _ =>
-        Current.page.open(Current.contextPath, "_self")
+        Current.page.open(returnUrl, "_self")
     }
 
     Current.page.getUriFragment.asOption.map(_.toLowerCase).foreach {

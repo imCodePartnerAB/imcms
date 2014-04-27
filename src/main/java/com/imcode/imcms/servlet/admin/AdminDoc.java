@@ -1,7 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.*;
-import com.imcode.imcms.servlet.BackDoc;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -28,8 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.ObjectUtils;
-
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.GetDoc;
 
@@ -37,6 +34,40 @@ import com.imcode.imcms.servlet.GetDoc;
  * Handles admin panel commands.
  */
 public class AdminDoc extends HttpServlet {
+
+    private static class EditDocPageFlow extends PageFlow {
+
+        // todo: editor tag arg: perms/info/profile/etc
+        private EditDocPageFlow() {
+            super(null);
+        }
+
+        @Override
+        public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+            request.getRequestDispatcher("/WEB-INF/imcms/jsp/docadmin/document.jsp?" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=AdminDoc?meta_id=" + request.getParameter("meta_id"))
+                    .forward(request, response);
+//            request.getRequestDispatcher("/imcms/docadmin?meta_id=" + request.getParameter("meta_id") + "&" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=AdminDoc?meta_id=" + request.getParameter("meta_id"))
+//                    .forward(request, response);
+
+        }
+
+        @Override
+        protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+        }
+
+        @Override
+        protected void dispatchOk(HttpServletRequest request, HttpServletResponse response, String page) throws IOException, ServletException {
+
+        }
+
+        @Override
+        protected void dispatchFromPage(HttpServletRequest request, HttpServletResponse response, String page) throws IOException, ServletException {
+
+        }
+    }
+
+    ;
 
     private static final String PARAMETER__META_ID = "meta_id";
     public static final String PARAMETER__DISPATCH_FLAGS = "flags";
@@ -48,7 +79,7 @@ public class AdminDoc extends HttpServlet {
 
     /**
      * Creates a document page flow and dispatches request to that flow.
-     * <p/>
+     * <p>
      * If flow can not be created or an user is not allowed to edit a document adminDoc is called.
      */
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -68,11 +99,6 @@ public class AdminDoc extends HttpServlet {
         PageFlow pageFlow = createFlow(req, document, flags, user);
 
         if (null != pageFlow && user.canEdit(document)) {
-            // todo: vaadin transition hack, fix
-            // todo: PERM_EDIT_TEXT_DOCUMENT_TEMPLATE
-            // forward foes not work ... some problems with vaadin bootstrap js.
-            String contextPath = req.getContextPath();
-            if (contextPath.equals("/")) contextPath = "";
             pageFlow.dispatch(req, res);
         } else {
             Utility.setDefaultHtmlContentType(res);
@@ -90,17 +116,18 @@ public class AdminDoc extends HttpServlet {
      */
     private PageFlow createFlow(HttpServletRequest req, DocumentDomainObject document, int flags, UserDomainObject user) {
         RedirectToDocumentCommand returnCommand = new RedirectToDocumentCommand(document);
-        DocumentMapper.SaveEditedDocumentCommand saveDocumentCommand = new DocumentMapper.SaveEditedDocumentCommand();
 
         PageFlow pageFlow = null;
         if (ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags && user.canEditDocumentInformationFor(document)) {
+            pageFlow = new EditDocPageFlow();
         } else if (ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor(document)) {
-        } else if (document instanceof HtmlDocumentDomainObject
-                && ImcmsConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags) {
-        } else if (document instanceof UrlDocumentDomainObject
-                && ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags) {
-        } else if (document instanceof FileDocumentDomainObject
-                && ImcmsConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags) {
+            pageFlow = new EditDocPageFlow();
+        } else if (document instanceof HtmlDocumentDomainObject && ImcmsConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags) {
+            pageFlow = new EditDocPageFlow();
+        } else if (document instanceof UrlDocumentDomainObject && ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags) {
+            pageFlow = new EditDocPageFlow();
+        } else if (document instanceof FileDocumentDomainObject && ImcmsConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags) {
+            pageFlow = new EditDocPageFlow();
         } else if (ImcmsConstants.DISPATCH_FLAG__PUBLISH == flags) {
             pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.MakeDocumentVersionCommand(), user);
         } else if (ImcmsConstants.DISPATCH_FLAG__SET_DEFAULT_VERSION == flags) {
@@ -124,6 +151,7 @@ public class AdminDoc extends HttpServlet {
         final ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession();
+        @SuppressWarnings("unchecked")
         Stack<Integer> history = (Stack<Integer>) session.getAttribute("history");
         if (history == null) {
             history = new Stack<>();
@@ -145,7 +173,7 @@ public class AdminDoc extends HttpServlet {
 
         Integer userflags = (Integer) session.getAttribute(PARAMETER__DISPATCH_FLAGS);        // Get the flags from the user-object
         session.removeAttribute(PARAMETER__DISPATCH_FLAGS);
-        int flags = userflags == null ? 0 : userflags.intValue();    // Are there flags? Set to 0 if not.
+        int flags = userflags == null ? 0 : userflags;    // Are there flags? Set to 0 if not.
 
 
         try {

@@ -21,7 +21,7 @@
         src="javascript:false"></iframe>
 
  <!-- Embedded menu app-->
-<div style="width: 600px; height: 700px; border: 2px solid green;" id="text-editor" class="v-app">
+<div style="width: 800px; height: 700px; border: 2px solid green;" id="text-editor" class="v-app">
     <!-- Optional placeholder for the loading indicator -->
     <div class="v-app-loading"></div>
 
@@ -49,18 +49,15 @@ vaadin.initApplication("text-editor", {
     "debug": true,
     "standalone": false,
     "authErrMsg": {
-        "message": "Take note of any unsaved data, " +
-                "and <u>click here<\/u> to continue.",
+        "message": "Take note of any unsaved data, and <u>click here<\/u> to continue.",
         "caption": "Authentication problem"
     },
     "comErrMsg": {
-        "message": "Take note of any unsaved data, " +
-                "and <u>click here<\/u> to continue.",
+        "message": "Take note of any unsaved data, and <u>click here<\/u> to continue.",
         "caption": "Communication problem"
     },
     "sessExpMsg": {
-        "message": "Take note of any unsaved data, " +
-                "and <u>click here<\/u> to continue.",
+        "message": "Take note of any unsaved data, and <u>click here<\/u> to continue.",
         "caption": "Session Expired"
     }
 });

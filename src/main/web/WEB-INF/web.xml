@@ -102,7 +102,6 @@
 
     <filter-mapping>
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
-        <url-pattern>/*</url-pattern>
         <url-pattern>/web/archive/*</url-pattern>
     </filter-mapping>
 
@@ -139,7 +138,7 @@
 
         <init-param>
             <param-name>UI</param-name>
-            <param-value>com.imcode.imcms.admin.uber.UberAdmin</param-value>
+            <param-value>com.imcode.imcms.admin.uber.UberAdminUI</param-value>
         </init-param>
     </servlet>
 
@@ -151,7 +150,7 @@
 
         <init-param>
             <param-name>UI</param-name>
-            <param-value>com.imcode.imcms.admin.docadmin.DocAdmin</param-value>
+            <param-value>com.imcode.imcms.admin.docadmin.DocEditorUI</param-value>
         </init-param>
 
         <init-param>
@@ -169,7 +168,7 @@
 
         <init-param>
             <param-name>UI</param-name>
-            <param-value>com.imcode.imcms.admin.docadmin.image.ImageAdmin</param-value>
+            <param-value>com.imcode.imcms.admin.docadmin.image.ImageEditorUI</param-value>
         </init-param>
 
         <init-param>
@@ -180,14 +179,14 @@
     </servlet>
 
     <servlet>
-        <servlet-name>ChangeMenuUI</servlet-name>
+        <servlet-name>vaadin-docadmin-menu</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
         </servlet-class>
 
         <init-param>
             <param-name>UI</param-name>
-            <param-value>com.imcode.imcms.admin.docadmin.menu.MenuAdmin</param-value>
+            <param-value>com.imcode.imcms.admin.docadmin.menu.MenuEditorUI</param-value>
         </init-param>
 
         <init-param>
@@ -198,14 +197,14 @@
     </servlet>
 
     <servlet>
-        <servlet-name>ChangeTextUI</servlet-name>
+        <servlet-name>vaadin-docadmin-text</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
         </servlet-class>
 
         <init-param>
             <param-name>UI</param-name>
-            <param-value>com.imcode.imcms.admin.docadmin.menu.TextAdmin</param-value>
+            <param-value>com.imcode.imcms.admin.docadmin.text.TextEditorUI</param-value>
         </init-param>
 
         <init-param>
@@ -734,12 +733,12 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>ChangeTextUI</servlet-name>
+        <servlet-name>vaadin-docadmin-text</servlet-name>
         <url-pattern>/imcms/docadmin/text/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>ChangeMenuUI</servlet-name>
+        <servlet-name>vaadin-docadmin-menu</servlet-name>
         <url-pattern>/imcms/docadmin/menu/*</url-pattern>
     </servlet-mapping>
 
@@ -748,13 +747,11 @@
         <url-pattern>/imcms/docadmin/image/*</url-pattern>
     </servlet-mapping>
 
-
     <servlet-mapping>
         <servlet-name>vaadin-docadmin</servlet-name>
         <url-pattern>/imcms/docadmin/*</url-pattern>
         <url-pattern>/VAADIN/*</url-pattern>
     </servlet-mapping>
-
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>

@@ -13,7 +13,7 @@ import com.imcode.imcms.vaadin.Current
 import imcode.server.document.textdocument.TextDocumentDomainObject
 
 @com.vaadin.annotations.Theme("imcms")
-class LoopAdmin extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
+class LoopEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
 
   override def init(request: VaadinRequest) {
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))

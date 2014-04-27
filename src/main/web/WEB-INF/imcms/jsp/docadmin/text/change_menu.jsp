@@ -2,6 +2,7 @@
 
 <c:url var="vaadin_bootstrap_js_url" value='/VAADIN/vaadinBootstrap.js'/>
 
+<!DOCTYPE html>
 <html>
 <head>
     <title>Edit menu</title>
@@ -39,7 +40,7 @@ if (!window.vaadin) {
 
 /* The UI Configuration */
 vaadin.initApplication("menu-editor", {
-    "browserDetailsUrl": "<c:url value='/imcms/docadmin/menu/?docId=${requestScope.docId}&menuNo=${requestScope.menuNo}'/>",
+    "browserDetailsUrl": "<c:url value='/imcms/docadmin/menu?docId=${requestScope.docId}&menuNo=${requestScope.menuNo}'/>",
     "serviceUrl": "<c:url value='/imcms/docadmin/menu/'/>",
     "widgetset": "com.imcode.imcms.AppWidgetSet",
     "theme": "imcms",

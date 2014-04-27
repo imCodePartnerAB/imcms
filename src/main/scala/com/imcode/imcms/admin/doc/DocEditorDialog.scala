@@ -9,7 +9,7 @@ import com.vaadin.ui.VerticalLayout
 
 
 class DocEditorDialog(caption: String, doc: DocumentDomainObject) extends OkCancelDialog(caption)
-with OKEditorDialog with OKCaptionIsSave
+with EditorDialog with OKCaptionIsSave
 with CustomSizeDialog with Resizable {
 
   val editor = new DocEditor(doc)

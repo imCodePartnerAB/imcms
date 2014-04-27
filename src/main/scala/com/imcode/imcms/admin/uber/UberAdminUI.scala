@@ -51,7 +51,7 @@ import com.imcode.imcms.admin.doc.manager.DocManager
 
 @PreserveOnRefresh
 @com.vaadin.annotations.Theme("imcms")
-class UberAdmin extends UI {
+class UberAdminUI extends UI {
 
   private class MenuItem(val caption: String, val iconOpt: Option[ThemeResource] = None,
                          viewOpt: => Option[Component] = None, val children: Seq[MenuItem]) {

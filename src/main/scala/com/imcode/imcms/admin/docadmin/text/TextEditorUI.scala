@@ -2,37 +2,26 @@ package com.imcode
 package imcms
 package admin.docadmin.text
 
-import java.nio.charset.StandardCharsets
 import java.util.Locale
-import com.imcode.imcms.admin.docadmin.EditorContainerView
+import com.imcode.imcms.admin.docadmin.{RequestParams, EditorContainerView}
 import com.imcode.imcms.api.DocumentVersion
 import com.imcode.imcms.ImcmsServicesSupport
 import com.imcode.imcms.mapping.container.{LoopEntryRef, VersionRef}
 import com.imcode.imcms.mapping.DocumentSaveException
 import com.imcode.imcms.vaadin.Current
 import com.imcode.NonNegInt
-import com.vaadin.server.{Page, VaadinRequest}
+import com.vaadin.server.VaadinRequest
 import com.vaadin.ui.UI
 import _root_.imcode.server.document.NoPermissionToEditDocumentException
 import _root_.imcode.server.ImcmsConstants
 import _root_.imcode.server.document.textdocument.{NoPermissionToAddDocumentToMenuException, TextDomainObject}
 import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
 import com.imcode.imcms.vaadin.component._
-import org.apache.http.client.utils.URLEncodedUtils
-import scala.collection.JavaConverters._
 
 @com.vaadin.annotations.Theme("imcms")
-class TextAdmin extends UI with ImcmsServicesSupport {
+class TextEditorUI extends UI with ImcmsServicesSupport {
 
   val LoopEntryRefRE = """(\d+)_(\d+)""".r
-
-  def mkRequestParamFn(request: VaadinRequest): (String => String) = {
-    val embeddedModeParms = URLEncodedUtils.parse(Page.getCurrent.getLocation.getQuery, StandardCharsets.UTF_8).asScala.map { pair =>
-      pair.getName -> pair.getValue
-    }.toMap
-
-    name => Option(request.getParameter(name).trimToNull).orElse(embeddedModeParms.get(name)).orNull
-  }
 
   override def init(request: VaadinRequest) {
     getLoadingIndicatorConfiguration.setFirstDelay(1)
@@ -42,27 +31,23 @@ class TextAdmin extends UI with ImcmsServicesSupport {
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
     getLoadingIndicatorConfiguration.setFirstDelay(1)
 
-    val requestParam = mkRequestParamFn(request)
+    val requestParams = new RequestParams(request)
 
     val contextPath = Current.contextPath
     val pathInfo = request.getPathInfo
 
-    val docId = requestParam("meta_id").toInt
-    val titleOpt = requestParam("label").trimToOption
-    val returnUrlOpt = requestParam(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption
-    val textNo = requestParam("txt").toInt
+    val docId = requestParams("meta_id").toInt
+    val titleOpt = requestParams("label").trimToOption
+    val returnUrlOpt = requestParams(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption
+    val textNo = requestParams("txt").toInt
     val versioRef = VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO)
-    val loopEntryRefOpt = requestParam("loopEntryRef").trimToEmpty match {
+    val loopEntryRefOpt = requestParams("loopEntryRef").trimToEmpty match {
       case LoopEntryRefRE(NonNegInt(loopNo), NonNegInt(entryNo)) => Some(LoopEntryRef.of(loopNo, entryNo))
       case _ => None
     }
 
-    val formats = request.getParameterMap.get("format") match {
-      case null => Set.empty[String]
-      case array => array.toSet
-    }
-
-    val rowsCountOpt = request.getParameter("rows") |> {
+    val formats = requestParams.values("format")
+    val rowsCountOpt = requestParams("rows") |> {
       case NonNegInt(rows) => Some(rows)
       case _ => None
     }
@@ -83,7 +68,6 @@ class TextAdmin extends UI with ImcmsServicesSupport {
 
     setContent(wrapTextDocTextEditor(editor))
   }
-
 
 
   // [+] Text can be inside or outside of a content loop
@@ -178,57 +162,56 @@ class TextAdmin extends UI with ImcmsServicesSupport {
 
   // [-] <%= showModeEditor ? "Editor/" : "" %>HTML
   def wrapTextDocTextEditor(editor: TextEditor): EditorContainerView = {
-      val w = new EditorContainerView
+    val w = new EditorContainerView
 
-//      val title = request.getParameter("label").trimToNull match {
-//        case null => s"Document ${doc.getId} text no $textNo"
-//        case label => label |> StringEscapeUtils.escapeHtml4
-//      }
-//
-//      w.setTitle(title)
+    //      val title = request.getParameter("label").trimToNull match {
+    //        case null => s"Document ${doc.getId} text no $textNo"
+    //        case label => label |> StringEscapeUtils.escapeHtml4
+    //      }
+    //
+    //      w.setTitle(title)
 
-      w.mainComponent = editor.view
-      editor.view.setSize(900, 600)
+    w.mainComponent = editor.view
 
-      w.buttons.btnSave.addClickHandler {
-        _ =>
-          save(closeAfterSave = false)
-      }
-      w.buttons.btnSaveAndClose.addClickHandler {
-        _ =>
-          save(closeAfterSave = true)
-      }
+    w.buttons.btnSave.addClickHandler {
+      _ =>
+        save(closeAfterSave = false)
+    }
+    w.buttons.btnSaveAndClose.addClickHandler {
+      _ =>
+        save(closeAfterSave = true)
+    }
 
-      w.buttons.btnClose.addClickHandler {
-        _ =>
-          closeEditor()
-      }
+    w.buttons.btnClose.addClickHandler {
+      _ =>
+        closeEditor()
+    }
 
     w.buttons.btnReset.addClickHandler {
       _ =>
         editor.resetValues()
     }
 
-      def closeEditor() {
-        Current.page.open(Current.contextPath, "_self")
-      }
+    def closeEditor() {
+      Current.page.open(Current.contextPath, "_self")
+    }
 
-      def save(closeAfterSave: Boolean) {
-        editor.collectValues().right.get |> {
-          container =>
-          // -check permissionSet.getEditTexts()
-            try {
-              val user = Current.imcmsUser
-              imcmsServices.getDocumentMapper.saveTextDocTexts(container, Current.imcmsUser)
-              //imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
-              if (closeAfterSave) closeEditor()
-            } catch {
-              case e: NoPermissionToEditDocumentException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
-              case e: NoPermissionToAddDocumentToMenuException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
-              case e: DocumentSaveException => throw new ShouldNotBeThrownException(e)
-            }
-        }
+    def save(closeAfterSave: Boolean) {
+      editor.collectValues().right.get |> {
+        container =>
+        // -check permissionSet.getEditTexts()
+          try {
+            val user = Current.imcmsUser
+            imcmsServices.getDocumentMapper.saveTextDocTexts(container, Current.imcmsUser)
+            //imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
+            if (closeAfterSave) closeEditor()
+          } catch {
+            case e: NoPermissionToEditDocumentException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
+            case e: NoPermissionToAddDocumentToMenuException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
+            case e: DocumentSaveException => throw new ShouldNotBeThrownException(e)
+          }
       }
+    }
     return w
   }
 

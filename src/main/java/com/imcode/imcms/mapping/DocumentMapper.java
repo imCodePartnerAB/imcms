@@ -978,14 +978,6 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    @Deprecated
-    public static class SaveEditedDocumentCommand extends DocumentPageFlow.SaveDocumentCommand {
-
-        @Override
-        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        }
-    }
-
     /**
      * Makes a version from a working/draft version.
      */
