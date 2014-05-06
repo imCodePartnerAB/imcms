@@ -107,6 +107,7 @@ public class KerberosLoginService {
 
         if (auth == null || !auth.startsWith(NEGOTIATE_PREFIX)) {
             // Missing SPNEGO Negotiate token
+            log.info("Missing SPNEGO Negotiate token, returning NEGOTIATE");
             return resultNegotiate(request, response);
         }
 
@@ -116,12 +117,14 @@ public class KerberosLoginService {
 
         if (spnegoReqToken == null || spnegoReqToken.length == 0) {
             // Missing SPNEGO Negotiate token
+            log.info("Missing SPNEGO Negotiate token, returning NEGOTIATE");
             return resultNegotiate(request, response);
         }
 
         EstablishContextResult authResult = authenticate(spnegoReqToken);
 
         if (authResult == null) {
+            log.warn("Authentication failed (null)");
             return resultFailed(request, response);
         }
 
@@ -132,6 +135,7 @@ public class KerberosLoginService {
         }
 
         if (!authResult.isEstablished()) {
+            log.warn("Authentication failed (not established)");
             return resultContinue(request, response);
         }
 
@@ -141,12 +145,14 @@ public class KerberosLoginService {
     private KerberosLoginResult loginToImcms(EstablishContextResult authResult, HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
 
-        log.info("Client principal name: " + authResult.getClientPrincipalName());
+        String principalName = authResult.getClientPrincipalName();
+        log.info("Client principal name: " + principalName);
 
         ImcmsServices services = Imcms.getServices();
-        UserDomainObject user = services.verifyUser(authResult.getClientPrincipalName());
+        UserDomainObject user = services.verifyUser(principalName);
 
         if (user == null || user.isDefaultUser()) {
+            log.warn(String.format("Unable to authenticate principal %s. Outcome: %s", principalName, user));
             return resultFailed(request, response);
         }
 
