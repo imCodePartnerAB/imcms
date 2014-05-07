@@ -7,6 +7,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+
 import java.io.IOException;
 import javax.security.auth.Subject;
 import javax.security.auth.kerberos.KerberosPrincipal;
@@ -16,6 +17,7 @@ import javax.security.auth.login.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -44,7 +46,7 @@ public class KerberosLoginService {
             initLoginContext();
         }
     }
-    
+
     private void initLoginContext() {
         if (loggedIn) {
             return;
@@ -122,6 +124,10 @@ public class KerberosLoginService {
             return resultNegotiate(request, response);
         }
 
+        if (isNTLMSSPBlob(spnegoReqToken, 0)) {
+            log.warn("Client sent an NTLMSSP security blob");
+        }
+
         EstablishContextResult authResult = authenticate(spnegoReqToken);
 
         if (authResult == null) {
@@ -144,7 +150,7 @@ public class KerberosLoginService {
     }
 
     private KerberosLoginResult loginToImcms(EstablishContextResult authResult, HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                                             HttpServletResponse response) throws ServletException, IOException {
 
         String principalName = authResult.getClientPrincipalName();
         log.info("Client principal name: " + principalName);
@@ -208,5 +214,79 @@ public class KerberosLoginService {
         Utility.forwardToLogin(request, response);
 
         return new KerberosLoginResult(KerberosLoginStatus.FAILED);
+    }
+
+    private static class NTLM {
+
+        // Signature
+
+        public static final byte[] Signature = "NTLMSSP\u0000".getBytes();
+
+        // Message types
+
+        public static final int Type1 = 1;
+        public static final int Type2 = 2;
+        public static final int Type3 = 3;
+
+        // NTLM flags
+
+        public static final int FlagNegotiateUnicode = 0x00000001;
+        public static final int FlagNegotiateOEM = 0x00000002;
+        public static final int FlagRequestTarget = 0x00000004;
+        public static final int FlagNegotiateSign = 0x00000010;
+        public static final int FlagNegotiateSeal = 0x00000020;
+        public static final int FlagDatagramStyle = 0x00000040;
+        public static final int FlagLanManKey = 0x00000080;
+        public static final int FlagNegotiateNetware = 0x00000100;
+        public static final int FlagNegotiateNTLM = 0x00000200;
+        public static final int FlagDomainSupplied = 0x00001000;
+        public static final int FlagWorkstationSupplied = 0x00002000;
+        public static final int FlagLocalCall = 0x00004000;
+        public static final int FlagAlwaysSign = 0x00008000;
+        public static final int FlagChallengeInit = 0x00010000;
+        public static final int FlagChallengeAccept = 0x00020000;
+        public static final int FlagChallengeNonNT = 0x00040000;
+        public static final int FlagNTLM2Key = 0x00080000;
+        public static final int FlagTargetInfo = 0x00800000;
+        public static final int FlagRequestVersion = 0x02000000;
+        public static final int Flag128Bit = 0x20000000;
+        public static final int FlagKeyExchange = 0x40000000;
+        public static final int Flag56Bit = 0x80000000;
+
+        // Target information types
+
+        public static final int TargetServer = 0x0001;
+        public static final int TargetDomain = 0x0002;
+        public static final int TargetFullDNS = 0x0003;
+        public static final int TargetDNSDomain = 0x0004;
+    }
+
+    /**
+     * Check if a security blob starts with the NTLMSSP signature
+     *
+     * @param byts   byte[]
+     * @param offset int
+     * @return boolean
+     */
+    private boolean isNTLMSSPBlob(byte[] byts, int offset) {
+        // Check if the blob has the NTLMSSP signature
+
+        boolean isNTLMSSP = false;
+
+        if ((byts.length - offset) >= NTLM.Signature.length) {
+
+            if (log.isDebugEnabled())
+                log.debug("Checking if the blob has the NTLMSSP signature.");
+            // Check for the NTLMSSP signature
+
+            int idx = 0;
+            while (idx < NTLM.Signature.length && byts[offset + idx] == NTLM.Signature[idx])
+                idx++;
+
+            if (idx == NTLM.Signature.length)
+                isNTLMSSP = true;
+        }
+
+        return isNTLMSSP;
     }
 }
