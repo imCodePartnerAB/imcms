@@ -107,7 +107,8 @@ public class KerberosLoginService {
 
         if (auth == null || !auth.startsWith(NEGOTIATE_PREFIX)) {
             // Missing SPNEGO Negotiate token
-            log.info("Missing SPNEGO Negotiate token, returning NEGOTIATE");
+            log.info(String.format("Missing SPNEGO Negotiate token, returning NEGOTIATE. %s is %s",
+                    AUTHORIZATION_HEADER, auth));
             return resultNegotiate(request, response);
         }
 
