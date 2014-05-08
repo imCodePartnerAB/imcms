@@ -1,4 +1,6 @@
-package com.imcode.imcms.vaadin.component.dialog
+package com.imcode
+package imcms
+package vaadin.component.dialog
 
 import com.imcode.imcms.vaadin.component.UndefinedSize
 import com.vaadin.ui.Label

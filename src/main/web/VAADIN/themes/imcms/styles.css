@@ -153,3 +153,7 @@ table#docs_projection_basic_filter #buttons {
 .v-table {
     border: none;
 }
+
+.v-table-cell-content {
+    vertical-align: middle;
+}

@@ -1,9 +1,6 @@
 package com.imcode
 package imcms.vaadin.component
 
-import _root_.imcode.server.user.UserDomainObject
-import _root_.imcode.util.Utility
-
 import com.imcode.imcms._
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.security.{PermissionDenied, PermissionGranted, Permission}

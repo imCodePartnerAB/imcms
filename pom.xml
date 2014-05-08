@@ -66,16 +66,16 @@
 
         <build.webapp.dir>${project.build.directory}/${project.artifactId}</build.webapp.dir>
 
-        <solr.version>4.7.2</solr.version>
+        <solr.version>4.8.0</solr.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <scala.version>2.10.4</scala.version>
-        <springframework.version>4.0.3.RELEASE</springframework.version>
+        <scala.version>2.11.0</scala.version>
+        <springframework.version>4.0.4.RELEASE</springframework.version>
 
         <!--
             Core & EntityManager version
         -->
         <hibernate.version>4.3.5.Final</hibernate.version>
-        <vaadin.version>7.1.13</vaadin.version>
+        <vaadin.version>7.1.15</vaadin.version>
 
         <tomcat.version>7.0.53</tomcat.version>
 
@@ -580,12 +580,6 @@
         <!-- Scala -->
         <!-- ===== -->
         <dependency>
-            <groupId>com.imcode</groupId>
-            <artifactId>scala-core_2.10</artifactId>
-            <version>1.3</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
             <version>${scala.version}</version>
@@ -603,16 +597,10 @@
             <version>${scala.version}</version>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.scala-lang</groupId>-->
-        <!--<artifactId>scala-swing</artifactId>-->
-        <!--<version>${scala.version}</version>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.10</artifactId>
-            <version>2.1.3</version>
+            <artifactId>scalatest_2.11</artifactId>
+            <version>2.1.5</version>
             <scope>test</scope>
             <!--
                 Technically, exclusions section is not required.
@@ -765,14 +753,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Workaround: scalac bug - compiler is unable to parse Transactional.class. Fixed in 2.10.4? -->
-        <!--<dependency>-->
-        <!--<groupId>javax.transaction</groupId>-->
-        <!--<artifactId>javax.transaction-api</artifactId>-->
-        <!--<version>1.2</version>-->
-        <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -835,11 +815,6 @@
     </repositories>
 
     <pluginRepositories>
-        <!--<pluginRepository>-->
-        <!--<id>scala-tools.org</id>-->
-        <!--<name>Scala-tools Maven2 Releases Repository</name>-->
-        <!--<url>http://scala-tools.org/repo-releases</url>-->
-        <!--</pluginRepository>-->
     </pluginRepositories>
 
 
@@ -968,10 +943,10 @@
                         <jvmArg>-Xmx1024m</jvmArg>
                     </jvmArgs>
                     <args>
-                        <arg>-feature</arg>
-                        <arg>-unchecked</arg>
-                        <arg>-deprecation</arg>
-                        <arg>-explaintypes</arg>
+                        <!--<arg>-feature</arg>-->
+                        <!--<arg>-unchecked</arg>-->
+                        <!--<arg>-deprecation</arg>-->
+                        <!--<arg>-explaintypes</arg>-->
                         <!--
                             Shortens generated classfile names - unpredictable behaviour
                         -->

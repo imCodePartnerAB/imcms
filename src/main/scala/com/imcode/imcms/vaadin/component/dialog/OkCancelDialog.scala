@@ -1,4 +1,6 @@
-package com.imcode.imcms.vaadin.component.dialog
+package com.imcode
+package imcms
+package vaadin.component.dialog
 
 import com.imcode.imcms.vaadin.component.Spacing
 import com.vaadin.ui.{Alignment, GridLayout}

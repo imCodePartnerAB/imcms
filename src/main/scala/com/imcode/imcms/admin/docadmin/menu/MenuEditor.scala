@@ -56,7 +56,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
     }
 
     addContainerProperties(w.ttMenu,
-      PropertyDescriptor[DocId]("docs_projection.container_property.meta_id".i),
+      PropertyDescriptor[String]("docs_projection.container_property.meta_id".i),
       PropertyDescriptor[String]("docs_projection.container_property.headline".i),
       PropertyDescriptor[String]("docs_projection.container_property.alias".i),
       PropertyDescriptor[String]("docs_projection.container_property.type".i),
@@ -237,7 +237,7 @@ class MenuEditor(doc: TextDocumentDomainObject, menu: MenuDomainObject) extends 
       val doc = menuItem.getDocument
       val docId = doc.getId
       // doc.getDocumentType.getName.toLocalizedString(ui.getApplication.imcmsUser)
-      view.ttMenu.addRow(docId, docId: JInteger, doc.getHeadline, doc.getAlias, doc.getDocumentType.getName.toLocalizedString("eng"), doc.getLifeCyclePhase.toString)
+      view.ttMenu.addRow(docId, docId.toString, doc.getHeadline, doc.getAlias, doc.getDocumentType.getName.toLocalizedString("eng"), doc.getLifeCyclePhase.toString)
       view.ttMenu.setChildrenAllowed(docId, isMultilevel)
       view.ttMenu.setCollapsed(docId, false)
     }

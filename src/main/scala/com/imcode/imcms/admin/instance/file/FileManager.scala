@@ -7,8 +7,8 @@ import com.vaadin.ui._
 
 import java.io.File
 import org.apache.commons.io.FileUtils
-import actors.Actor
-import scala.concurrent.ops.spawn
+import scala.actors.Actor
+import com.imcode.util.Threads.spawn
 import com.imcode.imcms.vaadin.component._
 import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.server._
