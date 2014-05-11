@@ -210,7 +210,7 @@
         <dependency>
             <groupId>org.dbunit</groupId>
             <artifactId>dbunit</artifactId>
-            <version>2.4.9</version>
+            <version>2.5.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -252,7 +252,7 @@
         <dependency>
             <groupId>org.joda</groupId>
             <artifactId>joda-convert</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
         </dependency>
 
         <dependency>
@@ -299,7 +299,6 @@
 
         <dependency>
             <groupId>commons-betwixt</groupId>
-
             <artifactId>commons-betwixt</artifactId>
             <version>0.8</version>
             <exclusions>
@@ -354,7 +353,7 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.3</version>
+            <version>1.3.1</version>
         </dependency>
 
         <dependency>
@@ -375,7 +374,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
+            <version>3.3.2</version>
         </dependency>
 
         <dependency>
@@ -462,7 +461,7 @@
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
-            <version>1.1</version>
+            <version>1.1.1</version>
         </dependency>
 
 
@@ -476,7 +475,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.28</version>
+            <version>5.1.30</version>
         </dependency>
 
         <dependency>
@@ -524,7 +523,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.7.4</version>
+            <version>1.8.0</version>
         </dependency>
 
 
@@ -644,7 +643,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.3.1</version>
+            <version>4.3.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -656,7 +655,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>4.3.1</version>
+            <version>4.3.3</version>
         </dependency>
 
         <dependency>
@@ -700,7 +699,7 @@
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>ckeditor-wrapper-for-vaadin</artifactId>
-            <version>7.9.0</version>
+            <version>7.9.1</version>
         </dependency>
 
         <!-- ============================ -->

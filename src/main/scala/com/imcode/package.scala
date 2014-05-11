@@ -45,11 +45,9 @@ package object imcode {
 
   implicit class StringOps(string: String) {
     def trimToNull: String = string.trimToOption.orNull
-    def trimToEmpty: String = string.asOption.map(_.trim).getOrElse("")
-    def trimToOption: Option[String] = string.asOption.map(_.trim).filter(_.length > 0)
+    def trimToEmpty: String = string.trimToOption.getOrElse("")
+    def trimToOption: Option[String] = Option(string).map(_.trim).filter(_.length > 0)
   }
-
-  def opt[A](value: A) = Option(value)
 
   def when[A](exp: Boolean)(value: => A): Option[A] = PartialFunction.condOpt(exp) { case true => value }
 

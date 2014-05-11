@@ -76,7 +76,7 @@ class AppearanceEditor(meta: DocumentMeta, commonContentMap: Map[DocumentLanguag
       def findDocIdByAlias(): Option[Int] =
         for {
           alias <- v.alias.txtAlias.trimmedValueOpt
-          docId <- propertyRepository.findDocIdByAlias(alias) |> opt
+          docId <- propertyRepository.findDocIdByAlias(alias).asOption
           if meta.getId != docId
         } yield docId
 
@@ -84,7 +84,7 @@ class AppearanceEditor(meta: DocumentMeta, commonContentMap: Map[DocumentLanguag
 
       override def validate(value: AnyRef) {
         for (docId <- findDocIdByAlias()) {
-          throw new InvalidValueException("this alias is already taken by doc %d."format(docId))
+          throw new InvalidValueException(s"this alias is already taken by doc $docId.")
         }
       }
     })

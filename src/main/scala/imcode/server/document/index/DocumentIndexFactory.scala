@@ -34,7 +34,7 @@ object DocumentIndexFactory extends Log4jLoggerSupport {
           throw new IllegalArgumentException(errMsg)
       } |> {
         service =>
-          service.setRebuildIntervalInMinutes(config.getIndexingSchedulePeriodInMinutes.toInt |> opt)
+          service.setRebuildIntervalInMinutes(config.getIndexingSchedulePeriodInMinutes.toInt |> Option.apply)
           new DocumentIndexImpl(service)
       }
   }
