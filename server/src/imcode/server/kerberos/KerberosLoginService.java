@@ -34,9 +34,9 @@ public class KerberosLoginService {
 
     private Config config;
 
-    private boolean loggedIn;
+    private transient boolean loggedIn;
 
-    private LoginContext loginContext;
+    private transient LoginContext loginContext;
 
 
     public KerberosLoginService(Config config) {
@@ -47,18 +47,20 @@ public class KerberosLoginService {
         }
     }
 
-    private void initLoginContext() {
+    private synchronized void initLoginContext() {
+        dispose();
+
         if (log.isDebugEnabled()) {
             log.debug("Logging in to the KDC");
         }
 
-        if (loggedIn) {
-            if (log.isDebugEnabled()) {
-                log.debug("Already logged in to the KDC");
-            }
-
-            return;
-        }
+//        if (loggedIn) {
+//            if (log.isDebugEnabled()) {
+//                log.debug("Already logged in to the KDC");
+//            }
+//
+//            return;
+//        }
 
         try {
             LoginCallbackHandler callback = new LoginCallbackHandler(config.getSsoJaasPrincipalPassword());
@@ -96,12 +98,13 @@ public class KerberosLoginService {
 
     private void disposeLoginContext() {
         if (loginContext != null && loggedIn) {
-
+            log.debug("Logging out from KDC");
             try {
                 loginContext.logout();
-
+                loginContext = null;
+                loggedIn = false;
             } catch (LoginException ex) {
-                log.error(ex.getMessage(), ex);
+                log.error("KDC logout failed: " + ex.getMessage(), ex);
             }
         }
     }
