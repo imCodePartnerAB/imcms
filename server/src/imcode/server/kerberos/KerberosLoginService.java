@@ -157,10 +157,11 @@ public class KerberosLoginService {
         if (authResult.getSpnegoResponseToken() != null) {
             // Send back the SPNEGO response token if we have one
             byte[] data = Base64.encodeBase64(authResult.getSpnegoResponseToken());
-            response.setHeader(AUTHENTICATE_HEADER, NEGOTIATE_PREFIX + new String(data, "UTF-8"));
+            String authenticateHeader = NEGOTIATE_PREFIX + new String(data, "UTF-8");
+            response.setHeader(AUTHENTICATE_HEADER, authenticateHeader);
 
             if (log.isDebugEnabled()) {
-                log.debug("Sending back SPNEGO response token");
+                log.debug(String.format("Sending back SPNEGO response token: %s=%s ", AUTHENTICATE_HEADER, authenticateHeader));
             }
         }
 
