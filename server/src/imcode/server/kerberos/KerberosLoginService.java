@@ -48,7 +48,15 @@ public class KerberosLoginService {
     }
 
     private void initLoginContext() {
+        if (log.isDebugEnabled()) {
+            log.debug("Logging in to the KDC");
+        }
+
         if (loggedIn) {
+            if (log.isDebugEnabled()) {
+                log.debug("Already logged in to the KDC");
+            }
+
             return;
         }
 
@@ -74,8 +82,11 @@ public class KerberosLoginService {
                 log.info("Server: name=" + server.getName() + ", realm=" + server.getRealm());
             }
 
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully logged in to the KDC");
+            }
         } catch (LoginException ex) {
-            log.error(ex.getMessage(), ex);
+            log.error("Failed to login to the KDC" + ex.getMessage(), ex);
         }
     }
 
@@ -98,9 +109,17 @@ public class KerberosLoginService {
     public KerberosLoginResult login(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Authenticating web user");
+        }
+
         initLoginContext();
 
         if (!loggedIn) {
+            if (log.isDebugEnabled()) {
+                log.error("Unable to authenticating web user - not logged it to the KDC");
+            }
+
             // Couldn't authenticate to KDC as a Kerberos service.
             return resultFailed(request, response);
         }
@@ -131,7 +150,7 @@ public class KerberosLoginService {
         EstablishContextResult authResult = authenticate(spnegoReqToken);
 
         if (authResult == null) {
-            log.warn("Authentication failed (null)");
+            log.warn("Web user authentication failed (authResult is null)");
             return resultFailed(request, response);
         }
 
@@ -139,10 +158,14 @@ public class KerberosLoginService {
             // Send back the SPNEGO response token if we have one
             byte[] data = Base64.encodeBase64(authResult.getSpnegoResponseToken());
             response.setHeader(AUTHENTICATE_HEADER, NEGOTIATE_PREFIX + new String(data, "UTF-8"));
+
+            if (log.isDebugEnabled()) {
+                log.debug("Sending back SPNEGO response token");
+            }
         }
 
         if (!authResult.isEstablished()) {
-            log.warn("Authentication failed (not established)");
+            log.warn("Web user authentication failed (authResult.isEstablished() is false)");
             return resultContinue(request, response);
         }
 
@@ -153,13 +176,13 @@ public class KerberosLoginService {
                                              HttpServletResponse response) throws ServletException, IOException {
 
         String principalName = authResult.getClientPrincipalName();
-        log.info("Client principal name: " + principalName);
+        log.info("web user (client) principal name: " + principalName);
 
         ImcmsServices services = Imcms.getServices();
         UserDomainObject user = services.verifyUser(principalName);
 
         if (user == null || user.isDefaultUser()) {
-            log.warn(String.format("Unable to authenticate principal %s. Outcome: %s", principalName, user));
+            log.warn(String.format("Unable to authenticate web user (principal) %s. Outcome: %s", principalName, user));
             return resultFailed(request, response);
         }
 
