@@ -55,9 +55,9 @@ String cp = request.getContextPath() ;
 
 if (loadJq) { %>
 
-<jsp:include page="imcms_jquery_1.7.1.js" />
+<%@ include file="imcms_jquery_1.7.1.js" %>
 
-<jsp:include page="imcms_jquery-ui_1.8.16.js" />
+<%@ include file="imcms_jquery-ui_1.8.16.js" %>
 
 (function($) {
 
