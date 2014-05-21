@@ -15,6 +15,7 @@ import com.imcode.imcms.vaadin.Current
 import scala.collection.JavaConverters._
 import imcode.server.document.DocumentDomainObject
 import imcode.server.ImcmsConstants
+import scala.util.control.NonFatal
 
 @com.vaadin.annotations.Theme("imcms")
 class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
@@ -48,7 +49,7 @@ class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
               Current.page.showInfoNotification("notification.doc.saved".i)
               Current.page.open(Current.contextPath, "_self")
             } catch {
-              case e: Exception => Current.page.showUnhandledExceptionNotification(e)
+              case NonFatal(e) => Current.page.showUnhandledExceptionNotification(e)
             }
         }
     }

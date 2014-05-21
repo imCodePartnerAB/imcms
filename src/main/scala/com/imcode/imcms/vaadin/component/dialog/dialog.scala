@@ -10,6 +10,7 @@ import com.vaadin.server.ThemeResource
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.data._
 import com.vaadin.shared.ui.MarginInfo
+import scala.util.control.NonFatal
 
 /**
  * Auto-adjustable size dialog window with full margin.
@@ -58,7 +59,7 @@ object Dialog extends Log4jLoggerSupport {
       try {
         handler
       } catch {
-        case e: Exception =>
+        case NonFatal(e) =>
           logger.error("Dialog button click handler error", e)
           Current.page.showUnhandledExceptionNotification(e)
       }

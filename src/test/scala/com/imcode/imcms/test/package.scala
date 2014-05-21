@@ -3,6 +3,7 @@ package imcms
 
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
+import scala.util.control.NonFatal
 
 package object test {
 
@@ -10,7 +11,7 @@ package object test {
     try {
       block
     } catch {
-      case e: Exception => e.printStackTrace()
+      case NonFatal(e) => e.printStackTrace()
     }
 
   implicit def smiToAnswer[A](fn: InvocationOnMock => A): Answer[A] =

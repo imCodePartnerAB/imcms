@@ -6,6 +6,7 @@ import org.apache.log4j.Logger
 import java.text.MessageFormat
 import _root_.imcode.server.Imcms
 import scala.util.Try
+import scala.util.control.NonFatal
 
 /**
  * For use without implicit conversion.
@@ -37,7 +38,7 @@ class I18nMessage(key: String) {
       val bundle = try {
         ResourceBundle.getBundle("admin_ui", locale)
       } catch {
-        case e: Exception =>
+        case NonFatal(e) =>
           Logger.getLogger(getClass).error(s"Can't retrieve resource bundle for locale ${locale.getDisplayName}.", e)
           new ListResourceBundle {
             override def getContents: Array[Array[AnyRef]] = Array.ofDim(2)

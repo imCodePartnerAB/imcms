@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 public class Value {
 
-    public static <V, R> R map(V v, Function<? super V, ? extends R> function) {
+    public static <V, R> R apply(V v, Function<? super V, ? extends R> function) {
         return function.apply(v);
     }
 

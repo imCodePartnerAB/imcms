@@ -21,6 +21,7 @@ import org.apache.solr.client.solrj.{SolrServer, SolrQuery}
 import imcode.server.document.textdocument.{ImageDomainObject, TextDomainObject, TextDocumentDomainObject}
 import imcode.server.document.index.service.impl.{DocumentIndexer, DocumentContentIndexer}
 import imcode.server.{PhaseQueryFixingDocumentIndex, LoggingDocumentIndex}
+import scala.util.control.NonFatal
 
 @RunWith(classOf[JUnitRunner])
 class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -77,7 +78,7 @@ class DirectoryIndexTest extends WordSpec with BeforeAndAfterAll with BeforeAndA
       srv2.commit()
       println("-------------------")
     } catch {
-      case e: Exception => println("ERRR> " + e.getMessage); e.printStackTrace()
+      case NonFatal(e) => println("ERRR> " + e.getMessage); e.printStackTrace()
     }
     //srv.deleteById("*:*")
     srv.shutdown()

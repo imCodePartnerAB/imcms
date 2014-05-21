@@ -12,6 +12,7 @@ import java.util.concurrent._
 import com.imcode.util.Threads
 import scala.util.{Failure, Success, Try}
 import com.imcode.imcms.api.ServiceUnavailableException
+import scala.util.control.NonFatal
 
 /**
  * Implements all DocumentIndexService functionality.
@@ -167,7 +168,7 @@ class ManagedSolrDocumentIndexService(
               case _: InterruptedException =>
                 logger.debug(s"document-index-update thread [$indexUpdateThread] was interrupted")
 
-              case e: Exception =>
+              case NonFatal(e) =>
                 val writeFailure = ManagedSolrDocumentIndexService.IndexUpdateFailure(ManagedSolrDocumentIndexService.this, e)
                 logger.error(s"error in document-index-update thread [$indexUpdateThread].", e)
                 indexWriteFailureRef.set(writeFailure)
@@ -241,7 +242,7 @@ class ManagedSolrDocumentIndexService(
 
         logger.info("Service has been shut down.")
       } catch {
-        case e: Exception =>
+        case NonFatal(e) =>
           logger.warn("An error occurred while shutting down the service.", e)
           throw e
       }

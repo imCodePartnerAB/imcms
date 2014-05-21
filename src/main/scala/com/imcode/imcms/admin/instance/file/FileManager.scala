@@ -14,6 +14,7 @@ import com.imcode.imcms.vaadin.data._
 import com.imcode.imcms.vaadin.server._
 import com.imcode.imcms.vaadin.component.dialog._
 import com.vaadin.server.UserError
+import scala.util.control.NonFatal
 
 class FileManager {
   val browser = ImcmsFileBrowser.addAllLocations(new FileBrowser(isMultiSelect = true))
@@ -252,7 +253,7 @@ class ItemsDeleteHelper(browser: FileBrowser) {
         FileUtils.forceDelete(item)
         stateHandler ! ItemsState(remaining, item +: processed)
       } catch {
-        case e: Exception => Current.ui.withSessionLock {
+        case NonFatal(e) => Current.ui.withSessionLock {
           new OkCancelErrorDialog("file_mgr_dlg.delete.item.err.msg".f(item.getName)) |>> { dlg =>
             dlg.btnOk.setCaption("btn_caption.skip".i)
 
@@ -405,7 +406,7 @@ class ItemsTransferHelper(browser: FileBrowser) {
 
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
-            case e: Exception => Current.ui.withSessionLock {
+            case NonFatal(e) => Current.ui.withSessionLock {
               new OkCancelErrorDialog("Unable to copy") |>> { dlg =>
                 dlg.btnOk.setCaption("btn_caption.skip".i)
                 dlg.mainComponent = new Label("file_mgr_dlg.copy.item.err.msg".f(item.getName)) with UndefinedSize
@@ -542,7 +543,7 @@ class ItemsTransferHelper(browser: FileBrowser) {
 
             stateHandler ! ItemsState(remaining, destItem +: processed)
           } catch {
-            case e: Exception => Current.ui.withSessionLock {
+            case NonFatal(e) => Current.ui.withSessionLock {
               new OkCancelErrorDialog("file_mgr_dlg.move.item.err.msg".f(item.getName)) |>> { dlg =>
                 dlg.setOkButtonHandler { stateHandler ! ItemsState(remaining, processed) }
                 dlg.setCancelButtonHandler { stateHandler ! ItemsState(Nil, processed) }
