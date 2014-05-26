@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Objects;
 
 public final class DocumentLanguage implements Serializable {
@@ -46,6 +47,24 @@ public final class DocumentLanguage implements Serializable {
             return new DocumentLanguage(code, name, nativeName);
         }
     }
+
+    public static Comparator<DocumentLanguage> NATIVE_NAME_COMPARATOR = new Comparator<DocumentLanguage>() {
+        @Override
+        public int compare(DocumentLanguage d1, DocumentLanguage d2) {
+            String n1 = d1.getNativeName();
+            String n2 = d2.getNativeName();
+
+            if (n1 == null && n2 == null) {
+                return 0;
+            } else if (n1 == null && n2 != null) {
+                return 1;
+            } else if (n1 != null && n2 == null) {
+                return -1;
+            }
+
+            return n1.compareToIgnoreCase(n2);
+        }
+    };
 
     private final String code;
 

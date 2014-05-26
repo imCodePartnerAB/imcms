@@ -7,23 +7,21 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
 import imcode.util.image.Format;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.MessageDigest;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.codec.digest.DigestUtils;
+import imcode.util.image.Resize;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ImagePreview extends HttpServlet {
     private static final long serialVersionUID = -5206637712530904625L;
@@ -92,6 +90,8 @@ public class ImagePreview extends HttpServlet {
         int cropX2 = NumberUtils.toInt(request.getParameter("crop_x2"), -1);
         int cropY2 = NumberUtils.toInt(request.getParameter("crop_y2"), -1);
 
+        Resize resize = Resize.getByName(request.getParameter("resize"));
+
         CropRegion cropRegion = new CropRegion(cropX1, cropY1, cropX2, cropY2);
 
         int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
@@ -110,7 +110,7 @@ public class ImagePreview extends HttpServlet {
 
         try {
             boolean result = ImcmsImageUtils.generateImage(imageFile, tempFile, format,
-                    width, height, cropRegion, rotateDirection);
+                    width, height, resize, cropRegion, rotateDirection);
 
             if (result) {
                 String contentType = (format != null ? format.getMimeType() : "application/octet-stream");

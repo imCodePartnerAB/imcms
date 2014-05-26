@@ -52,9 +52,10 @@ public class DocRepository {
                 .setParameter("docId", docId)
                 .executeUpdate();
 
-        entityManager.createQuery("UPDATE Version v SET v.modifiedDt = :modifiedDt, v.modifiedBy = :modifiedBy WHERE v.docId = :docId AND v.no = :docVersionNo")
+        entityManager.createQuery("UPDATE Version v SET v.modifiedDt = :modifiedDt, v.modifiedBy.id = :modifiedBy WHERE v.docId = :docId AND v.no = :docVersionNo")
                 .setParameter("modifiedBy", userId)
                 .setParameter("modifiedDt", dt)
+                .setParameter("modifiedBy", userId)
                 .setParameter("docId", docId)
                 .setParameter("docVersionNo", docVersionNo)
                 .executeUpdate();

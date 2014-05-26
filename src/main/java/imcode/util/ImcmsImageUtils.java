@@ -113,18 +113,6 @@ public class ImcmsImageUtils {
 
             styleBuffer.append("border-width: ").append(image.getBorder()).append("px;");
 
-            int width = image.getWidth();
-            int height = image.getHeight();
-
-            if (0 != width) {
-                imageTagBuffer.append(" width=\"").append(width).append("\"");
-                styleBuffer.append(" width: ").append(width).append("px;");
-            }
-            if (0 != height) {
-                imageTagBuffer.append(" height=\"").append(height).append("\"");
-                styleBuffer.append(" height: ").append(height).append("px;");
-            }
-
             styleBuffer.append(" margin: ")
                     .append(image.getVerticalSpace()).append("px ")
                     .append(image.getHorizontalSpace()).append("px;");
@@ -256,6 +244,11 @@ public class ImcmsImageUtils {
         if (!forPreview && image.getGeneratedFilename() != null) {
             builder.append("&gen_file=");
             builder.append(image.getGeneratedFilename());
+        }
+
+        if (image.getResize() != null) {
+            builder.append("&resize=");
+            builder.append(image.getResize().name().toLowerCase());
         }
 
         return builder.toString();
@@ -420,7 +413,7 @@ public class ImcmsImageUtils {
             IOUtils.copy(input, output);
             IOUtils.closeQuietly(output);
 
-            generateImage(tempFile, genFile, image.getFormat(), image.getWidth(), image.getHeight(),
+            generateImage(tempFile, genFile, image.getFormat(), image.getWidth(), image.getHeight(), image.getResize(),
                     image.getCropRegion(), image.getRotateDirection());
 
         } catch (Exception ex) {
@@ -437,7 +430,7 @@ public class ImcmsImageUtils {
     }
 
     public static boolean generateImage(File imageFile, File destFile, Format format, int width, int height,
-                                        CropRegion cropRegion, RotateDirection rotateDir) {
+                                        Resize resize, CropRegion cropRegion, RotateDirection rotateDir) {
 
         ImageOp operation = new ImageOp().input(imageFile);
 
@@ -456,7 +449,10 @@ public class ImcmsImageUtils {
         if (width > 0 || height > 0) {
             Integer w = (width > 0 ? width : null);
             Integer h = (height > 0 ? height : null);
-            Resize resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
+
+            if (resize == null) {
+                resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
+            }
 
             operation.filter(Filter.LANCZOS);
             operation.resize(w, h, resize);

@@ -36,6 +36,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.regex.Matcher;
 
 public class TagParser {
 
@@ -46,6 +47,12 @@ public class TagParser {
     private static Pattern attributesPattern;
     private static Pattern widthPattern;
     private static Pattern heightPattern;
+    private static Pattern maxWidthPattern;
+    private static Pattern maxHeightPattern;
+
+    private static final java.util.regex.Pattern REMOVE_ATTRS_PATTERN = java.util.regex.Pattern.compile(
+            "(?<!-)(?:max-width|max-height|width|height)\\s*:\\s*\\d+\\s*px\\s*;?", java.util.regex.Pattern.CASE_INSENSITIVE);
+
 
     /**
      * Used as default image in tagImage when document.getImage returns null.
@@ -73,6 +80,10 @@ public class TagParser {
             widthPattern = patComp.compile("(?:^|[\\s;])width\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
 
             heightPattern = patComp.compile("(?:^|[\\s;])height\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
+
+            maxWidthPattern = patComp.compile("(?:^|[\\s;])max-width\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
+
+            maxHeightPattern = patComp.compile("(?:^|[\\s;])max-height\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
 
         } catch (MalformedPatternException e) {
             LOG.fatal("RegExp init failed.", e);
@@ -522,9 +533,19 @@ public class TagParser {
 
         ImageSource imageSource = image.getSource();
         String imageTag = "";
+        String style = attributes.getProperty("style");
         if (!(imageSource instanceof FileDocumentImageSource)
                 || imageMode
                 || user.canAccess(((FileDocumentImageSource) imageSource).getFileDocument())) {
+
+            if (style != null) {
+                Matcher matcher = REMOVE_ATTRS_PATTERN.matcher(style);
+
+                String cleanedStyle = matcher.replaceAll(" ");
+
+                attributes.put("style", cleanedStyle);
+            }
+
             imageTag = ImcmsImageUtils.getImageHtmlTag(image, httpServletRequest, attributes);
         }
 
@@ -539,24 +560,36 @@ public class TagParser {
 
             String imageWidth = "0";
             String imageHeight = "0";
-            String style = (String) attributes.get("style");
+            String maxWidth = "0";
+            String maxHeight = "0";
             if (style != null) {
                 PatternMatcher matcher = new Perl5Matcher();
+
                 if (matcher.contains(style, widthPattern)) {
                     imageWidth = matcher.getMatch().group(1);
                 }
                 if (matcher.contains(style, heightPattern)) {
                     imageHeight = matcher.getMatch().group(1);
                 }
+                if (matcher.contains(style, maxWidthPattern)) {
+                    maxWidth = matcher.getMatch().group(1);
+                }
+                if (matcher.contains(style, maxHeightPattern)) {
+                    maxHeight = matcher.getMatch().group(1);
+                }
             }
 
 
-            List<String> replaceTags = new ArrayList<>(replace_tags.length + 4);
+            List<String> replaceTags = new ArrayList<>(replace_tags.length + 10);
             CollectionUtils.addAll(replaceTags, replace_tags);
             replaceTags.add("#image_width#");
             replaceTags.add(imageWidth);
             replaceTags.add("#image_height#");
             replaceTags.add(imageHeight);
+            replaceTags.add("#max_width#");
+            replaceTags.add(maxWidth);
+            replaceTags.add("#max_height#");
+            replaceTags.add(maxHeight);
             replaceTags.add("#loop_ref#");
             replaceTags.add(loopEntryRef != null ? loopEntryRef.toString() : "");
 

@@ -1,6 +1,7 @@
 package imcode.util;
 
 import com.imcode.db.handlers.SingleObjectHandler;
+import com.imcode.imcms.I18nMessage$;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
@@ -8,7 +9,8 @@ import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -47,6 +49,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -133,6 +136,10 @@ public class Utility {
 
     public static void redirectToStartDocument(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.sendRedirect(req.getContextPath() + "/servlet/StartDoc");
+    }
+
+    public static void redirectToStartDocument(VaadinRequest request) {
+        Page.getCurrent().setLocation(request.getContextPath() + "/servlet/StartDoc");
     }
 
     public static boolean isValidEmail(String email) {
@@ -547,4 +554,24 @@ public class Utility {
         }
     }
 
+    /**
+     * Pass through to {@link com.imcode.imcms.I18nMessage$#i(String)}.
+     *
+     * @param key   a localisation key
+     *
+     * @return  a localised message for the {@code key}
+     */
+    public static String i(String key) {
+        return I18nMessage$.MODULE$.i(key);
+    }
+
+    /**
+     * @param key   a localisation key
+     * @param args  format paramaters for the localisation message
+     *
+     * @return  a localised message for the {@code key} formatted with the parameters {@code args}
+     */
+    public static String f(String key, Object... args) {
+        return new MessageFormat(i(key)).format(args);
+    }
 }

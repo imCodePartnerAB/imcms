@@ -18,6 +18,18 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     private static final int GEN_FILE_LENGTH = 255;
 
+    public static final String ALIGN_NONE = "";
+    public static final String ALIGN_TOP = "top";
+    public static final String ALIGN_MIDDLE = "middle";
+    public static final String ALIGN_BOTTOM = "bottom";
+    public static final String ALIGN_LEFT = "left";
+    public static final String ALIGN_RIGHT = "right";
+
+    public static final String TARGET_TOP = "_top";
+    public static final String TARGET_BLANK = "_blank";
+    public static final String TARGET_PARENT = "_parent";
+    public static final String TARGET_SELF = "_self";
+
     private volatile ImageSource source = new NullImageSource();
 
     private volatile int width;
@@ -47,7 +59,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     private volatile String generatedFilename;
 
-    private volatile int resize;
+    private volatile int resizeOrdinal;
 
     private volatile int format;
 
@@ -60,17 +72,120 @@ public class ImageDomainObject implements Serializable, Cloneable {
     public ImageSize getDisplayImageSize() {
         ImageSize realImageSize = getRealImageSize();
 
-        int wantedWidth = getWidth();
-        int wantedHeight = getHeight();
-        if (0 == wantedWidth && 0 != wantedHeight && 0 != realImageSize.getHeight()) {
-            wantedWidth = (int) (realImageSize.getWidth() * ((double) wantedHeight / realImageSize.getHeight()));
-        } else if (0 == wantedHeight && 0 != wantedWidth && 0 != realImageSize.getWidth()) {
-            wantedHeight = (int) (realImageSize.getHeight() * ((double) wantedWidth / realImageSize.getWidth()));
-        } else if (0 == wantedWidth && 0 == wantedHeight) {
-            wantedWidth = realImageSize.getWidth();
-            wantedHeight = realImageSize.getHeight();
+        int w = realImageSize.getWidth();
+        int h = realImageSize.getHeight();
+
+        if (w == 0 && h == 0) {
+            return realImageSize;
         }
-        return new ImageSize(wantedWidth, wantedHeight);
+
+        RotateDirection rotateDirection = getRotateDirection();
+        Resize resize = getResize();
+
+        if (rotateDirection != null && (rotateDirection == RotateDirection.EAST || rotateDirection == RotateDirection.WEST)) {
+            int temp = h;
+            h = w;
+            w = temp;
+        }
+
+        if (cropRegion != null && cropRegion.isValid()) {
+            w = cropRegion.getWidth();
+            h = cropRegion.getHeight();
+        }
+
+        if (width > 0 || height > 0) {
+            Resize res = resize;
+            if (res == null) {
+                res = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
+            }
+
+            double ratio = w / (double) h;
+            double targetRatio;
+
+            int finalWidth;
+            int finalHeight;
+
+            switch (res) {
+                case DEFAULT:
+                    if (width > 0 && height > 0) {
+                        targetRatio = width / (double) height;
+
+                        if (ratio > targetRatio) {
+                            finalWidth = width;
+                            finalHeight = (int) Math.round(width / ratio);
+                        } else {
+                            finalWidth = (int) Math.round(height * ratio);
+                            finalHeight = height;
+                        }
+
+                    } else if (width > 0) {
+                        finalWidth = width;
+                        finalHeight = (int) Math.round(width / ratio);
+                    } else {
+                        finalWidth = (int) Math.round(height * ratio);
+                        finalHeight = height;
+                    }
+                    break;
+                case FORCE:
+                    if (width > 0 && height > 0) {
+                        finalWidth = width;
+                        finalHeight = height;
+                    } else if (width > 0) {
+                        finalWidth = width;
+                        finalHeight = h;
+                    } else {
+                        finalWidth = w;
+                        finalHeight = height;
+                    }
+                    break;
+                case GREATER_THAN:
+                    if (width > 0 && height > 0) {
+                        if (w > width && h > height) {
+                            targetRatio = width / (double) height;
+
+                            if (ratio > targetRatio) {
+                                finalWidth = width;
+                                finalHeight = (int) Math.round(width / ratio);
+                            } else {
+                                finalWidth = (int) Math.round(height * ratio);
+                                finalHeight = height;
+                            }
+                        } else if (w > width) {
+                            finalWidth = width;
+                            finalHeight = (int) Math.round(width / ratio);
+                        } else if (h > height) {
+                            finalWidth = (int) Math.round(height * ratio);
+                            finalHeight = height;
+                        } else {
+                            finalWidth = w;
+                            finalHeight = h;
+                        }
+                    } else if (width > 0) {
+                        if (w > width) {
+                            finalWidth = width;
+                            finalHeight = (int) Math.round(width / ratio);
+                        } else {
+                            finalWidth = w;
+                            finalHeight = h;
+                        }
+                    } else {
+                        if (h > height) {
+                            finalWidth = (int) Math.round(height * ratio);
+                            finalHeight = height;
+                        } else {
+                            finalWidth = w;
+                            finalHeight = h;
+                        }
+                    }
+                    break;
+                default:
+                    throw new IllegalStateException("Unhandled resize = " + res);
+            }
+
+            return new ImageSize(finalWidth, finalHeight);
+        }
+
+        return new ImageSize(w, h);
     }
 
     public ImageSize getRealImageSize() {
@@ -292,11 +407,11 @@ public class ImageDomainObject implements Serializable, Cloneable {
     }
 
     public Resize getResize() {
-        return Resize.getByOrdinal(resize);
+        return Resize.getByOrdinal(resizeOrdinal);
     }
 
     public void setResize(Resize resize) {
-        this.resize = resize == null ? 0 : resize.getOrdinal();
+        this.resizeOrdinal = resize == null ? 0 : resize.getOrdinal();
     }
 
     public long getSize() {

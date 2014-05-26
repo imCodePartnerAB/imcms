@@ -216,6 +216,22 @@
 
 
     <servlet>
+        <servlet-name>EditImageUI</servlet-name>
+        <servlet-class>com.vaadin.server.VaadinServlet</servlet-class>
+
+        <init-param>
+            <param-name>UI</param-name>
+            <param-value>com.imcode.imcms.admin.docadmin.image.EditImageUI</param-value>
+        </init-param>
+
+        <init-param>
+            <description>Widget Set to Use</description>
+            <param-name>widgetset</param-name>
+            <param-value>com.imcode.imcms.AppWidgetSet</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet>
         <servlet-name>web</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -751,6 +767,11 @@
         <servlet-name>vaadin-docadmin</servlet-name>
         <url-pattern>/imcms/docadmin/*</url-pattern>
         <url-pattern>/VAADIN/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>EditImageUI</servlet-name>
+        <url-pattern>/EditImage/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
