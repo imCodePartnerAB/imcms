@@ -11,28 +11,27 @@ import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 public class ImageHandling extends HttpServlet {
@@ -176,7 +175,7 @@ public class ImageHandling extends HttpServlet {
             }
             
             if (useCacheFile) {
-                writeImageToResponse(cacheId, cacheFile, format, desiredFilename, etag, response);
+                writeImageToResponse(cacheId, cacheFile, format, desiredFilename, path, etag, response);
                 return;
             }
 		}
@@ -221,7 +220,7 @@ public class ImageHandling extends HttpServlet {
                 return;
             }
 
-            writeImageToResponse(cacheId, cacheFile, format, desiredFilename, etag, response);
+            writeImageToResponse(cacheId, cacheFile, format, desiredFilename, path, etag, response);
             
         } finally {
             if (source.isDeleteAfterUse()) {
@@ -230,8 +229,8 @@ public class ImageHandling extends HttpServlet {
         }
 	}
 	
-	private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename, String etag,
-			HttpServletResponse response) {
+	private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename,
+                                             String path, String etag, HttpServletResponse response) {
 
         if (etag != null) {
             response.addHeader("ETag", etag);
@@ -246,7 +245,29 @@ public class ImageHandling extends HttpServlet {
 		response.setContentLength((int) cacheFile.length());
 		
 		if (desiredFilename == null) {
-			desiredFilename = cacheId;
+            String pathname = cacheId;
+
+            if (path != null) {
+                String basename = FilenameUtils.getBaseName(path);
+
+                if (!basename.isEmpty()) {
+                    pathname = basename;
+                }
+            }
+
+			desiredFilename = pathname;
+
+            String ext = null;
+
+            if (format != null) {
+                ext = format.getExtension();
+            } else if (path != null) {
+                ext = FilenameUtils.getExtension(path);
+            }
+
+            if (ext != null && !ext.isEmpty()) {
+                desiredFilename += "." + ext;
+            }
 		}
 		
 		// replace " with \"
