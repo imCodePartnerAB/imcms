@@ -16,7 +16,7 @@
         <property name="order" value="1"/>
     </bean>
    
-    <context:component-scan base-package="com.imcode.imcms.addon.imagearchive"/>
+    <context:component-scan base-package="com.imcode.imcms.addon.imagearchive.controller"/>
     <context:annotation-config/>
    
     <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>

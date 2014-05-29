@@ -37,7 +37,9 @@
                 if(customCss.length > 0) {
                     $('head').append(customCss);
                 } else {
-                    top.location.reload();
+                    if (!isTransferToPicker()) {
+                        top.location.reload();
+                    }
                 }
             }
         });
@@ -48,4 +50,5 @@
     <input type="hidden" id="contextPath" value="${contextPath}"/>
     <c:url var="dummyUrl" value="<%=session.getId()%>"/>
     <input type="hidden" id="jsessionid" value=";jsessionid=${dummyUrl}" />
+    <input type="hidden" id="transferToPicker" value="${sessionScope.transferToPicker}"/>
 </form>

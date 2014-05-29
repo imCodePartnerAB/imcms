@@ -180,3 +180,42 @@ table#docs_projection_basic_filter #buttons {
     display: block;
     margin: 0 auto;
 }
+
+/* For image archive picker */
+#lightbox {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 500px;
+    background: #fff;
+    z-index: 12002;
+    display: none;
+}
+
+#lightbox-shadow, #overlay-shadow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    filter: alpha(opacity=75);
+    -moz-opacity: 0.75;
+    -khtml-opacity: 0.75;
+    opacity: 0.75;
+    z-index: 12001;
+    display: none;
+}
+
+#lightbox-close {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 35px;
+    height: 35px;
+    z-index: 12003;
+    display: none;
+    color: white;
+    background: url('../../../images/close.png') top left no-repeat;
+    cursor: pointer;
+}

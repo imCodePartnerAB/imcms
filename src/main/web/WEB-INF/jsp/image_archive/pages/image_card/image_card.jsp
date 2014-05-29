@@ -92,6 +92,14 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/top.jsp" %>
 
 <div id="containerContent">
+    <c:if test="${transferDone}">
+        <input type="hidden" id="transferDone" value="true"/>
+        <input type="hidden" id="transferId" value="${transferId}"/>
+        <input type="hidden" id="transferName" value="${fn:escapeXml(transferName)}"/>
+        <input type="hidden" id="transferFilename" value="${fn:escapeXml(transferFilename)}"/>
+        <input type="hidden" id="transferAltText" value="${fn:escapeXml(transferAltText)}"/>
+    </c:if>
+
     <div class="backToSearchResultsBtn">
         <a href="${pageContext.request.contextPath}/web/archive" class="imcmsFormBtn">
             <spring:message code="archive.imageCard.backToSearchResults" htmlEscape="true"/>
@@ -148,9 +156,13 @@
                 <c:if test="${canUseInImcms and not image.archived}">
                     <c:url var="useUrl" value="/web/archive/use">
                         <c:param name="id" value="${image.id}"/>
+
+                        <c:if test="${transferToPicker}">
+                            <c:param name="redir" value="${baseUrl}?transferDone=1"/>
+                        </c:if>
                     </c:url>
-                    <c:set var="disabled" value="${sessionScope.returnToImcms eq null}"/>
-                    <a href="${useUrl}" style="margin-right:2px;" class="imcmsFormBtn ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
+
+                    <a href="${fn:escapeXml(useUrl)}" style="margin-right:2px;" class="imcmsFormBtn">
                         <span><spring:message code="archive.useInImcms" htmlEscape="true"/></span>
                     </a>
                 </c:if>

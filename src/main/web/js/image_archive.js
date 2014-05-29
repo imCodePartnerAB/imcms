@@ -344,6 +344,17 @@ var initAddImage = function() {
 
 var initImageCard = function() {
     $(function() {
+        if ($("#transferDone").val() === "true") {
+            var id = parseInt($("#transferId").val(), 10),
+                name = $("#transferName").val(),
+                filename = $("#transferFilename").val(),
+                altText = $("#transferAltText").val();
+
+            if (parent != window && parent.hasOwnProperty("imagePicked")) {
+                parent.imagePicked(id, name, filename, altText);
+            }
+        }
+
         setupChangeData();
     });
 };
@@ -722,3 +733,7 @@ var showPreview = function(id, width, height, temp) {
     lightbox(url, width, height);
     return false;
 };
+
+function isTransferToPicker() {
+    return $("#transferToPicker").val() === "true";
+}

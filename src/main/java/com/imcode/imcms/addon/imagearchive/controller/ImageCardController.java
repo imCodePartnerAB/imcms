@@ -12,7 +12,9 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import com.imcode.imcms.addon.imagearchive.service.file.FileService;
 import com.imcode.imcms.addon.imagearchive.util.SessionUtils;
 import com.imcode.imcms.addon.imagearchive.util.exif.Flash;
 import org.apache.commons.io.IOUtils;
@@ -106,13 +108,10 @@ public class ImageCardController {
         facade.getImageService().setImageMetaIds(image);
 
         ModelAndView mav = new ModelAndView("image_archive/pages/image_card/image_card");
-        mav.addObject("image", image);
         mav.addObject("categories", getCategories(image));
         mav.addObject("keywords", getKeywords(image));
-        mav.addObject("canUseInImcms", SessionUtils.getImcmsReturnToUrl(request.getSession()) != null
-                && (facade.getImageService().canUseImage(user, imageId) || image.isCanChange()));
-        mav.addObject("canExport", (facade.getImageService().canUseImage(user, imageId) || image.isCanChange()));
         mav.addObject("format", Format.findFormat(image.getFormat()));
+        addCommonImageCardToModel(image, user ,request, mav);
 
         return mav;
     }
@@ -244,12 +243,30 @@ public class ImageCardController {
 
         ModelAndView mav = new ModelAndView("image_archive/pages/image_card/image_card");
         mav.addObject("action", "exif");
-        mav.addObject("image", image);
-        mav.addObject("canExport", (facade.getImageService().canUseImage(user, imageId) || image.isCanChange()));
-        mav.addObject("canUseInImcms", SessionUtils.getImcmsReturnToUrl(request.getSession()) != null
-                && (facade.getImageService().canUseImage(user, imageId) || image.isCanChange()));
+        addCommonImageCardToModel(image, user, request, mav);
 
         return mav;
+    }
+
+    private void addCommonImageCardToModel(Images image, User user, HttpServletRequest request, ModelAndView mav) {
+        HttpSession session = request.getSession();
+
+        boolean transferToPicker = SessionUtils.isTransferToPicker(session);
+
+        mav.addObject("baseUrl", request.getRequestURI());
+        mav.addObject("image", image);
+        mav.addObject("canExport", (facade.getImageService().canUseImage(user, image.getId()) || image.isCanChange()));
+        mav.addObject("canUseInImcms", (SessionUtils.getImcmsReturnToUrl(session) != null || transferToPicker)
+                && (facade.getImageService().canUseImage(user, image.getId()) || image.isCanChange()));
+        mav.addObject("transferToPicker", transferToPicker);
+
+        if (request.getParameter("transferDone") != null) {
+            mav.addObject("transferDone", true);
+            mav.addObject("transferId", image.getId());
+            mav.addObject("transferName", image.getImageNm());
+            mav.addObject("transferFilename", FileService.getTransferedImageFilename(image.getId()));
+            mav.addObject("transferAltText", image.getAltText());
+        }
     }
 
     @RequestMapping("/archive/image/*/unarchive")

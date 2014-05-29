@@ -462,6 +462,7 @@ public class TextDocumentContentSaver {
         image.setVerticalSpace(imageDO.getVerticalSpace());
         image.setWidth(imageDO.getWidth());
         image.setHeight(imageDO.getHeight());
+        image.setArchiveImageId(imageDO.getArchiveImageId());
 
         return image;
     }

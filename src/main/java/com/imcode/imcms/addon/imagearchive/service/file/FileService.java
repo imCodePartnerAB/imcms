@@ -269,7 +269,7 @@ public class FileService {
     }
 
     public String transferImageToImcms(long imageId) {
-        String filename = String.format("archive_img%d.jpg", imageId);
+        String filename = getTransferedImageFilename(imageId);
 
         File rootPath = new File(config.getStoragePath(), Long.toString(imageId));
 
@@ -284,6 +284,10 @@ public class FileService {
         }
 
         return filename;
+    }
+
+    public static String getTransferedImageFilename(long imageId) {
+        return String.format("archive_img%d.jpg", imageId);
     }
 
     public List<File> getSubdirs(File file, FileFilter filter) {

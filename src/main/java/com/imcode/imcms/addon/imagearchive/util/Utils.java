@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
@@ -216,6 +217,38 @@ public class Utils {
         }
 
         return categoriesesUserCantUse;
+    }
+
+    public static String cleanRedirect(String redir) {
+        if (redir == null) {
+            return null;
+        }
+
+        try {
+            URI uri = URI.create(redir);
+
+            if (uri.getPath().isEmpty()) {
+                return null;
+            }
+
+            String r = uri.getPath();
+
+            if (!StringUtils.isEmpty(uri.getRawQuery())) {
+                r += "?" + uri.getRawQuery();
+            }
+            if (!StringUtils.isEmpty(uri.getFragment())) {
+                r += "#" + uri.getFragment();
+            }
+
+            return r;
+
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static void sendRedirect(String redir, HttpServletResponse response) throws IOException {
+        response.sendRedirect(cleanRedirect(redir));
     }
 
     private Utils() {

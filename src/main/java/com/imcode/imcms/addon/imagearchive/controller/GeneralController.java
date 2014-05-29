@@ -66,22 +66,31 @@ public class GeneralController {
     @RequestMapping("/archive/use")
     public String useInImcmsHandler(
             @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String redir,
             HttpServletRequest request,
             HttpServletResponse response,
-            HttpSession session) {
+            HttpSession session) throws IOException {
+
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
 
         String returnTo = SessionUtils.getImcmsReturnToUrl(session);
+        boolean transferToPicker = SessionUtils.isTransferToPicker(session);
 
         if (user.isDefaultUser()) {
             return "redirect:/web/archive";
-        } else if (id == null || returnTo == null || !facade.getImageService().canUseImage(user, id)) {
+        } else if (id == null || (returnTo == null && !transferToPicker) || !facade.getImageService().canUseImage(user, id)) {
             return "redirect:/web/archive";
         }
 
-        String imageName = facade.getImageService().findImageName(id);
         String fileName = facade.getFileService().transferImageToImcms(id);
+
+        if (redir != null) {
+            Utils.sendRedirect(redir, response);
+            return null;
+        }
+
+        String imageName = facade.getImageService().findImageName(id);
         String altText = StringUtils.defaultString(facade.getImageService().findImageAltText(id));
 
         StringBuilder builder = new StringBuilder(returnTo);

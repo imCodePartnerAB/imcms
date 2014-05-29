@@ -46,6 +46,7 @@ public class ImageHistory extends ImageBase {
         setWidth(image.getWidth());
         setLanguage(image.getLanguage());
         setVersion(image.getVersion());
+        setArchiveImageId(image.getArchiveImageId());
 
         setModifiedBy(modifiedBy);
         setModifiedDt(new Date());

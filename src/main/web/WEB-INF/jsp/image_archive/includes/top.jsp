@@ -9,15 +9,17 @@
         <% String isoLang2 = Language.getLanguageByISO639_1(Imcms.getUser().getDocGetterCallback().getLanguage().getCode()).getIsoCode639_2(); %>
         <img class="right" src="${pageContext.servletContext.contextPath}/imcms/<%= isoLang2 %>/images/admin/logo_imcms_admin.gif" width="100" height="20"/>
     </div>
-    
-    <c:url var="backUrl" value="/web/archive/back"/>
-    <div id="backButton" class="clearfix">
-        <a href="${backUrl}" class="imcmsFormBtnSmall btnBack ${sessionScope.returnToImcms eq null ? 'disabled' : ''}"
-           onclick="${sessionScope.returnToImcms eq null ? 'return false;' : ''}">
-            <span><spring:message code="archive.backToImcms" htmlEscape="true"/></span>
-        </a>
-    </div>
-    
+
+    <c:if test="${not sessionScope.transferToPicker}">
+        <c:url var="backUrl" value="/web/archive/back"/>
+        <div id="backButton" class="clearfix">
+            <a href="${backUrl}" class="imcmsFormBtnSmall btnBack ${sessionScope.returnToImcms eq null ? 'disabled' : ''}"
+               onclick="${sessionScope.returnToImcms eq null ? 'return false;' : ''}">
+                <span><spring:message code="archive.backToImcms" htmlEscape="true"/></span>
+            </a>
+        </div>
+    </c:if>
+
     <%
         User user = ContentManagementSystem.fromRequest(request).getCurrentUser();
         pageContext.setAttribute("user", user);
@@ -53,19 +55,21 @@
                 </li>
             </c:if>
         </ul>
-        <span id="languageSwitch" class="right">
-            <c:url var="enUrl" value="/web/archive/language">
-                <c:param name="lang" value="en"/>
-                <c:param name="redir" value="${requestScope.requestUrl}"/>
-            </c:url>
-            <c:set var="imagearchive.visited.page.with.top" value="${requestScope.requestUrl}" scope="session"/>
-            <a href="${enUrl}" style="margin-right:4px;"><img src="${pageContext.servletContext.contextPath}/imcms/images/icons/flags_iso_639_1/en.gif" width="16" height="11"/></a>
-            <c:url var="svUrl" value="/web/archive/language">
-                <c:param name="lang" value="sv"/>
-                <c:param name="redir" value="${requestScope.requestUrl}"/>
-            </c:url>
-            <a href="${svUrl}"><img src="${pageContext.servletContext.contextPath}/imcms/images/icons/flags_iso_639_1/sv.gif" width="16" height="11"/></a>
-        </span>
+        <c:if test="${not sessionScope.transferToPicker}">
+            <span id="languageSwitch" class="right">
+                <c:url var="enUrl" value="/web/archive/language">
+                    <c:param name="lang" value="en"/>
+                    <c:param name="redir" value="${requestScope.requestUrl}"/>
+                </c:url>
+                <c:set var="imagearchive.visited.page.with.top" value="${requestScope.requestUrl}" scope="session"/>
+                <a href="${enUrl}" style="margin-right:4px;"><img src="${pageContext.servletContext.contextPath}/imcms/images/icons/flags_iso_639_1/en.gif" width="16" height="11"/></a>
+                <c:url var="svUrl" value="/web/archive/language">
+                    <c:param name="lang" value="sv"/>
+                    <c:param name="redir" value="${requestScope.requestUrl}"/>
+                </c:url>
+                <a href="${svUrl}"><img src="${pageContext.servletContext.contextPath}/imcms/images/icons/flags_iso_639_1/sv.gif" width="16" height="11"/></a>
+            </span>
+        </c:if>
     </div>
     <div class="clearheight"></div>
 </div>

@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -56,7 +55,7 @@ public class ImageService {
     }    
 
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public Images findById(long imageId, User user) {
         Session session = getCurrentSession();
 
@@ -99,7 +98,7 @@ public class ImageService {
         return image;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public Exif findExifByPK(long imageId, short type) {
         return (Exif) getCurrentSession()
                 .get(Exif.class, new ExifPK(imageId, type));
@@ -241,6 +240,7 @@ public class ImageService {
 
         Session session = getCurrentSession();
         session.persist(image);
+        session.flush();
 
         originalExif.setImageId(image.getId());
         changedExif.setImageId(image.getId());
@@ -326,6 +326,7 @@ public class ImageService {
 
         Session session = getCurrentSession();
         session.persist(image);
+        session.flush();
 
         originalExif.setImageId(image.getId());
         changedExif.setImageId(image.getId());
@@ -417,6 +418,7 @@ public class ImageService {
             image.setStatus(Images.STATUS_ACTIVE);
 
             session.persist(image);
+            session.flush();
 
             originalExif.setImageId(image.getId());
             changedExif.setImageId(image.getId());
@@ -899,7 +901,7 @@ public class ImageService {
         return query;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public int searchImagesCount(SearchImageCommand command, List<Integer> categoryIds, User user) {
         if (user.isDefaultUser() && categoryIds.isEmpty()) {
             return 0;
@@ -911,7 +913,7 @@ public class ImageService {
         return (int) count;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public List<Images> searchImages(SearchImageCommand command, Pagination pag, List<Integer> categoryIds, User user) {
 
         if (user.isDefaultUser() && categoryIds.isEmpty()) {
@@ -944,7 +946,7 @@ public class ImageService {
         return images;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public List<Categories> findImageCategories(long imageId) {
 
         return getCurrentSession()
@@ -956,7 +958,7 @@ public class ImageService {
                 .list();
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public List<Categories> findAvailableImageCategories(long imageId, User user) {
 
         Session session = getCurrentSession();
@@ -981,7 +983,7 @@ public class ImageService {
     }
 
     /* checks if the given user has 'use' permission to the categories with given ids */
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public boolean canUseCategories(User user, List<Integer> categoryIds) {
 
         if (user.isSuperAdmin()) {
@@ -1003,7 +1005,7 @@ public class ImageService {
         return count == categoryIds.size();
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public List<String> findAvailableKeywords(long imageId) {
 
         return getCurrentSession()
@@ -1012,7 +1014,7 @@ public class ImageService {
                 .list();
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public List<String> findImageKeywords(long imageId) {
 
         return getCurrentSession()
@@ -1023,7 +1025,7 @@ public class ImageService {
                 .list();
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public List<Keywords> findKeywords() {
 
         return getCurrentSession()
@@ -1032,7 +1034,7 @@ public class ImageService {
                 .list();
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public boolean canUseImage(User user, long imageId) {
         if (user.isSuperAdmin()) {
             return true;
@@ -1062,7 +1064,7 @@ public class ImageService {
         return count > 0L;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public String findImageName(long imageId) {
 
         return (String) getCurrentSession()
@@ -1071,7 +1073,7 @@ public class ImageService {
                 .uniqueResult();
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public String findImageAltText(long imageId) {
 
         return (String) getCurrentSession()
@@ -1080,7 +1082,7 @@ public class ImageService {
                 .uniqueResult();
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public void setImageMetaIds(Images image) {
 
         List<Integer> metaIds = getCurrentSession()
@@ -1092,7 +1094,7 @@ public class ImageService {
         image.setMetaIds(metaIds);
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public void setUsedInImcms(List<Images> images) {
 
         Map<Long, Images> imageMap = new HashMap<Long, Images>(images.size());
@@ -1111,7 +1113,7 @@ public class ImageService {
         }
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(readOnly = true)
     public void setImagesMetaIds(List<Images> images) {
 
         Map<Long, Images> imageMap = new HashMap<Long, Images>(images.size());

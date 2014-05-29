@@ -1,8 +1,5 @@
 package com.imcode.imcms.admin.docadmin.image;
 
-import static imcode.util.Utility.i;
-import static imcode.util.Utility.f;
-
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
@@ -33,7 +30,6 @@ import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
-import imcode.util.Utility;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
@@ -50,6 +46,9 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static imcode.util.Utility.f;
+import static imcode.util.Utility.i;
 
 
 @Theme("imcms")
@@ -168,6 +167,10 @@ public class EditImageUI extends UI {
         }
     }
 
+    private static interface ChangeImageSourceListener {
+        void change(ImageSource newSource, Long newArchiveImageId);
+    }
+
     public static final String REQUEST_PARAMETER__DOCUMENT_ID = "meta_id";
     public static final String REQUEST_PARAMETER__IMAGE_INDEX = "img";
     public static final String REQUEST_PARAMETER__LOOP_ENTRY_REFERENCE = "loop_ref";
@@ -270,6 +273,7 @@ public class EditImageUI extends UI {
         final MultiSetBeanItemProperty<String> multiLinkUrlProp = new MultiSetBeanItemProperty("linkUrl", String.class, imageBeans);
         final MultiSetBeanItemProperty<String> multiTargetProp = new MultiSetBeanItemProperty("target", String.class, imageBeans);
         final MultiSetBeanItemProperty<Resize> multiResizeProp = new MultiSetBeanItemProperty("resize", Resize.class, imageBeans);
+        final MultiSetBeanItemProperty<Long> multiArchiveImageIdProp = new MultiSetBeanItemProperty("archiveImageId", Long.class, imageBeans);
 
         if (forcedWidth > 0) {
             multiWidthProp.setValue(forcedWidth);
@@ -348,7 +352,10 @@ public class EditImageUI extends UI {
             final AbstractProperty<Integer> borderProp = (AbstractProperty<Integer>) imageBean.getItemProperty("border");
             final AbstractProperty<Format> formatProp = (AbstractProperty<Format>) imageBean.getItemProperty("format");
 
+            final AbstractProperty<String> nameProp = (AbstractProperty<String>) imageBean.getItemProperty("name");
             final AbstractProperty<String> altTextProp = (AbstractProperty<String>) imageBean.getItemProperty("alternateText");
+            final AbstractProperty<Long> archiveImageIdProp = (AbstractProperty<Long>) imageBean.getItemProperty("archiveImageId");
+
 
             // language flag
             String flagUrl = contextPath + "/imcms/images/icons/flags_iso_639_1/" + language.getCode() + ".gif";
@@ -529,6 +536,19 @@ public class EditImageUI extends UI {
             formatProp.addValueChangeListener(sourceValListener);
             sourceValListener.valueChange(null);
 
+            ChangeImageSourceListener changeImageSource = (newSource, newArchiveImageId) -> {
+                boolean share = shareImages.getValue();
+
+                Property<ImageSource> imgSourceProp = (share ? multiSourceProp : sourceProp);
+                Property<CropRegion> imgCropRegionProp = (share ? multiCropRegionProp : cropRegionProp);
+                Property<RotateDirection> imgRotateDirectionProp = (share ? multiRotateDirectionProp : rotateDirectionProp);
+                Property<Long> imgArchiveImageIdProp = (share ? multiArchiveImageIdProp : archiveImageIdProp);
+
+                imgSourceProp.setValue(newSource);
+                imgCropRegionProp.setValue(new CropRegion());
+                imgRotateDirectionProp.setValue(RotateDirection.NORTH);
+                imgArchiveImageIdProp.setValue(newArchiveImageId);
+            };
 
             // choose image button
             Button chooseFileBtn = new Button(i("image_editor.choose_file"));
@@ -560,17 +580,9 @@ public class EditImageUI extends UI {
                             return null;
                         }
 
-                        boolean share = shareImages.getValue();
-
-                        Property<ImageSource> imgSourceProp = (share ? multiSourceProp : sourceProp);
-                        Property<CropRegion> imgCropRegionProp = (share ? multiCropRegionProp : cropRegionProp);
-                        Property<RotateDirection> imgRotateDirectionProp = (share ? multiRotateDirectionProp : rotateDirectionProp);
-
                         ImageSource imgSource = new ImagesPathRelativePathImageSource(imageUrl);
 
-                        imgSourceProp.setValue(imgSource);
-                        imgCropRegionProp.setValue(new CropRegion());
-                        imgRotateDirectionProp.setValue(RotateDirection.NORTH);
+                        changeImageSource.change(imgSource, null);
 
                         dialog.close();
                         dialog.setOkButtonHandler(null);
@@ -586,9 +598,22 @@ public class EditImageUI extends UI {
             Button chooseFromImageArchiveBtn = new Button(i("image_ditor.choose_image_archive"));
             chooseFromImageArchiveBtn.setData(language);
 
-            // TODO: implements this
             chooseFromImageArchiveBtn.addClickListener(event -> {
-                Notification.show("Not implemented", Notification.Type.WARNING_MESSAGE);
+                ImageArchivePickerWindow pickerWindow = new ImageArchivePickerWindow();
+
+                pickerWindow.addImagePickedListener((imageId, imageName, imageFilename, imageAltText) -> {
+                    ImageSource imgSource = new ImageArchiveImageSource(imageFilename);
+
+                    changeImageSource.change(imgSource, imageId);
+
+                    Property<String> imgNameProp = (shareImages.getValue() ? multiNameProp : nameProp);
+                    imgNameProp.setValue(imageName);
+
+                    Property<String> imgAltTextProp = (shareImages.getValue() ? multiAlternateTextProp : altTextProp);
+                    imgAltTextProp.setValue(imageAltText);
+                });
+
+                UI.getCurrent().addWindow(pickerWindow);
             });
 
             // clear chosen image button
@@ -605,6 +630,9 @@ public class EditImageUI extends UI {
 
                 Property<RotateDirection> imgRotateDirProp = (shareImages.getValue() ? multiRotateDirectionProp : rotateDirectionProp);
                 imgRotateDirProp.setValue(RotateDirection.NORTH);
+
+                Property<Long> imgArchiveImageIdProp = (shareImages.getValue() ? multiArchiveImageIdProp : archiveImageIdProp);
+                imgArchiveImageIdProp.setValue(null);
             });
 
             HorizontalLayout imageSrcHoriz = new HorizontalLayout(imageSrcText, chooseFileBtn, chooseFromImageArchiveBtn, clearBtn);
@@ -1191,6 +1219,7 @@ public class EditImageUI extends UI {
             multiCropRegionProp.setValue(new CropRegion());
             multiRotateDirectionProp.setValue(RotateDirection.NORTH);
             multiAlternateTextProp.setValue("");
+            multiArchiveImageIdProp.setValue(null);
 
             multiNameProp.setValue("");
 
