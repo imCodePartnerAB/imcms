@@ -11,6 +11,7 @@ import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -123,7 +124,7 @@ public class ImageHandling extends HttpServlet {
                 }
             }
 
-            writeImageToResponse(cacheId, cacheFile, format, desiredFilename, etag, response);
+            writeImageToResponse(cacheId, cacheFile, format, desiredFilename, path, etag, response);
             return;
         }
 
@@ -161,11 +162,11 @@ public class ImageHandling extends HttpServlet {
         }
 
         Format outputFormat = (format != null ? format : imageInfo.getFormat());
-        writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, etag, response);
+        writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, path, etag, response);
     }
 
-    private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename, String etag,
-                                             HttpServletResponse response) {
+    private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename,
+                                             String path, String etag, HttpServletResponse response) {
 
         if (etag != null) {
             response.addHeader("ETag", etag);
@@ -180,7 +181,29 @@ public class ImageHandling extends HttpServlet {
         response.setContentLength((int) cacheFile.length());
 
         if (desiredFilename == null) {
-            desiredFilename = cacheId;
+            String pathname = cacheId;
+
+            if (path != null) {
+                String basename = FilenameUtils.getBaseName(path);
+
+                if (!basename.isEmpty()) {
+                    pathname = basename;
+                }
+            }
+
+			desiredFilename = pathname;
+
+            String ext = null;
+
+            if (format != null) {
+                ext = format.getExtension();
+            } else if (path != null) {
+                ext = FilenameUtils.getExtension(path);
+            }
+
+            if (ext != null && !ext.isEmpty()) {
+                desiredFilename += "." + ext;
+            }
         }
 
         // replace " with \"
