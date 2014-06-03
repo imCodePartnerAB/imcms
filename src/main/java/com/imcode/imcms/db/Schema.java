@@ -13,13 +13,11 @@ import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -27,17 +25,17 @@ public final class Schema {
 
     public static Schema fromFile(File file) {
         try {
-            return formXml(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
+            return fromXml(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static Schema fromUrl(URL url) {
-        return fromFile(new File(url.getFile()));
+    public static Schema fromInputStream(InputStream in) {
+        return fromXml(new Scanner(in, StandardCharsets.UTF_8.name()).useDelimiter("\\Z").next());
     }
 
-    public static Schema formXml(String xml) {
+    public static Schema fromXml(String xml) {
         try {
             Document document = DocumentBuilderFactory.newInstance()
                     .newDocumentBuilder()

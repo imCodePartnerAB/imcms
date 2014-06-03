@@ -11,6 +11,7 @@ import imcode.util.Prefs;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
@@ -319,16 +320,16 @@ public class Imcms {
     public static void prepareDatabase() {
         String sqlScriptsPath = getSQLScriptsPath();
 
-        URL schemaConfFileURL = Imcms.class.getResource("/schema.xml");
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("schema.xml");
 
-        if (schemaConfFileURL == null) {
+        if (inputStream == null) {
             String errMsg = "Database schema config file 'schema.xml' can not be found in the classpath.";
             logger.fatal(errMsg);
             throw new RuntimeException(errMsg);
         }
 
-        logger.info(String.format("Loading database schema config from %s.", schemaConfFileURL));
-        Schema schema = Schema.fromUrl(schemaConfFileURL);
+        logger.info(String.format("Loading database schema config from stream"));
+        Schema schema = Schema.fromInputStream(inputStream);
 
         DataSource dataSource = applicationContext.getBean("dataSource", DataSource.class);
         DB db = new DB(dataSource);
