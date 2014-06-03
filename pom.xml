@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
     Tomcat plugin: http://tomcat.apache.org/maven-plugin-2
 
@@ -18,7 +17,7 @@
 <!--
     Vaadin (GWT) add-ons widgetset
         Vaadin add-ons widgets have to be compiled (mvn vaadin:compile) before they can be used.
-        By default widgetset compilation is bound to maven package goal
+        By default widgetset compilation is bound to maven prepare-package goal
 
         See also: src/main/java/com/imcode/imcms/AppWidgetSet.gwt.xml
 -->
@@ -66,7 +65,7 @@
 
         <build.webapp.dir>${project.build.directory}/${project.artifactId}</build.webapp.dir>
 
-        <solr.version>4.8.0</solr.version>
+        <solr.version>4.8.1</solr.version>
         <slf4j.version>1.7.7</slf4j.version>
         <scala.version>2.11.1</scala.version>
         <springframework.version>4.0.5.RELEASE</springframework.version>
@@ -75,9 +74,9 @@
             Core & EntityManager version
         -->
         <hibernate.version>4.3.5.Final</hibernate.version>
-        <vaadin.version>7.2.0</vaadin.version>
+        <vaadin.version>7.2.1</vaadin.version>
 
-        <tomcat.version>7.0.53</tomcat.version>
+        <tomcat.version>7.0.54</tomcat.version>
 
         <!--
             tomcat7:run goal property.
@@ -231,13 +230,6 @@
             <artifactId>guava</artifactId>
             <version>17.0</version>
         </dependency>
-
-        <!-- Workaround: scalac bug - parse error Transactional.class. Fixed in 2.10.4? -->
-        <!--<dependency>-->
-        <!--<groupId>com.google.code.findbugs</groupId>-->
-        <!--<artifactId>jsr305</artifactId>-->
-        <!--<version>2.0.2</version>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.tika</groupId>
@@ -844,38 +836,12 @@
                     <groupId>org.apache.tomcat.maven</groupId>
                     <artifactId>tomcat6-maven-plugin</artifactId>
                     <version>2.2</version>
-                    <dependencies>
-                        <!--
-                            Eliminates warning:
-                            SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-                            SLF4J: Defaulting to no-operation (NOP) logger implementation
-                            SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
-                        -->
-                        <!--<dependency>-->
-                        <!--<groupId>org.slf4j</groupId>-->
-                        <!--<artifactId>slf4j-simple</artifactId>-->
-                        <!--<version>${slf4j.version}</version>-->
-                        <!--</dependency>-->
-                    </dependencies>
                 </plugin>
 
                 <plugin>
                     <groupId>org.apache.tomcat.maven</groupId>
                     <artifactId>tomcat7-maven-plugin</artifactId>
                     <version>2.2</version>
-                    <dependencies>
-                        <!--
-                            Eliminates warning:
-                            SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-                            SLF4J: Defaulting to no-operation (NOP) logger implementation
-                            SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
-                        -->
-                        <!--<dependency>-->
-                        <!--<groupId>org.slf4j</groupId>-->
-                        <!--<artifactId>slf4j-simple</artifactId>-->
-                        <!--<version>${slf4j.version}</version>-->
-                        <!--</dependency>-->
-                    </dependencies>
                 </plugin>
 
                 <plugin>
@@ -1177,13 +1143,13 @@
                     <archiveClasses>true</archiveClasses>
 
                     <!-- Copy resources into WEB-INF/classes dir -->
-                    <webResources>
-                        <resource>
-                            <directory>src/main/resources</directory>
-                            <targetPath>WEB-INF/classes</targetPath>
-                            <filtering>true</filtering>
-                        </resource>
-                    </webResources>
+                    <!--<webResources>-->
+                        <!--<resource>-->
+                            <!--<directory>src/main/resources</directory>-->
+                            <!--<targetPath>WEB-INF/classes</targetPath>-->
+                            <!--<filtering>true</filtering>-->
+                        <!--</resource>-->
+                    <!--</webResources>-->
 
                     <!--
                         War source directory must not be set to existing directory
