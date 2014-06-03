@@ -320,7 +320,7 @@ public class Imcms {
     public static void prepareDatabase() {
         String sqlScriptsPath = getSQLScriptsPath();
 
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream("schema.xml");
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema.xml");
 
         if (inputStream == null) {
             String errMsg = "Database schema config file 'schema.xml' can not be found in the classpath.";
