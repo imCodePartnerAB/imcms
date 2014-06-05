@@ -11,9 +11,14 @@
         <fileSet>
             <outputDirectory>/</outputDirectory>
             <directory>${project.build.outputDirectory}</directory>
+
+            <!--
+                Excludes resources and pre-compiled JSPs from archived classes.
+            -->
             <excludes>
-                <exclude>jsp/**</exclude>
+                <exclude>/org/apache/jsp/**</exclude>
                 <exclude>**/*.xml</exclude>
+                <exclude>**/*.xsd</exclude>
                 <exclude>**/*.properties</exclude>
             </excludes>
         </fileSet>

@@ -1133,22 +1133,19 @@
                 <configuration>
                     <!--
                         The same functionality is provided by assembly plugin
+                        See src/main/assembly/classes.xml assembly descriptor.
                         <attachClasses>true</attachClasses>
                     -->
 
-                    <!--
-                        Excludes resources and pre-compiled JSPs from archived classes.
-                        See src/main/assembly/classes.xml assembly descriptor.
-                    -->
                     <archiveClasses>true</archiveClasses>
 
                     <!-- Copy resources into WEB-INF/classes dir -->
                     <!--<webResources>-->
-                        <!--<resource>-->
-                            <!--<directory>src/main/resources</directory>-->
-                            <!--<targetPath>WEB-INF/classes</targetPath>-->
-                            <!--<filtering>true</filtering>-->
-                        <!--</resource>-->
+                    <!--<resource>-->
+                    <!--<directory>src/main/resources</directory>-->
+                    <!--<targetPath>WEB-INF/classes</targetPath>-->
+                    <!--<filtering>true</filtering>-->
+                    <!--</resource>-->
                     <!--</webResources>-->
 
                     <!--
