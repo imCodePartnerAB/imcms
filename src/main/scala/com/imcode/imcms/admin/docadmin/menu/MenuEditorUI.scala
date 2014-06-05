@@ -38,7 +38,7 @@ class MenuEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport 
     val view = new EditorContainerView(title)
 
     def close() {
-      Current.page.open(returnUrl, "_self")
+      Current.page.setLocation(returnUrl)
     }
 
     def save(close: Boolean) {
@@ -48,7 +48,7 @@ class MenuEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport 
           Current.page.showInfoNotification("menu_editor.notification.saved".i)
 
           if (close) {
-            Current.page.open(returnUrl, "_self")
+            Current.page.setLocation(returnUrl)
           }
       }
     }
