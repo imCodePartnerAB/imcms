@@ -21,7 +21,7 @@ public class SolrServerFactory {
     public static final String DEFAULT_DATA_DIR_NAME = "data";
 
     public static HttpSolrServer createHttpSolrServer(String solrUrl) {
-        return Value.update(new HttpSolrServer(solrUrl), solr ->
+        return Value.with(new HttpSolrServer(solrUrl), solr ->
                         solr.setRequestWriter(new BinaryRequestWriter())
         );
     }
@@ -44,7 +44,7 @@ public class SolrServerFactory {
         }
 
 
-        CoreContainer coreContainer = Value.update(new CoreContainer(solrHome), CoreContainer::load);
+        CoreContainer coreContainer = Value.with(new CoreContainer(solrHome), CoreContainer::load);
 
         return new EmbeddedSolrServer(coreContainer, DEFAULT_CORE_NAME);
     }

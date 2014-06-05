@@ -20,12 +20,12 @@ public class DataSourceConfig {
 
     @Bean
     public DataSource dataSource() {
-        return Value.update(dataSourcePrototype(), ds -> ds.setUrl(env.getRequiredProperty("JdbcUrl")));
+        return Value.with(dataSourcePrototype(), ds -> ds.setUrl(env.getRequiredProperty("JdbcUrl")));
     }
 
     @Bean
     public DataSource dataSourceWithoutDbName() {
-        return Value.update(dataSourcePrototype(), ds -> ds.setUrl(env.getRequiredProperty("JdbcUrlWithoutDBName")));
+        return Value.with(dataSourcePrototype(), ds -> ds.setUrl(env.getRequiredProperty("JdbcUrlWithoutDBName")));
     }
 
     @Bean
@@ -36,7 +36,7 @@ public class DataSourceConfig {
     @Scope("prototype")
     @Bean(destroyMethod = "close")
     public BasicDataSource dataSourcePrototype() {
-        return Value.update(new BasicDataSource(), ds -> {
+        return Value.with(new BasicDataSource(), ds -> {
             ds.setDriverClassName(env.getRequiredProperty("JdbcDriver"));
             ds.setUsername(env.getRequiredProperty("User"));
             ds.setPassword(env.getRequiredProperty("Password"));

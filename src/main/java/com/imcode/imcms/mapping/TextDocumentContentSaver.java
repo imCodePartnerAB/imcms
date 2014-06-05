@@ -486,7 +486,7 @@ public class TextDocumentContentSaver {
             entries.add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo, enabled));
         });
 
-        return Value.update(
+        return Value.with(
                 new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop(),
                 l -> {
                     l.setEntries(entries);

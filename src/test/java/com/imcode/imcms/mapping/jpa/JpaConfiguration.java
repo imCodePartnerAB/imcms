@@ -22,6 +22,6 @@ public class JpaConfiguration {
 
     @Bean
     public LocalEntityManagerFactoryBean entityManagerFactory() {
-        return Value.update(new LocalEntityManagerFactoryBean(), b -> b.setPersistenceUnitName("com.imcode.imcms"));
+        return Value.with(new LocalEntityManagerFactoryBean(), b -> b.setPersistenceUnitName("com.imcode.imcms"));
     }
 }

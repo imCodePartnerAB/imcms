@@ -41,8 +41,8 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
       failure.exception match {
         case e: SolrInputDocumentCreateException =>
           logger.fatal("Unexpected system error. Unable to create SolrInputDocument. No more index update or rebuild requests will be accepted.", e)
-
-        case _ => replaceManagedServerInstance(failure)
+        //fixme: review
+        //case _ => replaceManagedServerInstance(failure)
       }
   }
 

@@ -23,7 +23,7 @@ public class DocumentContentIndexer {
     private final Logger logger = Logger.getLogger(getClass());
     private final Predicate<FileDocumentDomainObject.FileDocumentFile> fileDocFileFilter;
 
-    private Tika tika = Value.update(new Tika(), t -> t.setMaxStringLength(-1));
+    private Tika tika = Value.with(new Tika(), t -> t.setMaxStringLength(-1));
 
     public DocumentContentIndexer(Predicate<FileDocumentDomainObject.FileDocumentFile> fileDocFileFilter) {
         this.fileDocFileFilter = fileDocFileFilter;
@@ -90,7 +90,7 @@ public class DocumentContentIndexer {
     public SolrInputDocument indexFileDoc(FileDocumentDomainObject doc, SolrInputDocument indexDoc) {
         Optional.ofNullable(doc.getDefaultFile()).filter(fileDocFileFilter::test).ifPresent(file -> {
             indexDoc.addField(DocumentIndex.FIELD__MIME_TYPE, file.getMimeType());
-            Metadata metadata = Value.update(new Metadata(), m -> {
+            Metadata metadata = Value.with(new Metadata(), m -> {
                 m.set(HttpHeaders.CONTENT_DISPOSITION, file.getFilename());
                 m.set(HttpHeaders.CONTENT_TYPE, file.getMimeType());
             });
