@@ -44,7 +44,9 @@ public class AdminDoc extends HttpServlet {
 
         @Override
         public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            response.sendRedirect("/imcms/docadmin?meta_id=" + request.getParameter("meta_id") + "&" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=AdminDoc?meta_id=" + request.getParameter("meta_id"));
+            String docAdminUrl = request.getContextPath() + "/imcms/docadmin?meta_id=" + request.getParameter("meta_id");
+
+            response.sendRedirect(docAdminUrl);
         }
 
         @Override

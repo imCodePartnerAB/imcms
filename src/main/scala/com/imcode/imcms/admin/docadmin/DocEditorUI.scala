@@ -20,6 +20,7 @@ import scala.util.control.NonFatal
 @com.vaadin.annotations.Theme("imcms")
 class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
 
+  //fixme: chech permissions
   override def init(request: VaadinRequest) {
     getLoadingIndicatorConfiguration.setFirstDelay(1)
     getLoadingIndicatorConfiguration.setSecondDelay(2)

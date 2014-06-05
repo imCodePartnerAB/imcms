@@ -45,7 +45,7 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
       case _ => None
     }
 
-    val formats = request.getParameterMap.get("format")
+    val formats = request.getParameterMap.get("format").asOption.getOrElse(Array.empty)
     val rowsCountOpt = request.getParameter("rows") |> {
       case NonNegInt(rows) => Some(rows)
       case _ => None
