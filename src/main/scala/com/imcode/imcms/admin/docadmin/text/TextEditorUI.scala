@@ -23,6 +23,7 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
 
   val LoopEntryRefRE = """(\d+)_(\d+)""".r
 
+  // fixme: check security
   override def init(request: VaadinRequest) {
     getLoadingIndicatorConfiguration.setFirstDelay(1)
     getLoadingIndicatorConfiguration.setSecondDelay(2)
@@ -31,23 +32,21 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
     getLoadingIndicatorConfiguration.setFirstDelay(1)
 
-    val requestParams = new RequestParams(request)
-
     val contextPath = Current.contextPath
     val pathInfo = request.getPathInfo
 
-    val docId = requestParams("meta_id").toInt
-    val titleOpt = requestParams("label").trimToOption
-    val returnUrlOpt = requestParams(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption
-    val textNo = requestParams("txt").toInt
+    val docId = request.getParameter("meta_id").toInt
+    val titleOpt = request.getParameter("label").trimToOption
+    val returnUrlOpt = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption
+    val textNo = request.getParameter("txt").toInt
     val versioRef = VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO)
-    val loopEntryRefOpt = requestParams("loopEntryRef").trimToEmpty match {
+    val loopEntryRefOpt = request.getParameter("loopEntryRef").trimToEmpty match {
       case LoopEntryRefRE(NonNegInt(loopNo), NonNegInt(entryNo)) => Some(LoopEntryRef.of(loopNo, entryNo))
       case _ => None
     }
 
-    val formats = requestParams.values("format")
-    val rowsCountOpt = requestParams("rows") |> {
+    val formats = request.getParameterMap.get("format")
+    val rowsCountOpt = request.getParameter("rows") |> {
       case NonNegInt(rows) => Some(rows)
       case _ => None
     }
@@ -212,7 +211,9 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
           }
       }
     }
-    return w
+
+    w.setSize(800, 700)
+    w
   }
 
 }

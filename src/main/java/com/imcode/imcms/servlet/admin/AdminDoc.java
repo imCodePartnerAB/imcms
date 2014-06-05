@@ -44,11 +44,7 @@ public class AdminDoc extends HttpServlet {
 
         @Override
         public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            request.getRequestDispatcher("/WEB-INF/imcms/jsp/docadmin/document.jsp?" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=AdminDoc?meta_id=" + request.getParameter("meta_id"))
-                    .forward(request, response);
-//            request.getRequestDispatcher("/imcms/docadmin?meta_id=" + request.getParameter("meta_id") + "&" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=AdminDoc?meta_id=" + request.getParameter("meta_id"))
-//                    .forward(request, response);
-
+            response.sendRedirect("/imcms/docadmin?meta_id=" + request.getParameter("meta_id") + "&" + ImcmsConstants.REQUEST_PARAM__RETURN_URL + "=AdminDoc?meta_id=" + request.getParameter("meta_id"));
         }
 
         @Override

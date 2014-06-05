@@ -19,17 +19,19 @@ import imcode.server.document.textdocument.TextDocumentDomainObject
 @com.vaadin.annotations.Theme("imcms")
 class MenuEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
 
+  // fixme: check security - see v4 EditMenu servlet
   override def init(request: VaadinRequest) {
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
     getLoadingIndicatorConfiguration.setFirstDelay(1)
+    getLoadingIndicatorConfiguration.setSecondDelay(2)
+    getLoadingIndicatorConfiguration.setThirdDelay(3)
 
-    val requestParam = new RequestParams(request)
     val contextPath = Current.contextPath
-    val docId = requestParam("docId").toInt
+    val docId = request.getParameter("docId").toInt
     val doc: TextDocumentDomainObject = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
-    val menuNo = requestParam("menuNo").toInt
-    val title = requestParam("label").trimToOption.getOrElse("menu_editor.title".f(docId.toString, menuNo.toString))
-    val returnUrl = requestParam(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
+    val menuNo = request.getParameter("menuNo").toInt
+    val title = request.getParameter("label").trimToOption.getOrElse("menu_editor.title".f(docId.toString, menuNo.toString))
+    val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
       s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}&editmenu=$menuNo"
     )
 
@@ -76,13 +78,13 @@ class MenuEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport 
 
           dlg.setOkButtonHandler {
             close()
-            dlg.close()
           }
 
           Current.ui.addWindow(dlg)
         }
     }
 
+    view.setSize(800, 700)
     setContent(view)
 
 //    Current.page.getJavaScript.addFunction("editDocProperties", new JavaScriptFunction {

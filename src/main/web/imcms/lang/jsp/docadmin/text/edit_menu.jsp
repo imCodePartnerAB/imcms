@@ -27,7 +27,7 @@
     pageContext.setAttribute("menuNo", menuIndex);
 %>
 
-<c:url value='/servlet/ChangeMenu?docId=${docId}&menuNo=${menuNo}"' var="editorUrl"/>
+<c:url value='/imcms/docadmin/menu?docId=${docId}&menuNo=${menuNo}"' var="editorUrl"/>
 
 <a href="${editorUrl}" class="imcms_label"><%--
     --%><%= label %> [<%= defaultUserCount %>/<%= userCount %>]&nbsp;<%--

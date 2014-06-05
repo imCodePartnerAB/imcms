@@ -67,6 +67,7 @@ class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
       case _ =>
     }
 
+    container.setSize(800, 700)
     setContent(container)
   }
 }

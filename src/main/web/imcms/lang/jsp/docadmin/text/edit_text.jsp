@@ -17,7 +17,7 @@
     String[] formats = (String[]) request.getAttribute("formats");
     UserDomainObject user = Utility.getLoggedOnUser(request);
 
-    String url = request.getContextPath() + "/servlet/ChangeText?meta_id=" + document.getId() + "&txt=" + textIndex;
+    String url = request.getContextPath() + "/imcms/docadmin/text?meta_id=" + document.getId() + "&txt=" + textIndex;
     if (null != label) {
         url += "&label=" + URLEncoder.encode(Html.removeTags(label), Imcms.UTF_8_ENCODING);
     }
