@@ -30,7 +30,6 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
     getLoadingIndicatorConfiguration.setThirdDelay(3)
 
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
-    getLoadingIndicatorConfiguration.setFirstDelay(1)
 
     val contextPath = Current.contextPath
     val pathInfo = request.getPathInfo

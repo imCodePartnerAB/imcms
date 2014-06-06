@@ -2,8 +2,8 @@ package com.imcode
 package imcms
 package admin.doc.meta.appearance
 
-import com.imcode.imcms.api._
 import com.imcode.imcms.mapping.DocumentMeta
+import com.vaadin.shared.ui.label.ContentMode
 import com.vaadin.ui._
 
 import com.imcode.imcms.vaadin.component._
@@ -15,7 +15,8 @@ class AppearanceEditorView extends TabSheet with TabSheetSmallStyle with FullSiz
   object languages {
     val cbShowMode = new ComboBox with SingleSelect[DocumentMeta.DisabledLanguageShowMode] with FullWidth with NoNullSelection
     val lblShowMode = new Label("When language is disabled") with UndefinedSize
-    val lytShowMode = new HorizontalLayout(lblShowMode, cbShowMode) with FullWidth with MiddleLeftAlignment with Spacing with Margin |>> { lyt =>
+    val lytShowMode = new HorizontalLayout() with FullWidth with MiddleLeftAlignment with Spacing with Margin |>> { lyt =>
+      lyt.addComponents(lblShowMode, cbShowMode)
       lyt.setExpandRatio(cbShowMode, 1.0f)
     }
 
@@ -28,19 +29,24 @@ class AppearanceEditorView extends TabSheet with TabSheetSmallStyle with FullSiz
   }
 
   object linkTarget {
-    val cbTarget = new ComboBox("Show in") with FullWidth with SingleSelect[String] with NoNullSelection
-    val content = new FormLayout(cbTarget)
+    val lblTarget = new Label("Show in") with UndefinedSize
+    val cbTarget = new ComboBox with FullWidth with SingleSelect[String] with NoNullSelection
+    val content = new HorizontalLayout with MiddleLeftAlignment with Margin with Spacing with FullWidth |>> { lyt =>
+      lyt.addComponents(lblTarget, cbTarget)
+      lyt.setExpandRatio(cbTarget, 1.0f)
+    }
   }
 
   object alias {
     private val contextPathPrefix = Current.contextPath match {
-      case "" | "/" => "/"
-      case path => s"$path/"
+      case "" | "/" => "/ "
+      case path => s"$path/ "
     }
 
-    val lblAlias = new Label(contextPathPrefix) with UndefinedSize
+    val lblAlias = new Label(s"${contextPathPrefix}", ContentMode.HTML) with UndefinedSize
     val txtAlias = new TextField with FullWidth
-    val content = new HorizontalLayout(lblAlias, txtAlias) with Margin with FullSize |>> { lyt =>
+    val content = new HorizontalLayout with MiddleLeftAlignment with Margin with FullWidth |>> { lyt =>
+      lyt.addComponents(lblAlias, txtAlias)
       lyt.setExpandRatio(txtAlias, 1.0f)
     }
   }
