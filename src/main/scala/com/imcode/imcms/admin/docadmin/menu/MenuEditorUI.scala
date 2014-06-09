@@ -2,7 +2,7 @@ package com.imcode
 package imcms
 package admin.docadmin.menu
 
-import com.imcode.imcms.admin.docadmin.{RequestParams, EditorContainerView}
+import com.imcode.imcms.admin.docadmin.EditorContainerView
 import com.imcode.imcms.mapping.container.TextDocMenuContainer
 import java.util.Locale
 import com.imcode.imcms.vaadin.component._

@@ -29,13 +29,11 @@ class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
     getLoadingIndicatorConfiguration.setFirstDelay(1)
 
-    val requestParams = new RequestParams(request)
-
-    val docId = requestParams("meta_id").toInt
+    val docId = request.getParameter("meta_id").toInt
     val doc: DocumentDomainObject = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
     val editor = new DocEditor(doc)
     val container = new EditorContainerView("doc.edit_properties.title".f(doc.getId.toString))
-    val returnUrl = requestParams(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
+    val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
       s"${Current.contextPath}/servlet/AdminDoc?meta_id=$docId"
     )
 

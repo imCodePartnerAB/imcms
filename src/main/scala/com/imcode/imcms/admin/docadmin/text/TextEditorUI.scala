@@ -3,7 +3,7 @@ package imcms
 package admin.docadmin.text
 
 import java.util.Locale
-import com.imcode.imcms.admin.docadmin.{RequestParams, EditorContainerView}
+import com.imcode.imcms.admin.docadmin.EditorContainerView
 import com.imcode.imcms.api.DocumentVersion
 import com.imcode.imcms.ImcmsServicesSupport
 import com.imcode.imcms.mapping.container.{LoopEntryRef, VersionRef}
