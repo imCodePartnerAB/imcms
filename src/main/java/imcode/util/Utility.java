@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -140,6 +141,21 @@ public class Utility {
 
     public static void redirectToStartDocument(VaadinRequest request) {
         Page.getCurrent().setLocation(request.getContextPath() + "/servlet/StartDoc");
+    }
+
+    public static void redirectToLoginPage(VaadinRequest vaadinRequest) {
+        HttpServletRequest request = (HttpServletRequest) vaadinRequest;
+        UserDomainObject user = getLoggedOnUser(request);
+        StringBuffer loginTarget = request.getRequestURL();
+        String queryString = request.getQueryString();
+        if (null != queryString) {
+            loginTarget.append("?").append(queryString);
+        }
+
+        String redirectUrl = request.getContextPath() + "/imcms/" + user.getLanguageIso639_2() + "/login/index.jsp?"
+                + VerifyUser.REQUEST_PARAMETER__NEXT_URL + "=" + URLEncoder.encode(loginTarget.toString());
+
+        Page.getCurrent().setLocation(redirectUrl);
     }
 
     public static boolean isValidEmail(String email) {

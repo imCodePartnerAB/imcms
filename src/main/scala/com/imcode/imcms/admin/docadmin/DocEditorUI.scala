@@ -16,49 +16,60 @@ import scala.collection.JavaConverters._
 import imcode.server.document.DocumentDomainObject
 import imcode.server.ImcmsConstants
 import scala.util.control.NonFatal
+import imcode.util.Utility
 
 @com.vaadin.annotations.Theme("imcms")
 class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
 
-  //fixme: check permissions
   override def init(request: VaadinRequest) {
-    getLoadingIndicatorConfiguration.setFirstDelay(1)
-    getLoadingIndicatorConfiguration.setSecondDelay(2)
-    getLoadingIndicatorConfiguration.setThirdDelay(3)
+    val user = Current.imcmsUser
 
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
-    getLoadingIndicatorConfiguration.setFirstDelay(1)
+    getLoadingIndicatorConfiguration |> { lic =>
+      lic.setFirstDelay(1)
+      lic.setSecondDelay(2)
+      lic.setThirdDelay(3)
+    }
 
     val docId = request.getParameter("meta_id").toInt
-    val doc: DocumentDomainObject = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
+    val doc = imcmsServices.getDocumentMapper.getWorkingDocument(docId) : DocumentDomainObject
+
+    if (!user.canEdit(doc)) {
+      Utility.redirectToLoginPage(request)
+      return
+    }
+
     val editor = new DocEditor(doc)
     val container = new EditorContainerView("doc.edit.title".f(doc.getId.toString))
     val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
       s"${Current.contextPath}/servlet/AdminDoc?meta_id=$docId"
     )
 
-    container.mainComponent = editor.view
-    container.buttons.btnSave.addClickHandler {
-      _ =>
-        editor.collectValues() match {
-          case Left(errors) => Current.page.showConstraintViolationNotification(errors)
-          case Right((editedDoc, commonContents)) =>
-            try {
-              imcmsServices.getDocumentMapper.saveDocument(editedDoc, commonContents.asJava, Current.imcmsUser)
-              Current.page.showInfoNotification("notification.doc.saved".i)
-              Current.page.open(Current.contextPath, "_self")
-            } catch {
-              case NonFatal(e) =>
-                logger.error("Document save error", e)
-                Current.page.showUnhandledExceptionNotification(e)
-            }
-        }
+    def close() {
+      Current.page.setLocation(returnUrl)
     }
 
-    container.buttons.btnClose.addClickHandler {
-      _ =>
-        Current.page.open(returnUrl, "_self")
+    def save(closeOnSuccess: Boolean = false) {
+      editor.collectValues() match {
+        case Left(errors) => Current.page.showConstraintViolationNotification(errors)
+        case Right((editedDoc, commonContents)) =>
+          try {
+            imcmsServices.getDocumentMapper.saveDocument(editedDoc, commonContents.asJava, Current.imcmsUser)
+            Current.page.showInfoNotification("notification.doc.saved".i)
+
+          } catch {
+            case NonFatal(e) =>
+              logger.error("Document save error", e)
+              Current.page.showUnhandledExceptionNotification(e)
+          }
+      }
     }
+
+    container.mainComponent = editor.view
+    container.buttons.btnSave.addClickHandler { _ => save() }
+    container.buttons.btnSaveAndClose.addClickHandler { _ => save(closeOnSuccess = true) }
+    container.buttons.btnClose.addClickHandler { _ => close() }
+    container.buttons.btnReset.addClickHandler { _ => editor.resetValues() }
 
     Current.page.getUriFragment.asOption.map(_.toLowerCase).foreach {
       case "info" => editor.metaEditor.view.treeEditors.selection = "doc_meta_editor.menu_item.life_cycle"

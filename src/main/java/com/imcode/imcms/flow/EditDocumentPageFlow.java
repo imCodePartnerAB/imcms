@@ -7,7 +7,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+// fixme: remove
 public abstract class EditDocumentPageFlow extends DocumentPageFlow {
 
     protected DocumentDomainObject document;

@@ -2,6 +2,7 @@ package com.imcode
 package imcms
 package admin.docadmin.text
 
+import com.imcode.imcms.servlet.admin.AdminDoc
 import java.util.Locale
 import com.imcode.imcms.admin.docadmin.EditorContainerView
 import com.imcode.imcms.api.DocumentVersion
@@ -12,9 +13,9 @@ import com.imcode.imcms.vaadin.Current
 import com.imcode.NonNegInt
 import com.vaadin.server.VaadinRequest
 import com.vaadin.ui.UI
-import _root_.imcode.server.document.NoPermissionToEditDocumentException
+import imcode.server.document.{TextDocumentPermissionSetDomainObject, NoPermissionToEditDocumentException}
 import _root_.imcode.server.ImcmsConstants
-import _root_.imcode.server.document.textdocument.{NoPermissionToAddDocumentToMenuException, TextDomainObject}
+import imcode.server.document.textdocument.{TextDocumentDomainObject, NoPermissionToAddDocumentToMenuException, TextDomainObject}
 import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
 import com.imcode.imcms.vaadin.component._
 
@@ -23,18 +24,34 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
 
   val LoopEntryRefRE = """(\d+)_(\d+)""".r
 
-  // fixme: check security
   override def init(request: VaadinRequest) {
+    val user = Current.imcmsUser
+    val docId = request.getParameter("meta_id").toInt
+    val doc = imcmsServices.getDocumentMapper.getWorkingDocument(docId) : TextDocumentDomainObject
+
+    val permissionSet: TextDocumentPermissionSetDomainObject =
+      user.getPermissionSetFor(doc).asInstanceOf[TextDocumentPermissionSetDomainObject]
+
+    // fixme: v4.
+    if (!permissionSet.getEditTexts) {
+      //AdminDoc.adminDoc(documentId, user, request, res, getServletContext)
+      return
+    }
+
     getLoadingIndicatorConfiguration.setFirstDelay(1)
     getLoadingIndicatorConfiguration.setSecondDelay(2)
     getLoadingIndicatorConfiguration.setThirdDelay(3)
 
-    setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
+    setLocale(new Locale(user))
+    getLoadingIndicatorConfiguration |> { lic =>
+      lic.setFirstDelay(1)
+      lic.setSecondDelay(2)
+      lic.setThirdDelay(3)
+    }
 
     val contextPath = Current.contextPath
     val pathInfo = request.getPathInfo
 
-    val docId = request.getParameter("meta_id").toInt
     val titleOpt = request.getParameter("label").trimToOption
     val returnUrlOpt = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption
     val textNo = request.getParameter("txt").toInt

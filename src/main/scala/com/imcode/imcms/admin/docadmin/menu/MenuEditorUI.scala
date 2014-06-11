@@ -4,6 +4,7 @@ package admin.docadmin.menu
 
 import com.imcode.imcms.admin.docadmin.EditorContainerView
 import com.imcode.imcms.mapping.container.TextDocMenuContainer
+import com.imcode.imcms.servlet.admin.AdminDoc
 import java.util.Locale
 import com.imcode.imcms.vaadin.component._
 import com.vaadin.ui._
@@ -15,20 +16,33 @@ import com.imcode.imcms.ImcmsServicesSupport
 import com.imcode.imcms.vaadin.Current
 import imcode.server.ImcmsConstants
 import imcode.server.document.textdocument.TextDocumentDomainObject
+import imcode.server.document.TextDocumentPermissionSetDomainObject
 
 @com.vaadin.annotations.Theme("imcms")
 class MenuEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
 
-  // fixme: check security - see v4 EditMenu servlet
   override def init(request: VaadinRequest) {
-    setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
-    getLoadingIndicatorConfiguration.setFirstDelay(1)
-    getLoadingIndicatorConfiguration.setSecondDelay(2)
-    getLoadingIndicatorConfiguration.setThirdDelay(3)
+    val user = Current.imcmsUser
+    val docId = request.getParameter("docId").toInt
+    val doc = imcmsServices.getDocumentMapper.getWorkingDocument(docId) : TextDocumentDomainObject
+
+    setLocale(new Locale(user))
+    getLoadingIndicatorConfiguration |> { lic =>
+      lic.setFirstDelay(1)
+      lic.setSecondDelay(2)
+      lic.setThirdDelay(3)
+    }
+
+    val permissionSetFor: TextDocumentPermissionSetDomainObject =
+      user.getPermissionSetFor(doc).asInstanceOf[TextDocumentPermissionSetDomainObject]
+
+    if (!permissionSetFor.getEditMenus) {
+      // fixme: v4.
+      // AdminDoc.adminDoc(documentId, user, request, response, getServletContext)
+      return
+    }
 
     val contextPath = Current.contextPath
-    val docId = request.getParameter("docId").toInt
-    val doc: TextDocumentDomainObject = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
     val menuNo = request.getParameter("menuNo").toInt
     val title = request.getParameter("label").trimToOption.getOrElse("menu_editor.title".f(docId.toString, menuNo.toString))
     val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
@@ -43,14 +57,14 @@ class MenuEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport 
       Current.page.setLocation(returnUrl)
     }
 
-    def save(close: Boolean) {
+    def save(closeOnSuccess: Boolean = false) {
       editor.collectValues().right.get |> {
         menu =>
           imcmsServices.getDocumentMapper.saveTextDocMenu(TextDocMenuContainer.of(doc.getVersionRef, menuNo, menu), Current.imcmsUser)
           Current.page.showInfoNotification("menu_editor.notification.saved".i)
 
-          if (close) {
-            Current.page.setLocation(returnUrl)
+          if (closeOnSuccess) {
+            close()
           }
       }
     }
@@ -60,10 +74,10 @@ class MenuEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport 
       _ => editor.resetValues()
     }
     view.buttons.btnSave.addClickHandler {
-      _ => save(close = false)
+      _ => save()
     }
     view.buttons.btnSaveAndClose.addClickHandler {
-      _ => save(close = true)
+      _ => save(closeOnSuccess = true)
     }
     view.buttons.btnClose.addClickHandler {
       _ =>
@@ -84,7 +98,6 @@ class MenuEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport 
         }
     }
 
-    view.setSize(800, 700)
     setContent(view)
 
 //    Current.page.getJavaScript.addFunction("editDocProperties", new JavaScriptFunction {
