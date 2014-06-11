@@ -26,7 +26,7 @@ class MenuEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport 
     val docId = request.getParameter("docId").toInt
     val doc = imcmsServices.getDocumentMapper.getWorkingDocument(docId) : TextDocumentDomainObject
 
-    setLocale(new Locale(user))
+    setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
     getLoadingIndicatorConfiguration |> { lic =>
       lic.setFirstDelay(1)
       lic.setSecondDelay(2)
@@ -46,7 +46,7 @@ class MenuEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport 
     val menuNo = request.getParameter("menuNo").toInt
     val title = request.getParameter("label").trimToOption.getOrElse("menu_editor.title".f(docId.toString, menuNo.toString))
     val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
-      s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}&editmenu=$menuNo"
+      s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}"
     )
 
     val menu = doc.getMenu(menuNo)

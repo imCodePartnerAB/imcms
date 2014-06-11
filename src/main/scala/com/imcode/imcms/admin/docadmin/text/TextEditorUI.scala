@@ -2,7 +2,6 @@ package com.imcode
 package imcms
 package admin.docadmin.text
 
-import com.imcode.imcms.servlet.admin.AdminDoc
 import java.util.Locale
 import com.imcode.imcms.admin.docadmin.EditorContainerView
 import com.imcode.imcms.api.DocumentVersion
@@ -42,7 +41,7 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
     getLoadingIndicatorConfiguration.setSecondDelay(2)
     getLoadingIndicatorConfiguration.setThirdDelay(3)
 
-    setLocale(new Locale(user))
+    setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
     getLoadingIndicatorConfiguration |> { lic =>
       lic.setFirstDelay(1)
       lic.setSecondDelay(2)
@@ -81,7 +80,7 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
 
     val editor = new TextEditor(versioRef, loopEntryRefOpt, textNo, opts)
 
-    setContent(wrapTextDocTextEditor(editor))
+    setContent(wrapTextDocTextEditor(request, editor))
   }
 
 
@@ -176,8 +175,8 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
   //}
 
   // [-] <%= showModeEditor ? "Editor/" : "" %>HTML
-  def wrapTextDocTextEditor(editor: TextEditor): EditorContainerView = {
-    val w = new EditorContainerView
+  def wrapTextDocTextEditor(request: VaadinRequest, editor: TextEditor): EditorContainerView = {
+    val w = new EditorContainerView("text_editor.title".i)
 
     //      val title = request.getParameter("label").trimToNull match {
     //        case null => s"Document ${doc.getId} text no $textNo"
@@ -190,11 +189,11 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
 
     w.buttons.btnSave.addClickHandler {
       _ =>
-        save(closeAfterSave = false)
+        save(closeOnSuccess = false)
     }
     w.buttons.btnSaveAndClose.addClickHandler {
       _ =>
-        save(closeAfterSave = true)
+        save(closeOnSuccess = true)
     }
 
     w.buttons.btnClose.addClickHandler {
@@ -208,10 +207,16 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
     }
 
     def closeEditor() {
-      Current.page.open(Current.contextPath, "_self")
+      val docId = request.getParameter("meta_id").toInt
+      val contextPath = Current.contextPath
+      val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
+        s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_TEXTS}"
+      )
+
+      Current.page.setLocation(returnUrl)
     }
 
-    def save(closeAfterSave: Boolean) {
+    def save(closeOnSuccess: Boolean) {
       editor.collectValues().right.get |> {
         container =>
         // -check permissionSet.getEditTexts()
@@ -219,7 +224,7 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
             val user = Current.imcmsUser
             imcmsServices.getDocumentMapper.saveTextDocTexts(container, Current.imcmsUser)
             //imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
-            if (closeAfterSave) closeEditor()
+            if (closeOnSuccess) closeEditor()
           } catch {
             case e: NoPermissionToEditDocumentException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
             case e: NoPermissionToAddDocumentToMenuException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
@@ -228,7 +233,6 @@ class TextEditorUI extends UI with ImcmsServicesSupport {
       }
     }
 
-    w.setSize(800, 700)
     w
   }
 
