@@ -39,7 +39,9 @@ public class MenuHistory extends MenuBase {
         setVersion(menu.getVersion());
 
         this.menuId = menu.getId();
-        this.items = menu.getItems();
+        // Items must not be same as menu items.
+        // Otherwise 'Hibernate Exception: found shared reference to a collection' might be thrown
+        this.items = new HashMap<>(menu.getItems());
         this.modifiedBy = modifiedBy;
         this.modifiedDt = new Date();
     }

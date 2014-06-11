@@ -163,7 +163,7 @@ public class DocumentSaver {
     }
 
     @Transactional
-    public void updateDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContentMap, DocumentDomainObject oldDoc,
+    public void updateDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContents, DocumentDomainObject oldDoc,
                                UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -180,7 +180,7 @@ public class DocumentSaver {
 
         metaRepository.saveAndFlush(jpaMeta);
 
-        commonContentMap.forEach((language, dcc) -> {
+        commonContents.forEach((language, dcc) -> {
             CommonContent ormDcc = commonContentRepository.findByDocIdAndLanguageCode(doc.getId(), language.getCode());
             if (ormDcc == null) {
                 ormDcc = new CommonContent();

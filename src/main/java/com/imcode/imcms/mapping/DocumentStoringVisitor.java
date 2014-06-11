@@ -45,6 +45,7 @@ class DocumentStoringVisitor extends DocumentVisitor {
         this.versionRepository = services.getManagedBean(VersionRepository.class);
         this.languageRepository = services.getManagedBean(LanguageRepository.class);
         this.commonContentRepository = services.getManagedBean(CommonContentRepository.class);
+        this.textDocumentContentSaver = services.getManagedBean(TextDocumentContentSaver.class);
     }
 
     /**

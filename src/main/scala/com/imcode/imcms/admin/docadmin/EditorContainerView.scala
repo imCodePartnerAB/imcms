@@ -2,6 +2,8 @@ package com.imcode
 package imcms
 package admin.docadmin
 
+import com.vaadin.server.Sizeable
+import com.vaadin.shared.ui.label.ContentMode
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.component._
 
@@ -9,7 +11,7 @@ import com.imcode.imcms.vaadin.component._
 class EditorContainerView(title: String = null) extends CustomComponent with FullSize {
   private val lytContent = new VerticalLayout with FullSize
   private val lytComponents = new GridLayout(1, 3) with Spacing with FullSize
-  private val lblTitle = new Label(title) with UndefinedSize
+  private val lblTitle = new Label with UndefinedSize |>> { _.setContentMode(ContentMode.HTML) }
   private val lytButtons = new HorizontalLayout with Spacing with UndefinedSize
 
   lytContent.addComponent(lytComponents)
@@ -39,6 +41,13 @@ class EditorContainerView(title: String = null) extends CustomComponent with Ful
   }
 
   def setTitle(title: String) {
-    lblTitle.setValue(title)
+    lblTitle.setValue(s"<h2>$title</h2>")
   }
+
+  def setContentSize(width: Float, height: Float, units: Sizeable.Unit = Sizeable.Unit.PIXELS) {
+    lytComponents.setSize(width, height, units)
+  }
+
+  setTitle(title)
+  setContentSize(800, 700)
 }

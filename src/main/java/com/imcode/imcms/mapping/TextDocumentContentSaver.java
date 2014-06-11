@@ -146,7 +146,7 @@ public class TextDocumentContentSaver {
         createLoops(doc, version);
         saveTexts(doc, version, language, user, SaveMode.UPDATE);
         saveImages(doc, version, language, user, SaveMode.UPDATE);
-        saveMenus(doc, version, user, SaveMode.CREATE);
+        saveMenus(doc, version, user, SaveMode.UPDATE);
 
         saveTemplateNames(doc.getId(), doc.getTemplateNames());
         saveIncludes(doc.getId(), doc.getIncludesMap());
@@ -302,7 +302,8 @@ public class TextDocumentContentSaver {
         }
 
         menuRepository.saveAndFlush(menu);
-        menuHistoryRepository.save(new MenuHistory(menu, user));
+        //fixme: save menu history
+        //menuHistoryRepository.save(new MenuHistory(menu, user));
     }
 
 

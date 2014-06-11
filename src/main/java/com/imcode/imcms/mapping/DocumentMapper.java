@@ -347,14 +347,14 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> appearances, UserDomainObject user)
+    public void saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContents, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
         DocumentDomainObject oldDoc = getCustomDocument(doc.getRef());
 
         try {
-            documentSaver.updateDocument(docClone, appearances, oldDoc, user);
+            documentSaver.updateDocument(docClone, commonContents, oldDoc, user);
         } finally {
             invalidateDocument(doc.getId());
         }

@@ -20,7 +20,7 @@ import scala.util.control.NonFatal
 @com.vaadin.annotations.Theme("imcms")
 class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
 
-  //fixme: chech permissions
+  //fixme: check permissions
   override def init(request: VaadinRequest) {
     getLoadingIndicatorConfiguration.setFirstDelay(1)
     getLoadingIndicatorConfiguration.setSecondDelay(2)
@@ -32,7 +32,7 @@ class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
     val docId = request.getParameter("meta_id").toInt
     val doc: DocumentDomainObject = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
     val editor = new DocEditor(doc)
-    val container = new EditorContainerView("doc.edit_properties.title".f(doc.getId.toString))
+    val container = new EditorContainerView("doc.edit.title".f(doc.getId.toString))
     val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
       s"${Current.contextPath}/servlet/AdminDoc?meta_id=$docId"
     )
@@ -42,13 +42,15 @@ class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
       _ =>
         editor.collectValues() match {
           case Left(errors) => Current.page.showConstraintViolationNotification(errors)
-          case Right((editedDoc, i18nMetas)) =>
+          case Right((editedDoc, commonContents)) =>
             try {
-              imcmsServices.getDocumentMapper.saveDocument(editedDoc, i18nMetas.asJava, Current.imcmsUser)
+              imcmsServices.getDocumentMapper.saveDocument(editedDoc, commonContents.asJava, Current.imcmsUser)
               Current.page.showInfoNotification("notification.doc.saved".i)
               Current.page.open(Current.contextPath, "_self")
             } catch {
-              case NonFatal(e) => Current.page.showUnhandledExceptionNotification(e)
+              case NonFatal(e) =>
+                logger.error("Document save error", e)
+                Current.page.showUnhandledExceptionNotification(e)
             }
         }
     }
@@ -66,7 +68,6 @@ class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
       case _ =>
     }
 
-    container.setSize(800, 700)
     setContent(container)
   }
 }

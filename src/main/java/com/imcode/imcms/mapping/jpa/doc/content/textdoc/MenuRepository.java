@@ -15,7 +15,7 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
     @Query("DELETE FROM Menu m WHERE m.version = ?1")
     void deleteByVersion(Version version);
 
-    @Query("SELECT m.id FROM Menu m WHERE m.version = ?1")
+    @Query("SELECT m FROM Menu m WHERE m.version = ?1")
     List<Menu> findByVersion(Version version);
 
     @Query("SELECT m.id FROM Menu m WHERE m.version = ?1 AND m.no = ?2")
