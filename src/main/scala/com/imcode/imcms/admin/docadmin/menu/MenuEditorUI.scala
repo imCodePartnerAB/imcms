@@ -19,7 +19,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document.TextDocumentPermissionSetDomainObject
 
 @com.vaadin.annotations.Theme("imcms")
-class MenuEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
+class MenuEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
 
   override def init(request: VaadinRequest) {
     val user = Current.imcmsUser

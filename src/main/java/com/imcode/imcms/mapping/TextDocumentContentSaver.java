@@ -103,9 +103,9 @@ public class TextDocumentContentSaver {
         saveIncludes(doc.getId(), doc.getIncludesMap());
     }
 
-    public void createSharedContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
-        DocRef docRef = doc.getRef();
-        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+    public void createCommonContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
+        VersionRef versionRef = doc.getVersionRef();
+        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
         User user = userRepository.getOne(userDomainObject.getId());
 
         createLoops(doc, version);

@@ -10,7 +10,7 @@ import scala.util.{Failure, Success, Try}
 /**
  *
  */
-trait DocumentIndexService extends Log4jLoggerSupport {
+trait DocumentIndexService extends Log4jLogger {
 
   def query(solrQuery: SolrQuery): Try[QueryResponse]
 

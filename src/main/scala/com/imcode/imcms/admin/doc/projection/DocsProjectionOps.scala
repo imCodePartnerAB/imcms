@@ -15,7 +15,7 @@ import scala.reflect.ClassTag
 import com.imcode.imcms.mapping.DocumentMapper
 import com.imcode.imcms.admin.doc.content.textdoc.NewTextDocContentEditor
 import com.vaadin.ui.UI
-import com.vaadin.server.Page
+import com.vaadin.server.{BrowserWindowOpener, Page}
 
 /**
  * Common operations associated with selected document(s) such as edit, view, delete etc.
@@ -26,7 +26,7 @@ import com.vaadin.server.Page
 // fixme: check op permissions
 // fixme: file doc - cant add files
 // fixme: copy should be rewritten - predefined copy dialog should be shown to a user.
-class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport with Log4jLoggerSupport {
+class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport with Log4jLogger {
 
   private def showMissingDocNotification() {
     Current.page.showWarningNotification(
@@ -102,6 +102,8 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
 
   def showSelectedDoc() {
     whenSingleton(projection.selection) { ref =>
+
+
       DocOpener.openDoc(ref.getId)
     }
   }
@@ -112,7 +114,7 @@ class DocsProjectionOps(projection: DocsProjection) extends ImcmsServicesSupport
       (imcmsServices.getDocumentMapper.getDefaultDocument(ref.getId, ref.getLanguageCode) : DocumentDomainObject) match {
         case null => showMissingDocNotification()
         case doc =>
-          imcmsServices.getDocumentMapper.copyDocumentsWithSharedMetaAndVersion(ref.getVersionRef, projection.user)
+          imcmsServices.getDocumentMapper.copyDocumentsWithCommonMetaAndVersion(ref.getVersionRef, projection.user)
           projection.reload()
           Current.page.showInfoNotification("Document has been copied".i)
       }

@@ -607,7 +607,7 @@ public class DocumentMapper implements DocumentGetter {
     public <T extends DocumentDomainObject> T copyDocument(T doc, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        Integer docId = copyDocumentsWithSharedMetaAndVersion(doc.getVersionRef(), user);
+        Integer docId = copyDocumentsWithCommonMetaAndVersion(doc.getVersionRef(), user);
 
         @SuppressWarnings("unchecked")
         T workingDocument = getWorkingDocument(docId, doc.getLanguage());
@@ -623,7 +623,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return copied doc id.
      * @since 6.0
      */
-    public int copyDocumentsWithSharedMetaAndVersion(VersionRef versionRef, UserDomainObject user)
+    public int copyDocumentsWithCommonMetaAndVersion(VersionRef versionRef, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         // todo: put into resource file.
@@ -655,7 +655,7 @@ public class DocumentMapper implements DocumentGetter {
                     "Unable to copy. Source document does not exists. DocVersionRef: %s.", versionRef));
         }
 
-        Integer docCopyId = documentSaver.saveNewDocsWithSharedMetaAndVersion(newDocs, user);
+        Integer docCopyId = documentSaver.saveNewDocsWithCommonMetaAndVersion(newDocs, user);
 
         invalidateDocument(docCopyId);
 

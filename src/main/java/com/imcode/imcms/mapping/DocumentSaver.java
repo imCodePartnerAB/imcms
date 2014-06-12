@@ -152,7 +152,7 @@ public class DocumentSaver {
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
             firstDoc.accept(docCreatingVisitor);
         } else {
-            textDocumentContentSaver.createSharedContent((TextDocumentDomainObject) firstDoc, user);
+            textDocumentContentSaver.createCommonContent((TextDocumentDomainObject) firstDoc, user);
 
             for (DocumentDomainObject doc : docs) {
                 textDocumentContentSaver.createI18nContent((TextDocumentDomainObject) doc, user);
@@ -213,7 +213,7 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public int saveNewDocsWithSharedMetaAndVersion(List<DocumentDomainObject> docs, UserDomainObject user)
+    public int saveNewDocsWithCommonMetaAndVersion(List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         DocumentDomainObject firstDoc = docs.get(0);
@@ -231,6 +231,7 @@ public class DocumentSaver {
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, firstDoc, user, null);
 
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
+        meta.setId(newDocId);
 
         docRepository.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, Integer.toString(newDocId));
 
@@ -248,7 +249,7 @@ public class DocumentSaver {
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
             firstDoc.accept(docCreatingVisitor);
         } else {
-            textDocumentContentSaver.createSharedContent((TextDocumentDomainObject) firstDoc, user);
+            textDocumentContentSaver.createCommonContent((TextDocumentDomainObject) firstDoc, user);
 
             for (DocumentDomainObject doc : docs) {
                 textDocumentContentSaver.createI18nContent((TextDocumentDomainObject) doc, user);

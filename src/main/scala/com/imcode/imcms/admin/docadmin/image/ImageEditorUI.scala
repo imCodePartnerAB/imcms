@@ -15,7 +15,7 @@ import _root_.imcode.server.document.textdocument._
 import com.imcode.imcms.vaadin.Current
 
 @com.vaadin.annotations.Theme("imcms")
-class ImageEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
+class ImageEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
 
   override def init(request: VaadinRequest) {
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))

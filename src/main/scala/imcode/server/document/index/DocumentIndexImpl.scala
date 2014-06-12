@@ -19,7 +19,7 @@ import com.imcode.imcms.{api, ImcmsServicesSupport}
 /**
  * {@link DocumentIndex} implementation.
  */
-class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex with ImcmsServicesSupport with Log4jLoggerSupport {
+class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex with ImcmsServicesSupport with Log4jLogger {
 
   @deprecated
   override def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {

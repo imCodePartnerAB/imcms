@@ -19,7 +19,7 @@ import scala.util.control.NonFatal
 import imcode.util.Utility
 
 @com.vaadin.annotations.Theme("imcms")
-class DocEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
+class DocEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
 
   override def init(request: VaadinRequest) {
     val user = Current.imcmsUser

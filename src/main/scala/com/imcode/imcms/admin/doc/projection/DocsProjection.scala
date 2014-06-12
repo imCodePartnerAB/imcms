@@ -43,7 +43,7 @@ import com.imcode.imcms.admin.doc.projection.container.{IndexedDocsView, Indexed
 // fixme: history; history should be represented as a nested module.
 // fixme: security
 // todo: show recently created docs in a separate view
-class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocRef]] with ImcmsServicesSupport with Log4jLoggerSupport {
+class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) extends Publisher[Seq[DocRef]] with ImcmsServicesSupport with Log4jLogger {
 
   @transient
   private var history = List.empty[(BasicFilterParams, ExtendedFilterParams)]
@@ -53,19 +53,18 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
   private def parentsRenderer(fields: DocumentStoredFields): Component = {
     fields.parentsCount() match {
       case 0 => null
-      case n => new Button("docs_projection.result.show_parents".f(n)) with LinkStyle |>> {
-        btn =>
-          btn.addClickHandler {
-            _ =>
-              val relationshipOpt = Some(
-                Relationship(children = Relationship.Exact(fields.id()))
-              )
+      case n => new Button("docs_projection.result.show_parents".f(n)) with LinkStyle |>> { btn =>
+        btn.addClickHandler {
+          _ =>
+            val relationshipOpt = Some(
+              Relationship(children = Relationship.Exact(fields.id()))
+            )
 
-              val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
-              val extendedFilterParams = new ExtendedFilterParams(relationshipOpt = relationshipOpt)
+            val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
+            val extendedFilterParams = new ExtendedFilterParams(relationshipOpt = relationshipOpt)
 
-              setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
-          }
+            setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
+        }
       }
     }
   }
@@ -75,14 +74,14 @@ class DocsProjection(val user: UserDomainObject, multiSelect: Boolean = true) ex
       case 0 => null
       case n => new Button("docs_projection.result.show_children".f(n)) with LinkStyle |>> { btn =>
         btn.addClickHandler { _ =>
-            val relationshipOpt = Some(
-              Relationship(parents = Relationship.Exact(fields.id()))
-            )
+          val relationshipOpt = Some(
+            Relationship(parents = Relationship.Exact(fields.id()))
+          )
 
-            val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
-            val extendedFilterParams = new ExtendedFilterParams(relationshipOpt = relationshipOpt)
+          val basicFilterParams = new BasicFilterParams(languagesOpt = filter.selectedLanguagesOpt())
+          val extendedFilterParams = new ExtendedFilterParams(relationshipOpt = relationshipOpt)
 
-            setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
+          setFilterParameters(FilterParameters(basicFilterParams, Some(extendedFilterParams)))
         }
       }
     }

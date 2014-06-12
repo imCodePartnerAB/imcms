@@ -13,7 +13,7 @@ import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
 /**
  *
  */
-object DocumentIndexFactory extends Log4jLoggerSupport {
+object DocumentIndexFactory extends Log4jLogger {
 
   def create(services: ImcmsServices): DocumentIndex = services.getConfig |> {
     config =>

@@ -21,62 +21,41 @@ import com.imcode.imcms.vaadin.Editor
 class LifeCycleEditor(meta: DocumentMeta) extends Editor with ImcmsServicesSupport {
 
   case class Data(
-                   publicationStatus: Document.PublicationStatus,
-                   publicationStartDt: Date,
-                   archiveDt: Option[Date],
-                   publicationEndDt: Option[Date],
-                   publisher: Option[UserDomainObject],
-                   versionNo: Int,
-                   createdDt: Date,
-                   modifiedDt: Date,
-                   creator: Option[UserDomainObject],
-                   modifier: Option[UserDomainObject]
-                   )
+    publicationStatus: Document.PublicationStatus,
+    publicationStartDt: Date,
+    archiveDt: Option[Date],
+    publicationEndDt: Option[Date],
+    publisher: Option[UserDomainObject],
+    versionNo: Int,
+    createdDt: Date,
+    modifiedDt: Date,
+    creator: Option[UserDomainObject],
+    modifier: Option[UserDomainObject]
+  )
 
 
-  override val view = new LifeCycleEditorView |>> {
-    w =>
-      for (phase <- LifeCyclePhase.ALL) {
-        new Label with UndefinedSize |>> {
-          lbl =>
-            lbl.setCaption(s"doc_publication_phase.$phase".i)
-            lbl.setIcon(Theme.Icon.Doc.phase(phase))
-        } |> w.publication.lytPhase.addComponent
-      }
+  override val view = new LifeCycleEditorView |>> { w =>
+    for (phase <- LifeCyclePhase.ALL) {
+      new Label with UndefinedSize |>> { lbl =>
+        lbl.setCaption(s"doc_publication_phase.$phase".i)
+        lbl.setIcon(Theme.Icon.Doc.phase(phase))
+      } |> w.publication.lytPhase.addComponent
+    }
 
-      w.publication.chkEnd.addValueChangeHandler {
-        _ =>
-          w.publication.calEnd.setEnabled(w.publication.chkEnd.checked)
+    w.publication.chkEnd.addValueChangeHandler { _ =>
+      w.publication.calEnd.setEnabled(w.publication.chkEnd.checked)
+      updatePhase()
+    }
 
-          updatePhase()
-      }
+    w.publication.chkArchive.addValueChangeHandler {_ =>
+        w.publication.calArchive.setEnabled(w.publication.chkArchive.checked)
+        updatePhase()
+    }
 
-      w.publication.chkArchive.addValueChangeHandler {
-        _ =>
-          w.publication.calArchive.setEnabled(w.publication.chkArchive.checked)
-
-          updatePhase()
-      }
-
-      w.publication.sltStatus.addValueChangeHandler {
-        _ =>
-          updatePhase()
-      }
-
-      w.publication.calStart.addValueChangeHandler {
-        _ =>
-          updatePhase()
-      }
-
-      w.publication.calEnd.addValueChangeHandler {
-        _ =>
-          updatePhase()
-      }
-
-      w.publication.calArchive.addValueChangeHandler {
-        _ =>
-          updatePhase()
-      }
+    w.publication.sltStatus.addValueChangeHandler { _ => updatePhase() }
+    w.publication.calStart.addValueChangeHandler { _ => updatePhase() }
+    w.publication.calEnd.addValueChangeHandler {_ => updatePhase() }
+    w.publication.calArchive.addValueChangeHandler { _ => updatePhase() }
   }
 
   resetValues()

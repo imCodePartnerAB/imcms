@@ -49,7 +49,7 @@ class Dialog(caption: String = "") extends Window(caption) with Modal {
 }
 
 
-object Dialog extends Log4jLoggerSupport {
+object Dialog extends Log4jLogger {
 
   /**
    * Wraps button click handler: shows "system error" message in case of an error.

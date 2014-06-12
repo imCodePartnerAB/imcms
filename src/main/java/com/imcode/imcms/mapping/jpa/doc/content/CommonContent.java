@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 /**
- * Document common content.
+ * Content common to all document types.
  */
 @Entity
 @Table(name = "imcms_doc_i18n_meta")

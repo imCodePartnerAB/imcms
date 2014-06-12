@@ -174,6 +174,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         userDO.setEmailAddress(user.getEmail());
         userDO.setFirstName(user.getFirstName());
         userDO.setId(user.getId());
+        userDO.setLoginName(user.getLogin());
         userDO.setImcmsExternal(user.isExternal());
         userDO.setLanguageIso639_2(ObjectUtils.defaultIfNull(user.getLanguageIso639_2(), services.getLanguageMapper().getDefaultLanguage()));
         userDO.setLastName(user.getLastName());
