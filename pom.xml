@@ -125,10 +125,16 @@
 
     <profiles>
         <profile>
+            <id>log4j:console</id>
+            <properties>
+                <log4j.console-appender.threshold>all</log4j.console-appender.threshold>
+            </properties>
+        </profile>
+
+        <profile>
             <id>log4j:trace</id>
             <properties>
                 <log4j.hibernate.level>all</log4j.hibernate.level>
-                <log4j.console-appender.threshold>all</log4j.console-appender.threshold>
                 <log4j.threshold>all</log4j.threshold>
             </properties>
         </profile>
@@ -137,7 +143,6 @@
             <id>log4j:info</id>
             <properties>
                 <log4j.hibernate.level>info</log4j.hibernate.level>
-                <log4j.console-appender.threshold>info</log4j.console-appender.threshold>
                 <log4j.threshold>info</log4j.threshold>
             </properties>
         </profile>
@@ -146,7 +151,6 @@
             <id>log4j:debug</id>
             <properties>
                 <log4j.hibernate.level>debug</log4j.hibernate.level>
-                <log4j.console-appender.threshold>debug</log4j.console-appender.threshold>
                 <log4j.threshold>debug</log4j.threshold>
 
                 <javac.args>-Xlint</javac.args>

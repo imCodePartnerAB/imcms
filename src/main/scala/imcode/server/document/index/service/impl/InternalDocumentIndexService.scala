@@ -21,15 +21,15 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
   private val shutdownRef: AtomicBoolean = new AtomicBoolean(false)
   private val serviceRef: AtomicReference[DocumentIndexService] = new AtomicReference(UnavailableDocumentIndexService)
   private val failureHandler: (ServiceFailure => Unit) = { failure: ServiceFailure =>
-    import org.apache.solr.common.SolrException.ErrorCode
+    import org.apache.solr.common.SolrException.ErrorCode.getErrorCode
     import org.apache.solr.common.SolrException.ErrorCode.{SERVER_ERROR, FORBIDDEN, UNAUTHORIZED, NOT_FOUND, BAD_REQUEST}
 
     failure.getException match {
-      case e: SolrException if Set(BAD_REQUEST).contains(ErrorCode.getErrorCode(e.code)) => logger.warn("Bad search request", e)
-      case e: SolrException if Set(SERVER_ERROR, FORBIDDEN, UNAUTHORIZED, NOT_FOUND).contains(ErrorCode.getErrorCode(e.code)) =>
+      case e: SolrException if Set(BAD_REQUEST).contains(getErrorCode(e.code)) => logger.warn("Bad search request", e)
+      case e: SolrException if Set(SERVER_ERROR, FORBIDDEN, UNAUTHORIZED, NOT_FOUND).contains(getErrorCode(e.code)) =>
         logger.fatal("Configuration error. Shutting down the service.", e)
         lock.synchronized {
-          if (serviceRef.get() == service) {
+          if (serviceRef.get() eq failure.getService) {
             shutdown()
           }
         }
@@ -37,17 +37,16 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
       case e: IOException => replaceManagedServerInstance(failure)
       case e: SolrServerException if e.getCause.isInstanceOf[IOException] => replaceManagedServerInstance(failure)
     }
-
-    //logger.fatal("No more index update or rebuild requests will be accepted.", e)
+    // ??? distinguish between Search & Alter (UPDATE | REBUILD) ???
+    // ??? logger.fatal("No more index update or rebuild requests will be accepted.", e) ???
   }
 
-  newManagedService(recreateDataDir = false) |> serviceRef.set
-
+  serviceRef.set(newManagedService(recreateDataDir = false))
 
   private def replaceManagedServerInstance(failure: ServiceFailure): Unit = lock.synchronized {
-    if (serviceRef.compareAndSet(service, UnavailableDocumentIndexService)) {
+    if (serviceRef.compareAndSet(failure.getService, UnavailableDocumentIndexService)) {
       logger.error("Unrecoverable index error. Managed service instance have to be replaced.", failure.getException)
-      service.shutdown()
+      failure.getService.shutdown()
 
       if (shutdownRef.get) {
         logger.info("New managed service instance can not be created - service has been shout down.")

@@ -15,7 +15,7 @@ import com.imcode.imcms.test.fixtures.DocFX
 import org.apache.solr.client.solrj.SolrServer
 import org.apache.solr.common.SolrInputDocument
 import org.mockito.invocation.InvocationOnMock
-import imcode.server.document.index.service.impl.{DocumentIndexServiceOps, ManagedDocumentIndexService}
+import imcode.server.document.index.service.impl.{ServiceFailure, DocumentIndexServiceOps, ManagedDocumentIndexService}
 
 @RunWith(classOf[JUnitRunner])
 class ManagedDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -55,7 +55,7 @@ class ManagedDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll wi
       val solrServerReader = mock[SolrServer]
       val solrServerWriter = mock[SolrServer]
       val opsMock = mock[DocumentIndexServiceOps]
-      var serviceErrors = Vector.empty[ManagedDocumentIndexService.ServiceFailure]
+      var serviceErrors = Vector.empty[ServiceFailure]
       val service = new ManagedDocumentIndexService(solrServerReader, solrServerWriter, opsMock, serviceErrors :+= _)
 
       Mockito.when(opsMock.addDocsToIndex(any(classOf[SolrServer]), anyInt())).thenAnswer {
@@ -81,13 +81,13 @@ class ManagedDocumentIndexServiceTest extends WordSpec with BeforeAndAfterAll wi
       verify(solrServerWriter, times(5)).add(anyCollectionOf(classOf[SolrInputDocument]))
 
       assertEquals("Errors count reported during indexing", 1, serviceErrors.length)
-      assertTrue("Error is an instance of IndexUpdateFailure", serviceErrors.head.isInstanceOf[ManagedDocumentIndexService.UpdateFailure])
+      assertTrue("Error is an Update Failure", serviceErrors.head.isInstanceOf[ServiceFailure])
     }
 
     "rebuild (write) all documents with provided ids into the solr index" in {
       val solrServerReader = mock[SolrServer]
       val solrServerWriter = mock[SolrServer]
-      var serviceErrors = Vector.empty[ManagedDocumentIndexService.ServiceFailure]
+      var serviceErrors = Vector.empty[ServiceFailure]
       val service = new ManagedDocumentIndexService(solrServerReader, solrServerWriter, ops, serviceErrors :+= _)
 
       try {
