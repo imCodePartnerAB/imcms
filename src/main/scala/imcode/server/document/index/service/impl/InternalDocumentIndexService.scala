@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
 import imcode.server.document.index.service._
 import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.client.solrj.SolrQuery
-import imcode.server.document.index.service.impl.ManagedSolrDocumentIndexService.{IndexSearchFailure, IndexWriteFailure}
+import imcode.server.document.index.service.impl.ManagedDocumentIndexService.{SearchFailure, WriteFailure}
 import scala.util.Try
 import org.apache.solr.common.SolrException
 
@@ -15,14 +15,13 @@ import org.apache.solr.common.SolrException
  * Delegates all invocations to the ManagedSolrDocumentIndexService instance.
  * In case of an indexing error replaces managed instance with new one and re-indexes documents.
  */
-class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexServiceOps)
-  extends DocumentIndexService {
+class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexServiceOps) extends DocumentIndexService {
 
   private val lock = new AnyRef
   private val shutdownRef: AtomicBoolean = new AtomicBoolean(false)
   private val serviceRef: AtomicReference[DocumentIndexService] = new AtomicReference(UnavailableDocumentIndexService)
-  private val serviceFailureHandler: (ManagedSolrDocumentIndexService.ServiceFailure => Unit) = {
-    case failure@IndexSearchFailure(service, exception) =>
+  private val failureHandler: (ManagedDocumentIndexService.ServiceFailure => Unit) = {
+    case failure@SearchFailure(service, exception) =>
       import SolrException.ErrorCode
       import SolrException.ErrorCode._
       exception match {
@@ -37,7 +36,7 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
         case _ => replaceManagedServerInstance(failure)
       }
 
-    case failure: IndexWriteFailure =>
+    case failure: WriteFailure =>
       failure.exception match {
         case e: SolrInputDocumentCreateException =>
           logger.fatal("Unexpected system error. Unable to create SolrInputDocument. No more index update or rebuild requests will be accepted.", e)
@@ -49,7 +48,7 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
   newManagedService(recreateDataDir = false) |> serviceRef.set
 
 
-  private def replaceManagedServerInstance(failure: ManagedSolrDocumentIndexService.ServiceFailure): Unit = lock.synchronized {
+  private def replaceManagedServerInstance(failure: ManagedDocumentIndexService.ServiceFailure): Unit = lock.synchronized {
     import failure.service
 
     if (serviceRef.compareAndSet(service, UnavailableDocumentIndexService)) {
@@ -71,10 +70,10 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
     }
   }
 
-  private def newManagedService(recreateDataDir: Boolean): ManagedSolrDocumentIndexService = {
+  private def newManagedService(recreateDataDir: Boolean): ManagedDocumentIndexService = {
     val solrServer = SolrServerFactory.createEmbeddedSolrServer(solrHome, recreateDataDir)
 
-    new ManagedSolrDocumentIndexService(solrServer, solrServer, serviceOps, serviceFailureHandler)
+    new ManagedDocumentIndexService(solrServer, solrServer, serviceOps, failureHandler)
   }
 
   override def query(solrQuery: SolrQuery): Try[QueryResponse] = serviceRef.get.query(solrQuery)

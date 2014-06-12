@@ -16,27 +16,26 @@ import scala.util.control.NonFatal
 
 /**
  * Implements all DocumentIndexService functionality.
- * Ensures that update and rebuild never run concurrently.
+ * Ensures that update and rebuild operations never run concurrently.
  *
- * Indexing errors are wrapped and published asynchronously as ManagedSolrDocumentIndexService.IndexError events.
- * On index write (rebuild and update) failure (either update or rebuild) the service stops processing index write requests.
+ * Indexing errors are handled asynchronously as ManagedSolrDocumentIndexService.IndexError events.
+ * On index write (update or rebuild) failure the service stops processing write requests.
  *
  * The business-logic (like rebuild scheduling and index recovery) is implemented on higher levels.
  */
-class ManagedSolrDocumentIndexService(
+class ManagedDocumentIndexService(
     solrServerReader: SolrServer,
     solrServerWriter: SolrServer,
     serviceOps: DocumentIndexServiceOps,
-    serviceFailureHandler: ManagedSolrDocumentIndexService.ServiceFailure => Unit) extends DocumentIndexService {
+    failureHandler: ManagedDocumentIndexService.ServiceFailure => Unit) extends DocumentIndexService {
 
   private val lock = new AnyRef
   private val shutdownRef = new AtomicBoolean(false)
   private val indexRebuildThreadRef = new AtomicReference[Thread]
   private val indexUpdateThreadRef = new AtomicReference[Thread]
   private val indexUpdateRequests = new LinkedBlockingQueue[IndexUpdateOp](1000)
-  private val indexWriteFailureRef = new AtomicReference[ManagedSolrDocumentIndexService.IndexWriteFailure]
+  private val indexWriteFailureRef = new AtomicReference[ManagedDocumentIndexService.WriteFailure]
   private val indexRebuildTaskRef = new AtomicReference[IndexRebuildTask]
-
 
   /**
    * Creates and starts new index-rebuild-thread if there is no already running one.
@@ -112,11 +111,11 @@ class ManagedSolrDocumentIndexService(
 
             case e: ExecutionException =>
               val cause = e.getCause
-              val writeFailure = ManagedSolrDocumentIndexService.IndexRebuildFailure(ManagedSolrDocumentIndexService.this, cause)
+              val writeFailure = ManagedDocumentIndexService.RebuildFailure(ManagedDocumentIndexService.this, cause)
               logger.error(s"document-index-rebuild task has failed. document-index-rebuild thread: [$indexRebuildThread].", cause)
               indexWriteFailureRef.set(writeFailure)
               Threads.spawnDaemon {
-                serviceFailureHandler(writeFailure)
+                failureHandler(writeFailure)
               }
           } finally {
             logger.info(s"document-index-rebuild thread [$indexRebuildThread] is about to terminate.")
@@ -169,11 +168,11 @@ class ManagedSolrDocumentIndexService(
                 logger.debug(s"document-index-update thread [$indexUpdateThread] was interrupted")
 
               case NonFatal(e) =>
-                val writeFailure = ManagedSolrDocumentIndexService.IndexUpdateFailure(ManagedSolrDocumentIndexService.this, e)
+                val writeFailure = ManagedDocumentIndexService.UpdateFailure(ManagedDocumentIndexService.this, e)
                 logger.error(s"error in document-index-update thread [$indexUpdateThread].", e)
                 indexWriteFailureRef.set(writeFailure)
                 Threads.spawnDaemon {
-                  serviceFailureHandler(writeFailure)
+                  failureHandler(writeFailure)
                 }
             } finally {
               logger.info(s"document-index-update thread [$indexUpdateThread] is about to terminate.")
@@ -220,7 +219,7 @@ class ManagedSolrDocumentIndexService(
     case Failure(e) =>
       logger.error(s"Search error. solrQuery: $solrQuery", e)
       Threads.spawnDaemon {
-        serviceFailureHandler(ManagedSolrDocumentIndexService.IndexSearchFailure(ManagedSolrDocumentIndexService.this, e))
+        failureHandler(ManagedDocumentIndexService.SearchFailure(ManagedDocumentIndexService.this, e))
       }
   }
 
@@ -232,17 +231,21 @@ class ManagedSolrDocumentIndexService(
         interruptIndexUpdateThreadAndAwaitTermination()
         interruptIndexRebuildThreadAndAwaitTermination()
 
-        PartialFunction.condOpt(Try(solrServerReader.shutdown())) {
-          case Failure(e) => logger.warn("An error occurred while shutting down SolrServer reader.", e)
+        try {
+          solrServerReader.shutdown()
+        } catch {
+          case e: Exception => logger.warn("An error occurred while shutting down SolrServer reader.", e)
         }
 
-        PartialFunction.condOpt(Try(solrServerWriter.shutdown())) {
-          case Failure(e) => logger.warn("An error occurred while shutting down SolrServer writer.", e)
+        try {
+          solrServerWriter.shutdown()
+        } catch {
+          case e: Exception => logger.warn("An error occurred while shutting down SolrServer writer.", e)
         }
 
         logger.info("Service has been shut down.")
       } catch {
-        case NonFatal(e) =>
+        case e: Exception =>
           logger.warn("An error occurred while shutting down the service.", e)
           throw e
       }
@@ -254,16 +257,16 @@ class ManagedSolrDocumentIndexService(
 }
 
 
-object ManagedSolrDocumentIndexService {
+object ManagedDocumentIndexService {
 
-  sealed abstract class ServiceFailure {
-    val service: ManagedSolrDocumentIndexService
+  sealed trait ServiceFailure {
+    val service: ManagedDocumentIndexService
     val exception: Throwable
   }
 
-  abstract class IndexWriteFailure extends ServiceFailure
+  trait WriteFailure extends ServiceFailure
 
-  case class IndexUpdateFailure(service: ManagedSolrDocumentIndexService, exception: Throwable) extends IndexWriteFailure
-  case class IndexRebuildFailure(service: ManagedSolrDocumentIndexService, exception: Throwable) extends IndexWriteFailure
-  case class IndexSearchFailure(service: ManagedSolrDocumentIndexService, exception: Throwable) extends ServiceFailure
+  case class UpdateFailure(service: ManagedDocumentIndexService, exception: Throwable) extends WriteFailure
+  case class RebuildFailure(service: ManagedDocumentIndexService, exception: Throwable) extends WriteFailure
+  case class SearchFailure(service: ManagedDocumentIndexService, exception: Throwable) extends ServiceFailure
 }

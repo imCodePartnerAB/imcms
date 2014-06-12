@@ -8,11 +8,11 @@ import scala.util.Try
 class RemoteDocumentIndexService(solrReadUrl: String, solrWriteUrl: String, serviceOps: DocumentIndexServiceOps)
     extends DocumentIndexService {
 
-  private def newManagedService(): ManagedSolrDocumentIndexService = {
+  private def newManagedService(): ManagedDocumentIndexService = {
     val solrServerReader = SolrServerFactory.createHttpSolrServer(solrReadUrl)
     val solrServerWriter = SolrServerFactory.createHttpSolrServer(solrWriteUrl)
 
-    new ManagedSolrDocumentIndexService(solrServerReader, solrServerWriter, serviceOps, _ => ())
+    new ManagedDocumentIndexService(solrServerReader, solrServerWriter, serviceOps, _ => ())
   }
 
   def query(solrQuery: SolrQuery): Try[QueryResponse] = ???

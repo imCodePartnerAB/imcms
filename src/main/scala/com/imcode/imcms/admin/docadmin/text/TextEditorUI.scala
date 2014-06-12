@@ -19,7 +19,7 @@ import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissi
 import com.imcode.imcms.vaadin.component._
 
 @com.vaadin.annotations.Theme("imcms")
-class TextEditorUI extends UI with ImcmsServicesSupport {
+class TextEditorUI extends UI with Log4jLoggerSupport with ImcmsServicesSupport {
 
   val LoopEntryRefRE = """(\d+)_(\d+)""".r
 
