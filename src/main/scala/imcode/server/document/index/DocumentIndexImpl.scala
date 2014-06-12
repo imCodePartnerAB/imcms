@@ -62,7 +62,7 @@ class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex wit
   }
 
   @throws(classOf[IndexException])
-  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): SearchResult = {
+  override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): IndexSearchResult = {
     if (solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE) == null &&
       !solrQuery.getFilterQueries.exists(query => query.contains(s"${DocumentIndex.FIELD__LANGUAGE_CODE}:"))) {
       solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE_CODE, imcmsServices.getDocumentLanguages.getDefault))
@@ -79,7 +79,7 @@ class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex wit
 
     service.query(solrQuery) match {
       case Failure(e) => throw new IndexException(e)
-      case Success(queryResponse) => new SearchResult(solrQuery, queryResponse)
+      case Success(queryResponse) => new IndexSearchResult(solrQuery, queryResponse)
     }
   }
 

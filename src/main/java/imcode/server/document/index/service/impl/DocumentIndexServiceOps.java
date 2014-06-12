@@ -7,16 +7,19 @@ import imcode.server.document.index.DocumentIndex;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.util.DateUtil;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -40,45 +43,33 @@ public class DocumentIndexServiceOps {
         this.documentIndexer = documentIndexer;
     }
 
-    private <T> T withExceptionWrapper(Callable<? extends T> callable) {
-        try {
-            return callable.call();
-        } catch (Exception e) {
-            throw new SolrInputDocumentCreateException(e);
-        }
-    }
-
-    private <T> T withRuntimeExceptionWrapper(Callable<? extends T> callable) {
-        try {
-            return callable.call();
-        } catch (Exception e) {
-            throw new SolrInputDocumentCreateException(e);
-        }
+    public Collection<SolrInputDocument> mkSolrInputDocs(int docId) {
+        return mkSolrInputDocs(docId, documentMapper.getImcmsServices().getDocumentLanguages().getAll());
     }
 
 
-    public Collection<SolrInputDocument> mkSolrInputDocs(int docId) throws SolrInputDocumentCreateException {
-        return withExceptionWrapper(() ->
-                        mkSolrInputDocs(docId, documentMapper.getImcmsServices().getDocumentLanguages().getAll())
-        );
-    }
-
-
-    public Collection<SolrInputDocument> mkSolrInputDocs(int docId, Collection<DocumentLanguage> languages)
-            throws SolrInputDocumentCreateException {
-
+    public Collection<SolrInputDocument> mkSolrInputDocs(int docId, Collection<DocumentLanguage> languages) {
         Collection<SolrInputDocument> solrInputDocs = languages.stream()
                 .map(language -> (DocumentDomainObject) documentMapper.getDefaultDocument(docId, language))
                 .filter(Objects::nonNull)
-                .map(documentIndexer::index)
+                .map(doc -> {
+                    try {
+                        return documentIndexer.index(doc);
+                    } catch (Exception e) {
+                        logger.error(
+                                String.format("Can't create SolrInputDocument from doc %d-%d-%s",
+                                        doc.getId(), doc.getVersionNo(), doc.getLanguage().getCode()),
+                                e);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         if (logger.isTraceEnabled()) {
             logger.trace(
-                    String.format(
-                            "Created %d solrInputDoc(s) with docId: %d and language(s): %s.",
-                            solrInputDocs.size(), docId, languages
-                    )
+                    String.format("Created %d solrInputDoc(s) with docId: %d and language(s): %s.",
+                            solrInputDocs.size(), docId, languages)
             );
         }
 
@@ -90,46 +81,44 @@ public class DocumentIndexServiceOps {
         return String.format("%s:%d", DocumentIndex.FIELD__META_ID, docId);
     }
 
-    public QueryResponse query(SolrServer solrServer, SolrQuery solrQuery) throws SolrInputDocumentCreateException {
-        return withExceptionWrapper(() -> {
-            if (logger.isDebugEnabled()) {
-                logger.debug(String.format("Searching using SOLr query: %s.", URLDecoder.decode(solrQuery.toString(), "UTF-8")));
+    public QueryResponse query(SolrServer solrServer, SolrQuery solrQuery) throws SolrServerException {
+        if (logger.isDebugEnabled()) {
+            try {
+                String decodedSolrQuery = URLDecoder.decode(solrQuery.toString(), StandardCharsets.UTF_8.name());
+                logger.debug(String.format("Searching using SOLr query: %s.", decodedSolrQuery));
+            } catch (UnsupportedEncodingException e) {
+                // should never happen
+                logger.fatal("Solr query can not be decoded", e);
+                throw new AssertionError(e);
             }
+        }
 
-            return solrServer.query(solrQuery);
-
-        });
+        return solrServer.query(solrQuery);
     }
 
 
-    public void addDocsToIndex(SolrServer solrServer, int docId) throws SolrInputDocumentCreateException {
+    public void addDocsToIndex(SolrServer solrServer, int docId) throws SolrServerException, IOException {
         Collection<SolrInputDocument> solrInputDocs = mkSolrInputDocs(docId);
 
         if (!solrInputDocs.isEmpty()) {
-            withRuntimeExceptionWrapper(() -> {
-                solrServer.add(solrInputDocs);
-                solrServer.commit();
-                return null;
-            });
+            solrServer.add(solrInputDocs);
+            solrServer.commit();
 
             logger.trace(String.format("Added %d solrInputDoc(s) with docId %d into the index.", solrInputDocs.size(), docId));
         }
     }
 
 
-    public void deleteDocsFromIndex(SolrServer solrServer, int docId) {
+    public void deleteDocsFromIndex(SolrServer solrServer, int docId) throws SolrServerException, IOException {
         String query = mkSolrDocsDeleteQuery(docId);
 
-        withRuntimeExceptionWrapper(() -> {
-            solrServer.deleteByQuery(query);
-            solrServer.commit();
-            return null;
-        });
+        solrServer.deleteByQuery(query);
+        solrServer.commit();
     }
 
 
     public void rebuildIndex(SolrServer solrServer, Consumer<IndexRebuildProgress> progressCallback)
-            throws SolrInputDocumentCreateException, InterruptedException {
+            throws SolrServerException, IOException, InterruptedException {
         logger.debug("Rebuilding index.");
 
         List<Integer> ids = documentMapper.getAllDocumentIds();
@@ -144,13 +133,13 @@ public class DocumentIndexServiceOps {
 
         for (int id : ids) {
             if (Thread.interrupted()) {
-                withRuntimeExceptionWrapper(solrServer::rollback);
+                solrServer.rollback();
                 throw new InterruptedException();
             }
 
             Collection<SolrInputDocument> solrInputDocs = mkSolrInputDocs(id, languages);
             if (!solrInputDocs.isEmpty()) {
-                withRuntimeExceptionWrapper(() -> solrServer.add(solrInputDocs));
+                solrServer.add(solrInputDocs);
                 logger.debug(String.format("Added input docs [%s] to index.", solrInputDocs));
             }
 
@@ -159,11 +148,9 @@ public class DocumentIndexServiceOps {
         }
 
         logger.debug("Deleting old documents from index.");
-        withRuntimeExceptionWrapper(() -> {
-            solrServer.deleteByQuery(String.format("timestamp:{* TO %s}", DateUtil.getThreadLocalDateFormat().format(rebuildStartDt)));
-            solrServer.commit();
-            return null;
-        });
+
+        solrServer.deleteByQuery(String.format("timestamp:{* TO %s}", DateUtil.getThreadLocalDateFormat().format(rebuildStartDt)));
+        solrServer.commit();
 
         logger.debug("Index rebuild is complete.");
     }

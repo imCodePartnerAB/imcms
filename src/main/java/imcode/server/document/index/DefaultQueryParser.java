@@ -8,6 +8,7 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
 
+@Deprecated
 public class DefaultQueryParser implements QueryParser {
 
     public Query parse(String queryString) throws ParseException {

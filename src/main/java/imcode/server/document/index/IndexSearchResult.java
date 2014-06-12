@@ -8,7 +8,7 @@ import org.apache.solr.common.SolrDocumentList;
 import java.util.AbstractList;
 import java.util.List;
 
-public class SearchResult {
+public class IndexSearchResult {
 
     private final SolrQuery solrQuery;
     private final SolrDocumentList solrDocumentList;
@@ -17,7 +17,7 @@ public class SearchResult {
     private final int size;
     private final boolean isEmpty;
 
-    public SearchResult(SolrQuery solrQuery, QueryResponse queryResponse) {
+    public IndexSearchResult(SolrQuery solrQuery, QueryResponse queryResponse) {
         this.solrQuery = solrQuery;
         this.solrDocumentList = queryResponse.getResults();
         this.size = solrDocumentList.size();

@@ -7,7 +7,7 @@ import com.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 
 import _root_.imcode.server.user.UserDomainObject
-import _root_.imcode.server.document.index.{DocumentIndex, DocumentStoredFields, SearchResult}
+import _root_.imcode.server.document.index.{DocumentIndex, DocumentStoredFields, IndexSearchResult}
 import _root_.imcode.server.Imcms
 import _root_.imcode.server.document.DocumentDomainObject
 
@@ -33,7 +33,7 @@ with Container.Sortable
 with ContainerItemSetChangeNotifier
 with ImcmsServicesSupport {
 
-  private class Items(val searchResultOpt: Option[SearchResult]) {
+  private class Items(val searchResultOpt: Option[IndexSearchResult]) {
     val size: Int = if (searchResultOpt.isDefined) searchResultOpt.get.size() else 0
     val isEmpty: Boolean = searchResultOpt.isEmpty
     val nonEmpty: Boolean = searchResultOpt.nonEmpty

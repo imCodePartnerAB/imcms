@@ -1,10 +1,10 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.api.SearchResult;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.common.SolrDocumentList;
 
 import java.util.List;
 
@@ -77,7 +77,7 @@ public interface DocumentIndex {
     List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
     @Deprecated
-    com.imcode.imcms.api.SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException;
+    SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException;
 
     void rebuild() throws IndexException;
 
@@ -86,11 +86,9 @@ public interface DocumentIndex {
     void removeDocument(DocumentDomainObject document) throws IndexException;
 
     /**
-     * @return solr query response
-     * @throws IndexException
      * @since 6.0
      */
-    SearchResult search(SolrQuery query, UserDomainObject searchingUser) throws IndexException;
+    IndexSearchResult search(SolrQuery query, UserDomainObject searchingUser) throws IndexException;
 
     /**
      * Adds default document to index.

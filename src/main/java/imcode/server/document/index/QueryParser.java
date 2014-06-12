@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 
+@Deprecated
 public interface QueryParser extends Serializable {
     Query parse(String queryString) throws ParseException;
 }

@@ -4,7 +4,6 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.common.SolrDocumentList;
 
 import java.util.List;
 
@@ -38,7 +37,7 @@ public class DocumentIndexWrapper implements DocumentIndex {
     }
 
     @Override
-    public SearchResult search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
+    public IndexSearchResult search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
         return index.search(solrQuery, searchingUser);
     }
 

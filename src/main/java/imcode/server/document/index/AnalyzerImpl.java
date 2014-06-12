@@ -8,6 +8,7 @@ import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.util.Version;
 
+@Deprecated
 public class AnalyzerImpl extends Analyzer {
 
 

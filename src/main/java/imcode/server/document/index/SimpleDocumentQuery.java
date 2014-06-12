@@ -3,6 +3,7 @@ package imcode.server.document.index;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 
+@Deprecated
 public class SimpleDocumentQuery implements DocumentQuery {
 
     private final Query query;
