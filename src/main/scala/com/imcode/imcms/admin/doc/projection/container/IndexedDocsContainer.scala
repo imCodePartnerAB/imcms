@@ -2,7 +2,9 @@ package com.imcode
 package imcms
 package admin.doc.projection.container
 
+import com.imcode.imcms.vaadin.Current
 import com.vaadin.data.{Property, Container}
+import com.vaadin.server.{BrowserWindowOpener, ExternalResource}
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin.data._
 
@@ -198,6 +200,9 @@ with ImcmsServicesSupport {
 
           lyt.setComponentAlignment(icon, Alignment.MIDDLE_LEFT)
           lyt.setComponentAlignment(label, Alignment.MIDDLE_LEFT)
+
+          val opener = new BrowserWindowOpener(new ExternalResource(s"${Current.contextPath}/${fields.id}"))
+          opener.extend(lyt)
         }
       )
 

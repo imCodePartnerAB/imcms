@@ -2,28 +2,31 @@ package com.imcode
 package imcms
 package admin.docadmin.text
 
+import _root_.javax.servlet.http.{Cookie, HttpServletRequest}
 import java.util.Locale
+
+import _root_.imcode.server.ImcmsConstants
+import _root_.imcode.util.{ShouldHaveCheckedPermissionsEarlierException, ShouldNotBeThrownException}
 import com.imcode.imcms.admin.docadmin.EditorContainerView
 import com.imcode.imcms.api.DocumentVersion
-import com.imcode.imcms.ImcmsServicesSupport
-import com.imcode.imcms.mapping.container.{LoopEntryRef, VersionRef}
 import com.imcode.imcms.mapping.DocumentSaveException
+import com.imcode.imcms.mapping.container.{LoopEntryRef, VersionRef}
 import com.imcode.imcms.vaadin.Current
-import com.imcode.NonNegInt
+import com.imcode.imcms.vaadin.component._
 import com.vaadin.server.VaadinRequest
 import com.vaadin.ui.UI
-import imcode.server.document.{TextDocumentPermissionSetDomainObject, NoPermissionToEditDocumentException}
-import _root_.imcode.server.ImcmsConstants
-import imcode.server.document.textdocument.{TextDocumentDomainObject, NoPermissionToAddDocumentToMenuException, TextDomainObject}
-import _root_.imcode.util.{ShouldNotBeThrownException, ShouldHaveCheckedPermissionsEarlierException}
-import com.imcode.imcms.vaadin.component._
+import imcode.server.document.textdocument.{NoPermissionToAddDocumentToMenuException, TextDocumentDomainObject, TextDomainObject}
+import imcode.server.document.{NoPermissionToEditDocumentException, TextDocumentPermissionSetDomainObject}
+
+import scala.util.Try
 
 @com.vaadin.annotations.Theme("imcms")
 class TextEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
 
   val LoopEntryRefRE = """(\d+)_(\d+)""".r
 
-  override def init(request: VaadinRequest) {
+  override def init(vaadinRequest: VaadinRequest) {
+    val request = vaadinRequest.asInstanceOf[HttpServletRequest]
     val user = Current.imcmsUser
     val docId = request.getParameter("meta_id").toInt
     val doc = imcmsServices.getDocumentMapper.getWorkingDocument(docId) : TextDocumentDomainObject
@@ -37,10 +40,6 @@ class TextEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
       return
     }
 
-    getLoadingIndicatorConfiguration.setFirstDelay(1)
-    getLoadingIndicatorConfiguration.setSecondDelay(2)
-    getLoadingIndicatorConfiguration.setThirdDelay(3)
-
     setLocale(new Locale(Current.imcmsUser.getLanguageIso639_2))
     getLoadingIndicatorConfiguration |> { lic =>
       lic.setFirstDelay(1)
@@ -52,23 +51,38 @@ class TextEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
     val pathInfo = request.getPathInfo
 
     val titleOpt = request.getParameter("label").trimToOption
-    val returnUrlOpt = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption
     val textNo = request.getParameter("txt").toInt
+    val text = doc.getText(textNo).asOption.getOrElse(new TextDomainObject)
+    val label = request.getParameter("label").trimToOption.getOrElse("")
     val versioRef = VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO)
     val loopEntryRefOpt = request.getParameter("loopEntryRef").trimToEmpty match {
       case LoopEntryRefRE(NonNegInt(loopNo), NonNegInt(entryNo)) => Some(LoopEntryRef.of(loopNo, entryNo))
       case _ => None
     }
 
-    val formats = request.getParameterMap.get("format").asOption.getOrElse(Array.empty)
-    val rowsCountOpt = request.getParameter("rows") |> {
-      case NonNegInt(rows) => Some(rows)
-      case _ => None
+    val formats: Set[String] = request.getParameterValues("format") match {
+      case null => Set.empty
+      case strings => strings.map(_.trim).toSet
     }
 
+    val rowsOpt = Try(request.getParameter("rows").toInt).filter(_ > 0).toOption
+    val width = Try(request.getParameter("width").toInt).filter(w => Range(150, 600).contains(w)).getOrElse(0)
+    val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
+      s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_TEXTS}"
+    )
+
+    val showModeEditor = formats.isEmpty && rowsOpt.isDefined
     val showModeText = formats.isEmpty || formats.contains("text")
     val showModeHtml = formats.isEmpty || formats.contains("html") || formats.contains("none")
-    val showModeEditor = formats.isEmpty && rowsCountOpt.isEmpty
+    def containsCookie(name: String, value: String) = request.getCookies match {
+      case null => false
+      case cookies => cookies.contains((cookie: Cookie) => cookie.getName == "imcms_hide_editor" && cookie.getValue == "true")
+    }
+
+    val editorHidden: Boolean = containsCookie("imcms_hide_editor", "true")
+
+    val editorActive: Boolean = TextDomainObject.TEXT_TYPE_HTML == text.getType && !editorHidden
+    val validationIsActive: Boolean = !containsCookie("validationActive", "false")
 
     val (format, canChangeFormat) = (showModeText, showModeHtml) match {
       case (true, false) => (TextDomainObject.Format.PLAIN_TEXT, false)
@@ -76,11 +90,11 @@ class TextEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
       case _ => (TextDomainObject.Format.HTML, true)
     }
 
-    val opts = TextEditorOpts(format, rowsCountOpt, canChangeFormat, showModeEditor)
+    val opts = TextEditorOpts(format, rowsOpt, canChangeFormat, showModeEditor)
 
     val editor = new TextEditor(versioRef, loopEntryRefOpt, textNo, opts)
 
-    setContent(wrapTextDocTextEditor(request, editor))
+    setContent(wrapTextDocTextEditor(vaadinRequest, editor))
   }
 
 
