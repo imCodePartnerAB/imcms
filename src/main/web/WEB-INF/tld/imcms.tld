@@ -9,9 +9,9 @@
     <uri>imcms</uri>
 
     <tag>
-        <name>contentloop</name>
+        <name>loop</name>
         <tag-class>com.imcode.imcms.servlet.tags.LoopTag</tag-class>
-        <body-content>JSP</body-content>
+        <body-content>scriptless</body-content>
 
         <attribute>
             <name>no</name>

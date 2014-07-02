@@ -16,7 +16,7 @@ public final class Loop {
         return Loop.of(Collections.emptyMap());
     }
 
-    public static Loop singleton() {
+    public static Loop singleEntry() {
         return Loop.of(Collections.singletonMap(1, true));
     }
 

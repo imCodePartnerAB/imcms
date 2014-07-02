@@ -7,9 +7,9 @@ public class ImageTag extends SimpleImcmsTag {
 
     protected String getContent(TagParser tagParser) {
         LoopTag loopTag = (LoopTag)findAncestorWithClass(this, LoopTag.class);
-        LoopEntryRef loopEntryRef = loopTag == null ? null : loopTag.getLoopEntryRef();
+        LoopEntryRef loopEntryRef = loopTag == null ? null : (LoopEntryRef) pageContext.getAttribute("loopEntryRef");
 
-        return tagParser.tagImage(attributes, loopEntryRef);
+        return tagParser.tagText(attributes, loopEntryRef);
     }
 
     public void setMode(String mode) {
