@@ -2,13 +2,13 @@ package com.imcode
 package imcms
 package admin.docadmin.loop
 
-import com.imcode.imcms.vaadin.component.{Spacing, Margin, FullSize}
+import com.imcode.imcms.vaadin.component._
 import com.vaadin.ui._
 
 class LoopEditorView extends CustomComponent with FullSize {
 
-  private val lytEntries = new VerticalLayout with Margin with Spacing
-  private val pnlEntries = new Panel(lytEntries) with FullSize
+  val lytEntries = new VerticalLayout with Margin with Spacing
+  val pnlEntries = new Panel(lytEntries) with FullSize
 
   val mb = new MenuBar
   val miAddFirst = mb.addItem("Add first")
@@ -16,8 +16,5 @@ class LoopEditorView extends CustomComponent with FullSize {
   val miClear = mb.addItem("Clear")
   val miHelp = mb.addItem("Help")
 
-  def clear() {
-    lytEntries.removeAllComponents()
-    lytEntries.addComponent(new Label("Empty"))
-  }
+  setCompositionRoot(new VerticalLayout(mb, pnlEntries) with Spacing)
 }

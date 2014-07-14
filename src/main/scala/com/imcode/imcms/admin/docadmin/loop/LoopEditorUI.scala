@@ -4,6 +4,7 @@ package admin.docadmin.loop
 
 
 import java.util.Locale
+import com.imcode.imcms.admin.docadmin.EditorContainerView
 import com.vaadin.ui._
 import com.vaadin.server._
 import com.imcode.imcms.ImcmsServicesSupport
@@ -24,5 +25,10 @@ class LoopEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
     val doc: TextDocumentDomainObject = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
 
     val editor = new LoopEditor(doc.getVersionRef, loopNo)
+
+    val view = new EditorContainerView("Edit Loop")
+    view.mainComponent = editor.view
+
+    setContent(view)
   }
 }

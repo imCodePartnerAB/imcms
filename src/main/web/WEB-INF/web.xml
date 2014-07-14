@@ -214,6 +214,18 @@
         </init-param>
     </servlet>
 
+    <servlet>
+        <servlet-name>vaadin-docadmin-loop</servlet-name>
+        <servlet-class>
+            com.vaadin.server.VaadinServlet
+        </servlet-class>
+
+        <init-param>
+            <param-name>UI</param-name>
+            <param-value>com.imcode.imcms.admin.docadmin.loop.LoopEditorUI</param-value>
+        </init-param>
+    </servlet>
+
 
     <servlet>
         <servlet-name>EditImageUI</servlet-name>
@@ -744,6 +756,11 @@
     <servlet-mapping>
         <servlet-name>vaadin-docadmin-image</servlet-name>
         <url-pattern>/imcms/docadmin/image/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>vaadin-docadmin-loop</servlet-name>
+        <url-pattern>/imcms/docadmin/loop/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -16,4 +16,6 @@ class EntryView extends CustomComponent with FullSize {
   private val pnlContent = new Panel(lytContent) with FullWidth
 
   setCompositionRoot(pnlContent)
+
+
 }

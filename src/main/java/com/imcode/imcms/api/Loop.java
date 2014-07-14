@@ -66,6 +66,10 @@ public final class Loop {
         return entries;
     }
 
+    public Optional<Integer> getLastEntryNo() {
+        return entries.keySet().stream().max(Integer::compare);
+    }
+
     public int getNextEntryNo() {
         return nextEntryNo;
     }
