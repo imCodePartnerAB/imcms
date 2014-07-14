@@ -4,6 +4,7 @@ import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,7 @@ public class LoopTag extends SimpleTagSupport {
         ParserParameters parserParameters = ParserParameters.fromRequest(request);
         TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
         Loop loop = document.getLoop(no);
+        UserDomainObject user = Utility.getLoggedOnUser(request);
 
         boolean editMode = parserParameters.isContentLoopMode();
         StringWriter writer = new StringWriter();
@@ -74,9 +76,9 @@ public class LoopTag extends SimpleTagSupport {
                 request.setAttribute("flags", parserParameters.getFlags());
 
                 try {
-                    content = Utility.getContents(
-                            "/WEB-INF/admin/textdoc/contentloop/tag/loop.jsp",
-                            request, response);
+
+                    content = Utility.getContents("/imcms/" + user.getLanguageIso639_2()
+                            + "/jsp/docadmin/text/edit_loop.jsp", request, response);
                 } catch (Exception e) {
                     throw new JspException(e);
                 }

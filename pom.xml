@@ -65,16 +65,16 @@
 
         <build.webapp.dir>${project.build.directory}/${project.artifactId}</build.webapp.dir>
 
-        <solr.version>4.8.1</solr.version>
+        <solr.version>4.9.0</solr.version>
         <slf4j.version>1.7.7</slf4j.version>
         <scala.version>2.11.1</scala.version>
-        <springframework.version>4.0.5.RELEASE</springframework.version>
+        <springframework.version>4.0.6.RELEASE</springframework.version>
 
         <!--
             Core & EntityManager version
         -->
         <hibernate.version>4.3.5.Final</hibernate.version>
-        <vaadin.version>7.2.2</vaadin.version>
+        <vaadin.version>7.2.4</vaadin.version>
 
         <tomcat.version>7.0.54</tomcat.version>
 
@@ -111,7 +111,7 @@
         <!--
             Jetty plugin and jsp compiler plugin version.
         -->
-        <jetty.version>9.1.5.v20140505</jetty.version>
+        <jetty.version>9.2.1.v20140609</jetty.version>
         <jetty.port>9090</jetty.port>
         <jetty.stop.key>${project.name}</jetty.stop.key>
         <jetty.stop.port>9696</jetty.stop.port>
@@ -426,7 +426,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.1.0.Final</version>
+            <version>5.1.1.Final</version>
         </dependency>
 
         <dependency>

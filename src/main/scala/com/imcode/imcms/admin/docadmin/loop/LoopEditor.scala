@@ -20,6 +20,6 @@ class LoopEditor(versionRef: VersionRef, loopNo: Int) extends Editor with ImcmsS
 
   override def resetValues() {
     val loader = imcmsServices.getManagedBean(classOf[TextDocumentContentLoader])
-    //loop = Option(doc.getLoop).getOrElse(Loop.singleton())
+    loop = Option(doc.getLoop).getOrElse(Loop.empty())
   }
 }
