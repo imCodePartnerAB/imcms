@@ -105,7 +105,7 @@ public class Loop extends VersionedContent {
     @ElementCollection
     @CollectionTable(
             name = "imcms_text_doc_contents",
-            joinColumns = @JoinColumn(name = "content_id")
+            joinColumns = @JoinColumn(name = "loop_id")
     )
     @OrderColumn(name = "ix")
     private List<Entry> entries = new LinkedList<>();

@@ -5,9 +5,10 @@ package admin.docadmin.loop
 
 import java.util.Locale
 import com.imcode.imcms.admin.docadmin.EditorContainerView
+import com.imcode.imcms.mapping.TextDocumentContentSaver
 import com.vaadin.ui._
 import com.vaadin.server._
-import com.imcode.imcms.ImcmsServicesSupport
+import com.imcode.imcms.vaadin.component._
 
 
 import com.imcode.imcms.vaadin.Current
@@ -30,5 +31,12 @@ class LoopEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
     view.mainComponent = editor.view
 
     setContent(view)
+
+    view.buttons.btnSave.addClickHandler { e =>
+      val saver = imcmsServices.getManagedBean(classOf[TextDocumentContentSaver])
+      val loopContainer = editor.collectValues().right.get
+
+      saver.saveLoop(loopContainer)
+    }
   }
 }

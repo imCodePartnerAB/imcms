@@ -70,6 +70,10 @@ public final class Loop {
         return entries.keySet().stream().max(Integer::compare);
     }
 
+    public Optional<Integer> getLastEntryIndex() {
+        return entries.keySet().stream().max(Integer::compare).flatMap(this::findEntryIndexByNo);
+    }
+
     public int getNextEntryNo() {
         return nextEntryNo;
     }

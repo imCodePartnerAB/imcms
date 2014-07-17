@@ -479,9 +479,9 @@ public class TextDocumentContentSaver {
         return toJpaObject(container.getVersionRef(), container.getLoopNo(), container.getLoop());
     }
 
-    //fixme: assign version, check existing
     private com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop toJpaObject(VersionRef versionRef, int loopNo, Loop loopDO) {
         List<com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry> entries = new LinkedList<>();
+        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
         loopDO.getEntries().forEach((entryNo, enabled) -> {
             entries.add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo, enabled));
@@ -492,6 +492,8 @@ public class TextDocumentContentSaver {
                 l -> {
                     l.setEntries(entries);
                     l.setNo(loopNo);
+                    l.setNextEntryNo(loopDO.getNextEntryNo());
+                    l.setVersion(version);
                 }
         );
     }

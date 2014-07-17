@@ -12,7 +12,10 @@ class EntryView extends CustomComponent with FullSize {
   val btnDelete = new Button("Delete")
   val lblText = new Label with FullWidth
 
-  private val lytContent = new VerticalLayout(lblText, btnMoveUp, btnMoveDown, btnDelete) with FullWidth with Spacing
+  private val lytButtons = new HorizontalLayout(btnMoveUp, btnMoveDown, btnDelete)
+  private val lytContent = new HorizontalLayout(lblText, lytButtons) with FullWidth with Spacing |>> { lyt =>
+    lyt.setExpandRatio(lblText, 1.0f)
+  }
   private val pnlContent = new Panel(lytContent) with FullWidth
 
   setCompositionRoot(pnlContent)
