@@ -8,9 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
-public interface TextRepository extends JpaRepository<Text, Integer> {
+public interface TextRepository extends JpaRepository<Text, Integer>, TextRepositoryCustom {
 
     @Query("SELECT t FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.loopEntryRef IS NULL")
     List<Text> findByVersionAndLanguageWhereLoopEntryRefIsNull(Version version, Language language);
@@ -24,7 +25,6 @@ public interface TextRepository extends JpaRepository<Text, Integer> {
 
     @Query("SELECT t FROM Text t WHERE t.version = ?1 AND t.no = ?2 AND t.loopEntryRef = ?3")
     List<Text> findByVersionAndNoAndLoopEntryRef(Version version, int no, LoopEntryRef loopEntryRef);
-
 
     @Query("SELECT t FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef IS NULL")
     Text findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(Version version, Language language, int no);

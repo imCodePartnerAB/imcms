@@ -128,6 +128,16 @@ public class TextDocumentContentLoader {
         return result;
     }
 
+    public TextDomainObject getFirstLoopEntryText(DocRef docRef, com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef) {
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LoopEntryRef loopEntryRefJpa = new LoopEntryRef(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo());
+
+        return toDomainObject(
+                textRepository.findFirst(version, language, loopEntryRefJpa)
+        );
+    }
+
     public TextDomainObject getText(DocRef docRef, int textNo) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         Language language = languageRepository.findByCode(docRef.getLanguageCode());

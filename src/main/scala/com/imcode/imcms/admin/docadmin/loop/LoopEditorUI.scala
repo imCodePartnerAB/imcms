@@ -37,6 +37,7 @@ class LoopEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
       val loopContainer = editor.collectValues().right.get
 
       saver.saveLoop(loopContainer)
+      imcmsServices.getDocumentMapper.invalidateDocument(docId)
     }
   }
 }

@@ -6,14 +6,15 @@ import _root_.java.util.function.BiConsumer
 
 import com.imcode.imcms.api.Loop
 import com.imcode.imcms.mapping.TextDocumentContentLoader
-import com.imcode.imcms.mapping.container.{TextDocLoopContainer, VersionRef}
+import com.imcode.imcms.mapping.container.{DocRef, TextDocLoopContainer}
 import com.imcode.imcms.vaadin.Editor
 import com.imcode.imcms.vaadin.component._
 import com.vaadin.ui.Label
+import imcode.server.document.textdocument.TextDocumentDomainObject.LoopItemRef
 
 import scala.collection.JavaConverters._
 
-class LoopEditor(versionRef: VersionRef, loopNo: Int) extends Editor with ImcmsServicesSupport {
+class LoopEditor(docRef: DocRef, loopNo: Int) extends Editor with ImcmsServicesSupport {
 
   private val lblEmpty = new Label("Empty")
 
@@ -39,6 +40,8 @@ class LoopEditor(versionRef: VersionRef, loopNo: Int) extends Editor with ImcmsS
     }
   }
 
+  private val loader = imcmsServices.getManagedBean(classOf[TextDocumentContentLoader])
+
   resetValues()
 
   private var loop = Loop.empty()
@@ -48,8 +51,7 @@ class LoopEditor(versionRef: VersionRef, loopNo: Int) extends Editor with ImcmsS
   }
 
   override def resetValues() {
-    val loader = imcmsServices.getManagedBean(classOf[TextDocumentContentLoader])
-    loop = Option(loader.getLoop(versionRef, loopNo)).getOrElse(Loop.empty())
+    loop = Option(loader.getLoop(docRef.getVersionRef, loopNo)).getOrElse(Loop.empty())
 
     setLoop(loop)
   }
@@ -59,8 +61,10 @@ class LoopEditor(versionRef: VersionRef, loopNo: Int) extends Editor with ImcmsS
       view.lytEntries.removeComponent(lblEmpty)
     }
 
+    val text = loader.getFirstLoopEntryText(docRef, LoopItemRef.of(loopNo, no))
+
     val entryView = new EntryView |>> { v =>
-      v.lblText.setValue(no.toString)
+      v.lblText.setValue(if (text != null) text.getText.take(20) else no.toString)
     }
 
     view.lytEntries.addComponent(entryView, index)
