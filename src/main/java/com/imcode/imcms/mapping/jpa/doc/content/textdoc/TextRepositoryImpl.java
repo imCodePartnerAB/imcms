@@ -15,6 +15,8 @@ class TextRepositoryImpl implements TextRepositoryCustom {
     public Text findFirst(Version version, Language language, LoopEntryRef loopEntryRef) {
         return entityManager.createQuery(
                 "SELECT t FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.loopEntryRef = ?3",
-                Text.class).setMaxResults(1).getSingleResult();
+                Text.class)
+                .setParameter(1, version).setParameter(2, language).setParameter(3, loopEntryRef)
+                .setMaxResults(1).getResultList().stream().findFirst().orElse(null);
     }
 }

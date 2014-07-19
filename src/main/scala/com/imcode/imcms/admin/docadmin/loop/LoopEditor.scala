@@ -6,7 +6,7 @@ import _root_.java.util.function.BiConsumer
 
 import com.imcode.imcms.api.Loop
 import com.imcode.imcms.mapping.TextDocumentContentLoader
-import com.imcode.imcms.mapping.container.{DocRef, TextDocLoopContainer}
+import com.imcode.imcms.mapping.container.{LoopEntryRef, DocRef, TextDocLoopContainer}
 import com.imcode.imcms.vaadin.Editor
 import com.imcode.imcms.vaadin.component._
 import com.vaadin.ui.Label
@@ -47,7 +47,7 @@ class LoopEditor(docRef: DocRef, loopNo: Int) extends Editor with ImcmsServicesS
   private var loop = Loop.empty()
 
   override def collectValues(): ErrorsOrData = {
-    Right(TextDocLoopContainer.of(versionRef, loopNo, loop))
+    Right(TextDocLoopContainer.of(docRef.getVersionRef, loopNo, loop))
   }
 
   override def resetValues() {
@@ -61,10 +61,10 @@ class LoopEditor(docRef: DocRef, loopNo: Int) extends Editor with ImcmsServicesS
       view.lytEntries.removeComponent(lblEmpty)
     }
 
-    val text = loader.getFirstLoopEntryText(docRef, LoopItemRef.of(loopNo, no))
+    val text = loader.getFirstLoopEntryText(docRef, LoopEntryRef.of(loopNo, no))
 
     val entryView = new EntryView |>> { v =>
-      v.lblText.setValue(if (text != null) text.getText.take(20) else no.toString)
+      v.lblText.setValue(if (text != null) text.getText.take(20) else "...")
     }
 
     view.lytEntries.addComponent(entryView, index)

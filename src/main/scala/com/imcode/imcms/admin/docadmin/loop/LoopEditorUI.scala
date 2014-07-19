@@ -25,7 +25,7 @@ class LoopEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
     val loopNo = request.getParameter("loop_no").toInt
     val doc: TextDocumentDomainObject = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
 
-    val editor = new LoopEditor(doc.getVersionRef, loopNo)
+    val editor = new LoopEditor(doc.getRef, loopNo)
 
     val view = new EditorContainerView("Edit Loop")
     view.mainComponent = editor.view
