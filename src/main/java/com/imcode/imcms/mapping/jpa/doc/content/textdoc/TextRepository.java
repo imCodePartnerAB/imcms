@@ -33,10 +33,10 @@ public interface TextRepository extends JpaRepository<Text, Integer>, TextReposi
     Text findByVersionAndLanguageAndNoAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
 
 
-    @Query("SELECT t FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef IS NULL")
+    @Query("SELECT t.id FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef IS NULL")
     Integer findIdByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(Version version, Language language, int no);
 
-    @Query("SELECT t FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef = ?4")
+    @Query("SELECT t.id FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef = ?4")
     Integer findIdByVersionAndLanguageAndNoAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
 
 

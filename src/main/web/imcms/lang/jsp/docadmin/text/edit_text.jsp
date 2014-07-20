@@ -35,7 +35,7 @@
     LoopEntryRef loopEntryRef = (LoopEntryRef) request.getAttribute("loopEntryRef");
 
     if (loopEntryRef != null) {
-        url += String.format("loopEntryRef=%d_%d", loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo());
+        url += String.format("&loopEntryRef=%d_%d", loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo());
     }
 %>
 

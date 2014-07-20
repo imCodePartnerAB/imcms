@@ -78,7 +78,16 @@ class TextEditor(versionRef: VersionRef, loopEntryRefOpt: Option[LoopEntryRef], 
   }
 
   override def collectValues(): ErrorsOrData = {
-    Right(TextDocTextsContainer.of(versionRef, loopEntryRefOpt.orNull, textNo, textsMap))
+    val textsMapToSave: util.Map[DocumentLanguage, TextDomainObject] = languages.asScala.zipWithIndex.map {
+      case (language, index) =>
+        val field = view.tsTexts.getTab(index).getComponent.asInstanceOf[Field[String]]
+        val value = field.getValue
+        val text = new TextDomainObject(value.trim, if (field.isInstanceOf[TextField]) TextDomainObject.TEXT_TYPE_PLAIN else TextDomainObject.TEXT_TYPE_HTML)
+
+        (language, text)
+    }.toMap.asJava
+
+    Right(TextDocTextsContainer.of(versionRef, loopEntryRefOpt.orNull, textNo, textsMapToSave))
   }
 
   private def createFieldFor(textDO: TextDomainObject): Field[String] = {

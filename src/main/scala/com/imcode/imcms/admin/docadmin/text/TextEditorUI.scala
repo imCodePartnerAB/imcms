@@ -17,6 +17,7 @@ import com.vaadin.server.VaadinRequest
 import com.vaadin.ui.UI
 import imcode.server.document.textdocument.{NoPermissionToAddDocumentToMenuException, TextDocumentDomainObject, TextDomainObject}
 import imcode.server.document.{NoPermissionToEditDocumentException, TextDocumentPermissionSetDomainObject}
+import org.apache.commons.lang3.StringEscapeUtils
 
 import scala.util.Try
 
@@ -190,38 +191,34 @@ class TextEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
 
   // [-] <%= showModeEditor ? "Editor/" : "" %>HTML
   def wrapTextDocTextEditor(request: VaadinRequest, editor: TextEditor): EditorContainerView = {
-    val w = new EditorContainerView("text_editor.title".i)
+    val docId =  request.getParameter("meta_id").toInt
+    val textNo = request.getParameter("txt").toInt
 
-    //      val title = request.getParameter("label").trimToNull match {
-    //        case null => s"Document ${doc.getId} text no $textNo"
-    //        case label => label |> StringEscapeUtils.escapeHtml4
-    //      }
-    //
-    //      w.setTitle(title)
+    val title = request.getParameter("label").trimToNull match {
+      case null => "text_editor.title".f(docId, textNo)
+      case label => label |> StringEscapeUtils.escapeHtml4
+    }
+
+    val w = new EditorContainerView(title)
 
     w.mainComponent = editor.view
 
-    w.buttons.btnSave.addClickHandler {
-      _ =>
-        save(closeOnSuccess = false)
+    w.buttons.btnSave.addClickHandler { _ =>
+      save(closeOnSuccess = false)
     }
-    w.buttons.btnSaveAndClose.addClickHandler {
-      _ =>
-        save(closeOnSuccess = true)
+    w.buttons.btnSaveAndClose.addClickHandler { _ =>
+      save(closeOnSuccess = true)
     }
 
-    w.buttons.btnClose.addClickHandler {
-      _ =>
-        closeEditor()
+    w.buttons.btnClose.addClickHandler { _ =>
+      closeEditor()
     }
 
-    w.buttons.btnReset.addClickHandler {
-      _ =>
-        editor.resetValues()
+    w.buttons.btnReset.addClickHandler { _ =>
+      editor.resetValues()
     }
 
     def closeEditor() {
-      val docId = request.getParameter("meta_id").toInt
       val contextPath = Current.contextPath
       val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
         s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_TEXTS}"
@@ -231,19 +228,18 @@ class TextEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
     }
 
     def save(closeOnSuccess: Boolean) {
-      editor.collectValues().right.get |> {
-        container =>
+      editor.collectValues().right.get |> { container =>
         // -check permissionSet.getEditTexts()
-          try {
-            val user = Current.imcmsUser
-            imcmsServices.getDocumentMapper.saveTextDocTexts(container, Current.imcmsUser)
-            //imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
-            if (closeOnSuccess) closeEditor()
-          } catch {
-            case e: NoPermissionToEditDocumentException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
-            case e: NoPermissionToAddDocumentToMenuException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
-            case e: DocumentSaveException => throw new ShouldNotBeThrownException(e)
-          }
+        try {
+          val user = Current.imcmsUser
+          imcmsServices.getDocumentMapper.saveTextDocTexts(container, Current.imcmsUser)
+          //imcmsServices.updateMainLog(s"Text $textNo in [${doc.getId}] modified by user: [${user.getFullName}]");
+          if (closeOnSuccess) closeEditor()
+        } catch {
+          case e: NoPermissionToEditDocumentException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
+          case e: NoPermissionToAddDocumentToMenuException => throw new ShouldHaveCheckedPermissionsEarlierException(e)
+          case e: DocumentSaveException => throw new ShouldNotBeThrownException(e)
+        }
       }
     }
 

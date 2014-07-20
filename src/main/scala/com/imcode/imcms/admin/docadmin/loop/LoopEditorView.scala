@@ -10,7 +10,7 @@ class LoopEditorView extends CustomComponent with FullSize {
   val lytEntries = new VerticalLayout with Margin with Spacing with FullWidth
   val pnlEntries = new Panel(lytEntries) with FullSize
 
-  val mb = new MenuBar
+  val mb = new MenuBar with FullWidth
   val miAddFirst = mb.addItem("Add first")
   val miAddLast = mb.addItem("Add last")
   val miClear = mb.addItem("Clear")
