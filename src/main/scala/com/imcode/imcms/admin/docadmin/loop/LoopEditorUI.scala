@@ -29,7 +29,7 @@ class LoopEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
     val loopNo = request.getParameter("loop_no").toInt
     val contextPath = Current.contextPath
     val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
-      s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_TEXTS}"
+      s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_LOOPS}"
     )
 
     val doc: TextDocumentDomainObject = imcmsServices.getDocumentMapper.getWorkingDocument(docId)
@@ -63,22 +63,20 @@ class LoopEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
     view.buttons.btnSave.addClickHandler { _ => save() }
     view.buttons.btnSaveAndClose.addClickHandler { _ => save(closeOnSuccess = true) }
     view.buttons.btnClose.addClickHandler {  _ =>
-      close()
-//      val editedMenu = editor.collectValues().right.get
-//      if (editedMenu.getSortOrder == menu.getSortOrder && editedMenu.getMenuItems.deep == menu.getMenuItems.deep) {
-//        close()
-//      } else {
-//        val dlg = new ConfirmationDialog(
-//          "menu_editor_dlg.confirmation.close_without_saving.title".i,
-//          "menu_editor_dlg.confirmation.close_without_saving.message".i
-//        )
-//
-//        dlg.setOkButtonHandler {
-//          close()
-//        }
-//
-//        Current.ui.addWindow(dlg)
-//      }
+      if (!editor.isModified()) {
+        close()
+      } else {
+        val dlg = new ConfirmationDialog(
+          "loop_editor_dlg.confirmation.close_without_saving.title".i,
+          "loop_editor_dlg.confirmation.close_without_saving.message".i
+        )
+
+        dlg.setOkButtonHandler {
+          close()
+        }
+
+        Current.ui.addWindow(dlg)
+      }
     }
   }
 }
