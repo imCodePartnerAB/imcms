@@ -109,13 +109,13 @@
                         <imcms:include no='1' label='Dynamisk inkludering 1'/>
 
 
-                        <imcms:loop no="1">
+                        <imcms:loop no="1" label="Loop (main)" pre='<div class="text">' post='</div>'>
                             <imcms:text no='2' label='<br/>Text' pre='<div class="text">' post='</div>'/>
                             <imcms:image no="33"/>
                         </imcms:loop>
 
 
-                        <imcms:loop no="100">
+                        <imcms:loop no="100" label="Loop (secondary)" pre='<div class="text">' post='</div>'>
                             <imcms:text no='100' label='<br/>Text' pre='<div class="text">' post='</div>'/>
                             <imcms:image no='3' label='Bild' pre='<br/><br/>' post='<br/>'/><br/>
                         </imcms:loop>

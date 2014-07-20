@@ -9,10 +9,13 @@ public class TextTag extends SimpleImcmsTag {
 
     protected String getContent(TagParser tagParser) {
 //        LoopTag loopTag = (LoopTag)findAncestorWithClass(this, LoopTag.class);
-//        LoopEntryRef loopEntryRef = loopTag == null ? null : (LoopEntryRef) pageContext.getAttribute("loopEntryRef");
 
         TagAdapter loopTagAdapter = (TagAdapter)findAncestorWithClass(this, TagAdapter.class);
-        LoopEntryRef loopEntryRef = loopTagAdapter == null ? null : (LoopEntryRef) pageContext.getAttribute("loopEntryRef");
+        LoopTag loopTag = loopTagAdapter != null && loopTagAdapter.getAdaptee() instanceof LoopTag
+                ? (LoopTag) loopTagAdapter.getAdaptee()
+                : null;
+
+        LoopEntryRef loopEntryRef = loopTag == null ? null : loopTag.getLoopEntryRef();
 
         return tagParser.tagText(attributes, loopEntryRef);
     }

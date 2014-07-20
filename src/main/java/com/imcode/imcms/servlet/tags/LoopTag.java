@@ -4,6 +4,7 @@ import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
+import imcode.server.parser.TagParser;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -33,6 +34,8 @@ public class LoopTag extends SimpleTagSupport {
 
     private Properties attributes = new Properties();
 
+    private LoopEntryRef loopEntryRef;
+
     @Override
     public void doTag() throws JspException, IOException {
         PageContext pageContext = (PageContext) getJspContext();
@@ -56,7 +59,7 @@ public class LoopTag extends SimpleTagSupport {
             int entryNo = entry.getKey();
             boolean enabled = entry.getValue();
 
-            pageContext.setAttribute("loopEntryRef", LoopEntryRef.of(no, entryNo));
+            loopEntryRef = LoopEntryRef.of(no, entryNo);
 
             if (editMode) {
                 getJspBody().invoke(writer);
@@ -64,6 +67,7 @@ public class LoopTag extends SimpleTagSupport {
                 getJspBody().invoke(null);
             }
         }
+
 
         if (editMode) {
             try {
@@ -73,12 +77,15 @@ public class LoopTag extends SimpleTagSupport {
                 request.setAttribute("loop", loop);
                 request.setAttribute("content", content);
                 request.setAttribute("document", document);
+                request.setAttribute("label", label);
                 request.setAttribute("flags", parserParameters.getFlags());
 
                 try {
 
                     content = Utility.getContents("/imcms/" + user.getLanguageIso639_2()
                             + "/jsp/docadmin/text/edit_loop.jsp", request, response);
+
+                    content = TagParser.addPreAndPost(attributes, content);
                 } catch (Exception e) {
                     throw new JspException(e);
                 }
@@ -119,7 +126,6 @@ public class LoopTag extends SimpleTagSupport {
 //    }
 
 
-
     public void setNo(int no) {
         this.no = no;
     }
@@ -144,8 +150,7 @@ public class LoopTag extends SimpleTagSupport {
         attributes.setProperty("post", post);
     }
 
-    // todo: return as page cts param
     public LoopEntryRef getLoopEntryRef() {
-        return null;//LoopEntryRef.of(no, loopIterator.getCurrentEntryNo());
+        return loopEntryRef;
     }
 }
