@@ -561,6 +561,10 @@
         <filter token="db-pass" value="${db-pass}"/>
         <filter token="db-maxconnections" value="${db-maxconnections}"/>
 
+        <filter token="authentication-method-1" value="${authentication-method-1}"/>
+        <filter token="authentication-method-2" value="${authentication-method-2}"/>
+        <filter token="cgi-authentication-method-url" value="${cgi-authentication-method-url}"/>
+
         <filter token="external-authenticator" value="${external-authenticator}"/>
         <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
 

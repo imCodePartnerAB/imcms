@@ -96,6 +96,49 @@ TEXTAREA.FileAdminEditEditor {
 	color: #999;
 }
 
+#imcms-login-container-tabs{
+    border-bottom: 1px solid #20568d;
+}
+.imcms-typed-form-container{
+    margin-top:10px;
+}
+.imcms-tab{
+    text-align:center;
+    color: #fff;
+    font-size: 12px;
+    font-family: Tahoma, Arial, sans-serif;
+    margin-left:10px;
+    float:left;
+    background-color:#20568d;
+    width:100px;
+    height:21px;
+    line-height:21px;
+    border-top:1px solid #20568d;
+    border-left:1px solid #20568d;
+    border-right:1px solid #20568d;
+}
+.imcms-tab-active{
+    position:relative;
+    color: #000;
+    top: 1px;
+    border-top:1px solid #20568d;
+    border-left:1px solid #20568d;
+    border-right:1px solid #20568d;
+    border-bottom:0px solid #f5f5f7;
+    margin-left :10px;
+    float:left;
+    background-color:#f5f5f7;
+    width:100px;
+    height:21px;
+    line-height:21px;
+}
+
+iframe{
+    border:none;
+    width:100%;
+    height:100%;
+}
+
 <%
 /* *******************************************************************************************
  *         BG Colors                                                                         *

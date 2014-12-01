@@ -46,6 +46,11 @@
 	<name>imCMS</name>
 
 	<properties>
+        <sp.id>sp.rainbow.org</sp.id>
+        <acs.url>https://sp.rainbow.org:8443/sso/acs</acs.url>
+        <!--<idp.sso.url>https://idp.rainbow.org:8443/idp/profile/SAML2/Redirect/SSO</idp.sso.url>-->
+        <idp.sso.url>https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/req/0/0</idp.sso.url>
+        <logout.url>/logout</logout.url>
 		<generated.webapp.dir>${project.build.directory}/${project.build.finalName}</generated.webapp.dir>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -105,7 +110,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
-			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
@@ -160,6 +164,18 @@
 			<version>4.9</version>
 			<scope>test</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>1.4.01</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml</artifactId>
+            <version>2.6.1</version>
+        </dependency>
 
 		<dependency>
 			<groupId>commons-beanutils</groupId>

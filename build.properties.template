@@ -30,6 +30,9 @@ db-url = ${db-url-without-db-name};DatabaseName=${db-name}
 #db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
 #db-url = ${db-url-without-db-name}${db-name}?characterEncoding=utf8
 
+authentication-method-1 = loginPassword
+authentication-method-2 = cgi
+cgi-authentication-method-url = https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/req/0/0
 
 external-authenticator =
 external-user-and-role-registry =

@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-         version="2.4">
+<web-app
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+        xmlns="http://java.sun.com/xml/ns/javaee"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+        id="WebApp_ID" version="2.5">
 
     <display-name>imCMS</display-name>
+
+    <filter>
+        <description>Checking for answer from IDP server</description>
+        <filter-name>SSOFilter</filter-name>
+        <filter-class>imcode.server.user.saml2.SAMLSPFilter</filter-class>
+        <init-param>
+            <param-name>excludedUrlPattern</param-name>
+            <param-value>.*\.jpg</param-value>
+        </init-param>
+        <init-param>
+            <param-name>idProviderSSOUrl</param-name>
+            <param-value>https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/req/0/0</param-value>
+        </init-param>
+        <init-param>
+            <param-name>spProviderId</param-name>
+            <param-value>http://localhost:8080</param-value>
+        </init-param>
+        <init-param>
+            <param-name>acsUrl</param-name>
+            <param-value>http://localhost:8080/acs</param-value>
+        </init-param>
+        <init-param>
+            <param-name>logoutUrl</param-name>
+            <param-value>/logout</param-value>
+        </init-param>
+    </filter>
 
     <filter>
         <description>Checks for multiple user login</description>
@@ -25,18 +53,32 @@
         <filter-class>com.imcode.imcms.servlet.SuperAdminFilter</filter-class>
     </filter>
 
-    
+    <filter-mapping>
+        <filter-name>SSOFilter</filter-name>
+        <url-pattern>/VerifyUserViaBankId</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>SSOFilter</filter-name>
+        <url-pattern>/logout</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>SSOFilter</filter-name>
+        <url-pattern>/acs</url-pattern>
+    </filter-mapping>
+
     <filter-mapping>
         <filter-name>ImcmsMultipleUserLoginFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
-    
+
+
     <filter-mapping>
         <filter-name>ImcmsSetupFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
+
     <filter-mapping>
         <filter-name>SuperAdminFilter</filter-name>
         <url-pattern>/imcms/docs/apisamples/*</url-pattern>
@@ -45,7 +87,7 @@
     <listener>
         <listener-class>com.imcode.imcms.servlet.ContextListener</listener-class>
     </listener>
-    
+
     <servlet>
         <servlet-name>RD</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ReDirecter</servlet-class>
@@ -285,17 +327,17 @@
         <servlet-name>com.imcode.imcms.servlet.XmlDoc</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.XmlDoc</servlet-class>
     </servlet>
-    
+
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-class>
     </servlet>
-    
+
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.ImageHandling</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ImageHandling</servlet-class>
     </servlet>
-    
+
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.ClearImageCache</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ClearImageCache</servlet-class>
@@ -305,12 +347,12 @@
         <servlet-name>com.imcode.imcms.servlet.ImagePreview</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ImagePreview</servlet-class>
     </servlet>
-    
+
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.AjaxServlet</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.AjaxServlet</servlet-class>
     </servlet>
-    
+
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <url-pattern>/imcms/admin/profile/*</url-pattern>
@@ -560,12 +602,12 @@
         <servlet-name>com.imcode.imcms.servlet.XmlDoc</servlet-name>
         <url-pattern>/servlet/XmlDoc</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.ImageHandling</servlet-name>
         <url-pattern>/imagehandling/*</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.ClearImageCache</servlet-name>
         <url-pattern>/servlet/ClearImageCache</url-pattern>
@@ -575,7 +617,7 @@
         <servlet-name>com.imcode.imcms.servlet.ImagePreview</servlet-name>
         <url-pattern>/servlet/ImagePreview</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.AjaxServlet</servlet-name>
         <url-pattern>/servlet/AjaxServlet</url-pattern>
@@ -583,7 +625,7 @@
 
     <session-config>
         <session-timeout>
-         30
+            30
         </session-timeout>
     </session-config>
 
@@ -682,7 +724,7 @@
         <exception-type>java.lang.Throwable</exception-type>
         <location>/imcms/internalerrorpage.jsp</location>
     </error-page>
-    
+
     <error-page>
         <error-code>404</error-code>
         <location>/imcms/404.jsp</location>
