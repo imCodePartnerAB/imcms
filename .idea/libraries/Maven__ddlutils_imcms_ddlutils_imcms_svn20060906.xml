@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: ddlutils-imcms:ddlutils-imcms:svn20060906">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/ddlutils-imcms/ddlutils-imcms/svn20060906/ddlutils-imcms-svn20060906.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/ddlutils-imcms/ddlutils-imcms/svn20060906/ddlutils-imcms-svn20060906-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/ddlutils-imcms/ddlutils-imcms/svn20060906/ddlutils-imcms-svn20060906-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

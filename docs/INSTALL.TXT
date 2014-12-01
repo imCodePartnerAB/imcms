@@ -65,5 +65,11 @@ Running:
       
     * When the database setup is finished you should see the welcome page.
 
+if you wont to use CGI service (BankID and etc) follow this steps:
+    1.	Run IDEA.
+    2.	Make key combination ALT+F12
+    3.	In Opened Terminal Window write command cd %JAVA_HOME%. If nothing has happened - execute command “C:”  where C – java_home parent disk name
+    4.	Execute command “keytool -alias {sitename} -importcert –file {pathtocertificate}/***.crt” where {pathtocertificate} – path to certificate, as file extension can by any certificate extension, {sitename} – site address, that certificating by
+
 
 You're done!

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: gnu-crypto-javax-security:gnu-crypto-javax-security:2.0.1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/gnu-crypto-javax-security/gnu-crypto-javax-security/2.0.1/gnu-crypto-javax-security-2.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/gnu-crypto-javax-security/gnu-crypto-javax-security/2.0.1/gnu-crypto-javax-security-2.0.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/gnu-crypto-javax-security/gnu-crypto-javax-security/2.0.1/gnu-crypto-javax-security-2.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

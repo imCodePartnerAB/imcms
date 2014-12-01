@@ -25,7 +25,7 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
                                                          String defaultLanguage) throws IllegalArgumentException {
         if ((null == externalAuthenticator) != (null == externalUserRegistry)) {
             throw new IllegalArgumentException("External authenticator and external usermapper should both be either set or not set.");
-        }
+    }
 
         this.imcmsAuthenticatorAndUserMapperAndRole = imcmsAndRole;
         this.externalAuthenticator = externalAuthenticator;

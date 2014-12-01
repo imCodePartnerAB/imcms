@@ -7,10 +7,12 @@ public class RoleId implements Serializable {
     public static final int SUPERADMIN_ID = 0 ;
     public static final int USERADMIN_ID = 1 ;
     public static final int USERS_ID = 2 ;
+    public static final int BANKIDUSER_ID = 3 ;
 
     public final static RoleId SUPERADMIN = new RoleId(SUPERADMIN_ID);
     public final static RoleId USERADMIN = new RoleId(USERADMIN_ID);
     public final static RoleId USERS = new RoleId(USERS_ID);
+    public final static RoleId BANKIDUSER = new RoleId(BANKIDUSER_ID);
 
     private final int roleId ;
 

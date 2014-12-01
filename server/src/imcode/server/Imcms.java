@@ -6,6 +6,7 @@ import com.imcode.imcms.db.*;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import imcode.server.user.saml2.FilterConfig;
 import imcode.util.Prefs;
 import imcode.util.CachingFileLoader;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -38,7 +39,7 @@ public class Imcms {
     }
 
     public synchronized static ImcmsServices getServices() {
-        if ( null == services ) {
+        if (null == services) {
             start();
         }
         return services;
@@ -80,11 +81,43 @@ public class Imcms {
         return defaultImcmsServices;
     }
 
+    public static Map<String, AuthenticationMethodConfiguration> getAuthenticationConfiguration() {
+        Map<String, AuthenticationMethodConfiguration> result = new HashMap<String, AuthenticationMethodConfiguration>();
+
+        Properties prop = getServerProperties();
+        String authenticationMethodName = "";
+        int index = 1;
+        while ((authenticationMethodName =
+                prop.getProperty(
+                        AuthenticationMethodConfiguration.AUTHENTICATION_METHOD_NAMING_PATTERN
+                                .replace(AuthenticationMethodConfiguration.AUTHENTICATION_REPLACEABLE, String.valueOf(index)),
+                        AuthenticationMethodConfiguration.AUTHENTICATION_REPLACEABLE)
+        ) != AuthenticationMethodConfiguration.AUTHENTICATION_REPLACEABLE) {
+            result.put(
+                    authenticationMethodName,
+                    new AuthenticationMethodConfiguration()
+                            .setName(authenticationMethodName)
+                            .setOrder(index)
+                            .setUrl(
+                                    prop.getProperty(
+                                            AuthenticationMethodConfiguration.AUTHENTICATION_URL_NAMING_PATTERN
+                                                    .replace(AuthenticationMethodConfiguration.AUTHENTICATION_REPLACEABLE,
+                                                            authenticationMethodName)
+                                    )
+                            )
+            );
+            index++;
+        }
+
+
+        return result;
+    }
+
     private static void sanityCheckDatabase(Database database, org.apache.ddlutils.model.Database wantedDdl) {
         DatabaseSanityCheck databaseSanityCheck = new DatabaseSanityCheck(database, wantedDdl);
         Collection<SanityCheck.Problem> problems = databaseSanityCheck.execute();
-        for ( SanityCheck.Problem problem : problems ) {
-            if ( SanityCheck.Problem.Severity.ERROR == problem.getSeverity() ) {
+        for (SanityCheck.Problem problem : problems) {
+            if (SanityCheck.Problem.Severity.ERROR == problem.getSeverity()) {
                 LOG.error(problem.getDescription());
             } else if (SanityCheck.Problem.Severity.WARNING == problem.getSeverity()) {
                 LOG.warn(problem.getDescription());
@@ -100,7 +133,7 @@ public class Imcms {
     }
 
     public synchronized static DataSource getApiDataSource() {
-        if ( null == apiDataSource ) {
+        if (null == apiDataSource) {
             Properties serverprops = getServerProperties();
             LOG.debug("Creating API DataSource.");
             apiDataSource = createDataSource(serverprops);
@@ -111,7 +144,7 @@ public class Imcms {
     private static Properties getServerProperties() {
         try {
             return Prefs.getProperties(SERVER_PROPERTIES_FILENAME);
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             LOG.fatal("Failed to initialize imCMS", e);
             throw new UnhandledException(e);
         }
@@ -139,19 +172,19 @@ public class Imcms {
     }
 
     public static void stop() {
-        if ( null != apiDataSource ) {
+        if (null != apiDataSource) {
             try {
                 LOG.debug("Closing API DataSource.");
                 apiDataSource.close();
-            } catch ( SQLException e ) {
+            } catch (SQLException e) {
                 LOG.error(e, e);
             }
         }
-        if ( null != dataSource ) {
+        if (null != dataSource) {
             try {
                 LOG.debug("Closing main DataSource.");
                 dataSource.close();
-            } catch ( SQLException e ) {
+            } catch (SQLException e) {
                 LOG.error(e, e);
             }
         }
@@ -185,9 +218,9 @@ public class Imcms {
             logDatabaseVersion(basicDataSource);
 
             return basicDataSource;
-        } catch ( SQLException ex ) {
-            String message = "Could not connect to database "+ jdbcUrl + " with driver " + jdbcDriver + ": "+ex.getMessage()+" Error code: "
-                             + ex.getErrorCode() + " SQL State: " + ex.getSQLState();
+        } catch (SQLException ex) {
+            String message = "Could not connect to database " + jdbcUrl + " with driver " + jdbcDriver + ": " + ex.getMessage() + " Error code: "
+                    + ex.getErrorCode() + " SQL State: " + ex.getSQLState();
             LOG.fatal(message, ex);
             throw new RuntimeException(message, ex);
         }
@@ -203,7 +236,7 @@ public class Imcms {
     public static class StartupException extends RuntimeException {
 
         public StartupException(String message, Exception e) {
-            super(message, e) ;
+            super(message, e);
         }
     }
 
