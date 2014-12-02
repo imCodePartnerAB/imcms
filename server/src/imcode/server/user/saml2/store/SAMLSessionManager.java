@@ -2,7 +2,6 @@ package imcode.server.user.saml2.store;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
-import com.imcode.imcms.flow.DispatchCommand;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
@@ -12,7 +11,6 @@ import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.saml2.core.*;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -23,17 +21,18 @@ import java.util.*;
  * Created by Shadowgun on 20.11.2014.
  */
 public class SAMLSessionManager {
-    public static String SAML_SESSION_INFO = "SAML_SESSION_INFO";
+    private static String SAML_SESSION_INFO = "SAML_SESSION_INFO";
     private static SAMLSessionManager instance = new SAMLSessionManager();
     private static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
-    public static final String REQUEST_PARAMETER__NEXT_URL = SESSION_ATTRIBUTE__NEXT_URL;
+
+    /*public static final String REQUEST_PARAMETER__NEXT_URL = SESSION_ATTRIBUTE__NEXT_URL;
     public static final String REQUEST_PARAMETER__NEXT_META = "next_meta";
     private static final String SESSION_ATTRIBUTE__NEXT_META = "next_meta";
     private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
     public static final String REQUEST_PARAMETER__EDIT_USER = "edit_user";
     public static final String REQUEST_PARAMETER__USERNAME = "name";
     public static final String REQUEST_PARAMETER__PASSWORD = "passwd";
-    public static final String REQUEST_ATTRIBUTE__ERROR = "error";
+    public static final String REQUEST_ATTRIBUTE__ERROR = "error";*/
     private SAMLSessionManager() {
     }
 
@@ -97,10 +96,8 @@ public class SAMLSessionManager {
     public boolean isSAMLSessionValid(HttpSession session) {
         SAMLSessionInfo samlSessionInfo = (SAMLSessionInfo)
                 session.getAttribute(SAML_SESSION_INFO);
-        if (samlSessionInfo == null)
-            return false;
-        return samlSessionInfo.getValidTo() == null || new
-                Date().before(samlSessionInfo.getValidTo());
+        return samlSessionInfo != null && (samlSessionInfo.getValidTo() == null || new
+                Date().before(samlSessionInfo.getValidTo()));
     }
 
     public void destroySAMLSession(HttpSession session) {

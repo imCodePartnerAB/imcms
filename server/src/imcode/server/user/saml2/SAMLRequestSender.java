@@ -88,8 +88,7 @@ public class SAMLRequestSender {
             String encodedMessage = deflateAndBase64Encode(message);
             return buildRedirectURL(endpointURL, relayState, encodedMessage);
         }
-        public String buildRedirectURL(String endpointURL, String relayState, String message)
-                throws MessageEncodingException {
+        public String buildRedirectURL(String endpointURL, String relayState, String message) {
             URLBuilder urlBuilder = new URLBuilder(endpointURL);
             List<Pair<String, String>> queryParams = urlBuilder.getQueryParams();
             queryParams.clear();

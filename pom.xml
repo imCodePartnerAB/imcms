@@ -42,7 +42,7 @@
 	<groupId>com.imcode.imcms</groupId>
 	<artifactId>imcms</artifactId>
 	<packaging>war</packaging>
-	<version>4.2.16</version>
+	<version>RB-4-SNAPSHOT</version>
 	<name>imCMS</name>
 
 	<properties>
@@ -755,8 +755,8 @@
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>1.0-beta-6</version>
+				<artifactId>wagon-ssh-external</artifactId>
+				<version>2.6</version>
 			</extension>
 		</extensions>
 	</build>
@@ -785,7 +785,7 @@
 		<repository>
 			<id>imcode</id>
 			<name>imCode Internal Repository</name>
-			<url>scp://ymer.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
+			<url>scp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
 		</repository>
 	</distributionManagement>
 

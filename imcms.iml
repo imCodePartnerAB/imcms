@@ -8,7 +8,6 @@
         </descriptors>
         <webroots>
           <root url="file://$MODULE_DIR$/target/imcms" relative="/" />
-          <root url="file://$MODULE_DIR$/web/WEB-INF" relative="WEB-INF" />
         </webroots>
         <sourceRoots>
           <root url="file://$MODULE_DIR$/server/src" />

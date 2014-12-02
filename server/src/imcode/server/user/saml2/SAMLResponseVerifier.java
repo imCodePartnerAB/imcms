@@ -10,7 +10,6 @@ import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.saml2.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.List;
 
 /**
  * Created by Shadowgun on 20.11.2014.
@@ -58,7 +57,7 @@ public class SAMLResponseVerifier {
 
     private void verifyConditions(Conditions conditions, SAMLMessageContext samlMessageContext) throws SAMLException {
         verifyExpirationConditions(conditions);
-        verifyAudienceRestrictions(conditions.getAudienceRestrictions(), samlMessageContext);
+       // verifyAudienceRestrictions(conditions.getAudienceRestrictions(), samlMessageContext);
     }
 
     private void verifyExpirationConditions(Conditions conditions) throws SAMLException {
@@ -76,11 +75,10 @@ public class SAMLResponseVerifier {
             throw new SAMLException("Assertion is not conformed with notOnOrAfter condition");
     }
 
-    private void verifyAudienceRestrictions(
+   /* private void verifyAudienceRestrictions(
             List<AudienceRestriction> audienceRestrictions,
             SAMLMessageContext<?, ?, ?> samlMessageContext)
             throws SAMLException {
-// TODO: Audience restrictions should be defined below<sup>7</sup>
-    }
+    }*/
 }
 

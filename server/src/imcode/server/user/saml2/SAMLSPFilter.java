@@ -12,10 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Hello world!
+ * This class provide filtering all request, which reference to CGI-IDP
  */
 public class SAMLSPFilter implements Filter {
-    public static final String SAML_AUTHN_RESPONSE_PARAMETER_NAME = "SAMLResponse";
+    private static final String SAML_AUTHN_RESPONSE_PARAMETER_NAME = "SAMLResponse";
     private static Logger log = LoggerFactory.getLogger(SAMLSPFilter.class);
     private FilterConfig filterConfig;
     private SAMLResponseVerifier checkSAMLResponse;
@@ -34,9 +34,9 @@ public class SAMLSPFilter implements Filter {
                          FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-  /*
-  ШАГ 1: Игнорируем запросы, предназначенные не для фильтра
-  */
+      /*
+       * Check if request is not refer to CGI-IDP - ignore it;
+      */
         if (!isFilteredRequest(request)||!filterConfig.isEnabled()) {
             log.debug("According to {} configuration parameter request is ignored + {}",
                     new Object[]{FilterConfig.EXCLUDED_URL_PATTERN_PARAMETER, request.getRequestURI()});
@@ -44,14 +44,12 @@ public class SAMLSPFilter implements Filter {
             return;
         }
 
-        /*
-  ШАГ 2: Если пришел ответ от Shibboleth idP, обрабатываем его
-  */
+
         log.debug("Attempt to secure resource  is intercepted : {}", ((HttpServletRequest) servletRequest).getRequestURL().toString());
-/*
-  Check if response message is received from identity provider;
-  In case of successful response system redirects user to relayState (initial) request
-*/
+        /*
+          Check if response message is received from identity provider;
+          In case of successful response system redirects user to relayState (initial) request
+        */
         String responseMessage = servletRequest.getParameter(SAML_AUTHN_RESPONSE_PARAMETER_NAME);
         if (responseMessage != null) {
             log.debug("Response from Identity Provider is received");
@@ -75,8 +73,8 @@ public class SAMLSPFilter implements Filter {
             }
         }
         /*
-  ШАГ 3: Если получен запрос на logout, удаляем локальную сессию
-  */
+        * Check if request is logout request
+        */
         if (getCorrectURL(request).equals(filterConfig.getLogoutUrl())) {
             log.debug("Logout action: destroying SAML session.");
             SAMLSessionManager.getInstance().destroySAMLSession(request.getSession());
@@ -84,8 +82,8 @@ public class SAMLSPFilter implements Filter {
             return;
         }
         /*
-  ШАГ 4: Если пользователь уже аутентифицирован, даем доступ к ресурсу
-  */
+        *   Check if user has already authorised
+        */
         if (SAMLSessionManager.getInstance().isSAMLSessionValid(request.getSession())) {
             log.debug("SAML session exists and valid: grant access to secure resource");
             chain.doFilter(request, response);
@@ -97,9 +95,8 @@ public class SAMLSPFilter implements Filter {
             return;
         }
         /*
-  ШАГ 5: Создаем SAML запрос на аутентификацию и отправляем пользователя к
-         Shibboleth idP
-  */
+        * Create SAML request and redirect user to CGI service for authentication
+         */
         log.debug("Sending authentication request to idP");
         try {
             samlRequestSender.sendSAMLAuthRequest(request, response,
@@ -115,7 +112,7 @@ public class SAMLSPFilter implements Filter {
                 getCorrectURL(request).matches(filterConfig.getExcludedUrlPattern()));
     }
 
-    // Также добавляем вспомогательный метод получения корректного URL
+    // Check if URL is correct
     private String getCorrectURL(HttpServletRequest request) {
         String contextPath = request.getContextPath();
         String requestUri = request.getRequestURI();

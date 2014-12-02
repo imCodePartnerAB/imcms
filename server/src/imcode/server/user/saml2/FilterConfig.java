@@ -17,9 +17,6 @@ public class FilterConfig {
     public static final String SP_ACS_URL_PARAMETER = "acsUrl";
     public static final String SP_ID_PARAMETER = "spProviderId";
     public static final String SP_LOGOUT_URL_PARAMETER = "logoutUrl";
-    public static final String IDP_SSO_URL_PARAMETER = "idProviderSSOUrl";
-    public static final String IDP_SSO_ENABLED = "isSamlEnabled";
-    public static final String LOGIN_TAB_POSITION = "loginTabPosition";
     public static final String AUTHENTICATION_METHOD_NAME_PROP = "cgi";
 
     private String excludedUrlPattern;

@@ -6,7 +6,6 @@ import com.imcode.imcms.db.*;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import imcode.server.user.saml2.FilterConfig;
 import imcode.util.Prefs;
 import imcode.util.CachingFileLoader;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -85,14 +84,13 @@ public class Imcms {
         Map<String, AuthenticationMethodConfiguration> result = new HashMap<String, AuthenticationMethodConfiguration>();
 
         Properties prop = getServerProperties();
-        String authenticationMethodName = "";
+        String authenticationMethodName;
         int index = 1;
-        while ((authenticationMethodName =
+        while (!(authenticationMethodName =
                 prop.getProperty(
                         AuthenticationMethodConfiguration.AUTHENTICATION_METHOD_NAMING_PATTERN
                                 .replace(AuthenticationMethodConfiguration.AUTHENTICATION_REPLACEABLE, String.valueOf(index)),
-                        AuthenticationMethodConfiguration.AUTHENTICATION_REPLACEABLE)
-        ) != AuthenticationMethodConfiguration.AUTHENTICATION_REPLACEABLE) {
+                        AuthenticationMethodConfiguration.AUTHENTICATION_REPLACEABLE)).equals(AuthenticationMethodConfiguration.AUTHENTICATION_REPLACEABLE)) {
             result.put(
                     authenticationMethodName,
                     new AuthenticationMethodConfiguration()
