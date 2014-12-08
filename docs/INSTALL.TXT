@@ -45,6 +45,7 @@ Setting up imCMS:
     * Edit the file "server.properties" in the directory "tomcat/webapps/imcms/WEB-INF/conf",
       and set the database parameters ("JdbcDriver", "JdbcUrl", "User", "Password", "MaxConnectionCount")
       according to your setup.
+      Set "server-name" to show where imcms installed for example - "http://localhost:8080"
       Set "SmtpServer" to the hostname of your SMTP (outgoing mail) server.
 
     * If you want to add a file-extension to be recognized as a mime-type by imCMS,

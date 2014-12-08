@@ -548,7 +548,7 @@
         depends="check-build-properties,init-version-properties">
 
         <filter token="defaultlanguage" value="${defaultlanguage}"/>
-
+        <filter token="server-name" value="${server-name}"/>
         <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
         <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>
 

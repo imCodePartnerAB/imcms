@@ -80,6 +80,10 @@ public class Imcms {
         return defaultImcmsServices;
     }
 
+    public static String getServerName() {
+        return getServerProperties().getProperty("server-name", "http://localhost:8080");
+    }
+
     public static Map<String, AuthenticationMethodConfiguration> getAuthenticationConfiguration() {
         Map<String, AuthenticationMethodConfiguration> result = new HashMap<String, AuthenticationMethodConfiguration>();
 

@@ -23,11 +23,11 @@
         </init-param>
         <init-param>
             <param-name>spProviderId</param-name>
-            <param-value>http://localhost:8080</param-value>
+            <param-value>${server.name}</param-value>
         </init-param>
         <init-param>
             <param-name>acsUrl</param-name>
-            <param-value>http://localhost:8080/acs</param-value>
+            <param-value>${server.name}/acs</param-value>
         </init-param>
         <init-param>
             <param-name>logoutUrl</param-name>

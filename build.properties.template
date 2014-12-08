@@ -10,6 +10,8 @@ deny-multiple-user-login = false
 
 # Database parameters
 
+server-name = localhost:8080
+
 db-host = localhost
 db-name = imcms
 db-user =

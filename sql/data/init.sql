@@ -9,7 +9,7 @@ INSERT INTO lang_prefixes VALUES(1,'swe');
 INSERT INTO lang_prefixes VALUES(2,'eng');
 
 INSERT INTO doc_types VALUES(2, 'swe', 'Textsida');
-INSERT INTO doc_types VALUES(5, 'swe', 'Extern länk');
+INSERT INTO doc_types VALUES(5, 'swe', 'Extern lï¿½nk');
 INSERT INTO doc_types VALUES(6, 'swe', 'Browserkontroll');
 INSERT INTO doc_types VALUES(7, 'swe', 'HTML-dokument');
 INSERT INTO doc_types VALUES(8, 'swe', 'Fil');
@@ -20,17 +20,17 @@ INSERT INTO doc_types VALUES(6, 'eng', 'Browser controlled link');
 INSERT INTO doc_types VALUES(7, 'eng', 'HTML-document');
 INSERT INTO doc_types VALUES(8, 'eng', 'File');
 
-INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,2,'swe','Ändra text');
+INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,2,'swe','ï¿½ndra text');
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,5,'swe','Redigera');
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,6,'swe','Redigera');
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,7,'swe','Redigera');
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,8,'swe','Redigera');
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,101,'swe','Redigera');
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,102,'swe','Redigera');
-INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(131072,2,'swe','Ändra bild');
-INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(262144,2,'swe','Ändra meny');
-INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(524288,2,'swe','Ändra utseende');
-INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'swe','Ändra include');
+INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(131072,2,'swe','ï¿½ndra bild');
+INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(262144,2,'swe','ï¿½ndra meny');
+INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(524288,2,'swe','ï¿½ndra utseende');
+INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'swe','ï¿½ndra include');
 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,2,'eng','Edit texts');
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,5,'eng','Edit');
@@ -44,9 +44,9 @@ INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(524288,2,'eng','Change template');
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'eng','Change include');
 
-INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(1,'swe','Ändra rubrik');
-INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(2,'swe','Ändra dokinfo');
-INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(4,'swe','Ändra rättigheter för roller');
+INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(1,'swe','ï¿½ndra rubrik');
+INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(2,'swe','ï¿½ndra dokinfo');
+INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(4,'swe','ï¿½ndra rï¿½ttigheter fï¿½r roller');
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(8,'swe','Skapa dokument');
 
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(1,'eng','Edit headline');
@@ -55,9 +55,9 @@ INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(4,'eng'
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(8,'eng','Create document');
 
 INSERT INTO permission_sets (set_id, description) VALUES(0,'Full');
-INSERT INTO permission_sets (set_id, description) VALUES(1,'Begränsad 1');
-INSERT INTO permission_sets (set_id, description) VALUES(2,'Begränsad 2');
-INSERT INTO permission_sets (set_id, description) VALUES(3,'Läs');
+INSERT INTO permission_sets (set_id, description) VALUES(1,'Begrï¿½nsad 1');
+INSERT INTO permission_sets (set_id, description) VALUES(2,'Begrï¿½nsad 2');
+INSERT INTO permission_sets (set_id, description) VALUES(3,'Lï¿½s');
 
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(1,'Internet Explorer','%MSIE%',2);
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(2,'Netscape','Mozilla%(%;%[UIN][);]%',2);
@@ -107,7 +107,7 @@ INSERT INTO sys_types (type_id,name) VALUES(7,'WebMasterAddress');
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(0,'Annan...','other','swe');
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(1,'Vanlig text','text/plain','swe');
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(2,'HTML-dokument','text/html','swe');
-INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(3,'Binärfil','application/octet-stream','swe');
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(3,'Binï¿½rfil','application/octet-stream','swe');
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(4,'Shockwave Flash','application/x-shockwave-flash','swe');
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(5,'Shockwave Director','application/x-director','swe');
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(6,'PNG-bild','image/png','swe');
@@ -188,6 +188,7 @@ VALUES (2,'user', 'user', 'User', 'Extern','','','','','','','','',0,1,
 INSERT INTO roles (role_id, role_name, permissions, admin_role) VALUES(0, 'Superadmin', 0, 1);
 INSERT INTO roles (role_id, role_name, permissions, admin_role) VALUES(1, 'Useradmin', 0, 2);
 INSERT INTO roles (role_id, role_name, permissions, admin_role) VALUES(2, 'Users', 1, 0);
+INSERT INTO roles (role_id, role_name, permissions, admin_role) VALUES(3, 'CGIUsers', 1, 0);
 -- mssql SET IDENTITY_INSERT roles OFF
 
 INSERT INTO user_roles_crossref VALUES(1,0);

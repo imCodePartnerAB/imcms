@@ -1,5 +1,6 @@
 package imcode.server.user.saml2;
 
+import imcode.server.user.saml2.store.SAMLSessionInfo;
 import imcode.server.user.saml2.store.SAMLSessionManager;
 import imcode.server.user.saml2.utils.*;
 import org.opensaml.common.binding.SAMLMessageContext;
@@ -37,7 +38,7 @@ public class SAMLSPFilter implements Filter {
       /*
        * Check if request is not refer to CGI-IDP - ignore it;
       */
-        if (!isFilteredRequest(request)||!filterConfig.isEnabled()) {
+        if (!isFilteredRequest(request) || !filterConfig.isEnabled()) {
             log.debug("According to {} configuration parameter request is ignored + {}",
                     new Object[]{FilterConfig.EXCLUDED_URL_PATTERN_PARAMETER, request.getRequestURI()});
             chain.doFilter(servletRequest, servletResponse);
@@ -85,13 +86,10 @@ public class SAMLSPFilter implements Filter {
         *   Check if user has already authorised
         */
         if (SAMLSessionManager.getInstance().isSAMLSessionValid(request.getSession())) {
+            SAMLSessionInfo samlSessionInfo = SAMLSessionManager.getInstance().getSAMLSession(request.getSession());
+            SAMLSessionManager.getInstance().loginUser(samlSessionInfo, request, response);
             log.debug("SAML session exists and valid: grant access to secure resource");
-            chain.doFilter(request, response);
-            try {
-                response.sendRedirect("StartDoc");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            //chain.doFilter(request, response);
             return;
         }
         /*

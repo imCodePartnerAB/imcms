@@ -81,7 +81,7 @@
     <% } else {%>
     <div class="imcms-tab imcms-tab-active" id="imcms-default-tab"><? templates/login/index.html/2008 ?></div>
     <%
-            }%>
+        }%>
 
     <script>
         $(document).ready(function () {
@@ -90,7 +90,8 @@
             $(".imcms-tab-active").remove();
         });
     </script>
-        <%}
+    <%
+        }
     %>
 
     <div class="imcms-typed-form-container" id="imcms-bankid-login-tab" style="display:none">
@@ -199,7 +200,7 @@
                         height: 500
                     }, 500, function () {
                         $("iframe").css({height: 500});
-                        $("iframe").attr("src", "<%= fullServerName+"/VerifyUserViaBankId" %>");
+                        $("iframe").attr("src", "<%= fullServerName+request.getContextPath()+"/VerifyUserViaBankId" %>");
                     });
                     $("#imcms-default-login-tab").css({display: 'none'});
                     $("#imcms-default-tab").removeClass("imcms-tab-active");
@@ -207,7 +208,7 @@
                         try {
                             if ($(this).get(0).contentWindow.location.href == "<%= fullServerName+request.getContextPath()+ "/StartDoc" %>") {
                                 $(this).css({display: 'none'});
-                                window.location.replace("<%= fullServerName+"/servlet/StartDoc" %>");
+                                window.location.replace("<%= fullServerName+request.getContextPath()+"/servlet/StartDoc" %>");
                             }
                         }
                         catch (e) {

@@ -167,7 +167,7 @@
 
     <target name="init-global-filters">
         <filter token="defaultlanguage" value="${defaultlanguage}"/>
-
+        <filter token="server-name" value="${server-name}"/>
         <filter token="documentationwebappurl" value="http://${documentation-host}/${version}"/>
         <filter token="documentationurl" value="http://${documentation-host}/${version}"/>
 

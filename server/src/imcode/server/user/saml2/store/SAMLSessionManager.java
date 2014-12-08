@@ -1,9 +1,12 @@
 package imcode.server.user.saml2.store;
 
 import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.Role;
+import com.imcode.imcms.api.SaveException;
 import com.imcode.imcms.api.User;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
+import imcode.server.user.UserAlreadyExistsException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
@@ -51,17 +54,30 @@ public class SAMLSessionManager {
                 getAttributesMap(getSAMLAttributes(assertions)),
                 getSAMLSessionValidTo(assertions));
         request.getSession().setAttribute(SAML_SESSION_INFO, samlSessionInfo);
+        loginUser(samlSessionInfo, request, response);
+    }
 
-
+    public void loginUser(SAMLSessionInfo samlSessionInfo, HttpServletRequest request, HttpServletResponse response) {
         UserDomainObject user = prepareUser(samlSessionInfo);
-        ContentManagementSystem cms = Utility.initRequestWithApi(request, user);
+        UserDomainObject dbUser = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUser(user.getLoginName());
+        if (dbUser != null) {
+            for (RoleId role : dbUser.getRoleIds())
+                user.addRoleId(role);
+            user.setId(dbUser.getId());
+        } else
+            try {
+                user.addRoleId(RoleId.CGIUSER);
+                Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().addUser(user);
+            } catch (UserAlreadyExistsException e) {
+                e.printStackTrace();
+            }
 
+        ContentManagementSystem cms = Utility.initRequestWithApi(request, user);
         if (Imcms.getServices().getConfig().isDenyMultipleUserLogin()) {
             User currentUser = cms.getCurrentUser();
             currentUser.setSessionId(request.getSession().getId());
             cms.getUserService().updateUserSession(currentUser);
         }
-
         String rememberCd = user.getRememberCd();
         if (StringUtils.isEmpty(rememberCd)) {
             cms.getUserService().updateUserRememberCd(user);
@@ -82,13 +98,13 @@ public class SAMLSessionManager {
         Map<String, String> attributes = sessionInfo.getAttributes();
         user.setActive(true);
         user.setCompany(attributes.get("Subject_OrganisationName"));
-        user.addRoleId(RoleId.BANKIDUSER);
         user.setSessionId(attributes.get("CertificateSerialNumber"));
         user.setCountry(attributes.get("Subject_CountryName"));
         user.setFirstName(attributes.get("Subject_GivenName"));
         user.setLastName(attributes.get("Subject_Surname"));
         user.setLoginName(attributes.get("Subject_SerialNumber"));
         user.setImcmsExternal(true);
+        user.isImcmsExternal();
         user.setLanguageIso639_2("swe");
         return user;
     }
@@ -98,6 +114,11 @@ public class SAMLSessionManager {
                 session.getAttribute(SAML_SESSION_INFO);
         return samlSessionInfo != null && (samlSessionInfo.getValidTo() == null || new
                 Date().before(samlSessionInfo.getValidTo()));
+    }
+
+    public SAMLSessionInfo getSAMLSession(HttpSession session) {
+        return (SAMLSessionInfo)
+                session.getAttribute(SAML_SESSION_INFO);
     }
 
     public void destroySAMLSession(HttpSession session) {
