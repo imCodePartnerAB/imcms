@@ -109,7 +109,7 @@ public class ParserParameters implements Cloneable {
     }
 
     public boolean isAnyMode() {
-        return isTextMode() || isImageMode() || isMenuMode() || isIncludesMode() || isTemplateMode();
+        return isTextMode() || isImageMode() || isMenuMode() || isIncludesMode() || isTemplateMode() || isContentLoopMode();
     }
 
     public static ParserParameters putInRequest(ParserParameters parserParameters) {

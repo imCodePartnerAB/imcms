@@ -1,6 +1,6 @@
 package com.imcode.imcms.test;
 
-import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +27,7 @@ public class TestConfig {
         ds.setPassword(env.getRequiredProperty("Password"));
         ds.setTestOnBorrow(true);
         ds.setValidationQuery("select 1");
-        ds.setMaxActive(1);
+        ds.setMaxTotal(1);
 
         return ds;
     }

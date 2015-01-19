@@ -2,21 +2,19 @@ package com.imcode
 package imcms
 package admin.docadmin.menu
 
+import java.util.Locale
+
 import com.imcode.imcms.admin.docadmin.EditorContainerView
 import com.imcode.imcms.mapping.container.TextDocMenuContainer
-import com.imcode.imcms.servlet.admin.AdminDoc
-import java.util.Locale
-import com.imcode.imcms.vaadin.component._
-import com.vaadin.ui._
-import com.vaadin.server._
-import com.imcode.imcms.vaadin.server._
-import com.imcode.imcms.vaadin.component.dialog.ConfirmationDialog
-import com.imcode.imcms.ImcmsServicesSupport
-
 import com.imcode.imcms.vaadin.Current
+import com.imcode.imcms.vaadin.component._
+import com.imcode.imcms.vaadin.component.dialog.ConfirmationDialog
+import com.imcode.imcms.vaadin.server._
+import com.vaadin.server._
+import com.vaadin.ui._
 import imcode.server.ImcmsConstants
-import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document.TextDocumentPermissionSetDomainObject
+import imcode.server.document.textdocument.TextDocumentDomainObject
 
 @com.vaadin.annotations.Theme("imcms")
 class MenuEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
@@ -44,14 +42,14 @@ class MenuEditorUI extends UI with Log4jLogger with ImcmsServicesSupport {
 
     val contextPath = Current.contextPath
     val menuNo = request.getParameter("menuNo").toInt
-    val title = request.getParameter("label").trimToOption.getOrElse("menu_editor.title".f(docId.toString, menuNo.toString))
+    //val title = request.getParameter("label").trimToOption.getOrElse("menu_editor.title".f(docId, menuNo))
     val returnUrl = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL).trimToOption.getOrElse(
       s"$contextPath/servlet/AdminDoc?meta_id=$docId&flags=${ImcmsConstants.DISPATCH_FLAG__EDIT_MENU}"
     )
 
     val menu = doc.getMenu(menuNo)
     val editor = new MenuEditor(doc, menu)
-    val view = new EditorContainerView(title)
+    val view = new EditorContainerView("test")
 
     def close() {
       Current.page.setLocation(returnUrl)

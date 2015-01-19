@@ -2,7 +2,7 @@ package com.imcode
 package imcms.test
 
 import java.io.File
-import org.apache.tomcat.dbcp.dbcp.BasicDataSource
+import org.apache.commons.dbcp2.BasicDataSource
 import org.springframework.core.env.Environment
 import org.springframework.context.annotation._
 import org.springframework.context.ApplicationContext

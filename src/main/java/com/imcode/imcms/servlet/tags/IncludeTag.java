@@ -1,11 +1,17 @@
 package com.imcode.imcms.servlet.tags;
 
+import com.imcode.imcms.servlet.tags.Editor.BaseEditor;
 import imcode.server.parser.TagParser;
 
 public class IncludeTag extends SimpleImcmsTag {
 
     protected String getContent(TagParser tagParser) {
         return tagParser.tagInclude(attributes);
+    }
+
+    @Override
+    public BaseEditor createEditor() {
+        return  null;
     }
 
     public void setPath(String path) {

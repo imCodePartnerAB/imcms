@@ -731,7 +731,7 @@ CREATE TABLE childs_history (
 -- Tables for content loop data
 --
 
-CREATE TABLE text_doc_content_loops (
+CREATE TABLE imcms_text_doc_content_loops (
   id int auto_increment PRIMARY KEY,
   meta_id int NOT NULL,
   meta_version int NOT NULL,
@@ -746,7 +746,7 @@ CREATE TABLE text_doc_content_loops (
 -- Tables for contents
 --
 
-CREATE TABLE text_doc_contents (
+CREATE TABLE imcms_text_doc_contents (
   id int auto_increment PRIMARY KEY,
   loop_id int,
   sequence_index int NOT NULL,
@@ -754,5 +754,24 @@ CREATE TABLE text_doc_contents (
 
   CONSTRAINT uk__loop_id__sequence_index UNIQUE KEY (loop_id, sequence_index),
   CONSTRAINT uk__loop_id__order_index UNIQUE KEY (loop_id, order_index),
-  CONSTRAINT fk__text_doc_contents__text_doc_content_loops FOREIGN KEY (loop_id) REFERENCES text_doc_content_loops (id) ON DELETE CASCADE
+  CONSTRAINT fk__text_doc_contents__text_doc_content_loops FOREIGN KEY (loop_id) REFERENCES imcms_text_doc_content_loops (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- text documents texts
+CREATE TABLE imcms_text_doc_texts (
+  id int AUTO_INCREMENT PRIMARY KEY,
+  doc_id int default NULL,
+  doc_version_no int NOT NULL,
+  no int NOT NULL,
+  text longtext NOT NULL,
+  type int default NULL,
+  language_id int NOT NULL,
+  content_loop_no int DEFAULT NULL,
+  content_no int DEFAULT NULL,
+
+  CONSTRAINT uk__imcms_text_doc_texts__text UNIQUE KEY (doc_id, doc_version_no, no, language_id, content_loop_no, content_no),
+  CONSTRAINT fk__imcms_text_doc_texts__content FOREIGN KEY (doc_id, doc_version_no, content_loop_no, content_no) REFERENCES imcms_text_doc_contents (`doc_id`, `doc_version_no`, `loop_no`, `no`) ON DELETE CASCADE,
+  CONSTRAINT fk__imcms_text_doc_texts__languages FOREIGN KEY (language_id) REFERENCES imcms_languages (id),
+  CONSTRAINT fk__imcms_text_doc_texts__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

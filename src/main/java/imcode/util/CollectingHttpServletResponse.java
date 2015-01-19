@@ -20,6 +20,7 @@ public class CollectingHttpServletResponse extends HttpServletResponseWrapper {
 
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     ServletOutputStream servletOutputStream = new ServletOutputStream() {
+        @Override
         public void write(int b) {
             byteArrayOutputStream.write(b);
         }

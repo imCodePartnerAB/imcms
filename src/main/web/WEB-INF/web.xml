@@ -250,6 +250,16 @@
     </servlet>
 
     <servlet>
+        <servlet-name>EditTextTest</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.apis.TextApiServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>EditMenuTest</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.apis.MenuApiServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>RD</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ReDirecter</servlet-class>
     </servlet>
@@ -496,6 +506,17 @@
         <servlet-name>web</servlet-name>
         <url-pattern>/web/*</url-pattern>
     </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>EditTextTest</servlet-name>
+        <url-pattern>/edit/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>EditMenuTest</servlet-name>
+        <url-pattern>/editmenu/*</url-pattern>
+    </servlet-mapping>
+
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>

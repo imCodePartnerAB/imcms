@@ -41,21 +41,21 @@ NEW adminPanel CSS
     margin: 0 2px !important;
 }
 
-
 #imcmsToolBar * {
     position: relative;
 }
 
-#imcmsToolBar {<%--
-    /* Netscape 4, IE 4.x-5.0/Win and other lesser browsers will use this */ --%>
-    position: absolute;
+#imcmsToolBar {
+<%--
+    /* Netscape 4, IE 4.x-5.0/Win and other lesser browsers will use this */ --%> position: absolute;
     z-index: 10000000 !important;
     top: 0;
     left: 0;
     width: 100% !important;
-    border-bottom: 0 !important;/*1px solid red !important;*/
+    border-bottom: 0 !important; /*1px solid red !important;*/
     text-align: center !important;
 }
+
 #imcmsToolBarHidden {
     position: absolute;
     display: none;
@@ -64,26 +64,34 @@ NEW adminPanel CSS
     width: 100% !important;
     text-align: center !important;
     background-color: transparent !important;
-}<%
+}
+
+<%
 if (isIE7plus) { %>
 #imcmsToolBar,
 #imcmsToolBarHidden {
     position: fixed;
     z-index: 20000000 !important;
-}<%
+}
+
+<%
 } else { %><%-- /* used by Opera 5+, Netscape6+/Mozilla, Konqueror, Safari, OmniWeb 4.5+, iCab, ICEbrowser */ --%>
 body > #imcmsToolBar,
 body > #imcmsToolBarHidden {
     position: fixed;
     z-index: 20000000 !important;
-}<%
+}
+
+<%
 }
 
 if (isIE55plus && !isIE7plus) { %>
 #imcmsToolBar,
 #imcmsToolBarHidden {
     top: expression( ( ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop ) ) + 'px' );
-}<%
+}
+
+<%
 } %>
 
 #imcmsToolBarMain {
@@ -107,13 +115,16 @@ if (isIE55plus && !isIE7plus) { %>
 #imcmsToolBar #imcmsToolBarLeft {
     float: left !important;
 }
+
 #imcmsToolBar #imcmsToolBarRight {
     float: right !important;
 }
+
 #imcmsToolBar .imcmsToolBarDivider {
     display: inline !important;
     padding: 0 5px !important;
 }
+
 /*#imcmsToolBar .imcmsToolBarSub,
 #imcmsToolBar .imcmsToolBarDrop {
     position: absolute;
@@ -129,6 +140,7 @@ if (isIE55plus && !isIE7plus) { %>
 #imcmsToolBar .imcmsNone {
     display: none;
 }
+
 #imcmsToolBar .imcmsToolBarClear {
     clear: both !important;
 }
@@ -136,6 +148,7 @@ if (isIE55plus && !isIE7plus) { %>
 #imcmsToolBar button {
     margin: 0 3px !important;
 }
+
 #imcmsToolBar button,
 #imcmsToolBarHidden button,
 #imcmsToolBar .imcmsToolBarDrop button {
@@ -151,16 +164,16 @@ if (isIE55plus && !isIE7plus) { %>
 #imcmsToolBarLeftTable #imcmsToolBarLogoTd {
     padding: 3px 10px 0 8px !important;
 }
+
 #imcmsToolBarLeftTable #imcmsToolBarVersionTd {
     padding: 2px 10px 3px 8px !important;
     text-align: center !important;
-    font: normal 11px Tahoma,Verdana,Geneva,sans-serif !important;
+    font: normal 11px Tahoma, Verdana, Geneva, sans-serif !important;
     color: #d66613 !important;
     text-shadow: 0 1px 0 #fff !important;
 }
 
-
-<%-- 
+<%--
 /* *******************************************************************************************
  *         Meta TD / Status / Languages                                                      *
  ******************************************************************************************* */
@@ -170,20 +183,23 @@ if (isIE55plus && !isIE7plus) { %>
     margin: 0 !important;
     padding: 0 !important;
 }
+
 #imcmsToolBarLeftTable #imcmsToolBarMetaTd {
     padding: 2px 10px 0 0 !important;
     vertical-align: top !important;
 }
+
 #imcmsToolBarLeftTable #imcmsToolBarMetaTd UL {
     list-style-type: none !important;
     display: inline !important;
     float: left !important;
 }
+
 #imcmsToolBarLeftTable #imcmsToolBarMetaTd UL LI {
     display: block !important;
     float: left !important;
     padding: 2px 15px 0 0 !important;
-    font: normal 10px Verdana,Geneva,sans-serif !important;
+    font: normal 10px Verdana, Geneva, sans-serif !important;
     color: #b65004 !important;
     text-shadow: 0 1px 0 #fff !important;
 }
@@ -195,9 +211,11 @@ if (isIE55plus && !isIE7plus) { %>
 #imcmsToolBarLeftTable #imcmsToolBarMetaTd UL LI#statusIcon {
     padding: 0 20px 0 2px !important;
 }
+
 #imcmsToolBarLeftTable #imcmsToolBarMetaTd UL LI#statusIcon .imcmsStatusIconImg {
     margin: 0 !important;
 }
+
 #imcmsToolBarLeftTable #imcmsToolBarMetaTd UL LI LABEL {
     padding-right: 8px !important;
     font-weight: bold !important;
@@ -206,15 +224,18 @@ if (isIE55plus && !isIE7plus) { %>
 #imcmsToolBarLeftTable #imcmsToolBarMetaTd UL LI.langIcon {
     padding: 2px 5px 0 0 !important;
 }
+
 #imcmsToolBarLeftTable #imcmsToolBarMetaTd UL LI.langIcon IMG {
     margin: 0 5px 0 0 !important;
     border: 0 !important;
     vertical-align: middle !important;
 }
+
 #imcmsToolBarLeftTable #imcmsToolBarMetaTd UL LI.langIcon A {
     color: #000 !important;
     text-decoration: none !important;
 }
+
 #imcmsToolBarLeftTable #imcmsToolBarMetaTd UL LI.langIcon .langCode {
     padding: 0 10px 0 0 !important;
 }
@@ -232,7 +253,6 @@ if (isIE55plus && !isIE7plus) { %>
     color: #999 !important;
 }
 
-
 <%-- Top right links --%>
 
 #imcmsToolBarRightTop {
@@ -240,6 +260,7 @@ if (isIE55plus && !isIE7plus) { %>
     top: 3px !important;
     right: 12px !important;
 }
+
 #imcmsToolBarRightTop table td {
     padding-left: 5px !important;
 }
@@ -248,14 +269,15 @@ if (isIE55plus && !isIE7plus) { %>
     display: block !important;
     margin: 0 3px !important;
     padding: 1px 3px !important;
-    font: normal 10px Verdana,Geneva,sans-serif !important;
-    color: #a51414<%--b65004--%> !important;
+    font: normal 10px Verdana, Geneva, sans-serif !important;
+    color: #a51414 <%--b65004--%> !important;
     text-decoration: none !important;
     white-space: nowrap !important;
     text-shadow: 0 1px 0 #fff !important;
     background-color: transparent !important;
     border: 1px solid transparent !important;
 }
+
 .imcmsToolBarLink:hover {
     background-color: #e0e0e0 !important;
     border: 1px inset !important;
@@ -266,6 +288,7 @@ if (isIE55plus && !isIE7plus) { %>
     background-color: transparent !important;
     border: 1px solid transparent !important;
 }
+
 .imcmsToolBarIconLink:hover {
     background-color: #e0e0e0 !important;
     border: 1px inset !important;
@@ -277,8 +300,8 @@ if (isIE55plus && !isIE7plus) { %>
 .imcmsToolBarBtn {
     margin: 0 3px !important;
     padding: 1px 3px !important;
-    font: normal 10px Verdana,Geneva,sans-serif !important;
-    color: #a51414<%--b65004--%> !important;
+    font: normal 10px Verdana, Geneva, sans-serif !important;
+    color: #a51414 <%--b65004--%> !important;
     text-decoration: none !important;
     white-space: nowrap !important;
     text-shadow: 0 1px 0 #fff !important;
@@ -286,12 +309,12 @@ if (isIE55plus && !isIE7plus) { %>
     border: 1px outset !important;
     border-color: #f7f7f7 #7e7e7e #7e7e7e #f7f7f7 !important;
 }
+
 .imcmsToolBarBtn:hover {
     background-color: #e0e0e0 !important;
     border: 1px inset !important;
     border-color: #7e7e7e #f7f7f7 #f7f7f7 #7e7e7e !important;
 }
-
 
 <%-- Buttons / Tabs --%>
 
@@ -300,6 +323,7 @@ if (isIE55plus && !isIE7plus) { %>
     top: 23px !important;
     left: 85px !important;
 }
+
 #imcmsToolBarRight .tabsDiv {
     position: absolute !important;
     top: 23px !important;
@@ -316,6 +340,7 @@ if (isIE55plus && !isIE7plus) { %>
     font-size: 0px !important;
     line-height: 0px !important;
 }
+
 .imcmsToolBarTabLink,
 .imcmsToolBarTabLink SPAN,
 .imcmsToolBarTabLink SPAN B {
@@ -323,16 +348,19 @@ if (isIE55plus && !isIE7plus) { %>
     cursor: pointer !important;
     text-decoration: none !important;
 }
+
 .imcmsToolBarTabLink,
 .imcmsToolBarTabLink SPAN {
     height: 22px !important;
     background: transparent url(<%= cp %>/imcms/images/adminpanel/bg_tabs.gif) 100% 0 scroll no-repeat !important;
 }
+
 .imcmsToolBarTabLink SPAN {
     background-position: 0 -32px !important;
 }
+
 .imcmsToolBarTabLink SPAN B {
-    font: normal 10px Verdana,Geneva,sans-serif !important;
+    font: normal 10px Verdana, Geneva, sans-serif !important;
     color: #333 !important;
     padding: 5px 10px 0 10px !important;
     text-shadow: 0 1px 0 #eee !important;
@@ -340,6 +368,7 @@ if (isIE55plus && !isIE7plus) { %>
     background: none !important;
     white-space: nowrap !important;
 }
+
 <%--
 .imcmsToolBarTabLinkIcon SPAN B {
     padding: 2px 0 0 15px !important;
@@ -356,11 +385,13 @@ if (isIE55plus && !isIE7plus) { %>
 .imcmsToolBarTabLink.imcmsToolBarTabActive {
     background-position: 100% -64px !important;
 }
+
 .imcmsToolBarTabLink:hover SPAN,
 .imcmsToolBarTabLink.imcmsToolBarTabActive SPAN {
     background-position: 0 -96px !important;
     color: #000 !important;
 }
+
 .imcmsToolBarTabLink:hover SPAN B,
 .imcmsToolBarTabLink.imcmsToolBarTabActive SPAN B {
     color: #333 !important;
@@ -368,7 +399,8 @@ if (isIE55plus && !isIE7plus) { %>
 }
 
 .imcmsToolBarTabLink,
-.imcmsToolBarTabLink SPAN {/* removes dotted border onclick */
+.imcmsToolBarTabLink SPAN {
+    /* removes dotted border onclick */
     outline: none !important;
     -moz-outline-style: none !important;
 }
@@ -378,6 +410,7 @@ if (isIE55plus && !isIE7plus) { %>
 .imcmsToolBarTabLink.imcmsToolBarTabSubActive {
     background-position: 100% -128px !important;
 }
+
 .imcmsToolBarTabSubActive:hover SPAN,
 .imcmsToolBarTabLink.imcmsToolBarTabSubActive SPAN {
     background-position: 0 -160px !important;
@@ -392,7 +425,6 @@ if (isIE55plus && !isIE7plus) { %>
     background: transparent url(<%= cp %>/imcms/images/adminpanel/bg_toolbar_show.<%= (isIE55plus && !isIE7plus) ? "gif" : "png" %>) top left no-repeat !important;
     cursor: pointer !important;
 }
-
 
 <%-- Sub panels --%>
 
@@ -410,39 +442,38 @@ if (isIE55plus && !isIE7plus) { %>
     right: 44px;
 }
 
-
-
 table.imcmsToolBarSubTable {
-    
+
 }
 
 table.imcmsToolBarSubTable td.imcmsToolBarSubTdLeft {
     background: transparent url(<%= cp %>/imcms/images/adminpanel/bg_toolbar_sub_left.<%=
     (isIE55plus && !isIE7plus) ? "gif" : "png" %>) bottom right no-repeat !important;
 }
+
 table.imcmsToolBarSubTable td.imcmsToolBarSubTdMid {
     padding: 8px 5px 17px 0 !important;
     background: transparent url(<%= cp %>/imcms/images/adminpanel/bg_toolbar_sub_mid.<%=
     (isIE55plus && !isIE7plus) ? "gif" : "png" %>) bottom left repeat-x !important;
 }
+
 table.imcmsToolBarSubTable td.imcmsToolBarSubTdRight {
     background: transparent url(<%= cp %>/imcms/images/adminpanel/bg_toolbar_sub_right.<%=
     (isIE55plus && !isIE7plus) ? "gif" : "png" %>) bottom left no-repeat !important;
 }
 
-
 table.imcmsToolBarSubTable td.imcmsToolBarSubWidthTdLeft {
     width: 7px !important;
 }
+
 table.imcmsToolBarSubTable td.imcmsToolBarSubWidthTdMid {
 }
+
 table.imcmsToolBarSubTable td.imcmsToolBarSubWidthTdRight {
     width: 12px !important;
 }
 
-
-
-<%-- 
+<%--
 /* *******************************************************************************************
  *         Form elements                                                                     *
  ******************************************************************************************* */
@@ -450,13 +481,12 @@ table.imcmsToolBarSubTable td.imcmsToolBarSubWidthTdRight {
 
 .imcmsSelectBox,
 .imcmsTextField {
-    font: 10px Verdana,Geneva,sans-serif !important;
+    font: 10px Verdana, Geneva, sans-serif !important;
     color: #000 !important;
     border: 1px solid #999;
 }
 
-
-<%-- 
+<%--
 /* *******************************************************************************************
  *         Misc                                                                              *
  ******************************************************************************************* */
@@ -465,23 +495,26 @@ table.imcmsToolBarSubTable td.imcmsToolBarSubWidthTdRight {
 .imcmsToolTip {
     cursor: help;
 }
+
 A.imcmsToolTip {
     cursor: pointer;
 }
+
 .imcmsHelper {
     text-decoration: none;
     border-bottom: 1px dashed #0b0;
     cursor: help;
 }
+
 .imcmsHelper IMG {
     border: 0 !important;
 }
+
 #imcmsToolTipPop {
     position: absolute !important;
     border: 1px solid #000 !important;
-    <%= isGecko ? "-moz-border-radius: 4px !important;" : "" %>
-    padding: 5px 5px 5px 25px !important;
-    font: 11px Verdana,Geneva,sans-serif !important;
+<%= isGecko ? "-moz-border-radius: 4px !important;" : "" %> padding: 5px 5px 5px 25px !important;
+    font: 11px Verdana, Geneva, sans-serif !important;
     color: #000 !important;
     text-shadow: 0 1px 0 #ccc !important;
     text-align: left !important;
@@ -489,6 +522,7 @@ A.imcmsToolTip {
     z-index: 20000010 !important;
     display: none;
 }
+
 <%
 String[][] arrIconExt = {
     { "JPG", "icon_file_image.gif" },
@@ -537,20 +571,13 @@ for (String[] extData : arrIconExt) {
     if ("".equals(iconImg)) {
         iconImg = "icon_file_" + extData[0].toLowerCase() + ".gif" ;
     } %>
-.imcmsToolTipIcon_<%= extData[0] %> {
+.imcmsToolTipIcon_ <%= extData[0] %> {
     background: #fff url(<%= cp + ICON_PATH + iconImg %>) 4px 5px no-repeat !important;
     padding-left: 27px !important;
-}<%
+}
+
+<%
 } %>
-
-
-
-
-
-
-
-
-
 
 .imcms_label,
 .imcms_label:link,
@@ -560,6 +587,7 @@ for (String[] extData : arrIconExt) {
     text-decoration: none !important;
     background-color: #ffc !important;
 }
+
 .imcms_label:active,
 .imcms_label:hover {
     font: 10px Verdana !important;
@@ -568,22 +596,13 @@ for (String[] extData : arrIconExt) {
     background-color: #ffc !important;
 }
 
-
-
-
-
 <%-- Testing feature --%>
 .ui-effects-transfer {
     border: 2px dotted #20568d !important;
 }
+
 <%----%>
 <jsp:include page="imcms_vaadin.css.jsp" />
-
-
-
-
-
-
 
 <%--
 
@@ -596,46 +615,57 @@ OLD adminPanel CSS - Soon removed!
 #adminPanelDiv {
     padding: 15px 0 10px 0 !important;
 }
+
 .adminPanelTable {
     border-right: 1px solid #000 !important;
     border-bottom: 1px solid #000 !important;
     background-color: #f5f5f7 !important;
 }
+
 .adminPanelTd1 {
     padding: 2px !important;
     background-color: #20568D !important;
 }
-#adminPanelTd1_1 {}
+
+#adminPanelTd1_1 {
+}
+
 .adminPanelLogo {
-    font: bold 11px Verdana,Geneva,sans-serif !important;
+    font: bold 11px Verdana, Geneva, sans-serif !important;
     color: #ddf !important;
     letter-spacing: -1px !important;
 }
-#adminPanelTd1_2 {}
+
+#adminPanelTd1_2 {
+}
+
 .adminPanelText,
 .adminPanelText SPAN {
-    font: 11px Verdana,Geneva,sans-serif !important;
+    font: 11px Verdana, Geneva, sans-serif !important;
     color: #fff !important;
 }
+
 #adminPanelTd1_2 .adminPanelText SPAN {
     white-space: nowrap !important;
 }
-#adminPanelTd1_3 {}
+
+#adminPanelTd1_3 {
+}
+
 .adminPanelTd2 {
     padding: 3px !important;
     height: 32px !important;
     vertical-align: top !important;
 }
 
-.adminPanelTd2 A:hover IMG {<%
-    if (isGecko) { %>
-    <%= "-moz-opacity: 0.5 !important;" %><%
-    } else if (isIE) { %>
-    <%= "filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=0, xray=0, mirror=0, invert=0, opacity=0.5, rotation=0) !important;" %><%
-    } else { %>
-    <%= "opacity: 0.5 !important;" %><%
+.adminPanelTd2 A:hover IMG {
+<%
+    if (isGecko) { %> <%= "-moz-opacity: 0.5 !important;" %><%
+    } else if (isIE) { %> <%= "filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=0, xray=0, mirror=0, invert=0, opacity=0.5, rotation=0) !important;" %><%
+    } else { %> <%= "opacity: 0.5 !important;" %><%
     } %>
 }
+
 .adminPanelTable B {
     font-weight: bold !important;
 }
@@ -645,33 +675,41 @@ OLD adminPanel CSS - Soon removed!
 #changePageDiv {
     padding: 0 0 10px 0 !important;
 }
+
 #changePageTable {
     border-right: 1px solid #000 !important;
     border-bottom: 1px solid #000 !important;
     background-color: #f5f5f7 !important;
 }
+
 #changePageTdTop {
     padding: 2px !important;
     background-color: #20568d !important;
 }
+
 #changePageTd1 {
-    font: 10px Verdana,Geneva,sans-serif !important;
+    font: 10px Verdana, Geneva, sans-serif !important;
     color: #fff !important;
     padding-left: 5px !important;
 }
+
 #changePageTd1 SPAN {
     white-space: nowrap !important;
 }
+
 #changePageTd2 {
     padding-left: 10px !important;
 }
+
 .changePageTdBottom TD {
     padding-top: 3px !important;
 }
+
 .changePageHeading {
-    font: 10px Verdana,Geneva,sans-serif !important;
+    font: 10px Verdana, Geneva, sans-serif !important;
     color: #fff !important;
 }
+
 .changePageButton {
     background-color: #e2e2e4 !important;
     font: 10px Tahoma, Arial, sans-serif !important;
@@ -680,8 +718,9 @@ OLD adminPanel CSS - Soon removed!
     border-width: 1px !important;
     border-style: outset !important;
     border-color: #ccc #666 #666 #ccc !important;
-    cursor:pointer !important;
+    cursor: pointer !important;
 }
+
 #changePageDiv .imcmsFormBtnSmall {
     background-color: #20568d !important;
     color: #fff !important;
@@ -691,16 +730,65 @@ OLD adminPanel CSS - Soon removed!
     padding: 0 2px !important;
     cursor: pointer !important;
 }
+
 #changePageTable B {
     font-weight: bold !important;
 }
+
 A.imLinkHelp:link,
 A.imLinkHelp:visited,
 A.imLinkHelp:active,
 A.imLinkHelp:hover {
-    font: bold 15px Arial, Tahoma,Verdana,sans-serif !important;
+    font: bold 15px Arial, Tahoma, Verdana, sans-serif !important;
     color: #ee0 !important;
-    text-decoration:none !important;
+    text-decoration: none !important;
 }
+
+<%--
+
+editor theme
+
+--%>
+.editor-base {
+    border: 1px dashed black;
+}
+
+.editor-menu-wrapper-adder, .editor-menu-wrapper-accepter {
+    height: 34px;
+    width: 34px;
+}
+
+.custom-combobox {
+    position: relative;
+    display: inline-block;
+    float: left;
+    margin-right: 45px;
+}
+
+.custom-combobox-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-left: -1px;
+    padding: 0;
+}
+
+.custom-combobox-input {
+    margin: 0;
+    padding: 5px 10px;
+}
+
+.editor-menu-item > a {
+    display: block;
+    float: left;
+    line-height: 22px;
+    margin: 0px 5px
+}
+
+.editor-menu-item-wrapper-button {
+    width: 22px;
+    height: 22px;
+}
+
 
 

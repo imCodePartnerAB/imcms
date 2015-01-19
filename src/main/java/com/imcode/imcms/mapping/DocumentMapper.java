@@ -488,10 +488,10 @@ public class DocumentMapper implements DocumentGetter {
         TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[rows.size()];
 
         for (int i = 0; i < documentMenuPairs.length; i++) {
-            Integer[] row = rows.get(i);
+            Object[] row = rows.get(i);
 
-            int containingDocumentId = row[0];
-            int menuIndex = row[1];
+            int containingDocumentId = (int) row[0];
+            int menuIndex = (int) row[1];
 
             TextDocumentDomainObject containingDocument = getDocument(containingDocumentId);
             documentMenuPairs[i] = new TextDocumentMenuIndexPair(containingDocument, menuIndex);
@@ -757,6 +757,24 @@ public class DocumentMapper implements DocumentGetter {
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language) {
         return documentLoaderCachingProxy.getDefaultDoc(docId, language.getCode());
+    }
+
+    /**
+     * Find documents by it headline
+     * @param term
+     * @param <T>
+     * @return list of document
+     */
+    public <T extends DocumentDomainObject> List<T> findDocumentsByHeadline(String term){
+        List<Integer> ids = getAllDocumentIds();
+        List<T> result = new ArrayList<T>();
+        term = term.toLowerCase();
+        for(Integer id: ids) {
+            DocumentDomainObject document = getDocument(id);
+            if(term.isEmpty()||document.getHeadline().toLowerCase().contains(term))
+                result.add((T) document);
+        }
+        return  result;
     }
 
 

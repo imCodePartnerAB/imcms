@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.mapping.container.LoopEntryRef;
+import com.imcode.imcms.servlet.tags.Editor.BaseEditor;
 import imcode.server.parser.TagParser;
 
 import javax.servlet.jsp.tagext.TagAdapter;
@@ -18,6 +19,11 @@ public class ImageTag extends SimpleImcmsTag {
         LoopEntryRef loopEntryRef = loopTag == null ? null : loopTag.getLoopEntryRef();
 
         return tagParser.tagImage(attributes, loopEntryRef);
+    }
+
+    @Override
+    public BaseEditor createEditor() {
+        return  null;
     }
 
     public void setMode(String mode) {

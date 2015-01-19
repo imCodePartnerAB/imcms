@@ -426,7 +426,7 @@ public class TagParser {
             }
         }
 
-        if (textMode && (textDocumentToUse.getId() == document.getId())) {
+       /* if (textMode && (textDocumentToUse.getId() == document.getId())) {
             HttpServletRequest request = documentRequest.getHttpServletRequest();
             HttpServletResponse response = documentRequest.getHttpServletResponse();
             String formatsAttribute = attributes.getProperty("formats", "");
@@ -451,7 +451,7 @@ public class TagParser {
             } catch (IOException e) {
                 throw new UnhandledException(e);
             }
-        }
+        }*/
 
         return result;
     }
@@ -815,7 +815,7 @@ public class TagParser {
         if (0 == tagResult.length()) {
             return "";
         }
-        String preAttribute = StringUtils.defaultString(attributes.getProperty("pre"));
+        String preAttribute = StringUtils.defaultString(attributes.getProperty("pre")).replace(">", " imcms-wrapper>");
         String postAttribute = StringUtils.defaultString(attributes.getProperty("post"));
         return preAttribute + tagResult + postAttribute;
     }

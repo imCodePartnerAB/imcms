@@ -32,9 +32,6 @@ boolean isIE7plus  = browser.isIE7plus() ;
 
 %>
 
-<jsp:include page="imcms_jquery_1.4.2.js" />
-
-<jsp:include page="imcms_jquery-ui_1.8.5.js" />
 
 var lastActiveTabId = "" ;
 var flags = <%= flags %> ;//(document.location.toString().indexOf('servlet/SaveInPage') != -1) ? <%= ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE %> : <%= flags %> ;

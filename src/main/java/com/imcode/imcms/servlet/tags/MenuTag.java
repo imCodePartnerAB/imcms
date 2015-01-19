@@ -1,5 +1,7 @@
 package com.imcode.imcms.servlet.tags;
 
+import com.imcode.imcms.servlet.tags.Editor.BaseEditor;
+import com.imcode.imcms.servlet.tags.Editor.MenuEditor;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -23,7 +25,7 @@ import org.apache.commons.collections.iterators.FilterIterator;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.TextDocument;
 
-public class MenuTag extends BodyTagSupport {
+public class MenuTag extends BodyTagSupport implements EditableTag {
 
     private volatile int no;
     private volatile Properties attributes = new Properties();
@@ -78,6 +80,7 @@ public class MenuTag extends BodyTagSupport {
             bodyContentString = MenuParser.addMenuAdmin(no,
                     parserParameters.isMenuMode(),
                     bodyContentString, menu, request, response, label);
+            bodyContentString = createEditor().setNo(no).wrap(bodyContentString);
             bodyContentString = TagParser.addPreAndPost(attributes, bodyContentString);
             pageContext.getOut().write(bodyContentString);
         } catch (IOException e) {
@@ -136,5 +139,10 @@ public class MenuTag extends BodyTagSupport {
 
     public void setTemplate(String template) {
         this.template = template;
+    }
+
+    @Override
+    public MenuEditor createEditor() {
+        return new MenuEditor();
     }
 }

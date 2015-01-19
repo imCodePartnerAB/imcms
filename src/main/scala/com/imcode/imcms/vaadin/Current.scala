@@ -1,10 +1,11 @@
 package com.imcode
 package imcms.vaadin
 
+import _root_.javax.servlet.http.HttpSession
+import javax.servlet.ServletContext
+
 import com.vaadin.server._
 import com.vaadin.ui.{JavaScript, UI}
-import _root_.javax.servlet.http.{HttpServletRequest, HttpSession}
-import javax.servlet.ServletContext
 import imcode.server.user.UserDomainObject
 import imcode.util.Utility
 

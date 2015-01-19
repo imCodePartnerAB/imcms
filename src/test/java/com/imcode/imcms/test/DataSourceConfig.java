@@ -1,7 +1,7 @@
 package com.imcode.imcms.test;
 
 import com.imcode.imcms.util.Value;
-import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -42,7 +42,7 @@ public class DataSourceConfig {
             ds.setPassword(env.getRequiredProperty("Password"));
             ds.setTestOnBorrow(true);
             ds.setValidationQuery("select 1");
-            ds.setMaxActive(1);
+            ds.setMaxTotal(1);
         });
     }
 }

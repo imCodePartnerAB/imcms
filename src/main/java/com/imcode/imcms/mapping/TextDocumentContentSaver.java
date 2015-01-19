@@ -141,6 +141,7 @@ public class TextDocumentContentSaver {
         imageRepository.deleteByVersionAndLanguage(version, language);
         menuRepository.deleteByVersion(version);
         // loops must be re-created before loop items (texts and images)
+        loopRepository.findByVersion(version).forEach((a) -> a.getEntries().clear());
         loopRepository.deleteByVersion(version);
 
         createLoops(doc, version);

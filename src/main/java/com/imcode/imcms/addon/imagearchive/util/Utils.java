@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.imcode.imcms.addon.imagearchive.service.Facade;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.validation.FieldError;
 import org.springframework.web.context.WebApplicationContext;
@@ -174,7 +174,7 @@ public class Utils {
     }
 
     public static void writeJSON(Object object, HttpServletResponse response) {
-        MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
+        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
         MediaType jsonMimeType = MediaType.parseMediaType("application/json");
 
         if (jsonConverter.canWrite(object.getClass(), jsonMimeType)) {

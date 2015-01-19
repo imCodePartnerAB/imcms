@@ -22,19 +22,91 @@
     <tx:annotation-driven proxy-target-class="false"/>
     <aop:config proxy-target-class="false"/>
 
-    <jpa:repositories base-package="com.imcode.imcms.mapping.jpa"/>
+    <jpa:repositories base-package="com.imcode.imcms.mapping.jpa" entity-manager-factory-ref="myEmf"/>
 
     <context:component-scan base-package="com.imcode.imcms.mapping, com.imcode.imcms.addon.imagearchive"/>
-    <context:property-placeholder location="/WEB-INF/conf/server.properties" system-properties-mode="NEVER" ignore-resource-not-found="true"/>
+    <context:property-placeholder location="/WEB-INF/conf/server.properties" system-properties-mode="NEVER"
+                                  ignore-resource-not-found="true"/>
     <!--ignore-unresolvable="true"-->
 
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"/>
+    <!--bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="jpaDialect" ref="jpaDialect"/>
+    </bean>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-            p:dataSource-ref="dataSource"/>
+          p:dataSource-ref="dataSource">
+        <property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml"/>
+        <property name="persistenceUnitName" value="com.imcode.imcms"/>
+        <property name="jpaDialect" ref="jpaDialect"/>
+        <property name="packagesToScan">
+            <list>
+                <value>com.imcode.imcms.mapping.jpa</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="jpaVendorAdapter"
+          class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="database" value="MYSQL"/>
+        <property name="databasePlatform" value="org.hibernate.dialect.MySQL5InnoDBDialect"/>
+    </bean>
 
-    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"
-            p:defaultLocale="sv"/>
+    <tx:annotation-driven transaction-manager="transactionManager"/-->
+
+    <!--bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"
+          p:defaultLocale="sv"/-->
+
+    <bean id="myEmf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="persistenceUnitName" value="com.imcode.imcms" />
+        <property name="persistenceUnitManager" ref="pum"/>
+        <property name="packagesToScan" value="com.imcode.imcms.mapping, com.imcode.imcms.addon.imagearchive, com.imcode.imcms.mapping.jpa" />
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+            <!-- <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+                <property name="generateDdl" value="${jpa.generateDdl}" />
+                <property name="databasePlatform" value="${persistence.dialect}" />
+            </bean> -->
+        </property>
+        <property name="loadTimeWeaver">
+            <bean
+                    class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <!--prop key="hibernate.hbm2ddl.auto">create-drop</prop-->
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="pum" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
+        <property name="persistenceXmlLocations">
+            <list>
+                <value>classpath:META-INF/persistence.xml</value>
+            </list>
+        </property>
+        <property name="dataSources">
+            <map>
+                <entry key="localDataSource" value-ref="dataSource"/>
+                <entry key="remoteDataSource" value-ref="dataSource"/>
+            </map>
+        </property>
+        <!-- if no datasource is specified, use this one -->
+        <property name="defaultDataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="myEmf" />
+    </bean>
+
+    <tx:annotation-driven  transaction-manager="transactionManager" />
+
+    <bean id="persistenceExceptionTranslationPostProcessor" class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
 
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basenames">
@@ -47,7 +119,7 @@
         <property name="useCodeAsDefaultMessage" value="true"/>
     </bean>
 
-    <bean id="dataSource" class="org.apache.tomcat.dbcp.dbcp.BasicDataSource" destroy-method="close"
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
           p:driverClassName="${JdbcDriver}"
           p:url="${JdbcUrl}"
           p:username="${User}"
@@ -55,7 +127,7 @@
           p:testOnBorrow="true"
           p:validationQuery="select 1"
           p:defaultAutoCommit="false"
-          p:maxActive="${MaxConnectionCount}"/>
+          p:maxTotal="${MaxConnectionCount}"/>
 
     <!--
         Legacy code support:
