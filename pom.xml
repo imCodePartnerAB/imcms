@@ -69,7 +69,7 @@
 		<slf4j.version>1.6.6</slf4j.version>
 
 		<!-- jetty plugin since version 7.5.3+ requires maven v3.x -->
-		<jetty.version>7.5.2.v20111006</jetty.version>
+		<jetty.version>7.5.4.v20111024</jetty.version>
 		<jetty.port>9090</jetty.port>
 		<jetty.stop.key>${project.name}</jetty.stop.key>
 		<jetty.stop.port>9696</jetty.stop.port>
