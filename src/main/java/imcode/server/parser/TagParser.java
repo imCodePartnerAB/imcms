@@ -1,8 +1,8 @@
 package imcode.server.parser;
 
-import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import com.imcode.util.CountingIterator;
 import imcode.server.DocumentRequest;
@@ -18,15 +18,14 @@ import imcode.util.Html;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -40,27 +39,13 @@ import java.util.regex.Matcher;
 
 public class TagParser {
 
-    private static Pattern htmlPrebodyPattern;
-    private static Pattern htmlPostbodyPattern;
-    private static Pattern imcmsTagPattern;
-    private static Pattern imcmsEndTagPattern;
-    private static Pattern attributesPattern;
-    private static Pattern widthPattern;
-    private static Pattern heightPattern;
-    private static Pattern maxWidthPattern;
-    private static Pattern maxHeightPattern;
-
     private static final java.util.regex.Pattern REMOVE_ATTRS_PATTERN = java.util.regex.Pattern.compile(
             "(?<!-)(?:max-width|max-height|width|height)\\s*:\\s*\\d+\\s*px\\s*;?", java.util.regex.Pattern.CASE_INSENSITIVE);
-
-
     /**
      * Used as default image in tagImage when document.getImage returns null.
      */
     private final static ImageDomainObject DEFAULT_IMAGE = new ImageDomainObject();
-
     private final static Logger LOG = Logger.getLogger(TagParser.class.getName());
-
     static {
         Perl5Compiler patComp = new Perl5Compiler();
 
@@ -91,9 +76,16 @@ public class TagParser {
             throw new RuntimeException(e);
         }
     }
-
     private final static Substitution NULL_SUBSTITUTION = new StringSubstitution("");
-
+    private static Pattern htmlPrebodyPattern;
+    private static Pattern htmlPostbodyPattern;
+    private static Pattern imcmsTagPattern;
+    private static Pattern imcmsEndTagPattern;
+    private static Pattern attributesPattern;
+    private static Pattern widthPattern;
+    private static Pattern heightPattern;
+    private static Pattern maxWidthPattern;
+    private static Pattern maxHeightPattern;
     private TextDocumentParser textDocParser;
 
     private boolean includeMode;
@@ -128,6 +120,48 @@ public class TagParser {
 
         this.viewing = new TextDocumentViewing(parserParameters);
 
+    }
+
+    private static boolean shouldOutputNothingAccordingToMode(Properties attributes, boolean mode) {
+        String modeAttribute = attributes.getProperty("mode");
+        return StringUtils.isNotBlank(modeAttribute)
+                && (mode && "read".startsWith(modeAttribute) // With mode="read", we don't want anything in textMode.
+                || !mode
+                && "write".startsWith(modeAttribute)// With mode="write", we don't want anything unless we're in textMode.
+        );
+    }
+
+    private static String getLabel(Properties attributes) {
+        return attributes.getProperty("label", "").replaceAll("\\s+", " ");
+    }
+
+    private static String[] getLabelTags(Properties attributes, int no,
+                                         String finalresult, TextDocumentDomainObject document) {
+        String label = getLabel(attributes);
+        String label_urlparam = "";
+        if (!"".equals(label)) {
+            label_urlparam = removeHtmlTagsAndUrlEncode(label);
+        }
+        return new String[]{
+                "#meta_id#", String.valueOf(document.getId()),
+                "#content_id#", "" + no,
+                "#content#", finalresult,
+                "#label_url#", label_urlparam,
+                "#label#", label
+        };
+    }
+
+    private static String removeHtmlTagsAndUrlEncode(String label) {
+        return URLEncoder.encode(Html.removeTags(label));
+    }
+
+    public static String addPreAndPost(Properties attributes, String tagResult) {
+        if (0 == tagResult.length()) {
+            return "";
+        }
+        String preAttribute = StringUtils.defaultString(attributes.getProperty("pre")).replace(">", " imcms-wrapper>");
+        String postAttribute = StringUtils.defaultString(attributes.getProperty("post"));
+        return preAttribute + tagResult + postAttribute;
     }
 
     /**
@@ -374,7 +408,6 @@ public class TagParser {
         return names;
     }
 
-
     public String tagText(Properties attributes) {
         return tagText(attributes, null);
     }
@@ -454,39 +487,6 @@ public class TagParser {
         }*/
 
         return result;
-    }
-
-    private static boolean shouldOutputNothingAccordingToMode(Properties attributes, boolean mode) {
-        String modeAttribute = attributes.getProperty("mode");
-        return StringUtils.isNotBlank(modeAttribute)
-                && (mode && "read".startsWith(modeAttribute) // With mode="read", we don't want anything in textMode.
-                || !mode
-                && "write".startsWith(modeAttribute)// With mode="write", we don't want anything unless we're in textMode.
-        );
-    }
-
-    private static String getLabel(Properties attributes) {
-        return attributes.getProperty("label", "").replaceAll("\\s+", " ");
-    }
-
-    private static String[] getLabelTags(Properties attributes, int no,
-                                         String finalresult, TextDocumentDomainObject document) {
-        String label = getLabel(attributes);
-        String label_urlparam = "";
-        if (!"".equals(label)) {
-            label_urlparam = removeHtmlTagsAndUrlEncode(label);
-        }
-        return new String[]{
-                "#meta_id#", String.valueOf(document.getId()),
-                "#content_id#", "" + no,
-                "#content#", finalresult,
-                "#label_url#", label_urlparam,
-                "#label#", label
-        };
-    }
-
-    private static String removeHtmlTagsAndUrlEncode(String label) {
-        return URLEncoder.encode(Html.removeTags(label));
     }
 
     /**
@@ -811,15 +811,6 @@ public class TagParser {
         return tagResult;
     }
 
-    public static String addPreAndPost(Properties attributes, String tagResult) {
-        if (0 == tagResult.length()) {
-            return "";
-        }
-        String preAttribute = StringUtils.defaultString(attributes.getProperty("pre")).replace(">", " imcms-wrapper>");
-        String postAttribute = StringUtils.defaultString(attributes.getProperty("post"));
-        return preAttribute + tagResult + postAttribute;
-    }
-
     String blockTag(String tagname, Properties attributes, String content,
                     PatternMatcher patternMatcher) {
         String result = content;
@@ -877,23 +868,6 @@ public class TagParser {
         return textDocumentToUse;
     }
 
-    public class MetaIdHeaderHttpServletRequest extends HttpServletRequestWrapper {
-
-        private int metaId;
-
-        public MetaIdHeaderHttpServletRequest(HttpServletRequest request, int metaId) {
-            super(request);
-            this.metaId = metaId;
-        }
-
-        public String getHeader(String headerName) {
-            if ("x-meta-id".equalsIgnoreCase(headerName)) {
-                return "" + metaId;
-            }
-            return super.getHeader(headerName);
-        }
-    }
-
     /**
      * Take a String of attributes, as may be found inside a tag, (name="...", and so on...) and transform it into a Properties.
      */
@@ -917,6 +891,23 @@ public class TagParser {
 
         public String escapeHtml(String s) {
             return StringEscapeUtils.escapeHtml4(s);
+        }
+    }
+
+    public class MetaIdHeaderHttpServletRequest extends HttpServletRequestWrapper {
+
+        private int metaId;
+
+        public MetaIdHeaderHttpServletRequest(HttpServletRequest request, int metaId) {
+            super(request);
+            this.metaId = metaId;
+        }
+
+        public String getHeader(String headerName) {
+            if ("x-meta-id".equalsIgnoreCase(headerName)) {
+                return "" + metaId;
+            }
+            return super.getHeader(headerName);
         }
     }
 

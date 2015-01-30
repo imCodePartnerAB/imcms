@@ -6,6 +6,7 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.encoding.Encoding;
 
 public class StringInputStreamHandler extends Thread {
     private static final Log log = LogFactory.getLog(StringInputStreamHandler.class);
@@ -20,7 +21,7 @@ public class StringInputStreamHandler extends Thread {
     @Override
     public void run() {
         try {
-            data = IOUtils.toString(inputStream);
+            data = IOUtils.toString(inputStream, "ISO-8859-1");
         } catch (IOException ex) {
             log.warn(ex.getMessage(), ex);
         } finally {

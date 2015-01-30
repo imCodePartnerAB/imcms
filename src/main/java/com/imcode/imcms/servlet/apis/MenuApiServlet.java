@@ -48,6 +48,8 @@ public class MenuApiServlet extends HttpServlet {
                 objectMap.put("name", document.getId());
                 objectMap.put("value", document.getHeadline());
                 objectMap.put("label", document.getHeadline());
+                objectMap.put("language", document.getLanguage().getName());
+                objectMap.put("alias", document.getAlias());
                 result.add(objectMap);
             }
         }

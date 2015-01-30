@@ -1,15 +1,14 @@
 package imcode.server.document.textdocument;
 
+import com.imcode.util.ImageSize;
+import imcode.server.Imcms;
+import imcode.util.image.ImageInfo;
+import imcode.util.image.ImageOp;
 import imcode.util.io.InputStreamSource;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
-
-import com.imcode.util.ImageSize;
-import imcode.server.Imcms;
-import imcode.util.image.ImageInfo;
-import imcode.util.image.ImageOp;
 
 public abstract class ImageSource implements Serializable {
     public static final int IMAGE_TYPE_ID__NULL = -1;

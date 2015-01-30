@@ -18,8 +18,9 @@ public class TextTag extends SimpleImcmsTag {
                 : null;
 
         LoopEntryRef loopEntryRef = loopTag == null ? null : loopTag.getLoopEntryRef();
+
         ((TextEditor) editor)
-                .setLocale("en")
+                .setLocale(parserParameters.getDocumentRequest().getDocument().getLanguage().getCode())
                 .setLoopEntryRef(loopEntryRef)
                 .setNo(Integer.parseInt(attributes.getProperty("no")));
         return tagParser.tagText(attributes, loopEntryRef);

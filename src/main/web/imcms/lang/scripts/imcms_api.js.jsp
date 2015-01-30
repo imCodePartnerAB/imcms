@@ -159,7 +159,9 @@
                 this._helper = $("<input>");
                 this._wrapper.append(this._helper);
                 this._helper.combobox({
-                    source: $.proxy(Imcms.APIs.Menu, "read"),
+                    source: function () {
+                        Imcms.Editors.Menu.read.apply(Imcms.Editors.Menu, arguments);
+                    },
                     select: function (data) {
                         that._menuInfo = data;
                     }
@@ -167,9 +169,12 @@
                 this._wrapper.append($("<button>").text("+").addClass("editor-menu-wrapper-accepter").on("click", function () {
                     var request = Imcms.Utils.margeObjectsProperties(that._target.data().prettify(), that._menuInfo, Imcms.document);
                     Imcms.Editors.Menu.create(request, function () {
-                        window.location.reload()
+                        window.location.reload();
                     });
                     console.info("menu saved");
+                }));
+                this._wrapper.append($("<button>").text("...").addClass("editor-menu-wrapper-accepter").on("click", function () {
+                    Imcms.Editors.Menu._popup(that);
                 }));
             }
         };
@@ -198,7 +203,7 @@
                             var request = Imcms.Utils.margeObjectsProperties(that._target.data().prettify(),
                                     parentMenu.data().prettify(), Imcms.document);
                             Imcms.Editors.Menu.delete(request, function () {
-                                window.location.reload()
+                                window.location.reload();
                             });
                         }).appendTo(this._wrapper);
                 this._moveItemUpButton = $("<button>")
@@ -212,7 +217,7 @@
                             var request = Imcms.Utils.margeObjectsProperties(that._target.data().prettify(),
                                     parentMenu.data().prettify(), Imcms.document, positionTo);
                             Imcms.Editors.Menu.update(request, function () {
-                                window.location.reload()
+                                window.location.reload();
                             });
                         }).appendTo(this._wrapper);
                 this._moveItemDownButton = $("<button>")
@@ -226,26 +231,98 @@
                             var request = Imcms.Utils.margeObjectsProperties(that._target.data().prettify(),
                                     parentMenu.data().prettify(), Imcms.document, positionTo);
                             Imcms.Editors.Menu.update(request, function () {
-                                window.location.reload()
+                                window.location.reload();
                             });
                         }).appendTo(this._wrapper);
             }
         }
 
         Imcms.MenuEditor.prototype = {
+            _menuHelpers: [],
             init: function () {
                 var that = this;
                 jQuery(".editor-menu").each(function (pos, element) {
-                    new Imcms.MenuEditor.MenuHelper(element);
+                    that._menuHelpers[pos] = new Imcms.MenuEditor.MenuHelper(element);
                 });
             },
-            create: $.proxy(Imcms.APIs.Menu, "create"),
-            read: $.proxy(Imcms.APIs.Menu, "read"),
-            update: $.proxy(Imcms.APIs.Menu, "update"),
-            delete: $.proxy(Imcms.APIs.Menu, "delete")
+            create: function () {
+                Imcms.APIs.Menu.create.apply(Imcms.APIs.Menu, arguments);
+            },
+            read: function () {
+                Imcms.APIs.Menu.read.apply(Imcms.APIs.Menu, arguments);
+            },
+            update: function () {
+                Imcms.APIs.Menu.update.apply(Imcms.APIs.Menu, arguments);
+            },
+            delete: function () {
+                Imcms.APIs.Menu.delete.apply(Imcms.APIs.Menu, arguments);
+            },
+
+            _popup: function () {
+                var menuHelper = arguments[0] || this._menuHelpers[0];
+                var that = this;
+                var selectedRow = null;
+                var formBuilder = JSFormBuilder("<DIV>")
+                        .form()
+                        .class("editor-menu-form")
+                        .fieldset()
+                        .div()
+                        .text()
+                        .reference("searchField")
+                        .label("Document name")
+                        .end()
+                        .end()
+                        .div()
+                        .table()
+                        .on("click", function (e) {
+                            var element = document.elementFromPoint(e.pageX, e.pageY);
+                            if (selectedRow)
+                                selectedRow.className = "";
+                            selectedRow = element.parentElement;
+                            selectedRow.className = "clicked";
+                        })
+                        .column("id")
+                        .column("label")
+                        .column("language")
+                        .column("alias")
+                        .reference("documentsTable")
+                        .end()
+                        .end()
+                        .end()
+                        .end();
+                $(formBuilder[0]).dialog({
+                    autoOpen: true,
+                    height: 500,
+                    width: 700,
+                    modal: true,
+                    buttons: {
+                        "Add selected": function () {
+                            var dialog = $(this);
+                            dialog.next(".ui-dialog-buttonpane button").filter(function () {
+                                return $(this).text() == "Add selected";
+                            }).attr("disabled", true).addClass("ui-state-disabled");
+                            var request = Imcms.Utils.margeObjectsProperties(Imcms.document, menuHelper._target.data().prettify(), {id: selectedRow.children[0].innerHTML});
+                            that.create(request, function () {
+                                dialog.dialog("close");
+                                window.location.reload();
+                            });
+                        },
+                        Cancel: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+                var responce = function (data) {
+                    formBuilder.ref("documentsTable").clear();
+                    for (var rowId in data)
+                        formBuilder.ref("documentsTable").row(data[rowId]);
+                };
+                formBuilder.ref("searchField").on("input", function () {
+                    that.read({term: this.value()}, responce);
+                })
+                this.read({term: ""}, responce);
+            }
         };
-
-
 
 
         Imcms.MenuAPI = function () {

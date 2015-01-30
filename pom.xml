@@ -392,11 +392,11 @@
         </dependency>
 
         <!-- imCode Internal Repository dependencies -->
-        <dependency>
+        <!--dependency>
             <groupId>gnu-crypto-javax-security</groupId>
             <artifactId>gnu-crypto-javax-security</artifactId>
             <version>2.0.1</version>
-        </dependency>
+        </dependency-->
 
         <dependency>
             <groupId>gnu-inetlib</groupId>
@@ -804,6 +804,10 @@
         <repository>
             <id>imcode</id>
             <url>http://repo.imcode.com/maven2</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.apache.org/maven2</url>
         </repository>
 
         <repository>

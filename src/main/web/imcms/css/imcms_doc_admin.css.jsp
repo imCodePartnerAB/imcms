@@ -790,5 +790,19 @@ editor theme
     height: 22px;
 }
 
+.editor-menu-form{
+
+}
+.editor-menu-form table{
+    width:100%;
+    border-color: black;
+}
+.editor-menu-form table tbody tr:hover{
+    background-color: #aabbc5;
+}
+.editor-menu-form table tbody .clicked{
+    background-color: #aa77cc
+}
+
 
 

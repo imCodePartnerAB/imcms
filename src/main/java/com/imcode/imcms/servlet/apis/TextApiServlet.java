@@ -59,9 +59,9 @@ public class TextApiServlet extends HttpServlet {
             return;
         }
         int textNo = Integer.parseInt(req.getParameter("no"));
-        VersionRef versioRef = VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO);
+        VersionRef versionRef = VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO);
         LoopEntryRef loopEntryRefOpt = null;
-        String loopEntryRef = "";
+        String loopEntryRef;
         if (!StringUtils.isEmpty(loopEntryRef = req.getParameter("loopEntryRef".toLowerCase()))) {
             String[] items = loopEntryRef.split("_", 2);
             if (items.length > 1)
@@ -71,7 +71,7 @@ public class TextApiServlet extends HttpServlet {
         try {
             imcmsServices.getDocumentMapper().saveTextDocText(
                     TextDocTextContainer.of(
-                            DocRef.of(versioRef, locale),
+                            DocRef.of(versionRef, locale),
                             loopEntryRefOpt, textNo,
                             new TextDomainObject(content.trim(),
                                     TextDomainObject.TEXT_TYPE_HTML)

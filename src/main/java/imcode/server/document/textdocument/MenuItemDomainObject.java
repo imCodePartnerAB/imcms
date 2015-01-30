@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Menu item descriptor.
@@ -82,8 +83,16 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         return treeSortKey;
     }
 
+    public void setTreeSortKey(TreeSortKeyDomainObject treeSortKey) {
+        this.treeSortKey = treeSortKey;
+    }
+
     public DocumentReference getDocumentReference() {
         return documentReference;
+    }
+
+    public void setDocumentReference(DocumentReference documentReference) {
+        this.documentReference = documentReference;
     }
 
     public int getDocumentId() {
@@ -94,23 +103,40 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         return sortKey;
     }
 
-    public String getTreeSortIndex() {
-        return treeSortKey.getTreeSortKey();
-    }
-
     public void setSortKey(Integer sortKey) {
         this.sortKey = sortKey;
     }
 
-    public void setTreeSortKey(TreeSortKeyDomainObject treeSortKey) {
-        this.treeSortKey = treeSortKey;
+    public String getTreeSortIndex() {
+        return treeSortKey.getTreeSortKey();
     }
 
     public void setTreeSortIndex(String treeSortIndex) {
         setTreeSortKey(new TreeSortKeyDomainObject(treeSortIndex));
     }
 
-    public void setDocumentReference(DocumentReference documentReference) {
-        this.documentReference = documentReference;
+    public static class TreeMenuItemDomainObject {
+        private MenuItemDomainObject menuItem;
+        private List<MenuItemDomainObject> subMenuItems;
+
+        public MenuItemDomainObject getMenuItem() {
+            return menuItem;
+        }
+
+        public void setMenuItem(MenuItemDomainObject menuItem) {
+            this.menuItem = menuItem;
+        }
+
+        public List<MenuItemDomainObject> getSubMenuItems() {
+            return subMenuItems;
+        }
+
+        public void setSubMenuItems(List<MenuItemDomainObject> subMenuItems) {
+            this.subMenuItems = subMenuItems;
+        }
+
+        public boolean hasMore() {
+            return subMenuItems.size() > 0;
+        }
     }
 }
