@@ -381,22 +381,35 @@ public class TextDocumentContentSaver {
 
         com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop = loopRepository.findByVersionAndNo(
                 version, entryRef.getLoopNo());
-
         int entryNo = entryRef.getEntryNo();
+        int loopNo = entryRef.getLoopNo();
 
         if (loop == null) {
             loop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
-            loop.setNextEntryNo(entryNo + 1);
+            com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
+            loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
             loop.setVersion(version);
-            loop.setNo(entryRef.getLoopNo());
+            loop.setNo(entryNo);
             loop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo));
-
+            neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
+            if (neighbor != null)
+                neighbor.setNextEntryNo(loopNo);
             loopRepository.save(loop);
         } else {
             if (!loop.containsEntry(entryRef.getEntryNo())) {
+                com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
                 loop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo));
-                loop.setNextEntryNo(Math.max(loop.getNextEntryNo(), entryNo + 1));
-
+                loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
+                neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
+                if (neighbor != null)
+                    neighbor.setNextEntryNo(loopNo);
+                loopRepository.save(loop);
+            } else {
+                com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
+                loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
+                neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
+                if (neighbor != null)
+                    neighbor.setNextEntryNo(loopNo);
                 loopRepository.save(loop);
             }
         }

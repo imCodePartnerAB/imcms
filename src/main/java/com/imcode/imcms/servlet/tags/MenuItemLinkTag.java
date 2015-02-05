@@ -5,6 +5,7 @@ import com.imcode.imcms.servlet.tags.Editor.SupportEditor;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.parser.MenuParser;
+import imcode.server.parser.ParserParameters;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -14,6 +15,7 @@ import java.io.IOException;
 
 public class MenuItemLinkTag extends TagSupport implements EditableTag {
     private SupportEditor editor;
+    private ParserParameters parserParameters;
 
     public int doStartTag() throws JspException {
         MenuTag menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class);
@@ -25,11 +27,15 @@ public class MenuItemLinkTag extends TagSupport implements EditableTag {
             return SKIP_BODY;
         }
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+        parserParameters = ParserParameters.fromRequest(request);
         DocumentDomainObject document = menuItem.getDocument();
         String pathToDocument = MenuParser.getPathToDocument(request, document, menuTag.getTemplate());
-        editor = createEditor().setId(menuItem.getDocumentReference().getDocumentId()).setPosition(menuItem.getSortKey());
+        editor = createEditor().setId(menuItem.getDocumentReference().getDocumentId())
+                .setPosition(menuItem.getSortKey())
+                .setTreePosition(menuItem.getTreeSortIndex());
         try {
-            pageContext.getOut().print(editor.getWrapperPre());
+            if (parserParameters.isAnyMode())
+                pageContext.getOut().print(editor.getWrapperPre());
             pageContext.getOut().print("<a href=\"" + pathToDocument + "\" target=\"" + document.getTarget() + "\">");
         } catch (IOException e) {
             throw new JspException(e);
@@ -40,7 +46,8 @@ public class MenuItemLinkTag extends TagSupport implements EditableTag {
     public int doEndTag() throws JspException {
         try {
             pageContext.getOut().print("</a>");
-            pageContext.getOut().print(editor.getWrapperPost());
+            if (parserParameters.isAnyMode())
+                pageContext.getOut().print(editor.getWrapperPost());
         } catch (IOException e) {
             throw new JspException(e);
         }

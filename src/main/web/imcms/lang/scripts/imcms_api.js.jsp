@@ -44,6 +44,19 @@
 
             init: function () {
                 var that = this;
+                var textFrame = new Imcms.FrameBuilder().title("Text Editor");
+                $("[contenteditable='true']").each(function (position, element) {
+                    element = $(element);
+                    var parent = element.parent().css({position: "relative"});
+                    var currentFrame = textFrame.click(function (e) {
+                        currentFrame.hide();
+                        element.focus();
+                        element.trigger(e);
+                        element.blur(function(){
+                            currentFrame.show();
+                        });
+                    }).build().appendTo(parent);
+                });
                 CKEDITOR.on('instanceCreated', $.proxy(this, "_onCreated"));
                 CKEDITOR.on("confirmChanges", $.proxy(this, "_onConfirm"));
             },
@@ -116,11 +129,13 @@
             this.init();
         };
 
-        Imcms.MenuEditor.MenuHelper = function (element) {
+        Imcms.MenuEditor.MenuHelper = function (element, menu) {
+            this._menu = menu;
             this._target = $(element);
             return this.init();
-        }
+        };
         Imcms.MenuEditor.MenuHelper.prototype = {
+            _menu: {},
             _target: {},
             init: function () {
                 this._initItems();
@@ -166,14 +181,14 @@
                         that._menuInfo = data;
                     }
                 });
-                this._wrapper.append($("<button>").text("+").addClass("editor-menu-wrapper-accepter").on("click", function () {
-                    var request = Imcms.Utils.margeObjectsProperties(that._target.data().prettify(), that._menuInfo, Imcms.document);
+                this._wrapper.append($("<button>").text("+").attr("type", "button").addClass("editor-menu-wrapper-accepter").on("click", function () {
+                    var request = Imcms.Utils.margeObjectsProperties(that._menu.data().prettify(), that._menuInfo, Imcms.document);
                     Imcms.Editors.Menu.create(request, function () {
                         window.location.reload();
                     });
                     console.info("menu saved");
                 }));
-                this._wrapper.append($("<button>").text("...").addClass("editor-menu-wrapper-accepter").on("click", function () {
+                this._wrapper.append($("<button>").text("...").attr("type", "button").addClass("editor-menu-wrapper-accepter").on("click", function () {
                     Imcms.Editors.Menu._popup(that);
                 }));
             }
@@ -235,14 +250,94 @@
                             });
                         }).appendTo(this._wrapper);
             }
-        }
+        };
 
         Imcms.MenuEditor.prototype = {
             _menuHelpers: [],
             init: function () {
                 var that = this;
+                var menuFrame = new Imcms.FrameBuilder().title("Menu Editor");
                 jQuery(".editor-menu").each(function (pos, element) {
-                    that._menuHelpers[pos] = new Imcms.MenuEditor.MenuHelper(element);
+                    element = $(element);
+                    var builder = new JSFormBuilder("<div>")
+                            .form()
+                            .div()
+                            .class("header")
+                            .submit()
+                            .class("positive save-and-close")
+                            .end()
+                            .end()
+                            .div()
+                            .class("content")
+                            .div()
+                            .reference("menuContent")
+                            .end()
+                            .end()
+                            .div()
+                            .class("footer")
+                            .reference("footer")
+                            .end()
+                            .end();
+                    var data = [];
+                    element.find(".editor-menu-item").each(function (position, item) {
+                        item = $(item);
+                        var menuItemData = item.data().prettify();
+                        data.push({
+                            id: menuItemData["menu-item-id"],
+                            label: item.find("a").text(),
+                            sort: menuItemData["menu-item-position"],
+                            tree: menuItemData["menu-item-tree-position"]
+                        });
+                    });
+
+                    function buildTree(items) {
+                        var tree = [];
+                        var currentLevel = 1;
+                        var current = null, item;
+                        while ((item = items[0])) {
+                            var itemLevel = (item["tree"].match(/\./g) || []).length + 1;
+                            if (!current || itemLevel == currentLevel) {
+                                current = item;
+                                current["children"] = [];
+                                currentLevel = itemLevel;
+                                tree.push(current);
+                                items.shift();
+                            } else if (itemLevel > currentLevel && itemLevel - currentLevel == 1) {
+                                current["children"] = buildTree(items);
+                            } else {
+                                break;
+                            }
+                        }
+                        return tree;
+                    };
+                    data = buildTree(data);
+                    var menuContent = $(builder.ref("menuContent").getHTMLElement()).tree({
+                        data: data,
+                        autoOpen: true,
+                        dragAndDrop: true,
+                        onCreateLi: function (node, $li) {
+                            // Append a link to the jqtree-element div.
+                            // The link has an url '#node-[id]' and a data property 'node-id'.
+                            var treeElement = $li.find('.jqtree-element').css({display: "inline-block"});
+                            $("<span>").text(node.id).appendTo(treeElement);
+                            $("<span>").text(node.label).appendTo(treeElement);
+                            $("<span>").text(node.sort).appendTo(treeElement);
+                        }
+                    });
+                    menuContent.bind(
+                            'tree.move',
+                            function(event) {
+                                console.log('moved_node', event.move_info.moved_node);
+                                console.log('target_node', event.move_info.target_node);
+                                console.log('position', event.move_info.position);
+                                console.log('previous_parent', event.move_info.previous_parent);
+                            }
+                    );
+                    that._menuHelpers[pos] = new Imcms.MenuEditor.MenuHelper(builder.ref("footer").getHTMLElement(), element);
+                    $(builder[0]).appendTo("body").addClass("editor-form");
+                    menuFrame.click(function () {
+                        $(builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 100});
+                    }).build().appendTo(element);
                 });
             },
             create: function () {
@@ -301,7 +396,7 @@
                             dialog.next(".ui-dialog-buttonpane button").filter(function () {
                                 return $(this).text() == "Add selected";
                             }).attr("disabled", true).addClass("ui-state-disabled");
-                            var request = Imcms.Utils.margeObjectsProperties(Imcms.document, menuHelper._target.data().prettify(), {id: selectedRow.children[0].innerHTML});
+                            var request = Imcms.Utils.margeObjectsProperties(Imcms.document, menuHelper._menu.data().prettify(), {id: selectedRow.children[0].innerHTML});
                             that.create(request, function () {
                                 dialog.dialog("close");
                                 window.location.reload();
@@ -462,6 +557,42 @@
                 }
             });
         })(jQuery);
+
+        Imcms.FrameBuilder = function () {
+
+        };
+        Imcms.FrameBuilder.prototype = {
+            _click: function () {
+            },
+            _title: "",
+            title: function () {
+                this._title = arguments[0];
+                return this;
+            },
+            click: function () {
+                this._click = arguments[0];
+                return this;
+            },
+            build: function () {
+                var frame = $("<div>").addClass("editor-frame");
+
+                this._createHeader().appendTo(frame);
+                frame.click(this._click);
+                return frame;
+            },
+
+            _createHeader: function () {
+                var headerPh = $("<div>").addClass("header-ph");
+                var header = $("<div>").addClass("header").appendTo(headerPh);
+
+                this._createTitle().appendTo(header);
+                return headerPh;
+            },
+
+            _createTitle: function () {
+                return $("<div>").addClass("title").html(this._title);
+            }
+        };
 
     /*$(function () {
      $("#combobox").combobox();

@@ -6,13 +6,15 @@ package com.imcode.imcms.servlet.tags.Editor;
 public class MenuItemEditor extends SupportEditor {
     private int id;
     private int position;
+    private String treePosition;
 
     @Override
     public String getWrapperPre() {
         super.builder
                 .addClass("menu-item")
                 .addParam("menu-item-id", id)
-                .addParam("menu-item-position", position);
+                .addParam("menu-item-position", position)
+                .addParam("menu-item-tree-position", treePosition);
 
         return super.getWrapperPre();
     }
@@ -24,6 +26,11 @@ public class MenuItemEditor extends SupportEditor {
 
     public MenuItemEditor setPosition(int position) {
         this.position = position;
+        return this;
+    }
+
+    public MenuItemEditor setTreePosition(String treePosition) {
+        this.treePosition = treePosition;
         return this;
     }
 }

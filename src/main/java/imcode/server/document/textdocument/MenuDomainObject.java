@@ -2,7 +2,6 @@ package imcode.server.document.textdocument;
 
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -83,11 +82,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
      */
     public MenuItemDomainObject[] getPublishedMenuItemsUserCanSee(UserDomainObject user) {
         List<MenuItemDomainObject> menuItems = getMenuItemsVisibleToUser(user);
-        CollectionUtils.filter(menuItems, new Predicate() {
-            public boolean evaluate(Object object) {
-                return ((MenuItemDomainObject) object).getDocument().isActive();
-            }
-        });
+        CollectionUtils.filter(menuItems, object -> ((MenuItemDomainObject) object).getDocument().isActive());
         return menuItems.toArray(new MenuItemDomainObject[menuItems.size()]);
     }
 
@@ -96,6 +91,41 @@ public class MenuDomainObject implements Cloneable, Serializable {
         MenuItemDomainObject[] menuItemsArray = menuItemsUnsorted.toArray(new MenuItemDomainObject[menuItemsUnsorted.size()]);
         Arrays.sort(menuItemsArray, getMenuItemComparatorForSortOrder(sortOrder));
         return menuItemsArray;
+    }
+
+    public LinkedList<MenuItemDomainObject.TreeMenuItemDomainObject> getMenuItemsAsTree() {
+        sortOrder = MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
+        final LinkedList<MenuItemDomainObject> items = new LinkedList<>(Arrays.asList(getMenuItems()));
+
+        return buildTree(items);
+    }
+
+    public LinkedList<MenuItemDomainObject.TreeMenuItemDomainObject> getMenuItemsVisibleToUserAsTree() {
+        sortOrder = MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
+        final LinkedList<MenuItemDomainObject> items = new LinkedList<>(Arrays.asList(getMenuItems()));
+        return buildTree(items);
+    }
+
+    private LinkedList<MenuItemDomainObject.TreeMenuItemDomainObject> buildTree(LinkedList<MenuItemDomainObject> items) {
+        final LinkedList<MenuItemDomainObject.TreeMenuItemDomainObject> tree = new LinkedList<>();
+        MenuItemDomainObject.TreeMenuItemDomainObject current = null;
+        int currentLevel = 1;
+        MenuItemDomainObject item;
+        while ((item = items.peek()) != null) {
+            final int itemLevel = item.getTreeSortKey().getLevelCount();
+            if (current == null || itemLevel == currentLevel) {
+                current = new MenuItemDomainObject.TreeMenuItemDomainObject();
+                currentLevel = item.getTreeSortKey().getLevelCount();
+                current.setMenuItem(item);
+                tree.addLast(current);
+                items.remove();
+            } else if (itemLevel > currentLevel && itemLevel - currentLevel == 1) {
+                current.getSubMenuItems().addAll(buildTree(items));
+            } else {
+                break;
+            }
+        }
+        return tree;
     }
 
     public Set<MenuItemDomainObject> getMenuItemsUnsorted() {

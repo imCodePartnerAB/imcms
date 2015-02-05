@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -117,7 +118,11 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
 
     public static class TreeMenuItemDomainObject {
         private MenuItemDomainObject menuItem;
-        private List<MenuItemDomainObject> subMenuItems;
+        private LinkedList<TreeMenuItemDomainObject> subMenuItems;
+
+        public TreeMenuItemDomainObject() {
+            subMenuItems = new LinkedList<>();
+        }
 
         public MenuItemDomainObject getMenuItem() {
             return menuItem;
@@ -127,16 +132,17 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
             this.menuItem = menuItem;
         }
 
-        public List<MenuItemDomainObject> getSubMenuItems() {
+        public LinkedList<TreeMenuItemDomainObject> getSubMenuItems() {
             return subMenuItems;
-        }
-
-        public void setSubMenuItems(List<MenuItemDomainObject> subMenuItems) {
-            this.subMenuItems = subMenuItems;
         }
 
         public boolean hasMore() {
             return subMenuItems.size() > 0;
         }
+    }
+
+    @Override
+    public String toString() {
+        return getTreeSortIndex();
     }
 }

@@ -749,8 +749,189 @@ A.imLinkHelp:hover {
 editor theme
 
 --%>
+.edit-mode {
+}
+
+.editor-frame {
+    border: 1px dotted #ccc;
+    cursor: pointer;
+    padding: 0 10px 10px 0;
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    width: 100%;
+    height: 100%;
+}
+
+.editor-frame:hover {
+    border: 1px solid #ff9600;
+}
+
+.editor-frame .header-ph {
+    display: none;
+    position: absolute;
+    left: -1px;
+    top: -1px;
+    width: 100%;
+}
+
+.editor-frame:hover .header-ph {
+    display: block;
+}
+
+.editor-frame .header-ph .header {
+    position: absolute;
+    left: 0;
+    top: -20px;
+    overflow: hidden;
+}
+
+.editor-frame .header-ph .header .title {
+    background: #ff9600;
+    color: #fff;
+    line-height: 20px;
+    font-size: 10px;
+    text-transform: uppercase;
+    float: left;
+    padding: 0 10px;
+    height: 20px;
+}
+
+.editor-form {
+    background: #fff;
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%
+    z-index:99999;
+}
+
+.editor-form .header {
+    background: #ff9600;
+    overflow: hidden;
+}
+
+.editor-form .header .title {
+    color: #fff;
+    line-height: 30px;
+    font-size: 15px;
+    text-transform: uppercase;
+    float: left;
+    padding: 0 20px;
+    height: 30px;
+}
+
+.editor-form .header .save-and-close {
+    line-height: 20px;
+    float: left;
+    margin: 5px 5px 0 0;
+    height: 20px;
+}
+
+.editor-form .content {
+    overflow: auto;
+}
+
+.editor-form .content table {
+    width: 100%;
+}
+
+.editor-form .content table tr th, .editor-form .content table tr td {
+    line-height: 30px;
+    text-align: left;
+    vertical-align: top;
+    padding: 0 20px;
+}
+
+.editor-form .content table tr:nth-child(2n+1) td {
+    background: #ffffe6;
+}
+
+.editor-form .content table tr:hover td {
+    background: #ffff64;
+}
+
+.editor-form .content table tr td.last-with-remove-button {
+    line-height: 0;
+    padding: 0;
+    width: 25px;
+}
+
+.editor-form .content table tr td.last-with-remove-button .negative {
+    background-image: url(../images/remove.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    line-height: 20px;
+    display: none;
+    margin-top: 5px;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.editor-form .content table tr:hover td.last-with-remove-button .negative {
+    display: block;
+}
+
+.editor-form .footer {
+    background: #f0f0f0;
+    padding: 20px;
+    height: 30px;
+}
+
+.editor-form .footer input {
+    border: none;
+    padding: 0 10px;
+    line-height: 30px;
+    float: left;
+    width: 200px;
+    height: 30px;
+}
+
+.editor-form .footer .browse {
+    float: left;
+}
+
+.editor-form .footer .add {
+    float: left;
+    margin-left: 20px;
+}
+
+.positive {
+    background: #649b00;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    line-height: 30px;
+    display: inline-block;
+    padding: 0 10px;
+    height: 30px;
+}
+
+.positive:hover {
+    background: #6eaf00;
+}
+
+.negative {
+    background: #dc0000;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    line-height: 30px;
+    display: inline-block;
+    padding: 0 10px;
+    height: 30px;
+}
+
+.negative:hover {
+    background: #e60000;
+}
+
 .editor-base {
-    border: 1px dashed black;
+    position: relative;
+    /*border: 1px dashed black;*/
 }
 
 .editor-menu-wrapper-adder, .editor-menu-wrapper-accepter {
@@ -803,6 +984,7 @@ editor theme
 .editor-menu-form table tbody .clicked{
     background-color: #aa77cc
 }
+
 
 
 

@@ -86,18 +86,21 @@
 
                         <imcms:text no="1" label="Text (html)" formats="text,html" rows="2" pre='<h1/>' post='<h1/>'/>
                         <imcms:text no='2' label='<br/>Text' pre='<div class="text">' post='</div>'/>
-                        <imcms:menu no='1' label='<br/><br/>Meny (punktlista)'>
+                        <imcms:menu no='1' docId="1001" label='<br/><br/>Meny (punktlista)'>
                             <ul>
                                 <imcms:menuloop>
                                     <imcms:menuitem>
                                         <li style="padding-bottom:5px; color:green;"><imcms:menuitemlink><c:out
-                                                value="${menuitem.document.headline}"/></imcms:menuitemlink></li>
-                                    </imcms:menuitem>
-                                    <imcms:menuitem>
-                                        <imcms:menuitemhide>
-                                            <li style="padding-bottom:5px; color:red;"><imcms:menuitemlink><c:out
-                                                    value="${menuitem.document.headline}"/></imcms:menuitemlink></li>
-                                        </imcms:menuitemhide>
+                                                value="${menuitem.document.headline}"/></imcms:menuitemlink>
+                                            <imcms:menuloop>
+                                                <imcms:menuitem>
+                                                    <div style="padding-bottom:5px; color:green;">
+                                                        <imcms:menuitemlink><c:out
+                                                                value="${menuitem.document.headline}"/></imcms:menuitemlink>
+                                                    </div>
+                                                </imcms:menuitem>
+                                            </imcms:menuloop>
+                                        </li>
                                     </imcms:menuitem>
                                 </imcms:menuloop>
                             </ul>
