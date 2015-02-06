@@ -123,7 +123,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
       }
     }
 
-    val dc = doc.clone()
+    val dc = doc;
     val i18nMetas = Map(dc.getLanguage -> dc.getCommonContent)
 
     Collector(
@@ -163,6 +163,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
       }
     }.merge(profileEditorOpt.map(_.collectValues())) {
       case (data@(tdc: TextDocumentDomainObject, _), profile) => data |>> { _ =>
+        tdc.setTemplateName(profile.defaultTemplate);
         tdc.setDefaultTemplateId(profile.defaultTemplate)
         tdc.getPermissionSetsForNewDocument.setRestricted1(profile.restrictedOnePermSet)
         tdc.getPermissionSetsForNewDocument.setRestricted2(profile.restrictedTwoPermSet)

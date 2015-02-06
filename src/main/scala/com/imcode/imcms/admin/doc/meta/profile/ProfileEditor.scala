@@ -34,7 +34,7 @@ import com.imcode.imcms.vaadin.Editor
 class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) extends Editor with ImcmsServicesSupport {
 
   case class Data(
-                   defaultTemplate: String,
+                   defaultTemplate: String = doc.getDefaultTemplateName,
                    restrictedOnePermSet: TextDocumentPermissionSetDomainObject,
                    restrictedTwoPermSet: TextDocumentPermissionSetDomainObject,
                    restrictedOneTemplate: String,
@@ -77,10 +77,10 @@ class ProfileEditor(doc: TextDocumentDomainObject, user: UserDomainObject) exten
     def setTemplatesNamesAsComboBoxItems(cb: ComboBox with SingleSelect[String], selectedTemplateName: String) {
       cb.removeAllItems()
       templatesNames.foreach(cb.addItem)
-      defaultTemplateNameOpt.orElse(selectedTemplateName.asOption).foreach(cb.select)
+      selectedTemplateName.asOption.foreach(cb.select)
     }
 
-    setTemplatesNamesAsComboBoxItems(view.cbDefaultTemplate, doc.getDefaultTemplateName)
+    setTemplatesNamesAsComboBoxItems(view.cbDefaultTemplate, doc.getTemplateName)
     setTemplatesNamesAsComboBoxItems(view.cbRestrictedOneDefaultTemplate, doc.getDefaultTemplateNameForRestricted1)
     setTemplatesNamesAsComboBoxItems(view.cbRestrictedTwoDefaultTemplate, doc.getDefaultTemplateNameForRestricted2)
   }

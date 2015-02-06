@@ -141,10 +141,10 @@ public class TextDocumentContentSaver {
         imageRepository.deleteByVersionAndLanguage(version, language);
         menuRepository.deleteByVersion(version);
         // loops must be re-created before loop items (texts and images)
-        loopRepository.findByVersion(version).forEach((a) -> a.getEntries().clear());
+       /* loopRepository.findByVersion(version).forEach((a) -> a.getEntries().clear());
         loopRepository.deleteByVersion(version);
 
-        createLoops(doc, version);
+        createLoops(doc, version);*/
         saveTexts(doc, version, language, user, SaveMode.UPDATE);
         saveImages(doc, version, language, user, SaveMode.UPDATE);
         saveMenus(doc, version, user, SaveMode.UPDATE);
@@ -389,7 +389,7 @@ public class TextDocumentContentSaver {
             com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
             loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
             loop.setVersion(version);
-            loop.setNo(entryNo);
+            loop.setNo(loopNo);
             loop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo));
             neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
             if (neighbor != null)

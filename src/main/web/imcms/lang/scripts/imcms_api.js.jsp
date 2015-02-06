@@ -286,7 +286,7 @@
                             id: menuItemData["menu-item-id"],
                             label: item.find("a").text(),
                             sort: menuItemData["menu-item-position"],
-                            tree: menuItemData["menu-item-tree-position"]
+                            "tree-index": menuItemData["menu-item-tree-position"]
                         });
                     });
 
@@ -295,7 +295,7 @@
                         var currentLevel = 1;
                         var current = null, item;
                         while ((item = items[0])) {
-                            var itemLevel = (item["tree"].match(/\./g) || []).length + 1;
+                            var itemLevel = (item["tree-index"].match(/\./g) || []).length + 1;
                             if (!current || itemLevel == currentLevel) {
                                 current = item;
                                 current["children"] = [];
