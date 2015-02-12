@@ -1,7 +1,6 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.mapping.container.TextDocMenuContainer;
 import com.imcode.imcms.util.JSONUtils;
 import com.imcode.imcms.util.RequestUtils;
@@ -12,16 +11,15 @@ import imcode.server.document.DocumentReference;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Shadowgun on 23.12.2014.
@@ -52,8 +50,7 @@ public class MenuApiServlet extends HttpServlet {
                 objectMap.put("alias", document.getAlias());
                 result.add(objectMap);
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
 
         }
         JSONUtils.defaultJSONAnswer(response, result);
@@ -88,28 +85,25 @@ public class MenuApiServlet extends HttpServlet {
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map<String, Object> result = new HashMap<String, Object>();
         try {
-            Map<String, String> parameters = RequestUtils.parse(request.getInputStream());
-            Integer currentDocumentId = Integer.parseInt(parameters.get("meta"));
-            Integer menuItemPosition = Integer.parseInt(parameters.get("menu-item-position"));
-            Integer menuItemPositionTo = Integer.parseInt(parameters.get("menu-item-position-to"));
-            Integer menuId = Integer.parseInt(parameters.get("no"));
+            Map<String, Object> parameters = new ObjectMapper()
+                    .readValue(
+                            RequestUtils.parse(request.getInputStream()).get("data"),
+                            new TypeReference<Map<String, Object>>() {
+                            }
+                    );
+
+            Integer currentDocumentId = Integer.parseInt(parameters.get("meta").toString());
+            Integer menuId = Integer.parseInt(parameters.get("no").toString());
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             TextDocumentDomainObject document = documentMapper.getWorkingDocument(currentDocumentId);
             MenuDomainObject menu = document.getMenu(menuId);
-            MenuItemDomainObject menuItem = null, menuItemTo = null;
-            for (MenuItemDomainObject item : menu.getMenuItems()) {
-                final int sortKey = item.getSortKey();
-                if (sortKey == menuItemPosition)
-                    menuItem = item;
-                else if (sortKey == menuItemPositionTo)
-                    menuItemTo = item;
-                if (menuItem != null && menuItemTo != null) break;
+            List<LinkedHashMap<String, String>> menuItemsData = (ArrayList<LinkedHashMap<String, String>>) parameters.get("items");
+            for (LinkedHashMap<String, String> entry : menuItemsData) {
+                String treeSortIndex = entry.get("tree-sort-index");
+                Integer menuItemReferencedDocumentId = Integer.parseInt(entry.get("referenced-document"));
+                menu.getMenuItemByDocId(menuItemReferencedDocumentId).setTreeSortIndex(treeSortIndex);
             }
-            menuItem.setSortKey(menuItemPositionTo);
-            menuItemTo.setSortKey(menuItemPosition);
             documentMapper.saveTextDocMenu(TextDocMenuContainer.of(document.getVersionRef(), menuId, menu), Imcms.getUser());
-
-
             result.put("result", true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,11 +114,11 @@ public class MenuApiServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         try {
             Map<String, String> parameters = RequestUtils.parse(request.getInputStream());
             Integer currentDocumentId = Integer.parseInt(parameters.get("meta"));
-            Integer menuItemId = Integer.parseInt(parameters.get("menu-item-id"));
+            Integer menuItemId = Integer.parseInt(parameters.get("referenced-document"));
             Integer menuId = Integer.parseInt(parameters.get("no"));
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             TextDocumentDomainObject document = documentMapper.getWorkingDocument(currentDocumentId);

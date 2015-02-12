@@ -73,7 +73,7 @@
         <!--
             Core & EntityManager version
         -->
-        <hibernate.version>4.3.7.Final</hibernate.version>
+        <hibernate.version>4.3.8.Final</hibernate.version>
         <vaadin.version>7.3.5</vaadin.version>
 
         <tomcat.version>7.0.57</tomcat.version>

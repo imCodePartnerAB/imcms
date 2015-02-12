@@ -52,7 +52,7 @@
                         currentFrame.hide();
                         element.focus();
                         element.trigger(e);
-                        element.blur(function(){
+                        element.blur(function () {
                             currentFrame.show();
                         });
                     }).build().appendTo(parent);
@@ -157,7 +157,7 @@
                     if (position > 0)
                         return $(that._items[position - 1]);
                     return null;
-                }
+                };
                 menuItem.next = function () {
                     var position = that._items.index(this._target);
                     if (position < that._items.length - 1)
@@ -181,74 +181,17 @@
                         that._menuInfo = data;
                     }
                 });
-                this._wrapper.append($("<button>").text("+").attr("type", "button").addClass("editor-menu-wrapper-accepter").on("click", function () {
+                this._wrapper.append($("<button>").text("...").attr("type", "button").addClass("positive browse").on("click", function () {
+                    Imcms.Editors.Menu._popup(that);
+                }));
+                this._wrapper.append($("<button>").text("Add").attr("type", "button").addClass("positive add").on("click", function () {
                     var request = Imcms.Utils.margeObjectsProperties(that._menu.data().prettify(), that._menuInfo, Imcms.document);
                     Imcms.Editors.Menu.create(request, function () {
                         window.location.reload();
                     });
                     console.info("menu saved");
                 }));
-                this._wrapper.append($("<button>").text("...").attr("type", "button").addClass("editor-menu-wrapper-accepter").on("click", function () {
-                    Imcms.Editors.Menu._popup(that);
-                }));
-            }
-        };
-        Imcms.MenuEditor.MenuItemHelper = function (element) {
-            this._target = $(element);
-            return this.init();
-        };
-
-        Imcms.MenuEditor.MenuItemHelper.prototype = {
-            _target: {},
-            init: function () {
-                this._createWrapper();
-                this._createButtons();
-                return this;
-            },
-            _createWrapper: function () {
-                this._wrapper = $("<div>").addClass("editor-menu-item-wrapper").appendTo(this._target);
-            },
-            _createButtons: function () {
-                var that = this;
-                this._deleteItemButton = $("<button>")
-                        .text("×")
-                        .addClass("editor-menu-item-wrapper-button")
-                        .on("click", function () {
-                            var parentMenu = that._target.parents(".editor-menu");
-                            var request = Imcms.Utils.margeObjectsProperties(that._target.data().prettify(),
-                                    parentMenu.data().prettify(), Imcms.document);
-                            Imcms.Editors.Menu.delete(request, function () {
-                                window.location.reload();
-                            });
-                        }).appendTo(this._wrapper);
-                this._moveItemUpButton = $("<button>")
-                        .addClass("editor-menu-item-wrapper-button")
-                        .text("↑")
-                        .on("click", function () {
-                            var parentMenu = that._target.parents(".editor-menu");
-                            var prev = that.prev();
-                            if (prev === null) return;
-                            var positionTo = {"menu-item-position-to": prev.data().prettify()["menu-item-position"]};
-                            var request = Imcms.Utils.margeObjectsProperties(that._target.data().prettify(),
-                                    parentMenu.data().prettify(), Imcms.document, positionTo);
-                            Imcms.Editors.Menu.update(request, function () {
-                                window.location.reload();
-                            });
-                        }).appendTo(this._wrapper);
-                this._moveItemDownButton = $("<button>")
-                        .text("↓")
-                        .addClass("editor-menu-item-wrapper-button")
-                        .on("click", function () {
-                            var parentMenu = that._target.parents(".editor-menu");
-                            var next = that.next();
-                            if (next === null) return;
-                            var positionTo = {"menu-item-position-to": next.data().prettify()["menu-item-position"]};
-                            var request = Imcms.Utils.margeObjectsProperties(that._target.data().prettify(),
-                                    parentMenu.data().prettify(), Imcms.document, positionTo);
-                            Imcms.Editors.Menu.update(request, function () {
-                                window.location.reload();
-                            });
-                        }).appendTo(this._wrapper);
+                this._wrapper.append($("<div>").css("clear", "both"));
             }
         };
 
@@ -263,8 +206,14 @@
                             .form()
                             .div()
                             .class("header")
-                            .submit()
+                            .div()
+                            .html("Menu Editor")
+                            .class("title")
+                            .end()
+                            .button()
+                            .html("Save and close")
                             .class("positive save-and-close")
+                            .reference("saveButton")
                             .end()
                             .end()
                             .div()
@@ -283,9 +232,12 @@
                         item = $(item);
                         var menuItemData = item.data().prettify();
                         data.push({
-                            id: menuItemData["menu-item-id"],
+                            id: menuItemData["menu-item-tree-position"],
+                            position: parseInt(menuItemData["menu-item-tree-position"]
+                                    .substr(menuItemData["menu-item-tree-position"].lastIndexOf(".") + 1)),
+                            "doc-id": menuItemData["menu-item-id"],
                             label: item.find("a").text(),
-                            sort: menuItemData["menu-item-position"],
+                            name: item.find("a").text(),
                             "tree-index": menuItemData["menu-item-tree-position"]
                         });
                     });
@@ -309,28 +261,119 @@
                             }
                         }
                         return tree;
-                    };
+                    }
+
                     data = buildTree(data);
                     var menuContent = $(builder.ref("menuContent").getHTMLElement()).tree({
+                        selectable: false,
                         data: data,
                         autoOpen: true,
                         dragAndDrop: true,
                         onCreateLi: function (node, $li) {
                             // Append a link to the jqtree-element div.
                             // The link has an url '#node-[id]' and a data property 'node-id'.
-                            var treeElement = $li.find('.jqtree-element').css({display: "inline-block"});
-                            $("<span>").text(node.id).appendTo(treeElement);
-                            $("<span>").text(node.label).appendTo(treeElement);
-                            $("<span>").text(node.sort).appendTo(treeElement);
+                            var treeElement = $li.find('.jqtree-element').css({display: "inline-block"}).empty();
+                            $("<span>").text(node["doc-id"]).appendTo(treeElement);
+                            $("<span>").text(node.name).appendTo(treeElement);
+                            $("<span>").appendTo(treeElement).append(
+                                    $("<button>").addClass("negative").attr("type", "button").click(function () {
+                                        var response = Imcms.Utils.margeObjectsProperties(
+                                                Imcms.document,
+                                                element.data().prettify(),
+                                                {"referenced-document": node["doc-id"]}
+                                        );
+                                        that.delete(response);
+                                        menuContent.tree('removeNode', node);
+                                    }));
                         }
                     });
                     menuContent.bind(
                             'tree.move',
-                            function(event) {
-                                console.log('moved_node', event.move_info.moved_node);
-                                console.log('target_node', event.move_info.target_node);
-                                console.log('position', event.move_info.position);
-                                console.log('previous_parent', event.move_info.previous_parent);
+                            function (event) {
+                                var info = event.move_info;
+                                var current = info.moved_node;
+                                var parentFrom = current.parent;
+                                var nodeTo = info.target_node;
+
+                                for (var i = parentFrom.children.indexOf(current) + 1,
+                                             count = parentFrom.children.length; i < count; i++)
+                                    parentFrom.children[i].position--;
+                                switch (info.position) {
+                                    case "inside":
+                                    {
+                                        var featureParent = nodeTo;
+                                        console.info("Parent node:");
+                                        console.info(nodeTo);
+                                        for (var i = 0, count = featureParent.children.length; i < count; i++) {
+                                            featureParent.children[i].position++;
+                                            console.info(featureParent.children[i]);
+                                        }
+                                        current.position = 1;
+                                    }
+                                        break;
+                                    case "before":
+                                    {
+                                        var featurePosition = nodeTo.position - 1;
+                                        var featureParent = nodeTo.parent;
+                                        console.info("Parent node:");
+                                        console.info(featureParent);
+                                        for (var i = featureParent.children.indexOf(nodeTo),
+                                                     count = featureParent.children.length; i < count; i++) {
+                                            featureParent.children[i].position++;
+                                            console.info(featureParent.children[i]);
+                                        }
+                                        current.position = featurePosition;
+                                    }
+                                        break;
+                                    case "after":
+                                    {
+                                        var featurePosition = nodeTo.position + 1;
+                                        var featureParent = nodeTo.parent;
+                                        console.info("Parent node:");
+                                        console.info(featureParent);
+                                        for (var i = featureParent.children.indexOf(nodeTo) + 1,
+                                                     count = featureParent.children.length; i < count; i++) {
+                                            featureParent.children[i].position++;
+                                            console.info(featureParent.children[i]);
+                                        }
+                                        current.position = featurePosition;
+                                    }
+                                        break;
+                                    default :
+                                    {
+                                        throw "Incorrect movement";
+                                    }
+                                }
+                            }
+                    );
+                    builder.ref("saveButton").on("click", function () {
+                                $(builder[0]).hide();
+                                function collect(node, prefix, data) {
+                                    var result = data || [];
+                                    for (var i = 0, count = node.children.length; i < count; i++) {
+                                        var currentNode = node.children[i];
+                                        var tree = (prefix ? (prefix + ".") : "") + currentNode.position;
+                                        result.push({
+                                            "referenced-document": currentNode["doc-id"],
+                                            "tree-sort-index": tree
+                                        });
+                                        console.info("----------------");
+                                        console.info(node);
+                                        console.info(response);
+                                        console.info("----------------");
+                                        if (currentNode.children.length > 0) {
+                                            result = collect(currentNode, tree, result);
+                                        }
+                                    }
+                                    return result;
+                                }
+
+                                var response = Imcms.Utils.margeObjectsProperties({items: collect(menuContent.tree("getTree"))},
+                                        Imcms.document,
+                                        element.data().prettify());
+                                that.update({data: JSON.stringify(response)}, function () {
+                                    location.reload();
+                                });
                             }
                     );
                     that._menuHelpers[pos] = new Imcms.MenuEditor.MenuHelper(builder.ref("footer").getHTMLElement(), element);
@@ -342,16 +385,22 @@
             },
             create: function () {
                 Imcms.APIs.Menu.create.apply(Imcms.APIs.Menu, arguments);
-            },
+            }
+
+            ,
             read: function () {
                 Imcms.APIs.Menu.read.apply(Imcms.APIs.Menu, arguments);
-            },
+            }
+            ,
             update: function () {
                 Imcms.APIs.Menu.update.apply(Imcms.APIs.Menu, arguments);
-            },
+            }
+            ,
             delete: function () {
                 Imcms.APIs.Menu.delete.apply(Imcms.APIs.Menu, arguments);
-            },
+            }
+
+            ,
 
             _popup: function () {
                 var menuHelper = arguments[0] || this._menuHelpers[0];
@@ -407,15 +456,15 @@
                         }
                     }
                 });
-                var responce = function (data) {
+                var response = function (data) {
                     formBuilder.ref("documentsTable").clear();
                     for (var rowId in data)
                         formBuilder.ref("documentsTable").row(data[rowId]);
                 };
                 formBuilder.ref("searchField").on("input", function () {
-                    that.read({term: this.value()}, responce);
-                })
-                this.read({term: ""}, responce);
+                    that.read({term: this.value()}, response);
+                });
+                this.read({term: ""}, response);
             }
         };
 
@@ -473,10 +522,9 @@
             $.widget("custom.combobox", {
                 _create: function () {
                     this.wrapper = $("<span>")
-                            .addClass("custom-combobox")
                             .appendTo(this.element.parent());
                     this._createAutocomplete();
-                    this._createShowAllButton();
+                    //this._createShowAllButton();
                     this.cache = {};
                 },
                 _source: function (request, response) {
@@ -499,17 +547,16 @@
                 _createAutocomplete: function () {
                     var that = this;
                     this.element
-                            .appendTo(this.wrapper)
                             .val("")
                             .attr("title", "")
-                            .addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left")
+                            .attr("placeholder", "Type to find document")
                             .autocomplete({
                                 delay: 0,
                                 minLength: 0,
                                 source: $.proxy(this, "_source"),
                                 select: function (event, ui) {
                                     var select = that.options.select || function () {
-                                            }
+                                            };
                                     select(ui.item);
                                 }
                             })

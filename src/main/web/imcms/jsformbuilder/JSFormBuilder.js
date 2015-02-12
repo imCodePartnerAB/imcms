@@ -399,7 +399,13 @@ JSFormBuilder.Classes.Div = function () {
     this._element = document.createElement("div");
 };
 
-JSFormBuilder.Mixins.Div = {};
+JSFormBuilder.Mixins.Div = {
+    html: function () {
+        if (arguments.length === 0) return this._element.innerHTML;
+        this._element.innerHTML = arguments[0];
+        return this;
+    }
+};
 
 JSFormBuilder.Classes.Fieldset = function () {
     this._element = document.createElement("fieldset");
@@ -447,6 +453,9 @@ JSFormBuilder.Mixins.ContainerAdapter = {
     },
 
     //BUTTON
+    button: function(){
+        return this._begin("button").type("button");
+    },
 
     submit: function () {
         return this._begin("button");

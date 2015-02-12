@@ -804,8 +804,11 @@ editor theme
     left: 0;
     top: 0;
     width: 100%;
-    height: 100%
-    z-index:99999;
+    height: 100%;
+    z-index: 1002;
+}
+.editor-form, .editor-form *{
+    font: normal 15px Arial;
 }
 
 .editor-form .header {
@@ -834,51 +837,24 @@ editor theme
     overflow: auto;
 }
 
-.editor-form .content table {
-    width: 100%;
-}
-
-.editor-form .content table tr th, .editor-form .content table tr td {
-    line-height: 30px;
-    text-align: left;
-    vertical-align: top;
-    padding: 0 20px;
-}
-
-.editor-form .content table tr:nth-child(2n+1) td {
-    background: #ffffe6;
-}
-
-.editor-form .content table tr:hover td {
-    background: #ffff64;
-}
-
-.editor-form .content table tr td.last-with-remove-button {
-    line-height: 0;
-    padding: 0;
-    width: 25px;
-}
-
-.editor-form .content table tr td.last-with-remove-button .negative {
-    background-image: url(../images/remove.png);
-    background-position: center;
-    background-repeat: no-repeat;
+.editor-form .content .negative {
+    background: #dc0000 url("<%= cp %>/images/remove.png") no-repeat center;
     line-height: 20px;
     display: none;
-    margin-top: 5px;
     padding: 0;
     width: 20px;
     height: 20px;
 }
 
-.editor-form .content table tr:hover td.last-with-remove-button .negative {
+.editor-form .content ul li .jqtree-element:hover .negative {
     display: block;
+    float:right
 }
 
 .editor-form .footer {
     background: #f0f0f0;
     padding: 20px;
-    height: 30px;
+    /*height: 30px;*/
 }
 
 .editor-form .footer input {
@@ -971,19 +947,116 @@ editor theme
     height: 22px;
 }
 
-.editor-menu-form{
+.editor-menu-form {
 
 }
-.editor-menu-form table{
-    width:100%;
+
+.editor-menu-form table {
+    width: 100%;
     border-color: black;
 }
-.editor-menu-form table tbody tr:hover{
+
+.editor-menu-form table tbody tr:hover {
     background-color: #aabbc5;
 }
-.editor-menu-form table tbody .clicked{
+
+.editor-menu-form table tbody .clicked {
     background-color: #aa77cc
 }
+
+.editor-form .content ul, .editor-form .content ul li {
+    margin: 0;
+    padding: 0;
+}
+
+.editor-form .content ul {
+    background: #f0f0f0;
+    padding-left: 30px !important;
+}
+
+.editor-form .content .jqtree-tree {
+    padding: 0 !important;
+}
+
+.editor-form .content ul li {
+    background: #fff;
+    list-style-type: none;
+}
+
+.editor-form .content ul li .jqtree-element {
+    overflow: hidden;
+    line-height: 20px;
+    width: 100%;
+}
+
+.editor-form .content ul li .jqtree-element span {
+    line-height: 30px;
+    float: left;
+    padding: 0 20px;
+}
+.editor-form .content ul li .jqtree-element span:last-child {
+    float: right;
+    padding: 5px;
+}
+
+.editor-form ul.jqtree-tree *:nth-child(2n+1) .jqtree-element {
+    /*background: #ffffe6;*/
+}
+
+ul.jqtree-tree li.jqtree-selected > .jqtree-element,
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
+    background-color: #97BDD6 !important;
+    background: -webkit-gradient(linear, left top, left bottom, from(#BEE0F5), to(#89AFCA)) !important;
+    background: -moz-linear-gradient(top, #BEE0F5, #89AFCA) !important;
+    background: -ms-linear-gradient(top, #BEE0F5, #89AFCA) !important;
+    background: -o-linear-gradient(top, #BEE0F5, #89AFCA) !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+}
+
+.ui-dialog {
+    z-index: 1003;
+}
+
+.editor-form ul.jqtree-tree .jqtree-element:hover {
+    background: #ffff64;
+}
+ul.jqtree-tree span.jqtree-border {
+    position: absolute !important;
+    display: block !important;
+    left: -2px !important;
+    top: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-sizing: content-box !important;
+    background-color: #649b00 !important;
+    height: 100% -ms-filter : "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; /* IE 8 */
+    filter: alpha(opacity=50); /* IE 5-7 */
+    -moz-opacity: 0.5; /* Netscape */
+    -khtml-opacity: 0.5; /* Safari 1.x */
+    opacity: 0.5;
+}
+ul.jqtree-tree li.jqtree-ghost span.jqtree-circle {
+    border: solid 2px #649b00;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 100px;
+    height: 8px;
+    width: 8px;
+    position: absolute;
+    top: -4px;
+    left: -6px;
+}
+
+ul.jqtree-tree li.jqtree-ghost span.jqtree-line {
+    background-color: #649b00;
+    height: 2px;
+    padding: 0;
+    position: absolute;
+    top: -1px;
+    left: 2px;
+    width: 100%;
+}
+
 
 
 

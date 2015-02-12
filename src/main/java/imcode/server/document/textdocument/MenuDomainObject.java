@@ -38,6 +38,11 @@ public class MenuDomainObject implements Cloneable, Serializable {
         this(MENU_SORT_ORDER__DEFAULT);
     }
 
+    public MenuDomainObject(int sortOrder) {
+        this.sortOrder = sortOrder;
+        menuItems = new HashMap<>();
+    }
+
     public MenuDomainObject clone() {
         try {
             MenuDomainObject clone = (MenuDomainObject) super.clone();
@@ -51,13 +56,22 @@ public class MenuDomainObject implements Cloneable, Serializable {
         }
     }
 
-    public MenuDomainObject(int sortOrder) {
-        this.sortOrder = sortOrder;
-        menuItems = new HashMap<>();
-    }
-
     public int getSortOrder() {
         return sortOrder;
+    }
+
+    public void setSortOrder(int sortOrder) {
+        switch (sortOrder) {
+            case MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED:
+            case MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER:
+            case MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED:
+            case MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED:
+            case MENU_SORT_ORDER__BY_HEADLINE:
+                this.sortOrder = sortOrder;
+                break;
+            default:
+                throw new IllegalArgumentException("Bad sort order. Use one of the constants.");
+        }
     }
 
     public MenuItemDomainObject[] getMenuItemsUserCanSee(UserDomainObject user) {
@@ -84,6 +98,12 @@ public class MenuDomainObject implements Cloneable, Serializable {
         List<MenuItemDomainObject> menuItems = getMenuItemsVisibleToUser(user);
         CollectionUtils.filter(menuItems, object -> ((MenuItemDomainObject) object).getDocument().isActive());
         return menuItems.toArray(new MenuItemDomainObject[menuItems.size()]);
+    }
+
+    public MenuItemDomainObject getMenuItemByDocId(Integer docId) {
+        if (menuItems.containsKey(docId))
+            return menuItems.get(docId);
+        return null;
     }
 
     public MenuItemDomainObject[] getMenuItems() {
@@ -138,7 +158,6 @@ public class MenuDomainObject implements Cloneable, Serializable {
         return set;
     }
 
-
     /**
      * Adds menu item to this menu only if it contains a document.
      *
@@ -152,7 +171,6 @@ public class MenuDomainObject implements Cloneable, Serializable {
             addMenuItemUnchecked(menuItem);
         }
     }
-
 
     /**
      * Adds menu item to this menu without checking if it references a document.
@@ -201,20 +219,6 @@ public class MenuDomainObject implements Cloneable, Serializable {
             comparator = MenuItemComparator.PUBLISHED_DATETIME.reversed().chain(comparator);
         }
         return comparator;
-    }
-
-    public void setSortOrder(int sortOrder) {
-        switch (sortOrder) {
-            case MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED:
-            case MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER:
-            case MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED:
-            case MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED:
-            case MENU_SORT_ORDER__BY_HEADLINE:
-                this.sortOrder = sortOrder;
-                break;
-            default:
-                throw new IllegalArgumentException("Bad sort order. Use one of the constants.");
-        }
     }
 
     public void removeMenuItemByDocumentId(int childId) {
