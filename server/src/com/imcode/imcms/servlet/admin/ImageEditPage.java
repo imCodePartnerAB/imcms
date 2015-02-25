@@ -95,6 +95,7 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID = "archive_img_id";
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME = "archive_img_nm";
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME = "archive_file_nm";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT = "archive_img_alt_text";
     public static final String REQUEST_PARAMETER__FORMAT = "format";
     public static final String REQUEST_PARAMETER__FORMAT_EXTENSION = "format_ext";
     public static final String REQUEST_PARAMETER__CROP_X1 = "crop_x1";
@@ -216,7 +217,8 @@ public class ImageEditPage extends OkCancelPage {
     	imageName = StringUtils.substring(imageName, 0, 40);
     	String fileName = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME));
     	String archiveImageIdStr = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID));
-    	
+        String altText = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT));
+
     	Long archiveImageId = null;
     	if (archiveImageIdStr != null) {
     		try {
@@ -235,6 +237,9 @@ public class ImageEditPage extends OkCancelPage {
     		if (archiveImageId != null) {
     			image.setArchiveImageId(archiveImageId);
     		}
+            if(altText != null) {
+                image.setAlternateText(altText);
+            }
     	}
     }
     
