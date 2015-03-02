@@ -97,11 +97,15 @@ public class MenuApiServlet extends HttpServlet {
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             TextDocumentDomainObject document = documentMapper.getWorkingDocument(currentDocumentId);
             MenuDomainObject menu = document.getMenu(menuId);
-            List<LinkedHashMap<String, String>> menuItemsData = (ArrayList<LinkedHashMap<String, String>>) parameters.get("items");
-            for (LinkedHashMap<String, String> entry : menuItemsData) {
-                String treeSortIndex = entry.get("tree-sort-index");
-                Integer menuItemReferencedDocumentId = Integer.parseInt(entry.get("referenced-document"));
-                menu.getMenuItemByDocId(menuItemReferencedDocumentId).setTreeSortIndex(treeSortIndex);
+            menu.removeAllMenuItems();
+            List<LinkedHashMap<String, Object>> menuItemsData = (ArrayList<LinkedHashMap<String, Object>>) parameters.get("items");
+            for (LinkedHashMap<String, Object> entry : menuItemsData) {
+                String treeSortIndex = entry.get("tree-sort-index").toString();
+                Integer menuItemReferencedDocumentId = Integer.parseInt(entry.get("referenced-document").toString());
+                DocumentReference docIdentity = documentMapper.getDocumentReference(documentMapper.getWorkingDocument(menuItemReferencedDocumentId));
+                MenuItemDomainObject menuItem = new MenuItemDomainObject(docIdentity);
+                menuItem.setTreeSortIndex(treeSortIndex);
+                menu.addMenuItem(menuItem);
             }
             documentMapper.saveTextDocMenu(TextDocMenuContainer.of(document.getVersionRef(), menuId, menu), Imcms.getUser());
             result.put("result", true);

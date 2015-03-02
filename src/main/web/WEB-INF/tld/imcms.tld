@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
-    version="2.0">
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
 
     <tlib-version>0.1</tlib-version>
     <short-name>imcms</short-name>
@@ -63,7 +63,7 @@
             <name>version</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-        </attribute>        
+        </attribute>
         <attribute>
             <name>label</name>
             <rtexprvalue>true</rtexprvalue>
@@ -108,7 +108,7 @@
             <name>version</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-        </attribute>        
+        </attribute>
         <attribute>
             <name>id</name>
             <rtexprvalue>true</rtexprvalue>
@@ -253,6 +253,46 @@
         <name>menuitemlink</name>
         <tag-class>com.imcode.imcms.servlet.tags.MenuItemLinkTag</tag-class>
         <body-content>JSP</body-content>
+        <attribute>
+            <name>classes</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <name>login</name>
+        <tag-class>com.imcode.imcms.servlet.tags.LoginTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>attributes</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <name>loginname</name>
+        <tag-class>com.imcode.imcms.servlet.tags.LoginNameTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>attributes</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <name>loginpassword</name>
+        <tag-class>com.imcode.imcms.servlet.tags.LoginPasswordTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>attributes</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <name>logout</name>
+        <tag-class>com.imcode.imcms.servlet.tags.LogoutTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>attributes</name>
+            <required>false</required>
+        </attribute>
     </tag>
 
     <tag>
@@ -270,22 +310,90 @@
             <scope>AT_BEGIN</scope>
         </variable>
     </tag>
-    
+
+    <tag>
+        <name>registration</name>
+        <tag-class>com.imcode.imcms.servlet.tags.RegistrationTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>attributes</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <name>registrationname</name>
+        <tag-class>com.imcode.imcms.servlet.tags.RegistrationNameTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>attributes</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <name>registrationsurname</name>
+        <tag-class>com.imcode.imcms.servlet.tags.RegistrationSurnameTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>attributes</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <name>registrationlogin</name>
+        <tag-class>com.imcode.imcms.servlet.tags.RegistrationLoginTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>attributes</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <name>registrationpassword1</name>
+        <tag-class>com.imcode.imcms.servlet.tags.RegistrationPassword1Tag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>attributes</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <name>registrationpassword2</name>
+        <tag-class>com.imcode.imcms.servlet.tags.RegistrationPassword2Tag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>attributes</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <name>registrationemail</name>
+        <tag-class>com.imcode.imcms.servlet.tags.RegistrationEmailTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>attributes</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+
     <tag-file>
         <name>statusIcon</name>
         <path>/WEB-INF/tags/imcms/ui/statusIcon.tag</path>
     </tag-file>
-    
+
     <function>
         <name>canEditDocument</name>
         <function-class>com.imcode.imcms.web.tag.Functions</function-class>
-        <function-signature>boolean canEditDocument(imcode.server.document.DocumentDomainObject, javax.servlet.jsp.PageContext)</function-signature>
+        <function-signature>boolean canEditDocument(imcode.server.document.DocumentDomainObject,
+            javax.servlet.jsp.PageContext)
+        </function-signature>
     </function>
-    
+
     <function>
         <name>canEditDocumentInformation</name>
         <function-class>com.imcode.imcms.web.tag.Functions</function-class>
-        <function-signature>boolean canEditDocumentInformation(imcode.server.document.DocumentDomainObject, javax.servlet.jsp.PageContext)</function-signature>
+        <function-signature>boolean canEditDocumentInformation(imcode.server.document.DocumentDomainObject,
+            javax.servlet.jsp.PageContext)
+        </function-signature>
     </function>
 
     <tag>

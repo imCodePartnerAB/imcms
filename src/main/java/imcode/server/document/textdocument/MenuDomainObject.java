@@ -225,6 +225,10 @@ public class MenuDomainObject implements Cloneable, Serializable {
         menuItems.remove(childId);
     }
 
+    public void removeAllMenuItems(){
+        menuItems.clear();
+    }
+
     public boolean equals(Object obj) {
         if (!(obj instanceof MenuDomainObject)) {
             return false;

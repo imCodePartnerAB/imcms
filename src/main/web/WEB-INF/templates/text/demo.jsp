@@ -1,5 +1,6 @@
-<%@ page import="imcode.server.ImcmsConstants,
-                 org.apache.oro.text.perl.Perl5Util" pageEncoding="UTF-8" %>
+<%@ page import="imcode.server.Imcms,
+                 imcode.server.ImcmsConstants" pageEncoding="UTF-8" %>
+<%@ page import="org.apache.oro.text.perl.Perl5Util" %>
 
 <%@taglib prefix="imcms" uri="imcms" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -77,6 +78,28 @@
                             pageContext.setAttribute("baseURL", baseURL);
 
                         %>
+                        <c:choose>
+                            <c:when test="<%=!Imcms.getUser().isDefaultUser()%>">
+                                <imcms:logout>
+                                    By Lolo
+                                </imcms:logout>
+                            </c:when>
+                            <c:otherwise>
+                                <imcms:login>
+                                    <imcms:loginname attributes="class='asasdgasdf' data-lol='asasdfs'"/>
+                                    <imcms:loginpassword/>
+                                    <input type="submit" name="login" value="login"/>
+                                </imcms:login>
+                            </c:otherwise>
+                        </c:choose>
+                        <imcms:registration>
+                            <imcms:registrationlogin/>
+                            <imcms:registrationname/>
+                            <imcms:registrationsurname/>
+                            <imcms:registrationpassword1/>
+                            <imcms:registrationpassword2/>
+                            <button type="submit">Register</button>
+                        </imcms:registration>
                         <a href="${baseURL}en"><img
                                 src="${pageContext.request.contextPath}/imcms/eng/images/admin/flags_iso_639_1/en.gif"
                                 alt="" style="border:0;"/></a>

@@ -137,33 +137,54 @@
         Imcms.MenuEditor.MenuHelper.prototype = {
             _menu: {},
             _target: {},
+            _builder: {},
             init: function () {
-                this._initItems();
                 this._createWrapper();
                 this._createHelperComboBox();
                 return this;
             },
-            _initItems: function () {
-                var that = this;
-                this._items = this._target.find(".editor-menu-item");
-                this._items.each(function (position, item) {
-                    that._initItem(new Imcms.MenuEditor.MenuItemHelper(item));
-                });
+            buildEditor: function () {
+                this._builder = new JSFormBuilder("<div>")
+                        .form()
+                        .div()
+                        .class("header")
+                        .div()
+                        .html("Menu Editor")
+                        .class("title")
+                        .end()
+                        .button()
+                        .html("Save and close")
+                        .class("positive save-and-close")
+                        .reference("saveButton")
+                        .end()
+                        .end()
+                        .div()
+                        .class("content")
+                        .div()
+                        .reference("menuContent")
+                        .end()
+                        .end()
+                        .div()
+                        .class("footer")
+                        .reference("footer")
+                        .end()
+                        .end();
             },
-            _initItem: function (menuItem) {
-                var that = this;
-                menuItem.prev = function () {
-                    var position = that._items.index(this._target);
-                    if (position > 0)
-                        return $(that._items[position - 1]);
-                    return null;
-                };
-                menuItem.next = function () {
-                    var position = that._items.index(this._target);
-                    if (position < that._items.length - 1)
-                        return $(that._items[position + 1]);
-                    return null;
-                }
+            buildTree:function(){
+                var data = [];
+                element.find(".editor-menu-item").each(function (position, item) {
+                    item = $(item);
+                    var menuItemData = item.data().prettify();
+                    data.push({
+                        id: menuItemData["menu-item-tree-position"],
+                        position: parseInt(menuItemData["menu-item-tree-position"]
+                                .substr(menuItemData["menu-item-tree-position"].lastIndexOf(".") + 1)),
+                        "doc-id": menuItemData["menu-item-id"],
+                        label: item.find("a").text(),
+                        name: item.find("a").text(),
+                        "tree-index": menuItemData["menu-item-tree-position"]
+                    });
+                });
             },
             _createWrapper: function () {
                 this._wrapper = $("<div>").addClass("editor-menu-wrapper");
@@ -277,12 +298,12 @@
                             $("<span>").text(node.name).appendTo(treeElement);
                             $("<span>").appendTo(treeElement).append(
                                     $("<button>").addClass("negative").attr("type", "button").click(function () {
-                                        var response = Imcms.Utils.margeObjectsProperties(
-                                                Imcms.document,
-                                                element.data().prettify(),
-                                                {"referenced-document": node["doc-id"]}
-                                        );
-                                        that.delete(response);
+                                        /*var response = Imcms.Utils.margeObjectsProperties(
+                                         Imcms.document,
+                                         element.data().prettify(),
+                                         {"referenced-document": node["doc-id"]}
+                                         );
+                                         // that.delete(response);*/
                                         menuContent.tree('removeNode', node);
                                     }));
                         }
@@ -809,4 +830,4 @@
                     margedResult[attr] = obj[attr];
             }
             return margedResult;
-        }
+        };

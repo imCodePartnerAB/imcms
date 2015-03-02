@@ -807,7 +807,8 @@ editor theme
     height: 100%;
     z-index: 1002;
 }
-.editor-form, .editor-form *{
+
+.editor-form, .editor-form *,.pop-up-form *,.pop-up-form  {
     font: normal 15px Arial;
 }
 
@@ -848,7 +849,7 @@ editor theme
 
 .editor-form .content ul li .jqtree-element:hover .negative {
     display: block;
-    float:right
+    float: right
 }
 
 .editor-form .footer {
@@ -867,10 +868,17 @@ editor theme
 }
 
 .editor-form .footer .browse {
+    text-align: center;
     float: left;
+    padding: 0;
+    width: 30px;
 }
 
 .editor-form .footer .add {
+    float: left;
+}
+
+.editor-form .footer .create-new {
     float: left;
     margin-left: 20px;
 }
@@ -882,7 +890,7 @@ editor theme
     cursor: pointer;
     line-height: 30px;
     display: inline-block;
-    padding: 0 10px;
+    padding: 0 20px;
     height: 30px;
 }
 
@@ -994,6 +1002,7 @@ editor theme
     float: left;
     padding: 0 20px;
 }
+
 .editor-form .content ul li .jqtree-element span:last-child {
     float: right;
     padding: 5px;
@@ -1020,6 +1029,7 @@ ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
 .editor-form ul.jqtree-tree .jqtree-element:hover {
     background: #ffff64;
 }
+
 ul.jqtree-tree span.jqtree-border {
     position: absolute !important;
     display: block !important;
@@ -1035,6 +1045,7 @@ ul.jqtree-tree span.jqtree-border {
     -khtml-opacity: 0.5; /* Safari 1.x */
     opacity: 0.5;
 }
+
 ul.jqtree-tree li.jqtree-ghost span.jqtree-circle {
     border: solid 2px #649b00;
     -webkit-border-radius: 100px;
@@ -1056,6 +1067,151 @@ ul.jqtree-tree li.jqtree-ghost span.jqtree-line {
     left: 2px;
     width: 100%;
 }
+
+.clear {
+    clear: both;
+}
+
+.ui-front {
+    z-index: 1005;
+}
+
+ul.jqtree-tree ul.jqtree_common {
+    margin-left: 0px !important;
+}
+
+.neutral {
+    background: rgba(0, 0, 0, 0.2);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    line-height: 30px;
+    display: inline-block;
+    padding: 0 20px;
+    height: 30px;
+}
+
+.neutral:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.editor-form .footer .neutral {
+    background: #323232;
+}
+
+.editor-form .footer .neutral:hover {
+    background: #484848;
+}
+
+.editor-form .header .save-and-close, .editor-form .header .close-without-saving {
+    line-height: 20px;
+    float: left;
+    padding: 0 10px;
+    margin: 5px 5px 0 0;
+    height: 20px;
+}
+
+.pop-up-form {
+    background: #fff;
+    display: none;
+    position: fixed;
+    width: 600px;
+    z-index: 1009;
+}
+
+.pop-up-form .title {
+    background: #ff9600;
+    color: #fff;
+    line-height: 30px;
+    text-transform: uppercase;
+    padding: 0 20px;
+}
+
+.pop-up-form .content {
+    padding: 20px;
+}
+
+.pop-up-form .content .buttons {
+    padding: 20px 0 0;
+    overflow: hidden;
+}
+
+.pop-up-form .content .buttons .positive {
+    margin-right: 20px;
+}
+
+.pop-up-form .content .buttons .neutral {
+    background: #323232;
+}
+
+.pop-up-form .content .buttons .neutral:hover {
+    background: #484848;
+}
+
+.editor-form .content table {
+    width: 100%;
+}
+
+.editor-form .content table tr td {
+    line-height: 30px;
+    padding: 0 20px;
+}
+
+.editor-form .content table tr:hover td {
+    background: #ffff64;
+}
+
+.editor-form .content table tr td:last-child {
+    line-height: 0;
+    padding: 5px;
+    width: 105px;
+}
+
+.editor-form .content table tr td .positive {
+    line-height: 20px;
+    text-align: center;
+    visibility: hidden;
+    display: block;
+    float: left;
+    margin-right: 5px;
+    width: 80px;
+    height: 20px;
+}
+
+.editor-form .content table tr:hover td .positive {
+    visibility: visible;
+}
+
+.editor-form .content table tr td .negative {
+    background-image: url(../../images/remove.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    line-height: 20px;
+    visibility: hidden;
+    display: block;
+    float: left;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.editor-form .content table tr:hover td .negative {
+    visibility: visible;
+}
+
+.modal {
+    background: #000;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1008;
+}
+
 
 
 

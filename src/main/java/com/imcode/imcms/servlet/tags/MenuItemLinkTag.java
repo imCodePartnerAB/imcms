@@ -16,6 +16,7 @@ import java.io.IOException;
 public class MenuItemLinkTag extends TagSupport implements EditableTag {
     private SupportEditor editor;
     private ParserParameters parserParameters;
+    private volatile String classes;
 
     public int doStartTag() throws JspException {
         MenuTag menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class);
@@ -32,11 +33,12 @@ public class MenuItemLinkTag extends TagSupport implements EditableTag {
         String pathToDocument = MenuParser.getPathToDocument(request, document, menuTag.getTemplate());
         editor = createEditor().setId(menuItem.getDocumentReference().getDocumentId())
                 .setPosition(menuItem.getSortKey())
-                .setTreePosition(menuItem.getTreeSortIndex());
+                .setTreePosition(menuItem.getTreeSortIndex())
+                .setMenuName(document.getHeadline());
         try {
             if (parserParameters.isAnyMode())
                 pageContext.getOut().print(editor.getWrapperPre());
-            pageContext.getOut().print("<a href=\"" + pathToDocument + "\" target=\"" + document.getTarget() + "\">");
+            pageContext.getOut().print("<a class=\"" + classes + "\" href=\"" + pathToDocument + "\" target=\"" + document.getTarget() + "\">");
         } catch (IOException e) {
             throw new JspException(e);
         }
@@ -54,8 +56,17 @@ public class MenuItemLinkTag extends TagSupport implements EditableTag {
         return EVAL_PAGE;
     }
 
+
     @Override
     public MenuItemEditor createEditor() {
         return new MenuItemEditor();
+    }
+
+    public String getClasses() {
+        return classes;
+    }
+
+    public void setClasses(String classes) {
+        this.classes = classes;
     }
 }

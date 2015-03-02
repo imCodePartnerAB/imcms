@@ -853,6 +853,15 @@
     </repositories>
 
     <pluginRepositories>
+
+        <pluginRepository>
+            <id>imcode</id>
+            <url>http://repo.imcode.com/maven2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo1.maven.apache.org/maven2</url>
+        </pluginRepository>
     </pluginRepositories>
 
 

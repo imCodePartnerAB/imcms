@@ -170,6 +170,11 @@ JSFormBuilder.Mixins.AttributeBase = {
         if (arguments.length = 0) return this._reference;
         this._reference = arguments[0];
         return this;
+    },
+    attr: function (name) {
+        if (arguments.length === 1) return this._element.getAttribute(name);
+        this._element.setAttribute(name, arguments[1]);
+        return this;
     }
 };
 
@@ -219,8 +224,8 @@ JSFormBuilder.Mixins.Select = {
     },
     option: function () {
         var opt = document.createElement('option');
-        opt.value = arguments[0];
         opt.innerHTML = arguments[0];
+        opt.value = arguments[1] || arguments[0];
         var appendTo = this._optgroup || this._element;
         appendTo.appendChild(opt);
         return this;
@@ -256,6 +261,8 @@ JSFormBuilder.Mixins.Input = {
 
 JSFormBuilder.Classes.Table = function () {
     this._element = document.createElement("table");
+    this._element.setAttribute("cellpadding", "0");
+    this._element.setAttribute("cellspacing", "0");
     this._header = document.createElement("thead");
     this._header.tr = document.createElement("tr")
     this._header.appendChild(this._header.tr);
@@ -264,7 +271,7 @@ JSFormBuilder.Classes.Table = function () {
     this._element.appendChild(this._header);
     this._element.appendChild(this._body);
     this._element.appendChild(this._footer);
-}
+};
 
 JSFormBuilder.Mixins.Table = {
     autoheader: function () {
@@ -279,7 +286,9 @@ JSFormBuilder.Mixins.Table = {
     },
     row: function () {
         var row = document.createElement("tr");
-        if (arguments[0] instanceof  Array)
+        if (arguments.length === 1 && typeof arguments[0] === typeof 1)
+            return this._body.children[arguments[0]];
+        else if (arguments[0] instanceof  Array)
             this._fillFromArray(row, arguments[0]);
         else if (arguments[0] instanceof Object && Object.keys(arguments).length > 0)
             this._fillFromObject(row, arguments[0]);
@@ -289,10 +298,10 @@ JSFormBuilder.Mixins.Table = {
         return this;
     },
     _fillFromArray: function (row, array) {
-        var columnsCount = this._header.tr.children.length;
+        var columnsCount = this._header.tr.children.length || array.length;
         for (var i = 0; i < columnsCount; i++) {
             var td = document.createElement("td");
-            td.innerHTML = array.shift();
+            this._append(td, array.shift());
             row.appendChild(td);
         }
     },
@@ -303,7 +312,7 @@ JSFormBuilder.Mixins.Table = {
         var children = this._header.tr.children;
         for (var i = 0; i < columnsCount; i++) {
             var td = document.createElement("td");
-            var prop = ""
+            var prop = "";
             if (needHeader) {
                 prop = objectKeys[i].trim();
                 this.column(prop);
@@ -311,9 +320,15 @@ JSFormBuilder.Mixins.Table = {
             else
                 prop = children[i].innerHTML.trim();
             if (Object.prototype.hasOwnProperty.call(object, prop))
-                td.innerHTML = object[prop];
+                this._append(td, object[prop]);
             row.appendChild(td);
         }
+    },
+    _append: function (element, data) {
+        if (data instanceof  HTMLElement)
+            element.appendChild(data);
+        else
+            element.innerHTML = data;
     },
     clear: function () {
         if (this._autoheader) {
@@ -453,7 +468,7 @@ JSFormBuilder.Mixins.ContainerAdapter = {
     },
 
     //BUTTON
-    button: function(){
+    button: function () {
         return this._begin("button").type("button");
     },
 

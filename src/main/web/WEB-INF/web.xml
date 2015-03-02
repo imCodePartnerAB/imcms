@@ -258,6 +258,19 @@
         <servlet-name>EditMenuTest</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.apis.MenuApiServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DocumentApi</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.apis.DocumentApiServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LanguageApi</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.apis.LanguageApiServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TemplateApi</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.apis.TemplateApiServlet</servlet-class>
+    </servlet>
 
     <servlet>
         <servlet-name>RD</servlet-name>
@@ -502,6 +515,11 @@
         <servlet-class>com.imcode.imcms.servlet.PasswordReset</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.RegisterUser</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.RegisterUserServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>web</servlet-name>
         <url-pattern>/web/*</url-pattern>
@@ -517,6 +535,18 @@
         <url-pattern>/editmenu/*</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>DocumentApi</servlet-name>
+        <url-pattern>/api/document/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LanguageApi</servlet-name>
+        <url-pattern>/api/language/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TemplateApi</servlet-name>
+        <url-pattern>/api/template/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
@@ -798,6 +828,10 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
         <url-pattern>/servlet/AdminPanelServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.RegisterUser</servlet-name>
+        <url-pattern>/servlet/RegisterUser</url-pattern>
     </servlet-mapping>
 
     <session-config>

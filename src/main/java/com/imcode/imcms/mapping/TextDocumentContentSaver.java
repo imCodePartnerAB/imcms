@@ -31,55 +31,36 @@ import java.util.Map;
 @Transactional
 public class TextDocumentContentSaver {
 
-    private enum SaveMode {
-        CREATE, UPDATE
-    }
-
     @PersistenceContext
     private EntityManager entityManager;
-
     @Inject
     private VersionRepository versionRepository;
-
     @Inject
     private TextRepository textRepository;
-
     @Inject
     private TextHistoryRepository textHistoryRepository;
-
     @Inject
     private ImageRepository imageRepository;
-
     @Inject
     private ImageHistoryRepository imageHistoryRepository;
-
     @Inject
     private MenuRepository menuRepository;
-
     @Inject
     private MenuHistoryRepository menuHistoryRepository;
-
     @Inject
     private TemplateNamesRepository templateNamesRepository;
-
     @Inject
     private LoopRepository loopRepository;
-
     @Inject
     private LanguageRepository languageRepository;
-
     @Inject
     private IncludeRepository includeRepository;
-
     @Inject
     private DocumentGetter menuItemDocumentGetter;
-
     @Inject
     private DocumentLanguageMapper languageMapper;
-
     @Inject
     private UserRepository userRepository;
-
 
     /**
      * Saves new document content.
@@ -158,14 +139,12 @@ public class TextDocumentContentSaver {
             com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
             List<com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry> items = new LinkedList<>();
 
-            loopDO.getEntries().forEach((entryNo, enabled) -> {
-                items.add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo, enabled));
-            });
+            loopDO.getEntries().forEach((entryNo, enabled) -> items.add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo, enabled)));
 
             loop.setVersion(version);
             loop.setNo(loopNo);
             loop.setEntries(items);
-            loop.setNextEntryNo(items.stream().mapToInt(i -> i.getNo()).max().orElse(0));
+            loop.setNextEntryNo(items.stream().mapToInt(i -> i.getNo()).max().orElse(1) + 1);
 
             loopRepository.save(loop);
         });
@@ -231,7 +210,6 @@ public class TextDocumentContentSaver {
         });
     }
 
-
     private void saveTemplateNames(int docId, TextDocumentDomainObject.TemplateNames templateNamesDO) {
         TemplateNames templateNames = new TemplateNames();
 
@@ -288,7 +266,6 @@ public class TextDocumentContentSaver {
         return menu;
     }
 
-
     private void saveMenus(TextDocumentDomainObject doc, Version version, User user, SaveMode saveMode) {
         doc.getMenus().forEach((menuNo, menuDO) -> {
             Menu menu = toJpaObject(menuDO, version, menuNo);
@@ -307,7 +284,6 @@ public class TextDocumentContentSaver {
         //menuHistoryRepository.save(new MenuHistory(menu, user));
     }
 
-
     private void saveImages(TextDocumentDomainObject doc, Version version, Language language, User user, SaveMode saveMode) {
         for (Map.Entry<Integer, ImageDomainObject> entry : doc.getImages().entrySet()) {
             Image image = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
@@ -324,7 +300,6 @@ public class TextDocumentContentSaver {
             saveImage(image, user, saveMode);
         }
     }
-
 
     private void saveTexts(TextDocumentDomainObject doc, Version version, Language language, User user, SaveMode saveMode) {
         for (Map.Entry<Integer, TextDomainObject> entry : doc.getTexts().entrySet()) {
@@ -343,7 +318,6 @@ public class TextDocumentContentSaver {
         }
     }
 
-
     private void saveImage(Image image, User user, SaveMode saveMode) {
         if (saveMode == SaveMode.UPDATE) {
             LoopEntryRef loopEntryRef = image.getLoopEntryRef();
@@ -358,7 +332,6 @@ public class TextDocumentContentSaver {
         imageRepository.save(image);
         imageHistoryRepository.save(new ImageHistory(image, user));
     }
-
 
     private void saveText(Text text, User user, SaveMode saveMode) {
         if (saveMode == SaveMode.UPDATE) {
@@ -386,33 +359,36 @@ public class TextDocumentContentSaver {
 
         if (loop == null) {
             loop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
-            com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
-            loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
+            //com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
+            //loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
             loop.setVersion(version);
             loop.setNo(loopNo);
             loop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo));
-            neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
+            /*neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
             if (neighbor != null)
-                neighbor.setNextEntryNo(loopNo);
-            loopRepository.save(loop);
+                neighbor.setNextEntryNo(loopNo);*/
+            //loopRepository.save(loop);
         } else {
             if (!loop.containsEntry(entryRef.getEntryNo())) {
-                com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
+                /*com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);*/
                 loop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo));
-                loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
+                /*loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
                 neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
                 if (neighbor != null)
-                    neighbor.setNextEntryNo(loopNo);
-                loopRepository.save(loop);
+                    neighbor.setNextEntryNo(loopNo);*/
+                //loopRepository.save(loop);
             } else {
-                com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
+               /* com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
                 loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
                 neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
                 if (neighbor != null)
                     neighbor.setNextEntryNo(loopNo);
-                loopRepository.save(loop);
+                loopRepository.save(loop);*/
             }
         }
+        loop.setNextEntryNo(loop.getEntries().stream()
+                .mapToInt(i -> i.getNo()).max().orElse(1) + 1);
+        loopRepository.save(loop);
     }
 
     private Text toJpaObject(TextDocTextContainer container) {
@@ -435,7 +411,6 @@ public class TextDocumentContentSaver {
 
         return text;
     }
-
 
     private Image toJpaObject(TextDocImageContainer container) {
         Language language = languageRepository.findByCode(container.getLanguageCode());
@@ -482,7 +457,6 @@ public class TextDocumentContentSaver {
         return image;
     }
 
-
     private LoopEntryRef toJpaObject(com.imcode.imcms.mapping.container.LoopEntryRef source) {
         return source == null
                 ? null
@@ -510,6 +484,10 @@ public class TextDocumentContentSaver {
                     l.setVersion(version);
                 }
         );
+    }
+
+    private enum SaveMode {
+        CREATE, UPDATE
     }
 
 }
