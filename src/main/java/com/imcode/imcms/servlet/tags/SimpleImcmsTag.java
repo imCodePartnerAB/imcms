@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.servlet.tags.Editor.BaseEditor;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TagParser;
 import imcode.server.parser.TextDocumentParser;
@@ -14,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-public abstract class SimpleImcmsTag extends TagSupport implements EditableTag {
+public abstract class SimpleImcmsTag extends TagSupport implements IEditableTag {
 
     protected Properties attributes = new Properties();
     protected BaseEditor editor;

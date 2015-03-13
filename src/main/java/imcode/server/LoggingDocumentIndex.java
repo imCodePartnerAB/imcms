@@ -13,12 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.MultiTermQuery;
-import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.*;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
@@ -86,9 +81,14 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
             PrefixQuery prefixQuery = (PrefixQuery) query;
             addTerm(terms, prefixQuery.getPrefix());
         }
+        else if(query instanceof PhraseQuery){
+            PhraseQuery phraseQuery = (PhraseQuery) query;
+            for(Term term :phraseQuery.getTerms())
+                addTerm(terms, term);
+        }
     }
 
-    private final static Set LOGGED_FIELDS = new HashSet(Arrays.asList(new String[]{
+    private final static Set<String> LOGGED_FIELDS = new HashSet<>(Arrays.asList(new String[]{
             DocumentIndex.FIELD__META_HEADLINE,
             DocumentIndex.FIELD__META_TEXT,
             DocumentIndex.FIELD__TEXT,

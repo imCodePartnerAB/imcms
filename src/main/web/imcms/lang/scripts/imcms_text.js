@@ -69,9 +69,9 @@ Imcms.Text.Editor.prototype = {
         var editor = event.editor;
 
         // Remove unnecessary plugins to make the editor simpler.
-        editor.config.removePlugins = 'colorbutton,find,flash,font,' +
-        'forms,iframe,image,newpage,removeformat,' +
-        'smiley,specialchar,stylescombo,templates';
+        editor.config.removePlugins = 'colorbutton,find,' +
+        'forms,newpage,removeformat,' +
+        'specialchar,stylescombo,templates';
         editor.config.extraPlugins = editor.config.extraPlugins + ",documentSaver";
 
         editor.config.toolbar = 'MyToolbar';
@@ -79,7 +79,10 @@ Imcms.Text.Editor.prototype = {
             [
                 ['Bold', 'Italic', 'Underline', 'Strike'],
                 ['NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Outdent', 'Indent'],
-                ['Link', 'Unlink'],
+                [ 'Link', 'Unlink', 'Anchor' ],
+                [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ],
+                [ 'Styles', 'Format', 'Font', 'FontSize' ],
+                [ 'TextColor', 'BGColor' ],
                 ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],
                 ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
                 ['confirm', 'cancel']

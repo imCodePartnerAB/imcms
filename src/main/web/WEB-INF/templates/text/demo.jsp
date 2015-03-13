@@ -163,8 +163,34 @@
 </table>
 
 <br/>
-<imcms:text document="1004" no='1' label='<br/>Text' pre='<div class="text">' post='</div>'/>
-<imcms:text document="1004" no='2' label='<br/>Text' pre='<div class="text">' post='</div>'/>
+<imcms:search searchRequest="" skip="0" take="2">
+    <imcms:searchitem>
+        <div>
+                ${searchItem.foundDocument.alias}
+                ${searchItem.foundDocument.language.name}
+        </div>
+    </imcms:searchitem>
+    <imcms:pager>
+        <div>
+            <a href="${firstPagerItem.link}">${firstPagerItem.pageNumber+1}</a>
+        </div>
+        <imcms:pageritem>
+            <c:choose>
+                <c:when test="${pagerItem.showed}">
+                    <div>
+                        <a href="${pagerItem.link}">${pagerItem.pageNumber+1}</a>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <a href="${pagerItem.link}">${pagerItem.pageNumber+1}</a>
+                </c:otherwise>
+            </c:choose>
+        </imcms:pageritem>
+        <div>
+            <a href="${lastPagerItem.link}">${lastPagerItem.pageNumber+1}</a>
+        </div>
+    </imcms:pager>
+</imcms:search>
 
 </body>
 </html>

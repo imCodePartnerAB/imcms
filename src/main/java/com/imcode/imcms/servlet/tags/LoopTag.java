@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
+import com.imcode.imcms.servlet.tags.Editor.LoopEditor;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TagParser;
@@ -13,14 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-public class LoopTag extends SimpleTagSupport {
+public class LoopTag extends SimpleTagSupport implements IEditableTag {
 
     /**
      * Loop no in a TextDocument.
@@ -45,7 +44,7 @@ public class LoopTag extends SimpleTagSupport {
         TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
         Loop loop = document.getLoop(no);
         UserDomainObject user = Utility.getLoggedOnUser(request);
-        boolean editMode = parserParameters.isContentLoopMode();
+        boolean editMode = parserParameters.isAnyMode();
         StringWriter writer = new StringWriter();
 
         if (loop == null) {
@@ -81,9 +80,9 @@ public class LoopTag extends SimpleTagSupport {
 
                 try {
 
-                    content = Utility.getContents("/imcms/" + user.getLanguageIso639_2()
-                            + "/jsp/docadmin/text/edit_loop.jsp", request, response);
-
+                   /* content = Utility.getContents("/imcms/" + user.getLanguageIso639_2()
+                            + "/jsp/docadmin/text/edit_loop.jsp", request, response);*/
+                    content = createEditor().setNo(no).wrap(content);
                     content = TagParser.addPreAndPost(attributes, content);
                 } catch (Exception e) {
                     throw new JspException(e);
@@ -124,13 +123,12 @@ public class LoopTag extends SimpleTagSupport {
 //        }
 //    }
 
+    public int getNo() {
+        return no;
+    }
 
     public void setNo(int no) {
         this.no = no;
-    }
-
-    public int getNo() {
-        return no;
     }
 
     public void setMode(String mode) {
@@ -151,5 +149,10 @@ public class LoopTag extends SimpleTagSupport {
 
     public LoopEntryRef getLoopEntryRef() {
         return loopEntryRef;
+    }
+
+    @Override
+    public LoopEditor createEditor() {
+        return new LoopEditor();
     }
 }

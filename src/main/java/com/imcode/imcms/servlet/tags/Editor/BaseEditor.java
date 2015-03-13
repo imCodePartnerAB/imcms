@@ -18,7 +18,7 @@ public abstract class BaseEditor {
 
         BuilderBase() {
             stringBuilder = new StringBuilder();
-            classList = new ArrayList<String>();
+            classList = new ArrayList<>();
             addClass("base");
         }
 

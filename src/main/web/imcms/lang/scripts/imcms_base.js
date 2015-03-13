@@ -21,6 +21,7 @@ Imcms.Bootstrapper.prototype = {
         Imcms.Editors.Language = new Imcms.Language.Loader();
         Imcms.Editors.Template = new Imcms.Template.Loader();
         Imcms.Editors.Document = new Imcms.Document.Loader();
+        Imcms.Editors.Loop = new Imcms.Loop.Loader();
     }
 };
 

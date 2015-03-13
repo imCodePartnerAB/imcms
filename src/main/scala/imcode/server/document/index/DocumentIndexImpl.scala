@@ -1,19 +1,16 @@
 package imcode.server.document.index
 
-import com.imcode._
-
-import _root_.imcode.server.user.UserDomainObject
-import _root_.imcode.server.document.DocumentDomainObject
-import _root_.imcode.server.document.index.service.{DeleteDocFromIndex, AddDocToIndex, DocumentIndexService}
-
-import org.apache.solr.client.solrj.SolrQuery
-
 import java.util.Collections
 
-import scala.util.{Success, Failure}
-import scala.collection.JavaConverters._
+import _root_.imcode.server.document.DocumentDomainObject
+import _root_.imcode.server.document.index.service.{AddDocToIndex, DeleteDocFromIndex, DocumentIndexService}
+import _root_.imcode.server.user.UserDomainObject
+import com.imcode._
+import com.imcode.imcms.ImcmsServicesSupport
+import org.apache.solr.client.solrj.SolrQuery
 
-import com.imcode.imcms.{api, ImcmsServicesSupport}
+import scala.collection.JavaConverters._
+import scala.util.{Failure, Success}
 
 
 /**
@@ -63,10 +60,16 @@ class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex wit
 
   @throws(classOf[IndexException])
   override def search(solrQuery: SolrQuery, searchingUser: UserDomainObject): IndexSearchResult = {
-    if (solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE) == null &&
-      !solrQuery.getFilterQueries.exists(query => query.contains(s"${DocumentIndex.FIELD__LANGUAGE_CODE}:"))) {
-      solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE_CODE, imcmsServices.getDocumentLanguages.getDefault))
+    if (solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE) == null
+      && (solrQuery.getFilterQueries == null ||
+      !solrQuery.getFilterQueries.exists(query => query.contains(s"${DocumentIndex.FIELD__LANGUAGE_CODE}:")))) {
+      solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__LANGUAGE_CODE, imcmsServices.getDocumentLanguages.getDefault.getCode))
     }
+
+    if (solrQuery.get(DocumentIndex.FIELD__META_ID) == null
+      && (solrQuery.getFilterQueries == null ||
+      !solrQuery.getFilterQueries.exists(query => query.contains(s"${DocumentIndex.FIELD__META_ID}:"))))
+      solrQuery.addFilterQuery("%s:%s".format(DocumentIndex.FIELD__META_ID, "[* TO *]"))
 
     // todo: replace canSearchFor with filter queries
     // UserDomainObject#canSearchFor replacement - not yet complete

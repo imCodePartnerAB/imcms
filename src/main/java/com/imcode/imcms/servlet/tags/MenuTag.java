@@ -7,11 +7,9 @@ import imcode.server.Imcms;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.parser.MenuParser;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TagParser;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
@@ -20,7 +18,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Properties;
 
-public class MenuTag extends BodyTagSupport implements EditableTag {
+public class MenuTag extends BodyTagSupport implements IEditableTag {
 
     private volatile int no;
     private volatile int docId = -1;

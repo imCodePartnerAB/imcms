@@ -13,7 +13,7 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 
-public class MenuItemLinkTag extends TagSupport implements EditableTag {
+public class MenuItemLinkTag extends TagSupport implements IEditableTag {
     private SupportEditor editor;
     private ParserParameters parserParameters;
     private volatile String classes;

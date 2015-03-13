@@ -2,7 +2,6 @@
 
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          id="imCMS"
          version="3.0"
@@ -265,6 +264,10 @@
     <servlet>
         <servlet-name>LanguageApi</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.apis.LanguageApiServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoopApi</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.apis.LoopApiServlet</servlet-class>
     </servlet>
 
     <servlet>
@@ -546,6 +549,10 @@
     <servlet-mapping>
         <servlet-name>TemplateApi</servlet-name>
         <url-pattern>/api/template/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoopApi</servlet-name>
+        <url-pattern>/api/loop/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
