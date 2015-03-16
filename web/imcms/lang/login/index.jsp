@@ -11,6 +11,7 @@
 <vel:velocity>
     <%
         UserDomainObject user = Utility.getLoggedOnUser(request);
+        Map<String,AuthenticationMethodConfiguration> loginConfiguration = Imcms.getAuthenticationConfiguration();
     %>
     <html>
     <head>
