@@ -22,7 +22,7 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.no = ?2 AND i.loopEntryRef IS NULL")
     List<Image> findByVersionAndNoWhereLoopEntryRefIsNull(Version version, int no);
 
-    //@Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.no = ?2 AND i.loopEntryRef = ?3")
+    @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.no = ?2 AND i.loopEntryRef = ?3")
     List<Image> findByVersionAndNoAndLoopEntryRef(Version version, int no, LoopEntryRef loopEntryRef);
 
 

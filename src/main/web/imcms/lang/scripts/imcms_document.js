@@ -168,6 +168,8 @@ Imcms.Document.Viewer.prototype = {
     _modal: {},
     _options: {},
     _title: "",
+    _activeContent: {},
+    _contentCollection: {},
     defaults: {
         data: null,
         loader: {},
@@ -191,7 +193,7 @@ Imcms.Document.Viewer.prototype = {
         var $builder = $(this._builder[0]);
         $builder.fadeIn("fast").css({
             left: $(window).width() / 2 - $builder.width() / 2,
-            top: $(window).height() / 2 - $builder.height()
+            top: $(window).height() / 2 - $builder.height()/2
         });
         $(this._modal).fadeIn("fast");
     },
@@ -206,47 +208,14 @@ Imcms.Document.Viewer.prototype = {
             .end()
             .end()
             .div()
-            .class("content")
+            .class("content with-tabs")
             .div()
-            .class("life-cycle tab")
-            .select()
-            .name("status")
-            .option("In Process", "0")
-            .option("Disapproved", "1")
-            .option("Approved", "2")
-            .option("Published", "3")
-            .option("Archived", "4")
-            .option("Expired", "5")
-            .end()
+            .class("tabs")
+            .reference("tabs")
             .end()
             .div()
-            .class("appearance tab")
-            .div()
-            .class("language")
-            .reference("languages")
-            .end()
-            .div()
-            .class("link-action")
-            .select()
-            .name("target")
-            .label("Show in")
-            .option("Same frame", "_self")
-            .option("New window", "_blank")
-            .option("Replace all", "_top")
-            .end()
-            .end()
-            .div()
-            .class("alias")
-            .text()
-            .name('alias')
-            .label("/")
-            .end()
-            .select()
-            .name("template")
-            .label("Template")
-            .reference("templates")
-            .end()
-            .end()
+            .class("pages")
+            .reference("pages")
             .end()
             .div()
             .class("buttons")
@@ -264,11 +233,103 @@ Imcms.Document.Viewer.prototype = {
             .end()
             .end();
         $(this._builder[0]).appendTo($("body")).addClass("document-viewer pop-up-form");
+        this.buildLifeCycle();
+        this.buildAppearance();
+    },
+    buildLifeCycle: function () {
+        this._builder.ref("tabs")
+            .div()
+            .reference("life-cycle-tab")
+            .class("life-cycle-tab tab active")
+            .html("Life Cycle")
+            .end();
+        this._builder.ref("pages")
+            .div()
+            .reference("life-cycle-page")
+            .class("life-cycle-page page active")
+            .div()
+            .class("select")
+            .select()
+            .name("status")
+            .option("In Process", "0")
+            .option("Disapproved", "1")
+            .option("Approved", "2")
+            .option("Published", "3")
+            .option("Archived", "4")
+            .option("Expired", "5")
+            .end()
+            .end()
+            .end();
+        this._contentCollection["life-cycle"] = {
+            tab: this._builder.ref("life-cycle-tab"),
+            page: this._builder.ref("life-cycle-page")
+        };
+        this._activeContent = this._contentCollection["life-cycle"];
+        this._builder.ref("life-cycle-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["life-cycle"]));
+    },
+    buildAppearance: function () {
+        this._builder.ref("tabs")
+            .div()
+            .reference("appearance-tab")
+            .class("appearance-tab tab")
+            .html("Appearance")
+            .end();
+        this._builder.ref("pages")
+            .div()
+            .reference("appearance-page")
+            .class("appearance-page page")
+            .div()
+            .class("language")
+            .reference("languages")
+            .end()
+            .div()
+            .class("link-action")
+            .select()
+            .name("target")
+            .label("Show in")
+            .option("Same frame", "_self")
+            .option("New window", "_blank")
+            .option("Replace all", "_top")
+            .end()
+            .end()
+            .div()
+            .class("alias")
+            .div()
+            .class("field")
+            .text()
+            .name('alias')
+            .label("/")
+            .end()
+            .end()
+            .div()
+            .class("select")
+            .select()
+            .name("template")
+            .label("Template")
+            .reference("templates")
+            .end()
+            .end()
+            .end()
+            .end();
+
+        this._contentCollection["appearance"] = {
+            tab: this._builder.ref("appearance-tab"),
+            page: this._builder.ref("appearance-page")
+        };
+        this._builder.ref("appearance-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["appearance"]));
     },
     createModal: function () {
         $(this._modal = document.createElement("div")).addClass("modal")
             .click($.proxy(this.cancel, this))
             .appendTo($("body"));
+    },
+    changeTab: function (collectionItem) {
+        $(this._activeContent.tab.getHTMLElement()).removeClass("active");
+        $(this._activeContent.page.getHTMLElement()).removeClass("active");
+
+        $(collectionItem.tab.getHTMLElement()).addClass("active");
+        $(collectionItem.page.getHTMLElement()).addClass("active");
+        this._activeContent = collectionItem;
     },
     loadTemplates: function (data) {
         $.each(data, $.proxy(this.addTemplate, this));
@@ -286,11 +347,14 @@ Imcms.Document.Viewer.prototype = {
     addLanguage: function (language, code) {
         this._builder.ref("languages")
             .div()
+            .div()
+            .class("checkbox")
             .checkbox()
             .attr("data-node-key", "language")
             .attr("data-node-value", language)
             .label(language)
             .name("enabled")
+            .end()
             .end()
             .hidden()
             .attr("data-node-key", "language")
@@ -298,12 +362,17 @@ Imcms.Document.Viewer.prototype = {
             .name("code")
             .value(code)
             .end()
+            .div()
+            .class("field")
             .text()
             .attr("data-node-key", "language")
             .attr("data-node-value", language)
             .label("Title")
             .name("title")
             .end()
+            .end()
+            .div()
+            .class("field")
             .textarea()
             .attr("data-node-key", "language")
             .attr("data-node-value", language)
@@ -311,11 +380,15 @@ Imcms.Document.Viewer.prototype = {
             .name("menu-text")
             .rows(3)
             .end()
+            .end()
+            .div()
+            .class("field")
             .text()
             .attr("data-node-key", "language")
             .attr("data-node-value", language)
             .label("Link to image")
             .name("image")
+            .end()
             .end()
             .end();
     },
@@ -447,12 +520,3 @@ Imcms.Document.ListAdapter.prototype = {
         this._loader.update(JSON.stringify(viewer.serialize()), $.proxy(this.reload, this));
     }
 };
-
-
-
-
-
-
-
-
-

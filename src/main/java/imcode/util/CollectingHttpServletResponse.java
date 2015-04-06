@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -20,6 +21,16 @@ public class CollectingHttpServletResponse extends HttpServletResponseWrapper {
 
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     ServletOutputStream servletOutputStream = new ServletOutputStream() {
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+
+        }
+
         @Override
         public void write(int b) {
             byteArrayOutputStream.write(b);

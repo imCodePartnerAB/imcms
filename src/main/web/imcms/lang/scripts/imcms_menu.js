@@ -278,6 +278,9 @@ Imcms.Menu.AutocompleteAdapter.prototype = {
             response(data);
         });
     },
+    find: function (word, callback) {
+        this._find({term: word}, callback);
+    },
     _onSelect: function (event, ui) {
         this._selected = ui.item;
     }
@@ -352,7 +355,7 @@ Imcms.Menu.Editor.prototype = {
             .button()
             .html("Create new…")
             .class("neutral create-new")
-            .on("click", $.proxy(this._loader.create, this._loader))
+            .on("click", $.proxy(this._openDocumentViewer, this))
             .end()
             .div()
             .class("clear")
@@ -401,21 +404,38 @@ Imcms.Menu.Editor.prototype = {
         data = data || this._autocompleteAdapter.data();
         this._treeAdapter.add({id: data.label, "doc-id": data.id, label: data.label, name: data.label});
     },
+    _openDocumentViewer: function () {
+        new Imcms.Document.Viewer({
+            loader: this._loader,
+            onApply: $.proxy(this._addMenuItemFromDocumentViewer, this),
+            onCancel: function () {
+            }
+        })
+    },
+    _addMenuItemFromDocumentViewer: function (viewer) {
+        var data = viewer.serialize();
+        this._loader.update(JSON.stringify(data), $.proxy(function (answer) {
+            if (!answer.result) return;
+            this._addItem({id: answer.data.id, label: data.languages[Imcms.language.name].title});
+        }, this));
+    },
     saveAndClose: function () {
         $(this._builder[0]).hide();
         var response = Imcms.Utils.margeObjectsProperties(
             {items: this._treeAdapter.collect()},
             Imcms.document,
             this._target.data().prettify());
-        this._loader.update({data: JSON.stringify(response)}, function () {
+        this._loader.updateMenu({data: JSON.stringify(response)}, function () {
             location.reload();
         });
-    },
+    }
+    ,
     close: function () {
         $(this._builder[0]).hide();
         this._treeAdapter.reset();
     }
-};
+}
+;
 
 Imcms.Menu.Loader = function () {
     this.init();
@@ -431,13 +451,22 @@ Imcms.Menu.Loader.prototype = {
             that._menuHelpers[pos] = new Imcms.Menu.Editor(element, that);
         });
     },
+    languagesList: function (callback) {
+        Imcms.Editors.Language.read(callback);
+    },
+    templatesList: function (callback) {
+        Imcms.Editors.Template.read(callback);
+    },
     create: function () {
         Imcms.Editors.Document.create("document" + Math.random());
     },
     read: function () {
         this._api.read.apply(this._api, arguments);
     },
-    update: function () {
+    update: function (data, callback) {
+        Imcms.Editors.Document.update(data, callback);
+    },
+    updateMenu: function () {
         this._api.update.apply(this._api, arguments);
     },
     delete: function () {

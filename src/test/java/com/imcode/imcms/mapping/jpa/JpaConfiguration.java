@@ -44,7 +44,7 @@ public class JpaConfiguration {
         final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
        // em.setPersistenceUnitName("com.imcode.imcms");
         em.setDataSource(dataSource());
-        em.setPackagesToScan(new String[] { "com.imcode.imcms.mapping", "com.imcode.imcms.addon.imagearchive", "com.imcode.imcms.mapping.jpa" });
+        em.setPackagesToScan("com.imcode.imcms.mapping", "com.imcode.imcms.addon.imagearchive", "com.imcode.imcms.mapping.jpa");
 
         final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

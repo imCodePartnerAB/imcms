@@ -1,8 +1,11 @@
 package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.mapping.container.LoopEntryRef;
-import com.imcode.imcms.servlet.tags.Editor.BaseEditor;
+import com.imcode.imcms.servlet.tags.Editor.ImageEditor;
+import imcode.server.Imcms;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.TagParser;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.jsp.tagext.TagAdapter;
 
@@ -11,19 +14,24 @@ public class ImageTag extends SimpleImcmsTag {
     protected String getContent(TagParser tagParser) {
 //        LoopTag loopTag = (LoopTag)findAncestorWithClass(this, LoopTag.class);
 
-        TagAdapter loopTagAdapter = (TagAdapter)findAncestorWithClass(this, TagAdapter.class);
+        TagAdapter loopTagAdapter = (TagAdapter) findAncestorWithClass(this, TagAdapter.class);
         LoopTag loopTag = loopTagAdapter != null && loopTagAdapter.getAdaptee() instanceof LoopTag
                 ? (LoopTag) loopTagAdapter.getAdaptee()
                 : null;
 
         LoopEntryRef loopEntryRef = loopTag == null ? null : loopTag.getLoopEntryRef();
-
+        TextDocumentDomainObject doc = (TextDocumentDomainObject) (!StringUtils.isNotBlank(attributes.getProperty("document")) ?
+                parserParameters.getDocumentRequest().getDocument() :
+                Imcms.getServices().getDocumentMapper().getDocument(attributes.getProperty("document")));
+        ((ImageEditor) editor).setDocumentId(doc.getId())
+                .setLoopEntryRef(loopEntryRef)
+                .setNo(Integer.parseInt(attributes.getProperty("no")));
         return tagParser.tagImage(attributes, loopEntryRef);
     }
 
     @Override
-    public BaseEditor createEditor() {
-        return  null;
+    public ImageEditor createEditor() {
+        return new ImageEditor();
     }
 
     public void setMode(String mode) {

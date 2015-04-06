@@ -58,6 +58,10 @@ public class LoopEntryRef {
                 .toString();
     }
 
+    public String toUriQueryString() {
+        return String.format("%s_%s", loopNo, entryNo);
+    }
+
     public int getLoopNo() {
         return loopNo;
     }

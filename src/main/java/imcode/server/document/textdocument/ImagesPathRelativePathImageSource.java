@@ -1,12 +1,16 @@
 package imcode.server.document.textdocument;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.util.image.ImageInfo;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.InputStreamSource;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
+import java.util.Optional;
 
 public class ImagesPathRelativePathImageSource extends ImageSource {
     private String path;
@@ -15,6 +19,7 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
         this.path = path.replace('\\', '/');
     }
 
+    @JsonIgnore
     public InputStreamSource getInputStreamSource() {
         return new FileInputStreamSource(getFile());
     }
@@ -27,9 +32,9 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
 
     public String getUrlPathRelativeToContextPath() {
         if (!isAbsolute()) {
-            return getImagesUrlPath() + path;
+            return getFile().exists() ? getImagesUrlPath() + path : "";
         }
-        return path;
+        return getFile().exists() ? path : "";
     }
 
     private boolean isAbsolute() {
@@ -54,6 +59,16 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
 
     @Override
     public String getName() {
-        return new File(path).getName();
+        return getFile().getName();
+    }
+
+    @Override
+    public ImageInfo getImageInfo() {
+        try {
+            return Optional.ofNullable(super.getImageInfo()).orElse(new ImageInfo());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -75,4 +75,8 @@ public enum Format {
     public static Format findFormat(int ordinal) {
         return ORDINAL_MAP.get(ordinal);
     }
+
+    public static boolean isImage(String name) {
+        return FORMAT_MAP.containsKey(name) || EXTENSION_MAP.containsKey(name) || ORDINAL_MAP.containsKey(name);
+    }
 }

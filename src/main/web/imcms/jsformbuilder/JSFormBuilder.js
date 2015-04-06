@@ -128,6 +128,9 @@ JSFormBuilder.Classes.BaseAdapter.prototype = {
             this._parent._append(this._label);
         if (this._reference) {
             var that = this;
+            if (!this._parent._localScope) {
+                this._parent._localScope = {};
+            }
             this._parent._localScope[this._reference] = {
                 get: function () {
                     return that;
@@ -430,18 +433,16 @@ JSFormBuilder.Mixins.Fieldset = {};
 JSFormBuilder.mix(JSFormBuilder.Mixins.Fieldset, JSFormBuilder.Mixins.Legend);
 
 JSFormBuilder.Classes.ContainerAdapter = function () {
-    if (["form", "fieldset", "div"].indexOf(arguments[1]) > -1)
+    if (["form", "fieldset", "div"].indexOf(arguments[1]) > -1) {
         JSFormBuilder.Classes.ContainerAdapter.__super__.constructor.apply(this, arguments);
-
+        if (this._parent)
+            this._localScope = this._parent._localScope;
+    }
     else throw "Element '" + arguments[1] + "' is not compatible with container";
 };
 
 JSFormBuilder.Classes.ContainerAdapter.prototype = {
-    _localScope: {},
-
-
     end: function () {
-        this._parent._localScope = JSFormBuilder.margeObjectsProperties(this._parent._localScope, this._localScope);
         return JSFormBuilder.Classes.ContainerAdapter.__super__.end.apply(this, arguments);
     },
     _begin: function () {
@@ -563,6 +564,10 @@ JSFormBuilder.Classes.FormAdapter = function () {
     var args = [null, "form"];
     JSFormBuilder.Classes.FormAdapter.__super__.constructor.apply(this, args);
     this._parent = arguments[0];
+    if (!this._localScope) {
+        this._localScope = {};
+    }
+    this._parent.scope = this._localScope;
 };
 
 JSFormBuilder.Classes.FormAdapter.prototype = {
@@ -571,7 +576,6 @@ JSFormBuilder.Classes.FormAdapter.prototype = {
         this._parent.each(function (position, element) {
             element.appendChild(that._element);
         });
-        this._parent.scope = this._localScope;
         return this._parent;
     }
 };

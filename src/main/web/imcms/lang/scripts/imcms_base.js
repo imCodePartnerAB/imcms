@@ -22,6 +22,10 @@ Imcms.Bootstrapper.prototype = {
         Imcms.Editors.Template = new Imcms.Template.Loader();
         Imcms.Editors.Document = new Imcms.Document.Loader();
         Imcms.Editors.Loop = new Imcms.Loop.Loader();
+        Imcms.Editors.File = new Imcms.File.Loader();
+        Imcms.Editors.Folder = new Imcms.Folder.Loader();
+        Imcms.Editors.Content = new Imcms.Content.Loader();
+        Imcms.Editors.Image = new Imcms.Image.Loader();
     }
 };
 

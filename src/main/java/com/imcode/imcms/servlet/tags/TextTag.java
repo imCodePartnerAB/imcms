@@ -3,23 +3,27 @@ package com.imcode.imcms.servlet.tags;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.servlet.tags.Editor.BaseEditor;
 import com.imcode.imcms.servlet.tags.Editor.TextEditor;
+import imcode.server.Imcms;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.TagParser;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.jsp.tagext.TagAdapter;
 
 public class TextTag extends SimpleImcmsTag {
 
     protected String getContent(TagParser tagParser) {
-//        LoopTag loopTag = (LoopTag)findAncestorWithClass(this, LoopTag.class);
-
         TagAdapter loopTagAdapter = (TagAdapter) findAncestorWithClass(this, TagAdapter.class);
         LoopTag loopTag = loopTagAdapter != null && loopTagAdapter.getAdaptee() instanceof LoopTag
                 ? (LoopTag) loopTagAdapter.getAdaptee()
                 : null;
 
         LoopEntryRef loopEntryRef = loopTag == null ? null : loopTag.getLoopEntryRef();
-
+        TextDocumentDomainObject doc = (TextDocumentDomainObject) (!StringUtils.isNotBlank(attributes.getProperty("document")) ?
+                parserParameters.getDocumentRequest().getDocument() :
+                Imcms.getServices().getDocumentMapper().getDocument(attributes.getProperty("document")));
         ((TextEditor) editor)
+                .setDocumentId(doc.getId())
                 .setLocale(parserParameters.getDocumentRequest().getDocument().getLanguage().getCode())
                 .setLoopEntryRef(loopEntryRef)
                 .setNo(Integer.parseInt(attributes.getProperty("no")));

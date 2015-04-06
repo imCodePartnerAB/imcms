@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import imcode.server.Imcms;
@@ -19,6 +20,7 @@ import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Used to edit/insert image in (Xina) editor.
@@ -51,9 +53,9 @@ public class EditImage extends HttpServlet {
         //fixme: language
         // Page should contain at least one image to edit.
         Map<DocumentLanguage, ImageDomainObject> images = Collections.singletonMap(Imcms.getServices().getDocumentLanguages().getDefault(), image);
-
+        Optional<LoopEntryRef> loopEntryRef  = LoopEntryRef.parse(request.getParameter("loop_ref"));
         //fixme: image no
-        imageEditPage.setImagesContainer(TextDocImagesContainer.of(VersionRef.of(metaId, 0), null, 0, images));
+        imageEditPage.setImagesContainer(TextDocImagesContainer.of(VersionRef.of(metaId, 0), loopEntryRef.orElse(null), 0, images));
 
         imageEditPage.updateFromRequest(request);
 

@@ -95,6 +95,7 @@ public class DocumentApiServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Map<String, Object> result = new HashMap<>();
         try {
+            Map<String, Object> answer = new HashMap<>();
             DocumentEntity documentEntity = new ObjectMapper()
                     .readValue(
                             RequestUtils.parse(req.getInputStream()).get("data"),
@@ -127,8 +128,10 @@ public class DocumentApiServlet extends HttpServlet {
             if (documentEntity.id != null)
                 documentMapper.saveDocument(documentDomainObject, contentMap, Imcms.getUser());
             else
-                documentMapper.saveNewDocument(documentDomainObject, contentMap, Imcms.getUser());
+                documentDomainObject = documentMapper.saveNewDocument(documentDomainObject, contentMap, Imcms.getUser());
+            answer.put("id", documentDomainObject.getId());
             result.put("result", true);
+            result.put("data", answer);
         } catch (Exception e) {
             result.put("result", false);
         }

@@ -43,6 +43,7 @@
         </init-param>
     </filter>
 
+
     <filter>
         <display-name>Imcms Setup Filter</display-name>
         <filter-name>ImcmsSetupFilter</filter-name>
@@ -525,8 +526,12 @@
 
     <servlet-mapping>
         <servlet-name>web</servlet-name>
-        <url-pattern>/web/*</url-pattern>
+        <url-pattern>/api/content/*</url-pattern>
     </servlet-mapping>
+    <!--servlet-mapping>
+        <servlet-name>web</servlet-name>
+        <url-pattern>/api/image/*</url-pattern>
+    </servlet-mapping-->
 
     <servlet-mapping>
         <servlet-name>EditTextTest</servlet-name>

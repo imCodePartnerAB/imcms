@@ -55,7 +55,7 @@
                     <td colspan="5" height="15">&nbsp;</td>
                 </tr>
                 <tr valign="top">
-                    <td width="200"><imcms:include url="${documentationUrl}/1054?template=imcmsDemoLeft"/></td>
+                    <td width="200"></td>
 
                     <td width="15">&nbsp;</td>
 

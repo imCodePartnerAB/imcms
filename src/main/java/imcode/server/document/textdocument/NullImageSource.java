@@ -1,11 +1,14 @@
 package imcode.server.document.textdocument;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import imcode.util.image.ImageInfo;
 import imcode.util.io.EmptyInputStreamSource;
 import imcode.util.io.InputStreamSource;
 
 import java.util.Date;
 
 public class NullImageSource extends ImageSource {
+    @JsonIgnore
     public InputStreamSource getInputStreamSource() {
         return new EmptyInputStreamSource();
     }
@@ -34,6 +37,11 @@ public class NullImageSource extends ImageSource {
     @Override
     public String getName() {
         return "";
+    }
+
+    @Override
+    public ImageInfo getImageInfo() {
+        return new ImageInfo();
     }
 }
  

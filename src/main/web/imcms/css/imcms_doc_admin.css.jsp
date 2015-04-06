@@ -808,7 +808,7 @@ editor theme
     z-index: 1002;
 }
 
-.editor-form, .editor-form *,.pop-up-form *,.pop-up-form  {
+.editor-form, .editor-form *, .pop-up-form *, .pop-up-form {
     font: normal 15px Arial;
 }
 
@@ -1115,7 +1115,7 @@ ul.jqtree-tree ul.jqtree_common {
     background: #fff;
     display: none;
     position: fixed;
-    width: 600px;
+    width: 1000px;
     z-index: 1009;
 }
 
@@ -1128,7 +1128,74 @@ ul.jqtree-tree ul.jqtree_common {
 }
 
 .pop-up-form .content {
+    position: relative;
     padding: 20px;
+}
+
+.pop-up-form .with-tabs {
+    padding-left: 220px;
+}
+
+.pop-up-form .content .tabs {
+    background: #323232;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200px;
+    height: 100%;
+}
+
+.pop-up-form .content .tabs .tab {
+    color: #fff;
+    line-height: 30px;
+    padding: 0 20px;
+}
+
+.pop-up-form .content .pages .page {
+    height: 300px;
+    overflow-y: auto;
+    display: none;
+}
+
+.pop-up-form .content .pages .page.active {
+    display: block;
+}
+
+.pop-up-form .content .tabs .tab:hover {
+    background: #484848;
+}
+
+.pop-up-form .content .tabs .active {
+    background: #fff !important;
+    color: #000 !important;
+}
+
+.pop-up-form .content .field {
+    padding-top: 10px;
+}
+
+.pop-up-form .content .field label {
+    display: block;
+    margin-bottom: 2px;
+}
+
+.pop-up-form .content .field input {
+    background: #f0f0f0;
+    border: none;
+    padding: 5px 10px;
+    width: 400px;
+}
+
+.pop-up-form .content .field textarea {
+    background: #f0f0f0;
+    border: none;
+    padding: 5px 10px;
+    width: 740px;
+    height: 100px;
+}
+
+.pop-up-form .content .checkbox {
+    padding-top: 10px;
 }
 
 .pop-up-form .content .buttons {
@@ -1210,6 +1277,52 @@ ul.jqtree-tree ul.jqtree_common {
     width: 100%;
     height: 100%;
     z-index: 1008;
+}
+
+.image-cropper {
+    background: #f0f0f0;
+    display: none;
+    position: relative;
+    height: 500px;
+}
+
+.image-cropper img {
+    max-width: 600px;
+    max-height: 500px;
+}
+
+.image-cropper .image-shader {
+    background: #000;
+    opacity: 0.75;
+    filter: alpha(opacity=75);
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.image-cropper .image-cropping-frame {
+    border: 1px solid #0096fa;
+    cursor: move;
+    position: absolute;
+    left: -1px;
+    top: -1px;
+    overflow: hidden;
+}
+
+.image-cropper .image-cropping-frame .image-fragment {
+    position: absolute;
+}
+
+.image-cropper .grip {
+    background: #0096fa;
+    cursor: se-resize;
+    position: absolute;
+    width: 11px;
+    height: 11px;
+}
+
+.folders {
+    float: left;
 }
 
 

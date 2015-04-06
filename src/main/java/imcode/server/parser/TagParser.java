@@ -591,7 +591,7 @@ public class TagParser {
             replaceTags.add("#max_height#");
             replaceTags.add(maxHeight);
             replaceTags.add("#loop_ref#");
-            replaceTags.add(loopEntryRef != null ? loopEntryRef.toString() : "");
+            replaceTags.add(loopEntryRef != null ? loopEntryRef.toUriQueryString() : "");
 
             imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
         }
@@ -857,7 +857,7 @@ public class TagParser {
                 textDocumentToUse = (TextDocumentDomainObject) service.getDocumentMapper().getDocument(documentName);
             } else if (documentVersion != null) {
                 Integer docmentId = textDocumentToUse.getId();
-                textDocumentToUse = (TextDocumentDomainObject) service.getDocumentMapper().getDocument(docmentId);
+                textDocumentToUse = service.getDocumentMapper().getDocument(docmentId);
             }
         } catch (ClassCastException e) {
             /* return null */
