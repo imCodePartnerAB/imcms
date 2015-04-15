@@ -76,6 +76,7 @@ Imcms.Content.Editor.prototype = {
             .button()
             .html("Close without saving")
             .class("neutral close-without-saving")
+            .on("click", this.cancel.bind(this))
             .end()
             .end()
             .div()
@@ -133,6 +134,10 @@ Imcms.Content.Editor.prototype = {
     },
     save: function () {
         this._option.onApply(this._fileAdapter.selected());
+        this.close();
+    },
+    cancel: function () {
+        this._option.onCancel();
         this.close();
     },
     close: function () {
@@ -325,8 +330,22 @@ Imcms.Content.FileView.prototype = {
         $.each(data, this._buildItem.bind(this));
     },
     _buildItem: function (position, data) {
-        var $div = $("<div>");
-        $div.appendTo(this._element).text(data.name).click(this._onSelect.bind(this, $div, data));
+        var $div = $("<div>")
+            .addClass("content-preview")
+            .append(this._createImage(data.urlPathRelativeToContextPath, data.imageInfo))
+            .append(this._createInfo(data.name));
+
+        $div.appendTo(this._element).click(this._onSelect.bind(this, $div, data));
+    },
+    _createImage: function (src, imageInfo) {
+        return $("<div>").addClass("content-preview-image")
+            .css({
+                background: "url('" + src + "') 50% 50% no-repeat",
+                backgroundSize: (imageInfo.width > 100 || imageInfo.height > 100) ? "contain" : "auto"
+            })
+    },
+    _createInfo: function (info) {
+        return $("<div>").addClass("content-preview-info").append(info);
     },
     _onSelect: function (element, data) {
         this._selectedItem = data;
@@ -365,7 +384,7 @@ Imcms.Content.FileAdapter.prototype = {
     selected: function () {
         return this._fileView._selectedItem;
     }
-}
+};
 
 Imcms.Content.FileUploader = function (target) {
     this._target = target;
@@ -405,7 +424,7 @@ Imcms.Content.FileUploader.prototype = {
             var request = new XMLHttpRequest();
 
             //request.onreadystatechange = mt.stateChange;
-            request.open("POST", "/api/content/files/testtesttest.png");
+            request.open("POST", "/api/content/files/" + postedFile.name);
             request.onreadystatechange = function () {
                 alert(request.responseText);
             };

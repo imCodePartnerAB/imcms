@@ -1323,8 +1323,212 @@ ul.jqtree-tree ul.jqtree_common {
 
 .folders {
     float: left;
+    height: 100%;
+    min-width: 200px;
 }
 
+.files {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-flex-pack: space-between;
+    -webkit-justify-content: space-between;
+    -moz-justify-content: space-between;
+    -ms-flex-pack: center;
+    justify-content: space-between;
+
+    -webkit-flex-line-pack: center;
+    -ms-flex-line-pack: center;
+    -webkit-align-content: center;
+    align-content: center;
+
+    -ms-flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.content-preview {
+    width: 110px;
+    height: 130px;
+    overflow: hidden;
+    float: left;
+}
+
+.content-preview.selected {
+    background-color: lightblue;
+}
+
+.content-preview-info,
+.content-preview-image {
+    width: 100px;
+    margin: 5px;
+    text-align: center;
+}
+
+.content-preview-image {
+    height: 100px;
+}
+
+<%-- Admin panel styles --%>
+.admin-panel {
+    display: block;
+    width: 540px;
+    background: #eee;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    padding: 3px;
+    overflow: auto;
+    position: absolute;
+    -webkit-box-shadow: 0 0 15px 0 rgba(50, 50, 50, 0.5);
+    -moz-box-shadow: 0 0 15px 0 rgba(50, 50, 50, 0.5);
+    box-shadow: 0 0 15px 0 rgba(50, 50, 50, 0.5);
+}
+
+.admin-panel-draggable {
+    width: 14px;
+    margin-right: 3px;
+    background: url("<%= cp %>/images/bg_draggable.png") 0 0 no-repeat;
+    cursor: move;
+}
+
+.admin-panel-content {
+    width: 523px;
+    background: #fff;
+}
+
+.admin-panel-content-section-language {
+    width: 146px;
+}
+
+.admin-panel,
+.admin-panel-draggable,
+.admin-panel-content,
+.admin-panel-content-section {
+    height: 70px;
+}
+
+.admin-panel-content-separator,
+.admin-panel-button {
+    height: 64px;
+    margin: 3px;
+}
+
+.admin-panel-content-separator {
+    width: 3px;
+    background: #eee;
+}
+
+.admin-panel-content-separator-white {
+    background: #fff;
+}
+
+.admin-panel-content-separator,
+.admin-panel-draggable,
+.admin-panel-button,
+.admin-panel-content,
+.admin-panel-content-section {
+    float: left;
+}
+
+.admin-panel-button {
+    width: 64px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+.admin-panel-content-section[data-mode=readonly] .admin-panel-button-image {
+    background: url("<%= cp %>/images/ic_readonly.png") no-repeat;
+}
+
+.admin-panel-content-section[data-mode=edit] .admin-panel-button-image {
+    background: url("<%= cp %>/images/ic_edit.png") no-repeat;
+}
+
+.admin-panel-content-section[data-mode=info] .admin-panel-button-image {
+    background: url("<%= cp %>/images/ic_pageinfo.png") no-repeat;
+}
+
+.admin-panel-content-section[data-mode=admin] .admin-panel-button-image {
+    background: url("<%= cp %>/images/ic_adminmanager.png") no-repeat;
+}
+
+.admin-panel-content-section[data-mode=logout] .admin-panel-button-image {
+    background: url("<%= cp %>/images/ic_logout.png") no-repeat;
+}
+
+.admin-panel-content-section.active[data-mode=readonly] .admin-panel-button .admin-panel-button-image,
+.admin-panel-content-section[data-mode=readonly] .admin-panel-button:hover .admin-panel-button-image {
+    background: url("<%= cp %>/images/ic_readonly.png") 0 -32px no-repeat;
+}
+
+.admin-panel-content-section.active[data-mode=edit] .admin-panel-button .admin-panel-button-image,
+.admin-panel-content-section[data-mode=edit] .admin-panel-button:hover .admin-panel-button-image {
+    background: url("<%= cp %>/images/ic_edit.png") 0 -32px no-repeat;
+}
+
+.admin-panel-content-section[data-mode=info] .admin-panel-button:hover .admin-panel-button-image {
+    background: url("<%= cp %>/images/ic_pageinfo.png") 0 -32px no-repeat;
+}
+
+.admin-panel-content-section[data-mode=admin] .admin-panel-button:hover .admin-panel-button-image {
+    background: url("<%= cp %>/images/ic_adminmanager.png") 0 -32px no-repeat;
+}
+
+.admin-panel-content-section[data-mode=logout] .admin-panel-button:hover .admin-panel-button-image {
+    background: url("<%= cp %>/images/ic_logout.png") 0 -32px no-repeat;
+}
+
+.admin-panel-button-image {
+    width: 32px;
+    height: 32px;
+    margin-top: 10px;
+}
+
+.admin-panel-content-section .admin-panel-version {
+    color: #0091e1;
+    font-size: 11px;
+    margin: 14px 20px 0 20px;
+}
+
+.admin-panel-content-section .admin-panel-button-description {
+    display: inline-block;
+}
+
+.admin-panel-content-section .admin-panel-button {
+    color: black;
+}
+
+.admin-panel-content-section.active .admin-panel-button,
+.admin-panel-content-section .admin-panel-button:hover {
+    background-color: #ebf0ff;
+    color: #0091e1;
+}
+
+.admin-panel-content-section div.admin-panel-language {
+    margin: 0 20px;
+}
+
+.admin-panel-content-section div.admin-panel-language a {
+    float: left;
+}
+
+.admin-panel-content-section div.admin-panel-language a:first-child {
+    display: block;
+    float: left;
+    margin-right: 5px;
+}
+
+.admin-panel-content-section div.admin-panel-language a.active {
+    background: #ebf0ff;
+    padding: 0 6px;
+    border-radius: 5px;
+    margin: 0 0 0 -6px;
+}
 
 
 

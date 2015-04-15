@@ -1,5 +1,8 @@
 package imcode.server.user;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 public class RoleId implements Serializable {
@@ -12,9 +15,11 @@ public class RoleId implements Serializable {
     public final static RoleId USERADMIN = new RoleId(USERADMIN_ID);
     public final static RoleId USERS = new RoleId(USERS_ID);
 
+    @JsonInclude
+    @JsonProperty("roleId")
     private final int roleId;
 
-    public RoleId(int roleId) {
+    public RoleId(@JsonProperty("roleId") int roleId) {
         this.roleId = roleId;
     }
 
@@ -30,6 +35,22 @@ public class RoleId implements Serializable {
 
         return roleId == that.roleId;
 
+    }
+
+    public int getRoleId() {
+        return roleId;
+    }
+
+    public String getName() {
+        switch (roleId) {
+            case 0:
+                return "Superadmin";
+            case 1:
+                return "Useradmin";
+            case 2:
+                return "User";
+        }
+        return "";
     }
 
     public int hashCode() {

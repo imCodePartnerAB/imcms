@@ -434,8 +434,7 @@ Imcms.Menu.Editor.prototype = {
         $(this._builder[0]).hide();
         this._treeAdapter.reset();
     }
-}
-;
+};
 
 Imcms.Menu.Loader = function () {
     this.init();

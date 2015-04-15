@@ -267,7 +267,7 @@ JSFormBuilder.Classes.Table = function () {
     this._element.setAttribute("cellpadding", "0");
     this._element.setAttribute("cellspacing", "0");
     this._header = document.createElement("thead");
-    this._header.tr = document.createElement("tr")
+    this._header.tr = document.createElement("tr");
     this._header.appendChild(this._header.tr);
     this._footer = document.createElement("tfoot");
     this._body = document.createElement("tbody");

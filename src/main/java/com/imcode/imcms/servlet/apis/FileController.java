@@ -1,21 +1,19 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.util.directory.Directory;
+import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.AbstractFileSource;
+import imcode.server.document.textdocument.DocumentImageSource;
 import imcode.server.document.textdocument.FileSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.util.image.Format;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.file.FileAlreadyExistsException;
@@ -59,7 +57,10 @@ public class FileController {
         String prefix = Imcms.getServices().getConfig().getImagePath().getAbsolutePath();
         List<AbstractFileSource> collect = Stream.of(files).map(file -> {
             if (Format.isImage(FilenameUtils.getExtension(file.getName()).toLowerCase())) {
-                return new ImagesPathRelativePathImageSource(file.getAbsolutePath().replace(prefix + File.separator, ""));
+                return new DocumentImageSource(
+                        file.getAbsolutePath().replace(prefix + File.separator, ""),
+                        new ImageSize(0, 0)
+                );
             }
             return new FileSource(file);
         }).collect(Collectors.toList());
@@ -67,7 +68,7 @@ public class FileController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = {"/**/{filename}.{extension}"})
-    public boolean create(MultipartHttpServletRequest request, @PathVariable("extension") String extension,
+    public boolean create(HttpServletRequest request, @PathVariable("extension") String extension,
                           @PathVariable("filename") String filename) throws IOException {
         String path = FolderController.folderFromRequest(request);
         Directory dir = new Directory(Imcms.getServices().getConfig().getImagePath()).find(path);
@@ -77,11 +78,12 @@ public class FileController {
                 String.format("%s.%s", filename, extension))).createNewFile()
                 )
             throw new FileAlreadyExistsException(String.format("File '%s.%s' has already exists", filename, extension));
-       // byte[] bytes = file.getBytes();
+       /*// byte[] bytes = file.getBytes();
         BufferedOutputStream stream = new BufferedOutputStream(
                 new FileOutputStream(createdFile));
        // stream.write(bytes);
-        stream.close();
+        stream.close();*/
+        FileUtils.copyInputStreamToFile(request.getInputStream(), createdFile);
         return true;
     }
 

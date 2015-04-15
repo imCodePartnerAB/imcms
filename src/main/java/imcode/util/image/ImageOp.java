@@ -2,20 +2,16 @@ package imcode.util.image;
 
 import imcode.server.Config;
 import imcode.server.Imcms;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class ImageOp {
     private static final Log log = LogFactory.getLog(ImageOp.class);
@@ -39,7 +35,10 @@ public class ImageOp {
     private static final String getApplicationPath(Config config, String appName) {
         String magickPath = config.getImageMagickPath();
 
-        if (magickPath != null && !"".equals(magickPath) && !magickPath.equals(Imcms.getPath())) {
+        if (magickPath != null
+                && !"".equals(magickPath)
+                && !magickPath.equals(Imcms.getPath())
+                && SystemUtils.IS_OS_WINDOWS) {
             return new File(magickPath, appName).getAbsolutePath();
         }
 
@@ -315,18 +314,17 @@ public class ImageOp {
 
             String fileToIdentify = addQuotes(file.getAbsolutePath() + "[0]");
             Process process = new ProcessBuilder(getIdentifyProcessArgs(config, fileToIdentify)).start();
+
             StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
             StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
             errorHandler.start();
             inputHandler.start();
-
             inputHandler.join();
 
             return processImageInfo(inputHandler);
         } catch (Exception ex) {
             log.fatal(ex.getMessage(), ex);
         }
-
         return null;
     }
 

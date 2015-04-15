@@ -2,26 +2,20 @@ package com.imcode
 package imcms
 package admin.doc.meta
 
-import java.util.Optional
+import _root_.imcode.server.document.DocumentDomainObject
+import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
+import com.imcode.imcms.admin.doc.meta.access.AccessEditor
+import com.imcode.imcms.admin.doc.meta.appearance.AppearanceEditor
+import com.imcode.imcms.admin.doc.meta.category.CategoryEditor
+import com.imcode.imcms.admin.doc.meta.lifecycle.LifeCycleEditor
+import com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
+import com.imcode.imcms.admin.doc.meta.search.SearchSettingsEditor
 import com.imcode.imcms.api.DocumentLanguage
 import com.imcode.imcms.mapping.DocumentCommonContent
-import com.imcode.imcms.vaadin.Current
-import scala.collection.JavaConverters._
-
-import _root_.imcode.server.document.textdocument.TextDocumentDomainObject
-import _root_.imcode.server.document.DocumentDomainObject
-
-import com.imcode.imcms.api._
-import com.imcode.imcms.vaadin.data._
+import com.imcode.imcms.vaadin.{Current, Editor}
 import com.imcode.imcms.vaadin.event._
-import com.imcode.imcms.admin.doc.meta.access.AccessEditor
-import com.imcode.imcms.admin.doc.meta.search.SearchSettingsEditor
-import com.imcode.imcms.admin.doc.meta.profile.ProfileEditor
-import com.imcode.imcms.admin.doc.meta.appearance.AppearanceEditor
-import com.imcode.imcms.admin.doc.meta.lifecycle.LifeCycleEditor
-import com.imcode.imcms.admin.doc.meta.category.CategoryEditor
-import com.vaadin.server.Sizeable
-import com.imcode.imcms.vaadin.Editor
+
+import scala.collection.JavaConverters._
 
 /**
  * Doc's meta editor.
@@ -141,11 +135,11 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
         dc.getMeta.setPublicationStartDatetime(lifeCycle.publicationStartDt)
         dc.getMeta.setPublicationEndDatetime(lifeCycle.publicationEndDt.orNull)
         dc.getMeta.setArchivedDatetime(lifeCycle.archiveDt.orNull)
-        dc.getMeta.setPublisherId(lifeCycle.publisher.map(p => p.getId : JInteger).orNull)
+        dc.getMeta.setPublisherId(lifeCycle.publisher.map(p => p.getId: JInteger).orNull)
         //???dc.setVersion(new DocumentVersion() state.versionNo)
         dc.getMeta.setCreatedDatetime(lifeCycle.createdDt)
         dc.getMeta.setModifiedDatetime(lifeCycle.modifiedDt)
-        dc.getMeta.setCreatorId(lifeCycle.creator.map(c => c.getId : JInteger).orNull)
+        dc.getMeta.setCreatorId(lifeCycle.creator.map(c => c.getId: JInteger).orNull)
         //???dc.getMeta.setModifierId
       }
     }.merge(accessEditorOpt.map(_.collectValues())) {
@@ -163,7 +157,7 @@ class MetaEditor(doc: DocumentDomainObject) extends Editor with ImcmsServicesSup
       }
     }.merge(profileEditorOpt.map(_.collectValues())) {
       case (data@(tdc: TextDocumentDomainObject, _), profile) => data |>> { _ =>
-        tdc.setTemplateName(profile.defaultTemplate);
+        tdc.setTemplateName(profile.defaultTemplate)
         tdc.setDefaultTemplateId(profile.defaultTemplate)
         tdc.getPermissionSetsForNewDocument.setRestricted1(profile.restrictedOnePermSet)
         tdc.getPermissionSetsForNewDocument.setRestricted2(profile.restrictedTwoPermSet)

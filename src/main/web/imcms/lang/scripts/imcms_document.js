@@ -193,7 +193,7 @@ Imcms.Document.Viewer.prototype = {
         var $builder = $(this._builder[0]);
         $builder.fadeIn("fast").css({
             left: $(window).width() / 2 - $builder.width() / 2,
-            top: $(window).height() / 2 - $builder.height()/2
+            top: $(window).height() / 2 - $builder.height() / 2
         });
         $(this._modal).fadeIn("fast");
     },
@@ -235,6 +235,7 @@ Imcms.Document.Viewer.prototype = {
         $(this._builder[0]).appendTo($("body")).addClass("document-viewer pop-up-form");
         this.buildLifeCycle();
         this.buildAppearance();
+        this.buildAccess();
     },
     buildLifeCycle: function () {
         this._builder.ref("tabs")
@@ -317,6 +318,41 @@ Imcms.Document.Viewer.prototype = {
             page: this._builder.ref("appearance-page")
         };
         this._builder.ref("appearance-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["appearance"]));
+    },
+    buildAccess: function () {
+        this._builder.ref("tabs")
+            .div()
+            .reference("access-tab")
+            .class("access-tab tab")
+            .html("Access")
+            .end();
+        this._builder.ref("pages")
+            .div()
+            .reference("access-page")
+            .class("access-page page")
+            .table()
+            .reference("access")
+            .column("Role")
+            .column("View")
+            .column("Grant")
+            .row(
+            "User",
+            $("<input>")
+                .attr("type", "radio")
+                .val("view")
+                .attr("name", "user-access")[0],
+            $("<input>")
+                .attr("type", "radio")
+                .val("grant")
+                .attr("name", "user-access")[0]
+        )
+            .end()
+            .end();
+        this._contentCollection["access"] = {
+            tab: this._builder.ref("access-tab"),
+            page: this._builder.ref("access-page")
+        };
+        this._builder.ref("access-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["access"]));
     },
     createModal: function () {
         $(this._modal = document.createElement("div")).addClass("modal")
@@ -442,6 +478,22 @@ Imcms.Document.Viewer.prototype = {
                     $dataElement.val(data.languages[language][$dataElement.attr("name")]);
             }
         });
+        this._builder.ref("access").clear();
+        $.each(data.access, function (key, value) {
+            this._builder.ref("access")
+                .row(
+                key,
+                $("<input>")
+                    .attr("type", "radio")
+                    .attr("value", 3)
+                    .attr("name", key + "-access")[0],
+                $("<input>")
+                    .attr("type", "radio")
+                    .attr("value", 0)
+                    .attr("name", key + "-access")[0]
+            );
+            $("input[name=" + key + "-access]").filter("[value=" + value + "]").prop("checked", true);
+        }.bind(this));
     }
 };
 
@@ -474,28 +526,7 @@ Imcms.Document.ListAdapter.prototype = {
         );
         var row = this._container.row(position);
         deleteButton
-            .click($.proxy(this.deleteDocument, this, data.id, row))
-        /*$("<li>").appendTo(this._ul).append($("<div>").addClass("jqtree-element")
-         .append($("<span>").html(data.id))
-         .append($("<span>").html(data.label))
-         .append($("<span>").html(data.alias))
-         .append($("<span>").html(data.type))
-         .append(
-         $("<span>")
-         .append(
-         $("<button>")
-         .click($.proxy(this.deleteDocument, this, data.id))
-         .addClass("negative")
-         .attr("type", "button")
-         ))
-         .append(
-         $("<span>")
-         .append(
-         $("<button>")
-         .click($.proxy(this.editDocument, this, data.id))
-         .addClass("negative")
-         .attr("type", "button")
-         )));*/
+            .click($.proxy(this.deleteDocument, this, data.id, row));
     },
     reload: function () {
         this._container.clear();

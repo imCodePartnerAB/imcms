@@ -49,6 +49,10 @@ public enum DocumentPermissionSetTypeDomainObject implements Serializable {
         return "" + id;
     }
 
+    public String getName() {
+        return super.toString();
+    }
+
     public boolean isMorePrivilegedThan(DocumentPermissionSetTypeDomainObject type) {
         return id < type.id;
     }

@@ -277,6 +277,16 @@
     </servlet>
 
     <servlet>
+        <servlet-name>RoleApi</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.apis.RoleApiServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>PermissionApi</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.apis.PermissionApiServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>RD</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ReDirecter</servlet-class>
     </servlet>
@@ -554,6 +564,14 @@
     <servlet-mapping>
         <servlet-name>TemplateApi</servlet-name>
         <url-pattern>/api/template/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RoleApi</servlet-name>
+        <url-pattern>/api/role/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PermissionApi</servlet-name>
+        <url-pattern>/api/permission/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoopApi</servlet-name>

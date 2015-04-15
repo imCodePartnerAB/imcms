@@ -87,7 +87,7 @@ public class ImageController {
             public void setAsText(String text) {
                 try {
                     Map map = new ObjectMapper().readValue(text, Map.class);
-                    Map displayImageSize = (Map) map.get("displayImageSize");
+                    Map displayImageSize = (Map) map.get("displaySize");
                     value = new DocumentImageSource(
                             map.get("urlPathRelativeToContextPath").toString(),
                             new ImageSize(

@@ -11,6 +11,7 @@ import com.imcode.imcms.util.RequestUtils;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.RoleId;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Shadowgun on 17.02.2015.
@@ -61,6 +64,9 @@ public class DocumentApiServlet extends HttpServlet {
             result.status = documentDomainObject.getPublicationStatus().asInt();
             result.target = documentDomainObject.getTarget();
             result.template = documentDomainObject.getTemplateName();
+            result.access = Stream
+                    .of(documentDomainObject.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings())
+                    .collect(Collectors.toMap(a -> a.getRoleId().intValue(), b -> b.getDocumentPermissionSetType().getId()));
             Map<DocumentLanguage, DocumentCommonContent> contentMap = Imcms.getServices().getDocumentMapper().getCommonContents(id);
             for (Map.Entry<DocumentLanguage, DocumentCommonContent> entry : contentMap.entrySet()) {
                 DocumentEntity.LanguageEntity languageEntity = new DocumentEntity.LanguageEntity();
@@ -103,9 +109,10 @@ public class DocumentApiServlet extends HttpServlet {
                             }
                     );
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            TextDocumentDomainObject documentDomainObject = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(TextDocument.TYPE_ID,
-                    documentMapper.getDocument(documentMapper.getHighestDocumentId()),
-                    Imcms.getUser());
+            TextDocumentDomainObject documentDomainObject =
+                    documentEntity.id == null ? (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(TextDocument.TYPE_ID,
+                            documentMapper.getDocument(documentMapper.getHighestDocumentId()),
+                            Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
             Map<DocumentLanguage, DocumentCommonContent> contentMap = new HashMap<>();
             for (DocumentLanguage language : Imcms.getServices().getDocumentLanguages().getAll()) {
                 DocumentEntity.LanguageEntity languageEntity = documentEntity.languages.get(language.getName());
@@ -119,8 +126,6 @@ public class DocumentApiServlet extends HttpServlet {
                                     .build()
                     );
             }
-            if (documentEntity.id != null)
-                documentDomainObject.setId(documentEntity.id);
             documentDomainObject.setAlias(documentEntity.alias);
             documentDomainObject.setTemplateName(documentEntity.template);
             documentDomainObject.setTarget(documentEntity.target);
@@ -153,6 +158,7 @@ public class DocumentApiServlet extends HttpServlet {
         public String target;
         public Integer status;
         public String template;
+        public Map<RoleId, Integer> access;
 
         private static class LanguageEntity {
             public String code;

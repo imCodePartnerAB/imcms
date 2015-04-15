@@ -75,6 +75,7 @@ Imcms.Image.Editor.prototype = {
     _imageCropper: {},
     _isShowed: false,
     _isLoaded: false,
+    _source: {},
     init: function () {
         var data = $(this._element).data().prettify();
         this._id = data.no;
@@ -133,6 +134,7 @@ Imcms.Image.Editor.prototype = {
             .appendTo(this._element);
     },
     _getSource: function (data) {
+        this._source = data;
         this._isLoaded = false;
         this.buildImageView(data)
             .buildInfoView(data);
@@ -159,7 +161,8 @@ Imcms.Image.Editor.prototype = {
     },
     _onChooseFile: function () {
         Imcms.Editors.Content.showDialog({
-            onApply: $.proxy(this._onFileChosen, this)
+            onApply: $.proxy(this._onFileChosen, this),
+            onCancel: $.proxy(this._onFileChosen, this, this._source)
         });
         $(this._builder[0]).fadeOut("fast");
     },
@@ -193,7 +196,9 @@ Imcms.Image.ImageViewAdapter.prototype = {
     _options: {},
     _parent: {},
     _imageView: {},
-    _imageSource: {},
+    _imageSource: {
+        urlPathRelativeToContextPath: ""
+    },
     init: function (options) {
         this._options = options;
         this._parent = options.element;
@@ -282,6 +287,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         return this._imageSource;
     }
 };
+
 Imcms.Image.ImageCropper = function (container) {
     this._target = container;
     this._img = $(container).find("img")[0];

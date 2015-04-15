@@ -36,6 +36,8 @@ import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.runtime.AbstractFunction0;
 
 import javax.servlet.http.HttpServletRequest;
@@ -180,13 +182,14 @@ public class EditImageUI extends UI {
     public static final String REQUEST_PARAMETER__MAX_WIDTH = "max-width";
     public static final String REQUEST_PARAMETER__MAX_HEIGHT = "max-height";
 
-    public static final Format[] ALLOWED_FORMATS = new Format[] { Format.GIF, Format.JPEG, Format.PNG };
+    public static final Format[] ALLOWED_FORMATS = new Format[]{Format.GIF, Format.JPEG, Format.PNG};
 
     private int maxWidth;
     private int maxHeight;
     private TextDocImagesContainer imagesContainer;
     private ObjectProperty<Boolean> shareImages = new ObjectProperty<>(false);
     private boolean linkable = true;
+    private static final Logger log = LoggerFactory.getLogger(EditImageUI.class);
 
     @Override
     protected void init(VaadinRequest request) {
@@ -221,7 +224,7 @@ public class EditImageUI extends UI {
         }
 
         // a lable to be shown along each image in the editor
-        String imageLabelText =  StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL));
+        String imageLabelText = StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL));
 
         final String returnURL = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
 
@@ -553,14 +556,15 @@ public class EditImageUI extends UI {
             // choose image button
             Button chooseFileBtn = new Button(i("image_editor.choose_file"));
             chooseFileBtn.addClickListener(event -> {
-
                 final ImageSelectDialog dialog = new ImageSelectDialog(i("image_editor.choose_file"));
                 dialog.setWidth(600, Unit.PIXELS);
                 dialog.setHeight(500, Unit.PIXELS);
 
                 dialog.setOkButtonHandler(new AbstractFunction0() {
                     public Object apply() {
+                        log.info("File chosen");
                         File file = dialog.imageSelect().selectionOpt().get();
+                        log.info(String.format("Selected file: %s", file));
                         if (file == null) {
                             return null;
                         }
@@ -576,12 +580,21 @@ public class EditImageUI extends UI {
                         String imageUrl = path.substring(rootPath.length());
 
                         ImageInfo info = ImageOp.getImageInfo(file);
+
                         if (info == null) {
                             return null;
                         }
+                        log.info(String.format("Image info: w:%s; h:%s; f:%s",
+                                        info.getWidth(),
+                                        info.getHeight(),
+                                        info.getFormat()
+                                )
+                        );
 
                         ImageSource imgSource = new ImagesPathRelativePathImageSource(imageUrl);
-
+                        log.info(String.format("Image source: isEmpty:%s; URL:%s",
+                                imgSource.isEmpty(),
+                                imgSource.getUrlPathRelativeToContextPath()));
                         changeImageSource.change(imgSource, null);
 
                         dialog.close();
@@ -1026,7 +1039,8 @@ public class EditImageUI extends UI {
         final NativeSelect targetSelect = new NativeSelect();
 
         if (linkable) {
-            Label linkedImageLabel = getLineLabel();new Label("", ContentMode.TEXT);
+            Label linkedImageLabel = getLineLabel();
+            new Label("", ContentMode.TEXT);
             linkedImageLabel.setValue(i("image_editor.linked_image"));
             grid.addComponent(linkedImageLabel, 0, row, 1, row);
             ++row;
@@ -1044,7 +1058,6 @@ public class EditImageUI extends UI {
             linkTypeGroup.setItemCaption(linkExternal, i("image_editor.external"));
             linkTypeGroup.setImmediate(true);
             linkTypeGroup.select(linkInternal);
-
 
 
             HorizontalLayout pathHoriz = new HorizontalLayout(pathLabel, linkTypeGroup);
@@ -1260,7 +1273,7 @@ public class EditImageUI extends UI {
     }
 
     /**
-     * @return  {@code true} if there is more than one image and all images have the same image source, otherwise {@code false}
+     * @return {@code true} if there is more than one image and all images have the same image source, otherwise {@code false}
      */
     private static boolean isHasSameSource(TextDocImagesContainer imgCont) {
         if (imgCont == null || imgCont.getImages().size() < 2) {
