@@ -1,6 +1,9 @@
 package imcode.server.document.textdocument;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.util.image.ImageInfo;
@@ -11,11 +14,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ImagesPathRelativePathImageSource extends ImageSource {
     private String path;
 
-    public ImagesPathRelativePathImageSource(String path) {
+    @JsonCreator
+    public ImagesPathRelativePathImageSource(@JsonProperty("urlPathRelativeToContextPath") String path) {
         this.path = path.replace('\\', '/');
     }
 

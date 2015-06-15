@@ -41,6 +41,10 @@ Imcms.Image.Loader.prototype = {
         this._api.read({object: ((meta || Imcms.document.meta) + "-" + id)},
             Imcms.Logger.log.bind(this, "Image::getById : ", callback));
     },
+    getByLoopItemRef: function (id, loopId, entryId, meta, callback) {
+        this._api.read({object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId)},
+            Imcms.Logger.log.bind(this, "Image::getByLoopItemRef : ", callback));
+    },
     getByPath: function (path, callback) {
         this._api.read({object: path}, callback);
     },
@@ -50,11 +54,15 @@ Imcms.Image.Loader.prototype = {
     },
     save: function (id, meta, data, callback) {
         this._api.update({
-            imageSource: JSON.stringify(data.imageSource),
-            imageInfo: JSON.stringify(data.imageInfo),
-            cropRegion: JSON.stringify(data.cropRegion),
+            imageDomainObject: JSON.stringify(data),
             object: ((meta || Imcms.document.meta) + "-" + id)
         }, Imcms.Logger.log.bind(this, "Image::save : ", callback));
+    },
+    saveLoopItem: function (id, meta, loopId, entryId, data, callback) {
+        this._api.update({
+            imageDomainObject: JSON.stringify(data),
+            object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId)
+        }, Imcms.Logger.log.bind(this, "Image::saveLoopItem : ", callback));
     }
 };
 
@@ -68,6 +76,8 @@ Imcms.Image.Editor.prototype = {
     _frame: {},
     _id: {},
     _meta: {},
+    _loopId: undefined,
+    _entryId: undefined,
     _loader: {},
     _builder: {},
     _imageViewAdapter: {},
@@ -76,12 +86,24 @@ Imcms.Image.Editor.prototype = {
     _isShowed: false,
     _isLoaded: false,
     _source: {},
+    _primarySource: {},
     init: function () {
         var data = $(this._element).data().prettify();
         this._id = data.no;
         this._meta = data.meta;
+        this._loopId = data.loop;
+        this._entryId = data.entry;
         this.buildView().buildExtra();
-        this._loader.getById(this._id, this._meta, this._getSource.bind(this));
+        if (data.loop && data.entry) {
+            this._loader.getByLoopItemRef(this._id, data.loop, data.entry, this._meta, this.initSource.bind(this));
+        }
+        else {
+            this._loader.getById(this._id, this._meta, this.initSource.bind(this));
+        }
+    },
+    initSource: function (data) {
+        this._primarySource = data;
+        this._getSource(data);
     },
     buildView: function () {
         this._builder = new JSFormBuilder("<div>")
@@ -93,13 +115,9 @@ Imcms.Image.Editor.prototype = {
             .class("title")
             .end()
             .button()
-            .html("Save and close")
-            .class("positive save-and-close")
-            .on("click", this.save.bind(this))
-            .end()
-            .button()
-            .html("Close without saving")
-            .class("neutral close-without-saving")
+            .reference("closeButton")
+            .class("close-button")
+            .on("click", $.proxy(this.close, this))
             .end()
             .end()
             .div()
@@ -113,17 +131,32 @@ Imcms.Image.Editor.prototype = {
             .reference("infoView")
             .end()
             .end()
+            .div()
+            .class("footer")
+            .button()
+            .html("Save and close")
+            .class("positive save-and-close")
+            .on("click", $.proxy(this.save, this))
+            .end()
+            .end()
             .end();
-        $(this._builder[0]).appendTo("body").addClass("editor-form");
+        $(this._builder[0]).appendTo("body").addClass("editor-form editor-image");
         return this;
     },
-    buildCropper: function () {
+    buildCropper: function (data) {
         if (this._imageCropper instanceof Imcms.Image.ImageCropper) {
             this._imageCropper.close();
         }
-        this._imageCropper = new Imcms.Image.ImageCropper(this._builder.ref("imageView").getHTMLElement());
+        this._imageCropper = new Imcms.Image.ImageCropper({
+            container: this._builder.ref("imageView").getHTMLElement(),
+            onCropChanged: this._onCropRegionChanged.bind(this)
+        });
         if (this._isShowed) {
-            setTimeout(this._imageCropper.initialize.bind(this._imageCropper), 250);
+            setTimeout(function () {
+                this._imageCropper.initialize();
+                this._imageCropper.changeCropping(data.cropRegion.cropX1, data.cropRegion.cropY1, data.cropRegion.cropX2, data.cropRegion.cropY2);
+                this._imageCropper.changeDestinationRect(data.displayImageSize.width, data.displayImageSize.height);
+            }.bind(this), 250);
         }
     },
     buildExtra: function () {
@@ -131,7 +164,7 @@ Imcms.Image.Editor.prototype = {
             .title("Image Editor")
             .click($.proxy(this.open, this))
             .build()
-            .appendTo(this._element);
+            .prependTo(this._element);
     },
     _getSource: function (data) {
         this._source = data;
@@ -143,48 +176,93 @@ Imcms.Image.Editor.prototype = {
         $(this._builder.ref("imageView").getHTMLElement()).empty();
         this._imageViewAdapter = new Imcms.Image.ImageViewAdapter({
             element: this._builder.ref("imageView").getHTMLElement(),
-            onChooseFile: $.proxy(this._onChooseFile, this),
-            onImageLoaded: $.proxy(this.onImageLoaded, this)
+            onImageLoaded: $.proxy(this.onImageLoaded, this, data)
         });
         this._imageViewAdapter.update(data);
         return this;
     },
-    onImageLoaded: function () {
-        this.buildCropper();
+    onImageLoaded: function (data) {
+        this.buildCropper(data);
         this._isLoaded = true;
     },
     buildInfoView: function (data) {
         $(this._builder.ref("infoView").getHTMLElement()).empty();
-        this._infoViewAdapter = new Imcms.Image.ImageInfoAdapter(this._builder.ref("infoView"));
+        this._infoViewAdapter = new Imcms.Image.ImageInfoAdapter({
+            infoRef: this._builder.ref("infoView"),
+            onDisplaySizeChanged: this._onDisplaySizeChanged.bind(this),
+            onChooseFile: $.proxy(this._onChooseFile, this)
+        });
         this._infoViewAdapter.update(data);
         return this;
+    },
+    _onDisplaySizeChanged(size){
+        this._imageCropper.changeDestinationRect(+size.width, +size.height);
     },
     _onChooseFile: function () {
         Imcms.Editors.Content.showDialog({
             onApply: $.proxy(this._onFileChosen, this),
-            onCancel: $.proxy(this._onFileChosen, this, this._source)
+            onCancel: $.proxy(this._onFileChosen, this)
         });
         $(this._builder[0]).fadeOut("fast");
     },
     _onFileChosen: function (data) {
-        this._getSource(data);
+        if (data) {
+            var clonedData = jQuery.extend(true, {}, data);
+            clonedData.source = jQuery.extend(true, {}, data);
+            clonedData.cropRegion = {
+                cropX1: 0,
+                cropX2: clonedData.imageInfo.width / 4,
+                cropY1: 0,
+                cropY2: clonedData.imageInfo.height / 4,
+                width: clonedData.imageInfo.width / 4,
+                height: clonedData.imageInfo.height / 4,
+                valid: true
+            };
+            this._getSource(Imcms.Utils.marge(clonedData, this._source));
+        }
+        else {
+            this._getSource(this._source);
+        }
         this.open();
+    },
+    _onCropRegionChanged: function (region) {
+        this._infoViewAdapter.updateCropping(region);
     },
     save: function () {
         var collectedData = this._infoViewAdapter.collect();
-        this._loader.save(this._id, this._meta, {
-            imageSource: collectedData,
-            imageInfo: collectedData.imageInfo,
-            cropRegion: this._imageCropper.collect()
-        });
+        if (this._loopId && this._entryId) {
+            this._loader.saveLoopItem(this._id, this._meta, this._loopId, this._entryId, collectedData, Imcms.BackgroundWorker.createTask({
+                showProcessWindow: true,
+                refreshPage: true
+            }));
+        }
+        else {
+            this._loader.save(this._id, this._meta, collectedData, Imcms.BackgroundWorker.createTask({
+                showProcessWindow: true,
+                refreshPage: true
+            }));
+        }
+        this.close();
+    },
+    close: function () {
+        this._source = this._primarySource;
         this._isShowed = false;
+        $(this._builder[0]).fadeOut("fast");
     },
     open: function () {
-        $(this._builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 100});
+        this._getSource(this._source);
+        $(this._builder[0]).find("img").css({maxHeight: $(window).height() - 95});
+        $(this._builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 95});
         this._isShowed = true;
-        if (this._isLoaded) {
-            setTimeout(this._imageCropper.initialize.bind(this._imageCropper), 250);
-        }
+
+        /*if (this._isLoaded) {
+         setTimeout(function () {
+
+         this._imageCropper.initialize();
+         this._imageCropper.changeCropping(this._source.cropRegion.cropX1, this._source.cropRegion.cropY1, this._source.cropRegion.cropX2, this._source.cropRegion.cropY2);
+         this._imageCropper.changeDestinationRect(this._source.displayImageSize.width, this._source.displayImageSize.height);
+         }.bind(this), 250);
+         }*/
     }
 };
 
@@ -206,9 +284,6 @@ Imcms.Image.ImageViewAdapter.prototype = {
     },
     buildView: function () {
         this._imageView = $("<img>").appendTo(this._parent).load(this._options.onImageLoaded);
-        $("<button>")
-            .attr("type", "button")
-            .click(this._options.onChooseFile).appendTo(this._parent);
     },
     update: function (src) {
         this._imageSource = src;
@@ -216,15 +291,27 @@ Imcms.Image.ImageViewAdapter.prototype = {
     }
 };
 
-Imcms.Image.ImageInfoAdapter = function (infoRef) {
-    this._infoRef = infoRef;
+Imcms.Image.ImageInfoAdapter = function (options) {
+    this._infoRef = options.infoRef;
+    this._options = Imcms.Utils.marge(options, this._options);
     this.init();
 };
 Imcms.Image.ImageInfoAdapter.prototype = {
     _infoRef: {},
     _imageSource: {
-        imageInfo: {},
-        displaySize: {}
+        realImageSize: {},
+        displayImageSize: {},
+        cropRegion: {}
+    },
+    _options: {
+        infoRef: null,
+        onChooseFile: function () {
+        },
+        onCropChanged: function () {
+        },
+        onDisplaySizeChanged: function () {
+
+        }
     },
     init: function () {
         this.buildView();
@@ -233,46 +320,99 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         $(this._infoRef.getHTMLElement()).empty();
         this._infoRef
             .div()
-            .class("field")
+            .class("field size-field")
             .text()
             .disabled()
             .name("width")
-            .value(this._imageSource.imageInfo.width || "")
-            .label("width")
+            .value(this._imageSource.realImageSize.width || "")
+            .label("Original size")
+            .placeholder("width")
             .attr("imageInfo", "")
             .end()
-            .end()
-            .div()
-            .class("field")
             .text()
             .disabled()
             .name("height")
-            .value(this._imageSource.imageInfo.height || "")
-            .label("height")
+            .placeholder("height")
+            .value(this._imageSource.realImageSize.height || "")
             .attr("imageInfo", "")
             .end()
             .end()
             .div()
-            .html(this._imageSource.urlPathRelativeToContextPath || "")
+            .class("field choose-image-field")
+            .button()
+            .html("Choose…")
+            .class("neutral choose-image")
+            .on("click", this._options.onChooseFile)
+            .label(this._imageSource.urlPathRelativeToContextPath || "")
+            .end()
+            .end()
+            .div()
+            .class("field free-transformation-field")
+            .checkbox()
+            .name("freeTransform")
+            .on("change", this._onFreeTransformStateChanged.bind(this))
+            .end()
+            .end()
+            .div()
+            .class("field size-field")
+            .text()
+            .on("change", this._onDisplaySizeChanged.bind(this))
+            .name("displayWidth")
+            .placeholder("width")
+            .value(this._imageSource.width || "")
+            .label("Display size")
+            .attr("imageInfo", "")
+            .end()
+            .text()
+            .on("change", this._onDisplaySizeChanged.bind(this))
+            .name("displayHeight")
+            .placeholder("height")
+            .value(this._imageSource.height || "")
+            .attr("imageInfo", "")
+            .end()
+            .end()
+            .div()
+            .class("field cropping-field")
+            .text()
+            .name("leftCrop")
+            .placeholder("left")
+            .value(this._imageSource.cropRegion.cropX1)
+            .on("change", this._onCropChanged.bind(this))
+            .label("Cropping")
+            .end()
+            .text()
+            .name("topCrop")
+            .placeholder("top")
+            .value(this._imageSource.cropRegion.cropY1)
+            .on("change", this._onCropChanged.bind(this))
+            .end()
+            .text()
+            .name("rightCrop")
+            .placeholder("right")
+            .value(this._imageSource.cropRegion.cropX2)
+            .on("change", this._onCropChanged.bind(this))
+            .end()
+            .text()
+            .name("bottomCrop")
+            .placeholder("bottom")
+            .value(this._imageSource.cropRegion.cropY2)
+            .on("change", this._onCropChanged.bind(this))
+            .end()
             .end()
             .div()
             .class("field")
             .text()
-            .disabled()
-            .name("width")
-            .value(this._imageSource.displaySize.width || "")
-            .label("width")
-            .attr("imageInfo", "")
+            .name("alternateText")
+            .label("Alt text (alt)")
+            .placeholder("altertext")
             .end()
             .end()
             .div()
             .class("field")
             .text()
-            .disabled()
-            .name("height")
-            .value(this._imageSource.displaySize.height || "")
-            .label("height")
-            .attr("imageInfo", "")
+            .name("imageName")
+            .label("Image name")
+            .placeholder("name")
             .end()
             .end()
     },
@@ -282,29 +422,114 @@ Imcms.Image.ImageInfoAdapter.prototype = {
     },
     collect: function () {
         var $infoRef = $(this._infoRef.getHTMLElement());
-        this._imageSource.imageInfo.width = $infoRef.find("input[name=width]").val();
-        this._imageSource.imageInfo.height = $infoRef.find("input[name=height]").val();
+        this._imageSource.realImageSize.width = $infoRef.find("input[name=width]").val();
+        this._imageSource.realImageSize.height = $infoRef.find("input[name=height]").val();
+        this._imageSource.width = $infoRef.find("input[name=displayWidth]").val();
+        this._imageSource.height = $infoRef.find("input[name=displayHeight]").val();
+        this._imageSource.cropRegion.cropX1 = $infoRef.find("input[name=leftCrop]").val();
+        this._imageSource.cropRegion.cropY1 = $infoRef.find("input[name=topCrop]").val();
+        this._imageSource.cropRegion.cropX2 = $infoRef.find("input[name=rightCrop]").val();
+        this._imageSource.cropRegion.cropY2 = $infoRef.find("input[name=bottomCrop]").val();
+        this._imageSource.alternateText = $infoRef.find("input[name=alternateText]").val();
+        this._imageSource.name = $infoRef.find("input[name=imageName]").val();
         return this._imageSource;
+    },
+    updateCropping(croppingOptions){
+        var $infoRef = $(this._infoRef.getHTMLElement());
+        $infoRef.find("input[name=leftCrop]").val(croppingOptions.cropX1);
+        $infoRef.find("input[name=topCrop]").val(croppingOptions.cropY1);
+        $infoRef.find("input[name=rightCrop]").val(croppingOptions.cropX2);
+        $infoRef.find("input[name=bottomCrop]").val(croppingOptions.cropY2);
+        if ($infoRef.find("input[name=freeTransform]").prop("checked")) {
+            $infoRef.find("input[name=displayHeight]").val(croppingOptions.cropY2 - croppingOptions.cropY1);
+            $infoRef.find("input[name=displayWidth]").val(croppingOptions.cropX2 - croppingOptions.cropX1);
+        }
+    },
+    _onDisplaySizeChanged: function () {
+        var $element = $(this._infoRef.getHTMLElement());
+        this._options.onDisplaySizeChanged({
+            height: $element.find("input[name=displayHeight]").val(),
+            width: $element.find("input[name=displayWidth]").val()
+        })
+    },
+    _onFreeTransformStateChanged: function () {
+        var $element = $(this._infoRef.getHTMLElement()),
+            state = $element.find("input[name=freeTransform]").prop("checked");
+        this._options.onDisplaySizeChanged({
+            height: state ? null : $element.find("input[name=displayHeight]").val(),
+            width: state ? null : $element.find("input[name=displayWidth]").val()
+        });
+        $element.find("input[name=displayHeight]").prop("disabled", state);
+        $element.find("input[name=displayWidth]").prop("disabled", state);
+    },
+    _onCropChanged: function () {
+
     }
 };
 
-Imcms.Image.ImageCropper = function (container) {
-    this._target = container;
-    this._img = $(container).find("img")[0];
+Imcms.Image.ImageCropper = function (options) {
+    this._target = options.container;
+    this._img = $(this._target).find("img")[0];
+    this._onCropChanged = options.onCropChanged || this._onCropChanged;
 };
 Imcms.Image.ImageCropper.prototype = {
     _img: {},
     _target: {},
     _imageShader: {},
+    _onCropChanged: function () {
 
+    },
     initialize: function () {
         $(this._target).addClass("image-cropper");
 
         this.setCroppingMode(this._img);
         this.show();
     },
+    validateCropping: function (left, top, right, bottom) {
+        return right - left > 0 && bottom - top > 0;
+    },
+    changeCropping: function (left, top, right, bottom) {
+        if (!this.validateCropping(left, top, right, bottom)) {
+            return;
+        }
+        var imageCroppingFrame = $(this._imageCroppingFrame);
+        var image = imageCroppingFrame.find("img");
+        var grip = $(this._grip);
+        var factor = image[0].naturalWidth / image.width();
+        var width, height;
+        width = right - left;
+        height = bottom - top;
+        left /= factor;
+        top /= factor;
+        right /= factor;
+        bottom /= factor;
+        width /= factor;
+        height /= factor
+        imageCroppingFrame.css({left: left - 1, top: top - 1, width: width, height: height});
+        image.css({left: left * -1, top: top * -1});
+        grip.css(
+            {
+                left: right - 4,
+                top: bottom - 4
+            }
+        );
+    },
+    changeDestinationRect: function (width, height) {
+        var imageCroppingFrame = $(this._imageCroppingFrame);
+        this.destinationWidth = width;
+        this.destinationHeight = height;
 
-
+        this.imageCroppingFrameWidth = imageCroppingFrame.width();
+        this.imageCroppingFrameHeight = imageCroppingFrame.height();
+        this.x = 0;
+        this.y = 0;
+        this.isResizing = true;
+        this.processMovingOrResizing({
+            pageX: 0,
+            pageY: 0
+        });
+        this.endMovingOrResizing();
+    },
     show: function (width, height, callback) {
         this.destinationWidth = width;
         this.destinationHeight = height;
@@ -342,8 +567,10 @@ Imcms.Image.ImageCropper.prototype = {
     },
 
     close: function () {
+        if (!this._imageCroppingFrame) return
         this._imageCroppingFrame.off("mouseenter", this.setMovingMode.bind(this));
         this._imageCroppingFrame.off("mouseleave", this.resetMovingMode.bind(this));
+        if (!this._grip) return;
         this._grip.off("mouseenter", this.setResizingMode.bind(this));
         this._grip.off("mouseleave", this.resetResizingMode.bind(this));
         $(document).off("mousedown", this.beginMovingOrResizing.bind(this));
@@ -477,10 +704,12 @@ Imcms.Image.ImageCropper.prototype = {
     processMovingOrResizing: function (e) {
         if (this.isMoving) {
             this.processMoving(e);
+            this._onCropChanged(this.collect());
         }
 
         else if (this.isResizing) {
             this.processResizing(e);
+            this._onCropChanged(this.collect());
         }
     },
 
@@ -518,7 +747,6 @@ Imcms.Image.ImageCropper.prototype = {
             }
         );
     },
-
     processResizing: function (e) {
         var imageCroppingFrame = $(this._imageCroppingFrame);
         var image = $(this._img);
@@ -526,7 +754,7 @@ Imcms.Image.ImageCropper.prototype = {
         var xOffset = e.pageX - this.x;
         var yOffset = e.pageY - this.y;
 
-        if (this.destinationWidth == null && this.destinationHeight == null) {
+        if (!this.destinationWidth && !this.destinationHeight) {
             var width = this.imageCroppingFrameWidth + xOffset;
 
             if (imageCroppingFrame.position().left + width > image.width() - 1) {
@@ -548,8 +776,8 @@ Imcms.Image.ImageCropper.prototype = {
                 width = image.width() - imageCroppingFrame.position().left - 1;
             }
 
-            var factor = this.imageCroppingFrameWidth / width;
-            var height = this.imageCroppingFrameHeight / factor;
+            var factor = this.destinationWidth / width;
+            var height = this.destinationHeight / factor;
 
             if (imageCroppingFrame.position().top + height > image.height() - 1) {
                 var factor = height / (image.height() - imageCroppingFrame.position().top - 1);
@@ -567,8 +795,7 @@ Imcms.Image.ImageCropper.prototype = {
             }
         );
     },
-
-    endMovingOrResizing: function (e) {
+    endMovingOrResizing: function () {
         if (!this.isCropping) {
             return true;
         }

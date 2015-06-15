@@ -2,8 +2,8 @@ package com.imcode.imcms.servlet.apis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocImageContainer;
-import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Created by Shadowgun on 26.03.2015.
@@ -75,8 +74,8 @@ public class ImageController {
                 }
             }
         });
-        dataBinder.registerCustomEditor(DocumentImageSource.class, new PropertyEditorSupport() {
-            Object value;
+        dataBinder.registerCustomEditor(ImageDomainObject.class, new PropertyEditorSupport() {
+            ImageDomainObject value;
 
             @Override
             public Object getValue() {
@@ -86,15 +85,8 @@ public class ImageController {
             @Override
             public void setAsText(String text) {
                 try {
-                    Map map = new ObjectMapper().readValue(text, Map.class);
-                    Map displayImageSize = (Map) map.get("displaySize");
-                    value = new DocumentImageSource(
-                            map.get("urlPathRelativeToContextPath").toString(),
-                            new ImageSize(
-                                    Integer.parseInt(displayImageSize.get("width").toString()),
-                                    Integer.parseInt(displayImageSize.get("height").toString())
-                            )
-                    );
+                    value = new ObjectMapper().readValue(text, ImageDomainObject.class);
+                    value.getCropRegion().updateValid();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -169,42 +161,42 @@ public class ImageController {
         return (ImageSource) urls[0];
     }
 
-    @RequestMapping(value = "/**/{docId}-{id}", method = RequestMethod.GET)
-    public ImageSource getImage(
-            @PathVariable("id") Integer id, @PathVariable("docId") Integer docId) {
+    @RequestMapping(value = "/{docId}-{id}", method = RequestMethod.GET)
+    public ImageDomainObject getImage(
+            @PathVariable("id") Integer id, @PathVariable("docId") Integer docId,
+            @RequestParam(value = "loopId", required = false) Integer loopId,
+            @RequestParam(value = "entryId", required = false) Integer entryId) {
         TextDocumentDomainObject textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
-        ImageDomainObject image = textDocument.getImage(id);
-        return new DocumentImageSource(image.getUrlPathRelativeToContextPath(), image.getDisplayImageSize());
+
+        if (loopId != null && entryId != null) {
+            return textDocument.getImage(TextDocumentDomainObject.LoopItemRef.of(loopId, entryId, id));
+        }
+
+        return textDocument.getImage(id);
     }
 
     @RequestMapping(value = "/**/{docId}-{id}", method = RequestMethod.POST)
     public boolean updateImage(
             @PathVariable("id") Integer id, @PathVariable("docId") Integer docId,
-            @RequestParam(value = "cropRegion", defaultValue = "") ImageDomainObject.CropRegion cropRegion,
-            @RequestParam(value = "imageInfo") ImageInfo imageInfo,
-            @RequestParam("imageSource") DocumentImageSource imageSource) throws DocumentSaveException {
+            @RequestParam(value = "loopId", required = false) Integer loopId,
+            @RequestParam(value = "entryId", required = false) Integer loopRefId,
+            @RequestParam("imageDomainObject") ImageDomainObject imageDomainObject) throws DocumentSaveException {
         TextDocumentDomainObject textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
-        ImageDomainObject imageDomainObject = textDocument.getImage(id);
-        imageDomainObject.setCropRegion(cropRegion);
-        imageDomainObject.setSource(imageSource);
-        imageDomainObject.setWidth(imageSource.getDisplaySize().getWidth());
-        imageDomainObject.setHeight(imageSource.getDisplaySize().getHeight());
-        imageDomainObject.setFormat(imageInfo.getFormat());
-        imageDomainObject.setLinkUrl(imageSource.getName());
-        imageDomainObject.setAlternateText("asfasfasdgfasd asd");
+        LoopEntryRef entryRef = loopId != null && loopRefId != null ?
+                LoopEntryRef.of(loopId, loopRefId) : null;
 
-        if (StringUtils.isBlank(imageDomainObject.getGeneratedFilename())) {
-            imageDomainObject.generateFilename();
-        } else {
+        if (!StringUtils.isBlank(imageDomainObject.getGeneratedFilename())) {
             imageDomainObject.getGeneratedFile().delete();
         }
+
+        imageDomainObject.generateFilename();
         ImcmsImageUtils.generateImage(imageDomainObject, false);
 
         try {
             Imcms.getServices()
                     .getDocumentMapper()
                     .saveTextDocImage(
-                            TextDocImageContainer.of(textDocument.getRef(), id, imageDomainObject),
+                            TextDocImageContainer.of(textDocument.getRef(), entryRef, id, imageDomainObject),
                             Imcms.getUser()
                     );
         } catch (NoPermissionToEditDocumentException e) {

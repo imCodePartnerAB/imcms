@@ -646,29 +646,28 @@
         </dependency>
 
         <!--<dependency>-->
-            <!--<groupId>org.apache.solr</groupId>-->
-            <!--<artifactId>solr-solrj</artifactId>-->
-            <!--<version>${solr.version}</version>-->
+        <!--<groupId>org.apache.solr</groupId>-->
+        <!--<artifactId>solr-solrj</artifactId>-->
+        <!--<version>${solr.version}</version>-->
         <!--</dependency>-->
 
         <!--<dependency>-->
-            <!--<groupId>org.apache.lucene</groupId>-->
-            <!--<artifactId>lucene-core</artifactId>-->
-            <!--<version>${solr.version}</version>-->
+        <!--<groupId>org.apache.lucene</groupId>-->
+        <!--<artifactId>lucene-core</artifactId>-->
+        <!--<version>${solr.version}</version>-->
         <!--</dependency>-->
 
         <!--<dependency>-->
-            <!--<groupId>org.apache.lucene</groupId>-->
-            <!--<artifactId>lucene-queryparser</artifactId>-->
-            <!--<version>${solr.version}</version>-->
+        <!--<groupId>org.apache.lucene</groupId>-->
+        <!--<artifactId>lucene-queryparser</artifactId>-->
+        <!--<version>${solr.version}</version>-->
         <!--</dependency>-->
 
         <!--<dependency>-->
-            <!--<groupId>org.apache.lucene</groupId>-->
-            <!--<artifactId>lucene-analyzers-common</artifactId>-->
-            <!--<version>${solr.version}</version>-->
+        <!--<groupId>org.apache.lucene</groupId>-->
+        <!--<artifactId>lucene-analyzers-common</artifactId>-->
+        <!--<version>${solr.version}</version>-->
         <!--</dependency>-->
-
 
 
         <!--
@@ -727,10 +726,10 @@
             <artifactId>vaadin-client-compiled</artifactId>
             <version>${vaadin.version}</version>
             <exclusions>
-            <exclusion>
-                <artifactId>javax.transaction</artifactId>
-                <groupId>org.eclipse.jetty.orbit</groupId>
-            </exclusion>
+                <exclusion>
+                    <artifactId>javax.transaction</artifactId>
+                    <groupId>org.eclipse.jetty.orbit</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -876,7 +875,6 @@
     </repositories>
 
     <pluginRepositories>
-
         <pluginRepository>
             <id>imcode</id>
             <url>http://repo.imcode.com/maven2</url>
@@ -886,7 +884,6 @@
             <url>http://repo1.maven.org/maven2/</url>
         </pluginRepository>
     </pluginRepositories>
-
 
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -1158,33 +1155,33 @@
             </plugin>
 
             <!--<plugin>-->
-                <!--<groupId>org.eclipse.jetty</groupId>-->
-                <!--<artifactId>jetty-jspc-maven-plugin</artifactId>-->
-                <!--<version>${jetty.version}</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>jspc</id>-->
-                        <!--<phase>test</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>jspc</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<excludes>-->
-                                <!--**/apisamples/*,-->
-                                <!--**/eng/jsp/category_admin_category.included.jsp, **/eng/jsp/text_restorer.jsp,-->
-                                <!--**/swe/jsp/category_admin_category.included.jsp, **/swe/jsp/text_restorer.jsp,-->
+            <!--<groupId>org.eclipse.jetty</groupId>-->
+            <!--<artifactId>jetty-jspc-maven-plugin</artifactId>-->
+            <!--<version>${jetty.version}</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<id>jspc</id>-->
+            <!--<phase>test</phase>-->
+            <!--<goals>-->
+            <!--<goal>jspc</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+            <!--<excludes>-->
+            <!--**/apisamples/*,-->
+            <!--**/eng/jsp/category_admin_category.included.jsp, **/eng/jsp/text_restorer.jsp,-->
+            <!--**/swe/jsp/category_admin_category.included.jsp, **/swe/jsp/text_restorer.jsp,-->
 
-                                <!--**/document_search_terms.jsp-->
-                            <!--</excludes>-->
-                            <!--<mergeFragment>false</mergeFragment>-->
-                            <!--<webAppSourceDirectory>${build.webapp.dir}</webAppSourceDirectory>-->
-                            <!--<jspc>-->
-                                <!--<compilerSourceVM>1.8</compilerSourceVM>-->
-                                <!--<compilerTargetVM>1.8</compilerTargetVM>-->
-                            <!--</jspc>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <!--**/document_search_terms.jsp-->
+            <!--</excludes>-->
+            <!--<mergeFragment>false</mergeFragment>-->
+            <!--<webAppSourceDirectory>${build.webapp.dir}</webAppSourceDirectory>-->
+            <!--<jspc>-->
+            <!--<compilerSourceVM>1.8</compilerSourceVM>-->
+            <!--<compilerTargetVM>1.8</compilerTargetVM>-->
+            <!--</jspc>-->
+            <!--</configuration>-->
+            <!--</execution>-->
+            <!--</executions>-->
             <!--</plugin>-->
 
             <plugin>

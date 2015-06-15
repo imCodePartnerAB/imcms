@@ -11,6 +11,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -28,7 +30,7 @@ import java.util.stream.Stream;
 @RestController
 @RequestMapping("/files")
 public class FileController {
-    private static final String FILE_FILTER_PATTERN = "^(%s)+(\\.(%s))$";
+    private static final String FILE_FILTER_PATTERN = "^%s\\.(%s)$";
 
     private static Pattern filterOf(String filename, String extension) {
         return Pattern
@@ -69,21 +71,26 @@ public class FileController {
 
     @RequestMapping(method = RequestMethod.POST, value = {"/**/{filename}.{extension}"})
     public boolean create(HttpServletRequest request, @PathVariable("extension") String extension,
-                          @PathVariable("filename") String filename) throws IOException {
+                          @PathVariable("filename") String filename)
+            throws IOException {
+        MultipartFile multipartFile = null;
         String path = FolderController.folderFromRequest(request);
         Directory dir = new Directory(Imcms.getServices().getConfig().getImagePath()).find(path);
         File createdFile;
+
         if (!(createdFile = new File(
                 dir.getSource(),
                 String.format("%s.%s", filename, extension))).createNewFile()
-                )
+                ) {
             throw new FileAlreadyExistsException(String.format("File '%s.%s' has already exists", filename, extension));
-       /*// byte[] bytes = file.getBytes();
-        BufferedOutputStream stream = new BufferedOutputStream(
-                new FileOutputStream(createdFile));
-       // stream.write(bytes);
-        stream.close();*/
-        FileUtils.copyInputStreamToFile(request.getInputStream(), createdFile);
+        }
+
+       /* @RequestParam(value = "file", required = false)*/
+        if (request instanceof MultipartHttpServletRequest) {
+            multipartFile = ((MultipartHttpServletRequest) request).getFile("file");
+        }
+
+        FileUtils.copyInputStreamToFile(multipartFile != null ? multipartFile.getInputStream() : request.getInputStream(), createdFile);
         return true;
     }
 

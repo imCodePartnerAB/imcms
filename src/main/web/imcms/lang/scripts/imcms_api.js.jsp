@@ -55,7 +55,7 @@
                         element.blur(function () {
                             currentFrame.show();
                         });
-                    }).build().appendTo(parent);
+                    }).build().prependTo(parent);
                 });
                 CKEDITOR.on('instanceCreated', $.proxy(this, "_onCreated"));
                 CKEDITOR.on("confirmChanges", $.proxy(this, "_onConfirm"));
@@ -83,8 +83,8 @@
 
                 // Remove unnecessary plugins to make the editor simpler.
                 editor.config.removePlugins = 'colorbutton,find,flash,font,' +
-                'forms,iframe,image,newpage,removeformat,' +
-                'smiley,specialchar,stylescombo,templates';
+                        'forms,iframe,image,newpage,removeformat,' +
+                        'smiley,specialchar,stylescombo,templates';
                 editor.config.extraPlugins = editor.config.extraPlugins + ",documentSaver";
 
                 editor.config.toolbar = 'MyToolbar';
@@ -170,7 +170,7 @@
                         .end()
                         .end();
             },
-            buildTree:function(){
+            buildTree: function () {
                 var data = [];
                 element.find(".editor-menu-item").each(function (position, item) {
                     item = $(item);
@@ -400,7 +400,7 @@
                     that._menuHelpers[pos] = new Imcms.MenuEditor.MenuHelper(builder.ref("footer").getHTMLElement(), element);
                     $(builder[0]).appendTo("body").addClass("editor-form");
                     menuFrame.click(function () {
-                        $(builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 100});
+                        $(builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 95});
                     }).build().appendTo(element);
                 });
             },

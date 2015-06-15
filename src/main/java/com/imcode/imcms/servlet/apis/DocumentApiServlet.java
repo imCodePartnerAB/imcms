@@ -3,15 +3,20 @@ package com.imcode.imcms.servlet.apis;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.TextDocument;
+import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.JSONUtils;
 import com.imcode.imcms.util.RequestUtils;
 import imcode.server.Imcms;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
@@ -21,10 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +58,7 @@ public class DocumentApiServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getParameter("id") != null) {
             Integer id = Integer.parseInt(request.getParameter("id"));
+            CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
             TextDocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().getDocument(id);
             DocumentEntity result = new DocumentEntity();
             result.languages = new HashMap<>();
@@ -66,7 +69,26 @@ public class DocumentApiServlet extends HttpServlet {
             result.template = documentDomainObject.getTemplateName();
             result.access = Stream
                     .of(documentDomainObject.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings())
-                    .collect(Collectors.toMap(a -> a.getRoleId().intValue(), b -> b.getDocumentPermissionSetType().getId()));
+                    .collect(Collectors.toMap(b -> b.getRoleId().intValue(), a -> {
+                        Map<String, java.io.Serializable> map = new HashMap<>();
+                        map.put("permission", a.getDocumentPermissionSetType().getId());
+                        map.put("role", a.getRoleId());
+                        return map;
+                    }));
+            result.keywords = documentDomainObject.getKeywords();
+            result.categories = Stream.of(categoryMapper.getAllCategoryTypes())
+                    .collect(
+                            Collectors.toMap(
+                                    CategoryTypeDomainObject::getName,
+                                    val -> {
+                                        CategoryDomainObject[] categories = categoryMapper.getCategoriesOfType(
+                                                val,
+                                                documentDomainObject.getCategoryIds()
+                                        ).toArray(new CategoryDomainObject[1]);
+                                        return categories[0] != null ? categories[0].getName() : "";
+                                    }
+                            )
+                    );
             Map<DocumentLanguage, DocumentCommonContent> contentMap = Imcms.getServices().getDocumentMapper().getCommonContents(id);
             for (Map.Entry<DocumentLanguage, DocumentCommonContent> entry : contentMap.entrySet()) {
                 DocumentEntity.LanguageEntity languageEntity = new DocumentEntity.LanguageEntity();
@@ -109,7 +131,8 @@ public class DocumentApiServlet extends HttpServlet {
                             }
                     );
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            TextDocumentDomainObject documentDomainObject =
+            CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
+            final TextDocumentDomainObject documentDomainObject =
                     documentEntity.id == null ? (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(TextDocument.TYPE_ID,
                             documentMapper.getDocument(documentMapper.getHighestDocumentId()),
                             Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
@@ -126,14 +149,28 @@ public class DocumentApiServlet extends HttpServlet {
                                     .build()
                     );
             }
+            documentEntity.access.forEach((id, map) ->
+                    documentDomainObject
+                            .setDocumentPermissionSetTypeForRoleId(new RoleId(id),
+                                    DocumentPermissionSetTypeDomainObject
+                                            .values()[Integer.parseInt(map.get("permission").toString())]));
             documentDomainObject.setAlias(documentEntity.alias);
             documentDomainObject.setTemplateName(documentEntity.template);
             documentDomainObject.setTarget(documentEntity.target);
+            documentDomainObject.setKeywords(documentEntity.keywords);
             documentDomainObject.setPublicationStatus(Document.PublicationStatus.of(documentEntity.status));
+            documentDomainObject.setCategoryIds(
+                    documentEntity.categories.entrySet().stream()
+                            .filter(entry -> StringUtils.isNotEmpty(entry.getValue()))
+                            .map(entry -> categoryMapper.getCategoryByTypeAndName(
+                                    categoryMapper.getCategoryTypeByName(entry.getKey()),
+                                    entry.getValue()).getId())
+                            .collect(Collectors.toSet())
+            );
             if (documentEntity.id != null)
                 documentMapper.saveDocument(documentDomainObject, contentMap, Imcms.getUser());
             else
-                documentDomainObject = documentMapper.saveNewDocument(documentDomainObject, contentMap, Imcms.getUser());
+                documentDomainObject.setId(documentMapper.saveNewDocument(documentDomainObject, contentMap, Imcms.getUser()).getId());
             answer.put("id", documentDomainObject.getId());
             result.put("result", true);
             result.put("data", answer);
@@ -158,7 +195,9 @@ public class DocumentApiServlet extends HttpServlet {
         public String target;
         public Integer status;
         public String template;
-        public Map<RoleId, Integer> access;
+        public Map<Integer, Map> access;
+        public Set<String> keywords;
+        public Map<String, String> categories;
 
         private static class LanguageEntity {
             public String code;

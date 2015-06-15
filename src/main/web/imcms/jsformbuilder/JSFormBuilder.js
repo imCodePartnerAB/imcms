@@ -228,7 +228,7 @@ JSFormBuilder.Mixins.Select = {
     option: function () {
         var opt = document.createElement('option');
         opt.innerHTML = arguments[0];
-        opt.value = arguments[1] || arguments[0];
+        opt.value = typeof arguments[1] !== "undefined" ? arguments[1] : arguments[0];
         var appendTo = this._optgroup || this._element;
         appendTo.appendChild(opt);
         return this;
@@ -248,6 +248,12 @@ JSFormBuilder.Classes.Input = function () {
 };
 
 JSFormBuilder.Mixins.Input = {
+
+    placeholder: function () {
+        if (arguments.length === 0) return this._element.placeholder;
+        this._element.placeholder = arguments[0];
+        return this;
+    },
 
     type: function () {
         if (arguments.length === 0) return this._element.getAttribute("type");
@@ -293,7 +299,7 @@ JSFormBuilder.Mixins.Table = {
             return this._body.children[arguments[0]];
         else if (arguments[0] instanceof  Array)
             this._fillFromArray(row, arguments[0]);
-        else if (arguments[0] instanceof Object && Object.keys(arguments).length > 0)
+        else if (arguments[0] instanceof Object && Object.keys(arguments).length > 0 && arguments.length == 1)
             this._fillFromObject(row, arguments[0]);
         else
             this._fillFromArray(row, Array.prototype.slice.call(arguments));
@@ -355,8 +361,8 @@ JSFormBuilder.Mixins.Button = {
         return this;
     }
 };
-JSFormBuilder.mix(JSFormBuilder.Mixins.Button, JSFormBuilder.Mixins.Input);
 JSFormBuilder.mix(JSFormBuilder.Mixins.Input, JSFormBuilder.Mixins.Label);
+JSFormBuilder.mix(JSFormBuilder.Mixins.Button, JSFormBuilder.Mixins.Input);
 
 JSFormBuilder.Classes.Textarea = function () {
     this._element = document.createElement("textarea");

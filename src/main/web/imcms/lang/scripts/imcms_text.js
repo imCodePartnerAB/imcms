@@ -45,7 +45,7 @@ Imcms.Text.Editor.prototype = {
                 element.blur(function () {
                     currentFrame.show();
                 });
-            }).build().appendTo(parent);
+            }).build().prependTo(parent);
         });
         CKEDITOR.on('instanceCreated', $.proxy(this, "_onCreated"));
         CKEDITOR.on("confirmChanges", $.proxy(this, "_onConfirm"));

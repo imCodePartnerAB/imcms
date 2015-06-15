@@ -1,5 +1,7 @@
 package imcode.server.document.textdocument;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.util.image.Format;
@@ -11,7 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ImageDomainObject implements Serializable, Cloneable {
 
     public static final int IMAGE_NAME_LENGTH = 40;
@@ -324,6 +326,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
         setHeight(0);
     }
 
+    @JsonDeserialize(as = ImagesPathRelativePathImageSource.class)
     public void setSource(ImageSource source) {
         this.source = Objects.requireNonNull(source, "image source can not be null");
     }
@@ -494,7 +497,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
             throw new RuntimeException(e);
         }
     }
-
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CropRegion implements Serializable {
         private static final long serialVersionUID = -586488435877347784L;
 

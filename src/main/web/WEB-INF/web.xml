@@ -287,6 +287,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>CategoryApi</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.apis.CategoryApiServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>RD</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ReDirecter</servlet-class>
     </servlet>
@@ -572,6 +577,10 @@
     <servlet-mapping>
         <servlet-name>PermissionApi</servlet-name>
         <url-pattern>/api/permission/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CategoryApi</servlet-name>
+        <url-pattern>/api/category/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoopApi</servlet-name>

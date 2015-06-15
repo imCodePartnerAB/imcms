@@ -99,15 +99,16 @@ Imcms.Loop.Editor.prototype = {
             .class("title")
             .end()
             .button()
-            .html("Save and close")
-            .class("positive save-and-close")
-            .on("click", $.proxy(this.save, this))
-            .end()
-            .button()
-            .html("Close without saving")
-            .class("neutral close-without-saving")
+            .reference("closeButton")
+            .class("close-button")
             .on("click", $.proxy(this.close, this))
             .end()
+            /*
+             .button()
+             .html("Close without saving")
+             .class("neutral close-without-saving")
+             .on("click", $.proxy(this.close, this))
+             .end()*/
             .end()
             .div()
             .class("content")
@@ -121,6 +122,11 @@ Imcms.Loop.Editor.prototype = {
             .reference("createNew")
             .class("neutral create-new")
             .html("Create new")
+            .end()
+            .button()
+            .html("Save and close")
+            .class("positive save-and-close")
+            .on("click", $.proxy(this.save, this))
             .end()
             .div()
             .class("clear")
@@ -150,22 +156,22 @@ Imcms.Loop.Editor.prototype = {
             .title("Loop Editor")
             .click($.proxy(this.open, this))
             .build()
-            .appendTo(this._target);
+            .prependTo(this._target);
         return this;
     },
     save: function () {
         this._loader.update(
             this._loopListAdapter.collect(),
             $(this._target).data().prettify().no,
-            $.proxy(this.close, this)
-        )
+            Imcms.BackgroundWorker.createTask({refreshPage: true})
+        );
+        this.close();
     },
     open: function () {
-        $(this._builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 100});
+        $(this._builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 95});
     },
     close: function () {
         $(this._builder[0]).fadeOut("fast");
-        location.reload();
     }
 };
 

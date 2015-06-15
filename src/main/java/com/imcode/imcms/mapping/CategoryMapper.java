@@ -183,7 +183,7 @@ public class CategoryMapper {
         Set<CategoryDomainObject> categoryDomainObjectSet = getCategories(categoryIds);
 
         for (Iterator<CategoryDomainObject> i = categoryDomainObjectSet.iterator(); i.hasNext(); ) {
-            if (i.next().getType().equals(categoryType)) i.remove();
+            if (!i.next().getType().equals(categoryType)) i.remove();
         }
 
         return categoryDomainObjectSet;

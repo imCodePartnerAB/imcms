@@ -81,12 +81,10 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
                     parserParameters.isMenuMode(),
                     bodyContentString, menu, request, response, label);*/
             if (parserParameters.isAnyMode())
-                bodyContentString = createEditor().setNo(no).wrap(bodyContentString);
+                bodyContentString = createEditor().setNo(no).setDocumentId(docId).wrap(bodyContentString);
             bodyContentString = TagParser.addPreAndPost(attributes, bodyContentString);
             pageContext.getOut().write(bodyContentString);
-        } catch (IOException e) {
-            throw new JspException(e);
-        } catch (RuntimeException e) {
+        } catch (IOException | RuntimeException e) {
             throw new JspException(e);
         }
         return EVAL_PAGE;

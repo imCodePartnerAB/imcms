@@ -65,19 +65,20 @@ Imcms.Content.Editor.prototype = {
             .div()
             .class("header")
             .div()
-            .html("Document Editor")
+            .html("Content Manager")
             .class("title")
             .end()
             .button()
-            .html("Save and close")
-            .class("positive save-and-close")
-            .on("click", this.save.bind(this))
-            .end()
-            .button()
-            .html("Close without saving")
-            .class("neutral close-without-saving")
+            .reference("closeButton")
+            .class("close-button")
             .on("click", this.cancel.bind(this))
             .end()
+            /*
+             .button()
+             .html("Close without saving")
+             .class("neutral close-without-saving")
+             .on("click", this.cancel.bind(this))
+             .end()*/
             .end()
             .div()
             .class("content")
@@ -86,12 +87,39 @@ Imcms.Content.Editor.prototype = {
             .class("folders")
             .end()
             .div()
+            .class("files-wrapper")
+            .reference("files-wrapper")
+            .div()
+            .class("dropzone")
+            .end()
+            .div()
             .reference("files")
             .class("files")
             .end()
             .end()
+            .end()
+            .div()
+            .class("footer")
+            .div()
+            .class("browse neutral")
+            .div()
+            .html("Upload file…")
+            .end()
+            .file()
+            .class("hidden")
+            .on("change", function () {
+                this._fileUploader.uploadFormFile($(this._builder[0]).find("input[type=file].hidden")[0].files[0]);
+            }.bind(this))
+            .end()
+            .end()
+            .button()
+            .html("Apply")
+            .class("positive save-and-close")
+            .on("click", this.save.bind(this))
+            .end()
+            .end()
             .end();
-        $(this._builder[0]).appendTo("body").addClass("editor-form");
+        $(this._builder[0]).appendTo("body").addClass("editor-form editor-content");
         return this;
     },
     buildFoldersTree: function () {
@@ -108,7 +136,10 @@ Imcms.Content.Editor.prototype = {
             element: this._builder.ref("files").getHTMLElement(),
             loader: this._loader
         });
-        this._fileUploader = new Imcms.Content.FileUploader(this._builder.ref("files").getHTMLElement());
+        this._fileUploader = new Imcms.Content.FileUploader({
+            target: this._builder.ref("files-wrapper").getHTMLElement(),
+            onFileUploaded: this._onFileUploaded.bind(this)
+        });
         return this;
     },
     _onSelectedFolderChanged: function (folder) {
@@ -128,9 +159,12 @@ Imcms.Content.Editor.prototype = {
         folder.fullPath = folder.fullPath.substring(delimiterPosition);
         return folder;
     },
+    _onFileUploaded: function () {
+        this._onSelectedFolderChanged(this._foldersTree.tree('getSelectedNode'));
+    },
     open: function (option) {
         this._option = option;
-        $(this._builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 100});
+        $(this._builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 95});
     },
     save: function () {
         this._option.onApply(this._fileAdapter.selected());
@@ -171,7 +205,7 @@ Imcms.Content.TreeAdapter.prototype = {
         if (event.node) {
             // node was selected
             var node = event.node;
-            alert(node.name);
+            // alert(node.name);
             this._options.onSelectedChanged(node);
         }
         else {
@@ -309,6 +343,9 @@ Imcms.Content.TreeAdapter.prototype = {
     },
     reset: function () {
         this._tree.tree('loadData', this._data);
+    },
+    tree: function (opt) {
+        return this._tree.tree(opt);
     }
 };
 
@@ -322,27 +359,48 @@ Imcms.Content.FileView.prototype = {
     _data: {},
     _selectedElement: {},
     _selectedItem: {},
+    _minImageCountPerLine: 8,
+    _minImageSize: 130,
     init: function () {
         if (this._data) this.buildView(this._data);
     },
     buildView: function (data) {
         $(this._element).empty();
+        $(this._element).resize(this._alignItems.bind(this));
         $.each(data, this._buildItem.bind(this));
+        this._alignItems();
     },
     _buildItem: function (position, data) {
         var $div = $("<div>")
             .addClass("content-preview")
             .append(this._createImage(data.urlPathRelativeToContextPath, data.imageInfo))
             .append(this._createInfo(data.name));
+        //.css({width: currentImageSize, height: currentImageSize});
 
         $div.appendTo(this._element).click(this._onSelect.bind(this, $div, data));
     },
-    _createImage: function (src, imageInfo) {
-        return $("<div>").addClass("content-preview-image")
-            .css({
-                background: "url('" + src + "') 50% 50% no-repeat",
-                backgroundSize: (imageInfo.width > 100 || imageInfo.height > 100) ? "contain" : "auto"
+    _alignItems: function () {
+        var areaSize = $(this._element).width(),
+            currentImageSize = areaSize / this._minImageCountPerLine;
+        if (currentImageSize < this._minImageSize) {
+            currentImageSize = areaSize / Math.floor(areaSize / this._minImageSize);
+        }
+        $(this._element).find(".content-preview")
+            .css({width: currentImageSize, height: currentImageSize})
+            .find("img").each(function (p, i) {
+                var imageInfo;
+                i = $(i);
+                imageInfo = i.data("imageInfo");
+                i.css({
+                    /* background: "url('" + src + "') 50% 50% no-repeat",*/
+                    /*backgroundSize: (imageInfo.width > 100 || imageInfo.height > 100) ? "contain" : "auto"*/
+                    "object-fit": (imageInfo.width > currentImageSize || imageInfo.height > currentImageSize) ? "cover" : "none"
+                });
             })
+    },
+    _createImage: function (src, imageInfo) {
+
+        return $("<img>").addClass("content-preview-image").attr("src", src).data("imageInfo", imageInfo);
     },
     _createInfo: function (info) {
         return $("<div>").addClass("content-preview-info").append(info);
@@ -386,28 +444,62 @@ Imcms.Content.FileAdapter.prototype = {
     }
 };
 
-Imcms.Content.FileUploader = function (target) {
-    this._target = target;
+Imcms.Content.FileUploader = function (options) {
+    this._options = Imcms.Utils.marge(options, this._options);
+    this._target = this._options.target;
     this.init();
 };
 Imcms.Content.FileUploader.prototype = {
     _target: {},
-    init: function () {
-        var dragAndDropArea = $(this._target);
+    _options: {
+        target: undefined,
+        onFileUploaded: function () {
 
-        dragAndDropArea[0].ondragover = function () {
-            dragAndDropArea.addClass("hover");
+        }
+    },
+    init: function () {
+        var dragAndDropArea = $(this._target),
+            that = this,
+            draggingcount = 0,
+            testContent = function (event) {
+                return event.dataTransfer.types.some(function (val) {
+                    return "files" === val.toLowerCase()
+                })
+            };
+
+        window.ondragenter = function (event) {
+            if (!testContent(event)) return false;
+            dragAndDropArea.find(".dropzone").addClass("hover");
+            draggingcount++;
+            event.stopPropagation();
+            event.preventDefault();
+            return false;
+        };
+        window.ondragover = function (event) {
+            // dragAndDropArea.append($("<div>").addClass("dropzone"));
+            if (!testContent(event)) return false;
+            dragAndDropArea.find(".dropzone").addClass("hover");
+            event.stopPropagation();
+            event.preventDefault();
             return false;
         };
 
-        dragAndDropArea[0].ondragleave = function () {
-            dragAndDropArea.removeClass("hover");
+        window.ondragleave = function (event) {
+            if (!testContent(event)) return false;
+            draggingcount--;
+            if (draggingcount === 0) {
+                dragAndDropArea.find(".dropzone").removeClass("hover");
+            }
+            // dragAndDropArea.find(".dropzone").remove();
+            event.stopPropagation();
+            event.preventDefault();
             return false;
         };
 
         dragAndDropArea[0].ondrop = function (event) {
             event.preventDefault();
-            dragAndDropArea.removeClass("hover");
+            if (!testContent(event)) return false;
+            dragAndDropArea.find(".dropzone").removeClass("hover");
 
             var postedFile = event.dataTransfer.files[0];
 
@@ -425,13 +517,24 @@ Imcms.Content.FileUploader.prototype = {
 
             //request.onreadystatechange = mt.stateChange;
             request.open("POST", "/api/content/files/" + postedFile.name);
-            request.onreadystatechange = function () {
-                alert(request.responseText);
-            };
+            request.onreadystatechange = that._options.onFileUploaded;
             request.setRequestHeader("X-FILE-NAME", postedFile.name);
             request.setRequestHeader("contentType", "multipart/form-data");
             request.send(postedFile);
             // parent.mt.forms.active.setUploadingMode(postedFile.name);
         };
+    },
+    uploadFormFile(file){
+        var formData = new FormData();
+        formData.append('file', file);
+        $.ajax({
+            url: "/api/content/files/" + file.name,
+            data: formData,
+            // THIS MUST BE DONE FOR FILE UPLOADING
+            contentType: false,
+            processData: false,
+            type: "POST",
+            success: this._options.onFileUploaded
+        })
     }
 };
