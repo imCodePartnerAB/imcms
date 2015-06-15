@@ -7,11 +7,11 @@
          version="3.0"
          metadata-complete="true">
 
-    <context-param>
+    <!--context-param>
         <description>Vaadin production mode</description>
         <param-name>productionMode</param-name>
         <param-value>false</param-value>
-    </context-param>
+    </context-param-->
 
     <display-name>imCMS</display-name>
 
@@ -50,7 +50,7 @@
         <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
     </filter>
 
-    <filter>
+    <!--filter>
         <description>
             Restricts access to the SysAdmin
         </description>
@@ -58,7 +58,7 @@
         <display-name>Über Admin Filter</display-name>
         <filter-name>UberAdminFilter</filter-name>
         <filter-class>com.imcode.imcms.admin.uber.UberAdminFilter</filter-class>
-    </filter>
+    </filter-->
 
     <filter>
         <description>
@@ -105,10 +105,10 @@
         <url-pattern>/web/archive/*</url-pattern>
     </filter-mapping>
 
-    <filter-mapping>
+    <!--filter-mapping>
         <filter-name>UberAdminFilter</filter-name>
         <url-pattern>/imcms/admin/*</url-pattern>
-    </filter-mapping>
+    </filter-mapping-->
 
     <!--<security-constraint>-->
     <!--<web-resource-collection>-->
@@ -130,7 +130,7 @@
     <!--</user-data-constraint>-->
     <!--</security-constraint>-->
 
-    <servlet>
+   <!-- <servlet>
         <servlet-name>vaadin-uberadmin</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
@@ -140,9 +140,9 @@
             <param-name>UI</param-name>
             <param-value>com.imcode.imcms.admin.uber.UberAdminUI</param-value>
         </init-param>
-    </servlet>
+    </servlet>-->
 
-    <servlet>
+    <!--<servlet>
         <servlet-name>vaadin-docadmin</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
@@ -158,9 +158,9 @@
             <param-name>widgetset</param-name>
             <param-value>com.imcode.imcms.AppWidgetSet</param-value>
         </init-param>
-    </servlet>
+    </servlet>-->
 
-    <servlet>
+    <!--<servlet>
         <servlet-name>vaadin-docadmin-image</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
@@ -176,9 +176,9 @@
             <param-name>widgetset</param-name>
             <param-value>com.imcode.imcms.AppWidgetSet</param-value>
         </init-param>
-    </servlet>
+    </servlet>-->
 
-    <servlet>
+    <!--<servlet>
         <servlet-name>vaadin-docadmin-menu</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
@@ -194,9 +194,9 @@
             <param-name>widgetset</param-name>
             <param-value>com.imcode.imcms.AppWidgetSet</param-value>
         </init-param>
-    </servlet>
+    </servlet>-->
 
-    <servlet>
+    <!--<servlet>
         <servlet-name>vaadin-docadmin-text</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
@@ -212,9 +212,9 @@
             <param-name>widgetset</param-name>
             <param-value>com.imcode.imcms.AppWidgetSet</param-value>
         </init-param>
-    </servlet>
+    </servlet>-->
 
-    <servlet>
+    <!--<servlet>
         <servlet-name>vaadin-docadmin-loop</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
@@ -224,10 +224,10 @@
             <param-name>UI</param-name>
             <param-value>com.imcode.imcms.admin.docadmin.loop.LoopEditorUI</param-value>
         </init-param>
-    </servlet>
+    </servlet>-->
 
 
-    <servlet>
+   <!-- <servlet>
         <servlet-name>EditImageUI</servlet-name>
         <servlet-class>com.vaadin.server.VaadinServlet</servlet-class>
 
@@ -241,7 +241,7 @@
             <param-name>widgetset</param-name>
             <param-value>com.imcode.imcms.AppWidgetSet</param-value>
         </init-param>
-    </servlet>
+    </servlet>-->
 
     <servlet>
         <servlet-name>web</servlet-name>
@@ -828,7 +828,7 @@
         <url-pattern>/servlet/RebuildImageCache</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
+    <!--<servlet-mapping>
         <servlet-name>vaadin-uberadmin</servlet-name>
         <url-pattern>/imcms/admin/*</url-pattern>
     </servlet-mapping>
@@ -862,7 +862,7 @@
     <servlet-mapping>
         <servlet-name>EditImageUI</servlet-name>
         <url-pattern>/EditImage/*</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping>-->
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>

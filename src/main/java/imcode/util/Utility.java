@@ -9,8 +9,6 @@ import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-import com.vaadin.server.Page;
-import com.vaadin.server.VaadinRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -20,9 +18,9 @@ import org.apache.commons.collections.*;
 import org.apache.commons.collections.iterators.ObjectArrayIterator;
 import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -44,7 +42,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -139,7 +136,7 @@ public class Utility {
         res.sendRedirect(req.getContextPath() + "/servlet/StartDoc");
     }
 
-    public static void redirectToStartDocument(VaadinRequest request) {
+    /*public static void redirectToStartDocument(VaadinRequest request) {
         Page.getCurrent().setLocation(request.getContextPath() + "/servlet/StartDoc");
     }
 
@@ -156,7 +153,7 @@ public class Utility {
                 + VerifyUser.REQUEST_PARAMETER__NEXT_URL + "=" + URLEncoder.encode(loginTarget.toString());
 
         Page.getCurrent().setLocation(redirectUrl);
-    }
+    }*/
 
     public static boolean isValidEmail(String email) {
         return EmailValidator.getInstance().isValid(email);
@@ -573,19 +570,17 @@ public class Utility {
     /**
      * Pass through to {@link com.imcode.imcms.I18nMessage$#i(String)}.
      *
-     * @param key   a localisation key
-     *
-     * @return  a localised message for the {@code key}
+     * @param key a localisation key
+     * @return a localised message for the {@code key}
      */
     public static String i(String key) {
         return I18nMessage$.MODULE$.i(key);
     }
 
     /**
-     * @param key   a localisation key
-     * @param args  format paramaters for the localisation message
-     *
-     * @return  a localised message for the {@code key} formatted with the parameters {@code args}
+     * @param key  a localisation key
+     * @param args format paramaters for the localisation message
+     * @return a localised message for the {@code key} formatted with the parameters {@code args}
      */
     public static String f(String key, Object... args) {
         return new MessageFormat(i(key)).format(args);

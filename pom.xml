@@ -74,7 +74,7 @@
             Core & EntityManager version
         -->
         <hibernate.version>4.3.8.Final</hibernate.version>
-        <vaadin.version>7.3.5</vaadin.version>
+        <!--<vaadin.version>7.3.5</vaadin.version>-->
 
         <tomcat.version>7.0.57</tomcat.version>
 
@@ -710,7 +710,7 @@
         <!-- ====== -->
         <!-- Vaadin -->
         <!-- ====== -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
             <version>${vaadin.version}</version>
@@ -744,12 +744,12 @@
             <version>${vaadin.version}</version>
         </dependency>
 
-        <!-- Vaadin Add-ons -->
+        &lt;!&ndash; Vaadin Add-ons &ndash;&gt;
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>ckeditor-wrapper-for-vaadin</artifactId>
             <version>7.9.1</version>
-        </dependency>
+        </dependency>-->
 
         <!-- ============================ -->
         <!-- Java EE API & Implementation -->
@@ -861,10 +861,10 @@
             <layout>legacy</layout>
         </repository>
 
-        <repository>
+        <!--<repository>
             <id>vaadin-addons</id>
             <url>http://maven.vaadin.com/vaadin-addons</url>
-        </repository>
+        </repository>-->
 
         <repository>
             <id>springsource-repo</id>
@@ -962,7 +962,7 @@
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>2.4.1</version>
-                <configuration>
+                <!--<configuration>
                     <filesets>
                         <fileset>
                             <directory>src/main/web/VAADIN/widgetsets</directory>
@@ -971,7 +971,7 @@
                             <directory>src/main/web/VAADIN/gwt-unitCache</directory>
                         </fileset>
                     </filesets>
-                </configuration>
+                </configuration>-->
             </plugin>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
@@ -1366,21 +1366,21 @@
                 </executions>
             </plugin>
 
-            <plugin>
+            <!--<plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <version>${vaadin.version}</version>
                 <configuration>
                     <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-                    <!-- <runTarget>mobilemail</runTarget> -->
-                    <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This
-                            way compatible with Vaadin eclipse plugin. -->
+                    &lt;!&ndash; <runTarget>mobilemail</runTarget> &ndash;&gt;
+                    &lt;!&ndash; We are doing "inplace" but into subdir VAADIN/widgetsets. This
+                            way compatible with Vaadin eclipse plugin. &ndash;&gt;
                     <webappDirectory>${build.webapp.dir}/VAADIN/widgetsets
                     </webappDirectory>
                     <hostedWebapp>${build.webapp.dir}/VAADIN/widgetsets
                     </hostedWebapp>
                     <noServer>true</noServer>
-                    <!-- Remove draftCompile when project is ready -->
+                    &lt;!&ndash; Remove draftCompile when project is ready &ndash;&gt;
                     <draftCompile>true</draftCompile>
                     <compileReport>true</compileReport>
                     <style>PRETTY</style>
@@ -1390,9 +1390,9 @@
                 <executions>
                     <execution>
                         <configuration>
-                            <!-- if you don't specify any modules, the plugin will find them -->
-                            <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
-                                    </modules> -->
+                            &lt;!&ndash; if you don't specify any modules, the plugin will find them &ndash;&gt;
+                            &lt;!&ndash; <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
+                                    </modules> &ndash;&gt;
                         </configuration>
                         <goals>
                             <goal>clean</goal>
@@ -1404,7 +1404,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 
