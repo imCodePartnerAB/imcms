@@ -26,7 +26,7 @@ Imcms.Menu.TreeAdapter.prototype = {
         $("<span>").text(node.name).appendTo(treeElement);
         $("<span>").appendTo(treeElement).append(
             $("<button>")
-                .addClass("negative")
+                .addClass("imcms-negative")
                 .attr("type", "button")
                 .click($.proxy(this.delete, this, node))
         );
@@ -184,6 +184,8 @@ Imcms.Menu.DialogAdapter.prototype = {
             .end()
             .div()
             .class("field")
+            .div()
+            .class("field-wrapper")
             .table()
             .on("click", $.proxy(this._onSelectElement, this))
             .column("id")
@@ -191,6 +193,7 @@ Imcms.Menu.DialogAdapter.prototype = {
             .column("language")
             .column("alias")
             .reference("documentsTable")
+            .end()
             .end()
             .end()
             .end()
@@ -211,19 +214,19 @@ Imcms.Menu.DialogAdapter.prototype = {
             }
         });
         var dialog = $(this._builder[0]).parents(".ui-dialog").removeClass()
-                .addClass("pop-up-form menu-viewer").css({position: "fixed"}),
+                .addClass("pop-up-form menu-viewer reset").css({position: "fixed"}),
             header = dialog.children(".ui-dialog-titlebar").removeClass()
-                .addClass("header").append($("<div>").addClass("title").text("DOCUMENT SELECTOR")),
+                .addClass("imcms-header").append($("<div>").addClass("imcms-title").text("DOCUMENT SELECTOR")),
             content = dialog.children(".ui-dialog-content").removeClass()
-                .addClass("content"),
+                .addClass("imcms-content"),
             footer = dialog.children(".ui-dialog-buttonpane").removeClass()
-                .addClass("footer"),
+                .addClass("imcms-footer"),
             buttons = footer.find(".ui-button").removeClass();
 
-        header.children("button").empty().removeClass().addClass("close-button");
+        header.children("button").empty().removeClass().addClass("imcms-close-button");
 
-        $(buttons[0]).addClass("positive");
-        $(buttons[1]).addClass("neutral cancel-button");
+        $(buttons[0]).addClass("imcms-positive");
+        $(buttons[1]).addClass("imcms-neutral cancel-button");
 
     },
     open: function () {
@@ -239,6 +242,10 @@ Imcms.Menu.DialogAdapter.prototype = {
                 this._builder.ref("documentsTable").row(data[rowId]);
             }
         }
+
+        $(this._builder.ref("documentsTable").getHTMLElement()).find("th").each(function (pos, item) {
+            $("<div>").append($(item).html()).appendTo(item);
+        });
     },
     result: function (callback) {
         this._callback = callback;
@@ -347,56 +354,56 @@ Imcms.Menu.Editor.prototype = {
         this._builder = new JSFormBuilder("<div>")
             .form()
             .div()
-            .class("header")
+            .class("imcms-header")
             .div()
             .html("Menu Editor")
-            .class("title")
+            .class("imcms-title")
             .end()
             /*.button()
              .on("click", $.proxy(this.close, this))
              .html("Close without saving")
-             .class("neutral close-without-saving")
+             .class("imcms-neutral close-without-saving")
              .reference("closeButton")
              .end()*/
             .button()
             .reference("closeButton")
-            .class("close-button")
+            .class("imcms-close-button")
             .on("click", $.proxy(this.close, this))
             .end()
             .end()
             .div()
-            .class("content")
+            .class("imcms-content")
             .div()
             .reference("menuContent")
             .end()
             .end()
             .div()
-            .class("footer")
+            .class("imcms-footer")
             .reference("footer")
             .text()
             .reference("findDocument")
             .end()
             .button()
             .html("…")
-            .class("neutral browse")
+            .class("imcms-neutral browse")
             .on("click", $.proxy(this._dialogAdapter.open, this._dialogAdapter))
             .end()
             .button()
             .html("Add")
-            .class("positive add")
+            .class("imcms-positive add")
             .on("click", $.proxy(function () {
                 this._addItem();
             }, this))
             .end()
             .button()
             .html("Create new…")
-            .class("neutral create-new")
+            .class("imcms-neutral create-new")
             .on("click", $.proxy(this._openDocumentViewer, this))
             .end()
             .button()
             .on("click", $.proxy(this.saveAndClose, this))
             .html("Save and close")
-            .class("positive save-and-close")
+            .class("imcms-positive imcms-save-and-close")
             .reference("saveButton")
             .end()
             .div()
@@ -404,7 +411,7 @@ Imcms.Menu.Editor.prototype = {
             .end()
             .end()
             .end();
-        $(this._builder[0]).appendTo("body").addClass("editor-form");
+        $(this._builder[0]).appendTo("body").addClass("editor-form reset");
         return this;
     },
     buildMenu: function () {
@@ -440,7 +447,7 @@ Imcms.Menu.Editor.prototype = {
         return this;
     },
     open: function () {
-        $(this._builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 95});
+        $(this._builder[0]).fadeIn("fast").find(".imcms-content").css({height: $(window).height() - 95});
     },
     _addItem: function (data) {
         data = data || this._autocompleteAdapter.data();

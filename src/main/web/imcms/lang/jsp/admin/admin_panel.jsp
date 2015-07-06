@@ -16,7 +16,7 @@
     String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext());
     DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().getLanguage();
 %>
-<div class="admin-panel">
+<div class="admin-panel reset">
     <div class="admin-panel-draggable"></div>
     <div class="admin-panel-content">
         <section id="languages" class="admin-panel-content-section  admin-panel-content-section-language">

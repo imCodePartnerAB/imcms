@@ -1,15 +1,15 @@
-.editor-image .content .image {
+.editor-image .imcms-content .image {
     width: 500px;
     background: #e5f4fc;
     border-right: 3px solid #0091e1;
 }
 
-.editor-image .content .choose-image-field:before {
+.editor-image .imcms-content .choose-image-field:before {
     content: "Choose image";
     display: block;
 }
 
-.editor-image .content .choose-image-field > label {
+.editor-image .imcms-content .choose-image-field > label {
     background: #f0f0f0;
     border: none;
     padding: 5px 10px;
@@ -22,30 +22,30 @@
     overflow: hidden;
 }
 
-.editor-image .content .size-field > input {
+.editor-image .imcms-content .size-field > input {
     width: 190px;
 }
 
-.editor-image .content .free-transformation-field > input {
+.editor-image .imcms-content .free-transformation-field > input {
     float: left;
     height: 20px;
     width: 20px;
     padding: 10px;
 }
 
-.editor-image .content .free-transformation-field:after {
+.editor-image .imcms-content .free-transformation-field:after {
     content: "Free transformation";
     float: left;
     padding: 5px 10px;
     height: 20px;
 }
 
-.editor-image .content .choose-image {
+.editor-image .imcms-content .choose-image {
     background: #323232;
     float: left;
 }
 
-.editor-image .content .modal {
+.editor-image .imcms-content .modal {
     background: #000;
     opacity: 0.5;
     filter: alpha(opacity=50);
@@ -58,7 +58,7 @@
     z-index: 1008;
 }
 
-.editor-image .content .image-cropper {
+.editor-image .imcms-content .image-cropper {
     background: #e5f4fc;
     display: none;
     position: relative;
@@ -67,17 +67,17 @@
     float: left;
 }
 
-.editor-image .content .info {
+.editor-image .imcms-content .info {
     float: left;
     padding: 10px;
 }
 
-.editor-image .content .image-cropper img {
+.editor-image .imcms-content .image-cropper img {
     max-width: 500px;
     /*max-height: 100%;*/
 }
 
-.editor-image .content .image-cropper .image-shader {
+.editor-image .imcms-content .image-cropper .image-shader {
     background: #000;
     opacity: 0.75;
     filter: alpha(opacity=75);
@@ -86,7 +86,7 @@
     top: 0;
 }
 
-.editor-image .content .image-cropper .image-cropping-frame {
+.editor-image .imcms-content .image-cropper .image-cropping-frame {
     border: 1px solid #0096fa;
     cursor: move;
     position: absolute;
@@ -96,11 +96,11 @@
     background-color: #e5f4fc;
 }
 
-.editor-image .content .image-cropper .image-cropping-frame .image-fragment {
+.editor-image .imcms-content .image-cropper .image-cropping-frame .image-fragment {
     position: absolute;
 }
 
-.editor-image .content .image-cropper .grip {
+.editor-image .imcms-content .image-cropper .grip {
     background: #0096fa;
     cursor: se-resize;
     position: absolute;
@@ -108,7 +108,7 @@
     height: 11px;
 }
 
-.editor-image .content .cropping-field input {
+.editor-image .imcms-content .cropping-field input {
     width: 85px;
 }
 

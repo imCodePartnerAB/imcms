@@ -11,12 +11,13 @@
     -webkit-box-shadow: 0 0 15px 0 rgba(50, 50, 50, 0.5);
     -moz-box-shadow: 0 0 15px 0 rgba(50, 50, 50, 0.5);
     box-shadow: 0 0 15px 0 rgba(50, 50, 50, 0.5);
+    font-size: 9pt;
 }
 
 .admin-panel-draggable {
     width: 14px;
     margin-right: 3px;
-    background: url("/images/bg_draggable.png") 0 0 no-repeat; /*/*/
+    background: url("/images/bg_draggable.png") 0 0 no-repeat;
     cursor: move;
 }
 
@@ -111,7 +112,7 @@
 .admin-panel-button-image {
     width: 32px;
     height: 32px;
-    margin-top: 10px;
+    margin: 10px auto 0 auto;
 }
 
 .admin-panel-content-section .admin-panel-version {
@@ -122,10 +123,13 @@
 
 .admin-panel-content-section .admin-panel-button-description {
     display: inline-block;
+    width: 64px;
+    text-align: center;
 }
 
 .admin-panel-content-section .admin-panel-button {
     color: black;
+    text-align: center;
 }
 
 .admin-panel-content-section.active .admin-panel-button,

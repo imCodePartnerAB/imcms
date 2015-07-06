@@ -4,13 +4,6 @@ import imcode.server.Imcms;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 public class CategoryTypeDomainObject implements Comparable, Serializable, Cloneable {
 
     private int id;
@@ -75,11 +68,11 @@ public class CategoryTypeDomainObject implements Comparable, Serializable, Clone
     public boolean equals(Object o) {
         return this == o
                 || (o instanceof CategoryTypeDomainObject &&
-                ((CategoryTypeDomainObject) o).getId() == getId());
+                ((CategoryTypeDomainObject) o).getName().toLowerCase().equals(getName().toLowerCase()));
     }
 
     public int hashCode() {
-        return getId();
+        return getName().hashCode();
     }
 
     public String toString() {

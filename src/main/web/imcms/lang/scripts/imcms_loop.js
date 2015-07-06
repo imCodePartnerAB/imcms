@@ -93,39 +93,39 @@ Imcms.Loop.Editor.prototype = {
         this._builder = new JSFormBuilder("<DIV>")
             .form()
             .div()
-            .class("header")
+            .class("imcms-header")
             .div()
             .html("Loop Editor")
-            .class("title")
+            .class("imcms-title")
             .end()
             .button()
             .reference("closeButton")
-            .class("close-button")
+            .class("imcms-close-button")
             .on("click", $.proxy(this.close, this))
             .end()
             /*
              .button()
              .html("Close without saving")
-             .class("neutral close-without-saving")
+             .class("imcms-neutral close-without-saving")
              .on("click", $.proxy(this.close, this))
              .end()*/
             .end()
             .div()
-            .class("content")
+            .class("imcms-content")
             .table()
             .reference("entriesList")
             .end()
             .end()
             .div()
-            .class("footer")
+            .class("imcms-footer")
             .button()
             .reference("createNew")
-            .class("neutral create-new")
+            .class("imcms-neutral create-new")
             .html("Create new")
             .end()
             .button()
             .html("Save and close")
-            .class("positive save-and-close")
+            .class("imcms-positive imcms-save-and-close")
             .on("click", $.proxy(this.save, this))
             .end()
             .div()
@@ -135,7 +135,7 @@ Imcms.Loop.Editor.prototype = {
             .end();
         $(this._builder[0])
             .appendTo("body")
-            .addClass("editor-form");
+            .addClass("editor-form reset");
         return this;
     },
     buildLoopsList: function (data) {
@@ -168,7 +168,7 @@ Imcms.Loop.Editor.prototype = {
         this.close();
     },
     open: function () {
-        $(this._builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 95});
+        $(this._builder[0]).fadeIn("fast").find(".imcms-content").css({height: $(window).height() - 95});
     },
     close: function () {
         $(this._builder[0]).fadeOut("fast");
@@ -193,7 +193,7 @@ Imcms.Loop.ListAdapter.prototype = {
     addLoopToList: function (position, data) {
         var deleteButton = $("<button>");
         this._container.row(data.no, data.text, deleteButton
-                .addClass("negative")
+                .addClass("imcms-negative")
                 .attr("type", "button")[0]
         );
         var row = this._container.row(position);

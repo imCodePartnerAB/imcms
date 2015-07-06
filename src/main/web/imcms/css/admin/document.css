@@ -1,4 +1,4 @@
-.document-viewer .content table {
+.document-viewer .imcms-content table {
     border-left: none;
     border-right: none;
     margin-top: 20px;
@@ -6,14 +6,14 @@
     overflow: hidden;
 }
 
-.document-viewer .content table tr th,
-.document-viewer .content table tr td {
+.document-viewer .imcms-content table tr th,
+.document-viewer .imcms-content table tr td {
     font-weight: normal;
     text-align: left;
     vertical-align: top;
 }
 
-.document-viewer .content table tr th {
+.document-viewer .imcms-content table tr th {
     background: #0091e1;
     color: white;
     /*border-bottom: 3px solid #dcdcf0;*/
@@ -25,64 +25,64 @@
     text-align: center;
 }
 
-.document-viewer .content table tr td {
+.document-viewer .imcms-content table tr td {
     border-bottom: 1px solid #f0f0ff;
     padding: 7.5px 20px;
     vertical-align: middle;
     text-align: center;
 }
 
-.document-viewer .content table tr.clicked td {
+.document-viewer .imcms-content table tr.clicked td {
     background: #0091e1;
     color: white;
 }
 
-.document-viewer .content table tr:hover td {
+.document-viewer .imcms-content table tr:hover td {
     background: #ffff64;
 }
 
-.document-viewer .content table tr td.buttons {
+.document-viewer .imcms-content table tr td.buttons {
     margin: 0;
 }
 
-.document-viewer .content table tr td.buttons button,
-.document-viewer .content table tr td.buttons .button {
+.document-viewer .imcms-content table tr td.buttons button,
+.document-viewer .imcms-content table tr td.buttons .button {
     font-size: 13px;
     line-height: 25px;
     visibility: hidden;
     padding: 0 10px;
 }
 
-.document-viewer .content table tr:hover td.buttons button,
-.document-viewer .content table tr:hover td.buttons .button {
+.document-viewer .imcms-content table tr:hover td.buttons button,
+.document-viewer .imcms-content table tr:hover td.buttons .button {
     visibility: visible;
 }
 
-.document-viewer .content table input[type=radio] {
+.document-viewer .imcms-content table input[type=radio] {
     width: 20px;
     height: 20px;
 }
 
-.document-viewer .content .field input[type=checkbox] {
+.document-viewer .imcms-content .field input[type=checkbox] {
     float: left;
     height: 20px;
     width: 20px;
     padding: 10px;
 }
 
-.document-viewer .content .field .label {
+.document-viewer .imcms-content .field .label {
     padding: 5px 10px;
     height: 20px;
 }
 
-.document-viewer .content .keywords-page .field > * {
+.document-viewer .imcms-content .keywords-page .field > * {
     float: left;
 }
-.document-viewer .content .keywords-page .field > label {
+.document-viewer .imcms-content .keywords-page .field > label {
     float: none;
 }
 
-.document-viewer .content .access-page tr button {
+.document-viewer .imcms-content .access-page tr button {
     visibility: hidden; background: #dc0000 url("/images/remove.png") no-repeat center;
     line-height: 20px;
     padding: 0;
@@ -90,7 +90,7 @@
     height: 20px;
 }
 
-.document-viewer .content .access-page tr:hover button {
+.document-viewer .imcms-content .access-page tr:hover button {
 
     visibility: visible;
 }

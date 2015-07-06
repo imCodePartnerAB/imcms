@@ -102,30 +102,30 @@ Imcms.Document.Editor.prototype = {
         this._builder = new JSFormBuilder("<DIV>")
             .form()
             .div()
-            .class("header")
+            .class("imcms-header")
             .div()
             .html("Document Editor")
-            .class("title")
+            .class("imcms-title")
             .end()
             .button()
             .html("Save and close")
-            .class("positive save-and-close")
+            .class("imcms-positive imcms-save-and-close")
             .end()
             .button()
             .html("Close without saving")
-            .class("neutral close-without-saving")
+            .class("imcms-neutral close-without-saving")
             .end()
             .end()
             .div()
-            .class("content")
+            .class("imcms-content")
             .table()
             .reference("documentsList")
             .end()
             .end()
             .div()
-            .class("footer")
+            .class("imcms-footer")
             .button()
-            .class("neutral create-new")
+            .class("imcms-neutral create-new")
             .html("Create new…")
             .on("click", $.proxy(this.showDocumentViewer, this))
             .end()
@@ -136,7 +136,7 @@ Imcms.Document.Editor.prototype = {
             .end();
         $(this._builder[0])
             .appendTo("body")
-            .addClass("editor-form");
+            .addClass("editor-form editor-document reset");
         return this;
     },
     buildDocumentsList: function () {
@@ -160,7 +160,7 @@ Imcms.Document.Editor.prototype = {
         }, this));
     },
     open: function () {
-        $(this._builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 95});
+        $(this._builder[0]).fadeIn("fast").find(".imcms-content").css({height: $(window).height() - 95});
     }
 };
 
@@ -210,9 +210,9 @@ Imcms.Document.Viewer.prototype = {
         this._builder = JSFormBuilder("<div>")
             .form()
             .div()
-            .class("header")
+            .class("imcms-header")
             .div()
-            .class("title")
+            .class("imcms-title")
             .html(this._title)
             .hidden()
             .name("id")
@@ -220,39 +220,39 @@ Imcms.Document.Viewer.prototype = {
             .end()
             .button()
             .reference("closeButton")
-            .class("close-button")
+            .class("imcms-close-button")
             .on("click", $.proxy(this.cancel, this))
             .end()
             .end()
             .div()
-            .class("content with-tabs")
+            .class("imcms-content with-tabs")
             .div()
-            .class("tabs")
+            .class("imcms-tabs")
             .reference("tabs")
             .end()
             .div()
-            .class("pages")
+            .class("imcms-pages")
             .reference("pages")
             .end()
             .end()
             .div()
-            .class("footer")
+            .class("imcms-footer")
             .div()
             .class("buttons")
             .button()
-            .class("positive")
+            .class("imcms-positive")
             .html("OK")
             .on("click", $.proxy(this.apply, this))
             .end()
             .button()
-            .class("neutral")
+            .class("imcms-neutral")
             .html("Cancel")
             .on("click", $.proxy(this.cancel, this))
             .end()
             .end()
             .end()
             .end();
-        $(this._builder[0]).appendTo($("body")).addClass("document-viewer pop-up-form");
+        $(this._builder[0]).appendTo($("body")).addClass("document-viewer pop-up-form reset");
         this.buildLifeCycle();
         this.buildAppearance();
         this.buildAccess();
@@ -263,13 +263,13 @@ Imcms.Document.Viewer.prototype = {
         this._builder.ref("tabs")
             .div()
             .reference("life-cycle-tab")
-            .class("life-cycle-tab tab active")
+            .class("life-cycle-tab imcms-tab active")
             .html("Life Cycle")
             .end();
         this._builder.ref("pages")
             .div()
             .reference("life-cycle-page")
-            .class("life-cycle-page page active")
+            .class("life-cycle-page imcms-page active")
             .div()
             .class("select field")
             .select()
@@ -294,13 +294,13 @@ Imcms.Document.Viewer.prototype = {
         this._builder.ref("tabs")
             .div()
             .reference("appearance-tab")
-            .class("appearance-tab tab")
+            .class("appearance-tab imcms-tab")
             .html("Appearance")
             .end();
         this._builder.ref("pages")
             .div()
             .reference("appearance-page")
-            .class("appearance-page page")
+            .class("appearance-page imcms-page")
             .div()
             .class("language field")
             .reference("languages")
@@ -345,13 +345,13 @@ Imcms.Document.Viewer.prototype = {
         this._builder.ref("tabs")
             .div()
             .reference("access-tab")
-            .class("access-tab tab")
+            .class("access-tab imcms-tab")
             .html("Access")
             .end();
         this._builder.ref("pages")
             .div()
             .reference("access-page")
-            .class("access-page page")
+            .class("access-page imcms-page")
             .table()
             .reference("access")
             .column("Role")
@@ -365,7 +365,7 @@ Imcms.Document.Viewer.prototype = {
             .reference("rolesList")
             .end()
             .button()
-            .class("positive")
+            .class("imcms-positive")
             .html("Add role")
             .on("click", this.addRolePermission.bind(this))
             .end()
@@ -381,13 +381,13 @@ Imcms.Document.Viewer.prototype = {
         this._builder.ref("tabs")
             .div()
             .reference("keywords-tab")
-            .class("keywords-tab tab")
+            .class("keywords-tab imcms-tab")
             .html("Keywords")
             .end();
         this._builder.ref("pages")
             .div()
             .reference("keywords-page")
-            .class("keywords-page page")
+            .class("keywords-page imcms-page")
             .div()
             .class("field")
             .text()
@@ -396,7 +396,7 @@ Imcms.Document.Viewer.prototype = {
             .reference("keywordInput")
             .end()
             .button()
-            .class("positive")
+            .class("imcms-positive")
             .html("Add")
             .on("click", this.addKeyword.bind(this))
             .end()
@@ -411,7 +411,7 @@ Imcms.Document.Viewer.prototype = {
             .multiple()
             .end()
             .button()
-            .class("negative")
+            .class("imcms-negative")
             .html("Remove")
             .on("click", this.removeKeyword.bind(this))
             .end()
@@ -427,13 +427,13 @@ Imcms.Document.Viewer.prototype = {
         this._builder.ref("tabs")
             .div()
             .reference("categories-tab")
-            .class("categories-tab tab")
+            .class("categories-tab imcms-tab")
             .html("Categories")
             .end();
         this._builder.ref("pages")
             .div()
             .reference("categories-page")
-            .class("categories-page page")
+            .class("categories-page imcms-page")
             .end();
         this._contentCollection["categories"] = {
             tab: this._builder.ref("categories-tab"),
@@ -550,7 +550,7 @@ Imcms.Document.Viewer.prototype = {
                 .attr("value", value.roleId)
                 .attr("name", value.name.toLowerCase() + "-id")
         ).append(hiddenRemoveRole);
-        removeButton = $("<button>").attr("type", "button").addClass("negative");
+        removeButton = $("<button>").attr("type", "button").addClass("imcms-negative");
         this._builder.ref("access")
             .row(
             divWithHidden[0],
@@ -707,11 +707,11 @@ Imcms.Document.ListAdapter.prototype = {
         this._container.row(data.id, data.label, data.alias, data.type, $("<span>")
                 .append($("<button>")
                     .click($.proxy(this.editDocument, this, data.id))
-                    .addClass("positive")
+                    .addClass("imcms-positive")
                     .text("Edit…")
                     .attr("type", "button"))
                 .append(deleteButton
-                    .addClass("negative")
+                    .addClass("imcms-negative")
                     .attr("type", "button"))[0]
         );
         var row = this._container.row(position);

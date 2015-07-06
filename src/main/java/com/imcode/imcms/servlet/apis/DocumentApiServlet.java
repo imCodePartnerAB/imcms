@@ -77,6 +77,7 @@ public class DocumentApiServlet extends HttpServlet {
                     }));
             result.keywords = documentDomainObject.getKeywords();
             result.categories = Stream.of(categoryMapper.getAllCategoryTypes())
+                    .distinct()
                     .collect(
                             Collectors.toMap(
                                     CategoryTypeDomainObject::getName,

@@ -109,19 +109,19 @@ Imcms.Image.Editor.prototype = {
         this._builder = new JSFormBuilder("<div>")
             .form()
             .div()
-            .class("header")
+            .class("imcms-header")
             .div()
             .html("Document Editor")
-            .class("title")
+            .class("imcms-title")
             .end()
             .button()
             .reference("closeButton")
-            .class("close-button")
+            .class("imcms-close-button")
             .on("click", $.proxy(this.close, this))
             .end()
             .end()
             .div()
-            .class("content")
+            .class("imcms-content")
             .div()
             .class("image")
             .reference("imageView")
@@ -132,15 +132,15 @@ Imcms.Image.Editor.prototype = {
             .end()
             .end()
             .div()
-            .class("footer")
+            .class("imcms-footer")
             .button()
             .html("Save and close")
-            .class("positive save-and-close")
+            .class("imcms-positive imcms-save-and-close")
             .on("click", $.proxy(this.save, this))
             .end()
             .end()
             .end();
-        $(this._builder[0]).appendTo("body").addClass("editor-form editor-image");
+        $(this._builder[0]).appendTo("body").addClass("editor-form editor-image reset");
         return this;
     },
     buildCropper: function (data) {
@@ -195,7 +195,7 @@ Imcms.Image.Editor.prototype = {
         this._infoViewAdapter.update(data);
         return this;
     },
-    _onDisplaySizeChanged(size){
+    _onDisplaySizeChanged: function (size) {
         this._imageCropper.changeDestinationRect(+size.width, +size.height);
     },
     _onChooseFile: function () {
@@ -252,7 +252,7 @@ Imcms.Image.Editor.prototype = {
     open: function () {
         this._getSource(this._source);
         $(this._builder[0]).find("img").css({maxHeight: $(window).height() - 95});
-        $(this._builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 95});
+        $(this._builder[0]).fadeIn("fast").find(".imcms-content").css({height: $(window).height() - 95});
         this._isShowed = true;
 
         /*if (this._isLoaded) {
@@ -341,7 +341,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .class("field choose-image-field")
             .button()
             .html("Choose…")
-            .class("neutral choose-image")
+            .class("imcms-neutral choose-image")
             .on("click", this._options.onChooseFile)
             .label(this._imageSource.urlPathRelativeToContextPath || "")
             .end()
@@ -434,7 +434,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         this._imageSource.name = $infoRef.find("input[name=imageName]").val();
         return this._imageSource;
     },
-    updateCropping(croppingOptions){
+    updateCropping: function (croppingOptions) {
         var $infoRef = $(this._infoRef.getHTMLElement());
         $infoRef.find("input[name=leftCrop]").val(croppingOptions.cropX1);
         $infoRef.find("input[name=topCrop]").val(croppingOptions.cropY1);

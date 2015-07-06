@@ -165,13 +165,13 @@ CREATE TABLE document_search_log (
 --
 
 CREATE TABLE fileupload_docs (
-  meta_id int NOT NULL,
+  doc_id int NOT NULL,
   variant_name varchar(100) NOT NULL,
   filename varchar(255) NOT NULL,
   mime varchar(50) NOT NULL,
   created_as_image int NOT NULL,
   default_variant tinyint(1) NOT NULL default '0',
-  CONSTRAINT pk__fileupload_docs PRIMARY KEY (meta_id,variant_name)
+  CONSTRAINT pk__fileupload_docs PRIMARY KEY (doc_id,variant_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

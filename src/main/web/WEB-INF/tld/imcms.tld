@@ -305,6 +305,16 @@
             <scope>AT_BEGIN</scope>
         </variable>
         <variable>
+            <name-given>user</name-given>
+            <variable-class>com.imcode.imcms.api.User</variable-class>
+            <scope>AT_BEGIN</scope>
+        </variable>
+        <variable>
+            <name-given>cms</name-given>
+            <variable-class>com.imcode.imcms.api.ContentManagementSystem</variable-class>
+            <scope>AT_BEGIN</scope>
+        </variable>
+        <variable>
             <name-given>viewing</name-given>
             <variable-class>com.imcode.imcms.api.TextDocumentViewing</variable-class>
             <scope>AT_BEGIN</scope>

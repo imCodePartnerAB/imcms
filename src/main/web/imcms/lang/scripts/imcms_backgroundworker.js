@@ -5,6 +5,7 @@ Imcms.BackgroundWorker = {
     registeredTasks: [],
     completedTasksOptions: [],
     processWindow: undefined,
+    contentChangedListeners: [],
 
     /**
      *
@@ -141,10 +142,15 @@ Imcms.BackgroundWorker = {
         content = $($.parseHTML($.trim(content)));
         $("body>*").remove();
         $("body").append(content).append($this.processWindow);
-        new Imcms.Bootstrapper().bootstrap();
+        new Imcms.Bootstrapper().bootstrap(true);
         $("[contenteditable=true]").each(function (p, e) {
             CKEDITOR.inline(e);
         });
+
+        $this.contentChangedListeners.forEach(function (item) {
+            item.call($this);
+        });
+
         setTimeout(function () {
             $this.processWindow.fadeOut(1200, function () {
                 $("body").css({overflow: "auto"});
@@ -152,6 +158,15 @@ Imcms.BackgroundWorker = {
                 delete $this.processWindow;
             });
         }, 300);
+    },
+    /**
+     * Add page content changed listener
+     * @param {Function} listener
+     */
+    addOnContentChangedListener: function (listener) {
+        var $this = Imcms.BackgroundWorker;
+
+        $this.contentChangedListeners.push(listener);
     }
 };
 Imcms.BackgroundWorker.Options = {refreshPage: false, showProcessWindow: false};

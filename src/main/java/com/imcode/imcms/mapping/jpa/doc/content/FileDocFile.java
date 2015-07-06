@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AssociationOverride(
         name = "docVersion",
         joinColumns = {
-                @JoinColumn(name = "meta_id", referencedColumnName = "doc_id"),
+                @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
                 @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
         })
 public class FileDocFile extends VersionedContent {

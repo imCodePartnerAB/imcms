@@ -1,196 +1,148 @@
-<%@ page import="imcode.server.Imcms,
-                 imcode.server.ImcmsConstants" pageEncoding="UTF-8" %>
-<%@ page import="org.apache.oro.text.perl.Perl5Util" %>
+<%@ page pageEncoding="UTF-8" %>
 
 <%@taglib prefix="imcms" uri="imcms" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 
 <imcms:variables/>
-<%
-
-    // TODO: Add support for imCMS versions > 5
-
-    String documentationUrl = "@documentationwebappurl@";
-
-    Perl5Util re = new Perl5Util();
-
-    if (re.match("/^(.*\\/)(\\d)(\\.\\d).*/", documentationUrl)) {
-        try {
-            int majorVersion = Integer.parseInt(re.group(2));
-            if (majorVersion > 5) {
-                majorVersion = 5;
-            }
-            documentationUrl = re.group(1) + majorVersion + re.group(3);
-        } catch (Exception ignore) {
-        }
-    }
-
-    request.setAttribute("documentationUrl", documentationUrl);
-
-%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-
-    <title><c:out value="${document.headline}"/> - Powered by imCMS from imCode Partner AB</title>
-
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/imcms_demo.css.jsp"/>
-
+    <title>${document.headline} - Powered by imCMS from imCode Partner AB</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="/imcms/css/template/demo.css"/>
 </head>
-<body style="margin:10px; background-color:#eee;">
-
-
-<table border="0" cellspacing="0" cellpadding="5" align="center"
-       style="height:100%; background-color:#fff; border: 1px solid #ccc; border-width: 1px 2px 2px 1px; border-color: #ccc #000 #000 #ccc;">
-    <tr>
-        <td valign="top">
-            <table border="0" cellspacing="0" cellpadding="0" width="760">
-                <tr>
-                    <td colspan="5"><imcms:include url="${documentationUrl}/1054?template=imcmsDemoTop"/></td>
-                </tr>
-                <tr>
-                    <td colspan="5" height="15">&nbsp;</td>
-                </tr>
-                <tr valign="top">
-                    <td width="200"></td>
-
-                    <td width="15">&nbsp;</td>
-
-                    <td width="385">
-                        <%
-                            String lang = ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE;
-
-                            // Refactor
-                            String queryString = request.getQueryString();
-                            StringBuffer baseURL = request.getRequestURL();
-
-                            if (queryString == null) {
-                                baseURL.append("?" + lang + "=");
-                            } else {
-                                // TODO 18n: refactor
-                                queryString = queryString.replaceFirst("&?" + lang + "=..", "");
-                                baseURL.append("?" + queryString + "&amp;" + lang + "=");
-                            }
-
-                            pageContext.setAttribute("baseURL", baseURL);
-
-                        %>
-                        <c:choose>
-                            <c:when test="<%=!Imcms.getUser().isDefaultUser()%>">
+<body>
+<div class="container">
+    <section class="header">
+        <div class="wrapper">
+            <div class="menu">
+                <!-- Example of ImCMS menu tag -->
+                <imcms:menu no='1' docId="1001">
+                    <ul>
+                        <imcms:menuloop>
+                            <imcms:menuitem>
+                                <li>
+                                    <imcms:menuitemlink>
+                                        ${menuitem.document.headline}
+                                    </imcms:menuitemlink>
+                                    <!-- sub menu definition -->
+                                    <imcms:menuloop>
+                                        <imcms:menuitem>
+                                            <div>
+                                                <imcms:menuitemlink>
+                                                    ${menuitem.document.headline}
+                                                </imcms:menuitemlink>
+                                            </div>
+                                        </imcms:menuitem>
+                                    </imcms:menuloop>
+                                </li>
+                            </imcms:menuitem>
+                        </imcms:menuloop>
+                    </ul>
+                </imcms:menu>
+            </div>
+            <div class="auth">
+                <c:choose>
+                    <c:when test="${not user.defaultUser}">
+                        <div class="info">
+                            <div class="user-name">${user.loginName}</div>
+                            <div class="sing-out">
                                 <imcms:logout>
-                                    By Lolo
+                                    Sign Out
                                 </imcms:logout>
-                            </c:when>
-                            <c:otherwise>
-                                <imcms:login>
-                                    <imcms:loginname attributes="class='asasdgasdf' data-lol='asasdfs'"/>
-                                    <imcms:loginpassword/>
-                                    <input type="submit" name="login" value="login"/>
-                                </imcms:login>
-                            </c:otherwise>
-                        </c:choose>
-                        <imcms:registration>
-                            <imcms:registrationlogin/>
-                            <imcms:registrationname/>
-                            <imcms:registrationsurname/>
-                            <imcms:registrationpassword1/>
-                            <imcms:registrationpassword2/>
-                            <button type="submit">Register</button>
-                        </imcms:registration>
-                        <a href="${baseURL}en"><img
-                                src="${pageContext.request.contextPath}/imcms/eng/images/admin/flags_iso_639_1/en.gif"
-                                alt="" style="border:0;"/></a>
-                        <a href="${baseURL}sv"><img
-                                src="${pageContext.request.contextPath}/imcms/swe/images/admin/flags_iso_639_1/sv.gif"
-                                alt="" style="border:0;"/></a>
+                            </div>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="tabs">
+                            <section>
+                                <div class="tab" selected data-item="1">Sing In</div>
+                                <div class="page" data-item="1" selected>
+                                    <h1>Sign In</h1>
+                                    <imcms:login>
+                                        <div class="field">
+                                            <label>Login</label>
+                                            <imcms:loginname attributes="placeholder='Enter your login'"/>
+                                        </div>
+                                        <div class="field">
+                                            <label>Password</label>
+                                            <imcms:loginpassword/>
+                                        </div>
+                                        <input type="hidden" name="login" value="login"/>
 
-                        <imcms:text no="1" label="Text (html)" formats="text,html" rows="2" pre='<h1/>' post='<h1/>'/>
-                        <imcms:text no='2' label='<br/>Text' pre='<div class="text">' post='</div>'/>
-                        <imcms:menu no='1' docId="1001" label='<br/><br/>Meny (punktlista)'>
-                            <ul>
-                                <imcms:menuloop>
-                                    <imcms:menuitem>
-                                        <li style="padding-bottom:5px; color:green;"><imcms:menuitemlink><c:out
-                                                value="${menuitem.document.headline}"/></imcms:menuitemlink>
-                                            <imcms:menuloop>
-                                                <imcms:menuitem>
-                                                    <div style="padding-bottom:5px; color:green;">
-                                                        <imcms:menuitemlink><c:out
-                                                                value="${menuitem.document.headline}"/></imcms:menuitemlink>
-                                                    </div>
-                                                </imcms:menuitem>
-                                            </imcms:menuloop>
-                                        </li>
-                                    </imcms:menuitem>
-                                </imcms:menuloop>
-                            </ul>
-                        </imcms:menu>
-                        <imcms:include url="${documentationUrl}/1054?template=imcmsDemoContent"
-                                       pre='<div style="margin: 10px 0; padding: 10px 0; border: 1px solid #ccc; border-width: 1px 0;">'
-                                       post='</div>'/>
-                        <imcms:image no='3' label='Bild' pre='<br/><br/>' post='<br/>'/><br/>
-                        <imcms:include no='1' label='Dynamisk inkludering 1'/>
-
-
-                        <imcms:loop no="1" label="Loop (main)" pre='<div class="loop">' post='</div>'>
-                            <imcms:text no='2' label='<br/>Text' pre='<div class="text">' post='</div>'/>
-                            <imcms:image no="33"/>
-                        </imcms:loop>
-
-
-                        <imcms:loop no="100" label="Loop (secondary)" pre='<div class="loop">' post='</div>'>
-                            <imcms:text no='100' label='<br/>Text' pre='<div class="text">' post='</div>'/>
-                            <imcms:image no='3' label='Bild' pre='<br/><br/>' post='<br/>'/><br/>
-                        </imcms:loop>
-
-                    </td>
-
-                    <td width="10">&nbsp;</td>
-
-                    <td width="150"><imcms:include url="${documentationUrl}/1054?template=imcmsDemoRight"/></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td align="center" valign="bottom">&nbsp;<br/><imcms:admin/>
-            <imcms:include url="${documentationUrl}/1054?template=imcmsDemoBottom"/>
-        </td>
-    </tr>
-</table>
-
-<br/>
-<imcms:search searchRequest="" skip="0" take="2">
-    <imcms:searchitem>
-        <div>
-                ${searchItem.foundDocument.alias}
-                ${searchItem.foundDocument.language.name}
+                                        <div class="field">
+                                            <button class="positive" type="submit">Login</button>
+                                        </div>
+                                    </imcms:login>
+                                </div>
+                            </section>
+                            <section>
+                                <div class="tab" data-item="2">Sing Up</div>
+                                <div class="page" data-item="2">
+                                    <h1>Sign Up</h1>
+                                    <imcms:registration>
+                                        <div class="field">
+                                            <label>Login</label>
+                                            <imcms:registrationlogin/>
+                                        </div>
+                                        <div class="field">
+                                            <label>Email</label>
+                                            <imcms:registrationemail/>
+                                        </div>
+                                        <div class="field">
+                                            <label>Name</label>
+                                            <imcms:registrationname/>
+                                        </div>
+                                        <div class="field">
+                                            <label>Second Name</label>
+                                            <imcms:registrationsurname/>
+                                        </div>
+                                        <div class="field">
+                                            <label>Password</label>
+                                            <imcms:registrationpassword1/>
+                                        </div>
+                                        <div class="field">
+                                            <label>Repeat password</label>
+                                            <imcms:registrationpassword2/>
+                                        </div>
+                                        <div class="field">
+                                            <button class="positive" type="submit">Register</button>
+                                        </div>
+                                    </imcms:registration>
+                                </div>
+                            </section>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
         </div>
-    </imcms:searchitem>
-    <imcms:pager>
-        <div>
-            <a href="${firstPagerItem.link}">${firstPagerItem.pageNumber+1}</a>
-        </div>
-        <imcms:pageritem>
-            <c:choose>
-                <c:when test="${pagerItem.showed}">
-                    <div>
-                        <a href="${pagerItem.link}">${pagerItem.pageNumber+1}</a>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <a href="${pagerItem.link}">${pagerItem.pageNumber+1}</a>
-                </c:otherwise>
-            </c:choose>
-        </imcms:pageritem>
-        <div>
-            <a href="${lastPagerItem.link}">${lastPagerItem.pageNumber+1}</a>
-        </div>
-    </imcms:pager>
-</imcms:search>
+    </section>
+    <section class="content">
+        <div class="wrapper">
+            <h1>${document.headline}</h1>
 
+            <imcms:text no="1" document="${document.id}"/>
+
+            <h2>Learn more</h2>
+
+            <imcms:text no="2" document="${document.id}"/>
+        </div>
+    </section>
+
+    <section class="footer-placeholder">
+        <section class="footer">
+            <div class="wrapper">
+                <div class="additional">
+                    <imcms:text no="3" document="1001"/>
+                </div>
+                <div class="logo">
+                    <imcms:image no="1" document="1001"/>
+                </div>
+            </div>
+        </section>
+    </section>
+    <imcms:admin/>
+</div>
 </body>
 </html>

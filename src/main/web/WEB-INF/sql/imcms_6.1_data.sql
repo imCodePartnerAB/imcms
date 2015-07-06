@@ -88,7 +88,9 @@ VALUES
 INSERT INTO meta
   (meta_id, doc_type, owner_id, permissions, shared, show_meta, lang_prefix, date_created, date_modified, disable_search, target, activate, archived_datetime, publisher_id, status, publication_start_datetime, publication_end_datetime, missing_i18n_show_rule)
 VALUES
-  (@start_document__meta_id, 2, @user_id__admin, 0, 0, 0, @'ui__language', NOW(), NOW(), 0, '_self', 1, NULL, NULL, 2, NOW(), NULL, 'DO_NOT_SHOW');
+  (@start_document__meta_id, 2, @user_id__admin, 0, 0, 0, @'ui__language', NOW(), NOW(), 0, '_self', 1, NULL, NULL, 2, NOW(), NULL, 'DO_NOT_SHOW'),
+  (@start_document__meta_id+1, 2, @user_id__admin, 0, 0, 0, @'ui__language', NOW(), NOW(), 0, '_self', 1, NULL, NULL, 2, NOW(), NULL, 'DO_NOT_SHOW'),
+  (@start_document__meta_id+2, 2, @user_id__admin, 0, 0, 0, @'ui__language', NOW(), NOW(), 0, '_self', 1, NULL, NULL, 2, NOW(), NULL, 'DO_NOT_SHOW');
 
 --
 -- Create demo document versions
@@ -172,7 +174,11 @@ INSERT INTO i18n_meta
   (i18n_meta_id, meta_id, language_id, meta_enabled, meta_headline, meta_text, meta_image)
 VALUES
   (1, @start_document__meta_id, @language_id__english, true, @'start_document__headline__english', '', ''),
-  (2, @start_document__meta_id, @language_id__swedish, true, @'start_document__headline__swedish', '', '');
+  (2, @start_document__meta_id, @language_id__swedish, true, @'start_document__headline__swedish', '', ''),
+  (3, @start_document__meta_id+1, @language_id__english, true, @'start_document__headline__english', '', ''),
+  (4, @start_document__meta_id+1, @language_id__swedish, true, @'start_document__headline__swedish', '', ''),
+  (5, @start_document__meta_id+2, @language_id__english, true, @'start_document__headline__english', '', ''),
+  (6, @start_document__meta_id+2, @language_id__swedish, true, @'start_document__headline__swedish', '', '');
 
 --
 -- Data for table images
@@ -386,7 +392,9 @@ VALUES
 INSERT INTO text_docs
   (meta_id, template_name, group_id, default_template_1, default_template_2, default_template)
 VALUES
-  (@start_document__meta_id, 'demo', 0, NULL, NULL, NULL);
+  (@start_document__meta_id, 'demo', 0, NULL, NULL, NULL),
+  (@start_document__meta_id+1, 'demo', 0, NULL, NULL, NULL),
+  (@start_document__meta_id+2, 'demo', 0, NULL, NULL, NULL),
 
 --
 -- Data for table texts

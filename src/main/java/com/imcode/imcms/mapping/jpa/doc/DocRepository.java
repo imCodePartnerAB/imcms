@@ -135,7 +135,7 @@ public class DocRepository {
             "DELETE FROM roles_rights WHERE meta_id = ?",
             "DELETE FROM user_rights WHERE meta_id = ?",
             "DELETE FROM imcms_url_docs WHERE doc_id = ?",
-            "DELETE FROM fileupload_docs WHERE meta_id = ?",
+            "DELETE FROM fileupload_docs WHERE doc_id = ?",
             "DELETE FROM imcms_html_docs WHERE doc_id = ?",
             "DELETE FROM new_doc_permission_sets_ex WHERE meta_id = ?",
             "DELETE FROM new_doc_permission_sets WHERE meta_id = ?",

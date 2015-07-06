@@ -767,12 +767,12 @@ editor theme
     font: normal 15px Arial;
 }
 
-.editor-form .header {
+.editor-form .imcms-header {
     background: #ff9600;
     overflow: hidden;
 }
 
-.editor-form .header .title {
+.editor-form .imcms-header .imcms-title {
     color: #fff;
     line-height: 30px;
     font-size: 15px;
@@ -782,18 +782,18 @@ editor theme
     height: 30px;
 }
 
-.editor-form .header .save-and-close {
+.editor-form .imcms-header .imcms-save-and-close {
     line-height: 20px;
     float: left;
     margin: 5px 5px 0 0;
     height: 20px;
 }
 
-.editor-form .content {
+.editor-form .imcms-content {
     overflow: auto;
 }
 
-.editor-form .content .negative {
+.editor-form .imcms-content .imcms-negative {
     background: #dc0000 url("<%= cp %>/images/remove.png") no-repeat center;
     line-height: 20px;
     display: none;
@@ -802,13 +802,13 @@ editor theme
     height: 20px;
 }
 
-.editor-form .footer {
+.editor-form .imcms-footer {
     background: #f0f0f0;
     padding: 20px;
     /*height: 30px;*/
 }
 
-.editor-form .footer input {
+.editor-form .imcms-footer input {
     border: none;
     padding: 0 10px;
     line-height: 30px;
@@ -817,23 +817,23 @@ editor theme
     height: 30px;
 }
 
-.editor-form .footer .browse {
+.editor-form .imcms-footer .browse {
     text-align: center;
     float: left;
     padding: 0;
     width: 30px;
 }
 
-.editor-form .footer .add {
+.editor-form .imcms-footer .add {
     float: left;
 }
 
-.editor-form .footer .create-new {
+.editor-form .imcms-footer .create-new {
     float: left;
     margin-left: 20px;
 }
 
-/*.positive {
+/*.imcms-positive {
     background: #649b00;
     border: none;
     color: #fff;
@@ -844,11 +844,11 @@ editor theme
     height: 30px;
 }
 
-.positive:hover {
+.imcms-positive:hover {
     background: #6eaf00;
 }
 
-.negative {
+.imcms-negative {
     background: #dc0000;
     border: none;
     color: #fff;
@@ -859,13 +859,14 @@ editor theme
     height: 30px;
 }
 
-.negative:hover {
+.imcms-negative:hover {
     background: #e60000;
 }*/
 
 .editor-base {
-    position: relative;
+<%--position: relative;--%>
     /*border: 1px dashed black;*/
+    overflow: hidden;
 }
 
 .editor-menu-wrapper-adder, .editor-menu-wrapper-accepter {
@@ -922,38 +923,38 @@ editor theme
 <%--background-color: #aa77cc--%>
 <%--}--%>
 
-<%--.editor-form .content ul, .editor-form .content ul li {--%>
+<%--.editor-form .imcms-content ul, .editor-form .imcms-content ul li {--%>
 <%--margin: 0;--%>
 <%--padding: 0;--%>
 <%--}--%>
 
-<%--.editor-form .content ul {--%>
+<%--.editor-form .imcms-content ul {--%>
 <%--background: #f0f0f0;--%>
 <%--padding-left: 30px !important;--%>
 <%--}--%>
 
-<%--.editor-form .content .jqtree-tree {--%>
+<%--.editor-form .imcms-content .jqtree-tree {--%>
 <%--padding: 0 !important;--%>
 <%--}--%>
 
-<%--.editor-form .content ul li {--%>
+<%--.editor-form .imcms-content ul li {--%>
 <%--background: #fff;--%>
 <%--list-style-type: none;--%>
 <%--}--%>
 
-<%--.editor-form .content ul li .jqtree-element {--%>
+<%--.editor-form .imcms-content ul li .jqtree-element {--%>
 <%--overflow: hidden;--%>
 <%--line-height: 20px;--%>
 <%--width: 100%;--%>
 <%--}--%>
 
-<%--.editor-form .content ul li .jqtree-element span {--%>
+<%--.editor-form .imcms-content ul li .jqtree-element span {--%>
 <%--line-height: 30px;--%>
 <%--float: left;--%>
 <%--padding: 0 20px;--%>
 <%--}--%>
 
-<%--.editor-form .content ul li .jqtree-element span:last-child {--%>
+<%--.editor-form .imcms-content ul li .jqtree-element span:last-child {--%>
 <%--float: right;--%>
 <%--padding: 5px;--%>
 <%--}--%>
@@ -1030,7 +1031,7 @@ editor theme
 <%--margin-left: 0px !important;--%>
 <%--}--%>
 
-/*.neutral {
+/*.imcms-neutral {
     background: rgba(0, 0, 0, 0.2);
     border: none;
     color: #fff;
@@ -1041,19 +1042,19 @@ editor theme
     height: 30px;
 }
 
-.neutral:hover {
+.imcms-neutral:hover {
     background: rgba(0, 0, 0, 0.1);
 }
 
-.editor-form .footer .neutral {
+.editor-form .imcms-footer .imcms-neutral {
     background: #323232;
 }
 
-.editor-form .footer .neutral:hover {
+.editor-form .imcms-footer .imcms-neutral:hover {
     background: #484848;
 }*/
 
-.editor-form .header .save-and-close, .editor-form .header .close-without-saving {
+.editor-form .imcms-header .imcms-save-and-close, .editor-form .imcms-header .close-without-saving {
     line-height: 20px;
     float: left;
     padding: 0 10px;
@@ -1069,7 +1070,7 @@ editor theme
     z-index: 1009;
 }
 
-.pop-up-form .title {
+.pop-up-form .imcms-title {
     background: #ff9600;
     color: #fff;
     line-height: 30px;
@@ -1077,7 +1078,7 @@ editor theme
     padding: 0 20px;
 }
 
-.pop-up-form .content {
+.pop-up-form .imcms-content {
     position: relative;
     padding: 20px;
 }
@@ -1086,7 +1087,7 @@ editor theme
     padding-left: 220px;
 }
 
-.pop-up-form .content .tabs {
+.pop-up-form .imcms-content .imcms-tabs {
     background: #323232;
     position: absolute;
     left: 0;
@@ -1095,45 +1096,46 @@ editor theme
     height: 100%;
 }
 
-.pop-up-form .content .tabs .tab {
+.pop-up-form .imcms-content .imcms-tabs .imcms-tab {
     color: #fff;
     line-height: 30px;
     padding: 0 20px;
 }
 
-.pop-up-form .content .pages .page {
+.pop-up-form .imcms-content .imcms-pages .imcms-page {
     height: 300px;
     overflow-y: auto;
     display: none;
 }
 
-.pop-up-form .content .pages .page.active {
+.pop-up-form .imcms-content .imcms-pages .imcms-page.active {
     display: block;
 }
 
-.pop-up-form .content .tabs .tab:hover {
+.pop-up-form .imcms-content .imcms-tabs .imcms-tab:hover {
     background: #484848;
 }
 
-.pop-up-form .content .tabs .active {
+.pop-up-form .imcms-content .imcms-tabs .active {
     background: #fff !important;
     color: #000 !important;
 }
 
-.editor-form .content .field,
-.pop-up-form .content .field {
+.editor-form .imcms-content .field,
+.pop-up-form .imcms-content .field {
     clear: both;
     padding-top: 10px;
 }
 
-.editor-form .content .field label,
-.pop-up-form .content .field label {
+.editor-form .imcms-content .field label,
+.pop-up-form .imcms-content .field label {
     display: block;
     margin-bottom: 2px;
 }
-.pop-up-form .content .field select,
-.editor-form .content .field input,
-.pop-up-form .content .field input {
+
+.pop-up-form .imcms-content .field select,
+.editor-form .imcms-content .field input,
+.pop-up-form .imcms-content .field input {
     background: #f0f0f0;
     border: none;
     padding: 5px 10px;
@@ -1143,16 +1145,16 @@ editor theme
     resize: none;
 }
 
-.pop-up-form .content .field select{
-    height: 30px;
+.pop-up-form .imcms-content .field select {
+    height: 20px;
     width: 420px;
 }
 
-.pop-up-form .content .field select[multiple]{
+.pop-up-form .imcms-content .field select[multiple] {
     height: 200px;
 }
 
-.pop-up-form .content .field textarea {
+.pop-up-form .imcms-content .field textarea {
     background: #f0f0f0;
     border: none;
     padding: 5px 10px;
@@ -1160,47 +1162,47 @@ editor theme
     height: 100px;
 }
 
-.pop-up-form .content .checkbox {
+.pop-up-form .imcms-content .checkbox {
     padding-top: 10px;
 }
 
-.pop-up-form .content .buttons {
+.pop-up-form .imcms-content .buttons {
     padding: 20px 0 0;
     overflow: hidden;
 }
 
-.pop-up-form .content .buttons .positive {
+.pop-up-form .imcms-content .buttons .imcms-positive {
     margin-right: 20px;
 }
 
-.pop-up-form .content .buttons .neutral {
+.pop-up-form .imcms-content .buttons .imcms-neutral {
     background: #323232;
 }
 
-.pop-up-form .content .buttons .neutral:hover {
+.pop-up-form .imcms-content .buttons .imcms-neutral:hover {
     background: #484848;
 }
 
-.editor-form .content table {
+.editor-form .imcms-content table {
     width: 100%;
 }
 
-.editor-form .content table tr td {
+.editor-form .imcms-content table tr td {
     line-height: 30px;
     padding: 0 20px;
 }
 
-.editor-form .content table tr:hover td {
+.editor-form .imcms-content table tr:hover td {
     background: #ffff64;
 }
 
-.editor-form .content table tr td:last-child {
+.editor-form .imcms-content table tr td:last-child {
     line-height: 0;
     padding: 5px;
     width: 105px;
 }
 
-.editor-form .content table tr td .positive {
+.editor-form .imcms-content table tr td .imcms-positive {
     line-height: 20px;
     text-align: center;
     visibility: hidden;
@@ -1211,11 +1213,11 @@ editor theme
     height: 20px;
 }
 
-.editor-form .content table tr:hover td .positive {
+.editor-form .imcms-content table tr:hover td .imcms-positive {
     visibility: visible;
 }
 
-.editor-form .content table tr td .negative {
+.editor-form .imcms-content table tr td .imcms-negative {
     background-image: url(../../images/remove.png);
     background-position: center;
     background-repeat: no-repeat;
@@ -1228,7 +1230,7 @@ editor theme
     height: 20px;
 }
 
-.editor-form .content table tr:hover td .negative {
+.editor-form .imcms-content table tr:hover td .imcms-negative {
     visibility: visible;
 }
 
@@ -1241,8 +1243,7 @@ editor theme
     display: none;
 }
 
-::-ms-reveal
-{
+::-ms-reveal {
     display: none;
 }
 

@@ -1,5 +1,6 @@
 package imcode.server.document.textdocument;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import imcode.server.Imcms;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.InputStreamSource;
@@ -17,6 +18,7 @@ public class FileSource extends AbstractFileSource {
         this.file = file;
     }
 
+    @JsonIgnore
     @Override
     public InputStreamSource getInputStreamSource() {
         return new FileInputStreamSource(file);

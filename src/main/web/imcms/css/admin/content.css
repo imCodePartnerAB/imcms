@@ -35,7 +35,7 @@
     }
 }
 
-.editor-content .footer:before {
+.editor-content .imcms-footer:before {
     content: "";
     display: block;
     float: left;
@@ -46,7 +46,7 @@
     margin: -10px 20px 0 -10px;
 }
 
-.editor-content .footer input.hidden {
+.editor-content .imcms-footer input.hidden {
     cursor: pointer;
     font-size: 150px;
     opacity: 0;
@@ -56,7 +56,7 @@
     height: 100px;
 }
 
-.editor-content .footer .browse {
+.editor-content .imcms-footer .browse {
     line-height: 30px;
     text-align: center;
     width: 85px;
@@ -66,46 +66,47 @@
     cursor: pointer;
 }
 
-.editor-content .footer .browse div {
+.editor-content .imcms-footer .browse div {
     line-height: 30px;
     width: 100%;
+    color: #fff;
 }
 
-.editor-content .content .folders {
+.editor-content .imcms-content .folders {
     width: 250px;
     background-color: #0091e1;
 }
 
-.editor-content .content .folders ul li {
+.editor-content .imcms-content .folders ul li {
     background: #0091e1;
     height: 30px;
 }
 
-.editor-content .content .folders ul li > div.jqtree-element span {
+.editor-content .imcms-content .folders ul li > div.jqtree-element span {
     line-height: 20px;
     padding: 5px 20px;
     color: #fff;
     text-transform: uppercase;
 }
 
-.editor-content .content .folders ul li.jqtree-selected > div.jqtree-element span {
+.editor-content .imcms-content .folders ul li.jqtree-selected > div.jqtree-element span {
     color: #000;
 }
 
-.editor-content .content .folders {
+.editor-content .imcms-content .folders {
     float: left;
     height: 100%;
     min-width: 200px;
 }
 
-.editor-content .content .files-wrapper {
+.editor-content .imcms-content .files-wrapper {
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
 }
 
-.editor-content .content .files {
+.editor-content .imcms-content .files {
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
@@ -130,12 +131,12 @@
     position: relative;
 }
 
-.editor-content .content .files-wrapper .dropzone {
+.editor-content .imcms-content .files-wrapper .dropzone {
     pointer-events: none;
     display: none;
 }
 
-.editor-content .content .files-wrapper .dropzone.hover {
+.editor-content .imcms-content .files-wrapper .dropzone.hover {
     pointer-events: none;
     position: absolute;
     left: 0;
@@ -147,7 +148,7 @@
     z-index: 99999;
 }
 
-.editor-content .content .content-preview {
+.editor-content .imcms-content .content-preview {
     width: 130px;
     height: 130px;
     overflow: hidden;
@@ -164,20 +165,20 @@
     transition-property: box-shadow, transform;
 }
 
-.editor-content .content .files .content-preview.selected {
+.editor-content .imcms-content .files .content-preview.selected {
     box-shadow: 0 0 20px -5px rgba(0, 0, 0, 0.75);
     -webkit-transform: scale(1.1);
     transform: scale(1.1);
     z-index: 100;
 }
 
-.editor-content .content .files .content-preview .content-preview-info,
-.editor-content .content .files .content-preview .content-preview-image {
+.editor-content .imcms-content .files .content-preview .content-preview-info,
+.editor-content .imcms-content .files .content-preview .content-preview-image {
     width: inherit;
     text-align: center;
 }
 
-.editor-content .content .files .content-preview .content-preview-info {
+.editor-content .imcms-content .files .content-preview .content-preview-info {
     overflow: hidden;
     position: absolute;
     height: 0;
@@ -190,21 +191,23 @@
     -webkit-animation: name-hover-off 0.2s forwards;
 }
 
-.editor-content .content .files .content-preview:hover .content-preview-info {
+.editor-content .imcms-content .files .content-preview:hover .content-preview-info {
     animation: name-hover-on 0.3s forwards;
     -webkit-animation: name-hover-on 0.3s forwards;
 }
 
-.editor-content .content .files .content-preview:hover {
+.editor-content .imcms-content .files .content-preview:hover {
     box-shadow: 0 0 20px -5px rgba(0, 0, 0, 0.75);
     -webkit-transform: scale(1.1);
     transform: scale(1.1);
     z-index: 105;
 }
 
-.editor-content .content .files .content-preview .content-preview-image {
+.editor-content .imcms-content .files .content-preview .content-preview-image {
     height: inherit;
 }
+
+
 
 
 

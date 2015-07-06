@@ -2,11 +2,12 @@
     cursor: pointer;
     padding: 0;
     position: absolute;
-    left: -5px;
-    top: -25px;
     width: auto;
     height: 20px;
-    opacity: 0.2;
+    opacity: 0.9;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 .editor-frame:hover {
@@ -19,13 +20,13 @@
     overflow: hidden;
 }
 
-.editor-frame .header-ph .header {
+.editor-frame .header-ph .imcms-header {
     position: relative;
     overflow: hidden;
     width: auto;
 }
 
-.editor-frame .header-ph .header .title {
+.editor-frame .header-ph .imcms-header .imcms-title {
     background: #0091e1;
     color: #fff;
     line-height: 20px;

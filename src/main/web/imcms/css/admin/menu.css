@@ -1,104 +1,118 @@
-.menu-viewer .content table {
+.menu-viewer .imcms-content table {
     border-left: none;
     border-right: none;
-    margin-top: 20px;
     width: 100%;
     overflow: hidden;
+    background-color: #fff;
 }
 
-.menu-viewer .content table tr th,
-.menu-viewer .content table tr td {
+.menu-viewer .imcms-content table tr th,
+.menu-viewer .imcms-content table tr td {
     font-weight: normal;
     text-align: left;
     vertical-align: top;
 }
 
-.menu-viewer .content table tr th {
+.menu-viewer .imcms-content table tr th {
     background: #0091e1;
-    /*border-bottom: 3px solid #dcdcf0;*/
     font-weight: 500;
-    line-height: 30px;
     text-transform: uppercase;
-    padding: 0 20px;
-    color: white;
+    height: 0;
+    line-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    color: transparent;
+    border: none;
+    white-space: nowrap;
 }
 
-/*.menu-viewer .content table tr th:first-child {
-    border-radius: 3px 0 0 3px;
-    -webkit-border-radius: 3px 0 0 3px;
-    -moz-border-radius: 3px 0 0 3px;
-}*/
-
-/*.menu-viewer .content table tr th:last-child {
-    border-radius: 0 3px 3px 0;
-    -webkit-border-radius: 0 3px 3px 0;
-    -moz-border-radius: 0 3px 3px 0;
-}*/
-
-.menu-viewer .content table tr td {
+.menu-viewer .imcms-content table tr td {
     border-bottom: 1px solid #f0f0ff;
     padding: 7.5px 20px;
 }
 
-.menu-viewer .content table tr.clicked td {
+.menu-viewer .imcms-content table tr.clicked td {
     background: #0091e1;
     color: white;
 }
 
-.menu-viewer .content table tr:hover td {
+.menu-viewer .imcms-content table tr:hover td {
     background: #ffff64;
     color: black;
 }
 
-.menu-viewer .content table tr td.buttons {
+.menu-viewer .imcms-content table tr td.buttons {
     margin: 0;
 }
 
-.menu-viewer .content table tr td.buttons button,
-.menu-viewer .content table tr td.buttons .button {
+.menu-viewer .imcms-content table tr td.buttons button,
+.menu-viewer .imcms-content table tr td.buttons .button {
     font-size: 13px;
     line-height: 25px;
     visibility: hidden;
     padding: 0 10px;
 }
 
-.menu-viewer .content table tr:hover td.buttons button,
-.menu-viewer .content table tr:hover td.buttons .button {
+.menu-viewer .imcms-content table tr:hover td.buttons button,
+.menu-viewer .imcms-content table tr:hover td.buttons .button {
     visibility: visible;
 }
 
-.editor-form .content ul, .editor-form .content ul li {
+.menu-viewer .imcms-content form > div .field:last-child {
+    position: relative;
+    padding-top: 30px;
+    margin-top: 10px;
+    background-color: #0091e1;
+}
+
+.menu-viewer .imcms-content form > div .field .field-wrapper {
+    height: 290px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #fff;
+}
+
+.menu-viewer .imcms-content form > div .field .field-wrapper table th div {
+    position: absolute;
+    background: transparent;
+    color: #fff;
+    top: 0;
+    line-height: 30px;
+    padding: 0 20px;
+}
+
+.editor-form .imcms-content ul, .editor-form .imcms-content ul li {
     margin: 0;
     padding: 0;
 }
 
-.editor-form .content ul {
+.editor-form .imcms-content ul {
     background: #f0f0f0;
     padding-left: 0 !important;
 }
 
-.editor-form .content .jqtree-tree {
+.editor-form .imcms-content .jqtree-tree {
     padding: 0 !important;
 }
 
-.editor-form .content ul li {
+.editor-form .imcms-content ul li {
     background: #fff;
     list-style-type: none;
 }
 
-.editor-form .content ul li .jqtree-element {
+.editor-form .imcms-content ul li .jqtree-element {
     overflow: hidden;
     line-height: 20px;
     width: 100%;
 }
 
-.editor-form .content ul li .jqtree-element span {
+.editor-form .imcms-content ul li .jqtree-element span {
     line-height: 30px;
     float: left;
     padding: 0 20px;
 }
 
-.editor-form .content ul li .jqtree-element span:last-child {
+.editor-form .imcms-content ul li .jqtree-element span:last-child {
     float: right;
     padding: 5px;
 }
@@ -110,14 +124,8 @@
 ul.jqtree-tree li.jqtree-selected > .jqtree-element,
 ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
     background-color: #fff !important;
-    background:#fff !important;
-    /*background: -webkit-gradient(linear, left top, left bottom, from(#BEE0F5), to(#89AFCA)) !important;
-    background: -moz-linear-gradient(top, #BEE0F5, #89AFCA) !important;
-    background: -ms-linear-gradient(top, #BEE0F5, #89AFCA) !important;
-    background: -o-linear-gradient(top, #BEE0F5, #89AFCA) !important;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) !important;*/
+    background: #fff !important;
 }
-
 
 .editor-form ul.jqtree-tree .jqtree-element:hover {
     background: #ffff64;
@@ -132,7 +140,7 @@ ul.jqtree-tree span.jqtree-border {
     border: none !important;
     box-sizing: content-box !important;
     background-color: #649b00 !important;
-    height: 100% -ms-filter : "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; /* IE 8 */
+    height: 100% -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; /* IE 8 */
     filter: alpha(opacity=50); /* IE 5-7 */
     -moz-opacity: 0.5; /* Netscape */
     -khtml-opacity: 0.5; /* Safari 1.x */
@@ -161,11 +169,24 @@ ul.jqtree-tree li.jqtree-ghost span.jqtree-line {
     width: 100%;
 }
 
-
 ul.jqtree-tree ul.jqtree_common {
     margin-left: 30px !important;
     background-color: white;
     border-left: 1px solid #eee;
+}
+
+.editor-form .imcms-content ul.jqtree-tree .jqtree_common span .imcms-negative {
+    background: #dc0000 url("/images/remove.png") no-repeat center;
+    line-height: 20px;
+    display: none;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.editor-form .imcms-content ul.jqtree-tree .jqtree_common:hover span button {
+    display: block;
+    background: #dc0000 url("/images/remove.png") no-repeat center;
 }
 
 .clear {

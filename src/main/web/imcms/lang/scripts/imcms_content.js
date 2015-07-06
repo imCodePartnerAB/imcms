@@ -63,25 +63,25 @@ Imcms.Content.Editor.prototype = {
         this._builder = JSFormBuilder("<div>")
             .form()
             .div()
-            .class("header")
+            .class("imcms-header")
             .div()
             .html("Content Manager")
-            .class("title")
+            .class("imcms-title")
             .end()
             .button()
             .reference("closeButton")
-            .class("close-button")
+            .class("imcms-close-button")
             .on("click", this.cancel.bind(this))
             .end()
             /*
              .button()
              .html("Close without saving")
-             .class("neutral close-without-saving")
+             .class("imcms-neutral close-without-saving")
              .on("click", this.cancel.bind(this))
              .end()*/
             .end()
             .div()
-            .class("content")
+            .class("imcms-content")
             .div()
             .reference("folders")
             .class("folders")
@@ -99,9 +99,9 @@ Imcms.Content.Editor.prototype = {
             .end()
             .end()
             .div()
-            .class("footer")
+            .class("imcms-footer")
             .div()
-            .class("browse neutral")
+            .class("browse imcms-neutral")
             .div()
             .html("Upload file…")
             .end()
@@ -114,12 +114,12 @@ Imcms.Content.Editor.prototype = {
             .end()
             .button()
             .html("Apply")
-            .class("positive save-and-close")
+            .class("imcms-positive imcms-save-and-close")
             .on("click", this.save.bind(this))
             .end()
             .end()
             .end();
-        $(this._builder[0]).appendTo("body").addClass("editor-form editor-content");
+        $(this._builder[0]).appendTo("body").addClass("editor-form editor-content reset");
         return this;
     },
     buildFoldersTree: function () {
@@ -164,7 +164,7 @@ Imcms.Content.Editor.prototype = {
     },
     open: function (option) {
         this._option = option;
-        $(this._builder[0]).fadeIn("fast").find(".content").css({height: $(window).height() - 95});
+        $(this._builder[0]).fadeIn("fast").find(".imcms-content").css({height: $(window).height() - 95});
     },
     save: function () {
         this._option.onApply(this._fileAdapter.selected());
@@ -357,6 +357,25 @@ Imcms.Content.FileView = function (element, data) {
 Imcms.Content.FileView.prototype = {
     _element: {},
     _data: {},
+    //fixme: should work with no image file
+    _fileDefaults: {
+        displaySize: {
+            height: 0,
+            width: 0
+        },
+        empty: false,
+        extension: "",
+        imageInfo: {
+            format: "",
+            height: 0,
+            width: 0
+        },
+        modifiedDatetime: 0,
+        name: "",
+        nameWithoutExt: "",
+        typeId: 0,
+        urlPathRelativeToContextPath: ""
+    },
     _selectedElement: {},
     _selectedItem: {},
     _minImageCountPerLine: 8,
@@ -367,6 +386,7 @@ Imcms.Content.FileView.prototype = {
     buildView: function (data) {
         $(this._element).empty();
         $(this._element).resize(this._alignItems.bind(this));
+        this._prepareData(data);
         $.each(data, this._buildItem.bind(this));
         this._alignItems();
     },
@@ -378,6 +398,11 @@ Imcms.Content.FileView.prototype = {
         //.css({width: currentImageSize, height: currentImageSize});
 
         $div.appendTo(this._element).click(this._onSelect.bind(this, $div, data));
+    },
+    _prepareData: function (data) {
+        data.forEach(function (item, index) {
+            data[index] = Imcms.Utils.marge(item, this._fileDefaults);
+        }.bind(this));
     },
     _alignItems: function () {
         var areaSize = $(this._element).width(),
@@ -524,7 +549,7 @@ Imcms.Content.FileUploader.prototype = {
             // parent.mt.forms.active.setUploadingMode(postedFile.name);
         };
     },
-    uploadFormFile(file){
+    uploadFormFile: function (file) {
         var formData = new FormData();
         formData.append('file', file);
         $.ajax({

@@ -37,7 +37,7 @@ Imcms.Text.Editor.prototype = {
         var textFrame = new Imcms.FrameBuilder().title("Text Editor");
         $("[contenteditable='true']").each(function (position, element) {
             element = $(element);
-            var parent = element.parent().css({position: "relative"});
+            $("<div>").insertAfter(element).append(element).css({overflow: "hidden"});
             var currentFrame = textFrame.click(function (e) {
                 currentFrame.hide();
                 element.focus();
@@ -45,7 +45,7 @@ Imcms.Text.Editor.prototype = {
                 element.blur(function () {
                     currentFrame.show();
                 });
-            }).build().prependTo(parent);
+            }).build().insertBefore(element);
         });
         CKEDITOR.on('instanceCreated', $.proxy(this, "_onCreated"));
         CKEDITOR.on("confirmChanges", $.proxy(this, "_onConfirm"));
@@ -70,8 +70,8 @@ Imcms.Text.Editor.prototype = {
 
         // Remove unnecessary plugins to make the editor simpler.
         editor.config.removePlugins = 'colorbutton,find,' +
-        'forms,newpage,removeformat,' +
-        'specialchar,stylescombo,templates';
+            'forms,newpage,removeformat,' +
+            'specialchar,stylescombo,templates';
         editor.config.extraPlugins = editor.config.extraPlugins + ",documentSaver";
 
         editor.config.toolbar = 'MyToolbar';
@@ -79,10 +79,10 @@ Imcms.Text.Editor.prototype = {
             [
                 ['Bold', 'Italic', 'Underline', 'Strike'],
                 ['NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Outdent', 'Indent'],
-                [ 'Link', 'Unlink', 'Anchor' ],
-                [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ],
-                [ 'Styles', 'Format', 'Font', 'FontSize' ],
-                [ 'TextColor', 'BGColor' ],
+                ['Link', 'Unlink', 'Anchor'],
+                ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'],
+                ['Styles', 'Format', 'Font', 'FontSize'],
+                ['TextColor', 'BGColor'],
                 ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],
                 ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
                 ['confirm', 'cancel']
