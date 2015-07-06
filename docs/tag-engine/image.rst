@@ -19,7 +19,7 @@ Available list of tag attributes:
 | no                 | Integer      | Identifier for current image                     |
 +--------------------+--------------+--------------------------------------------------+
 | document           | Integer      | Identify the linked document (default            |
-|                    |              | - current document                               |
+|                    |              | - current document)                              |
 +--------------------+--------------+--------------------------------------------------+
 | version            | Integer      | Identify version of image                        |
 +--------------------+--------------+--------------------------------------------------+
