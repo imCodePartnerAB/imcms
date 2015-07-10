@@ -53,10 +53,11 @@ Imcms.Admin.Panel = {
             Imcms.Editors.Document.getDocument(Imcms.document.meta, function (data) {
                 var viewer = new Imcms.Document.Viewer({
                     data: data,
+                    type: Imcms.document.type,
                     loader: Imcms.Editors.Document,
                     target: $("body")[0],
                     onApply: function () {
-                        Imcms.Editors.Document.update(JSON.stringify(viewer.serialize()), Imcms.BackgroundWorker.createTask({
+                        Imcms.Editors.Document.update(viewer.serialize(), Imcms.BackgroundWorker.createTask({
                             showProcessWindow: true,
                             refreshPage: true
                         }));

@@ -30,7 +30,7 @@ public class MenuItemLinkTag extends TagSupport implements IEditableTag {
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
         parserParameters = ParserParameters.fromRequest(request);
         DocumentDomainObject document = menuItem.getDocument();
-        String pathToDocument = MenuParser.getPathToDocument(request, document, menuTag.getTemplate());
+        String pathToDocument = MenuParser.getPathToDocument(request, document, menuTag.getTemplate(), parserParameters);
         editor = createEditor().setId(menuItem.getDocumentReference().getDocumentId())
                 .setPosition(menuItem.getSortKey())
                 .setTreePosition(menuItem.getTreeSortIndex())

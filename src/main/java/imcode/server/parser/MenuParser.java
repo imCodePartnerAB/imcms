@@ -10,32 +10,22 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.iterators.FilterIterator;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.oro.text.regex.*;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.iterators.FilterIterator;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.oro.text.regex.PatternMatcher;
-import org.apache.oro.text.regex.Perl5Matcher;
-import org.apache.oro.text.regex.StringSubstitution;
-import org.apache.oro.text.regex.Substitution;
-import org.apache.oro.text.regex.Util;
+import java.util.*;
 
 public class MenuParser {
 
@@ -308,7 +298,7 @@ public class MenuParser {
 
         String template = parameters.getProperty("template");
         HttpServletRequest request = documentRequest.getHttpServletRequest();
-        String href = getPathToDocument(request, document, template);
+        String href = getPathToDocument(request, document, template, parserParameters);
 
         List menuItemAHref = new ArrayList(4);
         menuItemAHref.add("#href#");
@@ -330,11 +320,14 @@ public class MenuParser {
         return new MapSubstitution(tags, true);
     }
 
-    public static String getPathToDocument(HttpServletRequest request, DocumentDomainObject document, String template) {
+    public static String getPathToDocument(HttpServletRequest request, DocumentDomainObject document, String template, ParserParameters parserParameters) {
         String href = Utility.getAbsolutePathToDocument(request, document);
         if (StringUtils.isNotBlank(template)) {
             href += -1 != href.indexOf('?') ? '&' : '?';
             href += "template=" + URLEncoder.encode(template);
+        }
+        if (parserParameters.isAnyMode()) {
+            href = request.getContextPath() + "/servlet/AdminDoc?meta_id=" + document.getId() + "&flags=" + parserParameters.getFlags();
         }
         return href;
     }

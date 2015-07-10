@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * Created by Shadowgun on 18.03.2015.
  */
 @RestController
-@RequestMapping("/folders")
+@RequestMapping("/content/folders")
 public class FolderController {
     private static final String FILE_FILTER_PATTERN = "^(%s)+(\\.(%s))$";
 
@@ -32,7 +32,7 @@ public class FolderController {
 
     public static String folderFromRequest(HttpServletRequest request) {
         String path = request.getPathInfo();
-        path = path.replaceFirst("^/(.*?)/", "/");
+        path = path.replaceFirst("^/content/(.*?)/", "/");
         int lastDelimiter = path.lastIndexOf('/');
         path = path.substring(0, lastDelimiter);
         return path;

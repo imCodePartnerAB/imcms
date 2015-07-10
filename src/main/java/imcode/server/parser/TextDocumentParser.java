@@ -101,6 +101,10 @@ public class TextDocumentParser {
 
             TemplateDomainObject template = templateMapper.getTemplateByName(templateName);
 
+            if (template == null) {
+                template = templateMapper.getAllTemplates().get(0);
+            }
+
             boolean hasAdminPanel = user.hasAdminPanelForDocument(document);
 
             Perl5Matcher patMat = new Perl5Matcher();

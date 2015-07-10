@@ -1,6 +1,12 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.flow.*;
+import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.flow.ChangeDocDefaultVersionPageFlow;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.PageFlow;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.servlet.GetDoc;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -14,21 +20,17 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Stack;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.GetDoc;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Stack;
 
 /**
  * Handles admin panel commands.
@@ -37,16 +39,33 @@ public class AdminDoc extends HttpServlet {
 
     private static class EditDocPageFlow extends PageFlow {
 
+        protected DocumentDomainObject document;
+
         // todo: editor tag arg: perms/info/profile/etc
-        private EditDocPageFlow() {
+        private EditDocPageFlow(DocumentDomainObject document) {
             super(null);
+
+            this.document = document;
         }
 
         @Override
         public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            String docAdminUrl = request.getContextPath() + "/imcms/docadmin?meta_id=" + request.getParameter("meta_id");
+            //String docAdminUrl = request.getContextPath() + "/imcms/docadmin?meta_id=" + request.getParameter("meta_id");
+            DocumentRequest documentRequest = new DocumentRequest(Imcms.getServices(), Imcms.getUser(), document, null, request, response);
+            ParserParameters parserParameters = new ParserParameters(documentRequest);
 
-            response.sendRedirect(docAdminUrl);
+            parserParameters.setFlags(56568);
+
+            ParserParameters.putInRequest(parserParameters);
+
+            ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
+            Document document = cms.getDocumentService().getDocument(this.document.getId());
+
+            request.setAttribute("document", document);
+            request.setAttribute("user", cms.getCurrentUser());
+
+
+            request.getRequestDispatcher("/WEB-INF/jsp/admin/edit_document.jsp").forward(request, response);
         }
 
         @Override
@@ -77,7 +96,7 @@ public class AdminDoc extends HttpServlet {
 
     /**
      * Creates a document page flow and dispatches request to that flow.
-     * <p>
+     * <p/>
      * If flow can not be created or an user is not allowed to edit a document adminDoc is called.
      */
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -117,15 +136,15 @@ public class AdminDoc extends HttpServlet {
 
         PageFlow pageFlow = null;
         if (ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags && user.canEditDocumentInformationFor(document)) {
-            pageFlow = new EditDocPageFlow();
+            pageFlow = new EditDocPageFlow(document);
         } else if (ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor(document)) {
-            pageFlow = new EditDocPageFlow();
+            pageFlow = new EditDocPageFlow(document);
         } else if (document instanceof HtmlDocumentDomainObject && ImcmsConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags) {
-            pageFlow = new EditDocPageFlow();
+            pageFlow = new EditDocPageFlow(document);
         } else if (document instanceof UrlDocumentDomainObject && ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags) {
-            pageFlow = new EditDocPageFlow();
+            pageFlow = new EditDocPageFlow(document);
         } else if (document instanceof FileDocumentDomainObject && ImcmsConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags) {
-            pageFlow = new EditDocPageFlow();
+            pageFlow = new EditDocPageFlow(document);
         } else if (ImcmsConstants.DISPATCH_FLAG__PUBLISH == flags) {
             pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.MakeDocumentVersionCommand(), user);
         } else if (ImcmsConstants.DISPATCH_FLAG__SET_DEFAULT_VERSION == flags) {

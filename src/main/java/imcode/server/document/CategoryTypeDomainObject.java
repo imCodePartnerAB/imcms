@@ -97,11 +97,11 @@ public class CategoryTypeDomainObject implements Comparable, Serializable, Clone
     }
 
     public boolean isMultiselect() {
-        return maxChoices > 0;
+        return maxChoices == 0;
     }
 
     public void setMultiselect(boolean multiselect) {
-        setMaxChoices(1);
+        setMaxChoices(0);
     }
 
     public boolean isSingleSelect() {

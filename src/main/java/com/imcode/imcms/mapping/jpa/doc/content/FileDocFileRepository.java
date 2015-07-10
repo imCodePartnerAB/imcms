@@ -11,7 +11,7 @@ import java.util.List;
 public interface FileDocFileRepository extends JpaRepository<FileDocFile, Integer> {
 
     @Modifying
-    @Query("DELETE FROM FileDocFile f WHERE f.version.docId = ?1 AND f.version.no = ?2")
+    @Query("DELETE FROM FileDocFile f WHERE f.documentId IN (SELECT v FROM Version v WHERE v.no = ?2 AND v.docId = ?1)")
     void deleteByDocIdAndVersionNo(int docId, int versionNo);
 
     @Query("SELECT f FROM FileDocFile f WHERE f.version.docId = ?1 AND f.version.no = ?2 ORDER BY f.defaultFileId DESC, f.fileId")

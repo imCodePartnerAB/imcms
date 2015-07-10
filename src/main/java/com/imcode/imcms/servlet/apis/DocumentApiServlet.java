@@ -1,30 +1,30 @@
 package com.imcode.imcms.servlet.apis;
 
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.TextDocument;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.JSONUtils;
-import com.imcode.imcms.util.RequestUtils;
 import imcode.server.Imcms;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.CategoryTypeDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
+import imcode.util.io.FileInputStreamSource;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,73 +33,42 @@ import java.util.stream.Stream;
 /**
  * Created by Shadowgun on 17.02.2015.
  */
-public class DocumentApiServlet extends HttpServlet {
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            TextDocumentDomainObject documentDomainObject = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(TextDocument.TYPE_ID,
-                    documentMapper.getDocument(documentMapper.getHighestDocumentId()),
-                    Imcms.getUser());
-            documentDomainObject.setHeadline(req.getParameter("name"));
+@RestController
+@RequestMapping("/document")
+public class DocumentApiServlet {
+    private static final Logger LOG = Logger.getLogger(DocumentApiServlet.class);
 
-            documentMapper.saveNewDocument(documentDomainObject, Imcms.getUser());
 
-            result.put("result", true);
-            result.put("id", documentMapper.getLowestDocumentId());
-        } catch (DocumentSaveException e) {
-            result.put("result", false);
-        }
-        JSONUtils.defaultJSONAnswer(resp, result);
-    }
-
-    @Override
+    @RequestMapping(method = RequestMethod.GET)
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getParameter("id") != null) {
             Integer id = Integer.parseInt(request.getParameter("id"));
-            CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
-            TextDocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().getDocument(id);
-            DocumentEntity result = new DocumentEntity();
-            result.languages = new HashMap<>();
-            result.alias = documentDomainObject.getAlias();
-            result.id = id;
-            result.status = documentDomainObject.getPublicationStatus().asInt();
-            result.target = documentDomainObject.getTarget();
-            result.template = documentDomainObject.getTemplateName();
-            result.access = Stream
-                    .of(documentDomainObject.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings())
-                    .collect(Collectors.toMap(b -> b.getRoleId().intValue(), a -> {
-                        Map<String, java.io.Serializable> map = new HashMap<>();
-                        map.put("permission", a.getDocumentPermissionSetType().getId());
-                        map.put("role", a.getRoleId());
-                        return map;
-                    }));
-            result.keywords = documentDomainObject.getKeywords();
-            result.categories = Stream.of(categoryMapper.getAllCategoryTypes())
-                    .distinct()
-                    .collect(
-                            Collectors.toMap(
-                                    CategoryTypeDomainObject::getName,
-                                    val -> {
-                                        CategoryDomainObject[] categories = categoryMapper.getCategoriesOfType(
-                                                val,
-                                                documentDomainObject.getCategoryIds()
-                                        ).toArray(new CategoryDomainObject[1]);
-                                        return categories[0] != null ? categories[0].getName() : "";
-                                    }
-                            )
-                    );
-            Map<DocumentLanguage, DocumentCommonContent> contentMap = Imcms.getServices().getDocumentMapper().getCommonContents(id);
-            for (Map.Entry<DocumentLanguage, DocumentCommonContent> entry : contentMap.entrySet()) {
-                DocumentEntity.LanguageEntity languageEntity = new DocumentEntity.LanguageEntity();
-                languageEntity.code = entry.getKey().getCode();
-                languageEntity.enabled = true;
-                languageEntity.image = entry.getValue().getMenuImageURL();
-                languageEntity.menuText = entry.getValue().getMenuText();
-                languageEntity.title = entry.getValue().getHeadline();
-                result.languages.put(entry.getKey().getName(), languageEntity);
+
+
+            DocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().getDocument(id);
+            DocumentEntity result;
+
+            switch (documentDomainObject.getDocumentTypeId()) {
+                case DocumentTypeDomainObject.URL_ID: {
+                    result = new UrlDocumentEntity();
+                    asUrlEntity((UrlDocumentEntity) result, (UrlDocumentDomainObject) documentDomainObject);
+                }
+                break;
+                case DocumentTypeDomainObject.FILE_ID: {
+                    result = new FileDocumentEntity();
+                    asFileEntity((FileDocumentEntity) result, (FileDocumentDomainObject) documentDomainObject);
+                }
+                break;
+                case DocumentTypeDomainObject.TEXT_ID:
+                default: {
+                    result = new TextDocumentEntity();
+                    asTextEntity((TextDocumentEntity) result, (TextDocumentDomainObject) documentDomainObject);
+                }
+                break;
             }
+
+            prepareEntity(result, documentDomainObject);
+
             JSONUtils.defaultJSONAnswer(response, result);
         } else {
             List<Map<String, Object>> result = new ArrayList<>();
@@ -120,68 +89,222 @@ public class DocumentApiServlet extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+    @RequestMapping(method = RequestMethod.POST)
+    protected Object doPut(HttpServletRequest req,
+                           @RequestParam("type") Integer type,
+                           @RequestParam("data") String data,
+                           @RequestParam(value = "file", required = false) MultipartFile file) throws ServletException, IOException {
         Map<String, Object> result = new HashMap<>();
         try {
-            Map<String, Object> answer = new HashMap<>();
-            DocumentEntity documentEntity = new ObjectMapper()
-                    .readValue(
-                            RequestUtils.parse(req.getInputStream()).get("data"),
-                            new TypeReference<DocumentEntity>() {
-                            }
-                    );
+            DocumentDomainObject documentDomainObject;
+
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
-            final TextDocumentDomainObject documentDomainObject =
-                    documentEntity.id == null ? (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(TextDocument.TYPE_ID,
+            DocumentEntity documentEntity;
+
+            switch (type) {
+                case DocumentTypeDomainObject.URL_ID: {
+                    documentEntity = new ObjectMapper()
+                            .readValue(
+                                    data,
+                                    new TypeReference<UrlDocumentEntity>() {
+                                    }
+                            );
+                    documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(UrlDocument.TYPE_ID,
                             documentMapper.getDocument(documentMapper.getHighestDocumentId()),
                             Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
-            Map<DocumentLanguage, DocumentCommonContent> contentMap = new HashMap<>();
-            for (DocumentLanguage language : Imcms.getServices().getDocumentLanguages().getAll()) {
-                DocumentEntity.LanguageEntity languageEntity = documentEntity.languages.get(language.getName());
-                if (languageEntity.enabled)
-                    contentMap.put(
-                            language,
-                            DocumentCommonContent.builder()
-                                    .headline(languageEntity.title)
-                                    .menuImageURL(languageEntity.image)
-                                    .menuText(languageEntity.menuText)
-                                    .build()
-                    );
+
+                    asUrlDocument((UrlDocumentDomainObject) documentDomainObject, (UrlDocumentEntity) documentEntity);
+                }
+                break;
+                case DocumentTypeDomainObject.FILE_ID: {
+                    documentEntity = new ObjectMapper()
+                            .readValue(
+                                    data,
+                                    new TypeReference<FileDocumentEntity>() {
+                                    }
+                            );
+                    documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(FileDocument.TYPE_ID,
+                            documentMapper.getDocument(documentMapper.getHighestDocumentId()),
+                            Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
+                    asFileDocument((FileDocumentDomainObject) documentDomainObject, (FileDocumentEntity) documentEntity, file);
+
+                }
+                break;
+                case DocumentTypeDomainObject.TEXT_ID:
+                default: {
+                    documentEntity = new ObjectMapper()
+                            .readValue(
+                                    data,
+                                    new TypeReference<TextDocumentEntity>() {
+                                    }
+                            );
+                    documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(TextDocument.TYPE_ID,
+                            documentMapper.getDocument(documentMapper.getHighestDocumentId()),
+                            Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
+
+                    asTextDocument((TextDocumentDomainObject) documentDomainObject, (TextDocumentEntity) documentEntity);
+                }
+                break;
             }
-            documentEntity.access.forEach((id, map) ->
-                    documentDomainObject
-                            .setDocumentPermissionSetTypeForRoleId(new RoleId(id),
-                                    DocumentPermissionSetTypeDomainObject
-                                            .values()[Integer.parseInt(map.get("permission").toString())]));
-            documentDomainObject.setAlias(documentEntity.alias);
-            documentDomainObject.setTemplateName(documentEntity.template);
-            documentDomainObject.setTarget(documentEntity.target);
-            documentDomainObject.setKeywords(documentEntity.keywords);
-            documentDomainObject.setPublicationStatus(Document.PublicationStatus.of(documentEntity.status));
-            documentDomainObject.setCategoryIds(
-                    documentEntity.categories.entrySet().stream()
-                            .filter(entry -> StringUtils.isNotEmpty(entry.getValue()))
-                            .map(entry -> categoryMapper.getCategoryByTypeAndName(
-                                    categoryMapper.getCategoryTypeByName(entry.getKey()),
-                                    entry.getValue()).getId())
-                            .collect(Collectors.toSet())
-            );
+
+
+            prepareDocument(documentEntity, documentDomainObject);
+
+
             if (documentEntity.id != null)
-                documentMapper.saveDocument(documentDomainObject, contentMap, Imcms.getUser());
+                documentMapper.saveDocument(documentDomainObject, getContentMap(documentEntity), Imcms.getUser());
             else
-                documentDomainObject.setId(documentMapper.saveNewDocument(documentDomainObject, contentMap, Imcms.getUser()).getId());
-            answer.put("id", documentDomainObject.getId());
+                documentDomainObject.setId(documentMapper.saveNewDocument(documentDomainObject, getContentMap(documentEntity), Imcms.getUser()).getId());
+
+            documentEntity.id = documentDomainObject.getId();
             result.put("result", true);
-            result.put("data", answer);
+            result.put("data", documentEntity);
         } catch (Exception e) {
+            LOG.error("Problem during document creating", e);
             result.put("result", false);
         }
-        JSONUtils.defaultJSONAnswer(resp, result);
+        return result;
     }
 
-    @Override
+    protected void prepareDocument(DocumentEntity documentEntity, DocumentDomainObject documentDomainObject) {
+        CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
+
+        documentEntity.access.forEach((id, map) ->
+                documentDomainObject
+                        .setDocumentPermissionSetTypeForRoleId(new RoleId(id),
+                                DocumentPermissionSetTypeDomainObject
+                                        .values()[Integer.parseInt(map.get("permission").toString())]));
+
+        documentDomainObject.setAlias(documentEntity.alias);
+
+        documentDomainObject.setTarget(documentEntity.target);
+        documentDomainObject.setKeywords(documentEntity.keywords);
+        documentDomainObject.setPublicationStatus(Document.PublicationStatus.of(documentEntity.status));
+        documentDomainObject.setCategoryIds(
+                documentEntity.categories.entrySet().stream()
+                        .filter(entry -> {
+                            for (String item : entry.getValue()) {
+                                if (!StringUtils.isNotEmpty(item)) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        })
+                        .map(entry -> {
+                            List<Integer> ids = new ArrayList<>();
+                            for (String item : entry.getValue()) {
+                                ids.add(categoryMapper.getCategoryByTypeAndName(
+                                        categoryMapper.getCategoryTypeByName(entry.getKey()),
+                                        item).getId());
+                            }
+                            return ids;
+                        })
+                        .flatMap(List::stream)
+                        .collect(Collectors.toSet())
+        );
+    }
+
+    protected Map<DocumentLanguage, DocumentCommonContent> getContentMap(DocumentEntity entity) {
+        Map<DocumentLanguage, DocumentCommonContent> contentMap = new HashMap<>();
+        for (DocumentLanguage language : Imcms.getServices().getDocumentLanguages().getAll()) {
+            DocumentEntity.LanguageEntity languageEntity = entity.languages.get(language.getName());
+            if (languageEntity.enabled)
+                contentMap.put(
+                        language,
+                        DocumentCommonContent.builder()
+                                .headline(languageEntity.title)
+                                .menuImageURL(languageEntity.image)
+                                .menuText(languageEntity.menuText)
+                                .build()
+                );
+        }
+        return contentMap;
+    }
+
+    protected void asFileDocument(FileDocumentDomainObject document, FileDocumentEntity entity, MultipartFile multipartFile) throws IOException, ServletException {
+        FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
+        fileDocumentFile.setFilename(multipartFile.getOriginalFilename());
+
+        fileDocumentFile.setMimeType(multipartFile.getContentType());
+        File file = new File(Imcms.getServices().getConfig().getFilePath(), multipartFile.getName());
+        file.createNewFile();
+        multipartFile.transferTo(file);
+        fileDocumentFile.setInputStreamSource(new FileInputStreamSource(file));
+        document.addFile(multipartFile.getName(), fileDocumentFile);
+    }
+
+    protected void asTextDocument(TextDocumentDomainObject document, TextDocumentEntity entity) {
+        document.setTemplateName(entity.template);
+    }
+
+    protected void asUrlDocument(UrlDocumentDomainObject document, UrlDocumentEntity entity) {
+        document.setUrl(entity.url);
+    }
+
+    protected void prepareEntity(DocumentEntity entity, DocumentDomainObject document) {
+        CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
+
+        entity.languages = new HashMap<>();
+        entity.alias = document.getAlias();
+        entity.id = document.getId();
+        entity.status = document.getPublicationStatus().asInt();
+        entity.target = document.getTarget();
+
+        entity.access = Stream
+                .of(document.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings())
+                .collect(Collectors.toMap(b -> b.getRoleId().intValue(), a -> {
+                    Map<String, java.io.Serializable> map = new HashMap<>();
+                    map.put("permission", a.getDocumentPermissionSetType().getId());
+                    map.put("role", a.getRoleId());
+                    return map;
+                }));
+
+        entity.keywords = document.getKeywords();
+
+        entity.categories = Stream.of(categoryMapper.getAllCategoryTypes())
+                .distinct()
+                .collect(
+                        Collectors.toMap(
+                                CategoryTypeDomainObject::getName,
+                                val ->
+                                        categoryMapper.getCategoriesOfType(
+                                                val,
+                                                document.getCategoryIds()
+                                        ).stream()
+                                                .map(val1 -> val1 == null ? "" : val1.getName())
+                                                .collect(Collectors.toList())
+                                                .toArray(new String[0]))
+                );
+
+        Map<DocumentLanguage, DocumentCommonContent> contentMap = Imcms.getServices()
+                .getDocumentMapper().getCommonContents(document.getId());
+
+        for (Map.Entry<DocumentLanguage, DocumentCommonContent> entry : contentMap.entrySet()) {
+            DocumentEntity.LanguageEntity languageEntity = new DocumentEntity.LanguageEntity();
+            languageEntity.code = entry.getKey().getCode();
+            languageEntity.enabled = true;
+            languageEntity.image = entry.getValue().getMenuImageURL();
+            languageEntity.menuText = entry.getValue().getMenuText();
+            languageEntity.title = entry.getValue().getHeadline();
+            entity.languages.put(entry.getKey().getName(), languageEntity);
+        }
+    }
+
+    protected void asFileEntity(FileDocumentEntity entity, FileDocumentDomainObject document) {
+        entity.file = document.getDefaultFile().getFilename();
+    }
+
+    protected void asUrlEntity(UrlDocumentEntity entity, UrlDocumentDomainObject document) {
+        entity.url = document.getUrl();
+    }
+
+    protected void asTextEntity(TextDocumentEntity entity, TextDocumentDomainObject document) {
+        entity.template = document.getTemplateName();
+    }
+
+
+    @RequestMapping(method = RequestMethod.DELETE)
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Map<String, Object> result = new HashMap<>();
         Imcms.getServices().getDocumentMapper().deleteDocument(Integer.parseInt(req.getPathInfo().replace("/", "")), Imcms.getUser());
@@ -195,10 +318,9 @@ public class DocumentApiServlet extends HttpServlet {
         public String alias;
         public String target;
         public Integer status;
-        public String template;
         public Map<Integer, Map> access;
         public Set<String> keywords;
-        public Map<String, String> categories;
+        public Map<String, String[]> categories;
 
         private static class LanguageEntity {
             public String code;
@@ -208,5 +330,17 @@ public class DocumentApiServlet extends HttpServlet {
             @JsonProperty("menu-text")
             public String menuText;
         }
+    }
+
+    private static class TextDocumentEntity extends DocumentEntity {
+        public String template;
+    }
+
+    private static class UrlDocumentEntity extends DocumentEntity {
+        public String url;
+    }
+
+    private static class FileDocumentEntity extends DocumentEntity {
+        public String file;
     }
 }

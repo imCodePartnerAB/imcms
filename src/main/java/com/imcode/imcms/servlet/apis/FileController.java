@@ -28,7 +28,7 @@ import java.util.stream.Stream;
  * Created by Shadowgun on 23.03.2015.
  */
 @RestController
-@RequestMapping("/files")
+@RequestMapping("/content/files")
 public class FileController {
     private static final String FILE_FILTER_PATTERN = "^%s\\.(%s)$";
 

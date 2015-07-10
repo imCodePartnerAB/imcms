@@ -454,18 +454,24 @@ Imcms.Menu.Editor.prototype = {
         this._treeAdapter.add({id: data.label, "doc-id": data.id, label: data.label, name: data.label});
     },
     _openDocumentViewer: function () {
-        new Imcms.Document.Viewer({
-            loader: this._loader,
-            onApply: $.proxy(this._addMenuItemFromDocumentViewer, this),
-            onCancel: function () {
-            }
-        })
+        new Imcms.Document.TypeViewer({
+            onApply: function (type) {
+                new Imcms.Document.Viewer({
+                    type: type,
+                    loader: this._loader,
+                    onApply: $.proxy(this._addMenuItemFromDocumentViewer, this),
+                    onCancel: function () {
+                    }
+                });
+            }.bind(this)
+        });
     },
     _addMenuItemFromDocumentViewer: function (viewer) {
-        var data = viewer.serialize();
-        this._loader.update(JSON.stringify(data), $.proxy(function (answer) {
+        var formData = viewer.serialize();
+
+        this._loader.update(formData, $.proxy(function (answer) {
             if (!answer.result) return;
-            this._addItem({id: answer.data.id, label: data.languages[Imcms.language.name].title});
+            this._addItem({id: answer.data.id, label: answer.data.languages[Imcms.language.name].title});
         }, this));
     },
     saveAndClose: function () {

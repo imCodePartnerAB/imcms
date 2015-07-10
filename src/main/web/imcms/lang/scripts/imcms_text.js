@@ -72,7 +72,7 @@ Imcms.Text.Editor.prototype = {
         editor.config.removePlugins = 'colorbutton,find,' +
             'forms,newpage,removeformat,' +
             'specialchar,stylescombo,templates';
-        editor.config.extraPlugins = editor.config.extraPlugins + ",documentSaver";
+        editor.config.extraPlugins = editor.config.extraPlugins + ",documentSaver,fileBrowser";
 
         editor.config.toolbar = 'MyToolbar';
         editor.config.toolbar_MyToolbar =
@@ -80,7 +80,7 @@ Imcms.Text.Editor.prototype = {
                 ['Bold', 'Italic', 'Underline', 'Strike'],
                 ['NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Outdent', 'Indent'],
                 ['Link', 'Unlink', 'Anchor'],
-                ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'],
+                ['Image', 'openBrowser', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'],
                 ['Styles', 'Format', 'Font', 'FontSize'],
                 ['TextColor', 'BGColor'],
                 ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],

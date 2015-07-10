@@ -30,11 +30,11 @@
 
     <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 
-    <target name="changes">
+    <!--<target name="changes">
         <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
-    </target>
+    </target>-->
 
-    <target name="process-webapp-sources" depends="init,changes"
+    <target name="process-webapp-sources" depends="init"
             description="Translates and copies the webapp sources to webapp.">
 
         <property name="texttemplates" value="${webinf.templates.dir}/text"/>

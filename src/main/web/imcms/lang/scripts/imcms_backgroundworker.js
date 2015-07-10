@@ -140,9 +140,12 @@ Imcms.BackgroundWorker = {
         //$('html[manifest=saveappoffline.appcache]').attr('content', '');
         content = pattern.exec(content)[0];
         content = $($.parseHTML($.trim(content)));
+
         $("body>*").remove();
         $("body").append(content).append($this.processWindow);
-        new Imcms.Bootstrapper().bootstrap(true);
+
+        new Imcms.Bootstrapper().bootstrap(Imcms.isEditMode);
+
         $("[contenteditable=true]").each(function (p, e) {
             CKEDITOR.inline(e);
         });

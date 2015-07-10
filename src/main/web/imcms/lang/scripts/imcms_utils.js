@@ -24,9 +24,10 @@ Imcms.Utils.margeObjectsProperties = function () {
 Imcms.Utils.marge = function (obj, source) {
     if (!obj || !source || obj.constructor !== Object || source.constructor !== Object) return obj ? obj : null;
     for (var key in source) {
-        if (!Object.prototype.hasOwnProperty.call(obj, key))
+        if (!Object.prototype.hasOwnProperty.call(obj, key)) {
             obj[key] = source[key];
-        else if (obj[key].constructor === Object) {
+        }
+        else if (obj[key] && obj[key].constructor === Object) {
             obj[key] = Imcms.Utils.marge(obj[key], source[key]);
         }
     }

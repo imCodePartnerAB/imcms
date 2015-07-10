@@ -12,6 +12,9 @@ public abstract class VersionedContent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "doc_id", unique = true, nullable = false, insertable = false, updatable = false)
+    private Integer documentId;
+
     @NotNull
     @ManyToOne
     @JoinColumns({
@@ -34,5 +37,9 @@ public abstract class VersionedContent {
 
     public void setVersion(Version contentVersion) {
         this.version = contentVersion;
+    }
+
+    public Integer getDocumentId() {
+        return documentId;
     }
 }

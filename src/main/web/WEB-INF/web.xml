@@ -258,10 +258,10 @@
         <servlet-name>EditMenuTest</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.apis.MenuApiServlet</servlet-class>
     </servlet>
-    <servlet>
+    <!--<servlet>
         <servlet-name>DocumentApi</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.apis.DocumentApiServlet</servlet-class>
-    </servlet>
+    </servlet>-->
     <servlet>
         <servlet-name>LanguageApi</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.apis.LanguageApiServlet</servlet-class>
@@ -541,7 +541,7 @@
 
     <servlet-mapping>
         <servlet-name>web</servlet-name>
-        <url-pattern>/api/content/*</url-pattern>
+        <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
     <!--servlet-mapping>
         <servlet-name>web</servlet-name>
@@ -558,10 +558,10 @@
         <url-pattern>/editmenu/*</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
+    <!--<servlet-mapping>
         <servlet-name>DocumentApi</servlet-name>
         <url-pattern>/api/document/*</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping>-->
     <servlet-mapping>
         <servlet-name>LanguageApi</servlet-name>
         <url-pattern>/api/language/*</url-pattern>

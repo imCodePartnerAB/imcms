@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,9 +29,12 @@ public class CategoryApiServlet extends HttpServlet {
                         .collect(
                                 Collectors.toMap(
                                         CategoryTypeDomainObject::getName,
-                                        val -> Stream.of(categoryMapper.getAllCategoriesOfType(val))
-                                                .map(CategoryDomainObject::getName)
-                                                .collect(Collectors.toList())
+                                        val -> new Object() {
+                                            public List<String> items = Stream.of(categoryMapper.getAllCategoriesOfType(val))
+                                                    .map(CategoryDomainObject::getName)
+                                                    .collect(Collectors.toList());
+                                            public boolean isMultiple = val.isMultiselect();
+                                        }
                                 )
                         )
         );

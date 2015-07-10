@@ -28,7 +28,7 @@ import java.io.IOException;
  * Created by Shadowgun on 26.03.2015.
  */
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/content/image")
 public class ImageController {
 
     @Autowired

@@ -165,6 +165,51 @@ CKEDITOR.dialog.add("documentSaver", function (e) {
     };
 });
 
+CKEDITOR.plugins.add("fileBrowser", {
+    init: function (editor) {
+
+        var onChooseFile = function () {
+            Imcms.Editors.Content.showDialog({
+                onApply: $.proxy(onFileChosen, this),
+                onCancel: $.proxy(onFileChosen, this)
+            });
+            editor.focusManager.blur();
+            editor.element.$.blur();
+        };
+        var onFileChosen = function (data) {
+            if (data) {
+                editor.insertHtml('<img class="captionedImage" src="' + data.urlPathRelativeToContextPath + '" alt="" /><br>', 'unfiltered_html');
+            }
+            editor.focusManager.focus();
+            editor.element.$.focus();
+
+        };
+
+        var openBrowserCommandDefinition =
+        {
+            // This command works in both editing modes.
+            modes: {wysiwyg: 1, source: 1},
+
+            // This command will not auto focus editor before execution.
+            editorFocus: false,
+
+            // This command requires no undo snapshot.
+            canUndo: false,
+
+            exec: onChooseFile
+        };
+        editor.addCommand("openBrowser", openBrowserCommandDefinition);
+
+
+        editor.ui.addButton('openBrowser',
+            {
+                label: 'Open Image Browser',
+                command: "openBrowser",
+                icon: "images/ic_apply.png"
+            });
+    }
+});
+
 /**
  * Detect Element Resize Plugin for jQuery
  *
