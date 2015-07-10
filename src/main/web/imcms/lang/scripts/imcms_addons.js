@@ -205,7 +205,7 @@ CKEDITOR.plugins.add("fileBrowser", {
             {
                 label: 'Open Image Browser',
                 command: "openBrowser",
-                icon: "images/ic_apply.png"
+                icon: "images/ic_images.png"
             });
     }
 });
