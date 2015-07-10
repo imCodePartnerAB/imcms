@@ -834,7 +834,7 @@ Imcms.Document.TypeViewer.prototype = {
             .class("imcms-header")
             .div()
             .class("imcms-title")
-            .html(this._title)
+            .html("Document Types")
             .hidden()
             .name("id")
             .end()
