@@ -8,14 +8,14 @@ In this article:
 Introduction
 ------------
 Probably everyone faced with a situation where same content should displayed several times. Of course this problem can be solve with
-well-known standard JSP tag ``forEach``, but it is not enough if count cycle of content changed very often. That is why ImCMS provide own cycle tag that called ``Loop``.
-``Loop`` tag works like the ``forEach`` tag, but the main feature of it is visual editor that provide agile configuration of content`s count, etc.
+well-known standard JSP tag ``forEach``, but it is not enough if count cycle of content changed very often. That is why ImCMS provide own cycle tag that called ``loop``.
+``loop`` tag works like the ``forEach`` tag, but the main feature of it is visual editor that provide agile configuration of content`s count, etc.
 
 
 Use in template
 ---------------
 
-For configure ``Loop`` tag in template just look at the code above.
+For configure ``loop`` tag in template just look at the code below.
 
 .. code-block:: jsp
 
