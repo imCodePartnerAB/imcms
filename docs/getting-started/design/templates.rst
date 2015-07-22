@@ -6,7 +6,7 @@ Templates
 In this article:
 	- `Create new template`_
 	- `Modify template`_
-    - `Summary`_
+	- `Summary`_
 
 
 Create new template
@@ -46,6 +46,7 @@ Create new template
 .. image:: templates/_static/03-PageInfo.png
 
 7. Choose created template from dropdown and click **"OK"** button
+
 
 
 Modify template

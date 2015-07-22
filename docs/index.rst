@@ -6,9 +6,9 @@
 .. _index:
 
 ImCMS Documentation
-=========================
+===================
 
-.. include:: ../common/stub-overview.txt
+.. include:: /common/stub-overview.txt
 
 .. toctree::
     :titlesonly:
@@ -16,7 +16,8 @@ ImCMS Documentation
     overview
     getting-started/index
     tag-engine/index
+    document-engine/index
 
-.. include:: ../common/contribute.txt
+.. include:: /common/contribute.txt
 
 
