@@ -9,7 +9,7 @@ In this article:
 Introduction
 ------------
 Well-known, an integral part of the page is menu it navigate users overall web-site, and describe what kind of content
-was presented on. Since ImCMS based on document-presented pages each menu item can presented as specific document link (see also :doc:`/document-engine` section)
+was presented on. Since ImCMS based on document-presented pages each menu item can presented as specific document link (see also :doc:`Document Engine </document-engine/index>` section)
 
 Use in template
 ---------------
