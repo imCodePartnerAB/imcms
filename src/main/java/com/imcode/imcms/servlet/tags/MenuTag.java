@@ -80,7 +80,7 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
             /*bodyContentString = MenuParser.addMenuAdmin(no,
                     parserParameters.isMenuMode(),
                     bodyContentString, menu, request, response, label);*/
-            if (parserParameters.isAnyMode())
+            if (parserParameters.isMenuMode())
                 bodyContentString = createEditor().setNo(no).setDocumentId(docId).wrap(bodyContentString);
             bodyContentString = TagParser.addPreAndPost(attributes, bodyContentString);
             pageContext.getOut().write(bodyContentString);

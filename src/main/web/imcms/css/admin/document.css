@@ -70,6 +70,11 @@
     padding: 10px;
 }
 
+.document-viewer .imcms-content .imcms-column {
+    float: left;
+    margin-right: 10px;
+}
+
 .document-viewer .imcms-content .field .label {
     padding: 5px 10px;
     height: 20px;
@@ -78,12 +83,14 @@
 .document-viewer .imcms-content .keywords-page .field > * {
     float: left;
 }
+
 .document-viewer .imcms-content .keywords-page .field > label {
     float: none;
 }
 
 .document-viewer .imcms-content .access-page tr button {
-    visibility: hidden; background: #dc0000 url("/images/remove.png") no-repeat center;
+    visibility: hidden;
+    background: #dc0000 url("/images/remove.png") no-repeat center;
     line-height: 20px;
     padding: 0;
     width: 20px;

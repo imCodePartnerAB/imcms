@@ -134,7 +134,7 @@
         <section class="footer">
             <div class="wrapper">
                 <div class="additional">
-                    <imcms:text no="3" document="1001"/>
+                    <imcms:text no="3" document="1001" placeholder="<i>now empty text field can be filled with attr `placeholder`</i>"/>
                 </div>
                 <div class="logo">
                     <imcms:image no="1" document="1001"/>

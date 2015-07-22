@@ -44,7 +44,7 @@ public class LoopTag extends SimpleTagSupport implements IEditableTag {
         TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
         Loop loop = document.getLoop(no);
         UserDomainObject user = Utility.getLoggedOnUser(request);
-        boolean editMode = parserParameters.isAnyMode();
+        boolean editMode = parserParameters.isContentLoopMode();
         StringWriter writer = new StringWriter();
 
         if (loop == null) {

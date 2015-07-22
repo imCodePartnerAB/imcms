@@ -19,6 +19,7 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
     public static final DocumentPermission EDIT_TEMPLATE = new DocumentPermission("editTemplates");
     public static final DocumentPermission EDIT_INCLUDES = new DocumentPermission("editIncludes");
     public static final DocumentPermission EDIT_IMAGES = new DocumentPermission("editImages");
+    public static final DocumentPermission EDIT_LOOPS = new DocumentPermission("editLoops");
     public final static int EDIT_TEXT_DOCUMENT_TEXTS_PERMISSION_ID = DocumentPermissionSetDomainObject.EDIT_DOCUMENT_PERMISSION_ID;
     public final static int EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES;
     public final static int EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS;
@@ -35,6 +36,14 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
 
     public void setEditTexts(boolean editTexts) {
         setPermission(EDIT_TEXTS, editTexts);
+    }
+
+    public boolean getEditLoops() {
+        return hasPermission(EDIT_LOOPS);
+    }
+
+    public void setEditLoops(boolean editLoops) {
+        setPermission(EDIT_LOOPS, editLoops);
     }
 
     public boolean getEditMenus() {

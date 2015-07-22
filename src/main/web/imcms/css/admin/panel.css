@@ -67,6 +67,10 @@
     border-radius: 10px;
 }
 
+.admin-panel-content-section-disabled {
+    opacity: 0.3;
+}
+
 .admin-panel-content-section[data-mode=readonly] .admin-panel-button-image {
     background: url("/images/ic_readonly.png") no-repeat;
 }
@@ -109,6 +113,18 @@
     background: url("/images/ic_logout.png") 0 -32px no-repeat;
 }
 
+.admin-panel-content-section-disabled[data-mode=info] .admin-panel-button:hover .admin-panel-button-image {
+    background: url("/images/ic_pageinfo.png") 0 0 no-repeat;
+}
+
+.admin-panel-content-section-disabled[data-mode=admin] .admin-panel-button:hover .admin-panel-button-image {
+    background: url("/images/ic_adminmanager.png") 0 0 no-repeat;
+}
+
+.admin-panel-content-section-disabled[data-mode=logout] .admin-panel-button:hover .admin-panel-button-image {
+    background: url("/images/ic_logout.png") 0 0 no-repeat;
+}
+
 .admin-panel-button-image {
     width: 32px;
     height: 32px;
@@ -136,6 +152,11 @@
 .admin-panel-content-section .admin-panel-button:hover {
     background-color: #ebf0ff;
     color: #0091e1;
+}
+
+.admin-panel-content-section-disabled .admin-panel-button:hover {
+    background-color: #fff;
+    color: #000;
 }
 
 .admin-panel-content-section div.admin-panel-language {

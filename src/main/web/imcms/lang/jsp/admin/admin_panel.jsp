@@ -1,7 +1,7 @@
 <%@ page
         contentType="text/html; charset=UTF-8"
         import="com.imcode.imcms.api.DocumentLanguage"
-        %>
+%>
 <%@ page import="com.imcode.imcms.servlet.Version" %>
 <%@ page import="imcode.server.Imcms" %>
 <%@ page import="imcode.server.document.DocumentDomainObject" %>
@@ -11,6 +11,8 @@
     UserDomainObject user = (UserDomainObject) request.getAttribute("user");
     DocumentDomainObject document = (DocumentDomainObject) request.getAttribute("document");
     if (!user.canEdit(document)) return;
+    Boolean canEditDocumentInfo =
+            user.getPermissionSetFor(document).getEditDocumentInformation();
     Boolean editMode = request.getParameterMap().containsKey("flags");
     String contextPath = request.getContextPath();
     String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext());
@@ -53,8 +55,8 @@
             </a>
         </section>
         <div class="admin-panel-content-separator"></div>
-        <section id="info" data-mode="info" class="admin-panel-content-section">
-            <a href="#" target="_self" onclick="pageInfo(); return false;">
+        <section id="info" data-mode="info" class="admin-panel-content-section <%= canEditDocumentInfo?"":"admin-panel-content-section-disabled"%>">
+            <a href="#" target="_self" onclick="<%= canEditDocumentInfo?"pageInfo();":""%> return false;">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image"></div>
                     <span class="admin-panel-button-description">Page info</span>

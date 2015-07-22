@@ -4,11 +4,12 @@
  */
 
 CKEDITOR.editorConfig = function( config ) {
-    config.extraPlugins = 'autogrow';
+    config.extraPlugins = 'autogrow,link';
     config.autoGrow_minHeight = 200;
     config.autoGrow_maxHeight = 600;
     config.autoGrow_bottomSpace = 50;
     config.disableAutoInline = true;
+
 	// Define changes to default configuration here. For example:
 	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';

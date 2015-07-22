@@ -31,9 +31,7 @@ public abstract class SimpleImcmsTag extends TagSupport implements IEditableTag 
             //else
             content = TagParser.addPreAndPost(attributes, content);
             pageContext.getOut().print(content);
-        } catch (IOException e) {
-            throw new JspException(e);
-        } catch (RuntimeException e) {
+        } catch (IOException | RuntimeException e) {
             throw new JspException(e);
         }
         return SKIP_BODY;

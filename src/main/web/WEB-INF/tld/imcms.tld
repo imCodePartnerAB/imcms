@@ -50,6 +50,11 @@
         <tag-class>com.imcode.imcms.servlet.tags.TextTag</tag-class>
         <body-content>empty</body-content>
         <attribute>
+            <name>placeholder</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
             <name>no</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>

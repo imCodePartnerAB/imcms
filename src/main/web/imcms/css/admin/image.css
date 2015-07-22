@@ -26,6 +26,7 @@
     width: 190px;
 }
 
+.editor-image .imcms-content .shared-mode-field > input,
 .editor-image .imcms-content .free-transformation-field > input {
     float: left;
     height: 20px;
@@ -35,6 +36,13 @@
 
 .editor-image .imcms-content .free-transformation-field:after {
     content: "Free transformation";
+    float: left;
+    padding: 5px 10px;
+    height: 20px;
+}
+
+.editor-image .imcms-content .shared-mode-field:after {
+    content: "Set for all languages";
     float: left;
     padding: 5px 10px;
     height: 20px;

@@ -223,6 +223,7 @@ Imcms.Menu.DialogAdapter.prototype = {
                 .addClass("imcms-footer"),
             buttons = footer.find(".ui-button").removeClass();
 
+        header.find(".ui-dialog-title").remove();
         header.children("button").empty().removeClass().addClass("imcms-close-button");
 
         $(buttons[0]).addClass("imcms-positive");
@@ -232,11 +233,17 @@ Imcms.Menu.DialogAdapter.prototype = {
     open: function () {
         this._dialog.dialog("open");
     },
+    dispose: function () {
+        this._dialog.remove();
+    },
     find: function (word) {
         this._source({term: word || ""}, $.proxy(this.fillDataToTable, this));
     },
     fillDataToTable: function (data) {
         this._builder.ref("documentsTable").clear();
+        $(this._builder.ref("documentsTable").getHTMLElement()).find("th").each(function (pos, item) {
+            $(item).find("div").remove();
+        });
         for (var rowId in data) {
             if (data.hasOwnProperty(rowId) && data[rowId]) {
                 this._builder.ref("documentsTable").row(data[rowId]);
@@ -269,7 +276,7 @@ Imcms.Menu.DialogAdapter.prototype = {
              farCorner = {right: offset.left + element.width(), bottom: offset.top + element.height()};
 
              return offset.left <= e.offsetX && offset.top <= e.offsetY && e.offsetX <= farCorner.right && e.offsetY <= farCorner.bottom*/
-            return $.contains(element, e.toElement);
+            return $.contains(element, e.target);
         });
         if (!element.length) {
             return false;

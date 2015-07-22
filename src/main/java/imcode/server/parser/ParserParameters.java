@@ -88,7 +88,7 @@ public class ParserParameters implements Cloneable {
      * There is no separate permissions for content loop editing.
      */
     public boolean isContentLoopMode() {
-        return isMode(ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_CONTENT_LOOPS, TextDocumentPermissionSetDomainObject.EDIT_TEXTS);
+        return isMode(ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_CONTENT_LOOPS, TextDocumentPermissionSetDomainObject.EDIT_LOOPS);
     }
 
     public boolean isImageMode() {
@@ -105,7 +105,7 @@ public class ParserParameters implements Cloneable {
 
     public boolean isMode(int flag,
                           DocumentPermission permission) {
-        return (flags & flag) != 0 && getPermissionSet().hasPermission(permission);
+        return (flags /*& flag*/) != 0 && getPermissionSet().hasPermission(permission);
     }
 
     public boolean isAnyMode() {

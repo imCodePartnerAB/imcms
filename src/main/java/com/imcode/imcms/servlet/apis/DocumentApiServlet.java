@@ -235,6 +235,30 @@ public class DocumentApiServlet {
     }
 
     protected void asTextDocument(TextDocumentDomainObject document, TextDocumentEntity entity) {
+        TextDocumentPermissionSetDomainObject permissionSetDomainObject1 = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_1);
+        TextDocumentPermissionSetDomainObject permissionSetDomainObject2 = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_2);
+        DocumentPermissionSets documentPermissionSets = new DocumentPermissionSets();
+
+        permissionSetDomainObject1.setEditImages(entity.permissions.get(0).canEditImage);
+        permissionSetDomainObject1.setEditMenus(entity.permissions.get(0).canEditMenu);
+        permissionSetDomainObject1.setEditTexts(entity.permissions.get(0).canEditText);
+        permissionSetDomainObject1.setEditLoops(entity.permissions.get(0).canEditLoop);
+        permissionSetDomainObject1.setEditDocumentInformation(entity.permissions.get(0).canEditDocumentInformation);
+        permissionSetDomainObject1.setEditPermissions(entity.permissions.get(0).canEditDocumentInformation);
+
+        permissionSetDomainObject2.setEditImages(entity.permissions.get(1).canEditImage);
+        permissionSetDomainObject2.setEditMenus(entity.permissions.get(1).canEditMenu);
+        permissionSetDomainObject2.setEditTexts(entity.permissions.get(1).canEditText);
+        permissionSetDomainObject2.setEditLoops(entity.permissions.get(1).canEditLoop);
+        permissionSetDomainObject2.setEditDocumentInformation(entity.permissions.get(1).canEditDocumentInformation);
+        permissionSetDomainObject2.setEditPermissions(entity.permissions.get(1).canEditDocumentInformation);
+
+        documentPermissionSets.setRestricted1(permissionSetDomainObject1);
+        documentPermissionSets.setRestricted2(permissionSetDomainObject2);
+
+        document.setPermissionSets(documentPermissionSets);
+        document.setPermissionSetsForNewDocument(documentPermissionSets);
+
         document.setTemplateName(entity.template);
     }
 
@@ -300,6 +324,31 @@ public class DocumentApiServlet {
     }
 
     protected void asTextEntity(TextDocumentEntity entity, TextDocumentDomainObject document) {
+        DocumentPermissionSets documentPermissionSets = document.getPermissionSets();
+
+        TextDocumentPermissionSetDomainObject permissionSetDomainObject1 = ((TextDocumentPermissionSetDomainObject) documentPermissionSets.getRestricted1());
+        TextDocumentPermissionSetDomainObject permissionSetDomainObject2 = ((TextDocumentPermissionSetDomainObject) documentPermissionSets.getRestricted2());
+
+        TextDocumentPermission textDocumentPermission1 = new TextDocumentPermission();
+        TextDocumentPermission textDocumentPermission2 = new TextDocumentPermission();
+
+        textDocumentPermission1.canEditImage = permissionSetDomainObject1.getEditImages();
+        textDocumentPermission1.canEditLoop = permissionSetDomainObject1.getEditLoops();
+        textDocumentPermission1.canEditMenu = permissionSetDomainObject1.getEditMenus();
+        textDocumentPermission1.canEditText = permissionSetDomainObject1.getEditTexts();
+        textDocumentPermission1.canEditDocumentInformation = permissionSetDomainObject1.getEditDocumentInformation();
+
+        textDocumentPermission2.canEditImage = permissionSetDomainObject2.getEditImages();
+        textDocumentPermission2.canEditLoop = permissionSetDomainObject2.getEditLoops();
+        textDocumentPermission2.canEditMenu = permissionSetDomainObject2.getEditMenus();
+        textDocumentPermission2.canEditText = permissionSetDomainObject2.getEditTexts();
+        textDocumentPermission2.canEditDocumentInformation = permissionSetDomainObject2.getEditDocumentInformation();
+
+        entity.permissions = new ArrayList<>();
+
+        entity.permissions.add(textDocumentPermission1);
+        entity.permissions.add(textDocumentPermission2);
+
         entity.template = document.getTemplateName();
     }
 
@@ -334,6 +383,15 @@ public class DocumentApiServlet {
 
     private static class TextDocumentEntity extends DocumentEntity {
         public String template;
+        public List<TextDocumentPermission> permissions;
+    }
+
+    private static class TextDocumentPermission {
+        public boolean canEditLoop;
+        public boolean canEditText;
+        public boolean canEditImage;
+        public boolean canEditMenu;
+        public boolean canEditDocumentInformation;
     }
 
     private static class UrlDocumentEntity extends DocumentEntity {

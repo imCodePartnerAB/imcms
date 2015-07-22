@@ -52,14 +52,16 @@ Imcms.Image.Loader.prototype = {
         this._api.read({object: folder + name + "-" + width + "-" + height + "." + extension},
             callback);
     },
-    save: function (id, meta, data, callback) {
+    save: function (id, meta, isShared, data, callback) {
         this._api.update({
+            sharedMode: isShared,
             imageDomainObject: JSON.stringify(data),
             object: ((meta || Imcms.document.meta) + "-" + id)
         }, Imcms.Logger.log.bind(this, "Image::save : ", callback));
     },
-    saveLoopItem: function (id, meta, loopId, entryId, data, callback) {
+    saveLoopItem: function (id, meta, isShared, loopId, entryId, data, callback) {
         this._api.update({
+            sharedMode: isShared,
             imageDomainObject: JSON.stringify(data),
             object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId)
         }, Imcms.Logger.log.bind(this, "Image::saveLoopItem : ", callback));
@@ -231,16 +233,27 @@ Imcms.Image.Editor.prototype = {
     save: function () {
         var collectedData = this._infoViewAdapter.collect();
         if (this._loopId && this._entryId) {
-            this._loader.saveLoopItem(this._id, this._meta, this._loopId, this._entryId, collectedData, Imcms.BackgroundWorker.createTask({
-                showProcessWindow: true,
-                refreshPage: true
-            }));
+            this._loader.saveLoopItem(this._id,
+                this._meta,
+                this._infoViewAdapter.isSharedMode(),
+                this._loopId, this._entryId,
+                collectedData,
+                Imcms.BackgroundWorker.createTask({
+                    showProcessWindow: true,
+                    refreshPage: true
+                })
+            );
         }
         else {
-            this._loader.save(this._id, this._meta, collectedData, Imcms.BackgroundWorker.createTask({
-                showProcessWindow: true,
-                refreshPage: true
-            }));
+            this._loader.save(this._id,
+                this._meta,
+                this._infoViewAdapter.isSharedMode(),
+                collectedData,
+                Imcms.BackgroundWorker.createTask({
+                    showProcessWindow: true,
+                    refreshPage: true
+                })
+            );
         }
         this.close();
     },
@@ -404,6 +417,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .text()
             .name("alternateText")
             .label("Alt text (alt)")
+            .value(this._imageSource.alternateText)
             .placeholder("altertext")
             .end()
             .end()
@@ -412,7 +426,23 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .text()
             .name("imageName")
             .label("Image name")
+            .value(this._imageSource.name)
             .placeholder("name")
+            .end()
+            .end()
+            .div()
+            .class("field")
+            .text()
+            .name("linkUrl")
+            .label("Image link URL")
+            .value(this._imageSource.linkUrl)
+            .placeholder("url")
+            .end()
+            .end()
+            .div()
+            .class("field shared-mode-field")
+            .checkbox()
+            .name("sharedMode")
             .end()
             .end()
     },
@@ -432,7 +462,13 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         this._imageSource.cropRegion.cropY2 = $infoRef.find("input[name=bottomCrop]").val();
         this._imageSource.alternateText = $infoRef.find("input[name=alternateText]").val();
         this._imageSource.name = $infoRef.find("input[name=imageName]").val();
+        this._imageSource.linkUrl = $infoRef.find("input[name=linkUrl]").val();
         return this._imageSource;
+    },
+    isSharedMode: function () {
+        var $infoRef = $(this._infoRef.getHTMLElement());
+
+        return $infoRef.find("input[name=sharedMode]").is(":checked");
     },
     updateCropping: function (croppingOptions) {
         var $infoRef = $(this._infoRef.getHTMLElement());

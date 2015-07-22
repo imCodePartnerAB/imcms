@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.tags;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.servlet.tags.Editor.ImageEditor;
 import imcode.server.Imcms;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.TagParser;
 import org.apache.commons.lang3.StringUtils;
@@ -23,9 +24,13 @@ public class ImageTag extends SimpleImcmsTag {
         TextDocumentDomainObject doc = (TextDocumentDomainObject) (!StringUtils.isNotBlank(attributes.getProperty("document")) ?
                 parserParameters.getDocumentRequest().getDocument() :
                 Imcms.getServices().getDocumentMapper().getDocument(attributes.getProperty("document")));
-        ((ImageEditor) editor).setDocumentId(doc.getId())
-                .setLoopEntryRef(loopEntryRef)
-                .setNo(Integer.parseInt(attributes.getProperty("no")));
+        if (((TextDocumentPermissionSetDomainObject) parserParameters.getDocumentRequest().getUser().getPermissionSetFor(doc)).getEditImages()) {
+            ((ImageEditor) editor).setDocumentId(doc.getId())
+                    .setLoopEntryRef(loopEntryRef)
+                    .setNo(Integer.parseInt(attributes.getProperty("no")));
+        } else {
+            editor = null;
+        }
         return tagParser.tagImage(attributes, loopEntryRef);
     }
 

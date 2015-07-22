@@ -51,7 +51,10 @@ Imcms.Text.Editor.prototype = {
         CKEDITOR.on("confirmChanges", $.proxy(this, "_onConfirm"));
     },
     _onConfirm: function (event) {
-        this._api.update(event.editor.element.$, null);
+        this._api.update(event.editor.element.$, Imcms.BackgroundWorker.createTask({
+            showProcessWindow: true,
+            refreshPage: true
+        }));
     },
     _onCreated: function (event) {
         var editor = event.editor;
@@ -72,7 +75,7 @@ Imcms.Text.Editor.prototype = {
         editor.config.removePlugins = 'colorbutton,find,' +
             'forms,newpage,removeformat,' +
             'specialchar,stylescombo,templates';
-        editor.config.extraPlugins = editor.config.extraPlugins + ",documentSaver,fileBrowser";
+        editor.config.extraPlugins = editor.config.extraPlugins + ",documentSaver,fileBrowser,link";
 
         editor.config.toolbar = 'MyToolbar';
         editor.config.toolbar_MyToolbar =

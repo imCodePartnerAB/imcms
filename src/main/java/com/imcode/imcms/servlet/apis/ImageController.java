@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocImageContainer;
+import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 import imcode.server.Imcms;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 /**
  * Created by Shadowgun on 26.03.2015.
@@ -180,10 +182,12 @@ public class ImageController {
             @PathVariable("id") Integer id, @PathVariable("docId") Integer docId,
             @RequestParam(value = "loopId", required = false) Integer loopId,
             @RequestParam(value = "entryId", required = false) Integer loopRefId,
+            @RequestParam(value = "sharedMode", required = false, defaultValue = "false") boolean sharedMode,
             @RequestParam("imageDomainObject") ImageDomainObject imageDomainObject) throws DocumentSaveException {
         TextDocumentDomainObject textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
         LoopEntryRef entryRef = loopId != null && loopRefId != null ?
                 LoopEntryRef.of(loopId, loopRefId) : null;
+
 
         if (!StringUtils.isBlank(imageDomainObject.getGeneratedFilename())) {
             imageDomainObject.getGeneratedFile().delete();
@@ -193,12 +197,24 @@ public class ImageController {
         ImcmsImageUtils.generateImage(imageDomainObject, false);
 
         try {
-            Imcms.getServices()
-                    .getDocumentMapper()
-                    .saveTextDocImage(
-                            TextDocImageContainer.of(textDocument.getRef(), entryRef, id, imageDomainObject),
-                            Imcms.getUser()
-                    );
+            if (sharedMode) {
+                Imcms.getServices()
+                        .getDocumentMapper()
+                        .saveTextDocImages(
+                                TextDocImagesContainer.of(textDocument.getVersionRef(), entryRef, id, Imcms.getServices().getDocumentLanguages()
+                                        .getAll()
+                                        .stream()
+                                        .collect(Collectors.toMap((val) -> val, (val) -> imageDomainObject))),
+                                Imcms.getUser()
+                        );
+            } else {
+                Imcms.getServices()
+                        .getDocumentMapper()
+                        .saveTextDocImage(
+                                TextDocImageContainer.of(textDocument.getRef(), entryRef, id, imageDomainObject),
+                                Imcms.getUser()
+                        );
+            }
         } catch (NoPermissionToEditDocumentException e) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch (NoPermissionToAddDocumentToMenuException e) {

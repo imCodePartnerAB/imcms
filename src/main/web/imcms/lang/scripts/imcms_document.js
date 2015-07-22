@@ -271,7 +271,10 @@ Imcms.Document.Viewer.prototype = {
         this.buildCategories();
         switch (this._options.type) {
             case 2:
+            {
                 this.buildTemplates();
+                this.buildPermissions();
+            }
                 break;
             case 5:
                 this.buildLinking();
@@ -381,6 +384,130 @@ Imcms.Document.Viewer.prototype = {
         };
         this._builder.ref("templates-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["templates"]));
     },
+    buildPermissions: function () {
+        this._builder.ref("tabs")
+            .div()
+            .reference("permissions-tab")
+            .class("permissions-tab imcms-tab")
+            .html("Permissions")
+            .end();
+        this._builder.ref("pages")
+            .div()
+            .reference("permissions-page")
+            .class("permissions-page imcms-page")
+            .div()
+            .class("imcms-column")
+            .div()
+            .class("imcms-label")
+            .html("Restricted 1")
+            .end()
+            .div()
+            .class("field")
+            .checkbox()
+            .attr("data-node-key", "permissions")
+            .attr("data-node-value", 1)
+            .name("canEditText")
+            .label("Edit Text")
+            .end()
+            .end()
+            .div()
+            .class("field")
+            .checkbox()
+            .attr("data-node-key", "permissions")
+            .attr("data-node-value", 1)
+            .name("canEditMenu")
+            .label("Edit Menu")
+            .end()
+            .end()
+            .div()
+            .class("field")
+            .checkbox()
+            .attr("data-node-key", "permissions")
+            .attr("data-node-value", 1)
+            .name("canEditImage")
+            .label("Edit Image")
+            .end()
+            .end()
+            .div()
+            .class("field")
+            .checkbox()
+            .attr("data-node-key", "permissions")
+            .attr("data-node-value", 1)
+            .name("canEditLoop")
+            .label("Edit Loop")
+            .end()
+            .end()
+            .div()
+            .class("field")
+            .checkbox()
+            .attr("data-node-key", "permissions")
+            .attr("data-node-value", 1)
+            .name("canEditDocumentInformation")
+            .label("Edit Doc Info")
+            .end()
+            .end()
+            .end()
+            .div()
+            .class("imcms-column")
+            .div()
+            .class("imcms-label")
+            .html("Restricted 2")
+            .end()
+            .div()
+            .class("field")
+            .checkbox()
+            .attr("data-node-key", "permissions")
+            .attr("data-node-value", 2)
+            .name("canEditText")
+            .label("Edit Text")
+            .end()
+            .end()
+            .div()
+            .class("field")
+            .checkbox()
+            .attr("data-node-key", "permissions")
+            .attr("data-node-value", 2)
+            .name("canEditMenu")
+            .label("Edit Menu")
+            .end()
+            .end()
+            .div()
+            .class("field")
+            .checkbox()
+            .attr("data-node-key", "permissions")
+            .attr("data-node-value", 2)
+            .name("canEditImage")
+            .label("Edit Image")
+            .end()
+            .end()
+            .div()
+            .class("field")
+            .checkbox()
+            .attr("data-node-key", "permissions")
+            .attr("data-node-value", 2)
+            .name("canEditLoop")
+            .label("Edit Loop")
+            .end()
+            .end()
+            .div()
+            .class("field")
+            .checkbox()
+            .attr("data-node-key", "permissions")
+            .attr("data-node-value", 2)
+            .name("canEditDocumentInformation")
+            .label("Edit Doc Info")
+            .end()
+            .end()
+            .end()
+            .end()
+            .end();
+        this._contentCollection["permissions"] = {
+            tab: this._builder.ref("permissions-tab"),
+            page: this._builder.ref("permissions-page")
+        };
+        this._builder.ref("permissions-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["permissions"]));
+
+    },
     buildLinking: function () {
         this._builder.ref("tabs")
             .div()
@@ -448,8 +575,7 @@ Imcms.Document.Viewer.prototype = {
             .reference("access")
             .column("Role")
             .column("View")
-            .column("Grant")
-            .column("")
+            .column("Full")
             .end()
             .div()
             .class("field")
@@ -463,6 +589,16 @@ Imcms.Document.Viewer.prototype = {
             .end()
             .end()
             .end();
+
+        if (this._options.type === 2) {
+            this._builder.ref("access")
+                .column("RESTRICTED 1")
+                .column("RESTRICTED 2")
+        }
+
+        this._builder.ref("access")
+            .column("");
+
         this._contentCollection["access"] = {
             tab: this._builder.ref("access-tab"),
             page: this._builder.ref("access-page")
@@ -643,21 +779,50 @@ Imcms.Document.Viewer.prototype = {
                 .attr("name", value.name.toLowerCase() + "-id")
         ).append(hiddenRemoveRole);
         removeButton = $("<button>").attr("type", "button").addClass("imcms-negative");
-        this._builder.ref("access")
-            .row(
-            divWithHidden[0],
-            $("<input>")
-                .attr("type", "radio")
-                .attr("data-node-key", "access")
-                .attr("value", 3)
-                .attr("name", value.name.toLowerCase() + "-access")[0],
-            $("<input>")
-                .attr("type", "radio")
-                .attr("data-node-key", "access")
-                .attr("value", 0)
-                .attr("name", value.name.toLowerCase() + "-access")[0],
-            removeButton[0]
-        );
+        if (this._options.type === 2) {
+            this._builder.ref("access")
+                .row(
+                divWithHidden[0],
+                $("<input>")
+                    .attr("type", "radio")
+                    .attr("data-node-key", "access")
+                    .attr("value", 3)
+                    .attr("name", value.name.toLowerCase() + "-access")[0],
+                $("<input>")
+                    .attr("type", "radio")
+                    .attr("data-node-key", "access")
+                    .attr("value", 0)
+                    .attr("name", value.name.toLowerCase() + "-access")[0],
+                $("<input>")
+                    .attr("type", "radio")
+                    .attr("data-node-key", "access")
+                    .attr("value", 1)
+                    .attr("name", value.name.toLowerCase() + "-access")[0],
+                $("<input>")
+                    .attr("type", "radio")
+                    .attr("data-node-key", "access")
+                    .attr("value", 2)
+                    .attr("name", value.name.toLowerCase() + "-access")[0],
+                removeButton[0]
+            );
+        }
+        else {
+            this._builder.ref("access")
+                .row(
+                divWithHidden[0],
+                $("<input>")
+                    .attr("type", "radio")
+                    .attr("data-node-key", "access")
+                    .attr("value", 3)
+                    .attr("name", value.name.toLowerCase() + "-access")[0],
+                $("<input>")
+                    .attr("type", "radio")
+                    .attr("data-node-key", "access")
+                    .attr("value", 0)
+                    .attr("name", value.name.toLowerCase() + "-access")[0],
+                removeButton[0]
+            );
+        }
         currentRow = this._builder.ref("access").row(this._rowsCount);
         removeButton.on("click", function () {
             $(currentRow).hide();
@@ -757,6 +922,14 @@ Imcms.Document.Viewer.prototype = {
                 result.categories[$this.attr("name")] = [$this.val() || ""];
             }
         });
+        if (this._options.type === 2) {
+            result.permissions = [{}, {}];
+            $source.find("input[data-node-key=permissions]").each(function () {
+                var $this = $(this);
+                var id = +$this.attr("data-node-value") - 1;
+                result.permissions[id][$this.attr("name")] = $this.is(":checked");
+            });
+        }
 
         formData.append("data", JSON.stringify(result));
         formData.append("type", this._options.type);
@@ -800,6 +973,16 @@ Imcms.Document.Viewer.prototype = {
                     .attr("selected", "");
             });
         });
+        if (this._options.type === 2) {
+            $.each(data.permissions, function (index, value) {
+                var $elements = $source.find("[data-node-key=permissions]").filter("[data-node-value=" + ++index + "]");
+                $.each(value, function (key, val) {
+                    if (val) {
+                        $elements.filter("input[name=" + key + "]").attr("checked", "")
+                    }
+                });
+            });
+        }
     }
 };
 

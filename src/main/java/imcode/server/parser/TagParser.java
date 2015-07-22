@@ -549,52 +549,52 @@ public class TagParser {
             imageTag = ImcmsImageUtils.getImageHtmlTag(image, httpServletRequest, attributes);
         }
 
-        if (imageMode && (textDocumentToUse.getId() == document.getId())) {
-            String[] replace_tags = getLabelTags(attributes, imageIndex, imageTag, textDocumentToUse);
-            String admin_template_file;
-            if ("".equals(imageTag)) { // no data in the db-field.
-                admin_template_file = "textdoc/admin_no_image.frag";
-            } else {               // data in the db-field.
-                admin_template_file = "textdoc/admin_image.frag";
-            }
-
-            String imageWidth = "0";
-            String imageHeight = "0";
-            String maxWidth = "0";
-            String maxHeight = "0";
-            if (style != null) {
-                PatternMatcher matcher = new Perl5Matcher();
-
-                if (matcher.contains(style, widthPattern)) {
-                    imageWidth = matcher.getMatch().group(1);
-                }
-                if (matcher.contains(style, heightPattern)) {
-                    imageHeight = matcher.getMatch().group(1);
-                }
-                if (matcher.contains(style, maxWidthPattern)) {
-                    maxWidth = matcher.getMatch().group(1);
-                }
-                if (matcher.contains(style, maxHeightPattern)) {
-                    maxHeight = matcher.getMatch().group(1);
-                }
-            }
-
-
-            List<String> replaceTags = new ArrayList<>(replace_tags.length + 10);
-            CollectionUtils.addAll(replaceTags, replace_tags);
-            replaceTags.add("#image_width#");
-            replaceTags.add(imageWidth);
-            replaceTags.add("#image_height#");
-            replaceTags.add(imageHeight);
-            replaceTags.add("#max_width#");
-            replaceTags.add(maxWidth);
-            replaceTags.add("#max_height#");
-            replaceTags.add(maxHeight);
-            replaceTags.add("#loop_ref#");
-            replaceTags.add(loopEntryRef != null ? loopEntryRef.toUriQueryString() : "");
-
-            imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
-        }
+//        if (imageMode && (textDocumentToUse.getId() == document.getId())) {
+//            String[] replace_tags = getLabelTags(attributes, imageIndex, imageTag, textDocumentToUse);
+//            String admin_template_file;
+//            if ("".equals(imageTag)) { // no data in the db-field.
+//                admin_template_file = "textdoc/admin_no_image.frag";
+//            } else {               // data in the db-field.
+//                admin_template_file = "textdoc/admin_image.frag";
+//            }
+//
+//            String imageWidth = "0";
+//            String imageHeight = "0";
+//            String maxWidth = "0";
+//            String maxHeight = "0";
+//            if (style != null) {
+//                PatternMatcher matcher = new Perl5Matcher();
+//
+//                if (matcher.contains(style, widthPattern)) {
+//                    imageWidth = matcher.getMatch().group(1);
+//                }
+//                if (matcher.contains(style, heightPattern)) {
+//                    imageHeight = matcher.getMatch().group(1);
+//                }
+//                if (matcher.contains(style, maxWidthPattern)) {
+//                    maxWidth = matcher.getMatch().group(1);
+//                }
+//                if (matcher.contains(style, maxHeightPattern)) {
+//                    maxHeight = matcher.getMatch().group(1);
+//                }
+//            }
+//
+//
+//            List<String> replaceTags = new ArrayList<>(replace_tags.length + 10);
+//            CollectionUtils.addAll(replaceTags, replace_tags);
+//            replaceTags.add("#image_width#");
+//            replaceTags.add(imageWidth);
+//            replaceTags.add("#image_height#");
+//            replaceTags.add(imageHeight);
+//            replaceTags.add("#max_width#");
+//            replaceTags.add(maxWidth);
+//            replaceTags.add("#max_height#");
+//            replaceTags.add(maxHeight);
+//            replaceTags.add("#loop_ref#");
+//            replaceTags.add(loopEntryRef != null ? loopEntryRef.toUriQueryString() : "");
+//
+//            imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
+//        }
 
         return imageTag;
     }

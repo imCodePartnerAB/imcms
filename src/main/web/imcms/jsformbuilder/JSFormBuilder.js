@@ -290,7 +290,12 @@ JSFormBuilder.Mixins.Table = {
     column: function () {
         var column = document.createElement("th");
         column.innerHTML = arguments[0];
-        this._header.tr.appendChild(column);
+        if (jQuery) {
+            jQuery(this._header.tr).append(column);
+        }
+        else {
+            this._header.tr.appendChild(column);
+        }
         return this;
     },
     row: function () {
@@ -303,7 +308,12 @@ JSFormBuilder.Mixins.Table = {
             this._fillFromObject(row, arguments[0]);
         else
             this._fillFromArray(row, Array.prototype.slice.call(arguments));
-        this._body.appendChild(row);
+        if (jQuery) {
+            jQuery(this._body).append(row);
+        }
+        else {
+            this._body.appendChild(row);
+        }
         return this;
     },
     _fillFromArray: function (row, array) {
@@ -311,7 +321,13 @@ JSFormBuilder.Mixins.Table = {
         for (var i = 0; i < columnsCount; i++) {
             var td = document.createElement("td");
             this._append(td, array.shift());
-            row.appendChild(td);
+
+            if (jQuery) {
+                jQuery(row).append(td);
+            }
+            else {
+                row.appendChild(td);
+            }
         }
     },
     _fillFromObject: function (row, object) {
@@ -330,11 +346,19 @@ JSFormBuilder.Mixins.Table = {
                 prop = children[i].innerHTML.trim();
             if (Object.prototype.hasOwnProperty.call(object, prop))
                 this._append(td, object[prop]);
-            row.appendChild(td);
+            if (jQuery) {
+                jQuery(row).append(td);
+            }
+            else {
+                row.appendChild(td);
+            }
         }
     },
     _append: function (element, data) {
-        if (data instanceof  HTMLElement)
+        if (jQuery) {
+            jQuery(element).append(data);
+        }
+        else if (data instanceof  HTMLElement)
             element.appendChild(data);
         else
             element.innerHTML = data;
@@ -342,11 +366,21 @@ JSFormBuilder.Mixins.Table = {
     clear: function () {
         if (this._autoheader) {
             var tr = this._header.tr;
-            while (tr.firstChild)
-                tr.removeChild(tr.firstChild);
+            if (jQuery) {
+                jQuery(tr).empty();
+            }
+            else {
+                while (tr.firstChild)
+                    tr.removeChild(tr.firstChild);
+            }
         }
-        while (this._body.firstChild)
-            this._body.removeChild(this._body.firstChild);
+        if (jQuery) {
+            jQuery(this._body).empty();
+        }
+        else {
+            while (this._body.firstChild)
+                this._body.removeChild(this._body.firstChild);
+        }
     }
 };
 
