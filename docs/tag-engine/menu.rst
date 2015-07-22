@@ -14,13 +14,38 @@ was presented on. Since ImCMS based on document-presented pages each menu item c
 Use in template
 ---------------
 
-For configure ``Loop`` tag in template just look at the code above.
+There are several important part configure menu fully:
+
+* HTML structure such as ``ul-li`` list or ``div-div`` list
+* Information about menu-nesting
+
+Default 2-level structured menu has shown above:
 
 .. code-block:: jsp
 
-    <imcms:loop no="1" pre="<div>" post="</div>">
-        ...HTML or JPS tags here...
-    </imcms:loop>
+    <imcms:menu no='1' docId="1001">
+        <ul>
+            <imcms:menuloop>
+                <imcms:menuitem>
+                    <li>
+                        <imcms:menuitemlink>
+                            ${menuitem.document.headline}
+                        </imcms:menuitemlink>
+                        <!-- sub menu definition -->
+                        <imcms:menuloop>
+                            <imcms:menuitem>
+                                <div>
+                                    <imcms:menuitemlink>
+                                        ${menuitem.document.headline}
+                                    </imcms:menuitemlink>
+                                </div>
+                            </imcms:menuitem>
+                        </imcms:menuloop>
+                    </li>
+                </imcms:menuitem>
+            </imcms:menuloop>
+        </ul>
+    </imcms:menu>
 
 
 
@@ -30,12 +55,15 @@ Available list of tag attributes:
 +--------------------+--------------+--------------------------------------------------+
 | Attribute          | Type         | Description                                      |
 +====================+==============+==================================================+
-| no                 | Integer      | Identifier for current loop                      |
+| no                 | Integer      | Identifier for current menu                      |
++--------------------+--------------+--------------------------------------------------+
+| docId              | Integer      | Identify the linked document (default            |
+|                    |              | - current document)                              |
 +--------------------+--------------+--------------------------------------------------+
 | pre                | String       | Text or html tag that would be added before      |
-|                    |              | loop tag                                         |
+|                    |              | menu tag                                         |
 +--------------------+--------------+--------------------------------------------------+
-| post               | String       | Text or html tag that would be added after loop  |
+| post               | String       | Text or html tag that would be added after menu  |
 |                    |              | tag                                              |
 +--------------------+--------------+--------------------------------------------------+
 
@@ -52,9 +80,29 @@ Example:
         <meta charset="utf-8"/>
     </head>
     <body>
-        <imcms:loop no="1" pre="<div>" post="</div>">
-            Hello world with loop content
-        </imcms:loop>
+        <imcms:menu no='1' docId="1001">
+            <ul>
+                <imcms:menuloop>
+                    <imcms:menuitem>
+                        <li>
+                            <imcms:menuitemlink>
+                                ${menuitem.document.headline}
+                            </imcms:menuitemlink>
+                            <!-- sub menu definition -->
+                            <imcms:menuloop>
+                                <imcms:menuitem>
+                                    <div>
+                                        <imcms:menuitemlink>
+                                            ${menuitem.document.headline}
+                                        </imcms:menuitemlink>
+                                    </div>
+                                </imcms:menuitem>
+                            </imcms:menuloop>
+                        </li>
+                    </imcms:menuitem>
+                </imcms:menuloop>
+            </ul>
+        </imcms:menu>
     </body>
     </html>
 
