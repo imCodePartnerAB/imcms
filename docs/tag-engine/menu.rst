@@ -19,7 +19,7 @@ There are several important part configure menu fully:
 * HTML structure such as ``ul-li`` list or ``div-div`` list
 * Information about menu-nesting
 
-Default 2-level structured menu has shown above:
+Default 2-level structured menu shows below:
 
 .. code-block:: jsp
 
