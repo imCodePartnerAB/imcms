@@ -3,7 +3,7 @@ Loop Tag
 
 In this article:
     - `Introduction`_
-	- `Use in template`_
+    - `Use in template`_
 
 Introduction
 ------------
@@ -15,11 +15,14 @@ well-known standard JSP tag ``forEach``, but it is not enough if count cycle of 
 Use in template
 ---------------
 
-For configure ``Loop` tag in template just look at the code above.
+For configure ``Loop`` tag in template just look at the code above.
+
 .. code-block:: jsp
+
     <imcms:loop no="1" pre="<div>" post="</div>">
         ...HTML or JPS tags here...
     </imcms:loop>
+
 
 
 Available list of tag attributes:
@@ -55,5 +58,4 @@ Example:
         </imcms:loop>
     </body>
     </html>
-
 
