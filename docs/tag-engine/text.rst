@@ -3,7 +3,7 @@ Text Tag
 
 In this article:
     - `Introduction`_
-	- `Use in template`_
+    - `Use in template`_
 
 
 Introduction
