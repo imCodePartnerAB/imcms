@@ -2,13 +2,19 @@ Image Tag
 =========
 
 In this article:
-	- `Use in template`_
+    - `Introduction`_
+    - `Use in template`_
 
+
+Introduction
+------------
+Today, maybe, there are no pages that contains only text content. It can contains topic, or new and of course it contain logo image, or news or topic preview image.
+That is why it is very important to flexibly configure the image. ImCMS provide own ``image`` tag that give easy access to image, stored in the system.
 
 Use in template
 ---------------
 
-ImCMS by default provide easy access to image, stored in the system. Also for using image in template all that needed are insert image-tag in the desired place.
+For using image in template all that needed are insert image-tag in the desired place.
 
 Available list of tag attributes:
 """""""""""""""""""""""""""""""""
