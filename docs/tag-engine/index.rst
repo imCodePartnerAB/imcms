@@ -10,3 +10,5 @@ Tag Engine
    image
    login
    register
+   pager
+   search
