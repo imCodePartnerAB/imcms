@@ -1,0 +1,2 @@
+|stub-icon| Text Document
+=========================
