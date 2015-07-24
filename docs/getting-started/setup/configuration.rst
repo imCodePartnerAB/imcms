@@ -55,4 +55,4 @@ Configuration below show, how to configure ImCMS for **MySQL**
    MaxConnectionCount = 20
 
 
-For more information see `advanced configuration </fundamental/advanced-configuration/index>`_ section
+For more information see :doc:`Advanced Configuration </fundamental/advanced-configuration/index>` section

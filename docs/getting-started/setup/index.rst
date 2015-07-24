@@ -1,5 +1,5 @@
 Setup
----------------
+=====
 
 .. toctree::
    :titlesonly:

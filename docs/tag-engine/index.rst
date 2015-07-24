@@ -8,4 +8,5 @@ Tag Engine
    menu
    loop
    image
-   
+   login
+   register
