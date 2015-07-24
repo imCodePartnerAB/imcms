@@ -17,6 +17,7 @@ ImCMS Documentation
     getting-started/index
     tag-engine/index
     document-engine/index
+    fundamental/index
 
 .. include:: /common/contribute.txt
 
