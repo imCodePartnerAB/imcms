@@ -10,12 +10,20 @@ In this article:
 Introduction
 ------------
 ImCMS support powerful and flex search engine that integrate with well-known Apache Solr. Each document in the system index in solr.
+Each content item on page indexing too: ImCMS provide searching by text content, document title, document alias, document menu description. Of course searching
+depends on current language, that user has already been selected.
 
 
 Use in template
 ---------------
 
-For using image in template all that needed are insert image-tag in the desired place.
+For using search in template all that needed are insert search-tag in the desired place.
+.. code-block:: jsp
+
+    <imcms:search searchRequest="" skip="0" take="20">
+
+    </imcms:search>
+
 
 Available list of tag attributes:
 """""""""""""""""""""""""""""""""
