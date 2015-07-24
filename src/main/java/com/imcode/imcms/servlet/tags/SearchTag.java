@@ -82,9 +82,7 @@ public class SearchTag extends BodyTagSupport implements IPageableTag {
             String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
             bodyContent = null;
             pageContext.getOut().write(bodyContentString);
-        } catch (IOException e) {
-            throw new JspException(e);
-        } catch (RuntimeException e) {
+        } catch (IOException | RuntimeException e) {
             throw new JspException(e);
         }
         return EVAL_PAGE;
