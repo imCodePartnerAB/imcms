@@ -2,9 +2,9 @@ Advanced Configuration
 ======================
 
 .. toctree::
-:titlesonly:
+    :titlesonly:
 
-       jdbc
-       image-processing
-       language
+    jdbc
+    image-processing
+    language
 
