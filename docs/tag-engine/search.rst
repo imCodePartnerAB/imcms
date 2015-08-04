@@ -18,6 +18,7 @@ Use in template
 ---------------
 
 For using search in template all that needed are insert search-tag in the desired place.
+
 .. code-block:: jsp
 
     <imcms:search searchRequest="" skip="0" take="20">
