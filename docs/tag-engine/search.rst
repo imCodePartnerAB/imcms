@@ -5,6 +5,7 @@ Search Tag
 In this article:
     - `Introduction`_
     - `Use in template`_
+    - `Paging integration`_
 
 
 Introduction
@@ -22,7 +23,9 @@ For using search in template all that needed are insert search-tag in the desire
 .. code-block:: jsp
 
     <imcms:search searchRequest="" skip="0" take="20">
-
+        <imcms:searchitem>
+            Some action with ${searchItem} here
+        </imcms:searchitem>
     </imcms:search>
 
 
@@ -32,24 +35,13 @@ Available list of tag attributes:
 +--------------------+--------------+--------------------------------------------------+
 | Attribute          | Type         | Description                                      |
 +====================+==============+==================================================+
-| no                 | Integer      | Identifier for current image                     |
+| searchRequest      | String       | Optional property. Set request is searching in   |
 +--------------------+--------------+--------------------------------------------------+
-| document           | Integer      | Identify the linked document (default            |
-|                    |              | - current document)                              |
+| skip               | Integer      | Optional property. It is describing how many     |
+|                    |              | items in result should be skipped                |
 +--------------------+--------------+--------------------------------------------------+
-| version            | Integer      | Identify version of image                        |
-+--------------------+--------------+--------------------------------------------------+
-| id                 | String       | Html attribute ``id``                            |
-+--------------------+--------------+--------------------------------------------------+
-| pre                | String       | Text or html tag that would be added before      |
-|                    |              | image tag                                        |
-+--------------------+--------------+--------------------------------------------------+
-| post               | String       | Text or html tag that would be added after image |
-|                    |              | tag                                              |
-+--------------------+--------------+--------------------------------------------------+
-| styleClass         | String       | Add html attribute ``class`` to image            |
-+--------------------+--------------+--------------------------------------------------+
-| style              | String       | Add html attribute ``style`` to image            |
+| take               | Integer      | Optional property. It is describing how many     |
+|                    |              | items in result should be taken                  |
 +--------------------+--------------+--------------------------------------------------+
 
 Example:
@@ -65,13 +57,31 @@ Example:
         <meta charset="utf-8"/>
     </head>
     <body>
-        <imcms:image no="1" document="1001" pre="<div>" post="</div>"/>
+    <imcms:search searchRequest="" skip="0" take="20">
+        <ul class="simple-post-list">
+            <imcms:searchitem>
+                <li>
+                    <div class="post-info">
+                        <a href="${pageContext.request.contextPath}/${searchItem.foundDocument.alias}">${searchItem.foundDocument.headline}</a>
+
+                        <div class="post-meta">
+                                ${searchItem.foundDocument.modifiedDatetime}
+                        </div>
+                    </div>
+                </li>
+            </imcms:searchitem>
+        </ul>
+    </imcms:search>
     </body>
     </html>
 
 
 
+Paging integration
+------------------
 
+By default ``search`` tag provide paging. It is mean that ``pager`` tag can be inserted in to ``search`` tag body.
+(see also :doc:`Pager Tag </tag-engine/pager>` section)
 
 
 
