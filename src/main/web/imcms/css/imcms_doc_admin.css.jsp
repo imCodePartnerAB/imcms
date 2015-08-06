@@ -1183,56 +1183,7 @@ editor theme
     background: #484848;
 }
 
-.editor-form .imcms-content table {
-    width: 100%;
-}
 
-.editor-form .imcms-content table tr td {
-    line-height: 30px;
-    padding: 0 20px;
-}
-
-.editor-form .imcms-content table tr:hover td {
-    background: #ffff64;
-}
-
-.editor-form .imcms-content table tr td:last-child {
-    line-height: 0;
-    padding: 5px;
-    width: 105px;
-}
-
-.editor-form .imcms-content table tr td .imcms-positive {
-    line-height: 20px;
-    text-align: center;
-    visibility: hidden;
-    display: block;
-    float: left;
-    margin-right: 5px;
-    width: 80px;
-    height: 20px;
-}
-
-.editor-form .imcms-content table tr:hover td .imcms-positive {
-    visibility: visible;
-}
-
-.editor-form .imcms-content table tr td .imcms-negative {
-    background-image: url(../../images/remove.png);
-    background-position: center;
-    background-repeat: no-repeat;
-    line-height: 20px;
-    visibility: hidden;
-    display: block;
-    float: left;
-    padding: 0;
-    width: 20px;
-    height: 20px;
-}
-
-.editor-form .imcms-content table tr:hover td .imcms-negative {
-    visibility: visible;
-}
 
 ::-moz-focus-inner {
     border: 0;

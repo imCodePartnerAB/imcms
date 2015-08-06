@@ -113,7 +113,7 @@ Imcms.Image.Editor.prototype = {
             .div()
             .class("imcms-header")
             .div()
-            .html("Document Editor")
+            .html("Image Editor")
             .class("imcms-title")
             .end()
             .button()

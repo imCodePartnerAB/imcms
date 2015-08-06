@@ -1,6 +1,6 @@
 .admin-panel {
     display: block;
-    width: 540px;
+    width: 623px;
     background: #eee;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -22,7 +22,7 @@
 }
 
 .admin-panel-content {
-    width: 523px;
+    width: 605px;
     background: #fff;
 }
 
@@ -83,6 +83,10 @@
     background: url("/images/ic_pageinfo.png") no-repeat;
 }
 
+.admin-panel-content-section[data-mode=docs] .admin-panel-button-image {
+    background: url("/images/ic_documents.png") no-repeat;
+}
+
 .admin-panel-content-section[data-mode=admin] .admin-panel-button-image {
     background: url("/images/ic_adminmanager.png") no-repeat;
 }
@@ -105,6 +109,10 @@
     background: url("/images/ic_pageinfo.png") 0 -32px no-repeat;
 }
 
+.admin-panel-content-section[data-mode=docs] .admin-panel-button:hover .admin-panel-button-image {
+    background: url("/images/ic_documents.png") 0 -32px no-repeat;
+}
+
 .admin-panel-content-section[data-mode=admin] .admin-panel-button:hover .admin-panel-button-image {
     background: url("/images/ic_adminmanager.png") 0 -32px no-repeat;
 }
@@ -115,6 +123,10 @@
 
 .admin-panel-content-section-disabled[data-mode=info] .admin-panel-button:hover .admin-panel-button-image {
     background: url("/images/ic_pageinfo.png") 0 0 no-repeat;
+}
+
+.admin-panel-content-section-disabled[data-mode=docs] .admin-panel-button:hover .admin-panel-button-image {
+    background: url("/images/ic_documents.png") 0 0 no-repeat;
 }
 
 .admin-panel-content-section-disabled[data-mode=admin] .admin-panel-button:hover .admin-panel-button-image {

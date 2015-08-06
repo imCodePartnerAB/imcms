@@ -65,5 +65,8 @@ Imcms.Admin.Panel = {
                 });
             })
         });
+    },
+    docs: function () {
+        Imcms.Editors.Document.show();
     }
 };

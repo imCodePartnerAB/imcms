@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.api.PagerItem;
+import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -20,7 +21,11 @@ public class PagerTag extends BodyTagSupport {
     @Override
     public int doStartTag() throws JspException {
         pageable = (IPageableTag) findAncestorWithClass(this, IPageableTag.class);
+
+        Assert.notNull(pageable, "PagerTag must be nested to IPageableTag");
+
         calculatePagination();
+
         return EVAL_BODY_BUFFERED;
     }
 
@@ -34,9 +39,7 @@ public class PagerTag extends BodyTagSupport {
             String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
             bodyContent = null;
             pageContext.getOut().write(bodyContentString);
-        } catch (IOException e) {
-            throw new JspException(e);
-        } catch (RuntimeException e) {
+        } catch (IOException | RuntimeException e) {
             throw new JspException(e);
         }
         return EVAL_PAGE;

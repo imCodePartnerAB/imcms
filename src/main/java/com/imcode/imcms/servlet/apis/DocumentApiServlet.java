@@ -176,7 +176,11 @@ public class DocumentApiServlet {
                                 DocumentPermissionSetTypeDomainObject
                                         .values()[Integer.parseInt(map.get("permission").toString())]));
 
-        documentDomainObject.setAlias(documentEntity.alias);
+        if (StringUtils.isNotEmpty(documentEntity.alias)) {
+            documentDomainObject.setAlias(documentEntity.alias);
+        } else {
+            documentDomainObject.setAlias(null);
+        }
 
         documentDomainObject.setTarget(documentEntity.target);
         documentDomainObject.setKeywords(documentEntity.keywords);

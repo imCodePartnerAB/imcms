@@ -64,6 +64,15 @@
             </a>
         </section>
         <div class="admin-panel-content-separator"></div>
+        <section id="docs" data-mode="docs" class="admin-panel-content-section <%= canEditDocumentInfo?"":"admin-panel-content-section-disabled"%>">
+            <a href="#" target="_self" onclick="<%= canEditDocumentInfo?"Imcms.Admin.Panel.docs();":""%> return false;">
+                <div class="admin-panel-button">
+                    <div class="admin-panel-button-image"></div>
+                    <span class="admin-panel-button-description">Documents</span>
+                </div>
+            </a>
+        </section>
+        <div class="admin-panel-content-separator"></div>
         <section id="admin" data-mode="admin" class="admin-panel-content-section">
             <a href="<%=contextPath%>/servlet/AdminManager" target="_self">
                 <div class="admin-panel-button">

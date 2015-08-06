@@ -16,6 +16,9 @@
     <link rel="stylesheet"
           href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/speakingurl/5.0.1/speakingurl.min.js"></script>
     <script src="${pageContext.request.contextPath}/js/jquery.cookie.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/imcms/ckeditor/ckeditor.js"></script>
     <script type="text/javascript"

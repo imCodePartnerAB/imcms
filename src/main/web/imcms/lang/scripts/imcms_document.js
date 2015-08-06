@@ -49,6 +49,9 @@ Imcms.Document.Loader = function () {
 Imcms.Document.Loader.prototype = {
     _api: new Imcms.Document.API(),
     _editor: {},
+    show: function () {
+        this._editor.open();
+    },
     init: function () {
         this._editor = new Imcms.Document.Editor(this);
     },
@@ -110,12 +113,9 @@ Imcms.Document.Editor.prototype = {
             .class("imcms-title")
             .end()
             .button()
-            .html("Save and close")
-            .class("imcms-positive imcms-save-and-close")
-            .end()
-            .button()
-            .html("Close without saving")
-            .class("imcms-neutral close-without-saving")
+            .reference("closeButton")
+            .class("imcms-close-button")
+            .on("click", $.proxy(this.close, this))
             .end()
             .end()
             .div()
@@ -130,9 +130,6 @@ Imcms.Document.Editor.prototype = {
             .class("imcms-neutral create-new")
             .html("Create new…")
             .on("click", $.proxy(this.showDocumentViewer, this))
-            .end()
-            .div()
-            .class("clear")
             .end()
             .end()
             .end();
@@ -168,6 +165,9 @@ Imcms.Document.Editor.prototype = {
     },
     open: function () {
         $(this._builder[0]).fadeIn("fast").find(".imcms-content").css({height: $(window).height() - 95});
+    },
+    close: function () {
+        $(this._builder[0]).fadeOut("fast");
     }
 };
 
@@ -302,9 +302,9 @@ Imcms.Document.Viewer.prototype = {
             .option("In Process", "0")
             .option("Disapproved", "1")
             .option("Approved", "2")
-            .option("Published", "3")
-            .option("Archived", "4")
-            .option("Expired", "5")
+            //.option("Published", "3")
+            //.option("Archived", "4")
+            //.option("Expired", "5")
             .end()
             .end()
             .end();
@@ -346,7 +346,18 @@ Imcms.Document.Viewer.prototype = {
             .class("field")
             .text()
             .name('alias')
-            .label("/")
+            .on("focus", function (e) {
+                if ($(e.target).val()) {
+                    return true;
+                }
+                var $languagesArea = $(this._builder.ref("languages").getHTMLElement()),
+                    lang = $languagesArea.find("input[data-node-key=language]:checked").attr("data-node-value"),
+                    title = $languagesArea.find("input[name=title]").filter("[data-node-value=" + lang + "]").val(),
+                    $target = $(e.target);
+
+                $target.val(getSlug(title));
+            }.bind(this))
+            .label("Document Alias")
             .end()
             .end()
             .end()
