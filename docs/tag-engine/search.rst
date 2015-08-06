@@ -81,7 +81,50 @@ Paging integration
 ------------------
 
 By default ``search`` tag provide paging. It is mean that ``pager`` tag can be inserted in to ``search`` tag body.
-(see also :doc:`Pager Tag </tag-engine/pager>` section)
+(see also :doc:`Pager Tag </tag-engine/pager>` section).
+
+For configure ``search`` tag to using paging look at example above.
+
+
+
+Example:
+""""""""
+.. code-block:: jsp
+
+    <imcms:search searchRequest="" skip="0" take="20">
+        <ul class="simple-post-list">
+            <imcms:searchitem>
+                <li>
+                    <div class="post-info">
+                        <a href="${pageContext.request.contextPath}/${searchItem.foundDocument.alias}">${searchItem.foundDocument.headline}</a>
+
+                        <div class="post-meta">
+                                ${searchItem.foundDocument.modifiedDatetime}
+                        </div>
+                    </div>
+                </li>
+            </imcms:searchitem>
+        </ul>
+        <imcms:pager visibleItemCount="6">
+            <ul class="pagination pull-right">
+                <li><a href="${firstPagerItem.link}">«</a></li>
+                <imcms:pageritem>
+                    <c:choose>
+                        <c:when test="${pagerItem.showed}">
+                            <li class="active"><a href="${pagerItem.link}">${pagerItem.pageNumber}</a>
+                            </li>
+                        </c:when>
+                        <c:otherwise>
+                            <li><a href="${pagerItem.link}">${pagerItem.pageNumber}</a></li>
+                        </c:otherwise>
+                    </c:choose>
+                </imcms:pageritem>
+                <li><a href="${lastPagerItem.link}">»</a>
+            </ul>
+        </imcms:pager>
+    </imcms:search>
+
+
 
 
 
