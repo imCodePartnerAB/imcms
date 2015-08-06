@@ -15,10 +15,7 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
@@ -357,12 +354,12 @@ public class DocumentApiServlet {
     }
 
 
-    @RequestMapping(method = RequestMethod.DELETE)
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    protected Object doDelete(@PathVariable("id") Integer id) throws ServletException, IOException {
         Map<String, Object> result = new HashMap<>();
-        Imcms.getServices().getDocumentMapper().deleteDocument(Integer.parseInt(req.getPathInfo().replace("/", "")), Imcms.getUser());
+        Imcms.getServices().getDocumentMapper().deleteDocument(id, Imcms.getUser());
         result.put("result", true);
-        JSONUtils.defaultJSONAnswer(resp, result);
+        return result;
     }
 
     private static class DocumentEntity {
