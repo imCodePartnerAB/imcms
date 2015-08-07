@@ -1,9 +1,9 @@
-.. include:: /common/stub-topic.txt
-
-|stub-icon| Content Management
-==============================
+Content Management
+==================
 
 .. toctree::
    :titlesonly:
+
+   document/index
 
 
