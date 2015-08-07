@@ -18,6 +18,7 @@ ImCMS Documentation
     tag-engine/index
     document-engine/index
     fundamental/index
+    content-management/index
 
 .. include:: /common/contribute.txt
 
