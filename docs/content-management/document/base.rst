@@ -26,3 +26,19 @@ ImCMS provide base document managing, that help change document status. There ar
 - Disapproved - document is disabled, and cannot be accessed.
 
 
+.. image:: base/_static/01-EditLifeCycle.png
+
+
+Edit Appearance
+---------------
+
+This editor section provides access to manage documents alias, how document will be opened from menu(in new window, in same frame, etc)
+document name, description, link image for all available in ImCMS system languages.
+
+
+.. image:: base/_static/01-EditAppearance.png
+
+
+
+
+
