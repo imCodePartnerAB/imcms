@@ -5,4 +5,5 @@ Document Management
    :titlesonly:
 
    base
+   text-document
 
