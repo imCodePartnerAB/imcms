@@ -10,6 +10,7 @@ import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.util.io.FileInputStreamSource;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -37,36 +38,49 @@ public class DocumentApiServlet {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getParameter("id") != null) {
-            Integer id = Integer.parseInt(request.getParameter("id"));
-
-
+    protected Object doGet(@RequestParam(value = "id", required = false) Integer id,
+                           @RequestParam(value = "isPrototype", required = false) boolean isPrototype) throws ServletException, IOException {
+        if (id != null) {
             DocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().getDocument(id);
             DocumentEntity result;
 
             switch (documentDomainObject.getDocumentTypeId()) {
                 case DocumentTypeDomainObject.URL_ID: {
                     result = new UrlDocumentEntity();
-                    asUrlEntity((UrlDocumentEntity) result, (UrlDocumentDomainObject) documentDomainObject);
+
+                    if (!isPrototype) {
+                        asUrlEntity((UrlDocumentEntity) result, (UrlDocumentDomainObject) documentDomainObject);
+                    }
                 }
                 break;
                 case DocumentTypeDomainObject.FILE_ID: {
                     result = new FileDocumentEntity();
-                    asFileEntity((FileDocumentEntity) result, (FileDocumentDomainObject) documentDomainObject);
+
+                    if (!isPrototype) {
+                        asFileEntity((FileDocumentEntity) result, (FileDocumentDomainObject) documentDomainObject);
+                    }
                 }
                 break;
                 case DocumentTypeDomainObject.TEXT_ID:
                 default: {
                     result = new TextDocumentEntity();
+
                     asTextEntity((TextDocumentEntity) result, (TextDocumentDomainObject) documentDomainObject);
+
+                    if (isPrototype) {
+                        ((TextDocumentEntity) result).template = ((TextDocumentDomainObject) documentDomainObject).getDefaultTemplateName();
+                    }
                 }
                 break;
             }
 
             prepareEntity(result, documentDomainObject);
 
-            JSONUtils.defaultJSONAnswer(response, result);
+            if (isPrototype) {
+                asPrototype(result);
+            }
+
+            return result;
         } else {
             List<Map<String, Object>> result = new ArrayList<>();
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
@@ -82,7 +96,7 @@ public class DocumentApiServlet {
                 result.add(objectMap);
 
             }
-            JSONUtils.defaultJSONAnswer(response, result);
+            return result;
         }
     }
 
@@ -90,6 +104,7 @@ public class DocumentApiServlet {
     @RequestMapping(method = RequestMethod.POST)
     protected Object doPut(HttpServletRequest req,
                            @RequestParam("type") Integer type,
+                           @RequestParam(value = "parent", defaultValue = "1001") Integer parentDocumentId,
                            @RequestParam("data") String data,
                            @RequestParam(value = "file", required = false) MultipartFile file) throws ServletException, IOException {
         Map<String, Object> result = new HashMap<>();
@@ -108,7 +123,7 @@ public class DocumentApiServlet {
                                     }
                             );
                     documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(UrlDocument.TYPE_ID,
-                            documentMapper.getDocument(documentMapper.getHighestDocumentId()),
+                            documentMapper.getDocument(parentDocumentId),
                             Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
 
                     asUrlDocument((UrlDocumentDomainObject) documentDomainObject, (UrlDocumentEntity) documentEntity);
@@ -122,7 +137,7 @@ public class DocumentApiServlet {
                                     }
                             );
                     documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(FileDocument.TYPE_ID,
-                            documentMapper.getDocument(documentMapper.getHighestDocumentId()),
+                            documentMapper.getDocument(parentDocumentId),
                             Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
                     asFileDocument((FileDocumentDomainObject) documentDomainObject, (FileDocumentEntity) documentEntity, file);
 
@@ -137,7 +152,7 @@ public class DocumentApiServlet {
                                     }
                             );
                     documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(TextDocument.TYPE_ID,
-                            documentMapper.getDocument(documentMapper.getHighestDocumentId()),
+                            documentMapper.getDocument(parentDocumentId),
                             Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
 
                     asTextDocument((TextDocumentDomainObject) documentDomainObject, (TextDocumentEntity) documentEntity);
@@ -261,6 +276,7 @@ public class DocumentApiServlet {
         document.setPermissionSetsForNewDocument(documentPermissionSets);
 
         document.setTemplateName(entity.template);
+        document.setDefaultTemplateId(entity.defaultTemplate);
     }
 
     protected void asUrlDocument(UrlDocumentDomainObject document, UrlDocumentEntity entity) {
@@ -351,8 +367,16 @@ public class DocumentApiServlet {
         entity.permissions.add(textDocumentPermission2);
 
         entity.template = document.getTemplateName();
+        entity.defaultTemplate = document.getDefaultTemplateName();
     }
 
+    protected void asPrototype(DocumentEntity entity) {
+        entity.alias = "";
+        entity.id = null;
+        entity.status = Document.STATUS_NEW;
+        entity.languages = new HashMap<>();
+        entity.keywords = new HashSet<>();
+    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     protected Object doDelete(@PathVariable("id") Integer id) throws ServletException, IOException {
@@ -384,6 +408,7 @@ public class DocumentApiServlet {
 
     private static class TextDocumentEntity extends DocumentEntity {
         public String template;
+        public String defaultTemplate;
         public List<TextDocumentPermission> permissions;
     }
 

@@ -462,14 +462,19 @@ Imcms.Menu.Editor.prototype = {
     },
     _openDocumentViewer: function () {
         new Imcms.Document.TypeViewer({
-            onApply: function (type) {
-                new Imcms.Document.Viewer({
-                    type: type,
-                    loader: this._loader,
-                    onApply: $.proxy(this._addMenuItemFromDocumentViewer, this),
-                    onCancel: function () {
-                    }
-                });
+            loader: this._loader,
+            onApply: function (data) {
+                this._loader.getPrototype(data.parentDocumentId, function (doc) {
+                    new Imcms.Document.Viewer({
+                        data: doc,
+                        type: data.documentType,
+                        parentDocumentId: data.parentDocumentId,
+                        loader: this._loader,
+                        onApply: $.proxy(this._addMenuItemFromDocumentViewer, this),
+                        onCancel: function () {
+                        }
+                    });
+                }.bind(this));
             }.bind(this)
         });
     },
@@ -525,6 +530,12 @@ Imcms.Menu.Loader.prototype = {
     },
     create: function () {
         Imcms.Editors.Document.create("document" + Math.random());
+    },
+    getPrototype: function (id, callback) {
+        Imcms.Editors.Document.getPrototype(id, callback);
+    },
+    documentsList: function (callback) {
+        Imcms.Editors.Document.documentsList(callback);
     },
     read: function () {
         this._api.read.apply(this._api, arguments);

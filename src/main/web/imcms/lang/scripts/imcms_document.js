@@ -71,6 +71,9 @@ Imcms.Document.Loader.prototype = {
     getDocument: function (id, callback) {
         this._api.read({id: id}, callback);
     },
+    getPrototype: function (id, callback) {
+        this._api.read({id: id, isPrototype: true}, callback);
+    },
     deleteDocument: function (data) {
         this._api.delete(data, function () {
         });
@@ -147,13 +150,18 @@ Imcms.Document.Editor.prototype = {
     },
     showDocumentViewer: function () {
         new Imcms.Document.TypeViewer({
-            onApply: function (type) {
-                new Imcms.Document.Viewer({
-                    type: type,
-                    loader: this._loader,
-                    target: $("body"),
-                    onApply: $.proxy(this.onApply, this)
-                });
+            loader: this._loader,
+            onApply: function (data) {
+                this._loader.getPrototype(data.parentDocumentId, function (doc) {
+                    new Imcms.Document.Viewer({
+                        data: doc,
+                        type: data.documentType,
+                        parentDocumentId: data.parentDocumentId,
+                        loader: this._loader,
+                        target: $("body"),
+                        onApply: $.proxy(this.onApply, this)
+                    });
+                }.bind(this));
             }.bind(this)
         });
     },
@@ -187,6 +195,7 @@ Imcms.Document.Viewer.prototype = {
     defaults: {
         data: null,
         type: 2,
+        parentDocumentId: 1001,
         loader: {},
         target: {},
         onApply: function () {
@@ -200,6 +209,7 @@ Imcms.Document.Viewer.prototype = {
         this._target = options.target;
         this._title = options.data ? "DOCUMENT " + options.data.id : "NEW DOCUMENT";
         this.buildView();
+        this.buildValidator();
         this.createModal();
         this._loader.languagesList($.proxy(this.loadLanguages, this));
         this._loader.rolesList($.proxy(this.loadRoles, this));
@@ -216,6 +226,16 @@ Imcms.Document.Viewer.prototype = {
             top: $(window).height() / 2 - $builder.height() / 2
         });
         $(this._modal).fadeIn("fast");
+    },
+    buildValidator: function () {
+        $(this._builder[0]).find("form").validate({
+            rules: {
+                enabled: {
+                    required: true
+                }
+            },
+            ignore: ""
+        });
     },
     buildView: function () {
         this._builder = JSFormBuilder("<div>")
@@ -386,6 +406,14 @@ Imcms.Document.Viewer.prototype = {
             .name("template")
             .label("Template")
             .reference("templates")
+            .end()
+            .end()
+            .div()
+            .class("select field")
+            .select()
+            .name("defaultTemplate")
+            .label("Default template for child documents")
+            .reference("defaultTemplates")
             .end()
             .end()
             .end();
@@ -700,6 +728,7 @@ Imcms.Document.Viewer.prototype = {
     },
     addTemplate: function (key, name) {
         this._builder.ref("templates").option(key, name);
+        this._builder.ref("defaultTemplates").option(key, name);
     },
     loadLanguages: function (id) {
         $.each(id, $.proxy(this.addLanguage, this));
@@ -882,6 +911,10 @@ Imcms.Document.Viewer.prototype = {
         $(this._builder.ref("keywordsList").getHTMLElement()).find("option:selected").remove();
     },
     apply: function () {
+        if (!$(this._builder[0]).find("form").valid()) {
+            return false;
+        }
+
         this._options.onApply(this);
         this.destroy();
     },
@@ -944,6 +977,7 @@ Imcms.Document.Viewer.prototype = {
 
         formData.append("data", JSON.stringify(result));
         formData.append("type", this._options.type);
+        formData.append("parent", this._options.parentDocumentId);
 
         if (this._options.type === 8) {
             formData.append("file", $source.find("input[name=file]")[0].files[0]);
@@ -1004,6 +1038,7 @@ Imcms.Document.TypeViewer = function (options) {
 Imcms.Document.TypeViewer.prototype = {
     _builder: undefined,
     _options: {
+        loader: undefined,
         onApply: function () {
         },
         onCancel: function () {
@@ -1013,6 +1048,7 @@ Imcms.Document.TypeViewer.prototype = {
         var $builder;
 
         this.buildView();
+        this.doLoadDocument();
 
         $builder = $(this._builder[0]);
 
@@ -1044,10 +1080,19 @@ Imcms.Document.TypeViewer.prototype = {
             .div()
             .class("field select")
             .select()
+            .label("Document Type")
             .name("documentTypes")
             .option("Text Document", 2)
             .option("Url Document", 5)
             .option("File Document", 8)
+            .end()
+            .end()
+            .div()
+            .class("field select")
+            .select()
+            .label("Document Parent")
+            .reference("parentDocumentsList")
+            .name("parentDocument")
             .end()
             .end()
             .end()
@@ -1070,8 +1115,20 @@ Imcms.Document.TypeViewer.prototype = {
             .end();
         $(this._builder[0]).appendTo($("body")).addClass("document-type-viewer pop-up-form reset");
     },
+    doLoadDocument: function () {
+        this._options.loader.documentsList(this.onDocumentListLoaded.bind(this));
+    },
+    onDocumentListLoaded: function (data) {
+        var that = this;
+        $.each(data, function (pos, item) {
+            that._builder.ref("parentDocumentsList").option(item.label, item.id);
+        });
+    },
     apply: function () {
-        this._options.onApply(+$(this._builder[0]).find("select[name=documentTypes]").val());
+        this._options.onApply({
+            documentType: +$(this._builder[0]).find("select[name=documentTypes]").val(),
+            parentDocumentId: $(this._builder[0]).find("select[name=parentDocument]").val()
+        });
         this.destroy();
     },
     cancel: function () {
