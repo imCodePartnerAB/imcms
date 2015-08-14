@@ -3,6 +3,7 @@ Base Management
 
 In this article:
     - `Introduction`_
+    - `Create Document`_
     - `Edit Life Cycle`_
     - `Edit Appearance`_
     - `Edit Access`_
@@ -13,7 +14,31 @@ In this article:
 Introduction
 ------------
 
-This article describes basic document configuration, base section of it, how document should be configured.
+This article describes basic document creating nad configuration.
+
+---------------
+Create Document
+---------------
+
+Today there are two way of document creation:
+    - Create document in document manager:
+        1. Click on *Documents* on *Admin Panel*
+
+
+        .. image:: base/_static/05-OpenDocumentManager.png
+
+
+        2. In opened window click on *Create new...* button to open *new document dialog*
+
+
+        .. image:: base/_static/06-CreateNewDocument.png
+
+
+        3. Opened window is *document prototyping* window: **Document Type** - document type such as Text Document,
+        or File Document, etc; **Document Parent** - document parent document, that will be inherited for current document.
+
+
+        .. image:: base/_static/07-PrototypeNewDocument.png
 
 ---------------
 Edit Life Cycle

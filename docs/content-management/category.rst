@@ -24,5 +24,31 @@ Category editor located on ``/servlet/AdminCategories``
 .. image:: category/_static/01-CategoryEditorAdminPage.png
 
 
+To create new category first create new category type.
 
 
+.. image:: category/_static/02-CreateCategoryType.png
+
+
+``Name`` - future category type name;
+
+``Single select`` - only one category can be selected from this category type;
+
+``Multi select`` - provide multiple category selecting;
+
+``Inherited to new documents`` - enable inheritance for new documents, that is mean that all new documents, create from prototype document,
+inherited already chosen category for this category type;
+
+Now, create category as show on image below
+
+
+.. image:: category/_static/03-CreateCategory.png
+
+
+``Category name`` - name of created category;
+
+``Description`` - short description of created category;
+
+``Icon`` - brows image for category if needed;
+
+``Add to category type`` - parent category type;
