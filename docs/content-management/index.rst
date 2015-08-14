@@ -5,5 +5,6 @@ Content Management
    :titlesonly:
 
    document/index
+   category
 
 
