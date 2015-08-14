@@ -6,4 +6,6 @@ Document Management
 
    base
    text-document
+   file-document
+   url-document
 
