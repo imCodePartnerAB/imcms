@@ -77,7 +77,7 @@ There are five types of roles:
 - FULL - role with this permission have access to any configuration of current document (usual it is **admin**)
 
 
-More information about custom permission sets configuration is in :doc:`Text Document Management </content-management/document/text-document#Edit Permissions>` section
+More information about custom permission sets configuration is in :doc:`Text Document Management </content-management/document/text-document>` section
 
 .. image:: base/_static/02-EditAccess.png
 
