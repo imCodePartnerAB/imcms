@@ -77,7 +77,7 @@ There are five types of roles:
 - FULL - role with this permission have access to any configuration of current document (usual it is **admin**)
 
 
-More information about custom permission sets configuration is in :doc:`Text Document Management <content-management/document/text-document>` section
+More information about custom permission sets configuration is in :doc:`Text Document Management </content-management/document/text-document:#Edit Permissions>` section
 
 .. image:: base/_static/02-EditAccess.png
 
@@ -85,7 +85,7 @@ More information about custom permission sets configuration is in :doc:`Text Doc
 Edit Keywords
 -------------
 
-Each document in ImCMS system is indexed by the search system, that called :doc:`Solr <fundamental/advanced-configuration/solr>`.
+Each document in ImCMS system is indexed by the search system, that called :doc:`Solr </fundamental/advanced-configuration/solr>`.
 That`s why it is very important to mark document with special keywords that make searching easily.
 
 .. image:: base/_static/03-EditKeywords.png

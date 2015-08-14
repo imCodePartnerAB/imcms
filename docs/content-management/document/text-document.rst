@@ -29,7 +29,7 @@ ImCMS provide base document managing, that help change document status. There ar
 Edit Permissions
 ----------------
 
-This section provide access to configuring custom permission sets those mentioned in :doc:`Base <content-management/document/base>` section.
+This section provide access to configuring custom permission sets those mentioned in :doc:`Base </content-management/document/base>` section.
 
 
 .. image:: text-document/_static/02-EditPermissions.png
