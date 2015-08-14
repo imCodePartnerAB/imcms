@@ -32,6 +32,6 @@ Edit Permissions
 This section provide access to configuring custom permission sets those mentioned in :doc:`Base <content-management/document/base>` section.
 
 
-.. image:: text-document/_static/01-EditTemplates.png
+.. image:: text-document/_static/02-EditPermissions.png
 
 

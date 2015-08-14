@@ -14,7 +14,7 @@ In this article:
 Introduction
 ------------
 
-This article describes basic document creating nad configuration.
+This article describes basic document creating and configuring.
 
 ---------------
 Create Document
@@ -51,7 +51,7 @@ ImCMS provide base document managing, that help change document status. There ar
 - Disapproved - document is disabled, and cannot be accessed.
 
 
-.. image:: base/_static/01-EditLifeCycle.png
+.. image:: base/_static/02-EditLifeCycle.png
 
 ---------------
 Edit Appearance
