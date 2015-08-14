@@ -18,6 +18,6 @@ Edit File
 ImCMS provide own section in base editor for file document. It provides access to loading file.
 
 
-.. image:: text-document/_static/01-EditFile.png
+.. image:: file-document/_static/01-EditFile.png
 
 

@@ -18,7 +18,7 @@ Edit Linking
 ImCMS provide own section in base editor for file document. It provides access to edit document`s link.
 
 
-.. image:: text-document/_static/01-EditLinking.png
+.. image:: url-document/_static/01-EditLinking.png
 
 
 
