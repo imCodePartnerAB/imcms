@@ -6,5 +6,14 @@ package com.imcode.imcms.servlet.tags;
 public class RegistrationPassword1Tag extends AbstractFormInputTag {
     public RegistrationPassword1Tag() {
         super("password", "password1");
+
+        setAttributes("");
+    }
+
+    @Override
+    public void setAttributes(String attributes) {
+        attributes += " required  minlength=\"4\" maxlength=\"15\"";
+
+        super.setAttributes(attributes);
     }
 }

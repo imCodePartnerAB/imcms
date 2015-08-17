@@ -6,5 +6,14 @@ package com.imcode.imcms.servlet.tags;
 public class RegistrationPassword2Tag extends AbstractFormInputTag {
     public RegistrationPassword2Tag() {
         super("password", "password2");
+
+        setAttributes("");
+    }
+
+    @Override
+    public void setAttributes(String attributes) {
+        attributes += " required equalTo=\"[name=password1]\"";
+
+        super.setAttributes(attributes);
     }
 }

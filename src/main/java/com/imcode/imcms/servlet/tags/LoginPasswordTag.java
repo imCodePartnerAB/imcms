@@ -17,7 +17,7 @@ public class LoginPasswordTag extends TagSupport implements IAttributedTag {
         try {
             pageContext.getOut().print("<input type='password' name='"
                     + VerifyUser.REQUEST_PARAMETER__PASSWORD + "' "
-                    + attributes + "/>");
+                    + attributes + " required/>");
         } catch (IOException e) {
             throw new JspException(e);
         }

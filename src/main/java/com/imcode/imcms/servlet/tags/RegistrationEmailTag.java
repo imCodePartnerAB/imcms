@@ -6,5 +6,14 @@ package com.imcode.imcms.servlet.tags;
 public class RegistrationEmailTag extends AbstractFormInputTag {
     public RegistrationEmailTag() {
         super("text", "email");
+
+        setAttributes("");
+    }
+
+    @Override
+    public void setAttributes(String attributes) {
+        attributes += " required";
+
+        super.setAttributes(attributes);
     }
 }

@@ -17,7 +17,7 @@ public class LoginNameTag extends TagSupport implements IAttributedTag {
         try {
             pageContext.getOut().print("<input type='text' name='"
                     + VerifyUser.REQUEST_PARAMETER__USERNAME + "' "
-                    + attributes + "/>");
+                    + attributes + " required/>");
         } catch (IOException e) {
             throw new JspException(e);
         }

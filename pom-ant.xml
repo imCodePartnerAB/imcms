@@ -8,6 +8,10 @@
 
     <property name="version" value="SET BY MAVEN"/>
 
+    <tstamp>
+        <format property="compilationdate" pattern="d-MMMM-yyyy" locale="en,GB"/>
+    </tstamp>
+
     <property file="build.properties"/>
 
     <property name="build.webapp.dir" value="SET BY MAVEN"/>
@@ -70,7 +74,7 @@
         <mkdir dir="${build.webapp.webinf.dir}/uploads"/>
         <mkdir dir="${build.webapp.webinf.dir}/classes"/>
 
-        <echo message="${version}" file="${versionfile}"/>
+        <echo message="${version}-${compilationdate}" file="${versionfile}"/>
 
         <!-- Copy and filter webinf, conf and classes resources to main webapp dir -->
         <copy todir="${webinf.conf.dir}" filtering="true" encoding="utf-8">

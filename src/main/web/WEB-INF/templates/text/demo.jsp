@@ -11,6 +11,8 @@
     <title>${document.headline} - Powered by imCMS from imCode Partner AB</title>
     <meta charset="utf-8"/>
     <link rel="stylesheet" href="/imcms/css/template/demo.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -91,11 +93,11 @@
                                             <imcms:registrationemail/>
                                         </div>
                                         <div class="field">
-                                            <label>Name</label>
+                                            <label>First Name</label>
                                             <imcms:registrationname/>
                                         </div>
                                         <div class="field">
-                                            <label>Second Name</label>
+                                            <label>Last Name</label>
                                             <imcms:registrationsurname/>
                                         </div>
                                         <div class="field">

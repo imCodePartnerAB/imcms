@@ -16,7 +16,7 @@ public class LoginTag extends TagSupport implements IAttributedTag {
         try {
             HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
 
-            pageContext.getOut().print("<form action='"
+            pageContext.getOut().print("<form data-goal='login' action='"
                     + request.getContextPath()
                     + "/servlet/VerifyUser' "
                     + attributes + " >");
@@ -30,6 +30,13 @@ public class LoginTag extends TagSupport implements IAttributedTag {
     public int doEndTag() throws JspException {
         try {
             pageContext.getOut().print("</form>");
+            pageContext.getOut().print(
+                    "<script>" +
+                            "if(jQuery && jQuery.validator){" +
+                            "jQuery(\"form[data-goal=login]\").validate()" +
+                            "}" +
+                            "</script>"
+            );
         } catch (IOException e) {
             throw new JspException(e);
         }

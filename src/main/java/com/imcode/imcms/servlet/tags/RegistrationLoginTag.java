@@ -6,5 +6,14 @@ package com.imcode.imcms.servlet.tags;
 public class RegistrationLoginTag extends AbstractFormInputTag {
     public RegistrationLoginTag() {
         super("text", "login");
+
+        setAttributes("");
+    }
+
+    @Override
+    public void setAttributes(String attributes) {
+        attributes += " required";
+
+        super.setAttributes(attributes);
     }
 }
