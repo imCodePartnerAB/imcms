@@ -21,25 +21,53 @@ Create Document
 ---------------
 
 Today there are two way of document creation:
-    - Create document in document manager:
-        1. Click on *Documents* on *Admin Panel*
+    1. Create document in document manager:
+        - Click on *Documents* on *Admin Panel*
 
 
-        .. image:: base/_static/05-OpenDocumentManager.png
+        .. image:: base/_static/01-OpenDocumentManager.png
 
 
-        2. In opened window click on *Create new...* button to open *new document dialog*
+        - In opened window click on *Create new...* button to open *new document dialog*
 
 
-        .. image:: base/_static/06-CreateNewDocument.png
+        .. image:: base/_static/02-CreateNewDocument.png
 
 
-        3. Opened window is *document prototyping* window: **Document Type** - document type such as Text Document,
-        or File Document, etc; **Document Parent** - document parent document, that will be inherited for current document.
+        - Opened window is *document prototyping* window: **Document Type** - document type such as Text Document,
+        or File Document, etc; **Document Parent** - document`s parent document, that will be inherited for current document.
 
 
-        .. image:: base/_static/07-PrototypeNewDocument.png
+        .. image:: base/_static/03-PrototypeNewDocument.png
 
+
+        - Click *OK* button, and configure document in opened window.
+
+    2. Create document in menu manager
+        - Enable **Edit Mode** as shown below
+
+
+        .. image:: base/_static/04-EnableEditMode.png
+
+
+        - Find **Menu Editor** label on the left side of page an click on it for open **Menu Editor**
+
+
+        .. image:: base/_static/05-MenuEditorLabel.png
+
+
+        - Click on **Create new...** button
+
+
+        .. image:: base/_static/06-CreateNewDocumentFromMenu.png
+
+
+        - Follow steps from Create Document in Document Manager section.
+
+
+
+
+---------------
 ---------------
 Edit Life Cycle
 ---------------
@@ -51,7 +79,7 @@ ImCMS provide base document managing, that help change document status. There ar
 - Disapproved - document is disabled, and cannot be accessed.
 
 
-.. image:: base/_static/02-EditLifeCycle.png
+.. image:: base/_static/07-EditLifeCycle.png
 
 ---------------
 Edit Appearance
@@ -61,7 +89,7 @@ This editor section provides access to manage documents alias, how document will
 document name, description, link image for all available in ImCMS system languages.
 
 
-.. image:: base/_static/01-EditAppearance.png
+.. image:: base/_static/08-EditAppearance.png
 
 -----------
 Edit Access
@@ -79,7 +107,7 @@ There are five types of roles:
 
 More information about custom permission sets configuration is in :doc:`Text Document Management </content-management/document/text-document>` section
 
-.. image:: base/_static/02-EditAccess.png
+.. image:: base/_static/09-EditAccess.png
 
 -------------
 Edit Keywords
@@ -88,7 +116,7 @@ Edit Keywords
 Each document in ImCMS system is indexed by the search system, that called :doc:`Solr </fundamental/advanced-configuration/solr>`.
 That`s why it is very important to mark document with special keywords that make searching easily.
 
-.. image:: base/_static/03-EditKeywords.png
+.. image:: base/_static/10-EditKeywords.png
 
 ---------------
 Edit Categories
@@ -97,4 +125,4 @@ Edit Categories
 Since ImCMS provide categories, each document can categorized. It should be noted, that one document can be assigned to
 several categories at the same time if category type support multiply selecting.
 
-.. image:: base/_static/04-EditCategories.png
+.. image:: base/_static/11-EditCategories.png

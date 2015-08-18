@@ -3,7 +3,7 @@ Category Management
 
 In this article:
     - `Introduction`_
-    - `Edit File`_
+    - `Create Category Type and Category`_
 
 ------------
 Introduction
@@ -14,9 +14,9 @@ of categories is **Category Type**. It can include several categories and applie
 (such as document, images, etc). Each category type can be simple or complex. Simple category type provide only one category selecting, complex provide multiply category selecting.
 
 
---------------------
-Create Category Type
---------------------
+---------------------------------
+Create Category Type and Category
+---------------------------------
 
 Category editor located on ``/servlet/AdminCategories``
 
