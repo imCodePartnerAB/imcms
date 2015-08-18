@@ -4,6 +4,7 @@ Menu Management
 In this article:
     - `Introduction`_
     - `Add Menu Item`_
+    - `Order Menu Items`_
 
 ------------
 Introduction
@@ -38,6 +39,7 @@ ImCMS Menu Editor provide several way for adding document to menu:
     3. From new document. To create new document from menu editor consider :doc:`Base Document Management </content-management/document/base>` section.
 
 
+----------------
 ----------------
 Order Menu Items
 ----------------
