@@ -555,7 +555,7 @@ Imcms.Menu.API = function () {
 };
 
 Imcms.Menu.API.prototype = {
-    path: "/editmenu",
+    path: Imcms.contextPath + "/editmenu",
 
     delete: function (request, response) {
         $.ajax({

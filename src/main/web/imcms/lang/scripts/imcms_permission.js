@@ -20,7 +20,7 @@ Imcms.Permission.API = function () {
 
 };
 Imcms.Permission.API.prototype = {
-    path: "/api/permission",
+    path: Imcms.contextPath + "/api/permission",
     read: function (request, response) {
         $.ajax({
             url: this.path,

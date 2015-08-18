@@ -20,7 +20,7 @@ Imcms.Role.API = function () {
 
 };
 Imcms.Role.API.prototype = {
-    path: "/api/role",
+    path: Imcms.contextPath + "/api/role",
     read: function (request, response) {
         $.ajax({
             url: this.path,

@@ -10,7 +10,7 @@ Imcms.Text.API = function () {
 
 };
 Imcms.Text.API.prototype = {
-    path: "/edit",
+    path: Imcms.contextPath + "/edit",
 
     update: function (sender, callback) {
         var data = jQuery(sender).data().prettify();

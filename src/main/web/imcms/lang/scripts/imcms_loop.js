@@ -6,7 +6,7 @@ Imcms.Loop.API = function () {
 
 };
 Imcms.Loop.API.prototype = {
-    path: "/api/loop",
+    path: Imcms.contextPath + "/api/loop",
     create: function (request, response) {
         $.ajax({
             url: this.path,

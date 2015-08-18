@@ -19,7 +19,7 @@ Imcms.Language.API = function () {
 
 };
 Imcms.Language.API.prototype = {
-    path: "/api/language",
+    path: Imcms.contextPath + "/api/language",
     read: function (request, response) {
         $.ajax({
             url: this.path,

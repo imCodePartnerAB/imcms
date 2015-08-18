@@ -6,7 +6,7 @@ Imcms.Document.API = function () {
 
 };
 Imcms.Document.API.prototype = {
-    path: "/api/document",
+    path: Imcms.contextPath + "/api/document",
     create: function (request, response) {
         $.ajax({
             url: this.path,

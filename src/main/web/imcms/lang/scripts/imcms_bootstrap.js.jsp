@@ -20,7 +20,9 @@
         .getByCode(request.getParameter("language").substring(0,2)).getName()%>"
         };
 
-        $.ajaxSetup({ cache: false });
+        Imcms.contextPath = "<%=request.getContextPath()%>";
+
+        $.ajaxSetup({cache: false});
 
         $(document).ready(function () {
             new Imcms.Bootstrapper().bootstrap(Imcms.isEditMode);

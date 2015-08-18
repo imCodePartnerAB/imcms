@@ -9,7 +9,7 @@ Imcms.Folder.API = function () {
 
 };
 Imcms.Folder.API.prototype = {
-    path: "/api/content/folders",
+    path: Imcms.contextPath + "/api/content/folders",
     create: function (request, response) {
         Imcms.Logger.log("Folder.API::create :",
             $.ajax.bind($, {

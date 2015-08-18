@@ -26,19 +26,22 @@
 
     <script src="${pageContext.request.contextPath}/imcms/jqtree/tree.jquery.js"></script>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/imcms/jqtree/jqtree.css">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/base.css "/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/imcms_doc_admin.css.jsp"/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/panel.css "/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/frame.css "/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/window.css "/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/menu.css "/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/content.css "/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/document.css "/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/image.css "/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/process.css "/>
+    <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/base.css "/>--%>
+    <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/imcms_doc_admin.css.jsp"/>--%>
+    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_marged.css.jsp"/>
+    <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/panel.css "/>--%>
+    <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/frame.css "/>--%>
+    <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/window.css "/>--%>
+    <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/menu.css "/>--%>
+    <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/content.css "/>--%>
+    <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/document.css "/>--%>
+    <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/image.css "/>--%>
+    <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/process.css "/>--%>
 
     <script type="text/javascript"
             src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_base.js"></script>
+    <script type="text/javascript"
+            src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_bootstrap.js.jsp?meta_id=${document.id}&amp;language=${user.language.isoCode639_2}&amp;flags=56565"></script>
     <script type="text/javascript"
             src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_adminpanel.js"></script>
     <script type="text/javascript"
@@ -75,8 +78,6 @@
             src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_image.js"></script>
     <script type="text/javascript"
             src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_backgroundworker.js"></script>
-    <script type="text/javascript"
-            src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_bootstrap.js.jsp?meta_id=${document.id}&amp;language=${user.language.isoCode639_2}&amp;flags=56565"></script>
 </head>
 <body>
 <imcms:admin/>

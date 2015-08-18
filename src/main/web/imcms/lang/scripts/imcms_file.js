@@ -6,7 +6,7 @@ Imcms.File.API = function () {
 
 };
 Imcms.File.API.prototype = {
-    path: "/api/content/files",
+    path: Imcms.contextPath + "/api/content/files",
     create: function (request, response) {
         Imcms.Logger.log("File.API::create :",
             $.ajax.bind($, {

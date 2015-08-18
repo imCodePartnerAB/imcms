@@ -5,7 +5,7 @@ Imcms.Image = {};
 Imcms.Image.API = function () {
 };
 Imcms.Image.API.prototype = {
-    path: "/api/content/image",
+    path: Imcms.contextPath + "/api/content/image",
     read: function (request, response) {
         Imcms.Logger.log("Image.API::read :",
             $.ajax.bind($, {
@@ -300,7 +300,7 @@ Imcms.Image.ImageViewAdapter.prototype = {
     },
     update: function (src) {
         this._imageSource = src;
-        this._imageView.attr("src", src.urlPathRelativeToContextPath)
+        this._imageView.attr("src", Imcms.contextPath + src.urlPathRelativeToContextPath)
     }
 };
 
