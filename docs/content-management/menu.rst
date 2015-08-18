@@ -35,7 +35,7 @@ ImCMS Menu Editor provide several way for adding document to menu:
     .. image:: menu/_static/03-SearchDialog.png
 
 
-    3. From new document. To create new document from menu editor consider :doc:`Base Document Management <content-management\document\base>` section.
+    3. From new document. To create new document from menu editor consider :doc:`Base Document Management </content-management/document/base>` section.
 
 
 ----------------
