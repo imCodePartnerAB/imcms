@@ -25,7 +25,7 @@ There are several way to open **Text Editor**:
         and click on it to open the editor. When label hovered - the link text is highlighted.
 
 
-        .. image:: menu/_static/01-TextEditorLabel.png
+        .. image:: text/_static/01-TextEditorLabel.png
 
 
     2. Since **contenteditable** attribute presented in all browser text editor will be opened when content is start changing.
