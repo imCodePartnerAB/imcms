@@ -44,8 +44,7 @@ There are several base part are in the image editor:
     .. image:: image/_static/03-ImageCropperPart.png
 
 
-    - ``Image Info`` - numeric configuration part of editor, it provide information about image size, size of cropped area,
-    etc.
+    - ``Image Info`` - numeric configuration part of editor, it provide information about image size, size of cropped area, etc.
 
 
     .. image:: image/_static/04-ImageInfoPart.png
