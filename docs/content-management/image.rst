@@ -23,7 +23,7 @@ Open Editor
 and click on it to open the editor. When label hovered - the linked image is highlighted.
 
 
-.. image:: image/_static/01-TextEditorLabel.png
+.. image:: image/_static/01-ImageEditorLabel.png
 
 ------------
 ------------
