@@ -8,5 +8,6 @@ Content Management
    category
    menu
    text
+   image
 
 
