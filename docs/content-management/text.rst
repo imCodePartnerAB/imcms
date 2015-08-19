@@ -36,7 +36,7 @@ There are several way to open **Text Editor**:
 Editor Features
 ---------------
 
-ImCMS text editor is **`CKEditor <http://ckeditor.com/>`_**. All information about this text editor presented on `official site <http://ckeditor.com/demo>`.
+ImCMS text editor is `CKEditor <http://ckeditor.com/>`_. All information about this text editor presented on `official site <http://ckeditor.com/demo>`_.
 
 But ImCMS customize a bit this great editor and provide own features:
 
