@@ -22,7 +22,7 @@ There are several way to open **Text Editor**:
         - Enable **Edit Mode**
 
         - Find on the left side of the page blue label with text **Text Editor** (as shown below)
-        and click on it to open the editor. When label hovered - the link text is highlighted.
+        and click on it to open the editor. When label hovered - the linked text is highlighted.
 
 
         .. image:: text/_static/01-TextEditorLabel.png
@@ -38,7 +38,7 @@ Editor Features
 
 ImCMS text editor is `CKEditor <http://ckeditor.com/>`_. All information about this text editor presented on `official site <http://ckeditor.com/demo>`_.
 
-But ImCMS customize a bit this great editor and provide own features:
+But ImCMS customize a bit this great editor and provides own features:
 
     .. |linkIcon| image:: text/_static/02-LinkEditorIcon.png
         :width: 20pt
@@ -63,4 +63,4 @@ But ImCMS customize a bit this great editor and provide own features:
         :height: 20pt
 
 
-    2. |imageBrowserIcon| ``Image Browser`` - this feature give access to default ImCMS Content Manager
+    2. |imageBrowserIcon| ``Image Browser`` - this feature give access to default ImCMS File-Content Manager
