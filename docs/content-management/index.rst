@@ -7,5 +7,6 @@ Content Management
    document/index
    category
    menu
+   text
 
 
