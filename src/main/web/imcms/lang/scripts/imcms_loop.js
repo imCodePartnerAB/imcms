@@ -135,7 +135,7 @@ Imcms.Loop.Editor.prototype = {
             .end();
         $(this._builder[0])
             .appendTo("body")
-            .addClass("editor-form reset");
+            .addClass("editor-form loop-viewer reset");
         return this;
     },
     buildLoopsList: function (data) {

@@ -37,9 +37,19 @@ public class LoopApiServlet extends HttpServlet {
             TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(metaId);
             DocRef docRef = DocRef.of(document.getVersionRef(), document.getLanguage().getCode());
             TextDocumentContentLoader textDocumentContentLoader = Imcms.getServices().getManagedBean(TextDocumentContentLoader.class);
+            TextDocumentContentSaver textDocumentContentSaver = Imcms.getServices().getManagedBean(TextDocumentContentSaver.class);
             Loop loop = textDocumentContentLoader.getLoop(
                     document.getVersionRef(),
                     loopId);
+
+            if (loop == null) {
+
+                textDocumentContentSaver.updateContent(document, Imcms.getUser());
+
+                loop = textDocumentContentLoader.getLoop(
+                        document.getVersionRef(),
+                        loopId);
+            }
             List<Map<String, Object>> entriesList = new ArrayList<>();
             loop.getEntries().forEach((no, bool) -> {
                 Map<String, Object> entryData = new HashMap<>();

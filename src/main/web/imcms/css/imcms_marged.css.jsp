@@ -767,6 +767,46 @@ editor theme
 <%--WINDOW--%>
 
 
+<%--LOOP--%>
+.loop-viewer .imcms-content table {
+    border-left: none;
+    border-right: none;
+    width: 100%;
+    overflow: hidden;
+    background-color: #fff;
+}
+.loop-viewer .imcms-content table tr td {
+    border-bottom: 1px solid #f0f0ff;
+    padding: 7.5px 20px;
+    vertical-align: middle;
+}
+
+.loop-viewer .imcms-content table tr:hover td {
+    background: #ffff64;
+    color: black;
+}
+
+.loop-viewer .imcms-content table tr td:last-child {
+    margin: 0;
+    width: 20px;
+    padding: 0 20px;
+}
+
+.loop-viewer .imcms-content table tr td:last-child button,
+.loop-viewer .imcms-content table tr td:last-child .button {
+    font-size: 13px;
+    line-height: 25px;
+}
+
+.loop-viewer .imcms-content table tr:hover td:last-child button,
+.loop-viewer .imcms-content table tr:hover td:last-child .button {
+    display: block;
+}
+
+
+
+<%--LOOP--%>
+
 
 <%--MENU--%>
 

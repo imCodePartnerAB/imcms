@@ -10,7 +10,7 @@
 <head>
     <title>${document.headline} - Powered by imCMS from imCode Partner AB</title>
     <meta charset="utf-8"/>
-    <link rel="stylesheet" href="/imcms/css/template/demo.css"/>
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/imcms/css/template/demo.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
 </head>
@@ -130,13 +130,26 @@
 
             <imcms:text no="2" document="${document.id}"/>
         </div>
+
+        <div class="wrapper">
+            <imcms:loop no="1">
+                <div class="figure">
+                    <imcms:image no="1" document="${document.id}"/>
+                    <div class="description">
+                        <imcms:text no="1" document="${document.id}"/>
+                    </div>
+
+                </div>
+            </imcms:loop>
+        </div>
     </section>
 
     <section class="footer-placeholder">
         <section class="footer">
             <div class="wrapper">
                 <div class="additional">
-                    <imcms:text no="3" document="1001" placeholder="<i>now empty text field can be filled with attr `placeholder`</i>"/>
+                    <imcms:text no="3" document="1001"
+                                placeholder="<i>now empty text field can be filled with attr `placeholder`</i>"/>
                 </div>
                 <div class="logo">
                     <imcms:image no="1" document="1001"/>

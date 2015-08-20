@@ -4,13 +4,12 @@ import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.util.JSONUtils;
 import imcode.server.Imcms;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.RoleGetter;
 import imcode.server.user.RoleId;
 import imcode.util.io.FileInputStreamSource;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -21,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -285,6 +283,7 @@ public class DocumentApiServlet {
 
     protected void prepareEntity(DocumentEntity entity, DocumentDomainObject document) {
         CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
+        RoleGetter roleGetter = Imcms.getServices().getRoleGetter();
 
         entity.languages = new HashMap<>();
         entity.alias = document.getAlias();
@@ -296,8 +295,13 @@ public class DocumentApiServlet {
                 .of(document.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings())
                 .collect(Collectors.toMap(b -> b.getRoleId().intValue(), a -> {
                     Map<String, java.io.Serializable> map = new HashMap<>();
+
+                    HashMap<String, Object> role = new HashMap<>();
+                    role.put("roleId", a.getRoleId().getRoleId());
+                    role.put("name", roleGetter.getRole(a.getRoleId()).getName());
+
                     map.put("permission", a.getDocumentPermissionSetType().getId());
-                    map.put("role", a.getRoleId());
+                    map.put("role", role);
                     return map;
                 }));
 
