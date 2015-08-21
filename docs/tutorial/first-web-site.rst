@@ -55,10 +55,10 @@ Consider text editing, we try to write our first *Hello World*.
     :height: 20pt
 
 
-    - Enable *Edit Mode*
-    - Find on the left side of page label with text **Text Editor** and click it.
-    - Put "Hello World"
-    - On Text Editor panel find button with |saveIcon| icon and click it.
-    - Reload page to be sure that text has been saved.
+- Enable *Edit Mode*
+- Find on the left side of page label with text **Text Editor** and click it.
+- Put "Hello World"
+- On Text Editor panel find button with |saveIcon| icon and click it.
+- Reload page to be sure that text has been saved.
 
 
