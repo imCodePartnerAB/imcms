@@ -15,6 +15,7 @@ ImCMS Documentation
 
     overview
     getting-started/index
+    tutorial/index
     tag-engine/index
     document-engine/index
     fundamental/index
