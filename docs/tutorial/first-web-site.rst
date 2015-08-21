@@ -29,7 +29,7 @@ In this article:
 
 6. Let's login as admin. There are two way to login in the system:
 
-    - Find in the top right corner button ``login`` end hover it.
+    - Find in the top right corner button ``SignIn`` end hover it.
 
     - Type in your browser address ``http://localhost:8080/imcms/login/``.
 
