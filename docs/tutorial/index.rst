@@ -1,5 +1,5 @@
-Getting Started
-===============
+Tutorial
+========
 
 .. toctree::
    :titlesonly:
