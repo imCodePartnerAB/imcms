@@ -25,7 +25,7 @@ In this article:
     .. image:: first-web-site/_static/02-WelcomeImCMSPage.png
 
 
-    that is mean that ImCMS system has started and now working perfectly.
+        that is mean that ImCMS system has started and now working perfectly.
 
 6. Let's login as admin. There are two way to login in the system:
 
