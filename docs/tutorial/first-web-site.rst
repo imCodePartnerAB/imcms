@@ -51,11 +51,11 @@ Consider text editing, we try to write our first *Hello World*.
 
 
 .. |saveIcon| image:: text/_static/04-ApplyTextEditingIcon.png
-        :width: 20pt
-        :height: 20pt
+    :width: 20pt
+    :height: 20pt
 
 
-       - Enable *Edit Mode*
+    - Enable *Edit Mode*
     - Find on the left side of page label with text **Text Editor** and click it.
     - Put "Hello World"
     - On Text Editor panel find button with |saveIcon| icon and click it.
