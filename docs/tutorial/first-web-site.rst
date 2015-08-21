@@ -25,7 +25,7 @@ In this article:
     .. image:: first-web-site/_static/02-WelcomeImCMSPage.png
 
 
-        that is mean that ImCMS system has started and now working perfectly.
+   that is mean that ImCMS system has started and now working perfectly.
 
 6. Let's login as admin. There are two way to login in the system:
 
@@ -33,7 +33,7 @@ In this article:
 
     - Type in your browser address ``http://localhost:8080/imcms/login/``.
 
-By default way login and password is the same - ``admin``
+   By default way login and password is the same - ``admin``
 
 7. If everything is okay you will see same page, but with **Admin Panel** (see :doc:`Admin Panel </content-management/admin-panel>` section).
 
