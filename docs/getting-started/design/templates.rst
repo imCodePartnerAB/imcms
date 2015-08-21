@@ -47,8 +47,8 @@ Create new template
 
 7. Choose created template from dropdown and click **"OK"** button
 
-
-
+---------------
+---------------
 Modify template
 ---------------
 

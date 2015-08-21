@@ -1156,6 +1156,7 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
+
                 </executions>
             </plugin>
 
@@ -1243,6 +1244,9 @@
                         War source directory must not be set to existing directory
                         since webappDirectory (the directory where the webapp is built) is created using ant script.
                     -->
+                    <!--<outputDirectory>docs/common/webapp/</outputDirectory>-->
+                    <!--<outputDirectory>target/</outputDirectory>-->
+
                     <warSourceDirectory/>
 
                     <!--<webResources>-->
