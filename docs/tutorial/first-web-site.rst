@@ -7,7 +7,7 @@ In this article:
 
 1. First that you need it is download the `Apache Tomcat <http://tomcat.apache.org/download-80.cgi>`_.
 
-2. Check if :doc:`all required part </getting has installed yet.
+2. Check if :doc:`all required part </getting-started/setup/requirement>` has installed yet.
 
    3. Download :download:`ImCMS distribution file <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/SNAPSHOT/imcms-20150820.105717-1.war>` and follow :doc:`Installation guide </getting-started/setup/install>`.
 
