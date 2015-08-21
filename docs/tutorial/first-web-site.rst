@@ -50,7 +50,7 @@ This is the time to enable **Edit Mode** - edit mode give ability to edit all ed
 Consider text editing, we try to write our first *Hello World*.
 
 
-.. |saveIcon| image:: text/_static/04-ApplyTextEditingIcon.png
+.. |saveIcon| image:: first-web-site/_static/04-ApplyTextEditingIcon.png
     :width: 20pt
     :height: 20pt
 
