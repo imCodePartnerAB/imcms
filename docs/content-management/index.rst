@@ -5,6 +5,7 @@ Content Management
    :titlesonly:
 
    document/index
+   admin-panel
    category
    menu
    text
