@@ -42,7 +42,7 @@ In this article:
 
 8. Let's create new document. Click on Admin Panel **Document List** and follow :doc:`Document Management </content-management/document/index>` guide.
 
-9. It is good, if document has been created, but nobody except you don`t know about it, soo let's add created document to menu.
+9. It is good, if document has been created, but nobody know, except you, about it, soo let's add created document to menu.
 To add document to menu consider :doc:`Menu Management </content-management/menu>` topic.
 
 10. Great - now you know how to create page and add it to menu, but you ask the question - 'How I should fill content on my new page'.
