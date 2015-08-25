@@ -9,7 +9,7 @@ In this article:
 
 2. Check if :doc:`all required part </getting-started/setup/requirement>` has installed yet.
 
-3. Download :download:`ImCMS distribution file <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/SNAPSHOT/imcms-20150820.105717-1.war>`_ and follow :doc:`Installation guide </getting-started/setup/install>`.
+3. Download :download:`` `ImCMS distribution file <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/SNAPSHOT/imcms-20150820.105717-1.war>`_ and follow :doc:`Installation guide </getting-started/setup/install>`.
 
 4. If everything is OK you will get something like that:
 
