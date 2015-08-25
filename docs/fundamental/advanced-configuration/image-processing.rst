@@ -3,7 +3,8 @@ Image Processing
 
 
 In this article:
-    - `Introduction`_.
+    - `Introduction`_
+    - `Setup`_
 
 
 ------------
@@ -14,3 +15,10 @@ All image processing in ImCMS powered by well known tools called `ImageMagic <ht
 
 
 
+-----
+Setup
+-----
+
+1. Download :download:`ImageMagic <http://www.imagemagick.org/script/binary-releases.php>`_ distribution and install it if it has not been installed yet.
+
+2.
