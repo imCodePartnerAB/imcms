@@ -1,8 +1,4 @@
-.. include:: /common/stub-topic.txt
+Overview of ImCMS
+=================
 
-|stub-icon| Overview of ImCMS
-=============================
 
-.. include:: /common/stub-notice.txt
-
-.. _issue: https://github.com/aspnet/Docs/issues/113

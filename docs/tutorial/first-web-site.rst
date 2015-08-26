@@ -9,7 +9,7 @@ In this article:
 
 2. Check if :doc:`all required part </getting-started/setup/requirement>` has installed yet.
 
-3. Download :download:`ImCMS distribution file <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/SNAPSHOT/imcms-20150820.105717-1.war>` and follow :doc:`Installation guide </getting-started/setup/install>`.
+3. Download :download:`- <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/SNAPSHOT/imcms-20150820.105717-1.war>` `ImCMS distribution file <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/SNAPSHOT/imcms-20150820.105717-1.war>`_ and follow :doc:`Installation guide </getting-started/setup/install>`.
 
 4. If everything is OK you will get something like that:
 
@@ -67,4 +67,15 @@ Consider text editing, we try to write our first *Hello World*.
 There are two things that helps you to prevent access to this page - close it for every one, or create special group of users.
 The better way is  creating group of users and give them permissions to view current page. Since users grouped by role lets create new
 role in system - this operation has been described in :doc:`Role Management </content-management/role>` section.
+
+After the role has been created open PageInfo dialog and open *Access* section as has shown below.
+
+
+.. image:: first-web-site/_static/05-AccessSection.png
+
+
+Remove role **Users** if it has been presented and add created role from the list.
+
+
+.. image:: first-web-site/_static/06-ChangedRolePermission.png
 
