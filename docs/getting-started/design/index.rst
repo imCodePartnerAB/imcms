@@ -8,4 +8,3 @@ Design in ImCMS consists of 2 larger concepts, namely Templates, and Tags. Templ
    :titlesonly:
 
    templates
-   content-media-api
