@@ -27,7 +27,7 @@ In this article:
 
    that is mean that ImCMS system has started and now working perfectly.
 
-6. Let's login as admin. There are two way to login in the system:
+6. Lets login as admin. There are two way to login in the system:
 
     - Find in the top right corner button ``SignIn`` end hover it.
 
@@ -40,7 +40,7 @@ In this article:
 
     .. image:: first-web-site/_static/03-PageWithAdminPanel.png
 
-8. Let's create new document. Click on Admin Panel **Document List** and follow :doc:`Document Management </content-management/document/index>` guide.
+8. Lets create new document. Click on Admin Panel **Document List** and follow :doc:`Document Management </content-management/document/index>` guide.
 
 9. It is good, if document has been created, but nobody know, except you, about it, soo let's add created document to menu.
 To add document to menu consider :doc:`Menu Management </content-management/menu>` topic.
@@ -61,4 +61,10 @@ Consider text editing, we try to write our first *Hello World*.
 - On Text Editor panel find button with |saveIcon| icon and click it.
 - Reload page to be sure that text has been saved.
 
+
+
+11. Now - everything in prepared but this page opened for every one and maybe you don`t want to show data on it.
+There are two things that helps you to prevent access to this page - close it for every one, or create special group of users.
+The better way is  creating group of users and give them permissions to view current page. Since users grouped by role lets create new
+role in system - this operation has been described in :doc:`Role Management </content-management/role>` section.
 
