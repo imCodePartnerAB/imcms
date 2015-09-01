@@ -241,11 +241,11 @@ public class DocumentApiServlet {
         fileDocumentFile.setFilename(multipartFile.getOriginalFilename());
 
         fileDocumentFile.setMimeType(multipartFile.getContentType());
-        File file = new File(Imcms.getServices().getConfig().getFilePath(), multipartFile.getName());
+        File file = new File(Imcms.getServices().getConfig().getFilePath(), multipartFile.getOriginalFilename());
         file.createNewFile();
         multipartFile.transferTo(file);
         fileDocumentFile.setInputStreamSource(new FileInputStreamSource(file));
-        document.addFile(multipartFile.getName(), fileDocumentFile);
+        document.addFile(multipartFile.getOriginalFilename(), fileDocumentFile);
     }
 
     protected void asTextDocument(TextDocumentDomainObject document, TextDocumentEntity entity) {

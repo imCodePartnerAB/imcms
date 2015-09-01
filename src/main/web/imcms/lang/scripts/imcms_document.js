@@ -232,6 +232,25 @@ Imcms.Document.Viewer.prototype = {
             rules: {
                 enabled: {
                     required: true
+                },
+                alias: {
+                    required: true,
+                    remote: {
+                        url: this._loader._api.path,
+                        type: "GET",
+                        success: function (data) {
+                            var result = true,
+                                validator = $(this._builder[0]).find("form").data("validator"),
+                                element = $(this._builder[0]).find("input[name=alias]"),
+                                currentAlias = element.val();
+
+                            data.forEach(function (it) {
+                                result = !result ? false : it.alias != currentAlias;
+                            });
+
+                            validator.stopRequest(element, result);
+                        }.bind(this)
+                    }
                 }
             },
             ignore: ""
@@ -284,16 +303,16 @@ Imcms.Document.Viewer.prototype = {
             .end()
             .end();
         $(this._builder[0]).appendTo($("body")).addClass("document-viewer pop-up-form reset");
-        this.buildLifeCycle();
         this.buildAppearance();
-        this.buildAccess();
+        this.buildLifeCycle();
         this.buildKeywords();
         this.buildCategories();
+        this.buildAccess();
         switch (this._options.type) {
             case 2:
             {
-                this.buildTemplates();
                 this.buildPermissions();
+                this.buildTemplates();
             }
                 break;
             case 5:
@@ -308,13 +327,13 @@ Imcms.Document.Viewer.prototype = {
         this._builder.ref("tabs")
             .div()
             .reference("life-cycle-tab")
-            .class("life-cycle-tab imcms-tab active")
+            .class("life-cycle-tab imcms-tab")
             .html("Life Cycle")
             .end();
         this._builder.ref("pages")
             .div()
             .reference("life-cycle-page")
-            .class("life-cycle-page imcms-page active")
+            .class("life-cycle-page imcms-page")
             .div()
             .class("select field")
             .select()
@@ -332,20 +351,19 @@ Imcms.Document.Viewer.prototype = {
             tab: this._builder.ref("life-cycle-tab"),
             page: this._builder.ref("life-cycle-page")
         };
-        this._activeContent = this._contentCollection["life-cycle"];
         this._builder.ref("life-cycle-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["life-cycle"]));
     },
     buildAppearance: function () {
         this._builder.ref("tabs")
             .div()
             .reference("appearance-tab")
-            .class("appearance-tab imcms-tab")
+            .class("appearance-tab imcms-tab active")
             .html("Appearance")
             .end();
         this._builder.ref("pages")
             .div()
             .reference("appearance-page")
-            .class("appearance-page imcms-page")
+            .class("appearance-page imcms-page active")
             .div()
             .class("language field")
             .reference("languages")
@@ -387,6 +405,9 @@ Imcms.Document.Viewer.prototype = {
             tab: this._builder.ref("appearance-tab"),
             page: this._builder.ref("appearance-page")
         };
+
+
+        this._activeContent = this._contentCollection["appearance"];
         this._builder.ref("appearance-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["appearance"]));
     },
     buildTemplates: function () {
@@ -812,56 +833,57 @@ Imcms.Document.Viewer.prototype = {
             .attr("value", 4).css("display", "none");
         divWithHidden = $("<div>").append(value.name)
             .append($("<input>")
-                .attr("type", "hidden")
-                .attr("data-node-key", "access")
-                .attr("data-role-name", value.name)
-                .attr("value", value.roleId)
-                .attr("name", value.name.toLowerCase() + "-id")
-        ).append(hiddenRemoveRole);
+                    .attr("type", "hidden")
+                    .attr("data-node-key", "access")
+                    .attr("data-role-name", value.name)
+                    .attr("value", value.roleId)
+                    .attr("name", value.name.toLowerCase() + "-id")
+            ).append(hiddenRemoveRole);
         removeButton = $("<button>").attr("type", "button").addClass("imcms-negative");
         if (this._options.type === 2) {
             this._builder.ref("access")
                 .row(
-                divWithHidden[0],
-                $("<input>")
-                    .attr("type", "radio")
-                    .attr("data-node-key", "access")
-                    .attr("value", 3)
-                    .attr("name", value.name.toLowerCase() + "-access")[0],
-                $("<input>")
-                    .attr("type", "radio")
-                    .attr("data-node-key", "access")
-                    .attr("value", 0)
-                    .attr("name", value.name.toLowerCase() + "-access")[0],
-                $("<input>")
-                    .attr("type", "radio")
-                    .attr("data-node-key", "access")
-                    .attr("value", 1)
-                    .attr("name", value.name.toLowerCase() + "-access")[0],
-                $("<input>")
-                    .attr("type", "radio")
-                    .attr("data-node-key", "access")
-                    .attr("value", 2)
-                    .attr("name", value.name.toLowerCase() + "-access")[0],
-                removeButton[0]
-            );
+                    divWithHidden[0],
+                    $("<input>")
+                        .attr("type", "radio")
+                        .attr("data-node-key", "access")
+                        .attr("value", 3)
+                        .attr("name", value.name.toLowerCase() + "-access")[0],
+                    $("<input>")
+                        .attr("type", "radio")
+                        .attr("data-node-key", "access")
+                        .attr("value", 0)
+                        .attr("name", value.name.toLowerCase() + "-access")[0],
+                    $("<input>")
+                        .attr("type", "radio")
+                        .attr("data-node-key", "access")
+                        .attr("value", 1)
+                        .attr("name", value.name.toLowerCase() + "-access")[0],
+                    $("<input>")
+                        .attr("type", "radio")
+                        .attr("data-node-key", "access")
+                        .attr("value", 2)
+                        .attr("name", value.name.toLowerCase() + "-access")[0],
+                    removeButton[0]
+                );
         }
         else {
             this._builder.ref("access")
                 .row(
-                divWithHidden[0],
-                $("<input>")
-                    .attr("type", "radio")
-                    .attr("data-node-key", "access")
-                    .attr("value", 3)
-                    .attr("name", value.name.toLowerCase() + "-access")[0],
-                $("<input>")
-                    .attr("type", "radio")
-                    .attr("data-node-key", "access")
-                    .attr("value", 0)
-                    .attr("name", value.name.toLowerCase() + "-access")[0],
-                removeButton[0]
-            );
+                    divWithHidden[0],
+                    $("<input>")
+                        .attr("type", "radio")
+                        .attr("data-node-key", "access")
+                        .attr("value", 3)
+                        .attr("name", value.name.toLowerCase() + "-access")[0],
+                    $("<input>")
+                        .attr("type", "radio")
+                        .attr("data-node-key", "access")
+                        .attr("value", 0)
+                        .attr("name", value.name.toLowerCase() + "-access")[0],
+                    removeButton[0]
+                );
+            key = key == 3 || key == 0 ? key : 3;
         }
         currentRow = this._builder.ref("access").row(this._rowsCount);
         removeButton.on("click", function () {
@@ -966,6 +988,7 @@ Imcms.Document.Viewer.prototype = {
                 result.categories[$this.attr("name")] = [$this.val() || ""];
             }
         });
+
         if (this._options.type === 2) {
             result.permissions = [{}, {}];
             $source.find("input[data-node-key=permissions]").each(function () {

@@ -7,11 +7,6 @@
          version="3.0"
          metadata-complete="true">
 
-    <!--context-param>
-        <description>Vaadin production mode</description>
-        <param-name>productionMode</param-name>
-        <param-value>false</param-value>
-    </context-param-->
 
     <display-name>imCMS</display-name>
 
@@ -49,16 +44,6 @@
         <filter-name>ImcmsSetupFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
     </filter>
-
-    <!--filter>
-        <description>
-            Restricts access to the SysAdmin
-        </description>
-
-        <display-name>Über Admin Filter</display-name>
-        <filter-name>UberAdminFilter</filter-name>
-        <filter-class>com.imcode.imcms.admin.uber.UberAdminFilter</filter-class>
-    </filter-->
 
     <filter>
         <description>
@@ -120,10 +105,7 @@
         <servlet-name>EditMenuTest</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.apis.MenuApiServlet</servlet-class>
     </servlet>
-    <!--<servlet>
-        <servlet-name>DocumentApi</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.apis.DocumentApiServlet</servlet-class>
-    </servlet>-->
+
     <servlet>
         <servlet-name>LanguageApi</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.apis.LanguageApiServlet</servlet-class>
@@ -416,10 +398,6 @@
         <url-pattern>/editmenu/*</url-pattern>
     </servlet-mapping>
 
-    <!--<servlet-mapping>
-        <servlet-name>DocumentApi</servlet-name>
-        <url-pattern>/api/document/*</url-pattern>
-    </servlet-mapping>-->
     <servlet-mapping>
         <servlet-name>LanguageApi</servlet-name>
         <url-pattern>/api/language/*</url-pattern>
