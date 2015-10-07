@@ -117,11 +117,12 @@ public class DocumentIndexer {
 
         doc.getKeywords().forEach(documentKeyword -> indexDoc.addField(DocumentIndex.FIELD__KEYWORD, documentKeyword));
 
-        List<Integer[]> parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument(doc);
+        List parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument(doc);
 
-        parentDocumentAndMenuIds.forEach(tuple -> {
-                    int parentId = tuple[0];
-                    int menuId = tuple[1];
+        parentDocumentAndMenuIds.forEach(it -> {
+                    Object[] tuple = (Object[]) it;
+                    int parentId = (int) tuple[0];
+                    int menuId = (int) tuple[1];
                     indexDoc.addField(DocumentIndex.FIELD__PARENT_ID, parentId);
                     indexDoc.addField(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId);
                 }
