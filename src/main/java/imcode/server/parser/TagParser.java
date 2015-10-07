@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.jsoup.Jsoup;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -129,6 +130,12 @@ public class TagParser {
                 || !mode
                 && "write".startsWith(modeAttribute)// With mode="write", we don't want anything unless we're in textMode.
         );
+    }
+
+    public static boolean isEditable(Properties attributes, boolean mode) {
+        String modeAttribute = attributes.getProperty("mode");
+        return mode && !(StringUtils.isNotBlank(modeAttribute)
+                && "read".startsWith(modeAttribute));
     }
 
     private static String getLabel(Properties attributes) {
@@ -485,6 +492,12 @@ public class TagParser {
                 throw new UnhandledException(e);
             }
         }*/
+
+
+
+        result = StringUtils.isEmpty(Jsoup.parse(result).text()) ? attributes.getProperty("placeholder") : result;
+
+        result = StringUtils.isEmpty(result) ? "" : result;
 
         return result;
     }

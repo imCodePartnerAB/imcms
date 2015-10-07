@@ -180,7 +180,7 @@ Imcms.Content.Editor.prototype = {
 };
 
 Imcms.Content.TreeAdapter = function (options) {
-    this.init(Imcms.Utils.marge(options, this.defaults));
+    this.init(Imcms.Utils.merge(options, this.defaults));
 };
 Imcms.Content.TreeAdapter.prototype = {
     _tree: {},
@@ -401,7 +401,7 @@ Imcms.Content.FileView.prototype = {
     },
     _prepareData: function (data) {
         data.forEach(function (item, index) {
-            data[index] = Imcms.Utils.marge(item, this._fileDefaults);
+            data[index] = Imcms.Utils.merge(item, this._fileDefaults);
         }.bind(this));
     },
     _alignItems: function () {
@@ -439,7 +439,7 @@ Imcms.Content.FileView.prototype = {
 };
 
 Imcms.Content.FileAdapter = function (options) {
-    this.init(Imcms.Utils.marge(options, this.defaults));
+    this.init(Imcms.Utils.merge(options, this.defaults));
 };
 Imcms.Content.FileAdapter.prototype = {
     _element: {},
@@ -470,7 +470,7 @@ Imcms.Content.FileAdapter.prototype = {
 };
 
 Imcms.Content.FileUploader = function (options) {
-    this._options = Imcms.Utils.marge(options, this._options);
+    this._options = Imcms.Utils.merge(options, this._options);
     this._target = this._options.target;
     this.init();
 };

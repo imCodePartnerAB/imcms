@@ -3,12 +3,22 @@
  */
 Imcms.Menu = {};
 
-Imcms.Menu.TreeAdapter = function (tree, data) {
-    this.init(tree, data);
+Imcms.Menu.TreeAdapter = function (options) {
+    options = Imcms.Utils.merge(options, this._defaults);
+    this._loader = options.loader;
+
+    this.init(options.tree, options.data);
 };
 Imcms.Menu.TreeAdapter.prototype = {
     _tree: {},
     _data: {},
+    _loader: {},
+    _defaults: {
+        tree: {},
+        data: {},
+        loader: {}
+    },
+    _sorting: 0,
     init: function (tree, data) {
         this._tree = $(tree);
         this._data = this.buildDataTree(data);
@@ -18,13 +28,25 @@ Imcms.Menu.TreeAdapter.prototype = {
             autoOpen: true,
             dragAndDrop: true,
             onCreateLi: $.proxy(this.onCreateLi, this)
-        }).bind('tree.move', this.onMoveNode);
+        }).bind('tree.move', this.onMoveNode.bind(this));
     },
     onCreateLi: function (node, $li) {
         var treeElement = $li.find('.jqtree-element').empty();
         $("<span>").text(node["doc-id"]).appendTo(treeElement);
-        $("<span>").text(node.name).appendTo(treeElement);
-        $("<span>").appendTo(treeElement).append(
+        $("<span>").attr("data-name", "").text(node.name).appendTo(treeElement);
+        $("<span>").text(node.status).appendTo(treeElement);
+        $("<span>").addClass("column-right buttons").appendTo(treeElement).append(
+            $("<button>")
+                .addClass("imcms-neutral")
+                .html("<a href ='/servlet/AdminDoc?meta_id=" + node["doc-id"] + "&flags=65536' target='_blank'>open<a/> ")
+                .attr("type", "button")
+        ).append(
+            $("<button>")
+                .addClass("imcms-neutral")
+                .text("edit")
+                .attr("type", "button")
+                .click($.proxy(this.editDocument, this, node, $li))
+        ).append(
             $("<button>")
                 .addClass("imcms-negative")
                 .attr("type", "button")
@@ -86,6 +108,8 @@ Imcms.Menu.TreeAdapter.prototype = {
                 throw "Incorrect movement";
             }
         }
+
+        setTimeout(this.sort.bind(this), 2);
     },
     buildDataTree: function (floatData) {
         var itemLevel,
@@ -130,6 +154,57 @@ Imcms.Menu.TreeAdapter.prototype = {
         }
         return data;
     },
+    setSoring: function (sorting) {
+        var needSorting = sorting && this._sorting !== sorting;
+
+        this._sorting = sorting;
+
+        if (needSorting) {
+            this.sort();
+        }
+    },
+    sort: function () {
+        if (!this._sorting) {
+            return;
+        }
+
+        var data = this._tree.tree("getTree"),
+            result = [],
+            comparator = function (a, b) {
+                var result = 0;
+
+                if (typeof (a[this._sorting] || b[this._sorting]) === typeof 0) {
+                    result = a[this._sorting] > b[this._sorting] ? 1 : a[this._sorting] === b[this._sorting] ? 0 : -1;
+                }
+                else {
+                    result = a[this._sorting].localeCompare(b[this._sorting]);
+                }
+
+                return result
+            }.bind(this),
+            postProcessor = function (it, index) {
+                var children = [];
+
+                it.position = index + 1;
+                it.children.sort(comparator);
+                it.children.forEach(postProcessor.bind(children));
+
+                this.push({
+                    position: it.position,
+                    name: it.name,
+                    label: it.name,
+                    status: it.status,
+                    "doc-id": it["doc-id"],
+                    id: it.id,
+                    children: children
+                });
+            };
+
+        data.children.sort(comparator);
+        data.children.forEach(postProcessor.bind(result));
+
+        this._tree.tree('loadData', result);
+    },
     delete: function (node) {
         this._tree.tree('removeNode', node);
     },
@@ -148,147 +223,33 @@ Imcms.Menu.TreeAdapter.prototype = {
     },
     reset: function () {
         this._tree.tree('loadData', this._data);
+    },
+    editDocument: function (node, $li) {
+        this._loader.getDocument(node["doc-id"], $.proxy(this.showDocumentViewer, this, node, $li));
+    },
+    showDocumentViewer: function (node, $li, data) {
+        new Imcms.Document.Viewer({
+            data: data,
+            type: (+data.type) || undefined,
+            loader: this._loader,
+            target: $("body")[0],
+            onApply: $.proxy(this.saveDocument, this, node, $li)
+        });
+    },
+    saveDocument: function (node, $li, viewer) {
+        var data = viewer.serialize();
+        this._loader.updateDocument(data, $.proxy(this.reload, this, node, $li, data));
+    },
+    reload: function (node, $li, data) {
+        //node.label = data.languages[Imcms.language.name].title;
+        //$li.find("[data-name]").text(node.label);
     }
 };
-
-Imcms.Menu.DialogAdapter = function (source) {
-    this._source = source;
-    this.init();
+Imcms.Menu.TreeAdapter.Sorting = {
+    NONE: false,
+    NAME: "name",
+    ID: "doc-id"
 };
-Imcms.Menu.DialogAdapter.prototype = {
-    _source: null,
-    _builder: {},
-    _dialog: {},
-    _selectedRow: {},
-    _callback: function () {
-    },
-    init: function () {
-        this.buildContent();
-        this.buildDialog();
-    },
-    buildContent: function () {
-        var that = this;
-        this._builder = JSFormBuilder("<DIV>")
-            .form()
-            .class("editor-menu-form")
-            .div()
-            .div()
-            .class("field")
-            .text()
-            .on("input", function () {
-                that.find(this.value());
-            })
-            .reference("searchField")
-            .placeholder("Type to find document")
-            .end()
-            .end()
-            .div()
-            .class("field")
-            .div()
-            .class("field-wrapper")
-            .table()
-            .on("click", $.proxy(this._onSelectElement, this))
-            .column("id")
-            .column("label")
-            .column("language")
-            .column("alias")
-            .reference("documentsTable")
-            .end()
-            .end()
-            .end()
-            .end()
-            .end();
-        this.find();
-    },
-    buildDialog: function () {
-        this._dialog = $(this._builder[0]).dialog({
-            autoOpen: false,
-            height: 500,
-            width: 700,
-            modal: true,
-            buttons: {
-                "Add selected": $.proxy(this._onApply, this),
-                Cancel: function () {
-                    $(this).dialog("close");
-                }
-            }
-        });
-        var dialog = $(this._builder[0]).parents(".ui-dialog").removeClass()
-                .addClass("pop-up-form menu-viewer reset").css({position: "fixed"}),
-            header = dialog.children(".ui-dialog-titlebar").removeClass()
-                .addClass("imcms-header").append($("<div>").addClass("imcms-title").text("DOCUMENT SELECTOR")),
-            content = dialog.children(".ui-dialog-content").removeClass()
-                .addClass("imcms-content"),
-            footer = dialog.children(".ui-dialog-buttonpane").removeClass()
-                .addClass("imcms-footer"),
-            buttons = footer.find(".ui-button").removeClass();
-
-        header.find(".ui-dialog-title").remove();
-        header.children("button").empty().removeClass().addClass("imcms-close-button");
-
-        $(buttons[0]).addClass("imcms-positive");
-        $(buttons[1]).addClass("imcms-neutral cancel-button");
-
-    },
-    open: function () {
-        this._dialog.dialog("open");
-    },
-    dispose: function () {
-        this._dialog.remove();
-    },
-    find: function (word) {
-        this._source({term: word || ""}, $.proxy(this.fillDataToTable, this));
-    },
-    fillDataToTable: function (data) {
-        this._builder.ref("documentsTable").clear();
-        $(this._builder.ref("documentsTable").getHTMLElement()).find("th").each(function (pos, item) {
-            $(item).find("div").remove();
-        });
-        for (var rowId in data) {
-            if (data.hasOwnProperty(rowId) && data[rowId]) {
-                this._builder.ref("documentsTable").row(data[rowId]);
-            }
-        }
-
-        $(this._builder.ref("documentsTable").getHTMLElement()).find("th").each(function (pos, item) {
-            $("<div>").append($(item).html()).appendTo(item);
-        });
-    },
-    result: function (callback) {
-        this._callback = callback;
-        return this;
-    },
-    _onApply: function () {
-        var resultData = {id: this._selectedRow.children[0].innerHTML, label: this._selectedRow.children[1].innerHTML};
-        this._callback(resultData);
-        this._dialog.dialog("close");
-    },
-    _onSelectElement: function (e) {
-        var $table = $(e.currentTarget),
-            tableOffset = $table.offset();
-        element = $table.find("tbody tr").filter(function (index, element) {
-            /*  var offset, farCorner;
-
-             element = $(element);
-
-             offset = element.position();
-             //offset = {left: offset.left - tableOffset.left, top: offset.top - tableOffset.top};
-             farCorner = {right: offset.left + element.width(), bottom: offset.top + element.height()};
-
-             return offset.left <= e.offsetX && offset.top <= e.offsetY && e.offsetX <= farCorner.right && e.offsetY <= farCorner.bottom*/
-            return $.contains(element, e.target);
-        });
-        if (!element.length) {
-            return false;
-        }
-        element = element[0];
-        if (this._selectedRow)
-            this._selectedRow.className = "";
-        this._selectedRow = element;
-        this._selectedRow.className = "clicked";
-    }
-};
-
 Imcms.Menu.AutocompleteAdapter = function (element, source) {
     this._element = element;
     this._source = source;
@@ -351,8 +312,10 @@ Imcms.Menu.Editor.prototype = {
     _dialogAdapter: {},
     _autocompleteAdapter: {},
     init: function () {
-        this._dialogAdapter = new Imcms.Menu.DialogAdapter($.proxy(this._loader.read, this._loader))
-            .result($.proxy(this._addItem, this));
+        this._dialogAdapter = new Imcms.Document.DocumentSearchDialog(function (term, callback) {
+            Imcms.Editors.Document.filteredDocumentList(term, callback)
+        }).result($.proxy(this._addItem, this));
+
         return this.buildEditor()
             .buildMenu()
             .buildExtra();
@@ -360,10 +323,13 @@ Imcms.Menu.Editor.prototype = {
     buildEditor: function () {
         this._builder = new JSFormBuilder("<div>")
             .form()
+            .on("drop", this._onDrop.bind(this))
             .div()
+            .on("drop", this._onDrop.bind(this))
             .class("imcms-header")
             .div()
-            .html("Menu Editor")
+            .on("drop", this._onDrop.bind(this))
+            .html("Menu Editor " + this._target.data().prettify().meta + "-" + this._target.data().prettify().no)
             .class("imcms-title")
             .end()
             /*.button()
@@ -380,7 +346,9 @@ Imcms.Menu.Editor.prototype = {
             .end()
             .div()
             .class("imcms-content")
+            .on("drop", this._onDrop.bind(this))
             .div()
+            .on("drop", this._onDrop.bind(this))
             .reference("menuContent")
             .end()
             .end()
@@ -407,6 +375,27 @@ Imcms.Menu.Editor.prototype = {
             .class("imcms-neutral create-new")
             .on("click", $.proxy(this._openDocumentViewer, this))
             .end()
+            .div()
+            .class("imcms-menu-sort-cases")
+            .radio()
+            .name("menu-sort-case")
+            .value(Imcms.Menu.TreeAdapter.Sorting.NAME)
+            .end()
+            .button()
+            .html("Sorting by alphabet")
+            .class("imcms-neutral create-new")
+            .on("click", $.proxy(this._sortItems, this))
+            .end()
+            .radio()
+            .name("menu-sort-case")
+            .value(Imcms.Menu.TreeAdapter.Sorting.ID)
+            .end()
+            .button()
+            .html("Sorting by Id")
+            .class("imcms-neutral create-new")
+            .on("click", $.proxy(this._sortItems, this))
+            .end()
+            .end()
             .button()
             .on("click", $.proxy(this.saveAndClose, this))
             .html("Save and close")
@@ -418,28 +407,36 @@ Imcms.Menu.Editor.prototype = {
             .end()
             .end()
             .end();
+
         $(this._builder[0]).appendTo("body").addClass("editor-form reset");
+
         return this;
     },
     buildMenu: function () {
-        var data = [];
-        this._target.find(".editor-menu-item").each(function (position, item) {
-                item = $(item);
-                var menuItemData = item.data().prettify();
-                var treePosition = menuItemData["menu-item-tree-position"].match(/[0-9]|\./) ?
-                    menuItemData["menu-item-tree-position"] : "" + (position + 1);
-                data.push({
-                    id: menuItemData["menu-item-name"],
+        this._loader.read(this._target.data().prettify(), function (data) {
+            var result = [];
+            data.forEach(function (it) {
+                var treePosition = it["treeSortIndex"].match(/[0-9]|\./) ?
+                    it["treeSortIndex"] : "" + (position + 1);
+
+                result.push({
+                    id: it["name"],
                     position: parseInt(treePosition
                         .substr(treePosition.lastIndexOf(".") + 1)),
-                    "doc-id": menuItemData["menu-item-id"],
-                    label: menuItemData["menu-item-name"],
-                    name: menuItemData["menu-item-name"],
+                    "doc-id": it["documentId"],
+                    label: it["name"],
+                    name: it["name"],
+                    status: it["status"],
                     "tree-index": treePosition
                 });
-            }
-        );
-        this._treeAdapter = new Imcms.Menu.TreeAdapter(this._builder.ref("menuContent").getHTMLElement(), data);
+            });
+            this._treeAdapter = new Imcms.Menu.TreeAdapter({
+                tree: this._builder.ref("menuContent").getHTMLElement(),
+                data: result,
+                loader: this._loader
+            });
+        }.bind(this));
+
         return this;
     },
     buildExtra: function () {
@@ -456,9 +453,24 @@ Imcms.Menu.Editor.prototype = {
     open: function () {
         $(this._builder[0]).fadeIn("fast").find(".imcms-content").css({height: $(window).height() - 95});
     },
+    _sortItems: function (e) {
+        var relatedRadio = $(e.target).parent().children("input[type=radio]").filter(function () {
+                return $(this).next()[0] === e.target
+            }),
+            isChecked = relatedRadio.prop("checked");
+
+        relatedRadio.prop("checked", !isChecked);
+        this._treeAdapter.setSoring((!isChecked) ? relatedRadio.val() : false);
+    },
     _addItem: function (data) {
         data = data || this._autocompleteAdapter.data();
-        this._treeAdapter.add({id: data.label, "doc-id": data.id, label: data.label, name: data.label});
+        this._treeAdapter.add({
+            id: data.label,
+            "doc-id": data.id,
+            label: data.label,
+            name: data.label,
+            status: data.status
+        });
     },
     _openDocumentViewer: function () {
         new Imcms.Document.TypeViewer({
@@ -478,6 +490,11 @@ Imcms.Menu.Editor.prototype = {
             }.bind(this)
         });
     },
+    _onDrop: function (event) {
+        event.preventDefault();
+        var data = JSON.parse(event.dataTransfer.getData("data"));
+        this._addItem(data);
+    },
     _addMenuItemFromDocumentViewer: function (viewer) {
         var formData = viewer.serialize();
 
@@ -489,9 +506,9 @@ Imcms.Menu.Editor.prototype = {
     saveAndClose: function () {
         $(this._builder[0]).hide();
         var response = Imcms.Utils.margeObjectsProperties(
-            {items: this._treeAdapter.collect()},
+            {data: JSON.stringify(this._treeAdapter.collect())},
             this._target.data().prettify());
-        this._loader.updateMenu({data: JSON.stringify(response)}, Imcms.BackgroundWorker.createTask({
+        this._loader.updateMenu(response, Imcms.BackgroundWorker.createTask({
             showProcessWindow: true,
             refreshPage: true
         }));
@@ -548,6 +565,12 @@ Imcms.Menu.Loader.prototype = {
     },
     delete: function () {
         this._api.delete.apply(this._api, arguments);
+    },
+    getDocument: function (id, callback) {
+        Imcms.Editors.Document.getDocument(id, callback);
+    },
+    updateDocument: function (data, callback) {
+        Imcms.Editors.Document.update(data, callback);
     }
 };
 
@@ -555,11 +578,11 @@ Imcms.Menu.API = function () {
 };
 
 Imcms.Menu.API.prototype = {
-    path: Imcms.contextPath + "/editmenu",
+    path: "/" + Imcms.contextPath + "api/menu",
 
     delete: function (request, response) {
         $.ajax({
-            url: this.path,
+            url: this.path + "/" + request.meta + "-" + request.no,
             type: "DELETE",
             data: request,
             success: response
@@ -568,7 +591,7 @@ Imcms.Menu.API.prototype = {
 
     update: function (request, response) {
         $.ajax({
-            url: this.path,
+            url: this.path + "/" + request.meta + "-" + request.no,
             type: "PUT",
             data: request,
             success: response
@@ -577,7 +600,7 @@ Imcms.Menu.API.prototype = {
 
     read: function (request, response) {
         $.ajax({
-            url: this.path,
+            url: this.path + "/" + request.meta + "-" + request.no,
             type: "GET",
             data: request,
             success: response
@@ -586,7 +609,7 @@ Imcms.Menu.API.prototype = {
 
     create: function (request, response) {
         $.ajax({
-            url: this.path,
+            url: this.path + request.meta + "-" + request.no,
             type: "POST",
             data: request,
             success: response

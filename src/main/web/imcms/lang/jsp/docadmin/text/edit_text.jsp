@@ -21,6 +21,7 @@
     if (null != label) {
         url += "&label=" + URLEncoder.encode(Html.removeTags(label), Imcms.UTF_8_ENCODING);
     }
+
     if (null != formats) {
         for (String format : formats) {
             if (StringUtils.isNotBlank(format)) {

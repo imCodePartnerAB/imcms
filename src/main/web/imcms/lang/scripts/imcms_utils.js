@@ -21,14 +21,14 @@ Imcms.Utils.margeObjectsProperties = function () {
  * @param {Object} source extend from
  * @returns {Object} or {null} if one of params is incorrect
  */
-Imcms.Utils.marge = function (obj, source) {
+Imcms.Utils.merge = function (obj, source) {
     if (!obj || !source || obj.constructor !== Object || source.constructor !== Object) return obj ? obj : null;
     for (var key in source) {
         if (!Object.prototype.hasOwnProperty.call(obj, key)) {
             obj[key] = source[key];
         }
         else if (obj[key] && obj[key].constructor === Object) {
-            obj[key] = Imcms.Utils.marge(obj[key], source[key]);
+            obj[key] = Imcms.Utils.merge(obj[key], source[key]);
         }
     }
 

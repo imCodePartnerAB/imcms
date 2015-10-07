@@ -17,15 +17,15 @@ Imcms.Document.API.prototype = {
     },
     read: function (request, response) {
         $.ajax({
-            url: this.path,
+            url: this.path + "/" + (request.id || ""),
             type: "GET",
             data: request,
             success: response
         });
     },
-    create2: function (request, response) {
+    create2: function (request, response, path) {
         $.ajax({
-            url: this.path,
+            url: this.path + "/" + (path ? path.join("/") : ""),
             type: "POST",
             contentType: false,
             processData: false,
@@ -68,14 +68,34 @@ Imcms.Document.Loader.prototype = {
     documentsList: function (callback) {
         this._api.read({}, callback);
     },
+    filteredDocumentList: function (params, callback) {
+        this._api.read({
+            filter: params.term || params.filter,
+            skip: params.skip,
+            take: params.take,
+            sort: params.sort,
+            order: params.order
+        }, callback);
+    },
     getDocument: function (id, callback) {
         this._api.read({id: id}, callback);
+    },
+    copyDocument: function (id, callback) {
+        this._api.create2({}, callback, [id, "copy"])
     },
     getPrototype: function (id, callback) {
         this._api.read({id: id, isPrototype: true}, callback);
     },
     deleteDocument: function (data) {
         this._api.delete(data, function () {
+        });
+    },
+    archiveDocument: function (data) {
+        this._api.delete(data + "?action=archive", function () {
+        });
+    },
+    unarchiveDocument: function (data) {
+        this._api.delete(data + "?action=unarchive", function () {
         });
     },
     languagesList: function (callback) {
@@ -180,7 +200,7 @@ Imcms.Document.Editor.prototype = {
 };
 
 Imcms.Document.Viewer = function (options) {
-    this.init(Imcms.Utils.marge(options, this.defaults));
+    this.init(Imcms.Utils.merge(options, this.defaults));
 };
 Imcms.Document.Viewer.prototype = {
     _loader: {},
@@ -234,7 +254,6 @@ Imcms.Document.Viewer.prototype = {
                     required: true
                 },
                 alias: {
-                    required: true,
                     remote: {
                         url: this._loader._api.path,
                         type: "GET",
@@ -242,15 +261,42 @@ Imcms.Document.Viewer.prototype = {
                             var result = true,
                                 validator = $(this._builder[0]).find("form").data("validator"),
                                 element = $(this._builder[0]).find("input[name=alias]"),
-                                currentAlias = element.val();
+                                currentAlias = element.val(),
+                                previous, errors, message, submitted;
+
+                            element = element[0];
+                            previous = validator.previousValue(element);
 
                             data.forEach(function (it) {
-                                result = !result ? false : it.alias != currentAlias;
-                            });
+                                result = !result ? false : it.alias != currentAlias || it.id == this._options.data.id;
+                            }.bind(this));
 
+                            validator.settings.messages[element.name].remote = previous.originalMessage;
+
+                            if (result) {
+                                submitted = validator.formSubmitted;
+                                validator.prepareElement(element);
+                                validator.formSubmitted = submitted;
+                                validator.successList.push(element);
+                                delete validator.invalid[element.name];
+                                validator.showErrors();
+                            } else {
+                                errors = {};
+                                message = validator.defaultMessage(element, "remote");
+                                errors[element.name] = previous.message = $.isFunction(message) ? message(value) : message;
+                                validator.invalid[element.name] = true;
+                                validator.showErrors(errors);
+                            }
+
+                            previous.valid = result;
                             validator.stopRequest(element, result);
                         }.bind(this)
                     }
+                }
+            },
+            messages: {
+                alias: {
+                    remote: "This alias has already been taken"
                 }
             },
             ignore: ""
@@ -613,6 +659,14 @@ Imcms.Document.Viewer.prototype = {
             .reference("file")
             .end()
             .end()
+            .div()
+            .table()
+            .reference("files")
+            .column("name")
+            .column("default")
+            .column("")
+            .end()
+            .end()
             .end();
         this._contentCollection["file"] = {
             tab: this._builder.ref("file-tab"),
@@ -635,7 +689,7 @@ Imcms.Document.Viewer.prototype = {
             .reference("access")
             .column("Role")
             .column("View")
-            .column("Full")
+            .column("Edit")
             .end()
             .div()
             .class("field")
@@ -702,6 +756,13 @@ Imcms.Document.Viewer.prototype = {
             .class("imcms-negative")
             .html("Remove")
             .on("click", this.removeKeyword.bind(this))
+            .end()
+            .end()
+            .div()
+            .class("field")
+            .checkbox()
+            .name("isSearchDisabled")
+            .label("Disable Searching")
             .end()
             .end()
             .end();
@@ -804,6 +865,11 @@ Imcms.Document.Viewer.prototype = {
             .label("Link to image")
             .name("image")
             .end()
+            .button()
+            .class("imcms-neutral")
+            .on("click", this.chooseImage.bind(this))
+            .html("…")
+            .end()
             .end()
             .end();
     },
@@ -833,11 +899,11 @@ Imcms.Document.Viewer.prototype = {
             .attr("value", 4).css("display", "none");
         divWithHidden = $("<div>").append(value.name)
             .append($("<input>")
-                    .attr("type", "hidden")
-                    .attr("data-node-key", "access")
-                    .attr("data-role-name", value.name)
-                    .attr("value", value.roleId)
-                    .attr("name", value.name.toLowerCase() + "-id")
+                .attr("type", "hidden")
+                .attr("data-node-key", "access")
+                .attr("data-role-name", value.name)
+                .attr("value", value.roleId)
+                .attr("name", value.name.toLowerCase() + "-id")
             ).append(hiddenRemoveRole);
         removeButton = $("<button>").attr("type", "button").addClass("imcms-negative");
         if (this._options.type === 2) {
@@ -911,7 +977,7 @@ Imcms.Document.Viewer.prototype = {
             .end();
 
         if (options.isMultiple) {
-            this._builder.ref(categoryType).multiple();
+            this._builder.ref(categoryType).class("pqSelect").multiple();
         }
         else {
             this._builder.ref(categoryType)
@@ -921,16 +987,54 @@ Imcms.Document.Viewer.prototype = {
         $.each(options.items, this.addCategory.bind(this, categoryType));
     },
     addCategory: function (categoryType, position, category) {
-        this._builder.ref(categoryType).option(category);
+        $(this._builder.ref(categoryType).getHTMLElement()).append(
+            $("<option>")
+                .val(category.name).text(category.name).attr("title", category.description)
+        );
     },
     addKeyword: function (position, keyword) {
+        var exist;
+
         if (!keyword) {
             keyword = this._builder.ref("keywordInput").value()
         }
-        this._builder.ref("keywordsList").option(keyword);
+
+        exist = $(this._builder.ref("keywordsList").getHTMLElement()).find("option").filter(function () {
+                return $(this).val() === keyword;
+            }).length > 0;
+
+        if (!exist) {
+            this._builder.ref("keywordsList").option(keyword);
+        }
+    },
+    addFile: function (key, val) {
+        var radio = $("<input>").attr("type", "radio").attr("name", "defaultFile").val(val);
+        this._builder.ref("files").row(
+            val,
+            radio[0],
+            $("<button>").attr("type", "button").addClass("imcms-negative").click(this.removeFile.bind(this, radio))[0]
+        )
+    },
+    removeFile: function (radio) {
+        radio.attr("data-removed", "").parents("tr").hide();
     },
     removeKeyword: function () {
         $(this._builder.ref("keywordsList").getHTMLElement()).find("option:selected").remove();
+    },
+    chooseImage: function (e) {
+        var onFileChosen = function (data) {
+            if (data) {
+                $(e.target).parent().children("input[name=image]").val(data.urlPathRelativeToContextPath);
+            }
+
+            $(this._builder[0]).fadeIn();
+        }.bind(this);
+
+        Imcms.Editors.Content.showDialog({
+            onApply: $.proxy(onFileChosen, this),
+            onCancel: $.proxy(onFileChosen, this)
+        });
+        $(this._builder[0]).fadeOut();
     },
     apply: function () {
         if (!$(this._builder[0]).find("form").valid()) {
@@ -953,10 +1057,14 @@ Imcms.Document.Viewer.prototype = {
             $source = $(this._builder[0]),
             formData = new FormData();
         $source.find("[name]").filter(function () {
-            return !$(this).attr("data-node-key");
+            return !$(this).attr("data-node-key") && "file" !== $(this).attr("type") && !$(this).attr("ignored");
         }).each(function () {
             var $this = $(this);
-            result[$this.attr("name")] = $this.val();
+            if ($this.is("[type=checkbox]")) {
+                result[$this.attr("name")] = $this.is(":checked")
+            } else {
+                result[$this.attr("name")] = $this.val();
+            }
         });
 
         $source.find("[data-node-key=language]").each(function () {
@@ -997,14 +1105,16 @@ Imcms.Document.Viewer.prototype = {
                 result.permissions[id][$this.attr("name")] = $this.is(":checked");
             });
         }
-
+        if (this._options.type === 8) {
+            result["removedFiles"] = $source.find("input[type=radio][data-removed]").map(function (pos, item) {
+                return $(item).val();
+            }).toArray();
+            formData.append("file", $source.find("input[name=file]")[0].files[0]);
+        }
         formData.append("data", JSON.stringify(result));
         formData.append("type", this._options.type);
         formData.append("parent", this._options.parentDocumentId);
 
-        if (this._options.type === 8) {
-            formData.append("file", $source.find("input[name=file]")[0].files[0]);
-        }
 
         return formData;
     },
@@ -1014,7 +1124,12 @@ Imcms.Document.Viewer.prototype = {
             return !$(this).attr("data-node-key") && "file" !== $(this).attr("type");
         }).each(function () {
             var $this = $(this);
-            $this.val(data[$this.attr("name")]);
+            if ($this.is("[type=checkbox]")) {
+                $this.prop("checked", data[$this.attr("name")]);
+            } else {
+                $this.val(data[$this.attr("name")]);
+            }
+
         });
         $source.find("[data-node-key=language]").each(function () {
             var $dataElement = $(this);
@@ -1040,8 +1155,10 @@ Imcms.Document.Viewer.prototype = {
                     .find("option[value='" + selectedCategory + "']")
                     .attr("selected", "");
             });
+
+            $($source.find("select[name=" + categoryType + "]")).multiselect();
         });
-        if (this._options.type === 2) {
+        if (this._options.type === 2 && data.permissions) {
             $.each(data.permissions, function (index, value) {
                 var $elements = $source.find("[data-node-key=permissions]").filter("[data-node-value=" + ++index + "]");
                 $.each(value, function (key, val) {
@@ -1051,11 +1168,20 @@ Imcms.Document.Viewer.prototype = {
                 });
             });
         }
+
+        if (this._options.type === 8 && data.files) {
+            this._builder.ref("files").clear();
+            $.each(data.files, this.addFile.bind(this));
+            $(this._builder.ref("files").getHTMLElement())
+                .find("input[name=defaultFile]")
+                .filter('[value="' + data.defaultFile + '"]')
+                .prop('checked', true);
+        }
     }
 };
 
 Imcms.Document.TypeViewer = function (options) {
-    this._options = Imcms.Utils.marge(options, this._options);
+    this._options = Imcms.Utils.merge(options, this._options);
     this.init();
 };
 Imcms.Document.TypeViewer.prototype = {
@@ -1071,7 +1197,7 @@ Imcms.Document.TypeViewer.prototype = {
         var $builder;
 
         this.buildView();
-        this.doLoadDocument();
+        this.onLoaded();
 
         $builder = $(this._builder[0]);
 
@@ -1112,10 +1238,16 @@ Imcms.Document.TypeViewer.prototype = {
             .end()
             .div()
             .class("field select")
-            .select()
+            .text()
             .label("Document Parent")
-            .reference("parentDocumentsList")
+            .reference("parentDocument")
             .name("parentDocument")
+            .disabled()
+            .end()
+            .button()
+            .on("click", this.openSearchDocumentDialog.bind(this))
+            .class("imcms-neutral browse")
+            .html("…")
             .end()
             .end()
             .end()
@@ -1138,19 +1270,25 @@ Imcms.Document.TypeViewer.prototype = {
             .end();
         $(this._builder[0]).appendTo($("body")).addClass("document-type-viewer pop-up-form reset");
     },
-    doLoadDocument: function () {
-        this._options.loader.documentsList(this.onDocumentListLoaded.bind(this));
-    },
-    onDocumentListLoaded: function (data) {
-        var that = this;
-        $.each(data, function (pos, item) {
-            that._builder.ref("parentDocumentsList").option(item.label, item.id);
+    openSearchDocumentDialog: function () {
+        var documentSearchDialog = new Imcms.Document.DocumentSearchDialog(function (term, callback) {
+            Imcms.Editors.Document.filteredDocumentList(term, callback)
         });
+
+        documentSearchDialog.result(function (data) {
+            $(this._builder.ref("parentDocument").getHTMLElement()).val(data.label).attr("data-id", data.id);
+            documentSearchDialog.dispose();
+        }.bind(this));
+        documentSearchDialog._dialog.parent().css("z-index", "99999999");
+        documentSearchDialog.open();
+    },
+    onLoaded: function (data) {
+        $(this._builder.ref("parentDocument").getHTMLElement()).val(Imcms.document.label).attr("data-id", Imcms.document.meta);
     },
     apply: function () {
         this._options.onApply({
             documentType: +$(this._builder[0]).find("select[name=documentTypes]").val(),
-            parentDocumentId: $(this._builder[0]).find("select[name=parentDocument]").val()
+            parentDocumentId: +$(this._builder[0]).find("input[name=parentDocument]").attr("data-id")
         });
         this.destroy();
     },
@@ -1172,42 +1310,124 @@ Imcms.Document.ListAdapter.prototype = {
     _container: {},
     _ul: {},
     _loader: {},
+    _pagerHandler: undefined,
     init: function () {
         this._loader.documentsList($.proxy(this.buildList, this));
+        this.buildPager();
     },
     buildList: function (data) {
         $.each(data, $.proxy(this.addDocumentToList, this));
     },
     addDocumentToList: function (position, data) {
-        var deleteButton = $("<button>");
+        var deleteButton = $("<button>"),
+            row;
+
         this._container.row(data.id, data.label, data.alias, data.type, $("<span>")
-                .append($("<button>")
-                    .click($.proxy(this.editDocument, this, data.id))
-                    .addClass("imcms-positive")
-                    .text("Edit…")
-                    .attr("type", "button"))
-                .append(deleteButton
-                    .addClass("imcms-negative")
-                    .attr("type", "button"))[0]
+            .append($("<button>")
+                .click($.proxy(this.copyDocument, this, data.id))
+                .addClass("imcms-positive")
+                .text("Copy")
+                .attr("type", "button"))
+            .append($("<button>")
+                .click($.proxy(this.editDocument, this, data.id))
+                .addClass("imcms-positive")
+                .text("Edit…")
+                .attr("type", "button"))
+            .append(deleteButton
+                .addClass("imcms-negative")
+                .attr("type", "button"))[0]
         );
-        var row = this._container.row(position);
+
+        row = this._container.row(position);
+        if (data.isArchived) {
+            $(row).addClass("archived");
+        }
+
+        $(row).hover(function (e) {
+            if (e.shiftKey) {
+                deleteButton.attr("data-remove", true).text("");
+            }
+            else {
+                deleteButton.attr("data-remove", false).text(this.isArchived(row) ? "U" : "A");
+            }
+        }.bind(this));
         deleteButton
             .click($.proxy(this.deleteDocument, this, data.id, row));
     },
+    buildPager: function () {
+        this._pagerHandler = new Imcms.Document.PagerHandler({
+            target: $(this._container.getHTMLElement()).parent()[0],
+            handler: this._loader.filteredDocumentList.bind(this._loader),
+            itemsPointer: function () {
+                var $source = $(this._container.getHTMLElement()).parent(),
+                    height = $source.height(),
+                    found = false,
+                    rows = $source.find("table").find('tr'),
+                    pointer = rows.length - 1,
+                    index = rows.filter(function (pos, it) {
+                        var result = false;
+
+                        if ($(it).position().top > height) {
+                            result = !found;
+                            found = true;
+                        }
+
+                        return result;
+                    }).index();
+
+                return index > -1 ? index : pointer;
+            }.bind(this),
+            resultProcessor: function (startIndex, data) {
+                this.buildList(data);
+            }.bind(this)
+        });
+    },
     reload: function () {
         this._container.clear();
-        this._loader.documentsList($.proxy(this.buildList, this));
+        this._loader.documentsList(function (data) {
+            this.buildList(data);
+            this._pagerHandler.reset();
+        }.bind(this));
     },
     deleteDocument: function (id, row) {
-        this._loader.deleteDocument(id);
-        $(row).remove();
+        var deleteButton = $(row).find("button.imcms-negative"),
+            flag = deleteButton.attr("data-remove");
+
+        if (flag && flag.toString().toLowerCase() == "true") {
+            if (!confirm("Are you sure?")) {
+                return;
+            }
+
+            this._loader.deleteDocument(id);
+            $(row).remove();
+        } else if (this.isArchived(row)) {
+            this.unarchive(id, row);
+        }
+        else {
+            this.archive(id, row);
+        }
+    },
+    isArchived: function (row) {
+        return $(row).hasClass("archived");
+    },
+    archive: function (id, row) {
+        this._loader.archiveDocument(id);
+        $(row).addClass("archived");
+    },
+    unarchive: function (id, row) {
+        this._loader.unarchiveDocument(id);
+        $(row).removeClass("archived");
     },
     editDocument: function (id) {
         this._loader.getDocument(id, $.proxy(this.showDocumentViewer, this));
     },
+    copyDocument: function (id) {
+        this._loader.copyDocument(id, this.reload.bind(this));
+    },
     showDocumentViewer: function (data) {
         new Imcms.Document.Viewer({
             data: data,
+            type: (+data.type) || undefined,
             loader: this._loader,
             target: $("body")[0],
             onApply: $.proxy(this.saveDocument, this)
@@ -1215,5 +1435,318 @@ Imcms.Document.ListAdapter.prototype = {
     },
     saveDocument: function (viewer) {
         this._loader.update(viewer.serialize(), $.proxy(this.reload, this));
+    }
+};
+
+Imcms.Document.DocumentSearchDialog = function (source) {
+    this._source = source;
+    this.init();
+};
+Imcms.Document.DocumentSearchDialog.prototype = {
+    _source: null,
+    _currentTerm: "",
+    _builder: {},
+    _dialog: {},
+    _sort: "",
+    _order: "",
+    _selectedRow: {},
+    _pagerHandler: {},
+    _callback: function () {
+    },
+    init: function () {
+        this.buildContent();
+        this.buildDialog();
+        this.buildPager();
+
+        this.find();
+    },
+    buildContent: function () {
+        var that = this;
+        this._builder = JSFormBuilder("<DIV>")
+            .form()
+            .class("editor-menu-form")
+            .div()
+            .div()
+            .class("field")
+            .text()
+            .on("input", function () {
+                that.find(this.value());
+            })
+            .reference("searchField")
+            .placeholder("Type to find document")
+            .end()
+            .end()
+            .div()
+            .class("field")
+            .div()
+            .class("field-wrapper")
+            .table()
+            .on("click", $.proxy(this._onSelectElement, this))
+            .column("id")
+            .column("label")
+            .column("language")
+            .column("alias")
+            .reference("documentsTable")
+            .end()
+            .end()
+            .end()
+            .end()
+            .end();
+    },
+    sort: function (index) {
+        //var sortingType = $(this._builder[0]).find("input[name=sorting]:checked").val(),
+        //    i = index,
+        //    comparator = function (row1, row2) {
+        //        return $($(row1).find("td")[i]).text().localeCompare($($(row2).find("td")[i]).text());
+        //    },
+        //    table = $(this._builder.ref("documentsTable").getHTMLElement());
+        //
+
+        //switch (sortingType) {
+        //    default:
+        //    case "id":
+        //        i = 0;
+        //        break;
+        //    case "headline":
+        //        i = 1;
+        //        break;
+        //    case  "alias":
+        //        i = 3;
+        //        break;
+        //}
+        var oldSort = this._sort;
+        switch (index) {
+            default:
+            case 0:
+                this._sort = "meta_id";
+                break;
+            case 1:
+                this._sort = "meta_headline";
+                break;
+            case  2:
+                this._sort = "language";
+                break;
+            case  3:
+                this._sort = "alias";
+                break;
+        }
+
+        if (this._sort === oldSort) {
+            this._order = this._order === "asc" ? "desc" : "asc";
+        }
+        else {
+            this._order = "asc";
+        }
+        //table.find("tr").sort(comparator).detach().appendTo(table);
+        this.find(this._currentTerm);
+    },
+    buildDialog: function () {
+        this._dialog = $(this._builder[0]).dialog({
+            autoOpen: false,
+            height: 500,
+            width: 700,
+            modal: true,
+            buttons: {
+                "Add selected": $.proxy(this._onApply, this),
+                Cancel: function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+        var dialog = $(this._builder[0]).parents(".ui-dialog").removeClass()
+            .addClass("pop-up-form menu-viewer reset").css({position: "fixed"}),
+            header = dialog.children(".ui-dialog-titlebar").removeClass()
+                .addClass("imcms-header").append($("<div>").addClass("imcms-title").text("DOCUMENT SELECTOR")),
+            content = dialog.children(".ui-dialog-content").removeClass()
+                .addClass("imcms-content"),
+            footer = dialog.children(".ui-dialog-buttonpane").removeClass()
+                .addClass("imcms-footer"),
+            buttons = footer.find(".ui-button").removeClass();
+
+        header.find(".ui-dialog-title").remove();
+        header.children("button").empty().removeClass().addClass("imcms-close-button");
+
+        $(buttons[0]).addClass("imcms-positive");
+        $(buttons[1]).addClass("imcms-neutral cancel-button");
+
+    },
+    buildPager: function () {
+        this._pagerHandler = new Imcms.Document.PagerHandler({
+            target: $(this._builder[0]).find(".field-wrapper")[0],
+            handler: this.pagingHandler.bind(this),
+            itemsPointer: function () {
+                var $source = $(this._builder[0]).find('.field-wrapper'),
+                    height = $source.height(),
+                    found = false,
+                    rows = $source.find("table").find('tr'),
+                    pointer = rows.length - 1,
+                    index = rows.filter(function (pos, it) {
+                        var result = false;
+
+                        if ($(it).position().top > height) {
+                            result = !found;
+                            found = true;
+                        }
+
+                        return result;
+                    }).index();
+
+                return index > -1 ? index : pointer;
+            }.bind(this),
+            resultProcessor: this.appendDataToTable.bind(this)
+        });
+    },
+    open: function () {
+        this._dialog.dialog("open");
+    },
+    dispose: function () {
+        this._dialog.remove();
+    },
+    find: function (word) {
+        this._currentTerm = word;
+        this._pagerHandler.reset();
+        this._source({term: word || "", sort: this._sort, order: this._order}, $.proxy(this.fillDataToTable, this));
+    },
+    pagingHandler: function (params, callback) {
+        params["term"] = this._currentTerm;
+        params["sort"] = this._sort;
+        params["order"] = this._order;
+
+        this._source(params, callback);
+    },
+    fillDataToTable: function (data) {
+        this.clearTable();
+        this.appendDataToTable(0, data);
+    },
+    clearTable: function () {
+        this._builder.ref("documentsTable").clear();
+    },
+    appendDataToTable: function (startIndex, data) {
+        $(this._builder.ref("documentsTable").getHTMLElement()).find("th").each(function (pos, item) {
+            $(item).find("div").remove();
+        });
+
+        for (var rowId in data) {
+            if (data.hasOwnProperty(rowId) && data[rowId]) {
+                this._builder.ref("documentsTable").row(data[rowId]);
+            }
+        }
+
+        $(this._builder.ref("documentsTable").getHTMLElement()).find("tr")
+            .filter(function (pos) {
+                return pos >= startIndex;
+            }).each(function (pos, item) {
+            $(item).on("dragstart", function (event) {
+                $(".ui-widget-overlay").css("display", "none");
+                event.originalEvent.dataTransfer.setData("data", JSON.stringify(data[pos - 1]));
+            }).on("dragend", function (event) {
+                $(".ui-widget-overlay").css("display", "block");
+            }).attr("draggable", true);
+
+        });
+
+
+        $(this._builder.ref("documentsTable").getHTMLElement()).find("th").each(function (pos, item) {
+            $("<div>").append($(item).html()).click(this.sort.bind(this, pos)).appendTo(item);
+        }.bind(this));
+    },
+    result: function (callback) {
+        this._callback = callback;
+        return this;
+    },
+    _onApply: function () {
+        var resultData = {id: this._selectedRow.children[0].innerHTML, label: this._selectedRow.children[1].innerHTML};
+        this._callback(resultData);
+        this._dialog.dialog("close");
+    },
+    _onSelectElement: function (e) {
+        var $table = $(e.currentTarget),
+            tableOffset = $table.offset();
+        element = $table.find("tbody tr").filter(function (index, element) {
+            /*  var offset, farCorner;
+
+             element = $(element);
+
+             offset = element.position();
+             //offset = {left: offset.left - tableOffset.left, top: offset.top - tableOffset.top};
+             farCorner = {right: offset.left + element.width(), bottom: offset.top + element.height()};
+
+             return offset.left <= e.offsetX && offset.top <= e.offsetY && e.offsetX <= farCorner.right && e.offsetY <= farCorner.bottom*/
+            return $.contains(element, e.target);
+        });
+        if (!element.length) {
+            return false;
+        }
+        element = element[0];
+        if (this._selectedRow)
+            this._selectedRow.className = "";
+        this._selectedRow = element;
+        this._selectedRow.className = "clicked";
+    }
+};
+
+Imcms.Document.PagerHandler = function (options) {
+    this._target = options.target;
+    this._options = Imcms.Utils.merge(options, this._options);
+
+    this.init();
+};
+Imcms.Document.PagerHandler.prototype = {
+    _target: undefined,
+    _waiter: undefined,
+    _isHandled: false,
+    _pageNumber: 1,
+    _options: {
+        count: 25,
+        handler: function () {
+        },
+        itemsPointer: function () {
+            return 0;
+        },
+        resultProcessor: function (data) {
+
+        },
+        waiterContent: ""
+    },
+    init: function () {
+        $(this._target).scroll(this.scrollHandler.bind(this)).bind('beforeShow', this.scrollHandler.bind(this));
+        this.scrollHandler();
+    },
+    handleRequest: function (skip) {
+        this._addWaiterToTarget();
+        this._isHandled = true;
+        this._options.handler({skip: skip, take: this._options.count}, this.requestCompleted.bind(this));
+    },
+    requestCompleted: function (data) {
+        this._options.resultProcessor(this._pageNumber * this._options.count, data);
+        this._pageNumber++;
+        this._removeWaiterFromTarget();
+        this._isHandled = false;
+        this.scrollHandler();
+    },
+    scrollHandler: function (event) {
+        if (this._isHandled) {
+            return;
+        }
+
+        var pointer = this._options.itemsPointer(),
+            currentItemsCount = this._pageNumber * this._options.count;
+
+        if (pointer >= currentItemsCount - 3) {
+            this.handleRequest(currentItemsCount)
+        }
+    },
+    _addWaiterToTarget: function () {
+        this._waiter = $("<div>")
+            .addClass("waiter")
+            .append(this._options.waiterContent)
+            .appendTo(this._target);
+    },
+    _removeWaiterFromTarget(){
+        this._waiter.remove();
+    },
+    reset: function () {
+        this._pageNumber = 1
+        this.scrollHandler();
     }
 };

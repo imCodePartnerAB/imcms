@@ -1,5 +1,6 @@
 package imcode.server.document.textdocument;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentReference;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -7,7 +8,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Menu item descriptor.
@@ -21,6 +21,7 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
 
     private TreeSortKeyDomainObject treeSortKey = new TreeSortKeyDomainObject("");
 
+    @JsonIgnore
     private DocumentReference documentReference;
 
     public MenuItemDomainObject() {
@@ -73,6 +74,11 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         return clone;
     }
 
+    public String getName() {
+        return this.getDocument().getHeadline();
+    }
+
+    @JsonIgnore
     public DocumentDomainObject getDocument() {
         if (documentReference == null)
             throw new IllegalStateException("Document reference is not initialized.");
@@ -88,6 +94,7 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         this.treeSortKey = treeSortKey;
     }
 
+    @JsonIgnore
     public DocumentReference getDocumentReference() {
         return documentReference;
     }

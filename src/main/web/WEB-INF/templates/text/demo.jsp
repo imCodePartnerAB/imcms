@@ -1,3 +1,4 @@
+<%@ page import="com.imcode.imcms.api.*" %>
 <%@ page pageEncoding="UTF-8" %>
 
 <%@taglib prefix="imcms" uri="imcms" %>
@@ -12,7 +13,7 @@
     <meta charset="utf-8"/>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/imcms/css/template/demo.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
 </head>
 <body>
 <div class="container">
@@ -49,7 +50,7 @@
                     <c:when test="${not user.defaultUser}">
                         <div class="info">
                             <div class="user-name">${user.loginName}</div>
-                            <div class="sing-out">
+                            <div class="sign-out">
                                 <imcms:logout>
                                     Sign Out
                                 </imcms:logout>
@@ -59,7 +60,7 @@
                     <c:otherwise>
                         <div class="tabs">
                             <section>
-                                <div class="tab" selected data-item="1">Sing In</div>
+                                <div class="tab" selected data-item="1">Sign In</div>
                                 <div class="page" data-item="1" selected>
                                     <h1>Sign In</h1>
                                     <imcms:login>
@@ -80,7 +81,7 @@
                                 </div>
                             </section>
                             <section>
-                                <div class="tab" data-item="2">Sing Up</div>
+                                <div class="tab" data-item="2">Sign Up</div>
                                 <div class="page" data-item="2">
                                     <h1>Sign Up</h1>
                                     <imcms:registration>
@@ -128,9 +129,8 @@
 
             <h2>Learn more</h2>
 
-            <imcms:text no="2" document="${document.id}"/>
+            <imcms:text label="asdas" no="2" document="<%=1000 + 1%>" mode="read" pre=""/>
         </div>
-
         <div class="wrapper">
             <imcms:loop no="1">
                 <div class="figure">

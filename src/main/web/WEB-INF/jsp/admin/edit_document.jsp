@@ -13,8 +13,6 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
     <script src="${pageContext.request.contextPath}/js/jquery.nearest.min.js"></script>
-    <link rel="stylesheet"
-          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
 
@@ -23,12 +21,17 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/imcms/ckeditor/ckeditor.js"></script>
     <script type="text/javascript"
             src="${pageContext.request.contextPath}/imcms/jsformbuilder/JSFormBuilder.js"></script>
-
+    <script src="${pageContext.request.contextPath}/imcms/prism/prism.js"></script>
     <script src="${pageContext.request.contextPath}/imcms/jqtree/tree.jquery.js"></script>
+
+    <link rel="stylesheet"
+          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/imcms/jqtree/jqtree.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/imcms/prism/prism.css">
+
     <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/base.css "/>--%>
     <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/imcms_doc_admin.css.jsp"/>--%>
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_marged.css.jsp"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/imcms_merged.css.jsp"/>
     <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/panel.css "/>--%>
     <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/frame.css "/>--%>
     <%--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/admin/window.css "/>--%>

@@ -51,10 +51,79 @@ Array.prototype.remove = function (value) {
         return $super.apply(this, arguments);
     };
 })(jQuery);
+
+/**
+ *
+ */
+
+(function ($) {
+    var dataKey = "data-multiselect"
+
+    $.fn.multiselect = function () {
+
+        if (!this.length) {
+            return this;
+        }
+
+        this.filter("select[multiple]").each(function (pos, item) {
+            var $element = $(item),
+                $div = $("<div>").addClass("multiselect-adapter"),
+                $options = $element.children("option");
+
+            $options.each(function (pos, item) {
+                var $wrapper = $("<div>").addClass("field"),
+                    $item = $(item),
+                    $checkbox = $("<input>")
+                        .attr({
+                            type: "checkbox",
+                            name: $element.attr("name"),
+                            ignored: "true"
+                        })
+                        .val($item.val())
+                        .prop("checked", $item.is(":selected"))
+                        .change(function () {
+                            if ($checkbox.is(":checked")) {
+                                $item.attr("selected", true)
+                            } else {
+                                $item.removeAttr("selected");
+                            }
+                        }),
+                    $label = $("<label>").text($item.text());
+
+                $.each(item.attributes, function () {
+                    // this.attributes is not a plain object, but an array
+                    // of attribute nodes, which contain both the name and value
+                    if (this.specified) {
+                        $label.attr(this.name, this.value);
+                    }
+                });
+
+                $wrapper.append($checkbox).append($label);
+                $div.append($wrapper);
+            });
+
+            $div.insertAfter($element.next().is("label") ? $element.next() : $element);
+            $element.hide().change(function () {
+                var selected = $element.val(),
+                    $checkboxes = $div.find("checkbox");
+
+                $checkboxes.prop("checked", false);
+
+                $.each(selected, function (post, item) {
+                    $checkboxes.filter("[value=" + item + "]").prop("checked", true);
+                });
+            }).data(dataKey, $div);
+
+        });
+    };
+})(jQuery);
+
 /*
  CKEditor Addons
  */
 CKEDITOR.define("confirmChanges", {});
+CKEDITOR.define("validateText", {});
+
 CKEDITOR.plugins.add("documentSaver", {
     init: function (editor) {
         var pluginName = "documentSaver";
@@ -68,15 +137,32 @@ CKEDITOR.plugins.add("documentSaver", {
             e.removeListener();
             e.editor.on('blur', e.editor.blurHandler);
         };
-        var confirmCommandFunction = function (e) {
-            CKEDITOR.fire("confirmChanges", {}, e);
+        var switchToolbarCommandFunction = function (e) {
+            var element = e.element;
+            if (e.elementMode == 1) {
+                e.execCommand("toolbarswitch");
+            }
+            for (var key in CKEDITOR.instances) {
+                var editor = CKEDITOR.instances[key];
+                if (element == editor.element) {
+                    return editor;
+                }
+            }
+        };
+        var confirmCommandFunction = function (e, callback) {
+            if (!callback) {
+                e = switchToolbarCommandFunction(e);
+            }
+            CKEDITOR.fire("confirmChanges", {callback: callback}, e);
             editor.documentSnapshot = e.getData();
             e.resetDirty();
-            e.removeListener('blur', e.blurHandler);
-            e.focusManager.unlock();
-            e.element.$.blur();
-            e.focusManager.blur();
-            e.on("focus", e.focusHandler);
+            if (!callback) {
+                e.removeListener('blur', e.blurHandler);
+                e.focusManager.unlock();
+                e.element.$.blur();
+                e.focusManager.blur();
+                e.on("focus", e.focusHandler);
+            }
         };
         var confirmCommandDefinition =
         {
@@ -92,13 +178,50 @@ CKEDITOR.plugins.add("documentSaver", {
             exec: confirmCommandFunction
         };
         editor.addCommand("confirmChanges", confirmCommandDefinition);
+        var saveCommandFunction = function (e) {
+            var $button = $('.' + e.id).find('.cke_button__savedata_icon')
+                .css({
+                    backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_loader.gif" + ")"
+                });
+            confirmCommandFunction(e, function () {
+                $button.css({
+                    backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_save.png" + ")"
+                });
+            });
+        };
+        var saveCommandDefinition =
+        {
+            // This command works in both editing modes.
+            modes: {wysiwyg: 1, source: 1},
+
+            // This command will not auto focus editor before execution.
+            editorFocus: false,
+
+            // This command requires no undo snapshot.
+            canUndo: false,
+
+            exec: saveCommandFunction
+        };
+        editor.addCommand("saveChanges", saveCommandDefinition);
         var cancelCommandFunction = function (e) {
-            e.setData(e.documentSnapshot);
-            e.removeListener('blur', e.blurHandler);
-            e.focusManager.unlock();
-            e.element.$.blur();
-            e.focusManager.blur();
-            e.on("focus", e.focusHandler);
+            var newEditor = switchToolbarCommandFunction(e),
+                hideCommand = function (e) {
+                    setTimeout(function () {
+                        e.removeListener('instanceReady', hideCommand);
+                        e.setData(e.documentSnapshot);
+                        e.removeListener('blur', e.blurHandler);
+                        e.focusManager.unlock();
+                        e.element.$.blur();
+                        e.focusManager.blur();
+                        e.on("focus", e.focusHandler);
+                    }, 1);
+                };
+            if (newEditor != e) {
+                newEditor.on('instanceReady', hideCommand.bind(null, newEditor));
+            }
+            else {
+                hideCommand(e);
+            }
         };
         var cancelCommandDefinition =
         {
@@ -128,6 +251,12 @@ CKEDITOR.plugins.add("documentSaver", {
                 label: 'Cancel all changes and restore document to previous state',
                 command: "cancelChanges",
                 icon: "images/ic_cancel.png"
+            });
+        editor.ui.addButton('saveData',
+            {
+                label: 'Save all changes',
+                command: "saveChanges",
+                icon: "images/ic_save.png"
             });
     }
 });
@@ -208,6 +337,90 @@ CKEDITOR.plugins.add("fileBrowser", {
                 icon: "images/ic_images.png"
             });
     }
+});
+
+CKEDITOR.plugins.add("w3cValidator", {
+    init: function (editor) {
+        var w3cValidateCommand = function (e) {
+            var $button = $('.' + e.id).find('.cke_button__w3cvalidate_icon')
+                .css({
+                    backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_loader.gif" + ")"
+                });
+            //todo: Add message if content is invalid
+            CKEDITOR.fire("validateText", {
+                callback: function (data) {
+                    $button.css({
+                        backgroundImage: "url(" + CKEDITOR.basePath + (data.result ? "images/ic_valid.png" : "images/ic_invalid.png") + ")"
+                    });
+
+                    if (!data.result) {
+                        $(e.element.$).data("w3cValidateData", data);
+                        e.execCommand("w3cValidateDialog", data);
+                    }
+                }
+            }, e);
+        };
+        var w3cValidateCommandDefinition =
+        {
+            // This command works in both editing modes.
+            modes: {wysiwyg: 1, source: 1},
+
+            // This command will not auto focus editor before execution.
+            editorFocus: false,
+
+            // This command requires no undo snapshot.
+            canUndo: false,
+
+            exec: w3cValidateCommand
+        };
+
+        editor.addCommand("w3cValidate", w3cValidateCommandDefinition);
+        editor.addCommand("w3cValidateDialog", new CKEDITOR.dialogCommand("w3cValidationResultDialog"));
+
+
+        editor.ui.addButton('w3cValidate',
+            {
+                label: 'Validate Content over W3C',
+                command: "w3cValidate",
+                icon: "images/ic_w3c.png"
+            });
+    }
+});
+CKEDITOR.dialog.add("w3cValidationResultDialog", function (e) {
+    var $wrapper = $("<div>"),
+        $content = $("<div>").addClass("imcms-w3c-errors").appendTo($wrapper),
+        data = $(e.element.$).data("w3cValidateData");
+
+    $("<div>").append($("<h2>").text("Validation Output: " + data.data.errors.length + " Errors")).appendTo($content);
+
+    data.data.errors.forEach(function (item, pos) {
+        var $container = $("<div>").addClass("imcms-w3c-error").appendTo($content),
+            $errorMessage = $("<div>").text(pos + 1 + ". " + item.message.charAt(0).toUpperCase() + item.message.slice(1)).appendTo($container),
+            $sourceContainer = $("<div>").appendTo($container),
+            $source = $("<code>").addClass("language-html").html(item.line + ": " + item.source.replace(/(<([^>]+)>)/ig, "")).appendTo($sourceContainer);
+
+
+        Prism.highlightElement($source[0]);
+    });
+
+
+    return {
+        title: 'Validation Result Dialog',
+        width: 600,
+        minHeight: 250,
+        contents: [
+            {
+                id: 'w3cValidation',
+                label: 'Validation',
+                elements: [
+                    {
+                        type: 'html',
+                        html: $("<div>").append($wrapper).html()
+                    }
+                ]
+            }
+        ]
+    };
 });
 
 /**

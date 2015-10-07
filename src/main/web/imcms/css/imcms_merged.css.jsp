@@ -34,10 +34,25 @@ String cp = request.getContextPath() ;
     float: none;
 }
 
+[aria-invalid=true],
+.error[aria-invalid=true] {
+    background-color: #ffaaaa !important;
+}
+
+.imcms-w3c-errors h2 {
+    font-size: 30px;
+}
+
+.imcms-w3c-error > div:first-child {
+    font-weight: bold;
+}
+
+.imcms-w3c-error > div:last-child,
+.imcms-w3c-error code {
+    padding: 10px !important;
+}
+
 <%--BASE--%>
-
-
-
 
 <%--
 
@@ -248,6 +263,8 @@ editor theme
     margin-bottom: 2px;
 }
 
+.editor-form .imcms-content .field select + div.pqSelect,
+.pop-up-form .imcms-content .field select + div.pqSelect,
 .pop-up-form .imcms-content .field select,
 .editor-form .imcms-content .field input,
 .pop-up-form .imcms-content .field input {
@@ -298,8 +315,6 @@ editor theme
     background: #484848;
 }
 
-
-
 ::-moz-focus-inner {
     border: 0;
     padding: 0;
@@ -313,16 +328,13 @@ editor theme
     display: none;
 }
 
-
 <%--EDITOR THEME--%>
-
 
 <%--PANEL--%>
 
-
 .admin-panel {
     display: block;
-    width: 623px;
+    width: auto;
     background: #eee;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -344,12 +356,12 @@ editor theme
 }
 
 .admin-panel-content {
-    width: 605px;
+    width: auto;
     background: #fff;
 }
 
 .admin-panel-content-section-language {
-    width: 146px;
+    width: auto;
 }
 
 .admin-panel,
@@ -465,10 +477,16 @@ editor theme
     margin: 10px auto 0 auto;
 }
 
-.admin-panel-content-section .admin-panel-version {
+.admin-panel-content-section .admin-panel-version,
+.admin-panel-content-section .admin-panel-version * {
     color: #0091e1;
     font-size: 11px;
     margin: 14px 20px 0 20px;
+}
+
+.admin-panel-content-section .admin-panel-version span {
+    font-weight: bold;
+    margin: 0;
 }
 
 .admin-panel-content-section .admin-panel-button-description {
@@ -486,6 +504,20 @@ editor theme
 .admin-panel-content-section .admin-panel-button:hover {
     background-color: #ebf0ff;
     color: #0091e1;
+}
+
+#additionalInfo.admin-panel-content-section .admin-panel-button *,
+#additionalInfo.admin-panel-content-section .admin-panel-button:hover {
+    background-color: #fff;
+    color: #0091e1;
+}
+
+#additionalInfo.admin-panel-content-section .admin-panel-button div {
+    padding-top: 10px;
+}
+
+#additionalInfo.admin-panel-content-section .admin-panel-button span {
+    font-weight: bold;
 }
 
 .admin-panel-content-section-disabled .admin-panel-button:hover {
@@ -514,10 +546,7 @@ editor theme
     margin: 0 0 0 -6px;
 }
 
-
-
 <%--PANEL--%>
-
 
 <%--FRAME--%>
 
@@ -560,12 +589,9 @@ editor theme
     height: 20px;
 }
 
-
 <%--FRAME--%>
 
-
 <%--WINDOW--%>
-
 
 .editor-form .imcms-header,
 .pop-up-form .imcms-header {
@@ -607,7 +633,7 @@ editor theme
     height: 30px;
 }
 
-.pop-up-form .imcms-positive span {
+.pop-up-form .imcms-positive * {
     color: #fff;
 }
 
@@ -628,7 +654,7 @@ editor theme
     height: 30px;
 }
 
-.pop-up-form .imcms-negative span {
+.pop-up-form .imcms-negative * {
     color: #fff;
 }
 
@@ -649,7 +675,7 @@ editor theme
     height: 30px;
 }
 
-.pop-up-form .imcms-neutral span {
+.pop-up-form .imcms-neutral * {
     color: #fff;
 }
 
@@ -762,10 +788,7 @@ editor theme
     box-shadow: 0 0 15px 0 rgba(50, 50, 50, 0.5);
 }
 
-
-
 <%--WINDOW--%>
-
 
 <%--LOOP--%>
 .loop-viewer .imcms-content table {
@@ -775,6 +798,7 @@ editor theme
     overflow: hidden;
     background-color: #fff;
 }
+
 .loop-viewer .imcms-content table tr td {
     border-bottom: 1px solid #f0f0ff;
     padding: 7.5px 20px;
@@ -803,10 +827,7 @@ editor theme
     display: block;
 }
 
-
-
 <%--LOOP--%>
-
 
 <%--MENU--%>
 
@@ -891,6 +912,7 @@ editor theme
     top: 0;
     line-height: 30px;
     padding: 0 20px;
+    cursor: pointer;
 }
 
 .editor-form .imcms-content ul, .editor-form .imcms-content ul li {
@@ -924,13 +946,40 @@ editor theme
     padding: 0 20px;
 }
 
-.editor-form .imcms-content ul li .jqtree-element span:last-child {
+.editor-form .imcms-content ul li .jqtree-element span.column-right {
     float: right;
     padding: 5px;
 }
 
+.editor-form .imcms-content ul li .jqtree-element span.buttons {
+    display: none;
+}
+
+.editor-form .imcms-content ul li .jqtree-element span.buttons > * {
+    float: left;
+    height: 20px;
+    line-height: 20px;
+    margin-right: 5px;
+}
+
+.editor-form .imcms-content ul li .jqtree-element span.buttons * {
+    color: #fff;
+}
+
+.editor-form .imcms-content ul li .jqtree-element:hover span.buttons {
+    display: block;
+}
+
 .editor-form ul.jqtree-tree *:nth-child(2n+1) .jqtree-element {
     /*background: #ffffe6;*/
+}
+
+.editor-form .imcms-footer input[name=menu-sort-case] {
+    display: none;
+}
+
+.editor-form .imcms-footer input[name=menu-sort-case]:checked + button {
+    background-color: #000;
 }
 
 ul.jqtree-tree li.jqtree-selected > .jqtree-element,
@@ -952,7 +1001,8 @@ ul.jqtree-tree span.jqtree-border {
     border: none !important;
     box-sizing: content-box !important;
     background-color: #649b00 !important;
-    height: 100% -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; /* IE 8 */
+    height: 100%
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; /* IE 8 */
     filter: alpha(opacity=50); /* IE 5-7 */
     -moz-opacity: 0.5; /* Netscape */
     -khtml-opacity: 0.5; /* Safari 1.x */
@@ -990,13 +1040,13 @@ ul.jqtree-tree ul.jqtree_common {
 .editor-form .imcms-content ul.jqtree-tree .jqtree_common span .imcms-negative {
     background: #dc0000 url("<%=cp%>/images/remove.png") no-repeat center;
     line-height: 20px;
-    display: none;
+    display: block;
     padding: 0;
     width: 20px;
     height: 20px;
 }
 
-.editor-form .imcms-content ul.jqtree-tree .jqtree_common:hover span button {
+.editor-form .imcms-content ul.jqtree-tree .jqtree_common:hover span .imcms-negative {
     display: block;
     background: #dc0000 url("<%=cp%>/images/remove.png") no-repeat center;
 }
@@ -1013,12 +1063,7 @@ ul.jqtree-tree ul.jqtree_common {
     z-index: 1003;
 }
 
-
-
 <%--MENU--%>
-
-
-
 
 <%--CONTENT--%>
 
@@ -1231,15 +1276,19 @@ ul.jqtree-tree ul.jqtree_common {
     height: inherit;
 }
 
-
-
-
 <%--CONTENT--%>
-
-
 
 <%--DOCUMENT--%>
 
+.document-viewer .imcms-content .multiselect-adapter {
+    background-color: #f0f0f0;
+    padding: 5px;
+    width: 400px;
+}
+
+.document-viewer .imcms-content .multiselect-adapter .field:first-child {
+    padding-top: 0;
+}
 
 .document-viewer .imcms-content table {
     border-left: none;
@@ -1331,6 +1380,7 @@ ul.jqtree-tree ul.jqtree_common {
     float: none;
 }
 
+.document-viewer .imcms-content .file-page tr button,
 .document-viewer .imcms-content .access-page tr button {
     visibility: hidden;
     background: #dc0000 url("<%=cp%>/images/remove.png") no-repeat center;
@@ -1340,6 +1390,7 @@ ul.jqtree-tree ul.jqtree_common {
     height: 20px;
 }
 
+.document-viewer .imcms-content .file-page tr:hover button,
 .document-viewer .imcms-content .access-page tr:hover button {
 
     visibility: visible;
@@ -1354,6 +1405,12 @@ ul.jqtree-tree ul.jqtree_common {
     padding: 0 20px;
 }
 
+.editor-document .imcms-content table tr.archived td {
+    vertical-align: middle;
+    padding: 0 20px;
+    background: #eee;
+}
+
 .editor-document .imcms-content table tr:hover td {
     background: #ffff64;
 }
@@ -1361,7 +1418,7 @@ ul.jqtree-tree ul.jqtree_common {
 .editor-document .imcms-content table tr td:last-child {
     line-height: 0;
     padding: 5px;
-    width: 105px;
+    width: 186px;
 }
 
 .editor-document .imcms-content table tr td .imcms-positive {
@@ -1404,14 +1461,20 @@ ul.jqtree-tree ul.jqtree_common {
     visibility: visible;
 }
 
+.editor-document .imcms-content table tr:hover td .imcms-negative[data-remove=false] {
+    visibility: visible;
+    text-align: center;
+    background-image: none;
+}
+
+.waiter {
+    padding: 10px;
+    background: url("<%=cp%>/images/upload.gif") no-repeat center;
+}
 
 <%--DOCUMENT--%>
 
-
-
 <%--IMAGE--%>
-
-
 
 .editor-image .imcms-content .image {
     width: 500px;
@@ -1535,17 +1598,9 @@ ul.jqtree-tree ul.jqtree_common {
     width: 85px;
 }
 
-
 <%--IMAGE--%>
 
-
-
-
-
-
-
 <%--PROCESS--%>
-
 
 @-webkit-keyframes bouncedelay {
     0%, 80%, 100% {
@@ -1571,7 +1626,7 @@ ul.jqtree-tree ul.jqtree_common {
     position: fixed;
     left: 0;
     top: 0;
-    background: rgba(256,256,256,0.9);
+    background: rgba(256, 256, 256, 0.9);
     z-index: 999999;
 
 }
@@ -1615,7 +1670,6 @@ ul.jqtree-tree ul.jqtree_common {
     -webkit-animation-delay: -0.16s;
     animation-delay: -0.16s;
 }
-
 
 <%--PROCESS--%>
 

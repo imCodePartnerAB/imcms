@@ -220,7 +220,7 @@ Imcms.Image.Editor.prototype = {
                 height: clonedData.imageInfo.height / 4,
                 valid: true
             };
-            this._getSource(Imcms.Utils.marge(clonedData, this._source));
+            this._getSource(Imcms.Utils.merge(clonedData, this._source));
         }
         else {
             this._getSource(this._source);
@@ -306,7 +306,7 @@ Imcms.Image.ImageViewAdapter.prototype = {
 
 Imcms.Image.ImageInfoAdapter = function (options) {
     this._infoRef = options.infoRef;
-    this._options = Imcms.Utils.marge(options, this._options);
+    this._options = Imcms.Utils.merge(options, this._options);
     this.init();
 };
 Imcms.Image.ImageInfoAdapter.prototype = {

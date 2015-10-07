@@ -6,6 +6,7 @@ Imcms.Admin.Panel = {
     init: function () {
         var draggable = false,
             entered = false,
+            panelWidth = 0,
             cornerPointDistanceX = 0,
             cornerPointDistanceY = 0,
             $draggable = $(".admin-panel-draggable"),
@@ -18,6 +19,10 @@ Imcms.Admin.Panel = {
         if (!$adminPanel.length) {
             return;
         }
+
+
+        panelWidth = $adminPanel.width();
+        $adminPanel.css("minWidth", panelWidth);
 
         $draggable.on("mouseenter", function () {
             entered = true
@@ -37,9 +42,11 @@ Imcms.Admin.Panel = {
         $doc.on("mousemove", function (e) {
             if (draggable) {
                 var
+                    windowWidth = $(window).width(),
                     x = e.pageX - cornerPointDistanceX,
                     y = e.pageY - cornerPointDistanceY;
-                x = x < 0 ? 0 : x;
+
+                x = x < 0 ? 0 : (x + panelWidth + 10 >= windowWidth) ? windowWidth - panelWidth - 10 : x;
                 y = y < 0 ? 0 : y;
                 $adminPanel.css({
                     left: x,

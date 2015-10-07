@@ -20,15 +20,15 @@ Imcms.Bootstrapper.prototype = {
             $("body").css({paddingLeft: 150, width: $(window).width() - 150});
         }
 
-        Imcms.Editors.Loop = new Imcms.Loop.Loader();
-        Imcms.Editors.Menu = new Imcms.Menu.Loader();
-        Imcms.Editors.Text = new Imcms.Text.Editor();
         Imcms.Editors.Language = new Imcms.Language.Loader();
         Imcms.Editors.Template = new Imcms.Template.Loader();
         Imcms.Editors.Role = new Imcms.Role.Loader();
         Imcms.Editors.Permission = new Imcms.Permission.Loader();
         Imcms.Editors.Category = new Imcms.Category.Loader();
         Imcms.Editors.Document = new Imcms.Document.Loader();
+        Imcms.Editors.Loop = new Imcms.Loop.Loader();
+        Imcms.Editors.Menu = new Imcms.Menu.Loader();
+        Imcms.Editors.Text = new Imcms.Text.Editor();
         Imcms.Editors.File = new Imcms.File.Loader();
         Imcms.Editors.Folder = new Imcms.Folder.Loader();
         Imcms.Editors.Content = new Imcms.Content.Loader();
@@ -72,42 +72,47 @@ Imcms.FrameBuilder.prototype = {
     },
     positioningFrame: function ($frame) {
         var changedPosition = false,
-            frameOffset = $frame.offset(),
+            frameOffset = undefined,
+            frameRect = undefined;
+
+        do {
+            changedPosition = false;
+            frameOffset = $frame.offset();
             frameRect = {
                 left: frameOffset.left,
                 top: frameOffset.top,
                 right: frameOffset.left + $frame.width(),
                 bottom: frameOffset.top + $frame.height()
             };
-        $frame.touching(".editor-frame").filter("[data-configured]").sort(function (a, b) {
-            var $a = $(a), $b = $(b),
-                offsetA = $a.offset(),
-                offsetB = $b.offset(),
-                rightA = offsetA.left + $a.width(),
-                rightB = offsetB.left + $b.width();
+            $frame.touching(".editor-frame").filter("[data-configured]:visible").sort(function (a, b) {
+                var $a = $(a), $b = $(b),
+                    offsetA = $a.offset(),
+                    offsetB = $b.offset(),
+                    rightA = offsetA.left + $a.width(),
+                    rightB = offsetB.left + $b.width();
 
-            if (rightA > rightB) {
-                return 1;
+                if (rightA > rightB) {
+                    return 1;
+                }
+                if (rightA < rightB) {
+                    return -1;
+                }
+                return 0;
+            }).each(function (position, element) {
+                var elementTop;
+                element = $(element);
+                if ((elementTop = element.offset().top + element.height()) > frameRect.top) {
+                    var diff = elementTop - frameRect.top;
+                    frameRect.top += diff;
+                    frameRect.bottom += diff;
+                    changedPosition = true;
+                }
+            });
+            $frame.attr("data-configured", "");
+            if (changedPosition) {
+                $frame.offset(frameRect);
             }
-            if (rightA < rightB) {
-                return -1;
-            }
-            return 0;
-        }).each(function (position, element) {
-            var elementTop;
-            element = $(element);
-            if ((elementTop = element.offset().top + element.height()) > frameRect.top) {
-                var diff = elementTop - frameRect.top;
-                frameRect.top += diff;
-                frameRect.bottom += diff;
-                changedPosition = true;
-            }
-        });
-        $frame.attr("data-configured", "");
-        if (changedPosition) {
-            $frame.offset(frameRect);
-            this.positioningFrame($frame);
-        }
+        } while (changedPosition && $frame.is(":visible"))
     },
     _createHeader: function () {
         var headerPh = $("<div>").addClass("header-ph");
@@ -116,7 +121,6 @@ Imcms.FrameBuilder.prototype = {
         this._createTitle().appendTo(header);
         return headerPh;
     },
-
     _createTitle: function () {
         return $("<div>").addClass("imcms-title").html(this._title);
     }

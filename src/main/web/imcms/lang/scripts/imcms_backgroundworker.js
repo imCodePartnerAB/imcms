@@ -116,6 +116,8 @@ Imcms.BackgroundWorker = {
                 })) {
                 $this.reloadPage()
             }
+
+            $this.closeProcessWindow();
         }
     },
 
@@ -146,13 +148,16 @@ Imcms.BackgroundWorker = {
 
         new Imcms.Bootstrapper().bootstrap(Imcms.isEditMode);
 
-        $("[contenteditable=true]").each(function (p, e) {
-            CKEDITOR.inline(e);
-        });
-
         $this.contentChangedListeners.forEach(function (item) {
             item.call($this);
         });
+    },
+    /**
+     * Close Process Window
+     * Usually it happens when all tasks have been done
+     */
+    closeProcessWindow: function () {
+        var $this = Imcms.BackgroundWorker;
 
         setTimeout(function () {
             $this.processWindow.fadeOut(1200, function () {
@@ -162,6 +167,7 @@ Imcms.BackgroundWorker = {
             });
         }, 300);
     },
+
     /**
      * Add page content changed listener
      * @param {Function} listener

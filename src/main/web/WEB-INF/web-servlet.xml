@@ -21,19 +21,20 @@
     <!-- Configure bean to convert JSON to POJO and vice versa -->
     <bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
     </bean>
-    <mvc:annotation-driven content-negotiation-manager="cnManager"/>
+    <!--<mvc:annotation-driven content-negotiation-manager="cnManager"/>-->
+    <mvc:annotation-driven/>
 
-    <bean id="cnManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
-        <property name="favorPathExtension" value="false"/>
-        <property name="ignoreAcceptHeader" value="true"/>
-        <property name="defaultContentType" value="application/json"/>
-        <property name="useJaf" value="false"/>
-        <property name="mediaTypes">
-            <map>
-                <!--<entry key="html" value="text/html" />-->
-                <entry key="json" value="application/json"/>
-            </map>
-        </property>
-    </bean>
+    <!--<bean id="cnManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">-->
+        <!--<property name="favorPathExtension" value="false"/>-->
+        <!--<property name="ignoreAcceptHeader" value="true"/>-->
+        <!--<property name="defaultContentType" value="application/json"/>-->
+        <!--<property name="useJaf" value="false"/>-->
+        <!--<property name="mediaTypes">-->
+            <!--<map>-->
+                <!--&lt;!&ndash;<entry key="html" value="text/html" />&ndash;&gt;-->
+                <!--<entry key="json" value="application/json"/>-->
+            <!--</map>-->
+        <!--</property>-->
+    <!--</bean>-->
 </beans>
   

@@ -1,11 +1,13 @@
-<%@ page import="imcode.server.Imcms"%><%@ page
+<%@ page import="imcode.server.Imcms"%><%@ page import="imcode.server.document.DocumentDomainObject"%><%@ page
                  contentType="text/javascript"
                  pageEncoding="UTF-8"
 
 %>
         <%
         Integer metaId = Integer.parseInt(request.getParameter("meta_id"));
-        Integer typeId = Imcms.getServices().getDocumentMapper().getDocument(metaId).getDocumentTypeId();
+        DocumentDomainObject document =  Imcms.getServices().getDocumentMapper().getDocument(metaId);
+        Integer typeId = document.getDocumentTypeId();
+        String label = document.getHeadline();
         %>
         Imcms.isEditMode = <%=
             request.getParameterMap().containsKey("flags")&&
@@ -13,7 +15,8 @@
             %>;
         Imcms.document = {
             "meta": <%=metaId%>,
-            "type": <%=typeId%>
+            "type": <%=typeId%>,
+            "label": "<%=label%>"
         };
         Imcms.language = {
             name: "<%=Imcms.getServices().getDocumentLanguages()
@@ -23,6 +26,7 @@
         Imcms.contextPath = "<%=request.getContextPath()%>";
 
         $.ajaxSetup({cache: false});
+        CKEDITOR.disableAutoInline = true;
 
         $(document).ready(function () {
             new Imcms.Bootstrapper().bootstrap(Imcms.isEditMode);

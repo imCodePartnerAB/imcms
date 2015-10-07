@@ -15,7 +15,7 @@
             user.getPermissionSetFor(document).getEditDocumentInformation();
     Boolean editMode = request.getParameterMap().containsKey("flags");
     String contextPath = request.getContextPath();
-    String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext());
+    String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext()).replace("imCMS", "<span>imCMS</span>");
     DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().getLanguage();
 %>
 <div class="admin-panel reset">
@@ -55,7 +55,8 @@
             </a>
         </section>
         <div class="admin-panel-content-separator"></div>
-        <section id="info" data-mode="info" class="admin-panel-content-section <%= canEditDocumentInfo?"":"admin-panel-content-section-disabled"%>">
+        <section id="info" data-mode="info"
+                 class="admin-panel-content-section <%= canEditDocumentInfo?"":"admin-panel-content-section-disabled"%>">
             <a href="#" target="_self" onclick="<%= canEditDocumentInfo?"pageInfo();":""%> return false;">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image"></div>
@@ -63,8 +64,19 @@
                 </div>
             </a>
         </section>
+        <section id="additionalInfo" data-mode="info"
+                 class="admin-panel-content-section <%= canEditDocumentInfo?"":"admin-panel-content-section-disabled"%>">
+            <a href="#" target="_self" onclick="return false;">
+                <div class="admin-panel-button">
+                    <div>
+                        <span><%=document.getId()%></span> <%=document.getLifeCyclePhase().toString().substring(0, 1).toUpperCase()%>
+                    </div>
+                </div>
+            </a>
+        </section>
         <div class="admin-panel-content-separator"></div>
-        <section id="docs" data-mode="docs" class="admin-panel-content-section <%= canEditDocumentInfo?"":"admin-panel-content-section-disabled"%>">
+        <section id="docs" data-mode="docs"
+                 class="admin-panel-content-section <%= canEditDocumentInfo?"":"admin-panel-content-section-disabled"%>">
             <a href="#" target="_self" onclick="<%= canEditDocumentInfo?"Imcms.Admin.Panel.docs();":""%> return false;">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image"></div>

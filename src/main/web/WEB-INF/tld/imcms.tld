@@ -52,7 +52,7 @@
         <attribute>
             <name>placeholder</name>
             <required>false</required>
-            <type>java.lang.String</type>
+            <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
             <name>no</name>
