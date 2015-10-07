@@ -148,7 +148,10 @@
                                     label: commonLang.browseServer,
                                     onClick: function () {
                                         var that = this;
-                                        var documentSearchDialog = new Imcms.Menu.DialogAdapter($.proxy(Imcms.Editors.Menu.read, Imcms.Editors.Menu));
+                                        var documentSearchDialog = new Imcms.Document.DocumentSearchDialog(function (term, callback) {
+                                            Imcms.Editors.Document.filteredDocumentList(term, callback)
+                                        });
+
                                         documentSearchDialog.result(function (data) {
                                             that.setValue(data.id);
                                             documentSearchDialog.dispose();
