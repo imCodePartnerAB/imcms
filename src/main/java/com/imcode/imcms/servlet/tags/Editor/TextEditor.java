@@ -8,6 +8,7 @@ import com.imcode.imcms.mapping.container.LoopEntryRef;
 public class TextEditor extends BaseEditor {
     private int no;
     private String locale;
+    private String contentType;
     private LoopEntryRef loopEntryRef;
     private int documentId;
 
@@ -16,6 +17,7 @@ public class TextEditor extends BaseEditor {
         super.builder
                 .addClass("text")
                 .addParam("contenteditable", true, false)
+                .addParam("contentType", contentType)
                 .addParam("no", no)
                 .addParam("meta", documentId)
                 .addParam("locale", locale)
@@ -40,12 +42,13 @@ public class TextEditor extends BaseEditor {
         return this;
     }
 
-    public int getDocumentId() {
-        return documentId;
-    }
-
     public TextEditor setDocumentId(int documentId) {
         this.documentId = documentId;
+        return this;
+    }
+
+    public TextEditor setContentType(String contentType) {
+        this.contentType = contentType;
         return this;
     }
 }
