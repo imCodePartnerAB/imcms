@@ -1,17 +1,23 @@
 package com.imcode.imcms.servlet.apis;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
 import imcode.server.document.*;
+import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.DocumentStoredFields;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.RoleId;
 import imcode.util.io.FileInputStreamSource;
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
@@ -27,84 +33,109 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Created by Shadowgun on 17.02.2015.
+ * Realise API for working with  {@link DocumentDomainObject}
  */
 @RestController
 @RequestMapping("/document")
-public class DocumentApiServlet {
-    private static final Logger LOG = Logger.getLogger(DocumentApiServlet.class);
+public class DocumentController {
+    private static final Logger LOG = Logger.getLogger(DocumentController.class);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    public Object getDocumentById(@PathVariable("id") Integer id,
+                                  @RequestParam(value = "isPrototype", required = false) boolean isPrototype) {
+        DocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().getDocument(id);
+        DocumentEntity result;
+
+        switch (documentDomainObject.getDocumentTypeId()) {
+            case DocumentTypeDomainObject.URL_ID: {
+                result = new UrlDocumentEntity();
+
+                if (!isPrototype) {
+                    asUrlEntity((UrlDocumentEntity) result, (UrlDocumentDomainObject) documentDomainObject);
+                }
+            }
+            break;
+            case DocumentTypeDomainObject.FILE_ID: {
+                result = new FileDocumentEntity();
+
+                if (!isPrototype) {
+                    asFileEntity((FileDocumentEntity) result, (FileDocumentDomainObject) documentDomainObject);
+                }
+            }
+            break;
+            case DocumentTypeDomainObject.TEXT_ID:
+            default: {
+                result = new TextDocumentEntity();
+
+                asTextEntity((TextDocumentEntity) result, (TextDocumentDomainObject) documentDomainObject);
+
+                if (isPrototype) {
+                    ((TextDocumentEntity) result).template = ((TextDocumentDomainObject) documentDomainObject).getDefaultTemplateName();
+                }
+            }
+            break;
+        }
+
+        prepareEntity(result, documentDomainObject);
+
+        if (isPrototype) {
+            asPrototype(result);
+        }
+
+        return result;
+    }
 
 
     @RequestMapping(method = RequestMethod.GET)
-    protected Object doGet(@RequestParam(value = "id", required = false) Integer id,
-                           @RequestParam(value = "isPrototype", required = false) boolean isPrototype) throws ServletException, IOException {
-        if (id != null) {
-            DocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().getDocument(id);
-            DocumentEntity result;
+    protected Object getDocumentsList(@RequestParam(value = "filter", required = false) String term,
+                           @RequestParam(value = "skip", required = false, defaultValue = "0") int skip,
+                           @RequestParam(value = "take", required = false, defaultValue = "25") int take,
+                           @RequestParam(value = "sort", required = false, defaultValue = "meta_id") String sort,
+                           @RequestParam(value = "order", required = false, defaultValue = "asc") String order) throws ServletException, IOException {
+        List<Map<String, Object>> result = new ArrayList<>();
+        List<DocumentDomainObject> documents;
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        List<Integer> documentStoredFieldsList;
+        SolrQuery solrQuery;
 
-            switch (documentDomainObject.getDocumentTypeId()) {
-                case DocumentTypeDomainObject.URL_ID: {
-                    result = new UrlDocumentEntity();
-
-                    if (!isPrototype) {
-                        asUrlEntity((UrlDocumentEntity) result, (UrlDocumentDomainObject) documentDomainObject);
-                    }
-                }
-                break;
-                case DocumentTypeDomainObject.FILE_ID: {
-                    result = new FileDocumentEntity();
-
-                    if (!isPrototype) {
-                        asFileEntity((FileDocumentEntity) result, (FileDocumentDomainObject) documentDomainObject);
-                    }
-                }
-                break;
-                case DocumentTypeDomainObject.TEXT_ID:
-                default: {
-                    result = new TextDocumentEntity();
-
-                    asTextEntity((TextDocumentEntity) result, (TextDocumentDomainObject) documentDomainObject);
-
-                    if (isPrototype) {
-                        ((TextDocumentEntity) result).template = ((TextDocumentDomainObject) documentDomainObject).getDefaultTemplateName();
-                    }
-                }
-                break;
-            }
-
-            prepareEntity(result, documentDomainObject);
-
-            if (isPrototype) {
-                asPrototype(result);
-            }
-
-            return result;
+        if (StringUtils.isNotBlank(term)) {
+            String query = Arrays.asList(new String[]{DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE,
+                    DocumentIndex.FIELD__META_TEXT, DocumentIndex.FIELD__KEYWORD, DocumentIndex.FIELD__ALIAS,
+            }).stream().map(field -> String.format("%s:*%s*", field, term)).collect(Collectors.joining(" "));
+            solrQuery = new SolrQuery(query);
         } else {
-            List<Map<String, Object>> result = new ArrayList<>();
-            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            List<DocumentDomainObject> documents = documentMapper.getDocuments(documentMapper.getAllDocumentIds());
-            for (DocumentDomainObject document : documents) {
-                Map<String, Object> objectMap = new HashMap<>();
-                objectMap.put("id", document.getId());
-                objectMap.put("name", document.getName());
-                objectMap.put("label", document.getHeadline());
-                objectMap.put("language", document.getLanguage().getName());
-                objectMap.put("alias", document.getAlias());
-                objectMap.put("type", document.getDocumentType().getName().toLocalizedString(Imcms.getUser()));
-                result.add(objectMap);
-
-            }
-            return result;
+            solrQuery = new SolrQuery("*:*");
         }
+
+        solrQuery.addSort(sort, SolrQuery.ORDER.valueOf(order));
+        documentStoredFieldsList = documentMapper.getDocumentIndex()
+                .search(solrQuery, Imcms.getUser()).documentStoredFieldsList()
+                .stream().map(DocumentStoredFields::id).collect(Collectors.toList());
+
+        documents = documentMapper.getDocuments(documentStoredFieldsList.stream().skip(skip).limit(take).collect(Collectors.toList()));
+
+        for (DocumentDomainObject document : documents) {
+            Map<String, Object> objectMap = new HashMap<>();
+            objectMap.put("id", document.getId());
+            objectMap.put("name", document.getName());
+            objectMap.put("status", document.getLifeCyclePhase().toString().toUpperCase().substring(0, 1));
+            objectMap.put("label", document.getHeadline());
+            objectMap.put("isArchived", document.isArchived());
+            objectMap.put("language", document.getLanguage().getName());
+            objectMap.put("alias", document.getAlias());
+            objectMap.put("type", document.getDocumentType().getName().toLocalizedString(Imcms.getUser()));
+            result.add(objectMap);
+        }
+        return result;
     }
 
 
     @RequestMapping(method = RequestMethod.POST)
-    protected Object doPut(HttpServletRequest req,
-                           @RequestParam("type") Integer type,
-                           @RequestParam(value = "parent", defaultValue = "1001") Integer parentDocumentId,
-                           @RequestParam("data") String data,
-                           @RequestParam(value = "file", required = false) MultipartFile file) throws ServletException, IOException {
+    protected Object createOrUpdateDocument(HttpServletRequest req,
+                                            @RequestParam("type") Integer type,
+                                            @RequestParam(value = "parent", defaultValue = "1001") Integer parentDocumentId,
+                                            @RequestParam("data") String data,
+                                            @RequestParam(value = "file", required = false) MultipartFile file) throws ServletException, IOException {
         Map<String, Object> result = new HashMap<>();
         try {
             DocumentDomainObject documentDomainObject;
@@ -177,6 +208,56 @@ public class DocumentApiServlet {
         return result;
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/{id}/copy")
+    protected Object copyDocument(@PathVariable("id") Integer id) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            Map<String, Object> map = new HashedMap<>();
+            DocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().copyDocument(Imcms.getServices().getDocumentMapper().getDocument(id), Imcms.getUser());
+
+            map.put("id", documentDomainObject.getId());
+            result.put("result", true);
+            result.put("data", map);
+        } catch (DocumentSaveException e) {
+            e.printStackTrace();
+            LOG.error("Problem during document creating", e);
+            result.put("result", false);
+        }
+
+        return result;
+    }
+
+
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    protected Object deleteDocument(
+            @PathVariable("id") Integer id,
+            @RequestParam(value = "action", required = false, defaultValue = "") String action
+    ) throws ServletException, IOException {
+        Map<String, Object> result = new HashMap<>();
+        switch (action) {
+            case "unarchive":
+            case "archive": {
+                DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(id);
+                document.setArchivedDatetime(action.equals("unarchive") ? null : new Date());
+                try {
+                    Imcms.getServices().getDocumentMapper().saveDocument(document, Imcms.getUser());
+                    result.put("result", true);
+                } catch (DocumentSaveException e) {
+                    e.printStackTrace();
+                    result.put("result", false);
+                }
+            }
+            break;
+            default: {
+                Imcms.getServices().getDocumentMapper().deleteDocument(id, Imcms.getUser());
+                result.put("result", true);
+            }
+        }
+        return result;
+    }
+
     protected void prepareDocument(DocumentEntity documentEntity, DocumentDomainObject documentDomainObject) {
         CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
 
@@ -192,6 +273,7 @@ public class DocumentApiServlet {
             documentDomainObject.setAlias(null);
         }
 
+        documentDomainObject.setSearchDisabled(documentEntity.isSearchDisabled);
         documentDomainObject.setTarget(documentEntity.target);
         documentDomainObject.setKeywords(documentEntity.keywords);
         documentDomainObject.setPublicationStatus(Document.PublicationStatus.of(documentEntity.status));
@@ -237,15 +319,31 @@ public class DocumentApiServlet {
     }
 
     protected void asFileDocument(FileDocumentDomainObject document, FileDocumentEntity entity, MultipartFile multipartFile) throws IOException, ServletException {
-        FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
-        fileDocumentFile.setFilename(multipartFile.getOriginalFilename());
+        if (StringUtils.isNotEmpty(entity.defaultFile)) {
+            document.setDefaultFileId(entity.defaultFile);
+        }
 
-        fileDocumentFile.setMimeType(multipartFile.getContentType());
-        File file = new File(Imcms.getServices().getConfig().getFilePath(), multipartFile.getOriginalFilename());
-        file.createNewFile();
-        multipartFile.transferTo(file);
-        fileDocumentFile.setInputStreamSource(new FileInputStreamSource(file));
-        document.addFile(multipartFile.getOriginalFilename(), fileDocumentFile);
+        Stream.of(entity.removedFiles).forEach(document::removeFile);
+
+        if (multipartFile != null) {
+            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
+            fileDocumentFile.setFilename(multipartFile.getOriginalFilename());
+
+            fileDocumentFile.setMimeType(multipartFile.getContentType());
+            File file = new File(Imcms.getServices().getConfig().getFilePath(), multipartFile.getOriginalFilename());
+
+            if (!file.createNewFile() &&
+                    document.getFile(multipartFile.getOriginalFilename()) != null) {
+                document.removeFile(multipartFile.getOriginalFilename());
+            }
+
+            multipartFile.transferTo(file);
+            fileDocumentFile.setInputStreamSource(new FileInputStreamSource(file));
+            document.addFile(multipartFile.getOriginalFilename(), fileDocumentFile);
+
+            document.setDefaultFileId(multipartFile.getOriginalFilename());
+        }
+
     }
 
     protected void asTextDocument(TextDocumentDomainObject document, TextDocumentEntity entity) {
@@ -285,11 +383,13 @@ public class DocumentApiServlet {
         CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
         RoleGetter roleGetter = Imcms.getServices().getRoleGetter();
 
+        entity.type = document.getDocumentTypeId();
         entity.languages = new HashMap<>();
         entity.alias = document.getAlias();
         entity.id = document.getId();
         entity.status = document.getPublicationStatus().asInt();
         entity.target = document.getTarget();
+        entity.isSearchDisabled = document.isSearchDisabled();
 
         entity.access = Stream
                 .of(document.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings())
@@ -337,7 +437,10 @@ public class DocumentApiServlet {
     }
 
     protected void asFileEntity(FileDocumentEntity entity, FileDocumentDomainObject document) {
-        entity.file = document.getDefaultFile().getFilename();
+        if (document.getFiles().size() > 0) {
+            entity.files = document.getFiles().keySet().stream().toArray(String[]::new);
+            entity.defaultFile = document.getDefaultFileId();
+        }
     }
 
     protected void asUrlEntity(UrlDocumentEntity entity, UrlDocumentDomainObject document) {
@@ -382,23 +485,17 @@ public class DocumentApiServlet {
         entity.keywords = new HashSet<>();
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    protected Object doDelete(@PathVariable("id") Integer id) throws ServletException, IOException {
-        Map<String, Object> result = new HashMap<>();
-        Imcms.getServices().getDocumentMapper().deleteDocument(id, Imcms.getUser());
-        result.put("result", true);
-        return result;
-    }
-
     private static class DocumentEntity {
         public Integer id;
         public Map<String, LanguageEntity> languages;
         public String alias;
+        public Integer type;
         public String target;
         public Integer status;
         public Map<Integer, Map> access;
         public Set<String> keywords;
         public Map<String, String[]> categories;
+        public boolean isSearchDisabled;
 
         private static class LanguageEntity {
             public String code;
@@ -428,7 +525,10 @@ public class DocumentApiServlet {
         public String url;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private static class FileDocumentEntity extends DocumentEntity {
-        public String file;
+        public String[] files;
+        public String[] removedFiles;
+        public String defaultFile;
     }
 }
