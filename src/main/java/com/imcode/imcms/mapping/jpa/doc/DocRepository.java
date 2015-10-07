@@ -12,9 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Arrays;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Repository
@@ -99,7 +101,17 @@ public class DocRepository {
 
 
     public void deleteFileDocContent(DocRef docIdentity) {
-        fileDocFileRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+        List<FileDocFile> fileDocFile = fileDocFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+
+        if (fileDocFile.size() == 0) {
+            return;
+        }
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaDelete<FileDocFile> query = cb.createCriteriaDelete(FileDocFile.class);
+        query.where(query.from(FileDocFile.class).get("id").in(fileDocFile.stream().map(FileDocFile::getId).collect(Collectors.toList())));
+
+        entityManager.createQuery(query).executeUpdate();
     }
 
 
@@ -125,37 +137,37 @@ public class DocRepository {
 
     public void deleteDocument(int docId) {
         Stream.of(
-            "DELETE FROM document_categories WHERE meta_id = ?",
-            "DELETE FROM imcms_text_doc_menu_items WHERE to_doc_id = ?",
-            "DELETE FROM imcms_text_doc_menu_items WHERE menu_id IN (SELECT doc_id FROM imcms_text_doc_menus WHERE doc_id = ?)",
-            "DELETE FROM imcms_text_doc_menus WHERE doc_id = ?",
-            "DELETE FROM text_docs WHERE meta_id = ?",
-            "DELETE FROM imcms_text_doc_texts WHERE doc_id = ?",
-            "DELETE FROM imcms_text_doc_images WHERE doc_id = ?",
-            "DELETE FROM roles_rights WHERE meta_id = ?",
-            "DELETE FROM user_rights WHERE meta_id = ?",
-            "DELETE FROM imcms_url_docs WHERE doc_id = ?",
-            "DELETE FROM fileupload_docs WHERE doc_id = ?",
-            "DELETE FROM imcms_html_docs WHERE doc_id = ?",
-            "DELETE FROM new_doc_permission_sets_ex WHERE meta_id = ?",
-            "DELETE FROM new_doc_permission_sets WHERE meta_id = ?",
-            "DELETE FROM doc_permission_sets_ex WHERE meta_id = ?",
-            "DELETE FROM doc_permission_sets WHERE meta_id = ?",
-            "DELETE FROM includes WHERE meta_id = ?",
-            "DELETE FROM includes WHERE included_meta_id = ?",
-            "DELETE FROM imcms_text_doc_texts_history WHERE doc_id = ?",
-            "DELETE FROM imcms_text_doc_images_history WHERE doc_id = ?",
-            "DELETE FROM imcms_text_doc_menu_items_history WHERE to_doc_id = ?",
-            "DELETE FROM imcms_text_doc_menu_items_history WHERE menu_id IN (SELECT menu_id FROM imcms_text_doc_menus_history WHERE doc_id = ?)",
-            "DELETE FROM imcms_text_doc_menus_history WHERE doc_id = ?",
-            "DELETE FROM document_properties WHERE meta_id = ?",
-            "DELETE FROM imcms_doc_i18n_meta WHERE doc_id = ?",
-            "DELETE FROM imcms_text_doc_contents WHERE loop_id IN (SELECT id FROM imcms_text_doc_content_loops WHERE doc_id = ?)",
-            "DELETE FROM imcms_text_doc_content_loops WHERE doc_id = ?",
-            "DELETE FROM imcms_doc_languages WHERE doc_id = ?",
-            "DELETE FROM imcms_doc_keywords WHERE doc_id = ?",
-            "DELETE FROM imcms_doc_versions WHERE doc_id = ?",
-            "DELETE FROM meta WHERE meta_id = ?"
+                "DELETE FROM document_categories WHERE meta_id = ?",
+                "DELETE FROM imcms_text_doc_menu_items WHERE to_doc_id = ?",
+                "DELETE FROM imcms_text_doc_menu_items WHERE menu_id IN (SELECT doc_id FROM imcms_text_doc_menus WHERE doc_id = ?)",
+                "DELETE FROM imcms_text_doc_menus WHERE doc_id = ?",
+                "DELETE FROM text_docs WHERE meta_id = ?",
+                "DELETE FROM imcms_text_doc_texts WHERE doc_id = ?",
+                "DELETE FROM imcms_text_doc_images WHERE doc_id = ?",
+                "DELETE FROM roles_rights WHERE meta_id = ?",
+                "DELETE FROM user_rights WHERE meta_id = ?",
+                "DELETE FROM imcms_url_docs WHERE doc_id = ?",
+                "DELETE FROM fileupload_docs WHERE doc_id = ?",
+                "DELETE FROM imcms_html_docs WHERE doc_id = ?",
+                "DELETE FROM new_doc_permission_sets_ex WHERE meta_id = ?",
+                "DELETE FROM new_doc_permission_sets WHERE meta_id = ?",
+                "DELETE FROM doc_permission_sets_ex WHERE meta_id = ?",
+                "DELETE FROM doc_permission_sets WHERE meta_id = ?",
+                "DELETE FROM includes WHERE meta_id = ?",
+                "DELETE FROM includes WHERE included_meta_id = ?",
+                "DELETE FROM imcms_text_doc_texts_history WHERE doc_id = ?",
+                "DELETE FROM imcms_text_doc_images_history WHERE doc_id = ?",
+                "DELETE FROM imcms_text_doc_menu_items_history WHERE to_doc_id = ?",
+                "DELETE FROM imcms_text_doc_menu_items_history WHERE menu_id IN (SELECT menu_id FROM imcms_text_doc_menus_history WHERE doc_id = ?)",
+                "DELETE FROM imcms_text_doc_menus_history WHERE doc_id = ?",
+                "DELETE FROM document_properties WHERE meta_id = ?",
+                "DELETE FROM imcms_doc_i18n_meta WHERE doc_id = ?",
+                "DELETE FROM imcms_text_doc_contents WHERE loop_id IN (SELECT id FROM imcms_text_doc_content_loops WHERE doc_id = ?)",
+                "DELETE FROM imcms_text_doc_content_loops WHERE doc_id = ?",
+                "DELETE FROM imcms_doc_languages WHERE doc_id = ?",
+                "DELETE FROM imcms_doc_keywords WHERE doc_id = ?",
+                "DELETE FROM imcms_doc_versions WHERE doc_id = ?",
+                "DELETE FROM meta WHERE meta_id = ?"
         ).forEach(query -> entityManager.createNativeQuery(query).setParameter(1, docId).executeUpdate());
     }
 

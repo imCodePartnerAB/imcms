@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Used internally by DocumentMapper.
@@ -455,7 +457,15 @@ public class DocumentSaver {
         meta.setPublicationStatusInt(metaDO.getPublicationStatus().asInt());
         meta.setPublisherId(metaDO.getPublisherId());
         meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(metaDO.getRestrictedOneMorePrivilegedThanRestrictedTwo());
-        //e.setRoleIdToPermissionSetIdMap()
+        meta.setRoleIdToPermissionSetIdMap(
+                Stream.of(metaDO.getRoleIdToDocumentPermissionSetTypeMappings().getMappings())
+                        .collect(
+                                Collectors.toMap(
+                                        it -> it.getRoleId().getRoleId(),
+                                        it -> it.getDocumentPermissionSetType().getId()
+                                )
+                        )
+        );
         meta.setSearchDisabled(metaDO.getSearchDisabled());
         meta.setTarget(metaDO.getTarget());
 
