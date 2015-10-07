@@ -124,8 +124,12 @@ JSFormBuilder.Classes.BaseAdapter.prototype = {
     _element: {},
     _reference: null,
     end: function () {
-        if (this._label)
+        var result = this._parent._append(this._element);
+
+        if (this._label) {
             this._parent._append(this._label);
+        }
+
         if (this._reference) {
             var that = this;
             if (!this._parent._localScope) {
@@ -137,7 +141,8 @@ JSFormBuilder.Classes.BaseAdapter.prototype = {
                 }
             }
         }
-        return this._parent._append(this._element);
+
+        return result;
     }
 };
 
@@ -302,7 +307,7 @@ JSFormBuilder.Mixins.Table = {
         var row = document.createElement("tr");
         if (arguments.length === 1 && typeof arguments[0] === typeof 1)
             return this._body.children[arguments[0]];
-        else if (arguments[0] instanceof  Array)
+        else if (arguments[0] instanceof Array)
             this._fillFromArray(row, arguments[0]);
         else if (arguments[0] instanceof Object && Object.keys(arguments).length > 0 && arguments.length == 1)
             this._fillFromObject(row, arguments[0]);
@@ -358,7 +363,7 @@ JSFormBuilder.Mixins.Table = {
         if (jQuery) {
             jQuery(element).append(data);
         }
-        else if (data instanceof  HTMLElement)
+        else if (data instanceof HTMLElement)
             element.appendChild(data);
         else
             element.innerHTML = data;
