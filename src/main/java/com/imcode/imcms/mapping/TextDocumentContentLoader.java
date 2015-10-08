@@ -2,28 +2,25 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.Loop;
-import com.imcode.imcms.mapping.container.*;
-import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
+import com.imcode.imcms.mapping.jpa.doc.Version;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import imcode.util.image.Resize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
 
-import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toMap;
 
 @Service
@@ -38,6 +35,9 @@ public class TextDocumentContentLoader {
 
     @Inject
     private TextRepository textRepository;
+
+    @Inject
+    private TextHistoryRepository textHistoryRepository;
 
     @Inject
     private ImageRepository imageRepository;
@@ -56,7 +56,7 @@ public class TextDocumentContentLoader {
 
     @Inject
     private IncludeRepository includeRepository;
-    
+
     @Inject
     private DocumentGetter menuItemDocumentGetter;
 
@@ -136,6 +136,28 @@ public class TextDocumentContentLoader {
         return toDomainObject(
                 textRepository.findFirst(version, language, loopEntryRefJpa)
         );
+    }
+
+    public Set<TextHistory> getTextHistory(int docId, int textNo) {
+        return textHistoryRepository.findAllByDocumentAndTextNo(docId, textNo);
+    }
+
+    /**
+     * Return text history based on special document {@link Version}, {@link Language}, and text id
+     *
+     * @param docRef {@link DocRef} item
+     * @param textNo text id
+     * @return {@link Set<TextHistory>} of text history
+     * @see Version
+     * @see Language
+     * @see DocRef
+     * @see imcode.server.document.DocumentDomainObject
+     */
+    public Set<TextHistory> getTextHistory(DocRef docRef, int textNo) {
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+
+        return textHistoryRepository.findAllByVersionAndLanguageAndNo(version, language, textNo);
     }
 
     public TextDomainObject getText(DocRef docRef, int textNo) {
@@ -237,7 +259,6 @@ public class TextDocumentContentLoader {
     }
 
 
-
     public Map<Integer, Loop> getLoops(VersionRef versionRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
@@ -249,7 +270,6 @@ public class TextDocumentContentLoader {
 
         return toApiObject(loopRepository.findByVersionAndNo(version, loopNo));
     }
-
 
 
     public Map<Integer, MenuDomainObject> getMenus(VersionRef versionRef) {
