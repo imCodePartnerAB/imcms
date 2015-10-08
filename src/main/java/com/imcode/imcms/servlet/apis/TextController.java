@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,7 +49,7 @@ public class TextController {
                                  @RequestParam("locale") String locale) {
         TextDocumentContentLoader contentLoader = Imcms.getServices().getManagedBean(TextDocumentContentLoader.class);
         DocRef docRef = DocRef.of(imcmsServices.getDocumentMapper().getDocument(docId).getVersionRef(), locale);
-        Set<TextHistory> textHistories = contentLoader.getTextHistory(docRef, textNo);
+        Collection<TextHistory> textHistories = contentLoader.getTextHistory(docRef, textNo);
 
         return textHistories.stream().map(it -> new Object() {
             public String modifiedBy = it.getModifiedBy().getFirstName();
@@ -64,6 +66,7 @@ public class TextController {
 
         UserDomainObject user = Imcms.getUser();
         TextDocumentDomainObject doc = imcmsServices.getDocumentMapper().getWorkingDocument(docId);
+
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)
                 user.getPermissionSetFor(doc);
 
@@ -94,9 +97,19 @@ public class TextController {
         }
     }
 
+    /**
+     * Provide simple validation api.
+     * @param content Text, that should be validated by W3C
+     * @return anonymous object entity
+     * @throws IOException
+     *
+     * @see ValidatorBuilder
+     * @see ValidationResponse
+     * @see com.jcabi.w3c.Validator
+     * @see Defect
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/validate")
     public Object validateText(@RequestParam("content") String content) throws IOException {
-        // content = URLDecoder.decode(content, "UTF8");
         content = String.format("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>Test</title></head><body>%s</body></html>", content);
         ValidationResponse response = new ValidatorBuilder().html().validate(content);
         Function<Defect, Object> mapper = it -> new Object() {
