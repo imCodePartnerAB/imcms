@@ -2,10 +2,12 @@ package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.TextDocumentContentLoader;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextHistory;
 import com.jcabi.w3c.Defect;
 import com.jcabi.w3c.ValidationResponse;
 import com.jcabi.w3c.ValidatorBuilder;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,6 +41,20 @@ public class TextController {
         imcmsServices = Imcms.getServices();
     }
 
+    @RequestMapping
+    public Object getTextHistory(@RequestParam("meta") int docId,
+                                 @RequestParam("no") int textNo,
+                                 @RequestParam("locale") String locale) {
+        TextDocumentContentLoader contentLoader = Imcms.getServices().getManagedBean(TextDocumentContentLoader.class);
+        DocRef docRef = DocRef.of(imcmsServices.getDocumentMapper().getDocument(docId).getVersionRef(), locale);
+        Set<TextHistory> textHistories = contentLoader.getTextHistory(docRef, textNo);
+
+        return textHistories.stream().map(it -> new Object() {
+            public String modifiedBy = it.getModifiedBy().getFirstName();
+            public String modifiedDate = it.getModifiedDt().toString();
+        }).collect(Collectors.toList());
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     protected void saveText(@RequestParam("content") String content,
                             @RequestParam("locale") String locale,
@@ -49,7 +64,6 @@ public class TextController {
 
         UserDomainObject user = Imcms.getUser();
         TextDocumentDomainObject doc = imcmsServices.getDocumentMapper().getWorkingDocument(docId);
-
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)
                 user.getPermissionSetFor(doc);
 
@@ -82,7 +96,7 @@ public class TextController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/validate")
     public Object validateText(@RequestParam("content") String content) throws IOException {
-       // content = URLDecoder.decode(content, "UTF8");
+        // content = URLDecoder.decode(content, "UTF8");
         content = String.format("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>Test</title></head><body>%s</body></html>", content);
         ValidationResponse response = new ValidatorBuilder().html().validate(content);
         Function<Defect, Object> mapper = it -> new Object() {
