@@ -35,18 +35,21 @@ public class FolderController {
         path = path.replaceFirst("^/content/(.*?)/", "/");
         int lastDelimiter = path.lastIndexOf('/');
         path = path.substring(0, lastDelimiter);
+
         return path;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = {"/**/"})
     public Directory read(HttpServletRequest request) {
         String path = folderFromRequest(request);
+
         return new Directory(Imcms.getServices().getConfig().getImagePath()).find(path);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = {"/**/{name}"})
     public boolean create(HttpServletRequest request, @PathVariable("name") String name) throws IOException {
         String path = folderFromRequest(request);
+
         return new File(new Directory(Imcms.getServices().getConfig().getImagePath())
                 .find(path)
                 .getSource(), name).mkdir();
@@ -59,6 +62,7 @@ public class FolderController {
         String path = folderFromRequest(request);
         Directory base = new Directory(Imcms.getServices().getConfig().getImagePath());
         File folderTo = base.find(URLDecoder.decode(body.get("to").get(0), "UTF-8")).getSource();
+
         return new File(base
                 .find(path)
                 .getSource(), name).renameTo(new File(folderTo, name));
@@ -73,6 +77,7 @@ public class FolderController {
                 .getSource()
                 .listFiles(file -> file.isDirectory() && namePattern.matcher(file.getName()).matches()))
                 .forEach(File::delete);
+
         return true;
     }
 

@@ -13,6 +13,7 @@ import imcode.server.document.index.DocumentStoredFields;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileInputStreamSource;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
@@ -34,12 +35,21 @@ import java.util.stream.Stream;
 
 /**
  * Realise API for working with  {@link DocumentDomainObject}
+ *
+ * @see RestController
  */
 @RestController
 @RequestMapping("/document")
 public class DocumentController {
     private static final Logger LOG = Logger.getLogger(DocumentController.class);
 
+    /**
+     * Provide API access to special document
+     *
+     * @param id          {@link DocumentDomainObject} id
+     * @param isPrototype flag that several kind of fields in result entity should be empty
+     * @return {@link DocumentEntity}
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     public Object getDocumentById(@PathVariable("id") Integer id,
                                   @RequestParam(value = "isPrototype", required = false) boolean isPrototype) {
@@ -85,13 +95,28 @@ public class DocumentController {
         return result;
     }
 
-
+    /**
+     * Provide API access to find special documents based on special term.
+     *
+     * @param term  special term represented by word, or symbols sequence. It can be document id, or keyword, header,
+     *              even special word, that contained in document text content
+     * @param skip  Optional parameter, that indicate count of skipped document from list. Default value = 0
+     * @param take  Optional parameter, that indicate how many document should be taken. Default value = 25
+     * @param sort  Optional parameter, that indicate the field field on which will be sorted
+     * @param order Optional parameter, that indicate document ordering in list. By default is natural ordering
+     * @return List of documents
+     * @throws ServletException
+     * @throws IOException
+     * @see SolrQuery
+     * @see DocumentIndex
+     * @see DocumentIndex#search(SolrQuery, UserDomainObject)
+     */
     @RequestMapping(method = RequestMethod.GET)
     protected Object getDocumentsList(@RequestParam(value = "filter", required = false) String term,
-                           @RequestParam(value = "skip", required = false, defaultValue = "0") int skip,
-                           @RequestParam(value = "take", required = false, defaultValue = "25") int take,
-                           @RequestParam(value = "sort", required = false, defaultValue = "meta_id") String sort,
-                           @RequestParam(value = "order", required = false, defaultValue = "asc") String order) throws ServletException, IOException {
+                                      @RequestParam(value = "skip", required = false, defaultValue = "0") int skip,
+                                      @RequestParam(value = "take", required = false, defaultValue = "25") int take,
+                                      @RequestParam(value = "sort", required = false, defaultValue = "meta_id") String sort,
+                                      @RequestParam(value = "order", required = false, defaultValue = "asc") String order) throws ServletException, IOException {
         List<Map<String, Object>> result = new ArrayList<>();
         List<DocumentDomainObject> documents;
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
@@ -129,7 +154,21 @@ public class DocumentController {
         return result;
     }
 
-
+    /**
+     * Provide API access to creating|updating document.
+     * Document creating base on several parameters as document type({@link UrlDocument}, {@link FileDocument},
+     * {@link TextDocument}), parent document.
+     * {@link DocumentEntity} represent web object, that connect client side with server side
+     *
+     * @param req
+     * @param type
+     * @param parentDocumentId
+     * @param data
+     * @param file
+     * @return
+     * @throws ServletException
+     * @throws IOException
+     */
     @RequestMapping(method = RequestMethod.POST)
     protected Object createOrUpdateDocument(HttpServletRequest req,
                                             @RequestParam("type") Integer type,
@@ -208,6 +247,12 @@ public class DocumentController {
         return result;
     }
 
+    /**
+     * Provide API access to create copy of special document
+     *
+     * @param id id of document that should be copied
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/copy")
     protected Object copyDocument(@PathVariable("id") Integer id) {
         Map<String, Object> result = new HashMap<>();
@@ -229,7 +274,15 @@ public class DocumentController {
     }
 
 
-
+    /**
+     * Provide API access to several operations such as document deleting, archiving and unarchiving
+     *
+     * @param id     document id
+     * @param action special flag, that identify type of operation
+     * @return
+     * @throws ServletException
+     * @throws IOException
+     */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     protected Object deleteDocument(
             @PathVariable("id") Integer id,
@@ -258,6 +311,30 @@ public class DocumentController {
         return result;
     }
 
+
+    protected Map<DocumentLanguage, DocumentCommonContent> getContentMap(DocumentEntity entity) {
+        Map<DocumentLanguage, DocumentCommonContent> contentMap = new HashMap<>();
+        for (DocumentLanguage language : Imcms.getServices().getDocumentLanguages().getAll()) {
+            DocumentEntity.LanguageEntity languageEntity = entity.languages.get(language.getName());
+            if (languageEntity.enabled)
+                contentMap.put(
+                        language,
+                        DocumentCommonContent.builder()
+                                .headline(languageEntity.title)
+                                .menuImageURL(languageEntity.image)
+                                .menuText(languageEntity.menuText)
+                                .build()
+                );
+        }
+        return contentMap;
+    }
+
+    /**
+     * Provide basic document preparation base on {@link DocumentEntity}
+     *
+     * @param documentEntity
+     * @param documentDomainObject
+     */
     protected void prepareDocument(DocumentEntity documentEntity, DocumentDomainObject documentDomainObject) {
         CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
 
@@ -301,23 +378,15 @@ public class DocumentController {
         );
     }
 
-    protected Map<DocumentLanguage, DocumentCommonContent> getContentMap(DocumentEntity entity) {
-        Map<DocumentLanguage, DocumentCommonContent> contentMap = new HashMap<>();
-        for (DocumentLanguage language : Imcms.getServices().getDocumentLanguages().getAll()) {
-            DocumentEntity.LanguageEntity languageEntity = entity.languages.get(language.getName());
-            if (languageEntity.enabled)
-                contentMap.put(
-                        language,
-                        DocumentCommonContent.builder()
-                                .headline(languageEntity.title)
-                                .menuImageURL(languageEntity.image)
-                                .menuText(languageEntity.menuText)
-                                .build()
-                );
-        }
-        return contentMap;
-    }
-
+    /**
+     * Prepare {@link FileDocumentDomainObject}
+     *
+     * @param document      prepared document
+     * @param entity        presented entity
+     * @param multipartFile file, that should be added to document
+     * @throws IOException
+     * @throws ServletException
+     */
     protected void asFileDocument(FileDocumentDomainObject document, FileDocumentEntity entity, MultipartFile multipartFile) throws IOException, ServletException {
         if (StringUtils.isNotEmpty(entity.defaultFile)) {
             document.setDefaultFileId(entity.defaultFile);
@@ -346,6 +415,12 @@ public class DocumentController {
 
     }
 
+    /**
+     * Prepare {@link TextDocumentDomainObject} using {@link TextDocumentEntity}
+     *
+     * @param document current document
+     * @param entity   presented entity
+     */
     protected void asTextDocument(TextDocumentDomainObject document, TextDocumentEntity entity) {
         TextDocumentPermissionSetDomainObject permissionSetDomainObject1 = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_1);
         TextDocumentPermissionSetDomainObject permissionSetDomainObject2 = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_2);
@@ -375,10 +450,23 @@ public class DocumentController {
         document.setDefaultTemplateId(entity.defaultTemplate);
     }
 
+    /**
+     * Prepare {@link UrlDocumentDomainObject} using {@link UrlDocumentEntity}
+     *
+     * @param document current document
+     * @param entity   presented entity
+     */
     protected void asUrlDocument(UrlDocumentDomainObject document, UrlDocumentEntity entity) {
         document.setUrl(entity.url);
     }
 
+
+    /**
+     * Prepare Web-API entity base on special {@link DocumentDomainObject}
+     *
+     * @param entity   document entity
+     * @param document current document
+     */
     protected void prepareEntity(DocumentEntity entity, DocumentDomainObject document) {
         CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
         RoleGetter roleGetter = Imcms.getServices().getRoleGetter();
@@ -436,6 +524,12 @@ public class DocumentController {
         }
     }
 
+    /**
+     *
+     *
+     * @param entity
+     * @param document
+     */
     protected void asFileEntity(FileDocumentEntity entity, FileDocumentDomainObject document) {
         if (document.getFiles().size() > 0) {
             entity.files = document.getFiles().keySet().stream().toArray(String[]::new);
@@ -485,6 +579,10 @@ public class DocumentController {
         entity.keywords = new HashSet<>();
     }
 
+
+    /**
+     * Web-API entity
+     */
     private static class DocumentEntity {
         public Integer id;
         public Map<String, LanguageEntity> languages;

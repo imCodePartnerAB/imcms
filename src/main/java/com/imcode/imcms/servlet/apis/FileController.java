@@ -25,13 +25,21 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Created by Shadowgun on 23.03.2015.
+ * Current class provide access to file system inside ImCMS
  */
 @RestController
 @RequestMapping("/content/files")
 public class FileController {
     private static final String FILE_FILTER_PATTERN = "^%s\\.(%s)$";
 
+    /**
+     * Create RegExp {@link Pattern} file filter based on special file name and extension
+     *
+     * @param filename File name
+     * @param extension File extension
+     *
+     * @return Return created {@link Pattern}
+     */
     private static Pattern filterOf(String filename, String extension) {
         return Pattern
                 .compile(
@@ -42,6 +50,22 @@ public class FileController {
                 );
     }
 
+    /**
+     * List files from special folder, that presented in request.
+     * Path to folder presented as a part of url, for example:
+     *
+     *  http:localhost:8080/content/files/images/some/folder
+     * {         |         }{      |     }{        |        }
+     * {  server  address  }{  API part  }{   folder path   }
+     *
+     * @param request Request object {@link HttpServletRequest}
+     * @param extension File extension. Using for find files, with specify extension.
+     *                  If extension equals to `*` then all files extensions are valid
+     * @param filename File name. Using for find files, with specify name.
+     *                 If file name equals to `*` then all files names are valid
+     *
+     * @return Array of {@link File}
+     **/
     File[] readFiles(HttpServletRequest request, String extension, String filename) {
         final Pattern fileFilterPattern = filterOf(filename, extension);
         String path = FolderController.folderFromRequest(request);
@@ -50,6 +74,7 @@ public class FileController {
                 .getSource()
                 .listFiles((dir, item) -> fileFilterPattern.matcher(item).matches());
     }
+
 
     @RequestMapping(method = RequestMethod.GET, value = {"/**/{filename}.{extension}"})
     public AbstractFileSource[] read(HttpServletRequest request,

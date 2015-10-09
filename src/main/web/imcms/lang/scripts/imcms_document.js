@@ -1151,12 +1151,12 @@ Imcms.Document.Viewer.prototype = {
         $.each(data.categories, function (categoryType, selectedCategories) {
             selectedCategories.forEach(function (selectedCategory) {
                 $source
-                    .find("select[name=" + categoryType + "]")
+                    .find("select[name='" + categoryType + "']")
                     .find("option[value='" + selectedCategory + "']")
                     .attr("selected", "");
             });
 
-            $($source.find("select[name=" + categoryType + "]")).multiselect();
+            $($source.find("select[name='" + categoryType + "']")).multiselect();
         });
         if (this._options.type === 2 && data.permissions) {
             $.each(data.permissions, function (index, value) {

@@ -159,6 +159,26 @@ public class TextDocumentContentLoader {
 
         return textHistoryRepository.findAllByVersionAndLanguageAndNo(version, language, textNo);
     }
+    /**
+     * Return text history based on special document {@link Version}, {@link Language},{@link LoopEntryRef} and text id
+     *
+     * @param docRef {@link DocRef} item
+     * @param textNo text id
+     * @return {@link Collection<TextHistory>} of text history
+     *
+     * @see Version
+     * @see Language
+     * @see DocRef
+     * @see LoopEntryRef
+     * @see imcode.server.document.DocumentDomainObject
+     */
+    public Collection<TextHistory> getTextHistory(DocRef docRef, LoopEntryRef loopEntryRef, int textNo) {
+        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+
+        return textHistoryRepository.findAllByVersionAndLanguageAndLoopEntryRefAndNo(version, language, loopEntryRef, textNo);
+    }
+
 
     public TextDomainObject getText(DocRef docRef, int textNo) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());

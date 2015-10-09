@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
@@ -32,6 +31,9 @@ import java.util.stream.Collectors;
 
 /**
  * Created by Shadowgun on 23.12.2014.
+ */
+/*
+ todo: Since {@link RequestMapping} can get in request path parameters like "/{id}/{someparam1}/{someparam2}" it would be better to REPLACE  {@link RequestParam} with {@link PathParam}
  */
 @RestController
 @RequestMapping("/text")
@@ -43,26 +45,60 @@ public class TextController {
         imcmsServices = Imcms.getServices();
     }
 
+    /**
+     * Provide API access to text history
+     * @param docId {@link imcode.server.document.DocumentDomainObject} id
+     * @param textNo text id
+     * @param locale Content language. For more information about languages see {@link com.imcode.imcms.mapping.jpa.doc.Language} and {@link imcode.server.LanguageMapper}
+     * @param loopEntryRef {@link LoopEntryRef} represented in text form
+     * @return List of textHistory entities
+     *
+     * @see TextDocumentContentLoader#getTextHistory(DocRef, int)
+     * @see TextDocumentContentLoader#getTextHistory(DocRef, com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef, int)
+     */
     @RequestMapping
     public Object getTextHistory(@RequestParam("meta") int docId,
                                  @RequestParam("no") int textNo,
-                                 @RequestParam("locale") String locale) {
+                                 @RequestParam("locale") String locale,
+                                 @RequestParam(value = "loopentryref", required = false) String loopEntryRef) {
         TextDocumentContentLoader contentLoader = Imcms.getServices().getManagedBean(TextDocumentContentLoader.class);
         DocRef docRef = DocRef.of(imcmsServices.getDocumentMapper().getDocument(docId).getVersionRef(), locale);
-        Collection<TextHistory> textHistories = contentLoader.getTextHistory(docRef, textNo);
+        LoopEntryRef loopEntryRefOpt = null;
+        if (!StringUtils.isEmpty(loopEntryRef)) {
+            String[] items = loopEntryRef.split("_", 2);
+            if (items.length > 1)
+                loopEntryRefOpt = LoopEntryRef.of(Integer.parseInt(items[0]), Integer.parseInt(items[1]));
+        }
+        Collection<TextHistory> textHistories = loopEntryRefOpt == null ?
+                contentLoader.getTextHistory(docRef, textNo) :
+                contentLoader.getTextHistory(docRef,
+                        new com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef(loopEntryRefOpt.getLoopNo(), loopEntryRefOpt.getEntryNo()),
+                        textNo);
 
         return textHistories.stream().map(it -> new Object() {
             public String modifiedBy = it.getModifiedBy().getFirstName();
             public String modifiedDate = it.getModifiedDt().toString();
+            public String text = it.getText();
         }).collect(Collectors.toList());
     }
 
+    /**
+     * Save passed text into database. Also passed text saved into {@link TextHistory} table
+     * @param content Content to save
+     * @param locale Content language. For more information about languages see {@link com.imcode.imcms.mapping.jpa.doc.Language} and {@link imcode.server.LanguageMapper}
+     * @param docId {@link imcode.server.document.DocumentDomainObject} id
+     * @param textNo text id
+     * @param loopEntryRef {@link LoopEntryRef} represented in text form
+     *
+     * @see VersionRef
+     *
+     */
     @RequestMapping(method = RequestMethod.POST)
     protected void saveText(@RequestParam("content") String content,
                             @RequestParam("locale") String locale,
                             @RequestParam("meta") int docId,
                             @RequestParam("no") int textNo,
-                            @RequestParam(value = "loopEntryRef", required = false) String loopEntryRef) {
+                            @RequestParam(value = "loopentryref", required = false) String loopEntryRef) {
 
         UserDomainObject user = Imcms.getUser();
         TextDocumentDomainObject doc = imcmsServices.getDocumentMapper().getWorkingDocument(docId);
@@ -99,6 +135,7 @@ public class TextController {
 
     /**
      * Provide simple validation api.
+     *
      * @param content Text, that should be validated by W3C
      * @return anonymous object entity
      * @throws IOException

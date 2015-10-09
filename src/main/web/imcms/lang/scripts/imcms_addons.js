@@ -123,6 +123,7 @@ Array.prototype.remove = function (value) {
  */
 CKEDITOR.define("confirmChanges", {});
 CKEDITOR.define("validateText", {});
+CKEDITOR.define("getTextHistory", {});
 
 CKEDITOR.plugins.add("documentSaver", {
     init: function (editor) {
@@ -416,6 +417,120 @@ CKEDITOR.dialog.add("w3cValidationResultDialog", function (e) {
                     {
                         type: 'html',
                         html: $("<div>").append($wrapper).html()
+                    }
+                ]
+            }
+        ]
+    };
+});
+
+CKEDITOR.plugins.add("textHistory", {
+    init: function (editor) {
+        var textHistoryCommand = function (e) {
+            var $button = $('.' + e.id).find('.cke_button__texthistory_icon')
+                .css({
+                    backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_loader.gif" + ")"
+                });
+            //todo: Add message if content is invalid
+            CKEDITOR.fire("getTextHistory", {
+                callback: function (data) {
+                    $button.css({
+                        backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_history.png"  + ")"
+                    });
+
+                    $(e.element.$).data("textHistoryData", data);
+                    e.execCommand("textHistoryDialog", data);
+                }
+            }, e);
+        };
+        var textHistoryCommandDefinition =
+        {
+            // This command works in both editing modes.
+            modes: {wysiwyg: 1, source: 1},
+
+            // This command will not auto focus editor before execution.
+            editorFocus: false,
+
+            // This command requires no undo snapshot.
+            canUndo: false,
+
+            exec: textHistoryCommand
+        };
+
+        editor.addCommand("textHistory", textHistoryCommandDefinition);
+        editor.addCommand("textHistoryDialog", new CKEDITOR.dialogCommand("textHistory"));
+
+        editor.ui.addButton('textHistory',
+            {
+                label: 'Text History',
+                command: "textHistory",
+                icon: "images/ic_history.png"
+            });
+    }
+});
+
+CKEDITOR.dialog.add("textHistory", function (e) {
+    var $wrapper = $("<div>").addClass("imcms-text-history"),
+        $leftPanel = $("<div>").addClass("imcms-left-panel").appendTo($wrapper),
+        $content = $("<div>").addClass(".imcms-content").appendTo($wrapper),
+        data = $(e.element.$).data("textHistoryData").map(function (it) {
+            it.modifiedDate = new Date(it.modifiedDate);
+
+            return it;
+        }).sort(function (a, b) {
+            return (a.modifiedDate > b.modifiedDate ? -1 : (a.modifiedDate == b.modifiedDate ? 0 : 1));
+        }),
+        groupedData = {},
+        $selected = undefined,
+        selectedItem;
+
+
+    data.forEach(function (it) {
+        var key = it.modifiedDate.toLocaleDateString();
+
+        if (!(key in groupedData)) {
+            groupedData[key] = [];
+        }
+
+        groupedData[key].push(it);
+    });
+
+    $.each(groupedData, function (key, list) {
+        $("<div>").addClass("imcms-separator").text(key).appendTo($leftPanel);
+
+        list.forEach(function (item) {
+            $("<div>").appendTo($leftPanel).append(item.modifiedBy + " | " + item.modifiedDate.toLocaleTimeString()).click(function () {
+                if ($selected) {
+                    $selected.removeClass("selected");
+                }
+
+                $content.html(item.text);
+
+                $selected = $(this).addClass("selected");
+                selectedItem = item;
+            });
+        })
+    });
+
+
+    return {
+        title: 'Text History Dialog',
+        width: 600,
+        height: 400,
+        onOk: function () {
+            e.setData(selectedItem.text);
+        },
+        contents: [
+            {
+                id: 'textHistory',
+                label: 'Text History',
+                elements: [
+                    {
+                        type: 'html',
+                        onLoad: function () {
+                            $("#" + this.domId).append($wrapper)
+                        },
+                        html: ""
                     }
                 ]
             }

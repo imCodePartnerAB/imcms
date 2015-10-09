@@ -12,6 +12,14 @@ Imcms.Text.API = function () {
 Imcms.Text.API.prototype = {
     path: "/" + Imcms.contextPath + "api/text",
 
+    get: function (request, callback) {
+        $.ajax({
+            url: this.path,
+            type: "GET",
+            data: request,
+            success: callback
+        })
+    },
     update: function (request, callback) {
         $.ajax({
             url: this.path,
@@ -42,6 +50,7 @@ Imcms.Text.Editor.prototype = {
         CKEDITOR.on('instanceCreated', $.proxy(this, "_onCreated"));
         CKEDITOR.on("confirmChanges", $.proxy(this, "_onConfirm"));
         CKEDITOR.on("validateText", $.proxy(this, "_onValidateText"));
+        CKEDITOR.on("getTextHistory", $.proxy(this, "_onGetTextHistory"));
 
         $("[contenteditable='true']").each(function (position, element) {
             element = $(element);
@@ -85,6 +94,13 @@ Imcms.Text.Editor.prototype = {
         editor.on('configLoaded', $.proxy(this, "_onEditorLoaded"));
 
     },
+    _onGetTextHistory: function (event) {
+        var data = jQuery(event.editor.element.$).data().prettify();
+
+        data.meta = Imcms.document.meta;
+
+        this._api.get(data, event.data.callback);
+    },
     _onValidateText: function (event) {
         this._api.validate({content: event.editor.getData()}, event.data.callback);
     },
@@ -95,7 +111,7 @@ Imcms.Text.Editor.prototype = {
         editor.config.removePlugins = 'colorbutton,find,' +
             'forms,newpage,removeformat,' +
             'specialchar,stylescombo,templates';
-        editor.config.extraPlugins = editor.config.extraPlugins + ",documentSaver,fileBrowser,link,w3cValidator,maximize,toolbarswitch";
+        editor.config.extraPlugins = editor.config.extraPlugins + ",documentSaver,fileBrowser,link,textHistory,w3cValidator,maximize,toolbarswitch";
         editor.config.toolbar_minToolbar = [
             ['Bold', 'Italic', 'Underline', 'Strike'],
             ['NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Outdent', 'Indent'],
@@ -105,7 +121,7 @@ Imcms.Text.Editor.prototype = {
             ['TextColor', 'BGColor'],
             // ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],
             // ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
-            ['w3cValidate', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
+            ['w3cValidate', 'textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
         ]; // Custom minimized toolbar config
         editor.config.toolbar_plain = [
             ['saveData', 'confirm', 'cancel']
@@ -120,7 +136,7 @@ Imcms.Text.Editor.prototype = {
             ['Source'],
             ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],
             ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
-            ['w3cValidate', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
+            ['w3cValidate', 'textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
         ];
         editor.toolbarLocation = "top";
         editor.config.toolbar = editor.elementMode == 3 ? (editor.element.data("contenttype") === "html" ? 'minToolbar' : "plain") : 'maxToolbar';

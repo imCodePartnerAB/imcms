@@ -563,9 +563,9 @@ Imcms.Menu.Loader.prototype = {
     updateMenu: function () {
         this._api.update.apply(this._api, arguments);
     },
-    delete: function () {
+   /* delete: function () {
         this._api.delete.apply(this._api, arguments);
-    },
+    },*/
     getDocument: function (id, callback) {
         Imcms.Editors.Document.getDocument(id, callback);
     },
@@ -607,13 +607,13 @@ Imcms.Menu.API.prototype = {
         })
     },
 
-    create: function (request, response) {
+    /*create: function (request, response) {
         $.ajax({
             url: this.path + request.meta + "-" + request.no,
             type: "POST",
             data: request,
             success: response
         })
-    }
+    }*/
 
 };

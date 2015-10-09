@@ -52,6 +52,50 @@ String cp = request.getContextPath() ;
     padding: 10px !important;
 }
 
+.imcms-text-history,
+.imcms-text-history > .imcms-content,
+.imcms-text-history > .imcms-left-panel {
+    height: 400px;
+}
+
+.imcms-text-history > .imcms-left-panel {
+    float: left;
+    width: 30%;
+    overflow: auto;
+    height: 420px;
+    margin: -20px 5px -20px -10px;
+}
+
+.imcms-text-history > .imcms-left-panel .selected {
+    background-color: #0091e1;
+    color: #fff;
+}
+
+.imcms-text-history > .imcms-left-panel > div:not(.imcms-separator) {
+    padding: 5px;
+}
+
+.imcms-text-history > .imcms-left-panel > div:hover:not(.imcms-separator) {
+    background-color: #ffff64;
+    color: #000;
+}
+
+.imcms-text-history > .imcms-left-panel > .imcms-separator {
+    padding: 10px 0 0 0;
+    font-weight: bold;
+    border-bottom: solid 1px black;
+}
+
+.imcms-text-history > .imcms-content {
+    max-height: 400px;
+    width: 70%;
+    max-width: 70%;
+}
+
+.imcms-text-history > .imcms-content * {
+    text-align: center;
+}
+
 <%--BASE--%>
 
 <%--

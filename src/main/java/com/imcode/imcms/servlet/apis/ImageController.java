@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 
 /**
- * Created by Shadowgun on 26.03.2015.
+ * Provide access to processing images
  */
 @RestController
 @RequestMapping("/content/image")
