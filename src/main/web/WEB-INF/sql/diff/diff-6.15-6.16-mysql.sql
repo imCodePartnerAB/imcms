@@ -20,7 +20,7 @@ CREATE PROCEDURE dropForeignKeysFromTable()
         CONCAT("ALTER TABLE `", `K`.`TABLE_NAME`, "` DROP FOREIGN KEY `", `K`.`CONSTRAINT_NAME`, "`;") 'DROP'
       FROM `information_schema`.`KEY_COLUMN_USAGE` `K`
         LEFT JOIN `information_schema`.`REFERENTIAL_CONSTRAINTS` `C` USING (`CONSTRAINT_NAME`)
-      WHERE `K`.`REFERENCED_TABLE_SCHEMA` = "haninge-dport"
+      WHERE `K`.`REFERENCED_TABLE_SCHEMA` = SCHEMA()
             AND `K`.`REFERENCED_TABLE_NAME` = "fileupload_docs";
 
 
@@ -32,7 +32,7 @@ CREATE PROCEDURE dropForeignKeysFromTable()
 
     IF exists(SELECT *
               FROM information_schema.columns
-              WHERE table_name = 'fileupload_docs' AND column_name = 'meta_id')
+              WHERE table_name = 'fileupload_docs' AND column_name = 'meta_id' AND table_schema = schema())
     THEN
 
 
@@ -46,7 +46,7 @@ CREATE PROCEDURE dropForeignKeysFromTable()
       PREPARE stmt FROM @query;
       EXECUTE stmt;
       DEALLOCATE PREPARE stmt;
-      SET @query = "INSERT INTO temp_fk_view SELECT DISTINCT CONCAT('ALTER TABLE `',`K`.`TABLE_NAME`,'` ADD CONSTRAINT ','`fk_',`K`.`TABLE_NAME`,'_',`K`.`REFERENCED_TABLE_NAME`,'1','` FOREIGN KEY (`',`K`.`COLUMN_NAME`,'`) REFERENCES ','`',`K`.`REFERENCED_TABLE_SCHEMA`,'`.`',`K`.`REFERENCED_TABLE_NAME`,'` (`',IF(`K`.`REFERENCED_COLUMN_NAME`='meta_id', 'doc_id', `K`.`REFERENCED_COLUMN_NAME`),'`) ON DELETE ',`C`.`DELETE_RULE`,' ON UPDATE ',`C`.`UPDATE_RULE`,';') 'CREATE' FROM `information_schema`.`KEY_COLUMN_USAGE` `K` LEFT JOIN `information_schema`.`REFERENTIAL_CONSTRAINTS` `C` USING (`CONSTRAINT_NAME`) WHERE `K`.`REFERENCED_TABLE_SCHEMA` = 'haninge-dport' AND `K`.`REFERENCED_TABLE_NAME` = 'fileupload_docs';";
+      SET @query = "INSERT INTO temp_fk_view SELECT DISTINCT CONCAT('ALTER TABLE `',`K`.`TABLE_NAME`,'` ADD CONSTRAINT ','`fk_',`K`.`TABLE_NAME`,'_',`K`.`REFERENCED_TABLE_NAME`,'1','` FOREIGN KEY (`',`K`.`COLUMN_NAME`,'`) REFERENCES ','`',`K`.`REFERENCED_TABLE_SCHEMA`,'`.`',`K`.`REFERENCED_TABLE_NAME`,'` (`',IF(`K`.`REFERENCED_COLUMN_NAME`='meta_id', 'doc_id', `K`.`REFERENCED_COLUMN_NAME`),'`) ON DELETE ',`C`.`DELETE_RULE`,' ON UPDATE ',`C`.`UPDATE_RULE`,';') 'CREATE' FROM `information_schema`.`KEY_COLUMN_USAGE` `K` LEFT JOIN `information_schema`.`REFERENTIAL_CONSTRAINTS` `C` USING (`CONSTRAINT_NAME`) WHERE `K`.`REFERENCED_TABLE_SCHEMA` = SCHEMA() AND `K`.`REFERENCED_TABLE_NAME` = 'fileupload_docs';";
       SELECT @query;
       PREPARE stmt FROM @query;
       EXECUTE stmt;
