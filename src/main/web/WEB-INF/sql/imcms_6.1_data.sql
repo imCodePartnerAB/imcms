@@ -394,7 +394,7 @@ INSERT INTO text_docs
 VALUES
   (@start_document__meta_id, 'demo', 0, NULL, NULL, NULL),
   (@start_document__meta_id+1, 'demo', 0, NULL, NULL, NULL),
-  (@start_document__meta_id+2, 'demo', 0, NULL, NULL, NULL),
+  (@start_document__meta_id+2, 'demo', 0, NULL, NULL, NULL);
 
 --
 -- Data for table texts
