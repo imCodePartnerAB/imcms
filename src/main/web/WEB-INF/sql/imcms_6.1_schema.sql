@@ -735,6 +735,11 @@ CREATE TABLE imcms_text_doc_content_loops (
   id int auto_increment PRIMARY KEY,
   meta_id int NOT NULL,
   meta_version int NOT NULL,
+  -- seems that next three rows must be here, delete if not
+  doc_id int default NULL,
+  doc_version_no int NOT NULL,
+  no int NOT NULL,
+  -- end
   loop_index int NOT NULL,
   base_index int NOT NULL,
   CONSTRAINT fk__text_doc_content_loops__meta_id__meta_version FOREIGN KEY (meta_id, meta_version) REFERENCES meta_version (meta_id, version) ON DELETE CASCADE,
@@ -770,7 +775,7 @@ CREATE TABLE imcms_text_doc_texts (
   content_no int DEFAULT NULL,
 
   CONSTRAINT uk__imcms_text_doc_texts__text UNIQUE KEY (doc_id, doc_version_no, no, language_id, content_loop_no, content_no),
-  CONSTRAINT fk__imcms_text_doc_texts__content FOREIGN KEY (doc_id, doc_version_no, content_loop_no, content_no) REFERENCES imcms_text_doc_contents (`doc_id`, `doc_version_no`, `loop_no`, `no`) ON DELETE CASCADE,
+  CONSTRAINT fk__imcms_text_doc_texts__content FOREIGN KEY (doc_id, doc_version_no, content_loop_no, content_no) REFERENCES imcms_text_doc_contents (`doc_id`, `doc_version_no`, `loop_id`, `no`) ON DELETE CASCADE,
   CONSTRAINT fk__imcms_text_doc_texts__languages FOREIGN KEY (language_id) REFERENCES imcms_languages (id),
   CONSTRAINT fk__imcms_text_doc_texts__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 
