@@ -57,7 +57,7 @@ Array.prototype.remove = function (value) {
  */
 
 (function ($) {
-    var dataKey = "data-multiselect"
+    var dataKey = "data-multiselect";
 
     $.fn.multiselect = function () {
 
@@ -560,13 +560,13 @@ CKEDITOR.dialog.add("textHistory", function (e) {
             else
                 addResizeListener(this, callback);
         });
-    }
+    };
 
     $.fn.removeResize = function (callback) {
         return this.each(function () {
             removeResizeListener(this, callback);
         });
-    }
+    };
 
     if (!attachEvent) {
         var requestFrame = (function () {
@@ -598,7 +598,7 @@ CKEDITOR.dialog.add("textHistory", function (e) {
             expandChild.style.height = expand.offsetHeight + 1 + 'px';
             expand.scrollLeft = expand.scrollWidth;
             expand.scrollTop = expand.scrollHeight;
-        };
+        }
 
         function checkTriggers(element) {
             return element.offsetWidth != element.__resizeLast__.width ||
@@ -618,7 +618,7 @@ CKEDITOR.dialog.add("textHistory", function (e) {
                     });
                 }
             });
-        };
+        }
 
         /* Detect CSS Animations support to detect element display/re-attach */
         var animation = false,

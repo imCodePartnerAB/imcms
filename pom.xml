@@ -21,7 +21,7 @@
 
 	<groupId>com.imcode.imcms</groupId>
 	<artifactId>imcms</artifactId>
-	<version>SNAPSHOT</version>
+	<version>6.0.0-alpha101-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<name>imCMS</name>
@@ -53,8 +53,6 @@
 		<maven.compiler.optimize>false</maven.compiler.optimize>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-
-		<javac.args/>
 
 		<build.webapp.dir>${project.build.directory}/${project.artifactId}</build.webapp.dir>
 
@@ -830,7 +828,7 @@
 			<id>maven-repository.dev.java.net</id>
 			<name>Java.net Maven 1 Repository (legacy)</name>
 			<url>http://download.java.net/maven/1</url>
-			<layout>legacy</layout>
+			<layout>default</layout>
 		</repository>
 
 		<repository>
@@ -1260,6 +1258,7 @@
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.3.4.v20151007</version>
 				<configuration>
 					<scanIntervalSeconds>${jetty.scanIntervalSeconds}</scanIntervalSeconds>
 					<stopKey>${jetty.stop.key}</stopKey>

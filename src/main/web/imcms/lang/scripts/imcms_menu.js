@@ -578,7 +578,9 @@ Imcms.Menu.API = function () {
 };
 
 Imcms.Menu.API.prototype = {
-    path: "/" + Imcms.contextPath + "api/menu",
+    path: Imcms.contextPath + "/api/menu",
+
+    //path: "http://localhost:8080/imcms/api/menu",
 
     delete: function (request, response) {
         $.ajax({
@@ -607,13 +609,12 @@ Imcms.Menu.API.prototype = {
         })
     },
 
-    /*create: function (request, response) {
+    create: function (request, response) {
         $.ajax({
-            url: this.path + request.meta + "-" + request.no,
+            url: this.path + "/" + request.meta + "-" + request.no,
             type: "POST",
             data: request,
             success: response
         })
-    }*/
-
+    }
 };

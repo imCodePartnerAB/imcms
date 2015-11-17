@@ -1742,11 +1742,11 @@ Imcms.Document.PagerHandler.prototype = {
             .append(this._options.waiterContent)
             .appendTo(this._target);
     },
-    _removeWaiterFromTarget(){
+    _removeWaiterFromTarget: function() {
         this._waiter.remove();
     },
     reset: function () {
-        this._pageNumber = 1
+        this._pageNumber = 1;
         this.scrollHandler();
     }
 };

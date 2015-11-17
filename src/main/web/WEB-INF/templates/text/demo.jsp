@@ -129,12 +129,12 @@
 
             <h2>Learn more</h2>
 
-            <imcms:text label="asdas" no="2" document="<%=1000 + 1%>" mode="read" pre=""/>
+            <imcms:text label="asdas" no="2" document="1001" mode="read" pre=""/>
         </div>
         <div class="wrapper">
             <imcms:loop no="1">
                 <div class="figure">
-                    <imcms:image no="1" document="${document.id}"/>
+                    <imcms:image no="1" document="${document.id}" style="max-width:100px;"/>
                     <div class="description">
                         <imcms:text no="1" document="${document.id}"/>
                     </div>

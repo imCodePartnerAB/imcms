@@ -1,16 +1,9 @@
 package imcode.server.parser;
 
-import java.util.LinkedList;
+import org.apache.oro.text.regex.*;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.MatchResult;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.PatternMatcher;
-import org.apache.oro.text.regex.PatternMatcherInput;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
+import java.util.LinkedList;
 
 public class NodeList extends LinkedList {
 
@@ -53,7 +46,7 @@ public class NodeList extends LinkedList {
         String attributes_string = matchResult.group(2);
         String content = matchResult.group(3);
 
-        return new SimpleElement(name, tagParser.parseAttributes(attributes_string, patternMatcher, request), new NodeList(content, request, tagParser));
+        return new SimpleElement(name, tagParser.parseAttributes(attributes_string, patternMatcher), new NodeList(content, request, tagParser));
     }
 
 }
