@@ -417,7 +417,7 @@ Imcms.Menu.Editor.prototype = {
             var result = [];
             data.forEach(function (it) {
                 var treePosition = it["treeSortIndex"].match(/[0-9]|\./) ?
-                    it["treeSortIndex"] : "" + (position + 1);
+                    it["treeSortIndex"] : "" + (it.position + 1);
 
                 result.push({
                     id: it["name"],
