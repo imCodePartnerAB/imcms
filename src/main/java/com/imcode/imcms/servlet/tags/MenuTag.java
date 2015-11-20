@@ -4,7 +4,6 @@ import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.servlet.tags.Editor.MenuEditor;
 import imcode.server.Imcms;
-import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
@@ -22,11 +21,8 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 	private volatile int no;
 	private volatile int docId = 1001;
 	private volatile Properties attributes = new Properties();
-	//private volatile Iterator<MenuItemDomainObject> menuItemIterator;
 	private volatile LinkedList<MenuItemDomainObject.TreeMenuItemDomainObject> menuItemsCollection;
 	private volatile MenuItemDomainObject menuItem;
-    private volatile MenuDomainObject menu;
-	private volatile String label;
 	private volatile String template;
 
 	public int doStartTag() throws JspException {
@@ -37,12 +33,8 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 			document = Imcms.getServices().getDocumentMapper().getDocument(docId);
 		else
 			document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
-//        menu = document.getMenu(no);
-		//MenuItemDomainObject[] menuItems = menu.getMenuItems();
 		menuItemsCollection = document.getMenu(no).getMenuItemsVisibleToUserAsTree();
-		// menuItemIterator = new FilterIterator(new ArrayIterator(menuItems), new MenuParser.UserCanSeeMenuItemPredicate(parserParameters.getDocumentRequest().getUser()));
 		if (menuItemsCollection.size() > 0) {
-			// nextMenuItem();
 			return EVAL_BODY_BUFFERED;
 		} else {
 			return SKIP_BODY;
@@ -62,7 +54,6 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 
 	public int doAfterBody() throws JspException {
 		if (menuItemsCollection.size() > 0) {
-			//nextMenuItem();
 			return EVAL_BODY_AGAIN;
 		} else {
 			return SKIP_BODY;
@@ -74,11 +65,7 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 			String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
 			bodyContent = null;
 			HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-//			HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
 			ParserParameters parserParameters = ParserParameters.fromRequest(request);
-			/*bodyContentString = MenuParser.addMenuAdmin(no,
-					parserParameters.isMenuMode(),
-					bodyContentString, menu, request, response, label);*/
 			if (TagParser.isEditable(attributes, parserParameters.isMenuMode()))
 				bodyContentString = createEditor().setNo(no).setDocumentId(docId).wrap(bodyContentString);
 			bodyContentString = TagParser.addPreAndPost(attributes, bodyContentString);
@@ -105,10 +92,6 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 		attributes.setProperty("mode", mode);
 	}
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
 	public void setPre(String pre) {
 		attributes.setProperty("pre", pre);
 	}
@@ -116,10 +99,6 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 	public void setPost(String post) {
 		attributes.setProperty("post", post);
 	}
-
-   /* public Iterator<MenuItemDomainObject> getMenuItemIterator() {
-		return menuItemIterator;
-	}*/
 
 	public MenuItemDomainObject getMenuItem() {
 		if (null == menuItem) {

@@ -8,6 +8,7 @@ import imcode.server.user.UserDomainObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TemplateService {
 
@@ -61,11 +62,8 @@ public class TemplateService {
      */
     public Template[] getTemplates(TemplateGroup templateGroup) throws NoPermissionException {
         List<TemplateDomainObject> templates = getTemplateMapper().getTemplatesInGroup(templateGroup.getInternal());
-
-        List<Template> result = new ArrayList<Template>(templates.size());
-        for (TemplateDomainObject template : templates) {
-            result.add(new Template(template));
-        }
+        List<Template> result = new ArrayList<>(templates.size());
+        result.addAll(templates.stream().map(Template::new).collect(Collectors.toList()));
         return result.toArray(new Template[result.size()]);
     }
 
@@ -77,12 +75,12 @@ public class TemplateService {
      */
     public Template[] getPossibleTemplates(TextDocument textDocument) throws NoPermissionException {
         TemplateGroup[] groups = getTemplatesGroups(textDocument);
-        List temp = new ArrayList();
+        List<Template> temp = new ArrayList<>();
         for (TemplateGroup group : groups) {
             Template[] templates = getTemplates(group);
             temp.addAll(Arrays.asList(templates));
         }
-        return (Template[]) temp.toArray(new Template[temp.size()]);
+        return temp.toArray(new Template[temp.size()]);
     }
 
     public Template getTemplate(String templateName) {

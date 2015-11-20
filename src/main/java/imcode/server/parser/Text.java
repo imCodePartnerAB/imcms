@@ -5,6 +5,6 @@ public interface Text extends Node {
     /**
      * @return A String containing the contents of this element. *
      */
-    public String getContent();
+    String getContent();
 
 }

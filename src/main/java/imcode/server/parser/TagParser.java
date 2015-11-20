@@ -819,27 +819,26 @@ public class TagParser {
 			if (endTagName.equals(tagName)) {
 				String elementContent = endTagInput.preMatch();
 				input.setCurrentOffset(endTagInput.getMatchEndOffset());
-				tagResult = blockTag(tagName, attributes, elementContent, patMat);
+				tagResult = blockTag(tagName, attributes, elementContent);
 				break;
 			}
 		}
 		return tagResult;
 	}
 
-	String blockTag(String tagname, Properties attributes, String content,
-					PatternMatcher patternMatcher) {
+	private String blockTag(String tagname, Properties attributes, String content) {
 		String result = content;
 		if ("menu".equals(tagname)) {
-			result = tagMenu(attributes, content, patternMatcher);
+			result = tagMenu(attributes, content);
 		} else if ("velocity".equals(tagname)) {
 			result = tagVelocity(content);
 		}
 		return result;
 	}
 
-	private String tagMenu(Properties attributes, String content, PatternMatcher patternMatcher) {
+	private String tagMenu(Properties attributes, String content) {
 		MenuParser menuParser = new MenuParser(parserParameters);
-		return menuParser.tag(attributes, content, patternMatcher, this);
+		return menuParser.tag(attributes, content, this);
 	}
 
 	private String tagVelocity(String content) {
