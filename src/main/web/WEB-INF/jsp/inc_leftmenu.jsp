@@ -1,3 +1,4 @@
+<%--
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ page
 
@@ -63,4 +64,4 @@ List<TreeMenuItem> visibleTreeMenuItems = imcmsTreeMenu.getVisibleTreeMenuItems(
             %></a><%
         }
     }
-%>
+%>--%>

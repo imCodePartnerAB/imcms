@@ -21,7 +21,7 @@
         <div class="wrapper">
             <div class="menu">
                 <!-- Example of ImCMS menu tag -->
-                <imcms:menu no='1' docId="1001">
+                <imcms:menu no='1' docId="1001" label="Example">
                     <ul>
                         <imcms:menuloop>
                             <imcms:menuitem>

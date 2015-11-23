@@ -23,6 +23,7 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 	private volatile Properties attributes = new Properties();
 	private volatile LinkedList<MenuItemDomainObject.TreeMenuItemDomainObject> menuItemsCollection;
 	private volatile MenuItemDomainObject menuItem;
+	private volatile String label;
 	private volatile String template;
 
 	public int doStartTag() throws JspException {
@@ -110,6 +111,14 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 	public void invalidateMenuItem() {
 		menuItem = null;
 		pageContext.removeAttribute("menuitem");
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 	public String getTemplate() {
