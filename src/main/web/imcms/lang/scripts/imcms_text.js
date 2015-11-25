@@ -10,7 +10,8 @@ Imcms.Text.API = function () {
 
 };
 Imcms.Text.API.prototype = {
-    path: "/" + Imcms.contextPath + "api/text",
+//    path: "/" + Imcms.contextPath + "api/text",
+    path: Imcms.contextPath + "/api/text",
 
     get: function (request, callback) {
         $.ajax({

@@ -40,7 +40,7 @@ boolean isIE7plus  = browser.isIE7plus() ;
         var doMakePlace = false;
 
 
-        jQ(document).ready(function ($) {
+        jQuery(document).ready(function ($) {
 
             $.get('<%= AdminPanelServlet.getPathToAjaxHandler(metaId, request) %>',
                     {

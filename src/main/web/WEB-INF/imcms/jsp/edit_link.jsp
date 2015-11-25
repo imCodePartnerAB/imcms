@@ -1,15 +1,15 @@
 <%@ page
-	
+
 	import="com.imcode.imcms.flow.Page,
 	        static com.imcode.imcms.servlet.admin.LinkEditPage.Parameter.*,
 	        com.imcode.imcms.api.ContentManagementSystem,
 	        com.imcode.imcms.flow.OkCancelPage,
 	        com.imcode.imcms.servlet.admin.LinkEditPage,
 	        org.apache.commons.lang.StringEscapeUtils, com.imcode.imcms.servlet.admin.EditLink, com.imcode.imcms.servlet.AjaxServlet,org.apache.commons.lang3.StringUtils"
-	
+
 	contentType="text/html; charset=UTF-8"
   pageEncoding="UTF-8"
-	
+
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
 %><%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%@	taglib prefix="vel" uri="imcmsvelocity"
@@ -334,14 +334,14 @@ function copyRealHref($) {
 var editLinkAdvancedSettingsActive = ('true' == getCookie('editLinkAdvancedSettingsActive')) ;
 
 jQ(document).ready(function($) {
-	
+
 	$('#theForm').submit(function() {
 		copyRealHref($) ;
 	}) ;
 	$('#<%= HREF.toString() %>dummy').live('change keyup mouseup', function() {
 		copyRealHref($) ;
 	}) ;
-	
+
 	$('#editLinkAdvancedSettingsBtn').click(function(event) {
 		event.preventDefault() ;
 		if (editLinkAdvancedSettingsActive) {
@@ -354,10 +354,10 @@ jQ(document).ready(function($) {
 		checkAdvancedDiv($) ;
 	}) ;
 	checkAdvancedDiv($) ;
-	
+
 	setSelectToLinkType($) ;
 	copyRealHref($) ;
-	
+
 }) ;
 
 function checkAdvancedDiv($) {
@@ -372,7 +372,7 @@ function checkAdvancedDiv($) {
 
 
 jQuery(document).ready(function($) {
-	
+
 	$('div[id^=valueShow]').live('mouseenter mouseleave', function(event) {
 		var idNbr  = $(this).attr('id').replace(/[^\d]/g, '') ;
 		if ('mouseenter' == event.type) {
@@ -381,7 +381,7 @@ jQuery(document).ready(function($) {
 			hoverAutoCompleteItem($, idNbr, false) ;
 		}
 	}) ;
-	
+
 	$('#<%= HREF.toString() %>dummy').live(($.browser.opera ? "keypress" : "keydown"), function(event) {
 		var KEY = {
 			UP: 38,
@@ -400,7 +400,7 @@ jQuery(document).ready(function($) {
 				break;
 		}
 	}) ;
-	
+
 }) ;
 
 function hoverAutoCompleteItem($, idNbr, isHover) {
@@ -435,7 +435,7 @@ function enableAutoComplete($) {
 	}
 	autoCompleteEnabled = true ;
 	var isStartsWithSearch = false ;
-	
+
 	$('#<%= HREF.toString() %>dummy')<%-- http://view.jquery.com/trunk/plugins/autocomplete/demo/ --%>
 		.attr('autocomplete', 'off')
 		.autocomplete('<%= AjaxServlet.getPath(cp) %>',
@@ -463,7 +463,7 @@ function enableAutoComplete($) {
 			},
 			formatResult: function(array) {
 				try {
-					return array[0].replace(/<!-- (.+) -->.+/gi, '$1') ;
+					return array[0].replace(/.+/gi, '$1') ;
 				} catch(e) {
 					return array[0] ;
 				}
@@ -474,11 +474,11 @@ function enableAutoComplete($) {
 			}
 		}
 	) ;
-	
+
 	$('#<%= HREF.toString() %>dummy').result(function (event, data, formatted) {
 		if (data) {
 			var $objHref = $('#<%= HREF.toString() %>') ;
-			$objHref.val('<%= cp + "/" %>' + formatted.replace(/<!-- (.+) -->.+/gi, '$1')) ;
+			$objHref.val('<%= cp + "/" %>' + formatted.replace(/.+/gi, '$1')) ;
 		}
 	}) ;
 }
