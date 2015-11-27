@@ -1,11 +1,11 @@
 imcms
 =====
 
-imCMS, or as we prefer to call it i’m CMS, is a project that has been developed during more than 10 years. It is a java-based CMS system, with tag-based templates, and using MySQL DB (even MS SQL works). The system is used in more than hundred installations in Sweden, most frequently within the public sector.
+imCMS, or as we prefer to call it I’m CMS, is a project that has been developed during more than 10 years. It is a java-based CMS system, with tag-based templates, and using MySQL DB (even MS SQL works). The system is used in more than hundred installations in Sweden, most frequently within the public sector.
 
-During the last year imCMS has been updated to a very new codebase, integrating among others Spring and Hybernate, and using Vaadin as user interface for the administrators. This product is almost ready to go out for Alfa-testing now.
+During the last year imCMS has been updated to a very new codebase, integrating among others Spring and Hybernate, and using Vaadin as user interface for the administrators. This product is almost ready to go out for Alpha-testing now.
 
-During the years imCMS has been developed within the Swedish company: imCode Partner AB. Our intention is to try to create a community around the code. This is one of few qualified Java-basedd CMS systems, so we hope that we would find a number of contributors.
+During the years imCMS has been developed within the Swedish company: imCode Partner AB. Our intention is to try to create a community around the code. This is one of few qualified Java-based CMS systems, so we hope that we would find a number of contributors.
 
 Johan Larsson "johlra" is our responsible project manager.
 
@@ -23,7 +23,7 @@ Installing imCMS:
 
 Prerequisites:
 
-    * Install the Java Development Kit version 1.4 or later.
+    * Install the Java Development Kit version 1.5 or later.
 
     * Install Apache Tomcat 4 or later,
       or another servlet-api 2.3 (or later) compatible servlet engine.
