@@ -540,7 +540,7 @@ Imcms.Image.ImageCropper.prototype = {
         right /= factor;
         bottom /= factor;
         width /= factor;
-        height /= factor
+        height /= factor;
         imageCroppingFrame.css({left: left - 1, top: top - 1, width: width, height: height});
         image.css({left: left * -1, top: top * -1});
         grip.css(
@@ -603,7 +603,7 @@ Imcms.Image.ImageCropper.prototype = {
     },
 
     close: function () {
-        if (!this._imageCroppingFrame) return
+        if (!this._imageCroppingFrame) return;
         this._imageCroppingFrame.off("mouseenter", this.setMovingMode.bind(this));
         this._imageCroppingFrame.off("mouseleave", this.resetMovingMode.bind(this));
         if (!this._grip) return;
@@ -655,16 +655,17 @@ Imcms.Image.ImageCropper.prototype = {
         var imageCroppingFrame = $("<div>").addClass("image-cropping-frame").attr("id", "imageCroppingFrame");
         var width = this.destinationWidth == null ? 100 : this.destinationWidth;
         var height = this.destinationHeight == null ? 100 : this.destinationHeight;
+        var factor;
 
         if (width > image.width()) {
-            var factor = image.width() / width;
+            factor = image.width() / width;
 
             width = image.width();
             height *= factor;
         }
 
         if (height > image.height()) {
-            var factor = image.height() / height;
+            factor = image.height() / height;
 
             width *= factor;
             height = image.height();
@@ -789,15 +790,16 @@ Imcms.Image.ImageCropper.prototype = {
         var grip = $(this._grip);
         var xOffset = e.pageX - this.x;
         var yOffset = e.pageY - this.y;
+        var width, height, factor;
 
         if (!this.destinationWidth && !this.destinationHeight) {
-            var width = this.imageCroppingFrameWidth + xOffset;
+            width = this.imageCroppingFrameWidth + xOffset;
 
             if (imageCroppingFrame.position().left + width > image.width() - 1) {
                 width = image.width() - imageCroppingFrame.position().left - 1;
             }
 
-            var height = this.imageCroppingFrameHeight + yOffset;
+            height = this.imageCroppingFrameHeight + yOffset;
 
             if (imageCroppingFrame.position().top + height > image.height() - 1) {
                 height = image.height() - imageCroppingFrame.position().top - 1;
@@ -806,17 +808,17 @@ Imcms.Image.ImageCropper.prototype = {
 
         else {
             var offset = (xOffset + yOffset) / 2;
-            var width = this.imageCroppingFrameWidth + offset;
+            width = this.imageCroppingFrameWidth + offset;
 
             if (imageCroppingFrame.position().left + width > image.width() - 1) {
                 width = image.width() - imageCroppingFrame.position().left - 1;
             }
 
-            var factor = this.destinationWidth / width;
-            var height = this.destinationHeight / factor;
+            factor = this.destinationWidth / width;
+            height = this.destinationHeight / factor;
 
             if (imageCroppingFrame.position().top + height > image.height() - 1) {
-                var factor = height / (image.height() - imageCroppingFrame.position().top - 1);
+                factor = height / (image.height() - imageCroppingFrame.position().top - 1);
 
                 width = width / factor;
                 height = image.height() - imageCroppingFrame.position().top - 1;

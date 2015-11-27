@@ -34,7 +34,6 @@ Imcms.Bootstrapper.prototype = {
         Imcms.Editors.Content = new Imcms.Content.Loader();
         Imcms.Editors.Image = new Imcms.Image.Loader();
 
-
         Imcms.Admin.Panel.init();
     }
 };
