@@ -65,6 +65,91 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	 */
 	private volatile DocumentLanguage language = DocumentLanguage.builder().code("en").build();
 
+	/**
+	 * Factory method. Creates new document.
+	 *
+	 * @param documentTypeId document type id.
+	 * @return new document
+	 */
+	public static <T extends DocumentDomainObject> T fromDocumentTypeId(int documentTypeId) {
+		DocumentDomainObject document;
+
+		switch (documentTypeId) {
+			case DocumentTypeDomainObject.TEXT_ID:
+				document = new TextDocumentDomainObject();
+				break;
+			case DocumentTypeDomainObject.URL_ID:
+				document = new UrlDocumentDomainObject();
+				break;
+			case DocumentTypeDomainObject.FILE_ID:
+				document = new FileDocumentDomainObject();
+				break;
+			case DocumentTypeDomainObject.HTML_ID:
+				document = new HtmlDocumentDomainObject();
+				break;
+			default:
+				String errorMessage = "Unknown document-type-id: " + documentTypeId;
+				log.error(errorMessage);
+				throw new IllegalArgumentException(errorMessage);
+		}
+
+		document.setLanguage(Imcms.getServices().getDocumentLanguages().getDefault());
+		document.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
+
+		return (T) document;
+	}
+
+	private static boolean isActiveAtTime(DocumentMeta meta, Date now) {
+		return isPublishedAtTime(meta, now) && !hasBeenArchivedAtTime(meta, now);
+	}
+
+	private static boolean hasBeenArchivedAtTime(DocumentMeta meta, Date time) {
+		Date archivedDatetime = meta.getArchivedDatetime();
+		return archivedDatetime != null && archivedDatetime.before(time);
+	}
+
+	private static boolean isPublishedAtTime(DocumentMeta meta, Date date) {
+		boolean statusIsApproved = Document.PublicationStatus.APPROVED.equals(meta.getPublicationStatus());
+
+		return statusIsApproved && publicationHasStartedAtTime(meta, date) && !publicationHasEndedAtTime(meta, date);
+	}
+
+	private static boolean publicationHasStartedAtTime(DocumentMeta meta, Date date) {
+		Date publicationStartDatetime = meta.getPublicationStartDatetime();
+		return publicationStartDatetime != null && publicationStartDatetime.before(date);
+	}
+
+	private static boolean publicationHasEndedAtTime(DocumentMeta meta, Date date) {
+		Date publicationEndDatetime = meta.getPublicationEndDatetime();
+		return publicationEndDatetime != null && publicationEndDatetime.before(date);
+	}
+
+	public static LifeCyclePhase getLifeCyclePhaseAtTime(DocumentDomainObject doc, Date time) {
+		DocumentMeta meta = doc.getMeta();
+		LifeCyclePhase lifeCyclePhase;
+
+		Document.PublicationStatus publicationStatus = meta.getPublicationStatus();
+		if (publicationStatus == Document.PublicationStatus.NEW) {
+			lifeCyclePhase = LifeCyclePhase.NEW;
+		} else if (publicationStatus == Document.PublicationStatus.DISAPPROVED) {
+			lifeCyclePhase = LifeCyclePhase.DISAPPROVED;
+		} else {
+			if (publicationHasEndedAtTime(meta, time)) {
+				lifeCyclePhase = LifeCyclePhase.UNPUBLISHED;
+			} else if (publicationHasStartedAtTime(meta, time)) {
+				if (hasBeenArchivedAtTime(meta, time)) {
+					lifeCyclePhase = LifeCyclePhase.ARCHIVED;
+				} else {
+					lifeCyclePhase = LifeCyclePhase.PUBLISHED;
+				}
+			} else {
+				lifeCyclePhase = LifeCyclePhase.APPROVED;
+			}
+		}
+
+		return lifeCyclePhase;
+	}
+
 	@Override
 	public DocumentDomainObject clone() {
 		DocumentDomainObject clone;
@@ -101,40 +186,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return VersionRef.of(getId(), getVersionNo());
 	}
 
-	/**
-	 * Factory method. Creates new document.
-	 *
-	 * @param documentTypeId document type id.
-	 * @return new document
-	 */
-	public static <T extends DocumentDomainObject> T fromDocumentTypeId(int documentTypeId) {
-		DocumentDomainObject document;
-
-		switch (documentTypeId) {
-			case DocumentTypeDomainObject.TEXT_ID:
-				document = new TextDocumentDomainObject();
-				break;
-			case DocumentTypeDomainObject.URL_ID:
-				document = new UrlDocumentDomainObject();
-				break;
-			case DocumentTypeDomainObject.FILE_ID:
-				document = new FileDocumentDomainObject();
-				break;
-			case DocumentTypeDomainObject.HTML_ID:
-				document = new HtmlDocumentDomainObject();
-				break;
-			default:
-				String errorMessage = "Unknown document-type-id: " + documentTypeId;
-				log.error(errorMessage);
-				throw new IllegalArgumentException(errorMessage);
-		}
-
-		document.setLanguage(Imcms.getServices().getDocumentLanguages().getDefault());
-		document.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
-
-		return (T) document;
-	}
-
 	public Date getArchivedDatetime() {
 		return meta.getArchivedDatetime();
 	}
@@ -145,6 +196,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	public Set<Integer> getCategoryIds() {
 		return meta.getCategoryIds();
+	}
+
+	public void setCategoryIds(Set<Integer> categoryIds) {
+		meta.setCategoryIds(categoryIds);
 	}
 
 	public Date getCreatedDatetime() {
@@ -201,12 +256,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		meta.setKeywords(keywords);
 	}
 
-	public void setProperties(Map<String, String> properties) {
-		meta.setProperties(properties);
-	}
-
 	public Map<String, String> getProperties() {
 		return meta.getProperties();
+	}
+
+	public void setProperties(Map<String, String> properties) {
+		meta.setProperties(properties);
 	}
 
 	public String getProperty(String key) {
@@ -236,7 +291,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	public List<String> getFormattedDateTimes() {
 		Date[] dates = {
 				getCreatedDatetime(),
-				getCreatedDatetime(),
 				getModifiedDatetime(),
 				getArchivedDatetime(),
 				getPublicationStartDatetime(),
@@ -257,13 +311,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		meta.setModifiedDatetime(v);
 	}
 
+	public Date getActualModifiedDatetime() {
+		return meta.getActualModifiedDatetime();
+	}
+
 	@SuppressWarnings("unused")
 	public void setActualModifiedDatetime(Date modifiedDatetime) {
 		meta.setActualModifiedDatetime(modifiedDatetime);
-	}
-
-	public Date getActualModifiedDatetime() {
-		return meta.getActualModifiedDatetime();
 	}
 
 	public Date getPublicationEndDatetime() {
@@ -286,25 +340,25 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return meta.getPublisherId();
 	}
 
-	public void setPublisher(UserDomainObject user) {
-		setPublisherId(user.getId());
-	}
-
 	public void setPublisherId(Integer publisherId) {
 		meta.setPublisherId(publisherId);
+	}
+
+	public void setPublisher(UserDomainObject user) {
+		setPublisherId(user.getId());
 	}
 
 	public RoleIdToDocumentPermissionSetTypeMappings getRoleIdsMappedToDocumentPermissionSetTypes() {
 		return getRolePermissionMappings().clone();
 	}
 
-	private RoleIdToDocumentPermissionSetTypeMappings getRolePermissionMappings() {
-		return meta.getRoleIdToDocumentPermissionSetTypeMappings();
-	}
-
 	@SuppressWarnings("unused")
 	public void setRoleIdsMappedToDocumentPermissionSetTypes(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
 		meta.setRoleIdToDocumentPermissionSetTypeMappings(roleIdToDocumentPermissionSetTypeMappings);
+	}
+
+	private RoleIdToDocumentPermissionSetTypeMappings getRolePermissionMappings() {
+		return meta.getRoleIdToDocumentPermissionSetTypeMappings();
 	}
 
 	public Document.PublicationStatus getPublicationStatus() {
@@ -350,10 +404,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	public boolean isActive() {
 		return isActiveAtTime(meta, new Date());
-	}
-
-	private static boolean isActiveAtTime(DocumentMeta meta, Date now) {
-		return isPublishedAtTime(meta, now) && !hasBeenArchivedAtTime(meta, now);
 	}
 
 	public boolean isSearchDisabled() {
@@ -404,11 +454,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return getId();
 	}
 
-	private static boolean hasBeenArchivedAtTime(DocumentMeta meta, Date time) {
-		Date archivedDatetime = meta.getArchivedDatetime();
-		return archivedDatetime != null && archivedDatetime.before(time);
-	}
-
 	@SuppressWarnings("unused")
 	public void removeAllCategories() {
 		meta.setCategoryIds(new HashSet<>());
@@ -427,72 +472,26 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return getRolePermissionMappings().getPermissionSetTypeForRole(roleId);
 	}
 
-	private static boolean isPublishedAtTime(DocumentMeta meta, Date date) {
-		boolean statusIsApproved = Document.PublicationStatus.APPROVED.equals(meta.getPublicationStatus());
-
-		return statusIsApproved && publicationHasStartedAtTime(meta, date) && !publicationHasEndedAtTime(meta, date);
-	}
-
-	private static boolean publicationHasStartedAtTime(DocumentMeta meta, Date date) {
-		Date publicationStartDatetime = meta.getPublicationStartDatetime();
-		return publicationStartDatetime != null && publicationStartDatetime.before(date);
-	}
-
-	private static boolean publicationHasEndedAtTime(DocumentMeta meta, Date date) {
-		Date publicationEndDatetime = meta.getPublicationEndDatetime();
-		return publicationEndDatetime != null && publicationEndDatetime.before(date);
-	}
-
 	public DocumentPermissionSets getPermissionSets() {
 		return meta.getPermissionSets();
-	}
-
-	public DocumentPermissionSets getPermissionSetsForNewDocument() {
-		return meta.getPermissionSetsForNewDocument();
-	}
-
-	public abstract void accept(DocumentVisitor documentVisitor);
-
-	public LifeCyclePhase getLifeCyclePhase() {
-		return getLifeCyclePhaseAtTime(this, new Date());
-	}
-
-	public static LifeCyclePhase getLifeCyclePhaseAtTime(DocumentDomainObject doc, Date time) {
-		DocumentMeta meta = doc.getMeta();
-		LifeCyclePhase lifeCyclePhase;
-
-		Document.PublicationStatus publicationStatus = meta.getPublicationStatus();
-		if (publicationStatus == Document.PublicationStatus.NEW) {
-			lifeCyclePhase = LifeCyclePhase.NEW;
-		} else if (publicationStatus == Document.PublicationStatus.DISAPPROVED) {
-			lifeCyclePhase = LifeCyclePhase.DISAPPROVED;
-		} else {
-			if (publicationHasEndedAtTime(meta, time)) {
-				lifeCyclePhase = LifeCyclePhase.UNPUBLISHED;
-			} else if (publicationHasStartedAtTime(meta, time)) {
-				if (hasBeenArchivedAtTime(meta, time)) {
-					lifeCyclePhase = LifeCyclePhase.ARCHIVED;
-				} else {
-					lifeCyclePhase = LifeCyclePhase.PUBLISHED;
-				}
-			} else {
-				lifeCyclePhase = LifeCyclePhase.APPROVED;
-			}
-		}
-
-		return lifeCyclePhase;
-	}
-
-	public void setCategoryIds(Set<Integer> categoryIds) {
-		meta.setCategoryIds(categoryIds);
 	}
 
 	public void setPermissionSets(DocumentPermissionSets permissionSets) {
 		meta.setPermissionSets(permissionSets);
 	}
 
+	public DocumentPermissionSets getPermissionSetsForNewDocument() {
+		return meta.getPermissionSetsForNewDocument();
+	}
+
 	public void setPermissionSetsForNewDocument(DocumentPermissionSets permissionSetsForNew) {
 		meta.setPermissionSetsForNewDocument(permissionSetsForNew);
+	}
+
+	public abstract void accept(DocumentVisitor documentVisitor);
+
+	public LifeCyclePhase getLifeCyclePhase() {
+		return getLifeCyclePhaseAtTime(this, new Date());
 	}
 
 	public String getAlias() {
