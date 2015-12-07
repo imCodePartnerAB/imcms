@@ -780,6 +780,11 @@ editor theme
     padding-left: 220px;
 }
 
+.date-time {
+    width: 300px !important;
+    margin: 0 5px;
+}
+
 .pop-up-form .imcms-content .imcms-tabs {
     background: #0091e1;
     position: absolute;

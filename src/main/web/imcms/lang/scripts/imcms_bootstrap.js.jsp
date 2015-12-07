@@ -19,11 +19,13 @@
 			Integer metaId = Integer.parseInt(request.getParameter("meta_id"));
 			DocumentDomainObject document =  Imcms.getServices().getDocumentMapper().getDocument(metaId);
 			Integer typeId = document.getDocumentTypeId();
+			Integer id = document.getId();
 			String label = document.getHeadline();
 		%>
 		Imcms.isEditMode = <%= request.getParameterMap().containsKey("flags")
 			&& Integer.valueOf(request.getParameter("flags"))>0		%>;
 		Imcms.document = {
+			"id": <%=id%>,
 			"meta": <%=metaId%>,
 			"type": <%=typeId%>,
 			"label": "<%=label%>"

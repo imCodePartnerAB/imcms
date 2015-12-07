@@ -1,7 +1,8 @@
+<%--
 ' **********************************
 ' *   By: Tommy Ullberg, imCode
 ' *   www.imcode.com
-' *   Copyright © imCode AB
+' *   Copyright ï¿½ imCode AB
 ' **********************************
 
 Dim getDocPath, pixelSrc
@@ -18,3 +19,4 @@ getDocPath = "<%= request.getContextPath() %>/servlet/"
 pixelSrc = "images/1x1.gif"
 'pixelSrc = "imcms/images/transpix.gif"
 
+--%>

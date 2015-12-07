@@ -368,6 +368,7 @@ Imcms.Document.Viewer.prototype = {
                 this.buildFile();
                 break;
         }
+        this.buildDates();
     },
     buildLifeCycle: function () {
         this._builder.ref("tabs")
@@ -451,8 +452,6 @@ Imcms.Document.Viewer.prototype = {
             tab: this._builder.ref("appearance-tab"),
             page: this._builder.ref("appearance-page")
         };
-
-
         this._activeContent = this._contentCollection["appearance"];
         this._builder.ref("appearance-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["appearance"]));
     },
@@ -790,6 +789,119 @@ Imcms.Document.Viewer.prototype = {
         };
         this._builder.ref("categories-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["categories"]));
     },
+    buildDates: function () {
+        this._builder.ref("tabs")
+            .div()
+            .reference("dates-tab")
+            .class("dates-tab imcms-tab")
+            .html("Status")
+            .end();
+        this._builder.ref("pages")
+            .div().reference("dates-page").class("dates-page imcms-page")
+
+            .div()
+            .class("imcms-label")
+            .html("Created:")
+            .end()
+
+            .div()
+            .class("field")
+            .text()
+            .class("date-time")
+            .name("created-date")
+            .placeholder("Empty")
+            .end()
+            .text()
+            .class("date-time")
+            .name("created-time")
+            .placeholder("Empty")
+            .end()
+            .end()
+
+            .div()
+            .class("imcms-label")
+            .html("Modified:")
+            .end()
+
+            .div()
+            .class("field")
+            .text()
+            .class("date-time")
+            .name("modified-date")
+            .placeholder("Empty")
+            .end()
+            .text()
+            .class("date-time")
+            .name("modified-time")
+            .placeholder("Empty")
+            .end()
+            .end()
+
+            .div()
+            .class("imcms-label")
+            .html("Archived:")
+            .end()
+
+            .div()
+            .class("field")
+            .text()
+            .class("date-time")
+            .name("archived-date")
+            .placeholder("Empty")
+            .end()
+            .text()
+            .class("date-time")
+            .name("archived-time")
+            .placeholder("Empty")
+            .end()
+            .end()
+
+            .div()
+            .class("imcms-label")
+            .html("Published:")
+            .end()
+
+            .div()
+            .class("field")
+            .text()
+            .class("date-time")
+            .name("published-date")
+            .placeholder("Empty")
+            .end()
+            .text()
+            .class("date-time")
+            .name("published-time")
+            .placeholder("Empty")
+            .end()
+            .end()
+
+            .div()
+            .class("imcms-label")
+            .html("Publication end:")
+            .end()
+
+            .div()
+            .class("field")
+            .text()
+            .class("date-time")
+            .name("publication-end-date")
+            .placeholder("Empty")
+            .end()
+            .text()
+            .class("date-time")
+            .name("publication-end-time")
+            .placeholder("Empty")
+            .end()
+            .end()
+
+            .end();
+
+        this._contentCollection["dates"] = {
+            tab: this._builder.ref("dates-tab"),
+            page: this._builder.ref("dates-page")
+        };
+        this._builder.ref("dates-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["dates"]));
+    },
     createModal: function () {
         $(this._modal = document.createElement("div")).addClass("modal")
             .click($.proxy(this.cancel, this))
@@ -802,6 +914,43 @@ Imcms.Document.Viewer.prototype = {
         $(collectionItem.tab.getHTMLElement()).addClass("active");
         $(collectionItem.page.getHTMLElement()).addClass("active");
         this._activeContent = collectionItem;
+
+        this.fillDates();
+        this.fillTimes();
+    },
+    fillDates: function () {
+        var dates = [   "created",
+                        "modified",
+                        "archived",
+                        "published",
+                        "publication-end"  ];
+        for (var i = 0; i < dates.length; i++) {
+            var date = dates[i];
+            this.selectDateField(date).val(this.getDate(date));
+        }
+    },
+    getDate: function (dateType) {
+        return $("div.hide-dates#" + dateType + "-date").data(dateType);
+    },
+    selectDateField: function (dateType) {
+        return $("input[name=" + dateType + "-date]");
+    },
+    fillTimes: function () {
+        var dates = [   "created",
+                        "modified",
+                        "archived",
+                        "published",
+                        "publication-end"  ];
+        for (var i = 0; i < dates.length; i++) {
+            var time = dates[i];
+            this.selectTimeField(time).val(this.getTimes(time));
+        }
+    },
+    getTimes: function (timeType) {
+        return $("div.hide-times#" + timeType + "-time").data(timeType);
+    },
+    selectTimeField: function (timeType) {
+        return $("input[name=" + timeType + "-time]");
     },
     loadTemplates: function (data) {
         $.each(data, $.proxy(this.addTemplate, this));
@@ -1290,6 +1439,12 @@ Imcms.Document.TypeViewer.prototype = {
             documentType: +$(this._builder[0]).find("select[name=documentTypes]").val(),
             parentDocumentId: +$(this._builder[0]).find("input[name=parentDocument]").attr("data-id")
         });
+        $.ajax({
+            url: Imcms.contextPath + "/api/document",
+            type: "POST",
+            data: Imcms.document.id,
+            success: alert("!!!")
+        });
         this.destroy();
     },
     cancel: function () {
@@ -1639,7 +1794,7 @@ Imcms.Document.DocumentSearchDialog.prototype = {
             $(item).on("dragstart", function (event) {
                 $(".ui-widget-overlay").css("display", "none");
                 event.originalEvent.dataTransfer.setData("data", JSON.stringify(data[pos - 1]));
-            }).on("dragend", function (event) {
+            }).on("dragend", function () {
                 $(".ui-widget-overlay").css("display", "block");
             }).attr("draggable", true);
 
@@ -1661,7 +1816,7 @@ Imcms.Document.DocumentSearchDialog.prototype = {
     },
     _onSelectElement: function (e) {
         var $table = $(e.currentTarget),
-            tableOffset = $table.offset();
+//            tableOffset = $table.offset();
         element = $table.find("tbody tr").filter(function (index, element) {
             /*  var offset, farCorner;
 
@@ -1724,7 +1879,7 @@ Imcms.Document.PagerHandler.prototype = {
         this._isHandled = false;
         this.scrollHandler();
     },
-    scrollHandler: function (event) {
+    scrollHandler: function () {
         if (this._isHandled) {
             return;
         }

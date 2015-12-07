@@ -1,3 +1,4 @@
+<%--
 <%@page contentType="text/javascript"%>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
 <vel:velocity><%
@@ -7,7 +8,7 @@ if (true == false) {
 /* **********************************
  *   By: Tommy Ullberg, imCode
  *   www.imcode.com
- *   Copyright © imCode AB
+ *   Copyright ï¿½ imCode AB
  ********************************* */
 
 
@@ -185,7 +186,7 @@ arrColorSelectDescInverted = new Array(0,2,4,6,8,12,13,14); // Inverted text-col
 
 	/* background-colors */
 arrBackgroundColorSelectValues = new Array("transparent","white","#FFFF88","#FFBBBB","#BBFFBB","#C0C0FF","#E0E0E0");
-arrBackgroundColorSelectDesc = new Array("Transparent","Vit","Gul","Rosa","Ljusgrön","Ljusblå","Ljusgrå");
+arrBackgroundColorSelectDesc = new Array("Transparent","Vit","Gul","Rosa","Ljusgrï¿½n","Ljusblï¿½","Ljusgrï¿½");
 arrBackgroundColorSelectDescInverted = new Array(); // white text on these (zero-based)
 
 /* *******************************************************************************************
@@ -216,7 +217,7 @@ var showAdv = 0;
 		var showAdvFontStyleDiv = 0;
 		/* Valfri kod */
 		var showAdvCodeStringDiv = 0;
-		/* Inställningar */
+		/* Instï¿½llningar */
 		var showAdvSettingsDiv = 0;
 
 /* *******************************************************************************************
@@ -245,7 +246,7 @@ var showAdv = 0;
 	/* Show HTML mode button */
 	var showHtmlBtn = 1;
 
-	/* Show Close (Stäng) button */
+	/* Show Close (Stï¿½ng) button */
 	var showCloseBtn = 1;
 
 	/* Show Reset (Rensa) button */
@@ -254,7 +255,7 @@ var showAdv = 0;
 	/* Show Save (Spara) button */
 	var showSaveBtn = 1;
 
-	/* Show Help (Original) button [Hjälp] */
+	/* Show Help (Original) button [Hjï¿½lp] */
 	var showHelpFullBtn = 0;
 
 	/* Show Help (Per btn) button [?] */
@@ -300,3 +301,4 @@ if (true == false) {
 
 
 
+--%>

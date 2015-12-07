@@ -167,7 +167,7 @@ function showHelpLayer(what){
 			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/24 ?>';
 			break;
 		case 'EditCode':
-			helpImageIconNew = '<button disabled style="width:55; height:21; cursor:default"><img src="images/btn_preview_editor.gif"></button>&nbsp;<button disabled style="width:55; height:21; cursor:default"><img src="images/btn_preview_html.gif"></button>';
+			helpImageIconNew = '<button disabled style="width:55px; height:21px; cursor:default"><img src="images/btn_preview_editor.gif"></button>&nbsp;<button disabled style="width:55px; height:21px; cursor:default"><img src="images/btn_preview_html.gif"></button>';
 			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/25 ?>';
 			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/26 ?>';
 			break;
@@ -187,7 +187,7 @@ function showHelpLayer(what){
 			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/32 ?>';
 			break;
 		case 'StrikeThrough':
-			helpImageIconNew = '<button class="button" onClick="return false" style="cursor:default"><strike style="position:relative; top:-1; font: bold 14px Times New Roman">S</strike></button>';
+			helpImageIconNew = '<button class="button" onClick="return false" style="cursor:default"><strike style="position:relative; top:-1px; font: bold 14px Times New Roman">S</strike></button>';
 			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/33 ?>';
 			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/34 ?>';
 			break;

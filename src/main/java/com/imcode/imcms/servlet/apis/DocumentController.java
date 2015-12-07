@@ -29,6 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -243,6 +244,29 @@ public class DocumentController {
         } catch (Exception e) {
             LOG.error("Problem during document creating", e);
             result.put("result", false);
+        }
+        return result;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/{id}/changeDate/{dateType}/{value}")
+    protected Object changeDate(@PathVariable("id") int id,
+                                @PathVariable("dateType") String dateType,
+                                @PathVariable("value") String value) {
+
+        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> map = new HashedMap<>();
+
+        DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
+
+        switch (dateType) {
+            case "created" :
+                doc.setCreatedDatetime(Date.from(Instant.parse(value)));
+                map.put("id", id);
+                result.put("result", true);
+                result.put("data", map);
+                break;
+
+            default: result.put("result", false);
         }
         return result;
     }
