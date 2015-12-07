@@ -1174,23 +1174,23 @@ Imcms.Document.Viewer.prototype = {
 		$(this._builder[0]).fadeOut();
 	},
 	setDateTimes: function () {
-		var dates = [
-			"created",
-			"modified",
-			"archived",
-			"published",
-			"publication-end"
-		];
-		for (var i = 0; i < dates.length; i++) {
-			var type = dates[i];
-			this.setDateTimeVal("date", type);
-			this.setDateTimeVal("time", type);
-		}
-//?dateType=created&date=2010-12-23$time=17:55
-		$.ajax({
-			url: Imcms.contextPath + "/api/document/" + id + "?dateType=archive",
-			type: "POST"
-		})
+//		var dates = [
+//			"created",
+//			"modified",
+//			"archived",
+//			"published",
+//			"publication-end"
+//		];
+//		for (var i = 0; i < dates.length; i++) {
+//			var type = dates[i];
+//			this.setDateTimeVal("date", type);
+//			this.setDateTimeVal("time", type);
+//		}
+////?dateType=created&date=2010-12-23$time=17:55
+//		$.ajax({
+//			url: Imcms.contextPath + "/api/document/" + id + "?dateType=archive",
+//			type: "POST"
+//		})
 	},
 	apply: function () {
 		if (!$(this._builder[0]).find("form").valid()) {
