@@ -23,7 +23,7 @@ public class DocumentMeta implements Serializable, Cloneable {
     /**
      * Document show mode for disabled language.
      */
-    public static enum DisabledLanguageShowMode {
+    public enum DisabledLanguageShowMode {
         SHOW_IN_DEFAULT_LANGUAGE,
         DO_NOT_SHOW,
     }
