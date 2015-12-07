@@ -915,42 +915,30 @@ Imcms.Document.Viewer.prototype = {
 		$(collectionItem.page.getHTMLElement()).addClass("active");
 		this._activeContent = collectionItem;
 
-		this.fillDates();
-		this.fillTimes();
+		this.fillDateTimes();
 	},
-	fillDates: function () {
-		var dates = ["created",
+	fillDateTimes: function () {
+		var types = [
+			"date",
+			"time"
+		];
+		var dates = [
+			"created",
 			"modified",
 			"archived",
 			"published",
-			"publication-end"];
-		for (var i = 0; i < dates.length; i++) {
-			var date = dates[i];
-			this.selectDateField(date).val(this.getDate(date));
-		}
+			"publication-end"
+		];
+
+		types.forEach(function (type) {
+			dates.forEach(function (date) {
+				$("input[name=" + date + "-" + type + "]")
+					.val($("div.hide-" + type + "s#" + date + "-" + type + "").data(date + ""));
+			})
+		});
 	},
-	getDate: function (dateType) {
-		return $("div.hide-dates#" + dateType + "-date").data(dateType);
-	},
-	selectDateField: function (dateType) {
-		return $("input[name=" + dateType + "-date]");
-	},
-	fillTimes: function () {
-		var dates = ["created",
-			"modified",
-			"archived",
-			"published",
-			"publication-end"];
-		for (var i = 0; i < dates.length; i++) {
-			var time = dates[i];
-			this.selectTimeField(time).val(this.getTimes(time));
-		}
-	},
-	getTimes: function (timeType) {
-		return $("div.hide-times#" + timeType + "-time").data(timeType);
-	},
-	selectTimeField: function (timeType) {
-		return $("input[name=" + timeType + "-time]");
+	setDateTimeVal: function (type, date) {
+		$("input[name=" + date + "-" + type + "]").val($("div.hide-" + type + "s#" + date + "-" + type + "").data(date));
 	},
 	loadTemplates: function (data) {
 		$.each(data, $.proxy(this.addTemplate, this));
@@ -1185,11 +1173,30 @@ Imcms.Document.Viewer.prototype = {
 		});
 		$(this._builder[0]).fadeOut();
 	},
+	setDateTimes: function () {
+		var dates = [
+			"created",
+			"modified",
+			"archived",
+			"published",
+			"publication-end"
+		];
+		for (var i = 0; i < dates.length; i++) {
+			var type = dates[i];
+			this.setDateTimeVal("date", type);
+			this.setDateTimeVal("time", type);
+		}
+//?dateType=created&date=2010-12-23$time=17:55
+		$.ajax({
+			url: Imcms.contextPath + "/api/document/" + id + "?dateType=archive",
+			type: "POST"
+		})
+	},
 	apply: function () {
 		if (!$(this._builder[0]).find("form").valid()) {
 			return false;
 		}
-
+		this.setDateTimes();
 		this._options.onApply(this);
 		this.destroy();
 	},
@@ -1263,7 +1270,6 @@ Imcms.Document.Viewer.prototype = {
 		formData.append("data", JSON.stringify(result));
 		formData.append("type", this._options.type);
 		formData.append("parent", this._options.parentDocumentId);
-
 
 		return formData;
 	},
@@ -1438,12 +1444,6 @@ Imcms.Document.TypeViewer.prototype = {
 		this._options.onApply({
 			documentType: +$(this._builder[0]).find("select[name=documentTypes]").val(),
 			parentDocumentId: +$(this._builder[0]).find("input[name=parentDocument]").attr("data-id")
-		});
-		$.ajax({
-			url: Imcms.contextPath + "/api/document",
-			type: "POST",
-			data: Imcms.document.id,
-			success: alert("!!!")
 		});
 		this.destroy();
 	},
