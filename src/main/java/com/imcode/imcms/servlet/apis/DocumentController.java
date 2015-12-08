@@ -14,9 +14,11 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import imcode.util.io.FileInputStreamSource;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -30,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -185,12 +188,8 @@ public class DocumentController {
 
 			switch (type) {
 				case DocumentTypeDomainObject.URL_ID: {
-					documentEntity = new ObjectMapper()
-							.readValue(
-									data,
-									new TypeReference<UrlDocumentEntity>() {
-									}
-							);
+					documentEntity = new ObjectMapper().readValue(data, new TypeReference<UrlDocumentEntity>() {
+					});
 					documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(UrlDocument.TYPE_ID,
 							documentMapper.getDocument(parentDocumentId),
 							Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
@@ -199,12 +198,8 @@ public class DocumentController {
 				}
 				break;
 				case DocumentTypeDomainObject.FILE_ID: {
-					documentEntity = new ObjectMapper()
-							.readValue(
-									data,
-									new TypeReference<FileDocumentEntity>() {
-									}
-							);
+					documentEntity = new ObjectMapper().readValue(data, new TypeReference<FileDocumentEntity>() {
+					});
 					documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(FileDocument.TYPE_ID,
 							documentMapper.getDocument(parentDocumentId),
 							Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
@@ -214,12 +209,8 @@ public class DocumentController {
 				break;
 				case DocumentTypeDomainObject.TEXT_ID:
 				default: {
-					documentEntity = new ObjectMapper()
-							.readValue(
-									data,
-									new TypeReference<TextDocumentEntity>() {
-									}
-							);
+					documentEntity = new ObjectMapper().readValue(data, new TypeReference<TextDocumentEntity>() {
+					});
 					documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(TextDocument.TYPE_ID,
 							documentMapper.getDocument(parentDocumentId),
 							Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
@@ -236,7 +227,9 @@ public class DocumentController {
 			if (documentEntity.id != null)
 				documentMapper.saveDocument(documentDomainObject, getContentMap(documentEntity), Imcms.getUser());
 			else
-				documentDomainObject.setId(documentMapper.saveNewDocument(documentDomainObject, getContentMap(documentEntity), Imcms.getUser()).getId());
+				documentDomainObject.setId(documentMapper
+						.saveNewDocument(documentDomainObject, getContentMap(documentEntity), Imcms.getUser())
+						.getId());
 
 			documentEntity.id = documentDomainObject.getId();
 			result.put("result", true);
@@ -248,25 +241,134 @@ public class DocumentController {
 		return result;
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/{id}/changeDate/{dateType}/{value}")
-	protected Object changeDate(@PathVariable("id") int id,
-								@PathVariable("dateType") String dateType,
-								@PathVariable("value") String value) {
+	@RequestMapping(method = RequestMethod.GET, value = "/getDateTimes/{id}")
+	protected Object getDateTimes(@PathVariable(value = "id") int id) {
 
 		Map<String, Object> result = new HashMap<>();
 		Map<String, Object> map = new HashedMap<>();
 
 		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
 
-		switch (dateType) {
-			case "created" :
-				doc.setCreatedDatetime(Date.from(Instant.parse(value)));
-				map.put("id", id);
-				result.put("result", true);
-				result.put("data", map);
-				break;
+		String[] types = {
+				"created",
+				"modified",
+				"archived",
+				"published",
+				"publication-end"
+		};
 
-			default: result.put("result", false);
+		Date[] dates = {
+				doc.getCreatedDatetime(),
+				doc.getModifiedDatetime(),
+				doc.getArchivedDatetime(),
+				doc.getPublicationStartDatetime(),
+				doc.getPublicationEndDatetime()
+		};
+//		List<String> dateTimes = Stream.of(dates)
+//				.map(date -> Optional.ofNullable(Utility.formatNullableHtmlDatetime(date)).orElse("--"))
+//				.collect(Collectors.toList());
+
+		List<String> dateTimes = new ArrayList<>();
+		for (Date date : dates) {
+			dateTimes.add(null == date ? "--" : Utility.formatHtmlDatetime(date));
+		}
+
+		List<String> datesList = extractDates(dateTimes);
+		List<String> timesList = extractTimes(dateTimes);
+
+		for (int i = 0; i < types.length; i++) {
+			Map<String, Object> dateTimeMap = new HashedMap<>();
+			dateTimeMap.put("date", datesList.get(i));
+			dateTimeMap.put("time", timesList.get(i));
+			map.put(types[i], dateTimeMap);
+		}
+		return map;
+	}
+
+	private List<String> extractDates(List<String> list) {
+		List<String> dates = new ArrayList<>();
+		for (String dateTime : list) {
+			try {
+				dates.add(dateTime.substring(0, 10));
+			} catch (StringIndexOutOfBoundsException e) {
+				dates.add(dateTime);
+			}
+		}
+		return dates;
+	}
+
+	private List<String> extractTimes(List<String> list) {
+		List<String> times = new ArrayList<>();
+		for (String dateTime : list) {
+			try {
+				times.add(dateTime.substring(16));
+			} catch (StringIndexOutOfBoundsException e) {
+				times.add(dateTime);
+			}
+		}
+		return times;
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/{id}")
+	protected Object changeDateTimes(@PathVariable(value = "id") int id,
+									 @RequestParam(value = "dateType", required = true, defaultValue = "") String dateType,
+									 @RequestParam(value = "date", required = true, defaultValue = "") String date,
+									 @RequestParam(value = "time", required = true, defaultValue = "") String time) {
+
+		Map<String, Object> result = new HashMap<>();
+
+		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
+
+		try {
+			Date newDate = Date.from(Instant.parse(date + "T" + time + ":00.00Z"));
+			switch (dateType) {
+				case "created":
+					if (newDate.equals(doc.getCreatedDatetime())) {
+						return null;
+					}
+					doc.setCreatedDatetime(DateUtils.addHours(newDate, -3));
+					// in magic way all dates increases by two hours automatically, but this one by three.
+					break;
+
+				case "modified":
+					if (newDate.equals(doc.getModifiedDatetime())) {
+						return null;
+					}
+					doc.setModifiedDatetime(DateUtils.addHours(newDate, -2));
+					break;
+
+				case "archived":
+					if (newDate.equals(doc.getArchivedDatetime())) {
+						return null;
+					}
+					doc.setArchivedDatetime(DateUtils.addHours(newDate, -2));
+					break;
+
+				case "published":
+					if (newDate.equals(doc.getPublicationStartDatetime())) {
+						return null;
+					}
+					doc.setPublicationStartDatetime(DateUtils.addHours(newDate, -2));
+					break;
+
+				case "publication-end":
+					if (newDate.equals(doc.getPublicationEndDatetime())) {
+						return null;
+					}
+					doc.setPublicationEndDatetime(DateUtils.addHours(newDate, -2));
+					break;
+
+				default:
+					result.put("result", false);
+			}
+			Imcms.getServices().getDocumentMapper().saveDocument(doc, Imcms.getUser());
+			result.put("result", true);
+		} catch (DateTimeParseException e) {
+			//incoming date and/or time are incorrect or in empty "--:--" form
+			return null;
+		} catch (Exception e) {
+			LOG.error("Problem during date and time changing", e);
+			result.put("result", false);
 		}
 		return result;
 	}
@@ -283,7 +385,11 @@ public class DocumentController {
 
 		try {
 			Map<String, Object> map = new HashedMap<>();
-			DocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().copyDocument(Imcms.getServices().getDocumentMapper().getDocument(id), Imcms.getUser());
+			DocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().copyDocument(
+					Imcms.getServices()
+							.getDocumentMapper()
+							.getDocument(id), Imcms.getUser()
+			);
 
 			map.put("id", documentDomainObject.getId());
 			result.put("result", true);
@@ -293,10 +399,8 @@ public class DocumentController {
 			LOG.error("Problem during document creating", e);
 			result.put("result", false);
 		}
-
 		return result;
 	}
-
 
 	/**
 	 * Provide API access to several operations such as document deleting, archiving and unarchiving
@@ -308,9 +412,8 @@ public class DocumentController {
 	 * @throws IOException
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	protected Object deleteDocument(
-			@PathVariable("id") Integer id,
-			@RequestParam(value = "action", required = false, defaultValue = "") String action
+	protected Object deleteDocument(@PathVariable("id") Integer id,
+									@RequestParam(value = "action", required = false, defaultValue = "") String action
 	) throws ServletException, IOException {
 		Map<String, Object> result = new HashMap<>();
 		switch (action) {
@@ -335,15 +438,12 @@ public class DocumentController {
 		return result;
 	}
 
-
 	protected Map<DocumentLanguage, DocumentCommonContent> getContentMap(DocumentEntity entity) {
 		Map<DocumentLanguage, DocumentCommonContent> contentMap = new HashMap<>();
 		for (DocumentLanguage language : Imcms.getServices().getDocumentLanguages().getAll()) {
 			DocumentEntity.LanguageEntity languageEntity = entity.languages.get(language.getName());
 			if (languageEntity.enabled)
-				contentMap.put(
-						language,
-						DocumentCommonContent.builder()
+				contentMap.put(language, DocumentCommonContent.builder()
 								.headline(languageEntity.title)
 								.menuImageURL(languageEntity.image)
 								.menuText(languageEntity.menuText)
@@ -362,11 +462,9 @@ public class DocumentController {
 	protected void prepareDocument(DocumentEntity documentEntity, DocumentDomainObject documentDomainObject) {
 		CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
 
-		documentEntity.access.forEach((id, map) ->
-				documentDomainObject
-						.setDocumentPermissionSetTypeForRoleId(new RoleId(id),
-								DocumentPermissionSetTypeDomainObject
-										.values()[Integer.parseInt(map.get("permission").toString())]));
+		documentEntity.access.forEach(
+				(id, map) -> documentDomainObject.setDocumentPermissionSetTypeForRoleId(
+						new RoleId(id), DocumentPermissionSetTypeDomainObject.values()[Integer.parseInt(map.get("permission").toString())]));
 
 		if (StringUtils.isNotEmpty(documentEntity.alias)) {
 			documentDomainObject.setAlias(documentEntity.alias);
@@ -436,7 +534,6 @@ public class DocumentController {
 
 			document.setDefaultFileId(multipartFile.getOriginalFilename());
 		}
-
 	}
 
 	/**
@@ -484,7 +581,6 @@ public class DocumentController {
 		document.setUrl(entity.url);
 	}
 
-
 	/**
 	 * Prepare Web-API entity base on special {@link DocumentDomainObject}
 	 *
@@ -521,17 +617,12 @@ public class DocumentController {
 
 		entity.categories = Stream.of(categoryMapper.getAllCategoryTypes())
 				.distinct()
-				.collect(
-						Collectors.toMap(
-								CategoryTypeDomainObject::getName,
-								val ->
-										categoryMapper.getCategoriesOfType(
-												val,
-												document.getCategoryIds()
-										).stream()
-												.map(val1 -> val1 == null ? "" : val1.getName())
-												.collect(Collectors.toList())
-												.toArray(new String[0]))
+				.collect(Collectors.toMap(CategoryTypeDomainObject::getName,
+								val -> categoryMapper.getCategoriesOfType(val, document.getCategoryIds())
+										.stream()
+										.map(val1 -> val1 == null ? "" : val1.getName())
+										.collect(Collectors.toList())
+										.toArray(new String[0]))
 				);
 
 		Map<DocumentLanguage, DocumentCommonContent> contentMap = Imcms.getServices()
@@ -549,8 +640,6 @@ public class DocumentController {
 	}
 
 	/**
-	 *
-	 *
 	 * @param entity
 	 * @param document
 	 */
@@ -602,7 +691,6 @@ public class DocumentController {
 		entity.languages = new HashMap<>();
 		entity.keywords = new HashSet<>();
 	}
-
 
 	/**
 	 * Web-API entity

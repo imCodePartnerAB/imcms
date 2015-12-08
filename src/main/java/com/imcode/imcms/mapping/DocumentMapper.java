@@ -1,7 +1,10 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.api.*;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.NativeQueries;
@@ -17,9 +20,9 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
+import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang.math.IntRange;
 import org.apache.oro.text.perl.Perl5Util;
 import org.springframework.stereotype.Component;
 
@@ -35,48 +38,29 @@ import java.util.*;
 @Component
 public class DocumentMapper implements DocumentGetter {
 
-    /**
-     * Document save options.
-     * Currently applies to text documents only.
-     */
-    public enum SaveOpts {
-        CopyDocCommonContentIntoTextFields
-    }
     //todo: check resource
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
-
     private Database database;
-
     private DocumentIndex documentIndex;
-
     private ImcmsServices imcmsServices;
-
     /**
      * Document loader caching proxy. Intercepts calls to DocumentLoader.
      */
     private DocumentLoaderCachingProxy documentLoaderCachingProxy;
-
     @Inject
     private NativeQueries nativeQueries;
-
     @Inject
     private DocumentLoader documentLoader;
-
     @Inject
     private DocumentSaver documentSaver;
-
     @Inject
     private CategoryMapper categoryMapper;
-
     @Inject
     private DocumentContentMapper documentContentMapper;
-
     @Inject
     private DocumentVersionMapper documentVersionMapper;
-
     @Inject
     private MenuRepository menuRepository;
-
     @Inject
     private PropertyRepository propertyRepository;
 
@@ -106,6 +90,22 @@ public class DocumentMapper implements DocumentGetter {
         documentContentMapper = services.getManagedBean(DocumentContentMapper.class);
     }
 
+    static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
+        File filePath = Imcms.getServices().getConfig().getFilePath();
+        File[] filesToDelete = filePath.listFiles(fileFilter);
+        for (int i = 0; i < filesToDelete.length; i++) {
+            filesToDelete[i].delete();
+        }
+    }
+
+    static void deleteAllFileDocumentFiles(FileDocumentDomainObject fileDocument) {
+        deleteFileDocumentFilesAccordingToFileFilter(new FileDocumentFileFilter(fileDocument));
+    }
+
+    static void deleteOtherFileDocumentFiles(FileDocumentDomainObject fileDocument) {
+        deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
+    }
+
     public void init(ImcmsServices services, Database database, DocumentIndex documentIndex) {
         this.imcmsServices = services;
         this.database = database;
@@ -119,7 +119,6 @@ public class DocumentMapper implements DocumentGetter {
         documentSaver.setDocumentMapper(this);
     }
 
-
     /**
      * @param documentId document id.
      * @return version info for a given document or null if document does not exist.
@@ -127,7 +126,6 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentVersionInfo getDocumentVersionInfo(int documentId) {
         return documentLoaderCachingProxy.getDocVersionInfo(documentId);
     }
-
 
     /**
      * Creates new Document which inherits parent doc's meta excluding keywords and properties.
@@ -179,7 +177,6 @@ public class DocumentMapper implements DocumentGetter {
         return newDocument;
     }
 
-
     /**
      * Sets text doc's template.
      * <p/>
@@ -219,7 +216,6 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-
     void makeDocumentLookNew(DocumentDomainObject document, UserDomainObject user) {
         makeDocumentLookNew(document.getMeta(), user);
     }
@@ -239,11 +235,9 @@ public class DocumentMapper implements DocumentGetter {
         return getDocumentReference(document.getId());
     }
 
-
     public DocumentReference getDocumentReference(int childId) {
         return new GetterDocumentReference(childId, this);
     }
-
 
     /**
      * Saves doc as new.
@@ -268,7 +262,6 @@ public class DocumentMapper implements DocumentGetter {
 
         return saveNewDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
     }
-
 
     /**
      * Saves doc as new.
@@ -295,8 +288,7 @@ public class DocumentMapper implements DocumentGetter {
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         if (appearances.isEmpty()) {
-            throw new IllegalArgumentException(String.format(
-                    "Unable to save new document. i18nMetas must not be empty."));
+            throw new IllegalArgumentException("Unable to save new document. i18nMetas must not be empty.");
         }
 
         T docClone = (T) doc.clone();
@@ -332,7 +324,6 @@ public class DocumentMapper implements DocumentGetter {
         return saveNewDocument(doc, appearances, EnumSet.noneOf(SaveOpts.class), user);
     }
 
-
     /**
      * Updates existing document.
      */
@@ -340,7 +331,6 @@ public class DocumentMapper implements DocumentGetter {
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
         saveDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
     }
-
 
     /**
      * Updates existing document.
@@ -360,7 +350,6 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-
     /**
      * Saves document menu.
      *
@@ -375,7 +364,6 @@ public class DocumentMapper implements DocumentGetter {
             invalidateDocument(container.getDocId());
         }
     }
-
 
     /**
      * Creates next document version.
@@ -409,7 +397,6 @@ public class DocumentMapper implements DocumentGetter {
         return version;
     }
 
-
     /**
      * Changes doc's default version.
      *
@@ -424,20 +411,21 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-
     public void invalidateDocument(DocumentDomainObject document) {
         invalidateDocument(document.getId());
     }
-
 
     public void invalidateDocument(int docId) {
         documentLoaderCachingProxy.removeDocFromCache(docId);
         documentIndex.indexDocument(docId);
     }
 
-
     public DocumentIndex getDocumentIndex() {
         return documentIndex;
+    }
+
+    public void setDocumentIndex(DocumentIndex documentIndex) {
+        this.documentIndex = documentIndex;
     }
 
     public List<Integer[]> getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
@@ -518,7 +506,6 @@ public class DocumentMapper implements DocumentGetter {
         return ArrayUtils.toPrimitive(ids.toArray(new Integer[]{}));
     }
 
-
     public List<Integer> getAllDocumentIds() {
         return documentSaver.getDocRepository().getAllDocumentIds();
     }
@@ -548,7 +535,6 @@ public class DocumentMapper implements DocumentGetter {
                 : getDocument(documentId);
     }
 
-
     /**
      * @param documentIdentity document id or alias
      * @return document id or null if there is no document with such identity.
@@ -563,24 +549,6 @@ public class DocumentMapper implements DocumentGetter {
         } catch (NumberFormatException e) {
             return documentLoaderCachingProxy.getDocIdByAlias(documentIdentity);
         }
-    }
-
-
-    static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
-        File filePath = Imcms.getServices().getConfig().getFilePath();
-        File[] filesToDelete = filePath.listFiles(fileFilter);
-        for (int i = 0; i < filesToDelete.length; i++) {
-            filesToDelete[i].delete();
-        }
-    }
-
-    static void deleteAllFileDocumentFiles(FileDocumentDomainObject fileDocument) {
-        deleteFileDocumentFilesAccordingToFileFilter(new FileDocumentFileFilter(fileDocument));
-    }
-
-
-    static void deleteOtherFileDocumentFiles(FileDocumentDomainObject fileDocument) {
-        deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
     }
 
     public int getLowestDocumentId() {
@@ -806,6 +774,10 @@ public class DocumentMapper implements DocumentGetter {
         return categoryMapper;
     }
 
+    public void setCategoryMapper(CategoryMapper categoryMapper) {
+        this.categoryMapper = categoryMapper;
+    }
+
     public Database getDatabase() {
         return database;
     }
@@ -814,12 +786,10 @@ public class DocumentMapper implements DocumentGetter {
         return imcmsServices;
     }
 
-
     @Deprecated
     void setCreatedAndModifiedDatetimes(DocumentDomainObject document, Date date) {
         setCreatedAndModifiedDatetimes(document.getMeta(), date);
     }
-
 
     /**
      * @param documentMeta
@@ -831,7 +801,6 @@ public class DocumentMapper implements DocumentGetter {
         documentMeta.setModifiedDatetime(date);
         documentMeta.setActualModifiedDatetime(date);
     }
-
 
     /**
      * Saves text and non-saved enclosing content loop the text may refer.
@@ -850,7 +819,6 @@ public class DocumentMapper implements DocumentGetter {
             invalidateDocument(container.getDocId());
         }
     }
-
 
     /**
      * Saves text and non-saved enclosing content loop the text may refer.
@@ -888,7 +856,6 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-
     /**
      * Saves images and non-saved enclosing content loop if any.
      * <p/>
@@ -904,11 +871,6 @@ public class DocumentMapper implements DocumentGetter {
             invalidateDocument(container.getDocRef().getId());
         }
     }
-
-    public void setDocumentIndex(DocumentIndex documentIndex) {
-        this.documentIndex = documentIndex;
-    }
-
 
     /**
      * @param documentIds
@@ -943,6 +905,22 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
+    public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId) {
+        return documentContentMapper.getCommonContents(docId);
+    }
+
+    public DocumentLoaderCachingProxy getDocumentLoaderCachingProxy() {
+        return documentLoaderCachingProxy;
+    }
+
+    /**
+     * Document save options.
+     * Currently applies to text documents only.
+     */
+    public enum SaveOpts {
+        CopyDocCommonContentIntoTextFields
+    }
+
     public static class TextDocumentMenuIndexPair {
 
         private TextDocumentDomainObject document;
@@ -962,40 +940,6 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-
-    public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId) {
-        return documentContentMapper.getCommonContents(docId);
-    }
-
-    private class DocumentsIterator implements Iterator<DocumentDomainObject> {
-
-        int[] documentIds;
-        int index;
-
-        DocumentsIterator(int[] documentIds) {
-            this.documentIds = (int[]) documentIds.clone();
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        public boolean hasNext() {
-            return index < documentIds.length;
-        }
-
-        public DocumentDomainObject next() {
-
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-
-            int documentId = documentIds[index++];
-
-            return getDocument(documentId);
-        }
-    }
-
     /**
      * Makes a version from a working/draft version.
      */
@@ -1006,7 +950,6 @@ public class DocumentMapper implements DocumentGetter {
             Imcms.getServices().getDocumentMapper().makeDocumentVersion(document.getId(), user);
         }
     }
-
 
     /**
      * Sets default document version.
@@ -1072,11 +1015,32 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public DocumentLoaderCachingProxy getDocumentLoaderCachingProxy() {
-        return documentLoaderCachingProxy;
-    }
+    private class DocumentsIterator implements Iterator<DocumentDomainObject> {
 
-    public void setCategoryMapper(CategoryMapper categoryMapper) {
-        this.categoryMapper = categoryMapper;
+        int[] documentIds;
+        int index;
+
+        DocumentsIterator(int[] documentIds) {
+            this.documentIds = (int[]) documentIds.clone();
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean hasNext() {
+            return index < documentIds.length;
+        }
+
+        public DocumentDomainObject next() {
+
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            int documentId = documentIds[index++];
+
+            return getDocument(documentId);
+        }
     }
 }

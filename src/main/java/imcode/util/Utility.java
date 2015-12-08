@@ -55,14 +55,12 @@ import java.util.regex.Pattern;
 
 public class Utility {
 
-	private final static Logger log = Logger.getLogger(Utility.class.getName());
-
-	private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
-
-	private final static LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
 	public static final ResultSetHandler SINGLE_STRING_HANDLER = new SingleObjectHandler(new StringFromRowFactory());
 	public static final ResultSetHandler STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
 	public static final ResultSetHandler STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
+	private final static Logger log = Logger.getLogger(Utility.class.getName());
+	private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
+	private final static LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
 	private static final String LOGGED_IN_USER = "logon.isDone";
 	private static final Pattern DOMAIN_PATTERN = Pattern.compile("^.*?([^.]+?\\.[^.]+)$");
 	private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
@@ -256,13 +254,21 @@ public class Utility {
 		return documentPathPrefix + name;
 	}
 
+	private static String formatHtmlDatetimeWithSpecial(Date datetime, String nullable) {
+		return (null == datetime) ? nullable : newSimpleDateFormat(datetime);
+	}
+
+	private static String newSimpleDateFormat(Date dateTime) {
+		return new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"
+				+ DateConstants.TIME_NO_SECONDS_FORMAT_STRING).format(dateTime);
+	}
+
+	public static String formatNullableHtmlDatetime(Date datetime) {
+		return formatHtmlDatetimeWithSpecial(datetime, null);
+	}
+
 	public static String formatHtmlDatetime(Date datetime) {
-		if (null == datetime) {
-			return "";
-		}
-		DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"
-				+ DateConstants.TIME_NO_SECONDS_FORMAT_STRING);
-		return dateFormat.format(datetime);
+		return formatHtmlDatetimeWithSpecial(datetime, "");
 	}
 
 	public static void forwardToLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -279,7 +285,9 @@ public class Utility {
 
 		response.setStatus(responseStatus);
 		request.setAttribute(VerifyUser.REQUEST_ATTRIBUTE__ERROR, ERROR__NO_PERMISSION);
-		request.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2() + "/login/index.jsp?" + VerifyUser.REQUEST_PARAMETER__NEXT_URL + "=" + URLEncoder.encode(loginTarget.toString())).forward(request, response);
+		request.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2() + "/login/index.jsp?"
+				+ VerifyUser.REQUEST_PARAMETER__NEXT_URL + "=" + URLEncoder.encode(loginTarget.toString()))
+				.forward(request, response);
 	}
 
 	public static String[] getParameterValues(HttpServletRequest request, String parameterName) {
@@ -391,48 +399,6 @@ public class Utility {
 		calendar.setTime(date);
 		calendar.add(Calendar.DATE, i);
 		return calendar.getTime();
-	}
-
-	private static class ObjectPairToMapEntryTransformer implements Transformer {
-		public Object transform(Object input) {
-			final Object[] pair = (Object[]) input;
-			return new Map.Entry() {
-				public Object getKey() {
-					return pair[0];
-				}
-
-				public Object getValue() {
-					return pair[1];
-				}
-
-				public Object setValue(Object value) {
-					throw new UnsupportedOperationException();
-				}
-			};
-		}
-	}
-
-	private static class ArrayMap extends AbstractMap {
-
-		private final Object[] array;
-		private Transformer transformer;
-
-		ArrayMap(Object[] array, Transformer transformer) {
-			this.array = array;
-			this.transformer = transformer;
-		}
-
-		public Set entrySet() {
-			return new AbstractSet() {
-				public int size() {
-					return array.length;
-				}
-
-				public Iterator iterator() {
-					return new TransformIterator(new ObjectArrayIterator(array), transformer);
-				}
-			};
-		}
 	}
 
 	public static void outputXmlDocument(HttpServletResponse response, Document xmlDocument) throws IOException {
@@ -579,5 +545,47 @@ public class Utility {
 	 */
 	public static String f(String key, Object... args) {
 		return new MessageFormat(i(key)).format(args);
+	}
+
+	private static class ObjectPairToMapEntryTransformer implements Transformer {
+		public Object transform(Object input) {
+			final Object[] pair = (Object[]) input;
+			return new Map.Entry() {
+				public Object getKey() {
+					return pair[0];
+				}
+
+				public Object getValue() {
+					return pair[1];
+				}
+
+				public Object setValue(Object value) {
+					throw new UnsupportedOperationException();
+				}
+			};
+		}
+	}
+
+	private static class ArrayMap extends AbstractMap {
+
+		private final Object[] array;
+		private Transformer transformer;
+
+		ArrayMap(Object[] array, Transformer transformer) {
+			this.array = array;
+			this.transformer = transformer;
+		}
+
+		public Set entrySet() {
+			return new AbstractSet() {
+				public int size() {
+					return array.length;
+				}
+
+				public Iterator iterator() {
+					return new TransformIterator(new ObjectArrayIterator(array), transformer);
+				}
+			};
+		}
 	}
 }

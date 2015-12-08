@@ -7,8 +7,6 @@
 <%@ page import="imcode.server.document.DocumentDomainObject" %>
 <%@ page import="imcode.server.user.UserDomainObject" %>
 <%@ page import="org.apache.commons.lang3.StringUtils" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
 <%
 	UserDomainObject user = (UserDomainObject) request.getAttribute("user");
 	DocumentDomainObject document = (DocumentDomainObject) request.getAttribute("document");
@@ -106,56 +104,3 @@
 		</section>
 	</div>
 </div>
-<%!
-	public List<String> extractDates(List<String> list) {
-		List<String> dates = new ArrayList<>();
-		for (String dateTime : list) {
-			try {
-				dates.add(dateTime.substring(0, 10));
-			} catch (StringIndexOutOfBoundsException e) {
-				dates.add(dateTime);
-			}
-		}
-		return dates;
-	}
-
-	public List<String> extractTimes(List<String> list) {
-		List<String> times = new ArrayList<>();
-		for (String dateTime : list) {
-			try {
-				times.add(dateTime.substring(16));
-			} catch (StringIndexOutOfBoundsException e) {
-				times.add(dateTime);
-			}
-		}
-		return times;
-	}
-%>
-<%
-	String[] types = {
-			"created",
-			"modified",
-			"archived",
-			"published",
-			"publication-end"
-	};
-	List<String> dateTimeList = document.getFormattedDateTimes();
-	List<String> dates = extractDates(dateTimeList);
-	List<String> times = extractTimes(dateTimeList);
-
-	for (int i = 0; i < types.length; i++) {
-		String currentType = types[i];
-		String date = dates.get(i);
-		String time = times.get(i); %>
-<div hidden class="hide-dates" id="<%= currentType %>-date" data-<%=currentType%>="<%=date%>"></div>
-<div hidden class="hide-times" id="<%= currentType %>-time" data-<%=currentType%>="<%=time%>"></div>
-
-<% } %>
-
-<% for (String type : types) { %>
-<div hidden class="new-hide-dates" id="new-<%=type%>-date" data-new-<%=type%>=""></div>
-<% } %>
-
-<script>
-
-</script>

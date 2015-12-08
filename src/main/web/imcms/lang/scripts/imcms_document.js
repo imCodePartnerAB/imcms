@@ -338,7 +338,7 @@ Imcms.Document.Viewer.prototype = {
 			.button()
 			.class("imcms-positive")
 			.html("OK")
-			.on("click", $.proxy(this.apply, this))
+			.on("click", $.proxy(this.apply, this, this._options.data.id))
 			.end()
 			.button()
 			.class("imcms-neutral")
@@ -368,7 +368,7 @@ Imcms.Document.Viewer.prototype = {
 				this.buildFile();
 				break;
 		}
-		this.buildDates();
+		this.buildDates(this._options.data.id);
 	},
 	buildLifeCycle: function () {
 		this._builder.ref("tabs")
@@ -789,7 +789,7 @@ Imcms.Document.Viewer.prototype = {
 		};
 		this._builder.ref("categories-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["categories"]));
 	},
-	buildDates: function () {
+	buildDates: function (id) {
 		this._builder.ref("tabs")
 			.div()
 			.reference("dates-tab")
@@ -900,7 +900,7 @@ Imcms.Document.Viewer.prototype = {
 			tab: this._builder.ref("dates-tab"),
 			page: this._builder.ref("dates-page")
 		};
-		this._builder.ref("dates-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["dates"]));
+		this._builder.ref("dates-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["dates"], id));
 	},
 	createModal: function () {
 		$(this._modal = document.createElement("div")).addClass("modal")
@@ -915,30 +915,24 @@ Imcms.Document.Viewer.prototype = {
 		$(collectionItem.page.getHTMLElement()).addClass("active");
 		this._activeContent = collectionItem;
 
-		this.fillDateTimes();
+		if (typeof arguments[1] == 'number') {
+			this.fillDateTimes(arguments[1]);
+		}
 	},
-	fillDateTimes: function () {
-		var types = [
-			"date",
-			"time"
-		];
-		var dates = [
-			"created",
-			"modified",
-			"archived",
-			"published",
-			"publication-end"
-		];
-
-		types.forEach(function (type) {
-			dates.forEach(function (date) {
-				$("input[name=" + date + "-" + type + "]")
-					.val($("div.hide-" + type + "s#" + date + "-" + type + "").data(date + ""));
-			})
+	fillDateTimes: function (id) {
+		$.ajax({
+			url: Imcms.contextPath + "/api/document/getDateTimes/" + id,
+			type: "GET",
+			success: function (response) {
+				console.log(response);
+				$.each(response, function (key, element) {
+					var date = key;
+					$.each(element, function (key, element) {
+						$("input[name=" + date + "-" + key + "]").val(element);
+					});
+				});
+			}
 		});
-	},
-	setDateTimeVal: function (type, date) {
-		$("input[name=" + date + "-" + type + "]").val($("div.hide-" + type + "s#" + date + "-" + type + "").data(date));
 	},
 	loadTemplates: function (data) {
 		$.each(data, $.proxy(this.addTemplate, this));
@@ -1173,30 +1167,37 @@ Imcms.Document.Viewer.prototype = {
 		});
 		$(this._builder[0]).fadeOut();
 	},
-	setDateTimes: function () {
-//		var dates = [
-//			"created",
-//			"modified",
-//			"archived",
-//			"published",
-//			"publication-end"
-//		];
-//		for (var i = 0; i < dates.length; i++) {
-//			var type = dates[i];
-//			this.setDateTimeVal("date", type);
-//			this.setDateTimeVal("time", type);
-//		}
-////?dateType=created&date=2010-12-23$time=17:55
-//		$.ajax({
-//			url: Imcms.contextPath + "/api/document/" + id + "?dateType=archive",
-//			type: "POST"
-//		})
+	saveDateTimes: function (id) {
+
+		var types = [
+			"date",
+			"time"
+		];
+
+		var dates = [
+			"created",
+			"modified",
+			"archived",
+			"published",
+			"publication-end"
+		];
+
+		dates.forEach(function (date) {
+			var url = Imcms.contextPath + "/api/document/dateTimes/" + id + "?dateType=" + date;
+			types.forEach(function (type) {
+				url += "&" + type + "=" + $("input[name=" + date + "-" + type + "]").val();
+			});
+			$.ajax({
+				url: url,
+				type: "POST"
+			})
+		});	////api/document/dateTimes/1001?dateType=created&date=2010-12-23&time=17:55
 	},
-	apply: function () {
+	apply: function (id) {
 		if (!$(this._builder[0]).find("form").valid()) {
 			return false;
 		}
-		this.setDateTimes();
+		this.saveDateTimes(id);
 		this._options.onApply(this);
 		this.destroy();
 	},

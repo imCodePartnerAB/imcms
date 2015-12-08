@@ -1,6 +1,6 @@
 package imcode.server.document.textdocument;
 
-import com.google.common.base.*;
+import com.google.common.base.Strings;
 import com.google.common.primitives.Ints;
 import com.imcode.imcms.api.Loop;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
@@ -9,92 +9,28 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
 
 import java.util.*;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
-    public static class TemplateNames implements Cloneable {
-        private String templateName;
-        private int templateGroupId;
-        private String defaultTemplateName;
-        private String defaultTemplateNameForRestricted1;
-        private String defaultTemplateNameForRestricted2;
-
-        @Override
-        public TemplateNames clone() {
-            try {
-                return (TemplateNames) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new AssertionError(e);
-            }
-        }
-
-        public String getTemplateName() {
-            return templateName;
-        }
-
-        public void setTemplateName(String templateName) {
-            this.templateName = templateName;
-        }
-
-        public int getTemplateGroupId() {
-            return templateGroupId;
-        }
-
-        public void setTemplateGroupId(int templateGroupId) {
-            this.templateGroupId = templateGroupId;
-        }
-
-        public String getDefaultTemplateName() {
-            return defaultTemplateName;
-        }
-
-        public void setDefaultTemplateName(String defaultTemplateName) {
-            this.defaultTemplateName = defaultTemplateName;
-        }
-
-        public String getDefaultTemplateNameForRestricted1() {
-            return defaultTemplateNameForRestricted1;
-        }
-
-        public void setDefaultTemplateNameForRestricted1(String defaultTemplateNameForRestricted1) {
-            this.defaultTemplateNameForRestricted1 = defaultTemplateNameForRestricted1;
-        }
-
-        public String getDefaultTemplateNameForRestricted2() {
-            return defaultTemplateNameForRestricted2;
-        }
-
-        public void setDefaultTemplateNameForRestricted2(String defaultTemplateNameForRestricted2) {
-            this.defaultTemplateNameForRestricted2 = defaultTemplateNameForRestricted2;
-        }
-    }
-
     /**
      * Images outside of loops.
      */
     private volatile ConcurrentHashMap<Integer, ImageDomainObject> images = new ConcurrentHashMap<>();
-
     /**
      * Texts outside of loops.
      */
     private volatile ConcurrentHashMap<Integer, TextDomainObject> texts = new ConcurrentHashMap<>();
-
     /**
      * Texts in loops.
      */
     private volatile ConcurrentHashMap<LoopItemRef, TextDomainObject> loopTexts = new ConcurrentHashMap<>();
-
     /**
      * Images in loops.
      */
     private volatile ConcurrentHashMap<LoopItemRef, ImageDomainObject> loopImages = new ConcurrentHashMap<>();
-
-
     /**
      * Includes map.
      * <p/>
@@ -103,19 +39,16 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Map value is an included doc's id.
      */
     private volatile ConcurrentHashMap<Integer, Integer> includesMap = new ConcurrentHashMap<>();
-
     /**
      * Menus map.
      * <p/>
      * Map index is a menu's no in this document.
      */
     private volatile ConcurrentHashMap<Integer, MenuDomainObject> menus = new ConcurrentHashMap<>();
-
     /**
      * Template names.
      */
     private volatile TemplateNames templateNames = new TemplateNames();
-
     /**
      * Content loops.
      * <p/>
@@ -123,10 +56,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */
     private volatile ConcurrentHashMap<Integer, Loop> loops = new ConcurrentHashMap<>();
 
-
     public TextDocumentDomainObject() {
         this(ID_NEW);
     }
+
 
     public TextDocumentDomainObject(int documentId) {
         setId(documentId);
@@ -190,11 +123,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return menu;
     }
 
-
     public TextDomainObject getText(int no) {
         return texts.get(no);
     }
-
 
     /**
      * @return TextDomainObject or null if text can not be found.
@@ -229,7 +160,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         texts.clear();
         loopTexts.clear();
     }
-
 
     public void setInclude(int includeIndex, int includedDocumentId) {
         includesMap.put(includeIndex, includedDocumentId);
@@ -272,25 +202,28 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return Collections.unmodifiableMap(includesMap);
     }
 
+    public void setIncludesMap(Map<Integer, Integer> includesMap) {
+        this.includesMap = new ConcurrentHashMap<>(includesMap);
+    }
+
     public String getTemplateName() {
         return templateNames.getTemplateName();
+    }
+
+    public void setTemplateName(String templateName) {
+        templateNames.setTemplateName(templateName);
     }
 
     public int getTemplateGroupId() {
         return templateNames.getTemplateGroupId();
     }
 
-    public Map<Integer, TextDomainObject> getTexts() {
-        return Collections.unmodifiableMap(texts);
-    }
-
-
-    public void setTemplateName(String templateName) {
-        templateNames.setTemplateName(templateName);
-    }
-
     public void setTemplateGroupId(int v) {
         templateNames.setTemplateGroupId(v);
+    }
+
+    public Map<Integer, TextDomainObject> getTexts() {
+        return Collections.unmodifiableMap(texts);
     }
 
     public String getDefaultTemplateName() {
@@ -431,15 +364,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     private TemplateNames cloneTemplateNames() {
-        TemplateNames templateNamesClone = templateNames.clone();
-
-        return templateNamesClone;
+        return templateNames.clone();
     }
 
     private ConcurrentHashMap<Integer, Integer> cloneIncludesMap() {
-        ConcurrentHashMap<Integer, Integer> includesMapClone = new ConcurrentHashMap<>(includesMap);
-
-        return includesMapClone;
+        return new ConcurrentHashMap<>(includesMap);
     }
 
     private ConcurrentHashMap<Integer, Loop> cloneLoopsMap() {
@@ -462,10 +391,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         this.menus = new ConcurrentHashMap<>(menus);
     }
 
-    public void setIncludesMap(Map<Integer, Integer> includesMap) {
-        this.includesMap = new ConcurrentHashMap<>(includesMap);
-    }
-
     public Map<Integer, Loop> getLoops() {
         return Collections.unmodifiableMap(loops);
     }
@@ -483,7 +408,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      *
      * @param no   content loop no in this document.
      * @param loop content loop to set.
-     * @returncontentLoop set to this document.
+     * @return contentLoop set to this document.
      */
     public Loop setLoop(int no, Loop loop) {
         loops.put(no, loop);
@@ -499,6 +424,63 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return Collections.unmodifiableMap(loopImages);
     }
 
+    public static class TemplateNames implements Cloneable {
+        private String templateName;
+        private int templateGroupId;
+        private String defaultTemplateName;
+        private String defaultTemplateNameForRestricted1;
+        private String defaultTemplateNameForRestricted2;
+
+        @Override
+        public TemplateNames clone() {
+            try {
+                return (TemplateNames) super.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new AssertionError(e);
+            }
+        }
+
+        public String getTemplateName() {
+            return templateName;
+        }
+
+        public void setTemplateName(String templateName) {
+            this.templateName = templateName;
+        }
+
+        public int getTemplateGroupId() {
+            return templateGroupId;
+        }
+
+        public void setTemplateGroupId(int templateGroupId) {
+            this.templateGroupId = templateGroupId;
+        }
+
+        public String getDefaultTemplateName() {
+            return defaultTemplateName;
+        }
+
+        public void setDefaultTemplateName(String defaultTemplateName) {
+            this.defaultTemplateName = defaultTemplateName;
+        }
+
+        public String getDefaultTemplateNameForRestricted1() {
+            return defaultTemplateNameForRestricted1;
+        }
+
+        public void setDefaultTemplateNameForRestricted1(String defaultTemplateNameForRestricted1) {
+            this.defaultTemplateNameForRestricted1 = defaultTemplateNameForRestricted1;
+        }
+
+        public String getDefaultTemplateNameForRestricted2() {
+            return defaultTemplateNameForRestricted2;
+        }
+
+        public void setDefaultTemplateNameForRestricted2(String defaultTemplateNameForRestricted2) {
+            this.defaultTemplateNameForRestricted2 = defaultTemplateNameForRestricted2;
+        }
+    }
+
     /**
      * Reference to text document loop item.
      * <p>
@@ -507,24 +489,23 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */
     public static class LoopItemRef {
 
+        private final int loopNo;
+        private final int entryNo;
+        private final int itemNo;
+        private final int cachedHashCode;
+        public LoopItemRef(int loopNo, int entryNo, int itemNo) {
+            this.loopNo = loopNo;
+            this.entryNo = entryNo;
+            this.itemNo = itemNo;
+            this.cachedHashCode = Objects.hash(loopNo, entryNo, itemNo);
+        }
+
         public static LoopItemRef of(int loopNo, int entryNo, int itemNo) {
             return new LoopItemRef(loopNo, entryNo, itemNo);
         }
 
         public static LoopItemRef of(LoopEntryRef loopEntryRef, int itemNo) {
             return new LoopItemRef(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), itemNo);
-        }
-
-        private final int loopNo;
-        private final int entryNo;
-        private final int itemNo;
-        private final int cachedHashCode;
-
-        public LoopItemRef(int loopNo, int entryNo, int itemNo) {
-            this.loopNo = loopNo;
-            this.entryNo = entryNo;
-            this.itemNo = itemNo;
-            this.cachedHashCode = Objects.hash(loopNo, entryNo, itemNo);
         }
 
         public static Optional<LoopItemRef> of(String loopNo, String contentNo, String itemNo) {

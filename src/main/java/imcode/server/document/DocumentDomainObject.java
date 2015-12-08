@@ -12,7 +12,6 @@ import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -206,7 +205,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return meta.getCreatedDatetime();
 	}
 
-	@SuppressWarnings("unused")
 	public void setCreatedDatetime(Date v) {
 		meta.setCreatedDatetime(v);
 	}
@@ -286,21 +284,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	public void setMenuText(String v) {
 		setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuText(v).build());
-	}
-
-	public List<String> getFormattedDateTimes() {
-		Date[] dates = {
-				getCreatedDatetime(),
-				getModifiedDatetime(),
-				getArchivedDatetime(),
-				getPublicationStartDatetime(),
-				getPublicationEndDatetime()
-		};
-		List<String> list = new ArrayList<>();
-		for (Date date : dates) {
-			list.add(null == date ? "--" : Utility.formatHtmlDatetime(date));
-		}
-		return list;
 	}
 
 	public Date getModifiedDatetime() {
