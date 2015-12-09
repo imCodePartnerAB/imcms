@@ -31,8 +31,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -244,7 +244,6 @@ public class DocumentController {
 	@RequestMapping(method = RequestMethod.GET, value = "/getDateTimes/{id}")
 	protected Object getDateTimes(@PathVariable(value = "id") int id) {
 
-		Map<String, Object> result = new HashMap<>();
 		Map<String, Object> map = new HashedMap<>();
 
 		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
@@ -311,66 +310,71 @@ public class DocumentController {
 
 	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/{id}")
 	protected Object changeDateTimes(@PathVariable(value = "id") int id,
-									 @RequestParam(value = "dateType", required = true, defaultValue = "") String dateType,
-									 @RequestParam(value = "date", required = true, defaultValue = "") String date,
-									 @RequestParam(value = "time", required = true, defaultValue = "") String time) {
-
+									 @RequestParam(value = "created", required = true, defaultValue = "") String created,
+									 @RequestParam(value = "modified", required = true, defaultValue = "") String modified,
+									 @RequestParam(value = "archived", required = true, defaultValue = "") String archived,
+									 @RequestParam(value = "published", required = true, defaultValue = "") String published,
+									 @RequestParam(value = "publication-end", required = true, defaultValue = "") String publicationEnd) {
+		//	/dateTimes/{id}
 		Map<String, Object> result = new HashMap<>();
-
 		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
 
+		String[] dates = {
+				created,
+				modified,
+				archived,
+				published,
+				publicationEnd
+		};
+
+		for (int i = 0; i < dates.length; i++) {
+			handleDateTime(i, doc, dates[i]);
+		}
+
 		try {
-			Date newDate = Date.from(Instant.parse(date + "T" + time + ":00.00Z"));
-			switch (dateType) {
-				case "created":
-					if (newDate.equals(doc.getCreatedDatetime())) {
-						return null;
-					}
-					doc.setCreatedDatetime(DateUtils.addHours(newDate, -3));
-					// in magic way all dates increases by two hours automatically, but this one by three.
-					break;
-
-				case "modified":
-					if (newDate.equals(doc.getModifiedDatetime())) {
-						return null;
-					}
-					doc.setModifiedDatetime(DateUtils.addHours(newDate, -2));
-					break;
-
-				case "archived":
-					if (newDate.equals(doc.getArchivedDatetime())) {
-						return null;
-					}
-					doc.setArchivedDatetime(DateUtils.addHours(newDate, -2));
-					break;
-
-				case "published":
-					if (newDate.equals(doc.getPublicationStartDatetime())) {
-						return null;
-					}
-					doc.setPublicationStartDatetime(DateUtils.addHours(newDate, -2));
-					break;
-
-				case "publication-end":
-					if (newDate.equals(doc.getPublicationEndDatetime())) {
-						return null;
-					}
-					doc.setPublicationEndDatetime(DateUtils.addHours(newDate, -2));
-					break;
-
-				default:
-					result.put("result", false);
-			}
 			Imcms.getServices().getDocumentMapper().saveDocument(doc, Imcms.getUser());
 			result.put("result", true);
-		} catch (DateTimeParseException e) {
-			//incoming date and/or time are incorrect or in empty "--:--" form
-			return null;
-		} catch (Exception e) {
+		} catch (DocumentSaveException e) {
+			e.printStackTrace();
 			LOG.error("Problem during date and time changing", e);
 			result.put("result", false);
 		}
 		return result;
+	}
+
+	private void handleDateTime(int type, DocumentDomainObject doc, String value) {
+		try {
+			Date newDate;
+			if (StringUtils.isBlank(value)) {
+				newDate = null;
+			} else {
+				newDate = DateUtils.addHours(Date.from(Instant.parse(value)), -2);
+			}
+			switch (type) {
+				case 0:
+					doc.setCreatedDatetime(newDate);
+					break;
+
+				case 1:
+					doc.setModifiedDatetime(newDate);
+					break;
+
+				case 2:
+					doc.setArchivedDatetime(newDate);
+					break;
+
+				case 3:
+					doc.setPublicationStartDatetime(newDate);
+					break;
+
+				case 4:
+					doc.setPublicationEndDatetime(newDate);
+					break;
+
+				default:
+			}
+		} catch (DateTimeException ignore) {
+		}
 	}
 
 	/**
