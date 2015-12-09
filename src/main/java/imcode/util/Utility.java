@@ -255,10 +255,10 @@ public class Utility {
 	}
 
 	private static String formatHtmlDatetimeWithSpecial(Date datetime, String nullable) {
-		return (null == datetime) ? nullable : newSimpleDateFormat(datetime);
+		return (null == datetime) ? nullable : newHtmlSimpleDateFormat(datetime);
 	}
 
-	private static String newSimpleDateFormat(Date dateTime) {
+	private static String newHtmlSimpleDateFormat(Date dateTime) {
 		return new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"
 				+ DateConstants.TIME_NO_SECONDS_FORMAT_STRING).format(dateTime);
 	}
@@ -269,6 +269,19 @@ public class Utility {
 
 	public static String formatHtmlDatetime(Date datetime) {
 		return formatHtmlDatetimeWithSpecial(datetime, "");
+	}
+
+	public static String formatDateTime(Date dateTime) {
+		return formatDatetimeWithSpecial(dateTime, "-- --");
+	}
+
+	public static String formatDatetimeWithSpecial(Date dateTime, String ifNull) {
+		return (null == dateTime) ? ifNull : newSimpleDateFormat(dateTime);
+	}
+
+	public static String newSimpleDateFormat(Date dateTime) {
+		return new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING + " "
+				+ DateConstants.TIME_NO_SECONDS_FORMAT_STRING).format(dateTime);
 	}
 
 	public static void forwardToLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

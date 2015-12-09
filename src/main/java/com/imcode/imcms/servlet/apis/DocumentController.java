@@ -128,9 +128,9 @@ public class DocumentController {
 		SolrQuery solrQuery;
 
 		if (StringUtils.isNotBlank(term)) {
-			String query = Arrays.asList(new String[]{DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE,
+			String query = Stream.of(new String[]{DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE,
 					DocumentIndex.FIELD__META_TEXT, DocumentIndex.FIELD__KEYWORD, DocumentIndex.FIELD__ALIAS,
-			}).stream().map(field -> String.format("%s:*%s*", field, term)).collect(Collectors.joining(" "));
+			}).map(field -> String.format("%s:*%s*", field, term)).collect(Collectors.joining(" "));
 			solrQuery = new SolrQuery(query);
 		} else {
 			solrQuery = new SolrQuery("*:*");
@@ -143,18 +143,18 @@ public class DocumentController {
 
 		documents = documentMapper.getDocuments(documentStoredFieldsList.stream().skip(skip).limit(take).collect(Collectors.toList()));
 
-		for (DocumentDomainObject document : documents) {
-			Map<String, Object> objectMap = new HashMap<>();
-			objectMap.put("id", document.getId());
-			objectMap.put("name", document.getName());
-			objectMap.put("status", document.getLifeCyclePhase().toString().toUpperCase().substring(0, 1));
-			objectMap.put("label", document.getHeadline());
-			objectMap.put("isArchived", document.isArchived());
-			objectMap.put("language", document.getLanguage().getName());
-			objectMap.put("alias", document.getAlias());
-			objectMap.put("type", document.getDocumentType().getName().toLocalizedString(Imcms.getUser()));
-			result.add(objectMap);
-		}
+		result.addAll(documents.stream().map(document -> new HashMap<String, Object>() {
+			{
+				put("id", document.getId());
+				put("name", document.getName());
+				put("status", document.getLifeCyclePhase().toString().toUpperCase().substring(0, 1));
+				put("label", document.getHeadline());
+				put("isArchived", document.isArchived());
+				put("language", document.getLanguage().getName());
+				put("alias", document.getAlias());
+				put("type", document.getDocumentType().getName().toLocalizedString(Imcms.getUser()));
+			}
+		}).collect(Collectors.toList()));
 		return result;
 	}
 
@@ -220,9 +220,7 @@ public class DocumentController {
 				break;
 			}
 
-
 			prepareDocument(documentEntity, documentDomainObject);
-
 
 			if (documentEntity.id != null)
 				documentMapper.saveDocument(documentDomainObject, getContentMap(documentEntity), Imcms.getUser());
@@ -245,7 +243,6 @@ public class DocumentController {
 	protected Object getDateTimes(@PathVariable(value = "id") int id) {
 
 		Map<String, Object> map = new HashedMap<>();
-
 		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
 
 		String[] types = {
@@ -263,49 +260,19 @@ public class DocumentController {
 				doc.getPublicationStartDatetime(),
 				doc.getPublicationEndDatetime()
 		};
-//		List<String> dateTimes = Stream.of(dates)
-//				.map(date -> Optional.ofNullable(Utility.formatNullableHtmlDatetime(date)).orElse("--"))
-//				.collect(Collectors.toList());
-
-		List<String> dateTimes = new ArrayList<>();
-		for (Date date : dates) {
-			dateTimes.add(null == date ? "--" : Utility.formatHtmlDatetime(date));
-		}
-
-		List<String> datesList = extractDates(dateTimes);
-		List<String> timesList = extractTimes(dateTimes);
 
 		for (int i = 0; i < types.length; i++) {
-			Map<String, Object> dateTimeMap = new HashedMap<>();
-			dateTimeMap.put("date", datesList.get(i));
-			dateTimeMap.put("time", timesList.get(i));
-			map.put(types[i], dateTimeMap);
+//			String[] dateTime = ((null == dates[i]) ? "-- --" : Utility.formatDateTime(dates[i])).split(" ");
+			String[] dateTime = Utility.formatDateTime(dates[i]).split(" ");
+//			Map<String, Object> dateTimeMap = new HashedMap<>();
+//			dateTimeMap.put("date", dateTime[0]);
+//			dateTimeMap.put("time", dateTime[1]);
+			map.put(types[i], new HashedMap<String, Object>() {{
+				put("date", dateTime[0]);
+				put("time", dateTime[1]);
+			}});
 		}
 		return map;
-	}
-
-	private List<String> extractDates(List<String> list) {
-		List<String> dates = new ArrayList<>();
-		for (String dateTime : list) {
-			try {
-				dates.add(dateTime.substring(0, 10));
-			} catch (StringIndexOutOfBoundsException e) {
-				dates.add(dateTime);
-			}
-		}
-		return dates;
-	}
-
-	private List<String> extractTimes(List<String> list) {
-		List<String> times = new ArrayList<>();
-		for (String dateTime : list) {
-			try {
-				times.add(dateTime.substring(16));
-			} catch (StringIndexOutOfBoundsException e) {
-				times.add(dateTime);
-			}
-		}
-		return times;
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/{id}")
@@ -345,7 +312,7 @@ public class DocumentController {
 	private void handleDateTime(int type, DocumentDomainObject doc, String value) {
 		try {
 			Date newDate;
-			if (StringUtils.isBlank(value)) {
+			if (value.equals("T:00Z")) {
 				newDate = null;
 			} else {
 				newDate = DateUtils.addHours(Date.from(Instant.parse(value)), -2);

@@ -915,6 +915,8 @@ Imcms.Document.Viewer.prototype = {
 		$(collectionItem.page.getHTMLElement()).addClass("active");
 		this._activeContent = collectionItem;
 
+		// bad condition
+		//todo: change condition and/or arguments[1] (id) to smth better
 		if (typeof arguments[1] == 'number') {
 			this.fillDateTimes(arguments[1]);
 		}
@@ -1189,7 +1191,6 @@ Imcms.Document.Viewer.prototype = {
 			url += date + "=" + $("input[name=" + date + "-date]").val() + "T"
 				+ $("input[name=" + date + "-time]").val() + ":00Z&";
 		});
-
 		return url;
 	},
 	apply: function (id) {
