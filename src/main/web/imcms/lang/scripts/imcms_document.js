@@ -924,7 +924,6 @@ Imcms.Document.Viewer.prototype = {
 			url: Imcms.contextPath + "/api/document/getDateTimes/" + id,
 			type: "GET",
 			success: function (response) {
-				console.log(response);
 				$.each(response, function (key, element) {
 					var date = key;
 					$.each(element, function (key, element) {
@@ -1168,12 +1167,14 @@ Imcms.Document.Viewer.prototype = {
 		$(this._builder[0]).fadeOut();
 	},
 	saveDateTimes: function (id) {
+		var url = Imcms.contextPath + "/api/document/dateTimes/" + id + "?" + this.resolveDateTimes();
 
-		var types = [
-			"date",
-			"time"
-		];
-
+		$.ajax({
+			url: url,
+			type: "POST"
+		});
+	},
+	resolveDateTimes: function () {
 		var dates = [
 			"created",
 			"modified",
@@ -1182,16 +1183,14 @@ Imcms.Document.Viewer.prototype = {
 			"publication-end"
 		];
 
+		var url = "";
+
 		dates.forEach(function (date) {
-			var url = Imcms.contextPath + "/api/document/dateTimes/" + id + "?dateType=" + date;
-			types.forEach(function (type) {
-				url += "&" + type + "=" + $("input[name=" + date + "-" + type + "]").val();
-			});
-			$.ajax({
-				url: url,
-				type: "POST"
-			})
-		});	////api/document/dateTimes/1001?dateType=created&date=2010-12-23&time=17:55
+			url += date + "=" + $("input[name=" + date + "-date]").val() + "T"
+				+ $("input[name=" + date + "-time]").val() + ":00Z&";
+		});
+
+		return url;
 	},
 	apply: function (id) {
 		if (!$(this._builder[0]).find("form").valid()) {

@@ -315,7 +315,7 @@ public class DocumentController {
 									 @RequestParam(value = "archived", required = true, defaultValue = "") String archived,
 									 @RequestParam(value = "published", required = true, defaultValue = "") String published,
 									 @RequestParam(value = "publication-end", required = true, defaultValue = "") String publicationEnd) {
-		//	/dateTimes/{id}
+		//	/dateTimes/{id}?created=2010-08-08T10:10:00Z&modified=.......
 		Map<String, Object> result = new HashMap<>();
 		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
 
