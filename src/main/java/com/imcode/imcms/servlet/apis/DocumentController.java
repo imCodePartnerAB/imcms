@@ -305,6 +305,9 @@ public class DocumentController {
 			e.printStackTrace();
 			LOG.error("Problem during date and time changing", e);
 			result.put("result", false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.put("result", true);
 		}
 		return result;
 	}

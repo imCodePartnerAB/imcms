@@ -1,3 +1,4 @@
+<%--
 <%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject,
                  org.apache.commons.lang3.StringEscapeUtils,
                  com.imcode.imcms.servlet.admin.AdminDoc,
@@ -16,7 +17,6 @@
     <head>
         <title><? web/imcms/lang/jsp/document_references.jsp/heading ?></title>
         <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script type="text/javascript" src="$contextPath/imcms/scripts/imcms_api.js"></script>
     </head>
     <body>
@@ -66,3 +66,4 @@
     </body>
 </html>
 </vel:velocity>
+--%>

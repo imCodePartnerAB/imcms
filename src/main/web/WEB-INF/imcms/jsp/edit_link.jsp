@@ -1,14 +1,14 @@
 <%@ page
 
-	import="com.imcode.imcms.flow.Page,
-	        static com.imcode.imcms.servlet.admin.LinkEditPage.Parameter.*,
-	        com.imcode.imcms.api.ContentManagementSystem,
+		import="com.imcode.imcms.api.ContentManagementSystem,
 	        com.imcode.imcms.flow.OkCancelPage,
-	        com.imcode.imcms.servlet.admin.LinkEditPage,
-	        org.apache.commons.lang.StringEscapeUtils, com.imcode.imcms.servlet.admin.EditLink, com.imcode.imcms.servlet.AjaxServlet,org.apache.commons.lang3.StringUtils"
+	        com.imcode.imcms.flow.Page,
+	        com.imcode.imcms.servlet.AjaxServlet,
+	        com.imcode.imcms.servlet.admin.EditLink,
+	        com.imcode.imcms.servlet.admin.LinkEditPage, org.apache.commons.lang.StringEscapeUtils, org.apache.commons.lang3.StringUtils"
 
-	contentType="text/html; charset=UTF-8"
-  pageEncoding="UTF-8"
+		contentType="text/html; charset=UTF-8"
+		pageEncoding="UTF-8"
 
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
 %><%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
@@ -53,7 +53,6 @@ String otherParams = link.getOtherParams().trim() ;
 <script type="text/javascript" src="<%= cp %>/imcms/$language/scripts/imcms_admin.js.jsp"></script>
 <link rel="stylesheet" type="text/css" href="<%= cp %>/imcms/css/imcms4_admin.css.jsp" />
 <script type="text/javascript" src="<%= cp %>/imcms/swe/scripts/imcms4_admin_script.js.jsp?loadJq=false"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" media="all" href="<%= cp %>/imcms/scripts/autocomplete/imcms_jquery.autocomplete.css.jsp" />
 <script type="text/javascript" src="<%= cp %>/imcms/scripts/autocomplete/imcms_jquery.autocomplete.min.js"></script>
 <script type="text/javascript" src="<%= cp %>/imcms/scripts/defaultvalue/imcms_jquery.defaultValue.js"></script>

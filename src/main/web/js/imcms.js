@@ -71,7 +71,7 @@ function initAdmin() {
 			initFold();
 			break;
 		}
-	}
+	};
 	
 	$(init);
 }
@@ -187,7 +187,7 @@ var initCalendar = function(calBtnSelector, callback) {
 		});
 
 	});
-}
+};
 
 function initSearch() {	
 	var init = function() {
@@ -367,7 +367,7 @@ var initProfileNew = function() {
 				},
 				
 				onProfileChange: function() {
-					;
+					//why this is empty?
 				}
 			});
 		} );
@@ -384,7 +384,7 @@ var initProfileNew = function() {
 					$(".postInit :input").removeAttr("disabled");
 				}
 			});
-		}
+		};
 		
 		var disableControlls = function() {
 			profile.attr("disabled", true);
@@ -392,16 +392,16 @@ var initProfileNew = function() {
 			changedName.attr("disabled", true);
 			
 			$(".postInit :input").attr("disabled", true);
-		} 
+		};
 		disableControlls();
 		
 		$("saveButton").click( function() {
 			form.submit();
 		});
-	}
+	};
 	
 	$(init);
-}
+};
 
 var initChangeSeveral = function() {
 	var init = function() {
@@ -417,8 +417,8 @@ var initChangeSeveral = function() {
 						} );
 					} );
 				}
-			});			
-		}
+			});
+		};
 		
 		
 		var lockControls = function(controls) {
@@ -427,18 +427,18 @@ var initChangeSeveral = function() {
 					$(this).attr("disabled", true);
 				}
 			} );
-		}
+		};
 		
 		var columnsSelection = function(id) {
 			return "#selected_" + id + ", " + 
 				   "#unselected_" + id + ", " +
 				   "#add_" + id + ", " + 
 				   "#remove_" + id;
-		}
+		};
 		
 		var calendarSelection = function(id) {
 			return "#" +common.escapeId("csc." + id + ".Btn");
-		}
+		};
 		
 		var extendSelection = function(id, selection) {
 			switch (id) {
@@ -455,7 +455,7 @@ var initChangeSeveral = function() {
 			}
 
 			return selection
-		}
+		};
 		
 		$("[type='radio'][value='LOCK']").each( function() {
 			var prefix = $(this).attr("id").split('.')[0];
@@ -488,7 +488,7 @@ var initChangeSeveral = function() {
 				}
 			} );
 		} );
-	}
+	};
 	
 	$(init);
-}
+};

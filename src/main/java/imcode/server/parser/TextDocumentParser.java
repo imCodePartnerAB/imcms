@@ -33,288 +33,287 @@ import java.util.Set;
 
 public class TextDocumentParser {
 
-    private final static Logger LOG = Logger.getLogger(TextDocumentParser.class);
+	private final static Logger LOG = Logger.getLogger(TextDocumentParser.class);
 
-    static Pattern hashtagPattern;
-    private static Pattern htmlTagPattern;
-    private static Pattern htmlTagHtmlPattern;
-    private static Pattern headEndTagPattern;
+	static Pattern hashtagPattern;
+	private static Pattern htmlTagPattern;
+	private static Pattern htmlTagHtmlPattern;
+	private static Pattern headEndTagPattern;
+	private static Pattern scriptTagPattern;
 
-    static {
-        Perl5Compiler patComp = new Perl5Compiler();
-        try {
-            // OK, so this pattern is simple, ugly, and prone to give a lot of errors.
-            // Very good. Very good. Know something? NO SOUP FOR YOU!
-            htmlTagPattern = patComp.compile("<[^>]+?>", Perl5Compiler.READ_ONLY_MASK);
+	static {
+		Perl5Compiler patComp = new Perl5Compiler();
+		try {
+			// OK, so this pattern is simple, ugly, and prone to give a lot of errors.
+			// Very good. Very good. Know something? NO SOUP FOR YOU!
+			htmlTagPattern = patComp.compile("<[^>]+?>", Perl5Compiler.READ_ONLY_MASK);
 
-            htmlTagHtmlPattern = patComp.compile("<[hH][tT][mM][lL]\\b", Perl5Compiler.READ_ONLY_MASK);
+			htmlTagHtmlPattern = patComp.compile("<[hH][tT][mM][lL]\\b", Perl5Compiler.READ_ONLY_MASK); //for imcmsMessage
 
-            headEndTagPattern = patComp.compile("<\\/[hH][eE][aA][dD]\\b", Perl5Compiler.READ_ONLY_MASK);
+			headEndTagPattern = patComp.compile("<\\/[hH][eE][aA][dD]\\b", Perl5Compiler.READ_ONLY_MASK); //for imcmsAdminHeadTag
 
-            hashtagPattern = patComp.compile("#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK);
-        } catch (MalformedPatternException ignored) {
-            // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
-            LOG.fatal("Bad pattern.", ignored);
-        }
-    }
+			scriptTagPattern = patComp.compile("<[sS][cC][rR][iI][pP][tT]\\b", Perl5Compiler.READ_ONLY_MASK); //for jQuery hard version script
 
-    private ImcmsServices service;
+			hashtagPattern = patComp.compile("#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK);
+		} catch (MalformedPatternException ignored) {
+			// I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
+			LOG.fatal("Bad pattern.", ignored);
+		}
+	}
 
-    public TextDocumentParser(ImcmsServices service) {
-        this.service = service;
-    }
+	private ImcmsServices service;
 
-    public void parsePage(ParserParameters paramsToParse,
-                          Writer out) throws IOException {
-        NDC.push("parsePage");
-        try {
-            StopWatch stopWatch = new StopWatch();
-            stopWatch.start();
-            untimedParsePage(paramsToParse, out);
-            stopWatch.stop();
-            LOG.trace("Parsing template took " + stopWatch.getTime() + "ms.");
-        } finally {
-            NDC.pop();
-        }
-    }
+	public TextDocumentParser(ImcmsServices service) {
+		this.service = service;
+	}
 
-    public void untimedParsePage(ParserParameters parserParameters,
-                                 Writer out) throws IOException {
-        TextDocumentViewing viewing = new TextDocumentViewing(parserParameters);
-        TextDocumentViewing previousViewing = TextDocumentViewing.putInRequest(viewing);
-        ParserParameters previousParameters = ParserParameters.putInRequest(parserParameters);
-        try {
-            DocumentRequest documentRequest = parserParameters.getDocumentRequest();
+	public static String createChangeTemplateUi(boolean templatemode, UserDomainObject user,
+												TextDocumentDomainObject document, ImcmsServices service) throws IOException {
+		String changeTemplateUi = "";
+		if (templatemode) {    //Template mode! :)
 
-            TextDocumentDomainObject document = (TextDocumentDomainObject) documentRequest.getDocument();
-            UserDomainObject user = documentRequest.getUser();
+			TemplateMapper templateMapper = service.getTemplateMapper();
 
-            String templateName = document.getTemplateName();
+			TemplateGroupDomainObject selectedTemplateGroup = user.getTemplateGroup();
+			if (null == selectedTemplateGroup) {
+				selectedTemplateGroup = templateMapper.getTemplateGroupById(document.getTemplateGroupId());
+			}
 
-            TemplateMapper templateMapper = service.getTemplateMapper();
-            if (parserParameters.getTemplateName() != null) {
-                TemplateDomainObject template1 = templateMapper.getTemplateByName(parserParameters.getTemplateName());
-                if (null != template1) {
-                    templateName = template1.getName();
-                }
-            }
+			TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(document);
 
-            TemplateDomainObject template = templateMapper.getTemplateByName(templateName);
+			Set<Integer> allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds();
+			List<TemplateGroupDomainObject> allowedTemplateGroups = templateMapper.getTemplateGroups(allowedTemplateGroupIds);
+			String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups(allowedTemplateGroups, selectedTemplateGroup);
 
-            if (template == null) {
-                template = templateMapper.getAllTemplates().get(0);
-            }
+			List<TemplateDomainObject> templates = new ArrayList<>();
+			if (allowedTemplateGroupIds.contains(selectedTemplateGroup.getId())) {
+				templates = templateMapper.getTemplatesInGroup(selectedTemplateGroup);
+			}
+			String templateId = document.getTemplateName();
+			TemplateDomainObject template = templateMapper.getTemplateByName(templateId);
+			String templatesHtmlOptionList = templateMapper.createHtmlOptionListOfTemplates(templates, template);
 
-            boolean hasAdminPanel = user.hasAdminPanelForDocument(document);
+			// Oh! I need a set of tags to be replaced in the templatefiles we'll load...
+			List<String> temptags = new ArrayList<>();
 
-            Perl5Matcher patMat = new Perl5Matcher();
+			temptags.add("#getMetaId#");
+			temptags.add("" + document.getId());
+			temptags.add("#group#");
+			temptags.add(selectedTemplateGroup.getName());
+			temptags.add("#getTemplateGroups#");
+			temptags.add(templateGroupsHtmlOptionList);
+			temptags.add("#simple_name#");
+			temptags.add(template.getName());
+			temptags.add("#getTemplatesInGroup#");
+			temptags.add(templatesHtmlOptionList);
 
-            final String imcmsMessage = service.getAdminTemplate("textdoc/imcms_message.html", user, null);
-            List imcmsAdminHeadTagTags = new ArrayList();
-            imcmsAdminHeadTagTags.add("#getMetaId#");
-            imcmsAdminHeadTagTags.add("" + document.getId());
-            imcmsAdminHeadTagTags.add("#getFlag#");
-            imcmsAdminHeadTagTags.add("" + parserParameters.getFlags());
-            final String imcmsAdminHeadTag = service.getAdminTemplate("textdoc/imcms_admin_headtag.html", user, imcmsAdminHeadTagTags);
-            if (null == template) {
-                throw new RuntimeException("Template not found: " + templateName);
-            } else if (template.getFileName().endsWith(".jsp") || template.getFileName().endsWith(".jspx")) {
-                try {
-                    HttpServletRequest request = documentRequest.getHttpServletRequest();
-                    HttpServletResponse response = documentRequest.getHttpServletResponse();
-                    String contents = Utility.getContents("/WEB-INF/templates/text/" + template.getFileName(), request, response);
-                    contents = Util.substitute(patMat, htmlTagHtmlPattern, new Substitution() {
-                        public void appendSubstitution(StringBuffer stringBuffer, MatchResult matchResult, int i,
-                                                       PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
-                                                       Pattern pattern) {
-                            stringBuffer.append(imcmsMessage).append(matchResult.group(0));
-                        }
-                    }, contents);
-                    if (hasAdminPanel) {
-                        contents = Util.substitute(patMat, headEndTagPattern, new Substitution() {
-                            public void appendSubstitution(StringBuffer stringBuffer, MatchResult matchResult, int i,
-                                                           PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
-                                                           Pattern pattern) {
-                                stringBuffer.append(imcmsAdminHeadTag).append(matchResult.group(0));
-                            }
-                        }, contents);
-                    } else {
-                        AdminPanelServlet.setCookie(AdminPanelServlet.PARAM_COOKIE_PANEL_HIDE, "", documentRequest.getHttpServletResponse());
-                    }
-                    out.write(contents);
-                } catch (ServletException e) {
-                    throw new UnhandledException(e);
-                }
-            } else {
-                String templateContent = service.getTemplateMapper().getTemplateData(templateName);
+			// Put templateadmintemplate in list of files to load.
+			changeTemplateUi = service.getAdminTemplate("textdoc/inPage_admin.html", user, temptags);
+		}  // if (templatemode)
+		return changeTemplateUi;
+	}
 
-                SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
+	public void parsePage(ParserParameters paramsToParse,
+						  Writer out) throws IOException {
+		NDC.push("parsePage");
+		try {
+			StopWatch stopWatch = new StopWatch();
+			stopWatch.start();
+			untimedParsePage(paramsToParse, out);
+			stopWatch.stop();
+			LOG.trace("Parsing template took " + stopWatch.getTime() + "ms.");
+		} finally {
+			NDC.pop();
+		}
+	}
 
-                Properties hashTags = getHashTags(user, datetimeFormatWithSeconds, document, viewing.isEditingTemplate(), parserParameters);
-                MapSubstitution hashtagsubstitution = new MapSubstitution(hashTags, true);
-                TagParser tagParser = new TagParser(this, parserParameters);
+	public void untimedParsePage(ParserParameters parserParameters,
+								 Writer out) throws IOException {
+		TextDocumentViewing viewing = new TextDocumentViewing(parserParameters);
+		TextDocumentViewing previousViewing = TextDocumentViewing.putInRequest(viewing);
+		ParserParameters previousParameters = ParserParameters.putInRequest(parserParameters);
+		try {
+			DocumentRequest documentRequest = parserParameters.getDocumentRequest();
 
-                String tagsReplaced = tagParser.replaceTags(templateContent, false);
-                tagsReplaced = Util.substitute(patMat, hashtagPattern, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL);
+			TextDocumentDomainObject document = (TextDocumentDomainObject) documentRequest.getDocument();
+			UserDomainObject user = documentRequest.getUser();
 
-                String emphasizedAndTagsReplaced = applyEmphasis(documentRequest, user, tagsReplaced, patMat);
-                String cont = Util.substitute(patMat, htmlTagHtmlPattern, new Substitution() {
-                    public void appendSubstitution(StringBuffer stringBuffer, MatchResult matchResult, int i,
-                                                   PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
-                                                   Pattern pattern) {
-                        stringBuffer.append(imcmsMessage).append(matchResult.group(0));
-                    }
-                }, emphasizedAndTagsReplaced);
-                if (hasAdminPanel) {
-                    cont = Util.substitute(patMat, headEndTagPattern, new Substitution() {
-                        public void appendSubstitution(StringBuffer stringBuffer, MatchResult matchResult, int i,
-                                                       PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
-                                                       Pattern pattern) {
-                            stringBuffer.append(imcmsAdminHeadTag).append(matchResult.group(0));
-                        }
-                    }, cont);
-                } else {
-                    AdminPanelServlet.setCookie(AdminPanelServlet.PARAM_COOKIE_PANEL_HIDE, "", documentRequest.getHttpServletResponse());
-                }
-                out.write(cont);
-            }
-        } finally {
-            if (null != previousViewing) {
-                TextDocumentViewing.putInRequest(previousViewing);
-            }
-            if (null != previousParameters) {
-                ParserParameters.putInRequest(previousParameters);
-            }
-        }
-    }
+			String templateName = document.getTemplateName();
 
+			TemplateMapper templateMapper = service.getTemplateMapper();
+			if (parserParameters.getTemplateName() != null) {
+				TemplateDomainObject template1 = templateMapper.getTemplateByName(parserParameters.getTemplateName());
+				if (null != template1) {
+					templateName = template1.getName();
+				}
+			}
 
-    private String applyEmphasis(DocumentRequest documentRequest, UserDomainObject user, String string,
-                                 Perl5Matcher patMat) {
-        String[] emp = documentRequest.getEmphasize();
-        if (emp != null) { // If we have something to emphasize...
-            String emphasize_string = service.getAdminTemplate("textdoc/emphasize.html", user, null);
-            Perl5Substitution emphasize_substitution = new Perl5Substitution(emphasize_string);
-            StringBuffer result = new StringBuffer(string.length()); // A StringBuffer to hold the result
-            PatternMatcherInput emp_input = new PatternMatcherInput(string);    // A PatternMatcherInput to match on
-            int last_html_offset = 0;
-            String non_html_tag_string;
-            while (patMat.contains(emp_input, htmlTagPattern)) {
-                int current_html_offset = emp_input.getMatchBeginOffset();
-                non_html_tag_string = result.substring(last_html_offset, current_html_offset);
-                last_html_offset = emp_input.getMatchEndOffset();
-                String html_tag_string = result.substring(current_html_offset, last_html_offset);
-                non_html_tag_string = emphasizeString(non_html_tag_string, emp, emphasize_substitution, patMat);
-                // for each string to emphasize
-                result.append(non_html_tag_string);
-                result.append(html_tag_string);
-            } // while
-            non_html_tag_string = result.substring(last_html_offset);
-            non_html_tag_string = emphasizeString(non_html_tag_string, emp, emphasize_substitution, patMat);
-            result.append(non_html_tag_string);
-            return result.toString();
-        }
-        return string;
-    }
+			TemplateDomainObject template = templateMapper.getTemplateByName(templateName);
 
-    private Properties getHashTags(UserDomainObject user, SimpleDateFormat datetimeFormatWithSeconds,
-                                   TextDocumentDomainObject document,
-                                   boolean templatemode, ParserParameters parserParameters) throws IOException {
+			if (template == null) {
+				template = templateMapper.getAllTemplates().get(0);
+			}
 
-        Properties tags = new Properties();    // A properties object to hold the results from the db...
-        // Put tags and corresponding data in Properties
-        tags.setProperty("#userName#", user.getFullName());
-        tags.setProperty("#session_counter#", String.valueOf(service.getSessionCounter()));
-        tags.setProperty("#session_counter_date#", service.getSessionCounterDateAsString());
-        tags.setProperty("#lastDate#", datetimeFormatWithSeconds.format(document.getModifiedDatetime()));
-        tags.setProperty("#metaHeadline#", document.getHeadline());
-        tags.setProperty("#metaText#", document.getMenuText());
+			boolean hasAdminPanel = user.hasAdminPanelForDocument(document);
 
-        String meta_image = document.getMenuImage();
-        if (!"".equals(meta_image)) {
-            meta_image = "<img src=\"" + meta_image + "\" border=\"0\">";
-        }
-        tags.setProperty("#metaImage#", meta_image);
-        tags.setProperty("#sys_message#", service.getSystemData().getSystemMessage());
-        tags.setProperty("#webMaster#", service.getSystemData().getWebMaster());
-        tags.setProperty("#webMasterEmail#", service.getSystemData().getWebMasterAddress());
-        tags.setProperty("#serverMaster#", service.getSystemData().getServerMaster());
-        tags.setProperty("#serverMasterEmail#", service.getSystemData().getServerMasterAddress());
+			Perl5Matcher patMat = new Perl5Matcher();
 
-        tags.setProperty("#param#", parserParameters.getParameter());
+			final String imcmsMessage = service.getAdminTemplate("textdoc/imcms_message.html", user, null);
+			final String hardJquery = service.getAdminTemplate("textdoc/imcms_hard_jquery.html", user, null);
+			List<String> imcmsAdminHeadTagTags = new ArrayList<>();
+			imcmsAdminHeadTagTags.add("#getMetaId#");
+			imcmsAdminHeadTagTags.add("" + document.getId());
+			imcmsAdminHeadTagTags.add("#getFlag#");
+			imcmsAdminHeadTagTags.add("" + parserParameters.getFlags());
+			final String imcmsAdminHeadTag = service.getAdminTemplate("textdoc/imcms_admin_headtag.html", user, imcmsAdminHeadTagTags);
+			if (null == template) {
+				throw new RuntimeException("Template not found: " + templateName);
+			} else if (template.getFileName().endsWith(".jsp") || template.getFileName().endsWith(".jspx")) {
+				try {
+					HttpServletRequest request = documentRequest.getHttpServletRequest();
+					HttpServletResponse response = documentRequest.getHttpServletResponse();
+					String contents = Utility.getContents("/WEB-INF/templates/text/" + template.getFileName(), request, response);
+					contents = Util.substitute(patMat, htmlTagHtmlPattern,
+							(stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
+									-> stringBuffer.append(imcmsMessage).append(matchResult.group(0)),
+							contents);
+					contents = Util.substitute(patMat, scriptTagPattern,
+							(stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
+									-> stringBuffer.append(hardJquery).append(matchResult.group(0)),
+							contents);
+					if (hasAdminPanel) {
+						contents = Util.substitute(patMat, headEndTagPattern,
+								(stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
+										-> stringBuffer.append(imcmsAdminHeadTag).append(matchResult.group(0)),
+								contents);
+					} else {
+						AdminPanelServlet.setCookie(AdminPanelServlet.PARAM_COOKIE_PANEL_HIDE, "", documentRequest.getHttpServletResponse());
+					}
+					out.write(contents);
+				} catch (ServletException e) {
+					throw new UnhandledException(e);
+				}
+			} else {
+				String templateContent = service.getTemplateMapper().getTemplateData(templateName);
 
-        if (parserParameters.getFlags() >= 0 && parserParameters.isAdminButtonsVisible()) {
-            tags.setProperty("#adminMode#", Html.getAdminButtons(user, document, parserParameters.getDocumentRequest().getHttpServletRequest(), parserParameters.getDocumentRequest().getHttpServletResponse()));
-        }
+				SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
 
-        String changeTemplateUi = createChangeTemplateUi(templatemode, user, document, service);
-        tags.setProperty("#changePage#", changeTemplateUi);
-        return tags;
-    }
+				Properties hashTags = getHashTags(user, datetimeFormatWithSeconds, document, viewing.isEditingTemplate(), parserParameters);
+				MapSubstitution hashtagsubstitution = new MapSubstitution(hashTags, true);
+				TagParser tagParser = new TagParser(this, parserParameters);
 
-    public static String createChangeTemplateUi(boolean templatemode, UserDomainObject user,
-                                                TextDocumentDomainObject document, ImcmsServices service) throws IOException {
-        String changeTemplateUi = "";
-        if (templatemode) {    //Templatemode! :)
+				String tagsReplaced = tagParser.replaceTags(templateContent, false);
+				tagsReplaced = Util.substitute(patMat, hashtagPattern, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL);
 
-            TemplateMapper templateMapper = service.getTemplateMapper();
+				String emphasizedAndTagsReplaced = applyEmphasis(documentRequest, user, tagsReplaced, patMat);
+				String cont = Util.substitute(patMat, htmlTagHtmlPattern,
+						(stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
+								-> stringBuffer.append(imcmsMessage).append(matchResult.group(0)),
+						emphasizedAndTagsReplaced);
+				cont = Util.substitute(patMat, scriptTagPattern,
+						(stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
+								-> stringBuffer.append(hardJquery).append(matchResult.group(0)),
+						cont);
+				if (hasAdminPanel) {
+					cont = Util.substitute(patMat, headEndTagPattern,
+							(stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
+									-> stringBuffer.append(imcmsAdminHeadTag).append(matchResult.group(0)),
+							cont);
+				} else {
+					AdminPanelServlet.setCookie(AdminPanelServlet.PARAM_COOKIE_PANEL_HIDE, "", documentRequest.getHttpServletResponse());
+				}
+				out.write(cont);
+			}
+		} finally {
+			if (null != previousViewing) {
+				TextDocumentViewing.putInRequest(previousViewing);
+			}
+			if (null != previousParameters) {
+				ParserParameters.putInRequest(previousParameters);
+			}
+		}
+	}
 
-            TemplateGroupDomainObject selectedTemplateGroup = user.getTemplateGroup();
-            if (null == selectedTemplateGroup) {
-                selectedTemplateGroup = templateMapper.getTemplateGroupById(document.getTemplateGroupId());
-            }
+	private String applyEmphasis(DocumentRequest documentRequest, UserDomainObject user, String string,
+								 Perl5Matcher patMat) {
+		String[] emp = documentRequest.getEmphasize();
+		if (emp != null) { // If we have something to emphasize...
+			String emphasize_string = service.getAdminTemplate("textdoc/emphasize.html", user, null);
+			Perl5Substitution emphasize_substitution = new Perl5Substitution(emphasize_string);
+			StringBuffer result = new StringBuffer(string.length()); // A StringBuffer to hold the result
+			PatternMatcherInput emp_input = new PatternMatcherInput(string);    // A PatternMatcherInput to match on
+			int last_html_offset = 0;
+			String non_html_tag_string;
+			while (patMat.contains(emp_input, htmlTagPattern)) {
+				int current_html_offset = emp_input.getMatchBeginOffset();
+				non_html_tag_string = result.substring(last_html_offset, current_html_offset);
+				last_html_offset = emp_input.getMatchEndOffset();
+				String html_tag_string = result.substring(current_html_offset, last_html_offset);
+				non_html_tag_string = emphasizeString(non_html_tag_string, emp, emphasize_substitution, patMat);
+				// for each string to emphasize
+				result.append(non_html_tag_string);
+				result.append(html_tag_string);
+			} // while
+			non_html_tag_string = result.substring(last_html_offset);
+			non_html_tag_string = emphasizeString(non_html_tag_string, emp, emphasize_substitution, patMat);
+			result.append(non_html_tag_string);
+			return result.toString();
+		}
+		return string;
+	}
 
-            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(document);
+	private Properties getHashTags(UserDomainObject user, SimpleDateFormat datetimeFormatWithSeconds,
+								   TextDocumentDomainObject document,
+								   boolean templatemode, ParserParameters parserParameters) throws IOException {
 
-            Set allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds();
-            List allowedTemplateGroups = templateMapper.getTemplateGroups(allowedTemplateGroupIds);
-            String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups(allowedTemplateGroups, selectedTemplateGroup);
+		Properties tags = new Properties();    // A properties object to hold the results from the db...
+		// Put tags and corresponding data in Properties
+		tags.setProperty("#userName#", user.getFullName());
+		tags.setProperty("#session_counter#", String.valueOf(service.getSessionCounter()));
+		tags.setProperty("#session_counter_date#", service.getSessionCounterDateAsString());
+		tags.setProperty("#lastDate#", datetimeFormatWithSeconds.format(document.getModifiedDatetime()));
+		tags.setProperty("#metaHeadline#", document.getHeadline());
+		tags.setProperty("#metaText#", document.getMenuText());
 
-            List<TemplateDomainObject> templates = new ArrayList<TemplateDomainObject>();
-            if (allowedTemplateGroupIds.contains(new Integer(selectedTemplateGroup.getId()))) {
-                templates = templateMapper.getTemplatesInGroup(selectedTemplateGroup);
-            }
-            String templateId = document.getTemplateName();
-            TemplateDomainObject template = templateMapper.getTemplateByName(templateId);
-            String templatesHtmlOptionList = templateMapper.createHtmlOptionListOfTemplates(templates, template);
+		String meta_image = document.getMenuImage();
+		if (!"".equals(meta_image)) {
+			meta_image = "<img src=\"" + meta_image + "\" border=\"0\">";
+		}
+		tags.setProperty("#metaImage#", meta_image);
+		tags.setProperty("#sys_message#", service.getSystemData().getSystemMessage());
+		tags.setProperty("#webMaster#", service.getSystemData().getWebMaster());
+		tags.setProperty("#webMasterEmail#", service.getSystemData().getWebMasterAddress());
+		tags.setProperty("#serverMaster#", service.getSystemData().getServerMaster());
+		tags.setProperty("#serverMasterEmail#", service.getSystemData().getServerMasterAddress());
 
-            // Oh! I need a set of tags to be replaced in the templatefiles we'll load...
-            List temptags = new ArrayList();
+		tags.setProperty("#param#", parserParameters.getParameter());
 
-            temptags.add("#getMetaId#");
-            temptags.add("" + document.getId());
-            temptags.add("#group#");
-            temptags.add(selectedTemplateGroup.getName());
-            temptags.add("#getTemplateGroups#");
-            temptags.add(templateGroupsHtmlOptionList);
-            temptags.add("#simple_name#");
-            temptags.add(template.getName());
-            temptags.add("#getTemplatesInGroup#");
-            temptags.add(templatesHtmlOptionList);
+		if (parserParameters.getFlags() >= 0 && parserParameters.isAdminButtonsVisible()) {
+			tags.setProperty("#adminMode#", Html.getAdminButtons(user, document, parserParameters.getDocumentRequest().getHttpServletRequest(), parserParameters.getDocumentRequest().getHttpServletResponse()));
+		}
 
-            // Put templateadmintemplate in list of files to load.
-            changeTemplateUi = service.getAdminTemplate("textdoc/inPage_admin.html", user, temptags);
-        }  // if (templatemode)
-        return changeTemplateUi;
-    }
+		String changeTemplateUi = createChangeTemplateUi(templatemode, user, document, service);
+		tags.setProperty("#changePage#", changeTemplateUi);
+		return tags;
+	}
 
-    private String emphasizeString(String string, String[] emp, Substitution emphasize_substitution,
-                                   PatternMatcher patMat) {
-        String emphasizedString = string;
+	private String emphasizeString(String string, String[] emp, Substitution emphasize_substitution,
+								   PatternMatcher patMat) {
+		String emphasizedString = string;
 
-        Perl5Compiler empCompiler = new Perl5Compiler();
-        // for each string to emphasize
-        for (String anEmp : emp) {
-            try {
-                Pattern empPattern = empCompiler.compile(
-                        "(" + Perl5Compiler.quotemeta(anEmp) + ")", Perl5Compiler.CASE_INSENSITIVE_MASK);
-                emphasizedString = Util.substitute(patMat, empPattern, emphasize_substitution, emphasizedString, Util.SUBSTITUTE_ALL);
-            } catch (MalformedPatternException ex) {
-                throw new ShouldNotBeThrownException(ex);
-            }
-        }
-        return emphasizedString;
-    }
+		Perl5Compiler empCompiler = new Perl5Compiler();
+		// for each string to emphasize
+		for (String anEmp : emp) {
+			try {
+				Pattern empPattern = empCompiler.compile(
+						"(" + Perl5Compiler.quotemeta(anEmp) + ")", Perl5Compiler.CASE_INSENSITIVE_MASK);
+				emphasizedString = Util.substitute(patMat, empPattern, emphasize_substitution, emphasizedString, Util.SUBSTITUTE_ALL);
+			} catch (MalformedPatternException ex) {
+				throw new ShouldNotBeThrownException(ex);
+			}
+		}
+		return emphasizedString;
+	}
 
 
 }

@@ -28,7 +28,7 @@ public class TextDocument extends Document {
 	}
 
 	/**
-	 * @return A SortedMap that contains the textFileds index as keys, and instaces of TextFields as values. Only the
+	 * @return A SortedMap that contains the textFileds index as keys, and instances of TextFields as values. Only the
 	 * TextFields that contains any text is returned.
 	 */
 	public SortedMap<Integer, TextField> getTextFields() {
@@ -48,7 +48,7 @@ public class TextDocument extends Document {
 	}
 
 	/**
-	 * @return A SortedMap that contains the images index as keys, and instaces of Image as values. Only the
+	 * @return A SortedMap that contains the images index as keys, and instances of Image as values. Only the
 	 * Image that has an url is returned.
 	 */
 	public SortedMap<Integer, Image> getImages() {
@@ -69,7 +69,7 @@ public class TextDocument extends Document {
 	}
 
 	/**
-	 * @return A SortedMap that contains the index of the include as keys, and instaces of Document as values. Only the
+	 * @return A SortedMap that contains the index of the include as keys, and instances of Document as values. Only the
 	 * includes that has a document is returned.
 	 */
 	public SortedMap<Integer, Document> getIncludes() {
@@ -142,15 +142,15 @@ public class TextDocument extends Document {
 		return contentManagementSystem.getTemplateService().getTemplate(templateName);
 	}
 
+	public void setTemplate(Template template) {
+		setTemplate(null, template);
+	}
+
 	public void setTemplate(TemplateGroup templateGroup, Template template) {
 		getInternalTextDocument().setTemplateName(template.getInternal().getName());
 		if (null != templateGroup) {
 			getInternalTextDocument().setTemplateGroupId(templateGroup.getId());
 		}
-	}
-
-	public void setTemplate(Template template) {
-		setTemplate(null, template);
 	}
 
 	public Document getInclude(int includeIndexInDocument) {
@@ -200,22 +200,16 @@ public class TextDocument extends Document {
 		return contentManagementSystem;
 	}
 
+	public Loop getLoop(int no) {
+		return getInternal().getLoop(no);
+	}
+
+	public void setLoop(int no, Loop loop) {
+		getInternal().setLoop(no, loop);
+	}
+
 	public static class TextField {
 		private final TextDomainObject imcmsText;
-
-		public enum Format {
-			PLAIN(TextDomainObject.TEXT_TYPE_PLAIN),
-			HTML(TextDomainObject.TEXT_TYPE_HTML);
-			private final int type;
-
-			Format(int type) {
-				this.type = type;
-			}
-
-			public int getType() {
-				return type;
-			}
-		}
 
 		private TextField(TextDomainObject imcmsText) {
 			this.imcmsText = imcmsText;
@@ -246,6 +240,20 @@ public class TextDocument extends Document {
 		 */
 		public String getHtmlFormattedText() {
 			return imcmsText.toHtmlString();
+		}
+
+		public enum Format {
+			PLAIN(TextDomainObject.TEXT_TYPE_PLAIN),
+			HTML(TextDomainObject.TEXT_TYPE_HTML);
+			private final int type;
+
+			Format(int type) {
+				this.type = type;
+			}
+
+			public int getType() {
+				return type;
+			}
 		}
 	}
 
@@ -361,16 +369,16 @@ public class TextDocument extends Document {
 			internalTextDocument.getMenu(menuIndex).removeMenuItemByDocumentId(documentToRemove.getId());
 		}
 
+		public int getSortOrder() {
+			return internalTextDocument.getMenu(menuIndex).getSortOrder();
+		}
+
 		/**
 		 * @param sortOrder One of {@link #SORT_BY_HEADLINE}, {@link #SORT_BY_MANUAL_ORDER_DESCENDING},
 		 *                  {@link #SORT_BY_MODIFIED_DATETIME_DESCENDING}
 		 */
 		public void setSortOrder(int sortOrder) {
 			internalTextDocument.getMenu(menuIndex).setSortOrder(sortOrder);
-		}
-
-		public int getSortOrder() {
-			return internalTextDocument.getMenu(menuIndex).getSortOrder();
 		}
 
 		/**
@@ -449,13 +457,5 @@ public class TextDocument extends Document {
 			return documents;
 		}
 
-	}
-
-	public Loop getLoop(int no) {
-		return getInternal().getLoop(no);
-	}
-
-	public void setLoop(int no, Loop loop) {
-		getInternal().setLoop(no, loop);
 	}
 }

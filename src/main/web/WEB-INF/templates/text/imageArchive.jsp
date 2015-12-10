@@ -2,11 +2,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="imcode.server.ImcmsConstants" %>
-<%@ page import="imcode.server.Imcms" %>
-<%@ page import="com.imcode.imcms.servlet.VerifyUser" %>
-<%@ page import="com.imcode.imcms.api.TextDocumentViewing" %>
 <%@ page import="com.imcode.imcms.api.Document" %>
+<%@ page import="com.imcode.imcms.api.TextDocumentViewing" %>
+<%@ page import="com.imcode.imcms.servlet.VerifyUser" %>
+<%@ page import="imcode.server.Imcms" %>
+<%@ page import="imcode.server.ImcmsConstants" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -17,7 +17,6 @@
     <link href="${contextPath}/css/standalone_style.css.jsp" rel="stylesheet" type="text/css"/>
     <link type="text/css" rel="stylesheet" href="${contextPath}/css/jquery.qtip.css"/>
     
-    <script type="text/javascript" src="${contextPath}/js/jquery-1.6.4.min.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.ba-resize.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {

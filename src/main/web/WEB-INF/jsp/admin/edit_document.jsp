@@ -11,7 +11,6 @@
     <title>${document.headline} - Powered by imCMS from imCode Partner AB</title>
     <meta charset="utf-8"/>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
     <script src="${pageContext.request.contextPath}/js/jquery.nearest.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
