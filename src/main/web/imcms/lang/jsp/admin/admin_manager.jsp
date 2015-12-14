@@ -1,9 +1,9 @@
-<%@ page import="com.imcode.imcms.servlet.beans.AdminManagerSubreport,
+<%@ page import="com.imcode.db.DataSourceDatabase,
+                 com.imcode.imcms.api.ContentManagementSystem,
+                 com.imcode.imcms.mapping.ProfileMapper,
+                 com.imcode.imcms.servlet.beans.AdminManagerSubreport,
                  com.imcode.imcms.servlet.superadmin.AdminManager,
-                 imcode.server.document.DocumentTypeDomainObject,
-                 imcode.util.jscalendar.JSCalendar,
-                 java.util.Iterator,
-                 java.util.List, com.imcode.imcms.api.ContentManagementSystem, com.imcode.db.DataSourceDatabase, com.imcode.imcms.mapping.ProfileMapper, imcode.server.document.Profile, org.apache.commons.lang3.StringEscapeUtils"%>
+                 imcode.server.document.DocumentTypeDomainObject, imcode.server.document.Profile, imcode.util.jscalendar.JSCalendar, org.apache.commons.lang3.StringEscapeUtils, java.util.Iterator, java.util.List" %>
 <%@page contentType="text/html; charset=UTF-8" %><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
@@ -33,6 +33,8 @@
 <title><? web/imcms/lang/jsp/admin/admin_manager.jsp/6 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="//code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts()%>
 
