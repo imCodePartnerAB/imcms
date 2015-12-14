@@ -8,10 +8,6 @@
 String cp = request.getContextPath() ;
 
 %>
-
-        <jsp:include page="../../../js/jquery-1.11.3.min.js" />
-        <jsp:include page="../../../js/jquery-ui.min.js" />
-
         <vel:velocity>
 
     /* *******************************************************************************************
