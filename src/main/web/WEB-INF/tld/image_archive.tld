@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<taglib xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns="http://java.sun.com/xml/ns/j2ee"
 		xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
 		version="2.0">
 
@@ -10,7 +10,7 @@
 
 	<tag>
 		<name>libraryChildren</name>
-		<tag-class>com.imcode.imcms.addon.imagearchive.tag.LibraryChildren</tag-class>
+		<tag-class>com.imcode.imcms.imagearchive.tag.LibraryChildren</tag-class>
 		<body-content>empty</body-content>
 		<attribute>
 			<name>library</name>
@@ -31,7 +31,7 @@
 
 	<tag>
 		<name>param</name>
-		<tag-class>com.imcode.imcms.addon.imagearchive.tag.param.ParamTag</tag-class>
+		<tag-class>com.imcode.imcms.imagearchive.tag.param.ParamTag</tag-class>
 		<body-content>empty</body-content>
 
 		<attribute>
@@ -42,7 +42,7 @@
 	</tag>
 	<tag>
 		<name>params</name>
-		<tag-class>com.imcode.imcms.addon.imagearchive.tag.param.ParamsTag</tag-class>
+		<tag-class>com.imcode.imcms.imagearchive.tag.param.ParamsTag</tag-class>
 		<body-content>JSP</body-content>
 
 		<attribute>
@@ -54,7 +54,7 @@
 
 	<tag>
 		<name>pagination</name>
-		<tag-class>com.imcode.imcms.addon.imagearchive.tag.pagination.PaginationTag</tag-class>
+		<tag-class>com.imcode.imcms.imagearchive.tag.pagination.PaginationTag</tag-class>
 		<body-content>JSP</body-content>
 
 		<attribute>
@@ -129,29 +129,29 @@
 
 	<function>
 		<name>newlineToBr</name>
-		<function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
+		<function-class>com.imcode.imcms.imagearchive.tag.func.Functions</function-class>
 		<function-signature>java.lang.String newlineToBr(java.lang.String)</function-signature>
 	</function>
 	<function>
 		<name>abbreviate</name>
-		<function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
+		<function-class>com.imcode.imcms.imagearchive.tag.func.Functions</function-class>
 		<function-signature>java.lang.String abbreviate(java.lang.String, int)</function-signature>
 	</function>
 	<function>
 		<name>join</name>
-		<function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
+		<function-class>com.imcode.imcms.imagearchive.tag.func.Functions</function-class>
 		<function-signature>java.lang.String join(java.util.Collection, java.lang.String)</function-signature>
 	</function>
 	<function>
 		<name>isInArchive</name>
-		<function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
-		<function-signature>boolean isInArchive(com.imcode.imcms.addon.imagearchive.dto.LibraryEntryDto,
+		<function-class>com.imcode.imcms.imagearchive.tag.func.Functions</function-class>
+		<function-signature>boolean isInArchive(com.imcode.imcms.imagearchive.dto.LibraryEntryDto,
 			javax.servlet.jsp.PageContext)
 		</function-signature>
 	</function>
 	<function>
 		<name>doubleToFractionsString</name>
-		<function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
+		<function-class>com.imcode.imcms.imagearchive.tag.func.Functions</function-class>
 		<function-signature>java.lang.String doubleToFractionsString(java.lang.Double)</function-signature>
 	</function>
 

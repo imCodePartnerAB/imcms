@@ -26,7 +26,7 @@ db-url = ${db-url-without-db-name}${db-name}?characterEncoding=utf8
 hibernate-dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 
 # For MSSQL
-# hibernate-dialect = com.imcode.imcms.addon.imagearchive.util.SQLServerDialect
+# hibernate-dialect = SQLServerDialect
 
 external-authenticator =
 external-user-and-role-registry =

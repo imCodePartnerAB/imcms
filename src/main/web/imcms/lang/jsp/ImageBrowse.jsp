@@ -1,10 +1,10 @@
 <%@ page import="com.imcode.imcms.servlet.admin.ImageBrowse,
-                 org.apache.commons.lang.StringEscapeUtils,
                  com.imcode.imcms.servlet.admin.ImageBrowser,
-                 imcode.util.HttpSessionUtils,
-                 imcode.server.Imcms,
                  com.imcode.imcms.util.l10n.LocalizedMessage,
-                 imcode.util.Utility"
+                 imcode.server.Imcms,
+                 imcode.util.HttpSessionUtils,
+                 imcode.util.Utility,
+                 org.apache.commons.lang.StringEscapeUtils"
         contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"%><%
 
@@ -54,7 +54,9 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
         </tr>
         <tr>
             <td>
-            <select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_DIRECTORY %>" size="15" onDblClick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON ) %>'].click();" style="width:270">
+				<select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_DIRECTORY %>" size="15"
+						onDblClick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON ) %>'].click();"
+						style="width:270px">
                 <%=imageBrowsePage.getDirectoriesOptionList()%>
             </select></td>
         </tr>
@@ -70,7 +72,9 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
             </tr>
             <tr>
                 <td>
-                    <select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_URL %>" size="15" onDblClick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON ) %>'].click();" style="width:270">
+					<select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_URL %>" size="15"
+							onDblClick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON ) %>'].click();"
+							style="width:270px">
                         <%=imageBrowsePage.getImagesOptionList()%>
                     </select>
                 </td>

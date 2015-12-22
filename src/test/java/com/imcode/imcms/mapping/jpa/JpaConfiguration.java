@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping.jpa;
 
 import com.google.common.base.Preconditions;
-import com.imcode.imcms.util.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,14 +12,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
@@ -44,7 +41,7 @@ public class JpaConfiguration {
         final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
        // em.setPersistenceUnitName("com.imcode.imcms");
         em.setDataSource(dataSource());
-        em.setPackagesToScan("com.imcode.imcms.mapping", "com.imcode.imcms.addon.imagearchive", "com.imcode.imcms.mapping.jpa");
+        em.setPackagesToScan("com.imcode.imcms.mapping", "com.imcode.imcms.imagearchive", "com.imcode.imcms.mapping.jpa");
 
         final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

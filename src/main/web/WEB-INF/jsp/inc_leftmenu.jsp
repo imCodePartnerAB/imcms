@@ -2,8 +2,8 @@
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ page
 
-	import="com.imcode.imcms.addon.imagearchive.util.treemenu.ImcmsTreeMenu,
-	        com.imcode.imcms.addon.imagearchive.util.treemenu.TreeMenuItem,
+	import="ImcmsTreeMenu,
+	        TreeMenuItem,
 	        com.imcode.imcms.api.*"
 
 	contentType="text/html; charset=UTF-8"

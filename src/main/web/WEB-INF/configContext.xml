@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
-    
-    <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
-        <property name="customEditors">
-            <map>
-                <entry key="java.io.File" value="com.imcode.imcms.addon.imagearchive.util.FileEditor"/>
-                <entry key="java.io.File[]" value="com.imcode.imcms.addon.imagearchive.util.FileArrayEditor"/>
-            </map>
-        </property>
-    </bean>
-    
-    <bean class="com.imcode.imcms.addon.imagearchive.Config">
-        <property name="storagePath" value="${ImageArchiveStoragePath}"/>
-        <property name="tmpPath" value="${ImageArchiveTempPath}"/>
-        <property name="imageMagickPath" value="${ImageMagickPath}"/>
-        <property name="imagesPath" value="${ImageArchiveImagesPath}"/>
-        <property name="librariesPath" value="${ImageArchiveLibrariesPath}"/>
-        <property name="oldLibraryPaths" value="${ImageArchiveOldLibraryPaths}"/>
-        <property name="usersLibraryFolder" value="${ImageArchiveUsersLibraryFolder}"/>
-        <property name="maxImageUploadSize" value="${ImageArchiveMaxImageUploadSize}"/>
-        <property name="maxZipUploadSize" value="${ImageArchiveMaxZipUploadSize}"/>
-        <property name="languages">
-            <bean class="org.apache.commons.collections.bidimap.DualHashBidiMap">
-                <constructor-arg index="0" type="java.util.Map">
-                    <map key-type="java.lang.String" value-type="java.lang.String">
-                        <entry key="eng" value="en"/>
-                        <entry key="swe" value="sv"/>
-                    </map>
-                </constructor-arg>
-            </bean>
-        </property>
-    </bean>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns="http://www.springframework.org/schema/beans"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="customEditors">
+			<map>
+				<entry key="java.io.File" value="com.imcode.imcms.imagearchive.util.FileEditor"/>
+				<entry key="java.io.File[]" value="com.imcode.imcms.imagearchive.util.FileArrayEditor"/>
+			</map>
+		</property>
+	</bean>
+
+	<bean class="com.imcode.imcms.imagearchive.Config">
+		<property name="storagePath" value="${ImageArchiveStoragePath}"/>
+		<property name="tmpPath" value="${ImageArchiveTempPath}"/>
+		<property name="imageMagickPath" value="${ImageMagickPath}"/>
+		<property name="imagesPath" value="${ImageArchiveImagesPath}"/>
+		<property name="librariesPath" value="${ImageArchiveLibrariesPath}"/>
+		<property name="oldLibraryPaths" value="${ImageArchiveOldLibraryPaths}"/>
+		<property name="usersLibraryFolder" value="${ImageArchiveUsersLibraryFolder}"/>
+		<property name="maxImageUploadSize" value="${ImageArchiveMaxImageUploadSize}"/>
+		<property name="maxZipUploadSize" value="${ImageArchiveMaxZipUploadSize}"/>
+		<property name="languages">
+			<bean class="org.apache.commons.collections.bidimap.DualHashBidiMap">
+				<constructor-arg index="0" type="java.util.Map">
+					<map key-type="java.lang.String" value-type="java.lang.String">
+						<entry key="eng" value="en"/>
+						<entry key="swe" value="sv"/>
+					</map>
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
 </beans>

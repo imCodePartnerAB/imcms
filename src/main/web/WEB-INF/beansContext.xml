@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns="http://www.springframework.org/schema/beans"
+	   xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
-    <!--bean class="com.imcode.imcms.addon.imagearchive.service.Facade"/>
-    <bean class="com.imcode.imcms.addon.imagearchive.service.UserService"/>
-    <bean class="com.imcode.imcms.addon.imagearchive.service.CommonService"/>
-    <bean class="com.imcode.imcms.addon.imagearchive.service.file.FileService"/>
-    <bean class="com.imcode.imcms.addon.imagearchive.service.ImageService"/>
-    <bean class="com.imcode.imcms.addon.imagearchive.service.RoleService"/>
-    <bean class="com.imcode.imcms.addon.imagearchive.service.LibraryService"/>
-    <bean class="com.imcode.imcms.addon.imagearchive.service.CategoryService"/-->
 </beans>
