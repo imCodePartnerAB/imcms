@@ -1,5 +1,6 @@
 package imcode.server.document;
 
+import com.imcode.db.DatabaseException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
@@ -265,6 +266,16 @@ public class TemplateMapper {
             }
         }
         return true;
+    }
+
+    public boolean updateAvaliability(String templateName, boolean isAvaliable){
+        try {
+            database.execute(new SqlUpdateCommand("UPDATE template SET is_hidden = ? WHERE template_name = ?", new Object[]{isAvaliable, templateName}));
+            return true;
+        }
+        catch (DatabaseException e){
+            return false;
+        }
     }
 
     public File getTemplateDirectory() {

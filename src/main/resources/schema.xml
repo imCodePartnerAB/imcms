@@ -1,4 +1,4 @@
-<schema version="6.16" scripts-dir="WEB-INF/sql"
+<schema version="6.17" scripts-dir="WEB-INF/sql"
         xsi:noNamespaceSchemaLocation="schema.xsd"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
@@ -75,6 +75,9 @@
         </diff>
         <diff from="6.15" to="6.16">
             <script>diff/diff-6.15-6.16-mysql.sql</script>
+        </diff>
+        <diff from="6.16" to="6.17">
+            <script>diff/diff-6.16-6.17-mysql.sql</script>
         </diff>
     </diffs>
 </schema>

@@ -31,6 +31,7 @@ public class TemplateAdmin extends HttpServlet {
     private static final String ADMIN_TEMPLATE_ADD = "templategroup_add.html";
     private static final String ADMIN_TEMPLATE_EDIT = "template_edit.html";
     private static final String ADMIN_TEMPLATE_RENAME = "template_rename.html";
+    private static final String ADMIN_TEMPLATE_AVALIABILITY = "template_availability.html";
     private static final String TEMPLATE_DELETE = "template_delete.html";
     private static final String TEMPLATE_DEMO_UPLOAD = "templatedemo_upload.html";
     private static final String TEMPLATE_UPLOAD = "template_upload.html";
@@ -85,6 +86,8 @@ public class TemplateAdmin extends HttpServlet {
             htmlStr = createDeleteTemplateDialog(templateMapper, user, lang, imcref);
         } else if (req.getParameter("rename_template") != null) {
             htmlStr = createRenameTemplateDialog(lang, imcref, templateMapper, user, null);
+        } else if (req.getParameter("change_availability_template") != null) {
+            htmlStr = createChangeAvailabilityTemplateDialog(lang, imcref, templateMapper, user, null);
         } else if (req.getParameter("get_template") != null) {
             htmlStr = createDownloadTemplateDialog(lang, imcref, templateMapper, user);
         } else if (req.getParameter("edit_template") != null) {
@@ -166,6 +169,18 @@ public class TemplateAdmin extends HttpServlet {
         vec.add("#error#");
         vec.add(null == error ? "" : error.toLocalizedString(user));
         return imcref.getAdminTemplate(ADMIN_TEMPLATE_RENAME, user, vec);
+    }
+
+    static String createChangeAvailabilityTemplateDialog(String lang, ImcmsServices imcref, TemplateMapper templateMapper,
+                                             UserDomainObject user, LocalizedMessage error) throws IOException {
+        List vec = new ArrayList();
+        vec.add("#language#");
+        vec.add(lang);
+        vec.add("#templates#");
+        vec.add(templateMapper.createHtmlOptionListOfTemplates(imcref.getTemplateMapper().getAllTemplates(), null));
+        vec.add("#error#");
+        vec.add(null == error ? "" : error.toLocalizedString(user));
+        return imcref.getAdminTemplate(ADMIN_TEMPLATE_AVALIABILITY, user, vec);
     }
 
     static String createDeleteTemplateDialog(TemplateMapper templateMapper, UserDomainObject user, String lang,

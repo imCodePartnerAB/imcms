@@ -24,6 +24,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 public class TemplateChange extends HttpServlet {
 
     private final static LocalizedMessage ERROR__TEMPLATE_NAME_TAKEN = new LocalizedMessage("error/template_with_name_exists");
+    private final static LocalizedMessage ERROR_AVAILABILITY_NOT_CHANGED = new LocalizedMessage("error/template_availability_not_changed");
 
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response) throws ServletException, IOException {
@@ -65,6 +66,8 @@ public class TemplateChange extends HttpServlet {
                             imcref);
         } else if (request.getParameter("template_rename") != null) {
             htmlStr = renameTemplate(request, templateMapper, lang, imcref, user);
+        } else if (request.getParameter("change_availability_template") != null) {
+            htmlStr = changeAvailabilityTemplate(request, templateMapper, lang, imcref, user);
         } else if (request.getParameter("template_delete_check") != null) {
             htmlStr = deleteTemplateAfterCheckingUsage(request, imcref, lang, user);
         } else if (request.getParameter("group_delete_check") != null) {
@@ -262,6 +265,21 @@ public class TemplateChange extends HttpServlet {
             }
             htmlStr = TemplateAdmin.createRenameTemplateDialog(lang, imcref, templateMapper, user, error);
         }
+        return htmlStr;
+    }
+
+
+    private String changeAvailabilityTemplate(HttpServletRequest req, TemplateMapper templateMapper, String lang,
+                                  ImcmsServices imcref, UserDomainObject user) throws IOException {
+        String htmlStr;
+        String template_id = req.getParameter("template");
+        TemplateDomainObject template = templateMapper.getTemplateByName(template_id);
+        boolean isHidden = req.getParameter("hidden") != null;
+            LocalizedMessage error = null;
+            if (!templateMapper.updateAvaliability(template.getName(), isHidden)) {
+                error = ERROR_AVAILABILITY_NOT_CHANGED;
+            }
+            htmlStr = TemplateAdmin.createChangeAvailabilityTemplateDialog(lang, imcref, templateMapper, user, error);
         return htmlStr;
     }
 
