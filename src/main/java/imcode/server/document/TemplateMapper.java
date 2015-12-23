@@ -118,6 +118,7 @@ public class TemplateMapper {
     public void deleteTemplate(TemplateDomainObject template) {
 
         database.execute(new SqlUpdateCommand("delete from templates_cref where template_name = ?", new String[]{template.getName()}));
+        database.execute(new SqlUpdateCommand("delete from template where template_name = ?", new String[]{template.getName()}));
 
         // test if template exists and delete it
         File f = getTemplateFile(template);
@@ -152,7 +153,7 @@ public class TemplateMapper {
     public Set getAllTemplateGroupIds() {
         return (Set) database.execute(new SqlQueryCommand("SELECT group_id FROM templategroups", null, new CollectionHandler(new HashSet(), new RowTransformer() {
             public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
-                return new Integer(resultSet.getInt(1));
+                return resultSet.getInt(1);
             }
 
             public Class getClassOfCreatedObjects() {
@@ -169,9 +170,10 @@ public class TemplateMapper {
             }
         });
         SortedSet<TemplateDomainObject> templates = new TreeSet<TemplateDomainObject>();
+//        TODO check if user not superAdmin
         for (File templateFile : templateFiles) {
             String nameWithoutExtension = StringUtils.substringBeforeLast(templateFile.getName(), ".");
-            templates.add(new TemplateDomainObject(nameWithoutExtension, templateFile.getName()));
+            templates.add(new TemplateDomainObject(nameWithoutExtension, templateFile.getName(), (Boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{nameWithoutExtension}, Utility.SINGLE_BOOLEAN_HANDLER))));
         }
         return new ArrayList<TemplateDomainObject>(templates);
     }
@@ -201,7 +203,7 @@ public class TemplateMapper {
             String templateFileName = templateName + "." + extension;
             File templateFile = new File(getTemplateDirectory(), templateFileName);
             if (templateFile.exists()) {
-                return new TemplateDomainObject(templateName, templateFileName);
+                return new TemplateDomainObject(templateName, templateFileName, (Boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{templateName}, Utility.SINGLE_BOOLEAN_HANDLER)));
             }
         }
         return null;
@@ -221,6 +223,7 @@ public class TemplateMapper {
         return createTemplateGroupFromSqlResultRow(sqlResultRow);
     }
 
+    //TODO check this for getting templates depending by its availability for userGroup
     public List<TemplateDomainObject> getTemplatesInGroup(TemplateGroupDomainObject templateGroup) {
         return (List<TemplateDomainObject>) CollectionUtils.select((Collection) services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATES_IN_GROUP, new String[]{
                 "" + templateGroup.getId()}, new CollectionHandler(new ArrayList(), new RowTransformer() {
@@ -258,7 +261,7 @@ public class TemplateMapper {
             String newFilename = newNameForTemplate + "." + extension;
 
             if (templateFile.renameTo(new File(getTemplateDirectory(), newFilename))) {
-                replaceAllUsagesOfTemplate(template, new TemplateDomainObject(newNameForTemplate, newFilename));
+                replaceAllUsagesOfTemplate(template, new TemplateDomainObject(newNameForTemplate, newFilename, template.isHidden()));
             }
         }
         return true;
@@ -279,9 +282,11 @@ public class TemplateMapper {
     public void replaceAllUsagesOfTemplate(TemplateDomainObject template, TemplateDomainObject newTemplate) {
         if (null != template && null != newTemplate) {
             DocumentDomainObject[] documentsUsingTemplate = getDocumentsUsingTemplate(template);
-            String sqlStr = "update text_docs set template_name = ? where template_name = ?";
+            String sqlUpdateStr1 = "update text_docs set template_name = ? where template_name = ?";
+            String sqlUpdateStr2 = "update template set template_name = ? where template_name = ?";
             final Object[] parameters = new String[]{"" + newTemplate.getName(), "" + template.getName()};
-            database.execute(new SqlUpdateCommand(sqlStr, parameters));
+            database.execute(new SqlUpdateCommand(sqlUpdateStr1, parameters));
+            database.execute(new SqlUpdateCommand(sqlUpdateStr2, parameters));
             for (DocumentDomainObject document : documentsUsingTemplate) {
                 services.getDocumentMapper().invalidateDocument(document);
             }
@@ -319,7 +324,7 @@ public class TemplateMapper {
         }));
     }
 
-    public int saveTemplate(String name, String file_name, InputStream templateData, boolean overwrite) {
+    public int saveTemplate(String name, String file_name, InputStream templateData, boolean overwrite, boolean isHidden) {
 
         File f = new File(getTemplateDirectory(), name + "." + StringUtils.substringAfterLast(file_name, "."));
         if (f.exists() && !overwrite) {
@@ -331,7 +336,7 @@ public class TemplateMapper {
             IOUtils.copy(templateData, fw);
             fw.flush();
             fw.close();
-
+            database.execute(new SqlUpdateCommand("INSERT INTO template (template_name,is_hidden) VALUES(?,?)", new Object[]{name, isHidden}));
         } catch (IOException e) {
             return -2;
         }

@@ -4,6 +4,7 @@ import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.I18nMessage$;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
+import com.imcode.imcms.db.BooleanFromRowFactory;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
@@ -56,6 +57,7 @@ import java.util.regex.Pattern;
 public class Utility {
 
 	public static final ResultSetHandler SINGLE_STRING_HANDLER = new SingleObjectHandler(new StringFromRowFactory());
+	public static final ResultSetHandler SINGLE_BOOLEAN_HANDLER = new SingleObjectHandler(new BooleanFromRowFactory());
 	public static final ResultSetHandler STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
 	public static final ResultSetHandler STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
 	private final static Logger log = Logger.getLogger(Utility.class.getName());

@@ -28,6 +28,7 @@ public class TemplateAdd extends HttpServlet {
 
     private static final String REQUEST_PARAMETER__FILE = "file";
     private static final String REQUEST_PARAMETER__OVERWRITE = "overwrite";
+    private static final String REQUEST_PARAMETER__HIDDEN = "hidden";
     private static final String REQUEST_PARAMETER__NAME = "name";
     private static final String REQUEST_PARAMETER__ACTION = "action";
     private static final String REQUEST_PARAMETER__LANGUAGE = "language";
@@ -107,9 +108,10 @@ public class TemplateAdd extends HttpServlet {
         String filename = request.getParameterFileItem(REQUEST_PARAMETER__FILE).getName();
         File fn = new File(filename);
         boolean overwrite = request.getParameter(REQUEST_PARAMETER__OVERWRITE) != null;
+        boolean isHidden = request.getParameter(REQUEST_PARAMETER__HIDDEN) != null;
         String htmlStr;
 
-        int result = imcref.getTemplateMapper().saveTemplate(simpleName, fn.getName(), file.getInputStream(), overwrite);
+        int result = imcref.getTemplateMapper().saveTemplate(simpleName, fn.getName(), file.getInputStream(), overwrite,isHidden);
         if (result == -2) {
             List vec = new ArrayList();
             vec.add("#language#");
