@@ -19,6 +19,14 @@ public class TemplateDomainObject implements Comparable<TemplateDomainObject>, C
         return name;
     }
 
+    public String getNameAdmin() {
+        if (isHidden) {
+            return name + "(Hidden)";
+        } else {
+            return name;
+        }
+    }
+
     public Boolean isHidden() {
         return isHidden;
     }

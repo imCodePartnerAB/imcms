@@ -87,11 +87,11 @@ public class TemplateMapper {
 
             boolean selected = selectedTemplate != null && selectedTemplate.equals(template);
             temps += "<option value=\""
-                    + StringEscapeUtils.escapeHtml4(template.getName())
+                    + StringEscapeUtils.escapeHtml4(template.getNameAdmin())
                     + "\""
                     + (selected ? " selected" : "")
                     + ">"
-                    + StringEscapeUtils.escapeHtml4(template.getName()) + "</option>";
+                    + StringEscapeUtils.escapeHtml4(template.getNameAdmin()) + "</option>";
         }
         return temps;
     }
@@ -103,11 +103,11 @@ public class TemplateMapper {
         for (TemplateDomainObject template : templates) {
             List tags = new ArrayList();
             tags.add("#template_name#");
-            tags.add(StringEscapeUtils.escapeHtml4(template.getName()));
+            tags.add(StringEscapeUtils.escapeHtml4(template.getNameAdmin()));
             tags.add("#docs#");
             tags.add("" + templateMapper.getCountOfDocumentsUsingTemplate(template));
             tags.add("#template_id#");
-            tags.add(StringEscapeUtils.escapeHtml4(template.getName()));
+            tags.add(StringEscapeUtils.escapeHtml4(template.getNameAdmin()));
             htmlStr += services.getAdminTemplate("template_list_row.html", user, tags);
         }
         return htmlStr;
@@ -170,11 +170,18 @@ public class TemplateMapper {
                 return pathname.isFile() && (fileName.endsWith(".jsp") || fileName.endsWith(".jspx") || fileName.endsWith(".html"));
             }
         });
+        UserDomainObject udo = Imcms.getUser();
         SortedSet<TemplateDomainObject> templates = new TreeSet<TemplateDomainObject>();
-//        TODO check if user not superAdmin
         for (File templateFile : templateFiles) {
             String nameWithoutExtension = StringUtils.substringBeforeLast(templateFile.getName(), ".");
-            templates.add(new TemplateDomainObject(nameWithoutExtension, templateFile.getName(), (Boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{nameWithoutExtension}, Utility.SINGLE_BOOLEAN_HANDLER))));
+            TemplateDomainObject tdo = new TemplateDomainObject(nameWithoutExtension, templateFile.getName(), (Boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{nameWithoutExtension}, Utility.SINGLE_BOOLEAN_HANDLER)));
+            if(!udo.isSuperAdmin()&& tdo.isHidden()) {
+                continue;
+            }
+            else
+            {
+                templates.add(tdo);
+            }
         }
         return new ArrayList<TemplateDomainObject>(templates);
     }

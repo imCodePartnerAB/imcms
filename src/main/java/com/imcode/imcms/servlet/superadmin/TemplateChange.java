@@ -272,7 +272,7 @@ public class TemplateChange extends HttpServlet {
     private String changeAvailabilityTemplate(HttpServletRequest req, TemplateMapper templateMapper, String lang,
                                   ImcmsServices imcref, UserDomainObject user) throws IOException {
         String htmlStr;
-        String template_id = req.getParameter("template");
+        String template_id = (req.getParameter("template")).replace("(Hidden)","");
         TemplateDomainObject template = templateMapper.getTemplateByName(template_id);
         boolean isHidden = req.getParameter("hidden") != null;
             LocalizedMessage error = null;

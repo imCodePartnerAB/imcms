@@ -17,6 +17,6 @@ public class TemplateController {
     protected Object getTemplatesList() {
         return Imcms.getServices().getTemplateMapper().getAllTemplates()
                 .stream()
-                .collect(Collectors.toMap(TemplateDomainObject::getName, TemplateDomainObject::getName));
+                .collect(Collectors.toMap(TemplateDomainObject::getNameAdmin , TemplateDomainObject::getNameAdmin));
     }
 }

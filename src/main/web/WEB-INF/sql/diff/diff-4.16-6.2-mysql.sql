@@ -2,6 +2,7 @@
 SET @schema_version__major_new = 6;
 SET @schema_version__minor_new = 2;
 
+SET SESSION sql_mode='';
 SET @doc_language_id_en = 1;
 SET @doc_language_id_sw = 2;
 SET @doc_language_id = @doc_language_id_en;
