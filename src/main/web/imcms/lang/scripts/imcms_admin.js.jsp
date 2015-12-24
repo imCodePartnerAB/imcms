@@ -78,6 +78,15 @@ String cp = request.getContextPath() ;
             return retVal;
         }
 
+        function onSelectChange(str){
+            if((str.indexOf("(Hidden)") >= 0)){
+                document.getElementsByName("hidden")[0].checked = true;
+            }
+            else{
+                document.getElementsByName("hidden")[0].checked = false;
+            }
+        }
+
     /* *******************************************************************************************
      *         POPUP functions                                                                   *
      ******************************************************************************************* */
