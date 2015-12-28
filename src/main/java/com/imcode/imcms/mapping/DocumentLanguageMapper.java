@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
@@ -12,9 +11,9 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,11 +30,7 @@ public class DocumentLanguageMapper {
     private SystemPropertyRepository systemRepository;
 
     public List<DocumentLanguage> getAll() {
-        return Lists.transform(languageRepository.findAll(), new Function<Language, DocumentLanguage>() {
-            public DocumentLanguage apply(Language input) {
-                return toApiObject(input);
-            }
-        });
+        return Lists.transform(languageRepository.findAll(), this::toApiObject);
     }
 
     public DocumentLanguage findByCode(String code) {
@@ -49,21 +44,6 @@ public class DocumentLanguageMapper {
 
     public void setDefault(DocumentLanguage language) {
         setDefault(language.getCode());
-    }
-
-    public void setDefault(String code) {
-        Language language = languageRepository.findByCode(code);
-
-        if (language != null) {
-            String propertyValue = String.valueOf(language.getId());
-            SystemProperty property = systemRepository.findByName("DefaultLanguageId");
-            if (property == null) {
-                property = new SystemProperty(8, "DefaultLanguageId", propertyValue);
-                systemRepository.save(property);
-            } else {
-                property.setValue(propertyValue);
-            }
-        }
     }
 
     public void save(DocumentLanguage language) {
@@ -109,6 +89,21 @@ public class DocumentLanguageMapper {
         }
 
         return toApiObject(language);
+    }
+
+    public void setDefault(String code) {
+        Language language = languageRepository.findByCode(code);
+
+        if (language != null) {
+            String propertyValue = String.valueOf(language.getId());
+            SystemProperty property = systemRepository.findByName("DefaultLanguageId");
+            if (property == null) {
+                property = new SystemProperty(8, "DefaultLanguageId", propertyValue);
+                systemRepository.save(property);
+            } else {
+                property.setValue(propertyValue);
+            }
+        }
     }
 
     public DocumentLanguage toApiObject(Language jpaLanguage) {

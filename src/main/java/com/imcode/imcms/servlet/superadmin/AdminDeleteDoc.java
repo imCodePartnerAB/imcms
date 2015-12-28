@@ -1,27 +1,24 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.db.handlers.ObjectFromFirstRowResultSetHandler;
+import com.imcode.imcms.db.StringFromRowFactory;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-
-import com.imcode.db.handlers.ObjectFromFirstRowResultSetHandler;
-import com.imcode.imcms.db.StringFromRowFactory;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public class AdminDeleteDoc extends HttpServlet {
 
@@ -38,10 +35,9 @@ public class AdminDeleteDoc extends HttpServlet {
             throws ServletException, IOException {
 
         // Lets verify that this user is an admin
-        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
         if (!user.isSuperAdmin()) {
-            AdminIpAccess.printNonAdminError(imcref, user, req, res, getClass());
+            AdminIpAccess.printNonAdminError(user, req, res, getClass());
         } else {
             Map vm = new HashMap();
             AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
@@ -57,7 +53,7 @@ public class AdminDeleteDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
         if (!user.isSuperAdmin()) {
-            AdminIpAccess.printNonAdminError(imcref, user, req, res, getClass());
+            AdminIpAccess.printNonAdminError(user, req, res, getClass());
         } else {
             if (req.getParameter("DELETE_DOC") != null) {
 

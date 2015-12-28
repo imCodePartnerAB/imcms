@@ -1,6 +1,8 @@
 package imcode.util;
 
 import imcode.server.Imcms;
+import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.io.CopyUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -9,9 +11,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
-
-import org.apache.commons.collections.map.LRUMap;
-import org.apache.commons.io.CopyUtils;
 
 public class CachingFileLoader {
 
@@ -57,7 +56,7 @@ public class CachingFileLoader {
 
     public String getCachedFileStringIfRecent(File file) {
         Object[] file_and_date = (Object[]) fileCache.get(file);
-        if (file_and_date != null && file.lastModified() <= ((Long) file_and_date[1]).longValue()) {
+        if (file_and_date != null && file.lastModified() <= (Long) file_and_date[1]) {
             return (String) file_and_date[0];
         }
         return null;

@@ -1,14 +1,13 @@
 package imcode.util;
 
 import junit.framework.TestCase;
-
-import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
 
 public class TestUtility extends TestCase {
 
     public void testCreateQueryStringFromParameterMultiMap() {
-        MultiMap map1 = new MultiHashMap();
+        MultiMap map1 = new MultiValueMap();
         map1.put( "foo", "bar" ) ;
         assertEquals( "foo=bar", Utility.createQueryStringFromParameterMultiMap( map1 ) ) ;
         map1.put( "foo", "baz" ) ;

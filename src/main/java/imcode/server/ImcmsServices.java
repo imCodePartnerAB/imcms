@@ -1,13 +1,22 @@
 package imcode.server;
 
+import com.imcode.db.Database;
 import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.ImageCacheMapper;
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.document.TemplateMapper;
+import imcode.server.kerberos.KerberosLoginService;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.net.SMTP;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,17 +24,6 @@ import java.io.Writer;
 import java.security.KeyStore;
 import java.text.Collator;
 import java.util.Date;
-
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-
-import com.imcode.db.Database;
-import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.ImageCacheMapper;
-import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import imcode.server.kerberos.KerberosLoginService;
 
 public interface ImcmsServices {
 
@@ -41,26 +39,21 @@ public interface ImcmsServices {
 
     void incrementSessionCounter();
 
-    // set session counter
-    void setSessionCounter(int value);
+    // set  session counter date
+    Date getSessionCounterDate();
 
     // set  session counter date
     void setSessionCounterDate(Date date);
 
-    // set  session counter date
-    Date getSessionCounterDate();
-
     // parsedoc use template
-    String getAdminTemplate(String adminTemplateName, UserDomainObject user, java.util.List tagsWithReplacements);
+    String getAdminTemplate(String adminTemplateName, UserDomainObject user, java.util.List<String> tagsWithReplacements);
 
     // parseExternaldoc use template
-    String getTemplateFromDirectory(String adminTemplateName, UserDomainObject user, java.util.List variables,
-                                    String directory)
-    ;
+    String getTemplateFromDirectory(String adminTemplateName, UserDomainObject user, java.util.List<String> variables,
+                                    String directory);
 
     // get doctype
-    int getDocType(int meta_id)
-    ;
+    int getDocType(int meta_id);
 
     SystemData getSystemData();
 
@@ -69,6 +62,9 @@ public interface ImcmsServices {
     String[][] getAllDocumentTypes(String langPrefixStr);
 
     int getSessionCounter();
+
+    // set session counter
+    void setSessionCounter(int value);
 
     String getSessionCounterDateAsString();
 

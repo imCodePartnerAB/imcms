@@ -661,7 +661,7 @@ public class DocumentController {
 	protected void asPrototype(DocumentEntity entity) {
 		entity.alias = "";
 		entity.id = null;
-		entity.status = Document.STATUS_NEW;
+		entity.status = Document.PublicationStatus.NEW.asInt();
 		entity.languages = new HashMap<>();
 		entity.keywords = new HashSet<>();
 	}

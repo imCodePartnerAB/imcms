@@ -1,31 +1,22 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.commons.lang3.ClassUtils;
-import org.apache.log4j.Logger;
-
-import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
-import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
+import java.io.IOException;
+import java.util.*;
 
 public class AdminIpAccess extends HttpServlet {
 
@@ -35,6 +26,15 @@ public class AdminIpAccess extends HttpServlet {
     private static final String HTML_IP_SNIPPET = "AdminIpAccessList.htm";
     private static final String ADD_IP_TEMPLATE = "AdminIpAccess_Add.htm";
     private static final String WARN_DEL_IP_TEMPLATE = "AdminIpAccess_Delete2.htm";
+
+    static void printNonAdminError(UserDomainObject user, HttpServletRequest req,
+                                   HttpServletResponse res, Class clazz) throws IOException {
+        Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
+        String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+        String header = "Error in " + ClassUtils.getShortClassName(clazz) + ".";
+        log.debug(header + "- user is not an administrator");
+        AdminRoles.printErrorMessage(req, res, header, msg);
+    }
 
     /**
      * The GET method creates the html page when this page has been
@@ -52,7 +52,7 @@ public class AdminIpAccess extends HttpServlet {
         String[][] multi = (String[][]) imcref.getProcedureExecutor().executeProcedure("IPAccessesGetAll", parameters, new StringArrayArrayResultSetHandler());
 
         // Lets build the variables for each record
-        List tags = new ArrayList();
+        List<String> tags = new ArrayList<>();
         tags.add("IP_ACCESS_ID");
         tags.add("USER_ID");
         tags.add("LOGIN_NAME");
@@ -63,10 +63,10 @@ public class AdminIpAccess extends HttpServlet {
         String recs = "";
         int nbrOfRows = multi.length;
         for (int counter = 0; counter < nbrOfRows; counter++) {
-            List aRecV = new ArrayList(Arrays.asList(multi[counter]));
-            Map vmRec = new HashMap();
-            aRecV.set(3, Utility.ipLongToString(Long.parseLong((String) aRecV.get(3))));
-            aRecV.set(4, Utility.ipLongToString(Long.parseLong((String) aRecV.get(4))));
+            List<String> aRecV = Arrays.asList(multi[counter]);
+            Map<String, String> vmRec = new HashMap<>();
+            aRecV.set(3, Utility.ipLongToString(Long.parseLong(aRecV.get(3))));
+            aRecV.set(4, Utility.ipLongToString(Long.parseLong(aRecV.get(4))));
             for (int i = 0; i < tags.size(); i++) {
                 vmRec.put(tags.get(i), aRecV.get(i));
             }
@@ -75,7 +75,7 @@ public class AdminIpAccess extends HttpServlet {
         }
 
         // Lets generate the html page
-        Map vm = new HashMap();
+        Map<String, String> vm = new HashMap<>();
         vm.put("ALL_IP_ACCESSES", recs);
         AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
     }
@@ -87,7 +87,7 @@ public class AdminIpAccess extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
         if (!user.isSuperAdmin()) {
-            printNonAdminError(imcref, user, req, res, getClass());
+            printNonAdminError(user, req, res, getClass());
         } else {
             if (req.getParameter("ADD_IP_ACCESS") != null) {
 
@@ -95,7 +95,7 @@ public class AdminIpAccess extends HttpServlet {
                 String usersOption = Html.createUsersOptionList(imcref);
 
                 // Lets generate the html page
-                Map vm = new HashMap();
+                Map<String, String> vm = new HashMap<>();
                 vm.put("USERS_LIST", usersOption);
                 AdminRoles.sendHtml(req, res, vm, ADD_IP_TEMPLATE);
             } else if (req.getParameter("CANCEL_ADD_IP") != null || req.getParameter("IP_CANCEL_DELETE") != null) {
@@ -105,7 +105,7 @@ public class AdminIpAccess extends HttpServlet {
 
                 // Lets get the parameters from html page and validate them
                 Properties params = getAddParameters(req);
-                params = validateParameters(params, req, res, imcref, user);
+                params = validateParameters(params, req, res, user);
                 if (params == null) {
                     return;
                 }
@@ -122,14 +122,13 @@ public class AdminIpAccess extends HttpServlet {
 
                 // Lets resave all marked ip-accesses.
                 if (reSavesIds != null) {
-                    for (int i = 0; i < reSavesIds.length; i++) {
-                        log.debug("ResaveId: " + reSavesIds[i]);
-                        String tmpId = reSavesIds[i];
+                    for (String reSavesId : reSavesIds) {
+                        log.debug("ResaveId: " + reSavesId);
                         // Lets get all edited fields for that ip-access
-                        String ipAccessId = req.getParameter("IP_ACCESS_ID_" + tmpId);
-                        String ipUserId = req.getParameter("IP_USER_ID_" + tmpId);
-                        String ipStart = req.getParameter("IP_START_" + tmpId);
-                        String ipEnd = req.getParameter("IP_END_" + tmpId);
+                        String ipAccessId = req.getParameter("IP_ACCESS_ID_" + reSavesId);
+                        String ipUserId = req.getParameter("IP_USER_ID_" + reSavesId);
+                        String ipStart = req.getParameter("IP_START_" + reSavesId);
+                        String ipEnd = req.getParameter("IP_END_" + reSavesId);
 
                         long ipStartInt = Utility.ipStringToLong(ipStart);
 
@@ -176,8 +175,8 @@ public class AdminIpAccess extends HttpServlet {
 
                     // Lets resave all marked ip-accesses.
                     if (deleteIds != null) {
-                        for (int i = 0; i < deleteIds.length; i++) {
-                            String tmpId = "IP.IP_ACCESS_ID_" + deleteIds[i];
+                        for (String deleteId : deleteIds) {
+                            String tmpId = "IP.IP_ACCESS_ID_" + deleteId;
                             String[] tmpArr = (String[]) session.getAttribute(tmpId);
                             String ipAccessId = tmpArr[0];
                             final Object[] parameters = new String[]{ipAccessId};
@@ -197,15 +196,6 @@ public class AdminIpAccess extends HttpServlet {
         }
 
     } // end HTTP POST
-
-    static void printNonAdminError(ImcmsServices imcref, UserDomainObject user, HttpServletRequest req,
-                                   HttpServletResponse res, Class clazz) throws IOException {
-        Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
-        String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-        String header = "Error in " + ClassUtils.getShortClassName(clazz) + ".";
-        log.debug(header + "- user is not an administrator");
-        AdminRoles.printErrorMessage(req, res, header, msg);
-    }
 
     /**
      * Collects the parameters from the request object for the add function
@@ -243,7 +233,7 @@ public class AdminIpAccess extends HttpServlet {
      * failes, a error page will be generated and null will be returned.
      */
 
-    private Properties validateParameters(Properties aPropObj, HttpServletRequest req, HttpServletResponse res, ImcmsServices imcref, UserDomainObject user) throws IOException {
+    private Properties validateParameters(Properties aPropObj, HttpServletRequest req, HttpServletResponse res, UserDomainObject user) throws IOException {
 
         if (aPropObj.values().contains("")) {
             String header = "Error in AdminIpAccess, assertNoEmptyStringsInPropertyValues.";

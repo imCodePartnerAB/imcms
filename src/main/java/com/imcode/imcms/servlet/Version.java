@@ -1,7 +1,5 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.db.DatabaseCommand;
-import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
 import com.imcode.imcms.db.Schema;
 import imcode.server.Imcms;
@@ -28,6 +26,16 @@ public class Version extends HttpServlet {
 
     private final static String DB_SCHEMA_FILE = "schema.xml";
 
+    public static String getImcmsVersion(ServletContext servletContext) {
+        try {
+            try (Reader in = new InputStreamReader(servletContext.getResourceAsStream(VERSION_FILE))) {
+                return "imCMS " + IOUtils.toString(in).trim();
+            }
+        } catch (Exception npe) {
+            return "imCMS";
+        }
+    }
+
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
         String imcmsVersion = getImcmsVersion();
@@ -50,11 +58,8 @@ public class Version extends HttpServlet {
 
     private String getImcmsVersion() {
         try {
-            Reader in = new InputStreamReader(getServletContext().getResourceAsStream(VERSION_FILE));
-            try {
+            try (Reader in = new InputStreamReader(getServletContext().getResourceAsStream(VERSION_FILE))) {
                 return "imCMS " + IOUtils.toString(in).trim();
-            } finally {
-                in.close();
             }
         } catch (Exception npe) {
             return "imCMS";
@@ -70,28 +75,13 @@ public class Version extends HttpServlet {
         }
     }
 
-    public static String getImcmsVersion(ServletContext servletContext) {
-        try {
-            Reader in = new InputStreamReader(servletContext.getResourceAsStream(VERSION_FILE));
-            try {
-                return "imCMS " + IOUtils.toString(in).trim();
-            } finally {
-                in.close();
-            }
-        } catch (Exception npe) {
-            return "imCMS";
-        }
-    }
-
     private String getDatabaseProductNameAndVersion() {
-        return (String) Imcms.getServices().getDatabase().execute(new DatabaseCommand() {
-            public Object executeOn(DatabaseConnection connection) throws DatabaseException {
-                try {
-                    DatabaseMetaData metaData = connection.getConnection().getMetaData();
-                    return metaData.getDatabaseProductName() + " " + metaData.getDatabaseProductVersion();
-                } catch (SQLException e) {
-                    throw DatabaseException.fromSQLException("", e);
-                }
+        return (String) Imcms.getServices().getDatabase().execute(connection -> {
+            try {
+                DatabaseMetaData metaData = connection.getConnection().getMetaData();
+                return metaData.getDatabaseProductName() + " " + metaData.getDatabaseProductVersion();
+            } catch (SQLException e) {
+                throw DatabaseException.fromSQLException("", e);
             }
         });
     }

@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 public class CachingLocalizedMessageProvider extends LocalizedMessageProvider {
 
     private final LocalizedMessageProvider provider;
-    private final Map<String, ResourceBundle> bundleMap = new HashMap();
+    private final Map<String, ResourceBundle> bundleMap = new HashMap<>();
 
     public CachingLocalizedMessageProvider(LocalizedMessageProvider provider) {
         this.provider = provider;

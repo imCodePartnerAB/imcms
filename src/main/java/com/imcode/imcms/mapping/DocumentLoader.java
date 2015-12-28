@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.*;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.mapping.jpa.doc.*;
-import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.*;
@@ -10,9 +10,9 @@ import imcode.server.user.RoleId;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Loads documents from the database.
@@ -20,236 +20,239 @@ import java.util.Set;
 @Component
 public class DocumentLoader {
 
-    /**
-     * Permission to create child documents.
-     */
-    public final static int PERM_CREATE_DOCUMENT = 8;
+	/**
+	 * Permission to create child documents.
+	 */
+	public final static int PERM_CREATE_DOCUMENT = 8;
 
-    @Inject
-    private DocRepository docRepository;
+	@Inject
+	private DocRepository docRepository;
 
-    @Inject
-    private PropertyRepository propertyRepository;
+	@Inject
+	private PropertyRepository propertyRepository;
 
-    @Inject
-    private VersionRepository versionRepository;
+	@Inject
+	private VersionRepository versionRepository;
 
-    @Inject
-    private MetaRepository metaRepository;
+	@Inject
+	private MetaRepository metaRepository;
 
-    @Inject
-    private CommonContentRepository commonContentRepository;
+	@Inject
+	private CommonContentRepository commonContentRepository;
 
-    @Inject
-    private DocumentLanguageMapper languageMapper;
+	@Inject
+	private DocumentLanguageMapper languageMapper;
 
-    @Inject
-    private DocumentContentMapper contentMapper;
+	@Inject
+	private DocumentContentMapper contentMapper;
 
-    @Inject
-    private DocumentContentInitializingVisitor documentContentInitializingVisitor;
+	@Inject
+	private DocumentContentInitializingVisitor documentContentInitializingVisitor;
 
-    /**
-     * Loads document's meta.
-     *
-     * @param docId document id.
-     * @return loaded meta of null if meta with given id does not exists.
-     */
-    public DocumentMeta loadMeta(int docId) {
-        return toDomainObject(metaRepository.findOne(docId));
-    }
+	/**
+	 * Loads document's meta.
+	 *
+	 * @param docId document id.
+	 * @return loaded meta of null if meta with given id does not exists.
+	 */
+	public DocumentMeta loadMeta(int docId) {
+		return toDomainObject(metaRepository.findOne(docId));
+	}
 
-    /**
-     * Loads and initializes document's content.
-     */
-    public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
-        DocumentCommonContent dcc = contentMapper.getCommonContent(document.getRef());
+	/**
+	 * Loads and initializes document's content.
+	 */
+	public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
+		DocumentCommonContent dcc = contentMapper.getCommonContent(document.getRef());
 
-        document.setCommonContent(dcc != null
-                ? dcc
-                : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build()
-        );
+		document.setCommonContent(dcc != null
+				? dcc
+				: DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build()
+		);
+		document.accept(documentContentInitializingVisitor);
 
-        document.accept(documentContentInitializingVisitor);
+		return document;
+	}
 
-        return document;
-    }
+	private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
+		Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
+		if (Document.PublicationStatus.APPROVED.asInt() == publicationStatusInt) {
+			publicationStatus = Document.PublicationStatus.APPROVED;
+		} else if (Document.PublicationStatus.DISAPPROVED.asInt() == publicationStatusInt) {
+			publicationStatus = Document.PublicationStatus.DISAPPROVED;
+		}
+		return publicationStatus;
+	}
 
+	// Moved from  DocumentInitializer.initDocuments
+	private void initRoleIdToPermissionSetIdMap(DocumentMeta metaDO, Meta jpaMeta) {
+		RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
+				new RoleIdToDocumentPermissionSetTypeMappings();
 
-    private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
-        Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
-        if (Document.STATUS_PUBLICATION_APPROVED == publicationStatusInt) {
-            publicationStatus = Document.PublicationStatus.APPROVED;
-        } else if (Document.STATUS_PUBLICATION_DISAPPROVED == publicationStatusInt) {
-            publicationStatus = Document.PublicationStatus.DISAPPROVED;
-        }
-        return publicationStatus;
-    }
+		for (Map.Entry<Integer, Integer> roleIdToPermissionSetId : jpaMeta.getRoleIdToPermissionSetIdMap().entrySet()) {
+			rolePermissionMappings.setPermissionSetTypeForRole(
+					new RoleId(roleIdToPermissionSetId.getKey()),
+					DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
+		}
 
-    // Moved from  DocumentInitializer.initDocuments
-    private void initRoleIdToPermissionSetIdMap(DocumentMeta metaDO, Meta jpaMeta) {
-        RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
-                new RoleIdToDocumentPermissionSetTypeMappings();
+		metaDO.setRoleIdToDocumentPermissionSetTypeMappings(rolePermissionMappings);
+	}
 
-        for (Map.Entry<Integer, Integer> roleIdToPermissionSetId : jpaMeta.getRoleIdToPermissionSetIdMap().entrySet()) {
-            rolePermissionMappings.setPermissionSetTypeForRole(
-                    new RoleId(roleIdToPermissionSetId.getKey()),
-                    DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
-        }
+	private void initDocumentsPermissionSets(DocumentMeta metaDO, Meta ormMeta) {
+		DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
+				ormMeta.getPermissionSetBitsMap(), ormMeta.getPermissionSetEx());
 
-        metaDO.setRoleIdToDocumentPermissionSetTypeMappings(rolePermissionMappings);
-    }
+		metaDO.setPermissionSets(permissionSets);
+	}
 
-    private void initDocumentsPermissionSets(DocumentMeta metaDO, Meta ormMeta) {
-        DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-                ormMeta.getPermissionSetBitsMap(), ormMeta.getPermissionSetEx());
+	private void initDocumentsPermissionSetsForNew(DocumentMeta metaDO, Meta jpaMeta) {
+		DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
+				jpaMeta.getPermissionSetBitsForNewMap(), jpaMeta.getPermissionSetExForNew());
 
-        metaDO.setPermissionSets(permissionSets);
-    }
+		metaDO.setPermissionSetsForNewDocument(permissionSets);
+	}
 
+	private DocumentPermissionSets createDocumentsPermissionSets(
+			Map<Integer, Integer> permissionSetBitsMap,
+			Set<Meta.PermissionSetEx> permissionSetEx) {
 
-    private void initDocumentsPermissionSetsForNew(DocumentMeta metaDO, Meta jpaMeta) {
-        DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-                jpaMeta.getPermissionSetBitsForNewMap(), jpaMeta.getPermissionSetExForNew());
+		DocumentPermissionSets permissionSets = new DocumentPermissionSets();
 
-        metaDO.setPermissionSetsForNewDocument(permissionSets);
-    }
+		for (Map.Entry<Integer, Integer> permissionSetBitsEntry : permissionSetBitsMap.entrySet()) {
+			Integer setId = permissionSetBitsEntry.getKey();
+			Integer permissionSetBits = permissionSetBitsEntry.getValue();
+			DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
 
+			if (permissionSetBits != 0 && restricted.isEmpty()) {
+				restricted.setFromBits(permissionSetBits);
+			}
+		}
 
-    private DocumentPermissionSets createDocumentsPermissionSets(
-            Map<Integer, Integer> permissionSetBitsMap,
-            Set<Meta.PermissionSetEx> permissionSetEx) {
+		for (Meta.PermissionSetEx ex : permissionSetEx) {
+			Integer setId = ex.getSetId();
+			DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
 
-        DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+			setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());
+		}
 
-        for (Map.Entry<Integer, Integer> permissionSetBitsEntry : permissionSetBitsMap.entrySet()) {
-            Integer setId = permissionSetBitsEntry.getKey();
-            Integer permissionSetBits = permissionSetBitsEntry.getValue();
-            DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+		return permissionSets;
+	}
 
-            if (permissionSetBits != 0 && restricted.isEmpty()) {
-                restricted.setFromBits(permissionSetBits);
-            }
-        }
+	private void setPermissionData(DocumentPermissionSetDomainObject permissionSet, Integer permissionId, Integer permissionData) {
+		if (null != permissionId) {
+			TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) permissionSet;
+			switch (permissionId) {
+				case PERM_CREATE_DOCUMENT:
+					textDocumentPermissionSet.addAllowedDocumentTypeId(permissionData);
+					break;
+				case ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE:
+					textDocumentPermissionSet.addAllowedTemplateGroupId(permissionData);
+					break;
+				default:
+			}
+		}
+	}
 
-        for (Meta.PermissionSetEx ex : permissionSetEx) {
-            Integer setId = ex.getSetId();
-            DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+	private DocumentMeta toDomainObject(Meta meta) {
+		if (meta == null) return null;
 
-            setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());
-        }
+		DocumentMeta metaDO = new DocumentMeta();
 
-        return permissionSets;
-    }
+		metaDO.setArchivedDatetime(meta.getArchivedDatetime());
+		metaDO.setCategoryIds(meta.getCategoryIds());
+		metaDO.setCreatedDatetime(meta.getCreatedDatetime());
+		metaDO.setCreatorId(meta.getCreatorId());
+		metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());
+		metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(meta.getDisabledLanguageShowMode().name()));
+		metaDO.setDocumentType(meta.getDocumentType());
 
+		Set<DocumentLanguage> apiLanguages = meta.getEnabledLanguages().stream()
+				.map(jpaLanguage -> languageMapper.toApiObject(jpaLanguage))
+				.collect(Collectors.toSet());
 
-    private void setPermissionData(DocumentPermissionSetDomainObject permissionSet, Integer permissionId, Integer permissionData) {
-        if (null != permissionId) {
-            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) permissionSet;
-            switch (permissionId) {
-                case PERM_CREATE_DOCUMENT:
-                    textDocumentPermissionSet.addAllowedDocumentTypeId(permissionData.intValue());
-                    break;
-                case ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE:
-                    textDocumentPermissionSet.addAllowedTemplateGroupId(permissionData.intValue());
-                    break;
-                default:
-            }
-        }
-    }
+		metaDO.setEnabledLanguages(apiLanguages);
+		metaDO.setId(meta.getId());
+		metaDO.setKeywords(meta.getKeywords());
+		metaDO.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
+		metaDO.setLinkedForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
+		metaDO.setModifiedDatetime(meta.getModifiedDatetime());
+		metaDO.setActualModifiedDatetime(meta.getModifiedDatetime());
+		//m.setPermissionSets(entity.getPermissionSets)
+		//m.setPermissionSetsForNew(entity.getPermissionSetExForNew)
+		//m.setPermissionSetsForNewDocuments(entity.getPermissionSetsForNewDocuments)
+		metaDO.setProperties(meta.getProperties());
+		metaDO.setPublicationEndDatetime(meta.getPublicationEndDatetime());
+		metaDO.setPublicationStartDatetime(meta.getPublicationStartDatetime());
+		metaDO.setPublicationStatus(publicationStatusFromInt(meta.getPublicationStatusInt()));
+		metaDO.setPublisherId(meta.getPublisherId());
+		metaDO.setRestrictedOneMorePrivilegedThanRestrictedTwo(meta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
+		//m.setRoleIdToDocumentPermissionSetTypeMappings()
+		metaDO.setSearchDisabled(meta.getSearchDisabled());
+		metaDO.setTarget(meta.getTarget());
 
-    private DocumentMeta toDomainObject(Meta meta) {
-        if (meta == null) return null;
+		initRoleIdToPermissionSetIdMap(metaDO, meta);
+		initDocumentsPermissionSets(metaDO, meta);
+		initDocumentsPermissionSetsForNew(metaDO, meta);
 
-        DocumentMeta metaDO = new DocumentMeta();
+		return metaDO;
+	}
 
-        metaDO.setArchivedDatetime(meta.getArchivedDatetime());
-        metaDO.setCategoryIds(meta.getCategoryIds());
-        metaDO.setCreatedDatetime(meta.getCreatedDatetime());
-        metaDO.setCreatorId(meta.getCreatorId());
-        metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());
-        metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(meta.getDisabledLanguageShowMode().name()));
-        metaDO.setDocumentType(meta.getDocumentType());
+	public PropertyRepository getPropertyRepository() {
+		return propertyRepository;
+	}
 
-        Set<DocumentLanguage> apiLanguages = new HashSet<>();
+	@SuppressWarnings("unused")
+	public void setPropertyRepository(PropertyRepository propertyRepository) {
+		this.propertyRepository = propertyRepository;
+	}
 
-        for (Language jpaLanguage : meta.getEnabledLanguages()) {
-            apiLanguages.add(languageMapper.toApiObject(jpaLanguage));
-        }
+	public VersionRepository getVersionRepository() {
+		return versionRepository;
+	}
 
-        metaDO.setEnabledLanguages(apiLanguages);
-        metaDO.setId(meta.getId());
-        metaDO.setKeywords(meta.getKeywords());
-        metaDO.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
-        metaDO.setLinkedForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
-        metaDO.setModifiedDatetime(meta.getModifiedDatetime());
-        metaDO.setActualModifiedDatetime(meta.getModifiedDatetime());
-        //m.setPermissionSets(entity.getPermissionSets)
-        //m.setPermissionSetsForNew(entity.getPermissionSetExForNew)
-        //m.setPermissionSetsForNewDocuments(entity.getPermissionSetsForNewDocuments)
-        metaDO.setProperties(meta.getProperties());
-        metaDO.setPublicationEndDatetime(meta.getPublicationEndDatetime());
-        metaDO.setPublicationStartDatetime(meta.getPublicationStartDatetime());
-        metaDO.setPublicationStatus(publicationStatusFromInt(meta.getPublicationStatusInt()));
-        metaDO.setPublisherId(meta.getPublisherId());
-        metaDO.setRestrictedOneMorePrivilegedThanRestrictedTwo(meta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
-        //m.setRoleIdToDocumentPermissionSetTypeMappings()
-        metaDO.setSearchDisabled(meta.getSearchDisabled());
-        metaDO.setTarget(meta.getTarget());
+	/////////////// unused /////////////////
 
-        initRoleIdToPermissionSetIdMap(metaDO, meta);
-        initDocumentsPermissionSets(metaDO, meta);
-        initDocumentsPermissionSetsForNew(metaDO, meta);
+	public void setVersionRepository(VersionRepository versionRepository) {
+		this.versionRepository = versionRepository;
+	}
 
-        return metaDO;
-    }
+	@SuppressWarnings("unused")
+	public DocRepository getDocRepository() {
+		return docRepository;
+	}
 
+	@SuppressWarnings("unused")
+	public void setDocRepository(DocRepository docRepository) {
+		this.docRepository = docRepository;
+	}
 
-    public DocRepository getDocRepository() {
-        return docRepository;
-    }
+	@SuppressWarnings("unused")
+	public MetaRepository getMetaRepository() {
+		return metaRepository;
+	}
 
-    public void setDocRepository(DocRepository docRepository) {
-        this.docRepository = docRepository;
-    }
+	@SuppressWarnings("unused")
+	public void setMetaRepository(MetaRepository metaRepository) {
+		this.metaRepository = metaRepository;
+	}
 
-    public VersionRepository getVersionRepository() {
-        return versionRepository;
-    }
+	@SuppressWarnings("unused")
+	public CommonContentRepository getCommonContentRepository() {
+		return commonContentRepository;
+	}
 
-    public void setVersionRepository(VersionRepository versionRepository) {
-        this.versionRepository = versionRepository;
-    }
+	@SuppressWarnings("unused")
+	public void setCommonContentRepository(CommonContentRepository commonContentRepository) {
+		this.commonContentRepository = commonContentRepository;
+	}
 
-    public MetaRepository getMetaRepository() {
-        return metaRepository;
-    }
+	@SuppressWarnings("unused")
+	public DocumentContentInitializingVisitor getDocumentContentInitializingVisitor() {
+		return documentContentInitializingVisitor;
+	}
 
-    public void setMetaRepository(MetaRepository metaRepository) {
-        this.metaRepository = metaRepository;
-    }
-
-    public CommonContentRepository getCommonContentRepository() {
-        return commonContentRepository;
-    }
-
-    public void setCommonContentRepository(CommonContentRepository commonContentRepository) {
-        this.commonContentRepository = commonContentRepository;
-    }
-
-    public DocumentContentInitializingVisitor getDocumentContentInitializingVisitor() {
-        return documentContentInitializingVisitor;
-    }
-
-    public void setDocumentContentInitializingVisitor(DocumentContentInitializingVisitor documentContentInitializingVisitor) {
-        this.documentContentInitializingVisitor = documentContentInitializingVisitor;
-    }
-
-    public PropertyRepository getPropertyRepository() {
-        return propertyRepository;
-    }
-
-    public void setPropertyRepository(PropertyRepository propertyRepository) {
-        this.propertyRepository = propertyRepository;
-    }
+	@SuppressWarnings("unused")
+	public void setDocumentContentInitializingVisitor(DocumentContentInitializingVisitor documentContentInitializingVisitor) {
+		this.documentContentInitializingVisitor = documentContentInitializingVisitor;
+	}
 }

@@ -11,7 +11,7 @@
     <title>${document.headline} - Powered by imCMS from imCode Partner AB</title>
     <meta charset="utf-8"/>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/imcms/css/template/demo.css"/>
-    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
+    <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
 </head>
 <body>
 <div class="container">
@@ -141,6 +141,12 @@
             </imcms:loop>
         </div>
     </section>
+
+    <div>
+        <imcms:imageArchive styleClass="imageArchive">
+            <link href="${contextPath}/css/tag_image_archive.css.jsp" rel="stylesheet" type="text/css"/>
+        </imcms:imageArchive>
+    </div>
 
     <section class="footer-placeholder">
         <section class="footer">

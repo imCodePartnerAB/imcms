@@ -1,21 +1,23 @@
 package imcode.server.document.index
 
+import java.util.Date
+
+import _root_.imcode.server.document.FileDocumentDomainObject.FileDocumentFile
+import _root_.imcode.server.document._
+import _root_.imcode.server.user.RoleId
+import _root_.imcode.util.io.FileInputStreamSource
 import com.imcode._
+import com.imcode.imcms.test.TestSetup
+import com.imcode.imcms.test.fixtures.{CategoryFX, DocFX, LanguageFX}
+import imcode.server.document.index.service.impl.DocumentIndexer
+import org.apache.solr.common.SolrInputDocument
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, WordSpec}
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, WordSpec}
+
 import scala.collection.JavaConverters._
-import com.imcode.imcms.test.TestSetup
-import java.util.Date
 import scala.collection.mutable.{Map => MMap}
-import org.apache.solr.common.SolrInputDocument
-import _root_.imcode.server.user.RoleId
-import _root_.imcode.server.document._
-import _root_.imcode.server.document.FileDocumentDomainObject.FileDocumentFile
-import _root_.imcode.util.io.FileInputStreamSource
-import com.imcode.imcms.test.fixtures.{CategoryFX, DocFX, LanguageFX}
-import imcode.server.document.index.service.impl.DocumentIndexer
 
 @RunWith(classOf[JUnitRunner])
 class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -119,7 +121,7 @@ class DocumentIndexerTest extends WordSpec with BeforeAndAfterAll with BeforeAnd
       //      def propertyValue(name: String) = indexDoc.getFieldValue(DocumentIndex.FIELD__PROPERTY_PREFIX + name)
       //
       //      assertEquals("FIELD__PROPERTY_PREFIX",
-      //        defaultTextDocEn.getProperties.values.asScala.toSet.map()
+      //        defaultTextDocEn.getServerConfProperties.values.asScala.toSet.map()
       //        Set("property_1", "property_2", "property_3"),
       //      )
 

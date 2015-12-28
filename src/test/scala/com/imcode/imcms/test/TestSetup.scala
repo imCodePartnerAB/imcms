@@ -2,17 +2,20 @@ package com.imcode
 package imcms.test
 
 import java.io.File
-import org.apache.commons.dbcp2.BasicDataSource
-import org.springframework.core.env.Environment
-import org.springframework.context.annotation._
-import org.springframework.context.ApplicationContext
-import org.springframework.context.support.FileSystemXmlApplicationContext
-import org.apache.commons.io.FileUtils
+
 import _root_.imcode.server.Imcms
-import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
 import imcode.server.document.index.service.SolrServerFactory
-import scala.reflect.ClassTag
+import imcode.util.PropertyManager
+import org.apache.commons.dbcp2.BasicDataSource
+import org.apache.commons.io.FileUtils
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
+import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation._
+import org.springframework.context.support.FileSystemXmlApplicationContext
+import org.springframework.core.env.Environment
+
 import scala.collection.JavaConverters._
+import scala.reflect.ClassTag
 
 object TestSetup extends TestSetup
 
@@ -33,6 +36,12 @@ class TestSetup extends TestDb with TestSolr {
 
   val env: Environment = spring.ctx.getBean(classOf[Environment])
 
+  def path(relativePath: String) = new File(basedir, relativePath).getCanonicalPath
+
+  def file(relativePath: String) = new File(basedir, relativePath)
+
+  def dir(relativePath: String) = new File(basedir, relativePath)
+
   object spring {
     val ctx = createCtx(classOf[TestConfig])
 
@@ -47,7 +56,7 @@ class TestSetup extends TestDb with TestSolr {
       }
 
       Imcms.setSQLScriptsPath(path("src/main/web/WEB-INF/sql"))
-      Imcms.setServerPropertiesFilename("server.properties")
+      PropertyManager.setServerPropertiesFileName("server.properties")
       System.setProperty("com.imcode.imcms.test.basedir", basedir)
       // Can not be replaced with @Configuration since XML configuration always takes precedence over annotation configuration.
       Imcms.setApplicationContext(new FileSystemXmlApplicationContext("file:" + path("src/test/resources/applicationContext.xml")))
@@ -56,13 +65,6 @@ class TestSetup extends TestDb with TestSolr {
       if (start) Imcms.start()
     }
   }
-
-
-  def path(relativePath: String) = new File(basedir, relativePath).getCanonicalPath
-
-  def file(relativePath: String) = new File(basedir, relativePath)
-
-  def dir(relativePath: String) = new File(basedir, relativePath)
 }
 
 
@@ -82,6 +84,13 @@ trait TestDb {
 
     import com.imcode.imcms.db.{DB, Schema}
 
+    def runScripts(script: String, scripts: String*) {
+      new DB(createDataSource(autocommit = DataSourceAutocommit.Yes)) |> {
+        db =>
+          db.runScripts((script +: scripts).map(test.path).asJava)
+      }
+    }
+
     def createDataSource(urlType: DataSourceUrlType.Value = DataSourceUrlType.WithDBName,
                          autocommit: DataSourceAutocommit.Value = DataSourceAutocommit.No): BasicDataSource = {
 
@@ -94,6 +103,15 @@ trait TestDb {
       }
     }
 
+    def prepare(recreateBeforePrepare: Boolean = false) {
+      if (recreateBeforePrepare) recreate()
+
+      val scriptsDir = test.path("src/main/web/WEB-INF/sql")
+      val schema = Schema.fromFile(test.file("src/main/resources/schema.xml")).setScriptsDir(scriptsDir)
+
+      new DB(createDataSource()).prepare(schema)
+    }
+
     def recreate() {
       test.env.getRequiredProperty("DBName") |> {
         dbName =>
@@ -103,24 +121,6 @@ trait TestDb {
               db.getJdbcTemplate.update(s"CREATE DATABASE $dbName")
           }
       }
-    }
-
-
-    def runScripts(script: String, scripts: String*) {
-      new DB(createDataSource(autocommit = DataSourceAutocommit.Yes)) |> {
-        db =>
-          db.runScripts((script +: scripts).map(test.path).asJava)
-      }
-    }
-
-
-    def prepare(recreateBeforePrepare: Boolean = false) {
-      if (recreateBeforePrepare) recreate()
-
-      val scriptsDir = test.path("src/main/web/WEB-INF/sql")
-      val schema = Schema.fromFile(test.file("src/main/resources/schema.xml")).setScriptsDir(scriptsDir)
-
-      new DB(createDataSource()).prepare(schema)
     }
   }
 
@@ -135,16 +135,6 @@ trait TestSolr {
     val homeDir: File = new File(home)
     val homeTemplateDir: File = test.dir("src/main/web/WEB-INF/solr").ensuring(_.isDirectory, "SOLr home template exists.")
 
-    def recreateHome() {
-      if (homeDir.exists()) {
-        FileUtils.deleteDirectory(homeDir)
-
-        if (homeDir.exists()) sys.error("Unable to delete SOLr home directory.")
-      }
-
-      FileUtils.copyDirectory(homeTemplateDir, homeDir)
-    }
-
     def deleteCoreDataDir() {
       new File(home, "core/data") |> {
         dir =>
@@ -158,6 +148,16 @@ trait TestSolr {
       }
 
       SolrServerFactory.createEmbeddedSolrServer(home)
+    }
+
+    def recreateHome() {
+      if (homeDir.exists()) {
+        FileUtils.deleteDirectory(homeDir)
+
+        if (homeDir.exists()) sys.error("Unable to delete SOLr home directory.")
+      }
+
+      FileUtils.copyDirectory(homeTemplateDir, homeDir)
     }
   }
 

@@ -20,7 +20,7 @@ public class FileArrayEditor extends PropertyEditorSupport {
         String[] parts = StringUtils.split(text, ';');
 
         if (!ArrayUtils.isEmpty(parts)) {
-            List<File> files = new ArrayList<File>(parts.length);
+            List<File> files = new ArrayList<>(parts.length);
 
             for (String part : parts) {
                 part = StringUtils.trimToNull(part);

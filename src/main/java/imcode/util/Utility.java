@@ -69,7 +69,6 @@ public class Utility {
 	private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
 	private Utility() {
-
 	}
 
 	/**
@@ -115,18 +114,6 @@ public class Utility {
 		return (UserDomainObject) session.getAttribute(LOGGED_IN_USER);
 	}
 
-	public static int compareDatesWithNullFirst(Date date1, Date date2) {
-		if (null == date1 && null == date2) {
-			return 0;
-		} else if (null == date1) {
-			return -1;
-		} else if (null == date2) {
-			return +1;
-		} else {
-			return date1.compareTo(date2);
-		}
-	}
-
 	public static void setDefaultHtmlContentType(HttpServletResponse res) {
 		res.setContentType("text/html; charset=" + Imcms.DEFAULT_ENCODING);
 	}
@@ -135,51 +122,8 @@ public class Utility {
 		res.sendRedirect(req.getContextPath() + "/servlet/StartDoc");
 	}
 
-    /*public static void redirectToStartDocument(VaadinRequest request) {
-		Page.getCurrent().setLocation(request.getContextPath() + "/servlet/StartDoc");
-    }
-
-    public static void redirectToLoginPage(VaadinRequest vaadinRequest) {
-        HttpServletRequest request = (HttpServletRequest) vaadinRequest;
-        UserDomainObject user = getLoggedOnUser(request);
-        StringBuffer loginTarget = request.getRequestURL();
-        String queryString = request.getQueryString();
-        if (null != queryString) {
-            loginTarget.append("?").append(queryString);
-        }
-
-        String redirectUrl = request.getContextPath() + "/imcms/" + user.getLanguageIso639_2() + "/login/index.jsp?"
-                + VerifyUser.REQUEST_PARAMETER__NEXT_URL + "=" + URLEncoder.encode(loginTarget.toString());
-
-        Page.getCurrent().setLocation(redirectUrl);
-    }*/
-
 	public static boolean isValidEmail(String email) {
 		return EmailValidator.getInstance().isValid(email);
-	}
-
-	public static void removeNullValuesFromMap(Map map) {
-		Collection values = map.values();
-		for (Iterator iterator = values.iterator(); iterator.hasNext(); ) {
-			if (null == iterator.next()) {
-				iterator.remove();
-			}
-		}
-	}
-
-	public static String createQueryStringFromParameterMultiMap(MultiMap requestParameters) {
-		Set requestParameterStrings = SetUtils.orderedSet(new HashSet());
-		for (Iterator iterator = requestParameters.entrySet().iterator(); iterator.hasNext(); ) {
-			Map.Entry entry = (Map.Entry) iterator.next();
-			String parameterName = (String) entry.getKey();
-			Collection parameterValues = (Collection) entry.getValue();
-			for (Iterator valuesIterator = parameterValues.iterator(); valuesIterator.hasNext(); ) {
-				String parameterValue = (String) valuesIterator.next();
-				requestParameterStrings.add(URLEncoder.encode(parameterName) + "="
-						+ URLEncoder.encode(parameterValue));
-			}
-		}
-		return StringUtils.join(requestParameterStrings.iterator(), "&");
 	}
 
 	public static Collection collectImageDirectories() {
@@ -188,8 +132,8 @@ public class Utility {
 		return FileUtility.collectRelativeSubdirectoriesStartingWith(imagePath);
 	}
 
-	public static Object firstElementOfSetByOrderOf(Set set, Comparator comparator) {
-		SortedSet sortedSet = new TreeSet(comparator);
+	public static String firstElementOfSetByOrderOf(Set<String> set, Comparator<String> comparator) {
+		SortedSet<String> sortedSet = new TreeSet<>(comparator);
 		sortedSet.addAll(set);
 		return sortedSet.iterator().next();
 	}
@@ -230,10 +174,6 @@ public class Utility {
 		return new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING).format(oneWeekAgo);
 	}
 
-	public static String formatUser(UserDomainObject user) {
-		return StringEscapeUtils.escapeHtml4(user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName() + ")");
-	}
-
 	public static String getAbsolutePathToDocument(HttpServletRequest request, DocumentDomainObject document) {
 		if (null == document) {
 			return null;
@@ -263,10 +203,6 @@ public class Utility {
 	private static String newHtmlSimpleDateFormat(Date dateTime) {
 		return new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"
 				+ DateConstants.TIME_NO_SECONDS_FORMAT_STRING).format(dateTime);
-	}
-
-	public static String formatNullableHtmlDatetime(Date datetime) {
-		return formatHtmlDatetimeWithSpecial(datetime, null);
 	}
 
 	public static String formatHtmlDatetime(Date datetime) {
@@ -301,7 +237,7 @@ public class Utility {
 		response.setStatus(responseStatus);
 		request.setAttribute(VerifyUser.REQUEST_ATTRIBUTE__ERROR, ERROR__NO_PERMISSION);
 		request.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2() + "/login/index.jsp?"
-				+ VerifyUser.REQUEST_PARAMETER__NEXT_URL + "=" + URLEncoder.encode(loginTarget.toString()))
+				+ VerifyUser.REQUEST_PARAMETER__NEXT_URL + "=" + URLEncoder.encode(loginTarget.toString(), Imcms.UTF_8_ENCODING))
 				.forward(request, response);
 	}
 
@@ -365,10 +301,6 @@ public class Utility {
 		return true;
 	}
 
-	public static Map getMapViewOfObjectPairArray(final Object[][] array) {
-		return new ArrayMap(array, new ObjectPairToMapEntryTransformer());
-	}
-
 	public static String makeSqlStringFromDate(Date date) {
 		if (null == date) {
 			return null;
@@ -376,34 +308,13 @@ public class Utility {
 		return new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING).format(date);
 	}
 
-	public static Date parseDateFormat(DateFormat dateFormat, String dateString) {
+	public static String escapeUrl(String imageUrl) {
 		try {
-			return dateFormat.parse(dateString);
-		} catch (NullPointerException npe) {
-			return null;
-		} catch (ParseException pe) {
+			return URLEncoder.encode(imageUrl, Imcms.UTF_8_ENCODING).replaceAll("%2F", "/").replaceAll("\\+", "%20");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public static Object findMatch(Factory factory, Predicate predicate) {
-		Object unique;
-		do {
-			unique = factory.create();
-		} while (!predicate.evaluate(unique));
-		return unique;
-	}
-
-	public static String numberToAlphaNumerics(long identityHashCode) {
-		return Long.toString(identityHashCode, Character.MAX_RADIX);
-	}
-
-	public static Integer getInteger(Object object) {
-		return null == object ? null : ((Number) object).intValue();
-	}
-
-	public static String escapeUrl(String imageUrl) {
-		return URLEncoder.encode(imageUrl).replaceAll("%2F", "/").replaceAll("\\+", "%20");
 	}
 
 	public static Date addDate(Date date, int i) {
@@ -444,7 +355,6 @@ public class Utility {
 		}
 	}
 
-	// todo: investigate - ??? why not invalidate session ???
 	public static void makeUserLoggedOut(HttpServletRequest req) {
 		// req.getSession().removeAttribute(LOGGED_IN_USER);
 		HttpSession session = req.getSession(false);
@@ -487,6 +397,7 @@ public class Utility {
 		return Imcms.getServices().getLocalizedMessageProvider().getResourceBundle(Utility.getLoggedOnUser(request).getLanguageIso639_2());
 	}
 
+	@SuppressWarnings("unused")
 	public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String rememberCd) {
 		Cookie cookie = new Cookie("im_remember_cd", rememberCd);
 		cookie.setMaxAge(60 * 60 * 2);
@@ -560,6 +471,99 @@ public class Utility {
 	 */
 	public static String f(String key, Object... args) {
 		return new MessageFormat(i(key)).format(args);
+	}
+
+	@SuppressWarnings("unused")
+	public static int compareDatesWithNullFirst(Date date1, Date date2) {
+		if (null == date1 && null == date2) {
+			return 0;
+		} else if (null == date1) {
+			return -1;
+		} else if (null == date2) {
+			return +1;
+		} else {
+			return date1.compareTo(date2);
+		}
+	}
+
+	@SuppressWarnings("unused")
+	public static void removeNullValuesFromMap(Map map) {
+		Collection values = map.values();
+		for (Iterator iterator = values.iterator(); iterator.hasNext(); ) {
+			if (null == iterator.next()) {
+				iterator.remove();
+			}
+		}
+	}
+
+	/*
+
+				Unused methods
+
+	*/
+
+	@SuppressWarnings("unchecked")
+	public static String createQueryStringFromParameterMultiMap(MultiMap requestParameters) {
+		Set<String> requestParameterStrings = SetUtils.orderedSet(new HashSet());
+		for (Object o : requestParameters.entrySet()) {
+			Map.Entry entry = (Map.Entry) o;
+			String parameterName = (String) entry.getKey();
+			Collection<String> parameterValues = (Collection) entry.getValue();
+			for (String parameterValue : parameterValues) {
+				try {
+					requestParameterStrings.add(URLEncoder.encode(parameterName, Imcms.UTF_8_ENCODING) + "="
+							+ URLEncoder.encode(parameterValue, Imcms.UTF_8_ENCODING));
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return StringUtils.join(requestParameterStrings.iterator(), "&");
+	}
+
+	@SuppressWarnings("unused")
+	public static String formatUser(UserDomainObject user) {
+		return StringEscapeUtils.escapeHtml4(user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName() + ")");
+	}
+
+	@SuppressWarnings("unused")
+	public static String formatNullableHtmlDatetime(Date datetime) {
+		return formatHtmlDatetimeWithSpecial(datetime, null);
+	}
+
+	@SuppressWarnings("unused")
+	public static Map getMapViewOfObjectPairArray(final Object[][] array) {
+		return new ArrayMap(array, new ObjectPairToMapEntryTransformer());
+	}
+
+	@SuppressWarnings("unused")
+	public static Date parseDateFormat(DateFormat dateFormat, String dateString) {
+		try {
+			return dateFormat.parse(dateString);
+		} catch (NullPointerException npe) {
+			return null;
+		} catch (ParseException pe) {
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unused")
+	public static Object findMatch(Factory factory, Predicate predicate) {
+		Object unique;
+		do {
+			unique = factory.create();
+		} while (!predicate.evaluate(unique));
+		return unique;
+	}
+
+	@SuppressWarnings("unused")
+	public static String numberToAlphaNumerics(long identityHashCode) {
+		return Long.toString(identityHashCode, Character.MAX_RADIX);
+	}
+
+	@SuppressWarnings("unused")
+	public static Integer getInteger(Object object) {
+		return null == object ? null : ((Number) object).intValue();
 	}
 
 	private static class ObjectPairToMapEntryTransformer implements Transformer {
