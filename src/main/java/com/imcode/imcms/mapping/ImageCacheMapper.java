@@ -23,118 +23,120 @@ import java.util.Set;
 @Transactional
 public class ImageCacheMapper {
 
-    private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
+	@SuppressWarnings("unused")
+	private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
 
-    @Inject
-    private EntityManager entityManager;
+	@Inject
+	private EntityManager entityManager;
 
-    private Session getCurrentSession() {
-        return entityManager.unwrap(Session.class);
-    }
+	private Session getCurrentSession() {
+		return entityManager.unwrap(Session.class);
+	}
 
 
-    public void deleteDocumentImagesCache(int docId, Map<Integer, ImageDomainObject> images) {
-        Set<String> cacheIds = new HashSet<>();
+	public void deleteDocumentImagesCache(Map<Integer, ImageDomainObject> images) {
+		Set<String> cacheIds = new HashSet<>();
 
-        for (int imageIndex : images.keySet()) {
-            ImageDomainObject image = images.get(imageIndex);
+		for (int imageIndex : images.keySet()) {
+			ImageDomainObject image = images.get(imageIndex);
 
-            if (image.isEmpty()) {
-                continue;
-            }
+			if (image.isEmpty()) {
+				continue;
+			}
 
-            ImageCacheDomainObject imageCache = new ImageCacheDomainObject();
-            imageCache.setWidth(image.getWidth());
-            imageCache.setHeight(image.getHeight());
-            imageCache.setFormat(image.getFormat());
-            imageCache.setCropRegion(image.getCropRegion());
-            imageCache.setRotateDirection(image.getRotateDirection());
+			ImageCacheDomainObject imageCache = new ImageCacheDomainObject();
+			imageCache.setWidth(image.getWidth());
+			imageCache.setHeight(image.getHeight());
+			imageCache.setFormat(image.getFormat());
+			imageCache.setCropRegion(image.getCropRegion());
+			imageCache.setRotateDirection(image.getRotateDirection());
 
-            ImageSource source = image.getSource();
-            if (source instanceof FileDocumentImageSource) {
-                FileDocumentImageSource fileDocSource = (FileDocumentImageSource) source;
-                imageCache.setResource(Integer.toString(fileDocSource.getFileDocument().getId()));
-                imageCache.setType(ImageCacheDomainObject.TYPE_FILE_DOCUMENT);
-            } else {
-                imageCache.setResource(image.getUrlPathRelativeToContextPath());
-                imageCache.setType(ImageCacheDomainObject.TYPE_PATH);
-            }
-            imageCache.generateId();
+			ImageSource source = image.getSource();
+			if (source instanceof FileDocumentImageSource) {
+				FileDocumentImageSource fileDocSource = (FileDocumentImageSource) source;
+				imageCache.setResource(Integer.toString(fileDocSource.getFileDocument().getId()));
+				imageCache.setType(ImageCacheDomainObject.TYPE_FILE_DOCUMENT);
+			} else {
+				imageCache.setResource(image.getUrlPathRelativeToContextPath());
+				imageCache.setType(ImageCacheDomainObject.TYPE_PATH);
+			}
+			imageCache.generateId();
 
-            cacheIds.add(imageCache.getId());
-        }
+			cacheIds.add(imageCache.getId());
+		}
 
-        if (cacheIds.isEmpty()) {
-            return;
-        }
+		if (cacheIds.isEmpty()) {
+			return;
+		}
 
-        getCurrentSession()
-                .getNamedQuery("ImageCache.deleteAllById")
-                .setParameterList("ids", cacheIds)
-                .executeUpdate();
+		getCurrentSession()
+				.getNamedQuery("ImageCache.deleteAllById")
+				.setParameterList("ids", cacheIds)
+				.executeUpdate();
 
-        ImageCacheManager.deleteTextImageCacheEntries(cacheIds);
-    }
+		ImageCacheManager.deleteTextImageCacheEntries(cacheIds);
+	}
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public long getTextImageCacheFileSizeTotal() {
-        Number total = (Number) getCurrentSession()
-                .getNamedQuery("ImageCache.fileSizeTotal")
-                .uniqueResult();
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public long getTextImageCacheFileSizeTotal() {
+		Number total = (Number) getCurrentSession()
+				.getNamedQuery("ImageCache.fileSizeTotal")
+				.uniqueResult();
 
-        return (total != null ? total.longValue() : 0L);
-    }
+		return (total != null ? total.longValue() : 0L);
+	}
 
-    public void deleteTextImageCacheLFUEntries() {
-        Session session = getCurrentSession();
+	public void deleteTextImageCacheLFUEntries() {
+		Session session = getCurrentSession();
 
-        Number count = (Number) session
-                .getNamedQuery("ImageCache.countEntries")
-                .uniqueResult();
+		Number count = (Number) session
+				.getNamedQuery("ImageCache.countEntries")
+				.uniqueResult();
 
-        int deleteCount = (int) Math.ceil(count.longValue() * 0.1);
-        if (deleteCount < 1) {
-            return;
-        }
+		int deleteCount = (int) Math.ceil(count.longValue() * 0.1);
+		if (deleteCount < 1) {
+			return;
+		}
 
-        List<String> cacheIds = session
-                .getNamedQuery("ImageCache.idsByFrequency")
-                .setMaxResults(deleteCount)
-                .list();
+		@SuppressWarnings("unchecked")
+		List<String> cacheIds = session
+				.getNamedQuery("ImageCache.idsByFrequency")
+				.setMaxResults(deleteCount)
+				.list();
 
-        if (cacheIds.isEmpty()) {
-            return;
-        }
+		if (cacheIds.isEmpty()) {
+			return;
+		}
 
-        session.getNamedQuery("ImageCache.deleteAllById")
-                .setParameterList("ids", cacheIds)
-                .executeUpdate();
+		session.getNamedQuery("ImageCache.deleteAllById")
+				.setParameterList("ids", cacheIds)
+				.executeUpdate();
 
-        ImageCacheManager.deleteTextImageCacheEntries(cacheIds);
-    }
+		ImageCacheManager.deleteTextImageCacheEntries(cacheIds);
+	}
 
-    public void addImageCache(ImageCacheDomainObject imageCache) {
-        Session session = getCurrentSession();
+	public void addImageCache(ImageCacheDomainObject imageCache) {
+		Session session = getCurrentSession();
 
-        session.getNamedQuery("ImageCache.deleteById")
-                .setString("id", imageCache.getId())
-                .executeUpdate();
+		session.getNamedQuery("ImageCache.deleteById")
+				.setString("id", imageCache.getId())
+				.executeUpdate();
 
-        session.persist(imageCache);
-        session.flush();
-    }
+		session.persist(imageCache);
+		session.flush();
+	}
 
-    public void incrementFrequency(String cacheId) {
-        getCurrentSession()
-                .getNamedQuery("ImageCache.incFrequency")
-                .setString("id", cacheId)
-                .setInteger("maxFreq", Integer.MAX_VALUE)
-                .executeUpdate();
-    }
+	public void incrementFrequency(String cacheId) {
+		getCurrentSession()
+				.getNamedQuery("ImageCache.incFrequency")
+				.setString("id", cacheId)
+				.setInteger("maxFreq", Integer.MAX_VALUE)
+				.executeUpdate();
+	}
 
-    //fixme: implement - document version?
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<ImageDomainObject> getAllDocumentImages() {
-        throw new NotImplementedException();
-    }
+	//fixme: implement - document version?
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<ImageDomainObject> getAllDocumentImages() {
+		throw new NotImplementedException();
+	}
 }

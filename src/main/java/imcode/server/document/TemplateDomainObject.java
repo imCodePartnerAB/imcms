@@ -3,7 +3,7 @@ package imcode.server.document;
 public class TemplateDomainObject implements Comparable<TemplateDomainObject>, Cloneable {
     private final String name;
     private final String fileName;
-    private final Boolean isHidden;
+    private final boolean isHidden;
 
     public TemplateDomainObject(String name, String fileName, Boolean isHidden) {
         this.name = name;

@@ -448,15 +448,15 @@ public class DocumentMapper implements DocumentGetter {
         return nativeQueries.getAllMimeTypes().toArray(new String[]{});
     }
 
-    public void deleteDocument(int docId, UserDomainObject user) {
-        deleteDocument(getDefaultDocument(docId), user);
+    public void deleteDocument(int docId) {
+        deleteDocument(getDefaultDocument(docId));
     }
 
-    public void deleteDocument(DocumentDomainObject document, UserDomainObject user) {
+    public void deleteDocument(DocumentDomainObject document) {
         if (document instanceof TextDocumentDomainObject) {
             TextDocumentDomainObject textDoc = (TextDocumentDomainObject) document;
 
-            imcmsServices.getImageCacheMapper().deleteDocumentImagesCache(document.getId(), textDoc.getImages());
+            imcmsServices.getImageCacheMapper().deleteDocumentImagesCache(textDoc.getImages());
         }
 
         documentSaver.getDocRepository().deleteDocument(document.getId());
@@ -1021,7 +1021,7 @@ public class DocumentMapper implements DocumentGetter {
         int index;
 
         DocumentsIterator(int[] documentIds) {
-            this.documentIds = (int[]) documentIds.clone();
+            this.documentIds = documentIds.clone();
         }
 
         public void remove() {

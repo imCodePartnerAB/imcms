@@ -405,7 +405,7 @@ public class DocumentController {
 			}
 			break;
 			default: {
-				Imcms.getServices().getDocumentMapper().deleteDocument(id, Imcms.getUser());
+				Imcms.getServices().getDocumentMapper().deleteDocument(id);
 				result.put("result", true);
 			}
 		}

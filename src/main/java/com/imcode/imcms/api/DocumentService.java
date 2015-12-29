@@ -7,7 +7,6 @@ import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.UserDomainObject;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 
@@ -284,8 +283,7 @@ public class DocumentService {
     }
 
     public void deleteDocument(Document document) throws NoPermissionException {
-        UserDomainObject internalUser = contentManagementSystem.getCurrentUser().getInternal();
-        getDocumentMapper().deleteDocument(document.getInternal(), internalUser);
+        getDocumentMapper().deleteDocument(document.getInternal());
     }
 
     static class ApiWrappingDocumentVisitor extends DocumentVisitor {
