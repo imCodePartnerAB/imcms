@@ -12,7 +12,7 @@ class DocumentList extends AbstractList<DocumentDomainObject> implements Seriali
 
     DocumentList(Map documentMap) {
         map = Collections.synchronizedMap(documentMap);
-        list = new ArrayList(documentMap.size());
+        list = new ArrayList<>(documentMap.size());
         for (Object result : map.values()) {
             DocumentDomainObject document = (DocumentDomainObject) result;
             list.add(document);
@@ -22,16 +22,16 @@ class DocumentList extends AbstractList<DocumentDomainObject> implements Seriali
     public synchronized DocumentDomainObject remove(int index) {
         DocumentDomainObject document = list.remove(index);
         //document.loadAllLazilyLoaded();
-        map.remove(new Integer(document.getId()));
+        map.remove(document.getId());
         return document;
     }
 
     public synchronized DocumentDomainObject set(int index, DocumentDomainObject document) {
         DocumentDomainObject previousDocument = list.set(index, document);
         if (null != previousDocument) {
-            map.remove(new Integer(previousDocument.getId()));
+            map.remove(previousDocument.getId());
         }
-        map.put(new Integer(document.getId()), document);
+        map.put(document.getId(), document);
         return previousDocument;
     }
 
@@ -40,7 +40,7 @@ class DocumentList extends AbstractList<DocumentDomainObject> implements Seriali
     }
 
     public synchronized boolean add(DocumentDomainObject document) {
-        map.put(new Integer(document.getId()), document);
+        map.put(document.getId(), document);
         return list.add(document);
     }
 

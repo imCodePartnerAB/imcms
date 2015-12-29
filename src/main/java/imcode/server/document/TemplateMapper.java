@@ -1,36 +1,7 @@
 package imcode.server.document;
 
-import com.imcode.db.DatabaseException;
-import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
-import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.functors.NotPredicate;
-import org.apache.commons.collections.functors.NullPredicate;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.imcode.db.Database;
+import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
@@ -38,6 +9,24 @@ import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.functors.NotPredicate;
+import org.apache.commons.collections.functors.NullPredicate;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 public class TemplateMapper {
 
@@ -101,7 +90,7 @@ public class TemplateMapper {
         TemplateMapper templateMapper = services.getTemplateMapper();
         List<TemplateDomainObject> templates = templateMapper.getAllTemplates();
         for (TemplateDomainObject template : templates) {
-            List tags = new ArrayList();
+            List<String> tags = new ArrayList<>();
             tags.add("#template_name#");
             tags.add(StringEscapeUtils.escapeHtml4(template.getNameAdmin()));
             tags.add("#docs#");
@@ -164,26 +153,20 @@ public class TemplateMapper {
     }
 
     public List<TemplateDomainObject> getAllTemplates() {
-        File[] templateFiles = getTemplateDirectory().listFiles(new FileFilter() {
-            public boolean accept(File pathname) {
-                String fileName = pathname.getName().toLowerCase();
-                return pathname.isFile() && (fileName.endsWith(".jsp") || fileName.endsWith(".jspx") || fileName.endsWith(".html"));
-            }
+        File[] templateFiles = getTemplateDirectory().listFiles(pathname -> {
+            String fileName = pathname.getName().toLowerCase();
+            return pathname.isFile() && (fileName.endsWith(".jsp") || fileName.endsWith(".jspx") || fileName.endsWith(".html"));
         });
         UserDomainObject udo = Imcms.getUser();
-        SortedSet<TemplateDomainObject> templates = new TreeSet<TemplateDomainObject>();
+        SortedSet<TemplateDomainObject> templates = new TreeSet<>();
         for (File templateFile : templateFiles) {
             String nameWithoutExtension = StringUtils.substringBeforeLast(templateFile.getName(), ".");
-            TemplateDomainObject tdo = new TemplateDomainObject(nameWithoutExtension, templateFile.getName(), (Boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{nameWithoutExtension}, Utility.SINGLE_BOOLEAN_HANDLER)));
-            if(!udo.isSuperAdmin()&& tdo.isHidden()) {
-                continue;
-            }
-            else
-            {
+            TemplateDomainObject tdo = new TemplateDomainObject(nameWithoutExtension, templateFile.getName(), (boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{nameWithoutExtension}, Utility.SINGLE_BOOLEAN_HANDLER)));
+            if (udo.isSuperAdmin() || !tdo.isHidden()) {
                 templates.add(tdo);
             }
         }
-        return new ArrayList<TemplateDomainObject>(templates);
+        return new ArrayList<>(templates);
     }
 
     public int getCountOfDocumentsUsingTemplate(TemplateDomainObject template) {
@@ -211,7 +194,7 @@ public class TemplateMapper {
             String templateFileName = templateName + "." + extension;
             File templateFile = new File(getTemplateDirectory(), templateFileName);
             if (templateFile.exists()) {
-                return new TemplateDomainObject(templateName, templateFileName, (Boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{templateName}, Utility.SINGLE_BOOLEAN_HANDLER)));
+                return new TemplateDomainObject(templateName, templateFileName, (boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{templateName}, Utility.SINGLE_BOOLEAN_HANDLER)));
             }
         }
         return null;
@@ -247,9 +230,9 @@ public class TemplateMapper {
 
     public List<TemplateDomainObject> getTemplatesNotInGroup(TemplateGroupDomainObject templateGroup) {
         List<TemplateDomainObject> templatesInGroup = getTemplatesInGroup(templateGroup);
-        Set<TemplateDomainObject> allTemplates = new HashSet<TemplateDomainObject>(getAllTemplates());
+        Set<TemplateDomainObject> allTemplates = new HashSet<>(getAllTemplates());
         allTemplates.removeAll(templatesInGroup);
-        List<TemplateDomainObject> templatesNotInGroup = new ArrayList<TemplateDomainObject>(allTemplates);
+        List<TemplateDomainObject> templatesNotInGroup = new ArrayList<>(allTemplates);
         Collections.sort(templatesNotInGroup);
         return templatesNotInGroup;
     }

@@ -16,8 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Properties;
 
 public class AdminDeleteDoc extends HttpServlet {
@@ -39,8 +38,7 @@ public class AdminDeleteDoc extends HttpServlet {
         if (!user.isSuperAdmin()) {
             AdminIpAccess.printNonAdminError(user, req, res, getClass());
         } else {
-            Map vm = new HashMap();
-            AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
+            AdminRoles.sendHtml(req, res, Collections.emptyMap(), HTML_TEMPLATE);
         }
 
     }

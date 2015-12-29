@@ -3,10 +3,11 @@ package com.imcode.imcms.db;
 /**
  * Created by zemluk on 23.12.15.
  */
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import com.imcode.db.handlers.ObjectFromRowFactory;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class BooleanFromRowFactory implements ObjectFromRowFactory {
 
@@ -25,6 +26,6 @@ public class BooleanFromRowFactory implements ObjectFromRowFactory {
     }
 
     public Class getClassOfCreatedObjects() {
-        return Boolean.class;
+        return boolean.class;
     }
 }
