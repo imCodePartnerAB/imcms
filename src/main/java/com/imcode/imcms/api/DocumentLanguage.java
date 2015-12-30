@@ -6,70 +6,22 @@ import java.util.Objects;
 
 public final class DocumentLanguage implements Serializable {
 
-    public static Builder builder() {
-        return new Builder();
-    }
+    public static Comparator<DocumentLanguage> NATIVE_NAME_COMPARATOR = (d1, d2) -> {
+        String n1 = d1.getNativeName();
+        String n2 = d2.getNativeName();
 
-    public static Builder builder(DocumentLanguage documentLanguage) {
-        return new Builder(documentLanguage);
-    }
-
-    public static final class Builder {
-        private String code;
-        private String name;
-        private String nativeName;
-
-        public Builder() {
+        if (n1 == null && n2 == null) {
+            return 0;
+        } else if (n1 == null) {
+            return 1;
+        } else if (n2 == null) {
+            return -1;
         }
 
-        public Builder(DocumentLanguage language) {
-            this.code = language.code;
-            this.name = language.name;
-            this.nativeName = language.nativeName;
-        }
-
-        public Builder code(String code) {
-            this.code = code;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder nativeName(String nativeName) {
-            this.nativeName = nativeName;
-            return this;
-        }
-
-        public DocumentLanguage build() {
-            return new DocumentLanguage(code, name, nativeName);
-        }
-    }
-
-    public static Comparator<DocumentLanguage> NATIVE_NAME_COMPARATOR = new Comparator<DocumentLanguage>() {
-        @Override
-        public int compare(DocumentLanguage d1, DocumentLanguage d2) {
-            String n1 = d1.getNativeName();
-            String n2 = d2.getNativeName();
-
-            if (n1 == null && n2 == null) {
-                return 0;
-            } else if (n1 == null && n2 != null) {
-                return 1;
-            } else if (n1 != null && n2 == null) {
-                return -1;
-            }
-
-            return n1.compareToIgnoreCase(n2);
-        }
+        return n1.compareToIgnoreCase(n2);
     };
-
     private final String code;
-
     private final String name;
-
     private final String nativeName;
 
     /**
@@ -81,6 +33,14 @@ public final class DocumentLanguage implements Serializable {
         this.code = code;
         this.name = name;
         this.nativeName = nativeName;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static Builder builder(DocumentLanguage documentLanguage) {
+        return new Builder(documentLanguage);
     }
 
     @Override
@@ -126,5 +86,39 @@ public final class DocumentLanguage implements Serializable {
 
     public String getNativeName() {
         return nativeName != null ? nativeName : name;
+    }
+
+    public static final class Builder {
+        private String code;
+        private String name;
+        private String nativeName;
+
+        public Builder() {
+        }
+
+        public Builder(DocumentLanguage language) {
+            this.code = language.code;
+            this.name = language.name;
+            this.nativeName = language.nativeName;
+        }
+
+        public Builder code(String code) {
+            this.code = code;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder nativeName(String nativeName) {
+            this.nativeName = nativeName;
+            return this;
+        }
+
+        public DocumentLanguage build() {
+            return new DocumentLanguage(code, name, nativeName);
+        }
     }
 }

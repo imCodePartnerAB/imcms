@@ -8,4 +8,5 @@ Advanced Configuration
     image-processing
     solr
     language
+    properties
 

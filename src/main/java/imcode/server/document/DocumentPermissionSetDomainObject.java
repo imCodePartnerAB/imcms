@@ -16,161 +16,161 @@ import java.util.Set;
  */
 public class DocumentPermissionSetDomainObject implements Serializable, LazilyLoadedObject.Copyable, Cloneable {
 
-    public static final DocumentPermissionSetDomainObject NONE = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.NONE) {
-        public boolean hasPermission(DocumentPermission permission) {
-            return false;
-        }
-    };
+	public static final DocumentPermissionSetDomainObject NONE = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.NONE) {
+		public boolean hasPermission(DocumentPermission permission) {
+			return false;
+		}
+	};
 
-    public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.READ) {
-        public boolean hasPermission(DocumentPermission permission) {
-            return false;
-        }
-    };
+	public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.READ) {
+		public boolean hasPermission(DocumentPermission permission) {
+			return false;
+		}
+	};
 
-    public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.FULL) {
-        public Set getAllowedTemplateGroupIds() {
-            return Imcms.getServices().getTemplateMapper().getAllTemplateGroupIds();
-        }
+	public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.FULL) {
+		public Set<Integer> getAllowedTemplateGroupIds() {
+			return Imcms.getServices().getTemplateMapper().getAllTemplateGroupIds();
+		}
 
-        public Set<Integer> getAllowedDocumentTypeIds() {
-            return DocumentTypeDomainObject.getAllDocumentTypeIdsSet();
-        }
+		public Set<Integer> getAllowedDocumentTypeIds() {
+			return DocumentTypeDomainObject.getAllDocumentTypeIdsSet();
+		}
 
-        public boolean hasPermission(DocumentPermission permission) {
-            return true;
-        }
-    };
+		public boolean hasPermission(DocumentPermission permission) {
+			return true;
+		}
+	};
 
-    /**
-     * Permission to edit doc's content.
-     * <p/>
-     * Content is doc type depended:
-     * -text fields in Text docs
-     * -file references in File doc
-     * -etc.
-     */
-    public static final DocumentPermission EDIT = new DocumentPermission("edit");
+	/**
+	 * Permission to edit doc's content.
+	 * <p>
+	 * Content is doc type depended:
+	 * -text fields in Text docs
+	 * -file references in File doc
+	 * -etc.
+	 */
+	public static final DocumentPermission EDIT = new DocumentPermission("edit");
+	public static final DocumentPermission EDIT_DOCUMENT_INFORMATION = new DocumentPermission("editDocumentInformation");
+	public static final DocumentPermission EDIT_PERMISSIONS = new DocumentPermission("editPermissions");
+	public final static int EDIT_DOCINFO_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCINFO;
+	public final static int EDIT_PERMISSIONS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_PERMISSIONS;
+	public final static int EDIT_DOCUMENT_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCUMENT;
+	private static final String PERMISSION_SET_NAME__FULL = "Full";
+	private static final String PERMISSION_SET_NAME__RESTRICTED_1 = "Restricted One";
+	private static final String PERMISSION_SET_NAME__RESTRICTED_2 = "Restricted Two";
+	private static final String PERMISSION_SET_NAME__READ = "Read";
+	private static final String PERMISSION_SET_NAME__NONE = "None";
+	private DocumentPermissionSetTypeDomainObject type;
+	private HashSet<DocumentPermission> permissions = new HashSet<>();
 
-    private static final String PERMISSION_SET_NAME__FULL = "Full";
-    private static final String PERMISSION_SET_NAME__RESTRICTED_1 = "Restricted One";
-    private static final String PERMISSION_SET_NAME__RESTRICTED_2 = "Restricted Two";
-    private static final String PERMISSION_SET_NAME__READ = "Read";
-    private static final String PERMISSION_SET_NAME__NONE = "None";
+	public DocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject typeId) {
+		this.type = typeId;
+	}
 
-    private DocumentPermissionSetTypeDomainObject type;
+	private static String getName(DocumentPermissionSetTypeDomainObject userPermissionSetId) {
+		String result;
+		if (DocumentPermissionSetTypeDomainObject.FULL.equals(userPermissionSetId)) {
+			result = PERMISSION_SET_NAME__FULL;
+		} else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(userPermissionSetId)) {
+			result = PERMISSION_SET_NAME__RESTRICTED_1;
+		} else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(userPermissionSetId)) {
+			result = PERMISSION_SET_NAME__RESTRICTED_2;
+		} else if (DocumentPermissionSetTypeDomainObject.READ.equals(userPermissionSetId)) {
+			result = PERMISSION_SET_NAME__READ;
+		} else {
+			result = PERMISSION_SET_NAME__NONE;
+		}
+		return result;
+	}
 
-    private HashSet<DocumentPermission> permissions = new HashSet<>();
-    public static final DocumentPermission EDIT_DOCUMENT_INFORMATION = new DocumentPermission("editDocumentInformation");
-    public static final DocumentPermission EDIT_PERMISSIONS = new DocumentPermission("editPermissions");
+	void setPermission(DocumentPermission permission, boolean b) {
+		if (b) {
+			permissions.add(permission);
+		} else {
+			permissions.remove(permission);
+		}
+	}
 
-    public final static int EDIT_DOCINFO_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCINFO;
-    public final static int EDIT_PERMISSIONS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_PERMISSIONS;
-    public final static int EDIT_DOCUMENT_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCUMENT;
+	public boolean hasPermission(DocumentPermission permission) {
+		return permissions.contains(permission);
+	}
 
-    public DocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject typeId) {
-        this.type = typeId;
-    }
+	public DocumentPermissionSetTypeDomainObject getType() {
+		return type;
+	}
 
-    void setPermission(DocumentPermission permission, boolean b) {
-        if (b) {
-            permissions.add(permission);
-        } else {
-            permissions.remove(permission);
-        }
-    }
+	public String getTypeName() {
+		return getName(type);
+	}
 
-    public boolean hasPermission(DocumentPermission permission) {
-        return permissions.contains(permission);
-    }
+	public String toString() {
+		StringBuffer buff = new StringBuffer();
+		buff.append(getTypeName());
+		if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(type) || DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(type)) {
+			buff.append(" (")
+					.append("editDocumentInformation=")
+					.append(getEditDocumentInformation())
+					.append(", ")
+					.append("editPermissions=")
+					.append(getEditPermissions())
+					.append(", ")
+					.append(")");
+		}
+		return buff.toString();
+	}
 
-    public DocumentPermissionSetTypeDomainObject getType() {
-        return type;
-    }
+	public boolean getEditDocumentInformation() {
+		return hasPermission(EDIT_DOCUMENT_INFORMATION);
+	}
 
-    public String getTypeName() {
-        return getName(type);
-    }
+	public void setEditDocumentInformation(boolean editDocumentInformation) {
+		setPermission(EDIT_DOCUMENT_INFORMATION, editDocumentInformation);
+	}
 
-    private static String getName(DocumentPermissionSetTypeDomainObject userPermissionSetId) {
-        String result;
-        if (DocumentPermissionSetTypeDomainObject.FULL.equals(userPermissionSetId)) {
-            result = PERMISSION_SET_NAME__FULL;
-        } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(userPermissionSetId)) {
-            result = PERMISSION_SET_NAME__RESTRICTED_1;
-        } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(userPermissionSetId)) {
-            result = PERMISSION_SET_NAME__RESTRICTED_2;
-        } else if (DocumentPermissionSetTypeDomainObject.READ.equals(userPermissionSetId)) {
-            result = PERMISSION_SET_NAME__READ;
-        } else {
-            result = PERMISSION_SET_NAME__NONE;
-        }
-        return result;
-    }
+	public boolean getEditPermissions() {
+		return hasPermission(EDIT_PERMISSIONS);
+	}
 
-    public String toString() {
-        StringBuffer buff = new StringBuffer();
-        buff.append(getTypeName());
-        if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(type) || DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(type)) {
-            buff.append(" (")
-                    .append("editDocumentInformation=" + getEditDocumentInformation() + ", ")
-                    .append("editPermissions=" + getEditPermissions() + ", ")
-                    .append(")");
-        }
-        return buff.toString();
-    }
+	public void setEditPermissions(boolean editPermissions) {
+		setPermission(EDIT_PERMISSIONS, editPermissions);
+	}
 
-    public boolean getEditDocumentInformation() {
-        return hasPermission(EDIT_DOCUMENT_INFORMATION);
-    }
+	/**
+	 * todo: move to DocumentLoader - used only to initialize meta???
+	 *
+	 * @param permissionBits
+	 * @see com.imcode.imcms.mapping.DocumentLoader#loadMeta
+	 */
+	public void setFromBits(int permissionBits) {
+		setEditDocumentInformation(0 != (permissionBits & EDIT_DOCINFO_PERMISSION_ID));
+		setEditPermissions(0 != (permissionBits & EDIT_PERMISSIONS_PERMISSION_ID));
+		setEdit(0 != (permissionBits & EDIT_DOCUMENT_PERMISSION_ID));
+	}
 
-    public void setEditDocumentInformation(boolean editDocumentInformation) {
-        setPermission(EDIT_DOCUMENT_INFORMATION, editDocumentInformation);
-    }
+	public boolean getEdit() {
+		return hasPermission(EDIT);
+	}
 
-    public boolean getEditPermissions() {
-        return hasPermission(EDIT_PERMISSIONS);
-    }
+	public void setEdit(boolean edit) {
+		setPermission(EDIT, edit);
+	}
 
-    public void setEditPermissions(boolean editPermissions) {
-        setPermission(EDIT_PERMISSIONS, editPermissions);
-    }
+	public LazilyLoadedObject.Copyable copy() {
+		try {
+			return clone();
+		} catch (CloneNotSupportedException e) {
+			throw new ShouldNotBeThrownException(e);
+		}
+	}
 
-    /**
-     * todo: move to DocumentLoader - used only to initialize meta???
-     *
-     * @param permissionBits
-     * @see com.imcode.imcms.mapping.DocumentLoader#loadMeta
-     */
-    public void setFromBits(int permissionBits) {
-        setEditDocumentInformation(0 != (permissionBits & EDIT_DOCINFO_PERMISSION_ID));
-        setEditPermissions(0 != (permissionBits & EDIT_PERMISSIONS_PERMISSION_ID));
-        setEdit(0 != (permissionBits & EDIT_DOCUMENT_PERMISSION_ID));
-    }
+	protected DocumentPermissionSetDomainObject clone() throws CloneNotSupportedException {
+		DocumentPermissionSetDomainObject clone = (DocumentPermissionSetDomainObject) super.clone();
+		clone.permissions = (HashSet<DocumentPermission>) permissions.clone();
+		return clone;
+	}
 
-    public boolean getEdit() {
-        return hasPermission(EDIT);
-    }
-
-    public void setEdit(boolean edit) {
-        setPermission(EDIT, edit);
-    }
-
-    public LazilyLoadedObject.Copyable copy() {
-        try {
-            return (LazilyLoadedObject.Copyable) clone();
-        } catch (CloneNotSupportedException e) {
-            throw new ShouldNotBeThrownException(e);
-        }
-    }
-
-    protected DocumentPermissionSetDomainObject clone() throws CloneNotSupportedException {
-        DocumentPermissionSetDomainObject clone = (DocumentPermissionSetDomainObject) super.clone();
-        clone.permissions = (HashSet<DocumentPermission>) permissions.clone();
-        return clone;
-    }
-
-    public boolean isEmpty() {
-        return permissions.isEmpty();
-    }
+	public boolean isEmpty() {
+		return permissions.isEmpty();
+	}
 }
