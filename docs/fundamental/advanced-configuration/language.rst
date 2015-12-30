@@ -24,5 +24,5 @@ This code will return the ``Set<DocumentLanguage>``,  which can be used for choo
 * set user's language (not recommended):
 .. code-block:: java
 
-    Imcms.getUser().getDocGetterCallback().setLanguage(DocumentLanguage language, boolean isDefault);
+    Imcms.getUser().getDocGetterCallback().setLanguage("DocumentLanguage language, boolean isDefaultLang");
 
