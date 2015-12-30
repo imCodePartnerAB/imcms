@@ -18,6 +18,7 @@ Server properties
 
 While starting application, ImCMS automatically read its root path and goes to ``WEB-INF/conf/server.properties`` to
 read server properties. Properties from this file can be accessed by next methods:
+
 .. code-block:: java
 
     PropertyManager.getServerConfProperty(String property);
@@ -34,6 +35,7 @@ Properties in other files
 """""""""""""""""""""""""
 
 If you need to read some properties from another files, you may use next methods:
+
 .. code-block:: java
 
     PropertyManager.getPropertyFrom(String path, String property);
