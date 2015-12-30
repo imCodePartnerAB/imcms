@@ -7,5 +7,5 @@ Advanced Configuration
     jdbc
     image-processing
     solr
-            language
+    language
 
