@@ -2,4 +2,5 @@ Language
 ========
 
 General actions with language (the java-code):
-- ``Imcms.getServices().getDocumentLanguages().getDefault()`` - get default language.
+.. code-block:: java
+Imcms.getServices().getDocumentLanguages().getDefault() .. - get default language.
