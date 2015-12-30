@@ -19,10 +19,10 @@ This code will return the ``Set<DocumentLanguage>``,  which can be used for choo
 * set document's language:
 .. code-block:: java
 
-    Imcms.getServices().getDocumentMapper().getDocument("current document's id").setLanguage("DocumentLanguage language");
+    Imcms.getServices().getDocumentMapper().getDocument("current document's id").setLanguage(DocumentLanguage language);
 
 * set user's language (not recommended):
 .. code-block:: java
 
-    Imcms.getUser().getDocGetterCallback().setLanguage("DocumentLanguage language, boolean isDefaultLang");
+    Imcms.getUser().getDocGetterCallback().setLanguage(DocumentLanguage language, boolean isDefaultLang);
 
