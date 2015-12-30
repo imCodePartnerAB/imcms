@@ -12,14 +12,14 @@ General actions with language
 * get document's enabled languages:
 .. code-block:: java
 
-    Imcms.getServices().getDocumentMapper().getDocument(-- current document's id --).getMeta().getEnabledLanguages();
+    Imcms.getServices().getDocumentMapper().getDocument("current document's id").getMeta().getEnabledLanguages();
 
-This code will return the ``Set<DocumentLanguage>``, which can be used for choosing the right language and setting it.
+This code will return the ``Set<DocumentLanguage>``,  which can be used for choosing the right language and setting it.
 
 * set document's language:
 .. code-block:: java
 
-    Imcms.getServices().getDocumentMapper().getDocument(---id---).setLanguage(---DocumentLanguage--);
+    Imcms.getServices().getDocumentMapper().getDocument("id").setLanguage("DocumentLanguage");
 
 * set user's language (not recommended):
 .. code-block:: java
