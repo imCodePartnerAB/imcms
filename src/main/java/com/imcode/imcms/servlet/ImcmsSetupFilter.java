@@ -64,18 +64,6 @@ public class ImcmsSetupFilter implements Filter {
 						.orElse(Optional.ofNullable(dls.getForHost(request.getServerName()))
 								.orElse(defaultLanguage)));
 
-//		if (preferredLanguage == null) {
-//			preferredLanguage = docGetterCallback.getLanguage();
-//
-//			if (preferredLanguage == null) {
-//				preferredLanguage = dls.getForHost(request.getServerName());
-//
-//				if (preferredLanguage == null) {
-//					preferredLanguage = defaultLanguage;
-//				}
-//			}
-//		}
-
 		docGetterCallback.setLanguage(preferredLanguage, dls.isDefault(preferredLanguage));
 
 		Integer docId = Ints.tryParse(StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)));
@@ -226,7 +214,6 @@ public class ImcmsSetupFilter implements Filter {
 
 		if (resourcePaths == null || resourcePaths.size() == 0) {
 			String documentIdString = getDocumentIdString(service, path);
-
 			DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
 
 			if (null != document) {
@@ -237,7 +224,6 @@ public class ImcmsSetupFilter implements Filter {
 				}
 			}
 		}
-
 		chain.doFilter(request, response);
 	}
 

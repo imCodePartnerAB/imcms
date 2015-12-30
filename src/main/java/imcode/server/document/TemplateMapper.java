@@ -357,6 +357,7 @@ public class TemplateMapper {
 		return services.getFileCache().getCachedFileString(getTemplateFile(getTemplateByName(templateName)));
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<TemplateGroupDomainObject> getTemplateGroups(Set<Integer> templateGroupIds) {
 		List<TemplateGroupDomainObject> allowedTemplateGroups = new ArrayList<>(templateGroupIds.size());
 		for (Integer allowedTemplateGroupId : templateGroupIds) {
@@ -379,5 +380,4 @@ public class TemplateMapper {
 		}
 		return false;
 	}
-
 }

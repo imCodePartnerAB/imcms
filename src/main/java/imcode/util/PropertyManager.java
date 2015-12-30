@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Intended to load and cache properties from properties files.
+ * Intended to load and cache properties from *.properties files.
  */
 public class PropertyManager {
 
@@ -84,6 +84,18 @@ public class PropertyManager {
 		return getProperties(new File(path)).getProperty(property);
 	}
 
+	@SuppressWarnings("unused")
+	/**
+	 * Gets {@code Properties} by specified path.
+	 *
+	 * @param path     Path to properties file.
+	 * @return Asked properties.
+	 * @throws IOException Throws {@code IOException} if file not found.
+	 */
+	public static Properties getPropertiesFrom(String path) throws IOException {
+		return getProperties(new File(path));
+	}
+
 	/**
 	 * Gets the {@code Property} representation of file or path to file due to configuration path.
 	 *
@@ -91,7 +103,7 @@ public class PropertyManager {
 	 * @return {@code String} type of asked property
 	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
-	public static Properties getPropertiesFrom(String path) throws IOException {
+	public static Properties getPropsRelativeToConfPath(String path) throws IOException {
 		return getProperties(new File(configPath, path));
 	}
 
@@ -107,13 +119,6 @@ public class PropertyManager {
 	}
 
 	/**
-	 * Flushes the cache, causing the files to be loaded again, when they are needed.
-	 */
-	public static void flush() {
-		CACHE.clear();
-	}
-
-	/**
 	 * Get {@code Properties} from a config file.
 	 *
 	 * @return The properties in the file.
@@ -121,6 +126,13 @@ public class PropertyManager {
 	 */
 	public static Properties getServerConfProperties() throws IOException {
 		return getProperties(serverPropertiesPath);
+	}
+
+	/**
+	 * Flushes the cache, causing the files to be loaded again, when they are needed.
+	 */
+	public static void flush() {
+		CACHE.clear();
 	}
 
 	/**

@@ -14,207 +14,203 @@ import java.util.stream.Stream;
 
 public class DocumentLoaderCachingProxy {
 
-    private static class DocCacheKey {
-        private final int docId;
-        private final String languageCode;
-        private final int hashCode;
+	private final DocumentVersionMapper versionMapper;
+	private final DocumentLoader loader;
+	private final DocumentLanguages documentLanguages;
+	private final int size;
+	private final CacheWrapper<Integer, DocumentMeta> metas;
+	private final CacheWrapper<Integer, DocumentVersionInfo> versionInfos;
+	private final CacheWrapper<DocCacheKey, DocumentDomainObject> workingDocs;
+	private final CacheWrapper<DocCacheKey, DocumentDomainObject> defaultDocs;
+	private final CacheWrapper<String, Integer> aliasesToIds;
+	private final CacheWrapper<Integer, String> idsToAliases;
+	private final CacheManager cacheManager = CacheManager.create();
 
-        public DocCacheKey(int docId, String languageCode) {
-            this.docId = docId;
-            this.languageCode = languageCode;
-            this.hashCode = Objects.hash(docId, languageCode);
-        }
+	public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper, DocumentLoader loader, DocumentLanguages documentLanguages, int size) {
+		this.versionMapper = versionMapper;
+		this.loader = loader;
+		this.documentLanguages = documentLanguages;
+		this.size = size;
 
-        @Override
-        public int hashCode() {
-            return hashCode;
-        }
+		metas = CacheWrapper.of(cacheConfiguration("meats"));
+		versionInfos = CacheWrapper.of(cacheConfiguration("versionInfos"));
+		workingDocs = CacheWrapper.of(cacheConfiguration("workingDocs"));
+		defaultDocs = CacheWrapper.of(cacheConfiguration("defaultDocs"));
+		aliasesToIds = CacheWrapper.of(cacheConfiguration("aliasesToIds"));
+		idsToAliases = CacheWrapper.of(cacheConfiguration("idsToAliases"));
 
-        @Override
-        public boolean equals(Object obj) {
-            return this == obj || (obj instanceof DocCacheKey && equals((DocCacheKey) obj));
-        }
+		Stream.of(metas, versionInfos, workingDocs, defaultDocs, aliasesToIds, idsToAliases)
+				.forEach(cacheWrapper -> cacheManager.addCache(cacheWrapper.cache()));
+	}
 
-        private boolean equals(DocCacheKey that) {
-            return docId == that.docId && Objects.equals(languageCode, that.languageCode);
-        }
+	private CacheConfiguration cacheConfiguration(String name) {
+		CacheConfiguration cc = new CacheConfiguration();
 
-        @Override
-        public String toString() {
-            return com.google.common.base.Objects.toStringHelper(this)
-                    .add("docId", docId)
-                    .add("languageCode", languageCode)
-                    .toString();
-        }
+		cc.setMaxEntriesLocalHeap(size);
+		cc.setOverflowToDisk(false);
+		cc.setEternal(true);
+		cc.setName(DocumentLoaderCachingProxy.class.getCanonicalName() + "." + name);
 
-        public int getDocId() {
-            return docId;
-        }
+		return cc;
+	}
 
-        public String getLanguageCode() {
-            return languageCode;
-        }
-    }
+	/**
+	 * @return doc's meta or null if doc does not exists
+	 */
+	public DocumentMeta getMeta(final int docId) {
+		return metas.getOrPut(docId, () -> loader.loadMeta(docId));
+	}
 
-    private final DocumentVersionMapper versionMapper;
-    private final DocumentLoader loader;
-    private final DocumentLanguages documentLanguages;
-    private final int size;
+	/**
+	 * @return doc's version info or null if doc does not exists
+	 */
+	public DocumentVersionInfo getDocVersionInfo(final int docId) {
+		return versionInfos.getOrPut(docId, () -> versionMapper.getInfo(docId));
+	}
 
-    private final CacheWrapper<Integer, DocumentMeta> metas;
-    private final CacheWrapper<Integer, DocumentVersionInfo> versionInfos;
-    private final CacheWrapper<DocCacheKey, DocumentDomainObject> workingDocs;
-    private final CacheWrapper<DocCacheKey, DocumentDomainObject> defaultDocs;
-    private final CacheWrapper<String, Integer> aliasesToIds;
-    private final CacheWrapper<Integer, String> idsToAliases;
+	/**
+	 * @return doc's id or null if doc does not exists or alias is not set
+	 */
+	public Integer getDocIdByAlias(final String docAlias) {
+		return aliasesToIds.getOrPut(docAlias, () -> {
+			Integer docId = loader.getPropertyRepository().findDocIdByAlias(docAlias);
 
-    private final CacheManager cacheManager = CacheManager.create();
+			if (docId != null) {
+				idsToAliases.put(docId, docAlias);
+			}
 
-    public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper, DocumentLoader loader, DocumentLanguages documentLanguages, int size) {
-        this.versionMapper = versionMapper;
-        this.loader = loader;
-        this.documentLanguages = documentLanguages;
-        this.size = size;
+			return docId;
+		});
+	}
 
-        metas = CacheWrapper.of(cacheConfiguration("meats"));
-        versionInfos = CacheWrapper.of(cacheConfiguration("versionInfos"));
-        workingDocs = CacheWrapper.of(cacheConfiguration("workingDocs"));
-        defaultDocs = CacheWrapper.of(cacheConfiguration("defaultDocs"));
-        aliasesToIds = CacheWrapper.of(cacheConfiguration("aliasesToIds"));
-        idsToAliases = CacheWrapper.of(cacheConfiguration("idsToAliases"));
+	/**
+	 * @return working doc or null if doc does not exists
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends DocumentDomainObject> T getWorkingDoc(final int docId, final String docLanguageCode) {
+		return (T) workingDocs.getOrPut(new DocCacheKey(docId, docLanguageCode), () -> {
+			DocumentMeta meta = getMeta(docId);
 
-        Stream.of(metas, versionInfos, workingDocs, defaultDocs, aliasesToIds, idsToAliases)
-                .forEach(cacheWrapper -> cacheManager.addCache(cacheWrapper.cache()));
-    }
+			if (meta == null) {
+				return null;
+			}
 
+			DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
+			DocumentVersion version = versionInfo.getWorkingVersion();
+			DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
-    private CacheConfiguration cacheConfiguration(String name) {
-        CacheConfiguration cc = new CacheConfiguration();
+			doc.setMeta(meta.clone());
+			doc.setVersionNo(version.getNo());
+			doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
 
-        cc.setMaxEntriesLocalHeap(size);
-        cc.setOverflowToDisk(false);
-        cc.setEternal(true);
-        cc.setName(DocumentLoaderCachingProxy.class.getCanonicalName() + "." + name);
+			return loader.loadAndInitContent(doc);
+		});
+	}
 
-        return cc;
-    }
+	/**
+	 * @return default doc or null if doc does not exists
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends DocumentDomainObject> T getDefaultDoc(final int docId, final String docLanguageCode) {
+		return (T) workingDocs.getOrPut(new DocCacheKey(docId, docLanguageCode), () -> {
+			DocumentMeta meta = getMeta(docId);
 
-    /**
-     * @return doc's meta or null if doc does not exists
-     */
-    public DocumentMeta getMeta(final int docId) {
-        return metas.getOrPut(docId, () -> loader.loadMeta(docId));
-    }
+			if (meta == null) {
+				return null;
+			}
 
-    /**
-     * @return doc's version info or null if doc does not exists
-     */
-    public DocumentVersionInfo getDocVersionInfo(final int docId) {
-        return versionInfos.getOrPut(docId, () -> versionMapper.getInfo(docId));
-    }
+			DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
+			DocumentVersion version = versionInfo.getDefaultVersion();
+			DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
-    /**
-     * @return doc's id or null if doc does not exists or alias is not set
-     */
-    public Integer getDocIdByAlias(final String docAlias) {
-        return aliasesToIds.getOrPut(docAlias, () -> {
-            Integer docId = loader.getPropertyRepository().findDocIdByAlias(docAlias);
+			doc.setMeta(meta.clone());
+			doc.setVersionNo(version.getNo());
+			doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
 
-            if (docId != null) {
-                idsToAliases.put(docId, docAlias);
-            }
+			return loader.loadAndInitContent(doc);
+		});
+	}
 
-            return docId;
-        });
-    }
+	/**
+	 * @return custom doc or null if doc does not exists
+	 */
+	public <T extends DocumentDomainObject> T getCustomDoc(DocRef docRef) {
+		DocumentMeta meta = getMeta(docRef.getId());
 
-    /**
-     * @return working doc or null if doc does not exists
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends DocumentDomainObject> T getWorkingDoc(final int docId, final String docLanguageCode) {
-        return (T) workingDocs.getOrPut(new DocCacheKey(docId, docLanguageCode), () -> {
-            DocumentMeta meta = getMeta(docId);
+		if (meta == null) {
+			return null;
+		}
 
-            if (meta == null) {
-                return null;
-            }
+		DocumentVersionInfo versionInfo = getDocVersionInfo(docRef.getId());
+		DocumentVersion version = versionInfo.getDefaultVersion();
+		T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
-            DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
-            DocumentVersion version = versionInfo.getWorkingVersion();
-            DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+		doc.setMeta(meta.clone());
+		doc.setVersionNo(version.getNo());
+		doc.setLanguage(documentLanguages.getByCode(docRef.getLanguageCode()));
 
-            doc.setMeta(meta.clone());
-            doc.setVersionNo(version.getNo());
-            doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
+		return loader.loadAndInitContent(doc);
+	}
 
-            return loader.loadAndInitContent(doc);
-        });
-    }
+	public void removeDocFromCache(int docId) {
+		metas.remove(docId);
+		versionInfos.remove(docId);
 
+		documentLanguages.getCodes().forEach(code -> {
+			DocCacheKey key = new DocCacheKey(docId, code);
 
-    /**
-     * @return default doc or null if doc does not exists
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends DocumentDomainObject> T getDefaultDoc(final int docId, final String docLanguageCode) {
-        return (T) workingDocs.getOrPut(new DocCacheKey(docId, docLanguageCode), () -> {
-            DocumentMeta meta = getMeta(docId);
+			workingDocs.remove(key);
+			defaultDocs.remove(key);
+		});
 
-            if (meta == null) {
-                return null;
-            }
+		Optional.ofNullable(idsToAliases.get(docId)).ifPresent(alias -> {
+			idsToAliases.remove(docId);
+			aliasesToIds.remove(alias);
+		});
+	}
 
-            DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
-            DocumentVersion version = versionInfo.getDefaultVersion();
-            DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+	private static class DocCacheKey {
+		private final int docId;
+		private final String languageCode;
+		private final int hashCode;
 
-            doc.setMeta(meta.clone());
-            doc.setVersionNo(version.getNo());
-            doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
+		public DocCacheKey(int docId, String languageCode) {
+			this.docId = docId;
+			this.languageCode = languageCode;
+			this.hashCode = Objects.hash(docId, languageCode);
+		}
 
-            return loader.loadAndInitContent(doc);
-        });
-    }
+		@Override
+		public int hashCode() {
+			return hashCode;
+		}
 
-    /**
-     * @return custom doc or null if doc does not exists
-     */
-    public <T extends DocumentDomainObject> T getCustomDoc(DocRef docRef) {
-        DocumentMeta meta = getMeta(docRef.getId());
+		@Override
+		public boolean equals(Object obj) {
+			return this == obj || (obj instanceof DocCacheKey && equals((DocCacheKey) obj));
+		}
 
-        if (meta == null) {
-            return null;
-        }
+		private boolean equals(DocCacheKey that) {
+			return docId == that.docId && Objects.equals(languageCode, that.languageCode);
+		}
 
-        DocumentVersionInfo versionInfo = getDocVersionInfo(docRef.getId());
-        DocumentVersion version = versionInfo.getDefaultVersion();
-        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+		@Override
+		public String toString() {
+			return com.google.common.base.Objects.toStringHelper(this)
+					.add("docId", docId)
+					.add("languageCode", languageCode)
+					.toString();
+		}
 
-        doc.setMeta(meta.clone());
-        doc.setVersionNo(version.getNo());
-        doc.setLanguage(documentLanguages.getByCode(docRef.getLanguageCode()));
+		public int getDocId() {
+			return docId;
+		}
 
-        return loader.loadAndInitContent(doc);
-    }
-
-
-    public void removeDocFromCache(int docId) {
-        metas.remove(docId);
-        versionInfos.remove(docId);
-
-        documentLanguages.getCodes().forEach(code -> {
-            DocCacheKey key = new DocCacheKey(docId, code);
-
-            workingDocs.remove(key);
-            defaultDocs.remove(key);
-        });
-
-        Optional.ofNullable(idsToAliases.get(docId)).ifPresent(alias -> {
-            idsToAliases.remove(docId);
-            aliasesToIds.remove(alias);
-        });
-    }
+		@SuppressWarnings("unused")
+		public String getLanguageCode() {
+			return languageCode;
+		}
+	}
 }
 
 

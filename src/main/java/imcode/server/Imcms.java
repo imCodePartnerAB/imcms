@@ -333,7 +333,6 @@ public class Imcms {
 				: new File(path.getAbsolutePath(), solrHome).getAbsolutePath();
 	}
 
-	@SuppressWarnings("unused")
 	public static ApplicationContext getApplicationContext() {
 		return applicationContext;
 	}
@@ -342,7 +341,6 @@ public class Imcms {
 		Imcms.applicationContext = applicationContext;
 	}
 
-	@SuppressWarnings("unused")
 	public static boolean isPrepareDatabaseOnStart() {
 		return prepareDatabaseOnStart;
 	}

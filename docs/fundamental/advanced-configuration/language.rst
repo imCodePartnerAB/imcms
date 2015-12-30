@@ -1,31 +1,28 @@
 Language
 ========
 
-General actions with language (the java-code)
-"""""""""""""""""""""""""""""""""""""""""""""
+General actions with language
+"""""""""""""""""""""""""""""
 
 * get default language:
-
 .. code-block:: java
 
-    Imcms.getServices().getDocumentLanguages().getDefault();
+    DocumentLanguage defaultLang = Imcms.getServices().getDocumentLanguages().getDefault();
 
-* set language by creating new:
-
+* get document's enabled languages:
 .. code-block:: java
 
-    Imcms.getUser().getDocGetterCallback().setLanguage(new DocumentLanguage(String code, String name, String nativeName), boolean isDefaultLang);
+    Imcms.getServices().getDocumentMapper().getDocument(-- current document's id --).getMeta().getEnabledLanguages();
 
-where ``code`` is language ISO-639-1 code.
-     * @param name       language name
-     * @param nativeName language native name
-     */
-    public DocumentLanguage(String code, String name, String nativeName) {
-        this.code = code;
-        this.name = name;
-        this.nativeName = nativeName;
-    }
+This code will return the ``Set<DocumentLanguage>``, which can be used for choosing the right language and setting it.
 
-Imcms.getServices().getDocumentMapper().getDocument(---id---).getMeta().getEnabledLanguages();
-Imcms.getServices().getDocumentMapper().getDocument(---id---).setLanguage(---DocumentLanguage--);
+* set document's language:
+.. code-block:: java
+
+    Imcms.getServices().getDocumentMapper().getDocument(---id---).setLanguage(---DocumentLanguage--);
+
+* set user's language (not recommended):
+.. code-block:: java
+
+    Imcms.getUser().getDocGetterCallback().setLanguage(DocumentLanguage language, boolean isDefault);
 
