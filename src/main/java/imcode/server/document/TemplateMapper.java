@@ -161,7 +161,12 @@ public class TemplateMapper {
         SortedSet<TemplateDomainObject> templates = new TreeSet<>();
         for (File templateFile : templateFiles) {
             String nameWithoutExtension = StringUtils.substringBeforeLast(templateFile.getName(), ".");
-            TemplateDomainObject tdo = new TemplateDomainObject(nameWithoutExtension, templateFile.getName(), (boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{nameWithoutExtension}, Utility.SINGLE_BOOLEAN_HANDLER)));
+            Boolean isHidden = (Boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{nameWithoutExtension}, Utility.SINGLE_BOOLEAN_HANDLER));
+            if (isHidden == null){
+                database.execute(new SqlUpdateCommand("INSERT INTO template (template_name,is_hidden) VALUES(?,?)", new Object[]{nameWithoutExtension, false}));
+                isHidden = false;
+            }
+            TemplateDomainObject tdo = new TemplateDomainObject(nameWithoutExtension, templateFile.getName(), isHidden);
             if (udo.isSuperAdmin() || !tdo.isHidden()) {
                 templates.add(tdo);
             }

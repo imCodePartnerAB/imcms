@@ -11,9 +11,6 @@ CREATE TABLE template (
   is_hidden     TINYINT(1)   NOT NULL,
   PRIMARY KEY (id));
 
-INSERT INTO template (template_name,is_hidden) VALUES('demo',false);
-INSERT INTO template (template_name,is_hidden) VALUES('demoold',false);
-INSERT INTO template (template_name,is_hidden) VALUES('imageArchive',false);
 --
 -- Update schema version
 --
