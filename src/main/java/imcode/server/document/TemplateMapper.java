@@ -13,9 +13,9 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.functors.NotPredicate;
-import org.apache.commons.collections.functors.NullPredicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.functors.NotPredicate;
+import org.apache.commons.collections4.functors.NullPredicate;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -130,7 +130,7 @@ public class TemplateMapper {
 
 	public TemplateGroupDomainObject[] getAllTemplateGroups() {
 		final Object[] parameters = new String[]{};
-		String[][] sprocResult = (String[][]) services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATE_GROUPS, parameters, new StringArrayArrayResultSetHandler());
+		String[][] sprocResult = services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATE_GROUPS, parameters, new StringArrayArrayResultSetHandler());
 		return createTemplateGroupsFromSqlResult(sprocResult);
 	}
 
@@ -142,15 +142,7 @@ public class TemplateMapper {
 
 	//todo: rewrite this, make it beauty
 	public Set<Integer> getAllTemplateGroupIds() {
-		return (Set<Integer>) database.execute(new SqlQueryCommand("SELECT group_id FROM templategroups", null, new CollectionHandler(new HashSet(), new RowTransformer() {
-			public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
-				return resultSet.getInt(1);
-			}
-
-			public Class getClassOfCreatedObjects() {
-				return Integer.class;
-			}
-		})));
+		return (Set<Integer>) database.execute(new SqlQueryCommand("SELECT group_id FROM templategroups", null, new CollectionHandler(new HashSet(), newRowTransformer2())));
 	}
 
 	public List<TemplateDomainObject> getAllTemplates() {
@@ -200,7 +192,13 @@ public class TemplateMapper {
 			String templateFileName = templateName + "." + extension;
 			File templateFile = new File(getTemplateDirectory(), templateFileName);
 			if (templateFile.exists()) {
-				return new TemplateDomainObject(templateName, templateFileName, (boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{templateName}, Utility.SINGLE_BOOLEAN_HANDLER)));
+				String nameWithoutExtension = StringUtils.substringBeforeLast(templateFile.getName(), ".");
+				Boolean isHidden = (Boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{nameWithoutExtension}, Utility.SINGLE_BOOLEAN_HANDLER));
+				if (isHidden == null) {
+					database.execute(new SqlUpdateCommand("INSERT INTO template (template_name,is_hidden) VALUES(?,?)", new Object[]{nameWithoutExtension, false}));
+					isHidden = false;
+				}
+				return new TemplateDomainObject(templateName, templateFileName, isHidden);
 			}
 		}
 		return null;
@@ -221,9 +219,20 @@ public class TemplateMapper {
 	}
 
 	//TODO check this for getting templates depending by its availability for userGroup
-	public List<TemplateDomainObject> getTemplatesInGroup(TemplateGroupDomainObject templateGroup) {
-		return (List<TemplateDomainObject>) CollectionUtils.select((Collection) services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATES_IN_GROUP, new String[]{
-				"" + templateGroup.getId()}, new CollectionHandler(new ArrayList(), new RowTransformer() {
+	public Collection<TemplateDomainObject> getTemplatesInGroup(TemplateGroupDomainObject templateGroup) {
+		String[] params = new String[]{String.valueOf(templateGroup.getId())};
+		return CollectionUtils
+				.select(services.getProcedureExecutor()
+								.executeProcedure(SPROC_GET_TEMPLATES_IN_GROUP, params, newArrayListHandler()),
+						NotPredicate.notPredicate(NullPredicate.INSTANCE));
+	}
+
+	private CollectionHandler newArrayListHandler() {
+		return new CollectionHandler(new ArrayList(), newRowTransformer());
+	}
+
+	private RowTransformer newRowTransformer() {
+		return new RowTransformer() {
 			public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
 				return getTemplateByName(resultSet.getString(1));
 			}
@@ -231,11 +240,23 @@ public class TemplateMapper {
 			public Class getClassOfCreatedObjects() {
 				return TemplateDomainObject.class;
 			}
-		})), NotPredicate.getInstance(NullPredicate.INSTANCE));
+		};
+	}
+
+	private RowTransformer newRowTransformer2() {
+		return new RowTransformer() {
+			public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
+				return resultSet.getInt(1);
+			}
+
+			public Class getClassOfCreatedObjects() {
+				return Integer.class;
+			}
+		};
 	}
 
 	public List<TemplateDomainObject> getTemplatesNotInGroup(TemplateGroupDomainObject templateGroup) {
-		List<TemplateDomainObject> templatesInGroup = getTemplatesInGroup(templateGroup);
+		Collection<TemplateDomainObject> templatesInGroup = getTemplatesInGroup(templateGroup);
 		Set<TemplateDomainObject> allTemplates = new HashSet<>(getAllTemplates());
 		allTemplates.removeAll(templatesInGroup);
 		List<TemplateDomainObject> templatesNotInGroup = new ArrayList<>(allTemplates);
@@ -302,7 +323,7 @@ public class TemplateMapper {
 	private String[][] sprocGetTemplateGroupsForUser(UserDomainObject user,
 													 int meta_id) {
 		final Object[] parameters = new String[]{String.valueOf(meta_id), String.valueOf(user.getId())};
-		return (String[][]) services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATE_GROUPS_FOR_USER, parameters, new StringArrayArrayResultSetHandler());
+		return services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATE_GROUPS_FOR_USER, parameters, new StringArrayArrayResultSetHandler());
 	}
 
 	private TemplateGroupDomainObject createTemplateGroupFromSqlResultRow(String[] sqlResultRow) {
@@ -372,7 +393,7 @@ public class TemplateMapper {
 
 	public boolean templateGroupContains(TemplateGroupDomainObject templateGroup,
 										 TemplateDomainObject template) {
-		List<TemplateDomainObject> templates = getTemplatesInGroup(templateGroup);
+		Collection<TemplateDomainObject> templates = getTemplatesInGroup(templateGroup);
 		for (TemplateDomainObject t : templates) {
 			if (t.getName().equals(template.getName())) {
 				return true;

@@ -26,10 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 public class TextDocumentParser {
 
@@ -47,13 +44,9 @@ public class TextDocumentParser {
 			// OK, so this pattern is simple, ugly, and prone to give a lot of errors.
 			// Very good. Very good. Know something? NO SOUP FOR YOU!
 			htmlTagPattern = patComp.compile("<[^>]+?>", Perl5Compiler.READ_ONLY_MASK);
-
 			htmlTagHtmlPattern = patComp.compile("<[hH][tT][mM][lL]\\b", Perl5Compiler.READ_ONLY_MASK); //for imcmsMessage
-
 			headEndTagPattern = patComp.compile("<\\/[hH][eE][aA][dD]\\b", Perl5Compiler.READ_ONLY_MASK); //for imcmsAdminHeadTag
-
 			scriptTagPattern = patComp.compile("<[sS][cC][rR][iI][pP][tT]\\b", Perl5Compiler.READ_ONLY_MASK); //for jQuery hard version script
-
 			hashtagPattern = patComp.compile("#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK);
 		} catch (MalformedPatternException ignored) {
 			// I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
@@ -85,7 +78,7 @@ public class TextDocumentParser {
 			List<TemplateGroupDomainObject> allowedTemplateGroups = templateMapper.getTemplateGroups(allowedTemplateGroupIds);
 			String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups(allowedTemplateGroups, selectedTemplateGroup);
 
-			List<TemplateDomainObject> templates = new ArrayList<>();
+			Collection<TemplateDomainObject> templates = new ArrayList<>();
 			if (allowedTemplateGroupIds.contains(selectedTemplateGroup.getId())) {
 				templates = templateMapper.getTemplatesInGroup(selectedTemplateGroup);
 			}
@@ -285,7 +278,6 @@ public class TextDocumentParser {
 		tags.setProperty("#webMasterEmail#", service.getSystemData().getWebMasterAddress());
 		tags.setProperty("#serverMaster#", service.getSystemData().getServerMaster());
 		tags.setProperty("#serverMasterEmail#", service.getSystemData().getServerMasterAddress());
-
 		tags.setProperty("#param#", parserParameters.getParameter());
 
 		if (parserParameters.getFlags() >= 0 && parserParameters.isAdminButtonsVisible()) {
@@ -299,8 +291,8 @@ public class TextDocumentParser {
 
 	private String emphasizeString(String string, String[] emp, Substitution emphasize_substitution,
 								   PatternMatcher patMat) {
-		String emphasizedString = string;
 
+		String emphasizedString = string;
 		Perl5Compiler empCompiler = new Perl5Compiler();
 		// for each string to emphasize
 		for (String anEmp : emp) {
@@ -314,6 +306,4 @@ public class TextDocumentParser {
 		}
 		return emphasizedString;
 	}
-
-
 }

@@ -1,18 +1,22 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.mapping.NoPermissionInternalException;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.PhoneNumber;
-import imcode.server.user.PhoneNumberType;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.RoleId;
-import imcode.server.user.UserDomainObject;
-import imcode.util.ArraySet;
+import imcode.server.user.*;
 import imcode.util.Html;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.ToStringPairTransformer;
 import imcode.util.Utility;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -20,19 +24,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang3.StringUtils;
-
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.mapping.NoPermissionInternalException;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class UserEditorPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__LOGIN_NAME = "login_name";
@@ -69,19 +60,40 @@ public class UserEditorPage extends OkCancelPage {
     private static final LocalizedMessage ERROR__EMAIL_IS_EMPTY = new LocalizedMessage("error/email_is_missing");
     private static final LocalizedMessage ERROR__EMAIL_IS_INVALID = new LocalizedMessage("error/email_is_invalid");
     private static final LocalizedMessage ERROR__EMAIL_IS_TAKEN = new LocalizedMessage("error/email_is_taken");
-
+    private static final int MAXIMUM_PASSWORD_LENGTH = 15;
+    private static final int MINIMUM_PASSWORD_LENGTH = 4;
     private UserDomainObject editedUser;
     private UserDomainObject uneditedUser;
     private PhoneNumber currentPhoneNumber = new PhoneNumber("", PhoneNumberType.OTHER);
     private LocalizedMessage errorMessage;
-    private static final int MAXIMUM_PASSWORD_LENGTH = 15;
-    private static final int MINIMUM_PASSWORD_LENGTH = 4;
 
     public UserEditorPage(UserDomainObject user, DispatchCommand okDispatchCommand,
                           DispatchCommand cancelDispatchCommand) {
         super(okDispatchCommand, cancelDispatchCommand);
         editedUser = user;
         uneditedUser = user.clone();
+    }
+
+    /**
+     * @param login
+     * @param password
+     * @param passwordCheck
+     * @return
+     * @since 4.0.7
+     */
+    public static LocalizedMessage validatePassword(String login, String password, String passwordCheck) {
+        return StringUtils.isBlank(password)
+                ? ERROR__PASSWORD_LENGTH
+                : !password.equals(passwordCheck)
+                ? ERROR__PASSWORDS_DID_NOT_MATCH
+                : login.equalsIgnoreCase(password)
+                ? ERROR__PASSWORD_TOO_WEAK
+                : null;
+    }
+
+    private static boolean passwordPassesLengthRequirements(String password1) {
+        return password1.length() >= MINIMUM_PASSWORD_LENGTH
+                && password1.length() <= MAXIMUM_PASSWORD_LENGTH;
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
@@ -146,16 +158,16 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     private RoleId[] getRoleIdsFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
-        Set roleIds = getRoleIdsSetFromRequestParameterValues(request, requestParameter);
-        return (RoleId[]) roleIds.toArray(new RoleId[roleIds.size()]);
+        Set<RoleId> roleIds = getRoleIdsSetFromRequestParameterValues(request, requestParameter);
+        return roleIds.toArray(new RoleId[roleIds.size()]);
     }
 
-    private Set getRoleIdsSetFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
-        Set roleIds = new HashSet();
+    private Set<RoleId> getRoleIdsSetFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
+        Set<RoleId> roleIds = new HashSet<>();
         String[] roleIdStrings = request.getParameterValues(requestParameter);
         if (null != roleIdStrings) {
-            for (int i = 0; i < roleIdStrings.length; i++) {
-                RoleId roleId = new RoleId(Integer.parseInt(roleIdStrings[i]));
+            for (String roleIdString : roleIdStrings) {
+                RoleId roleId = new RoleId(Integer.parseInt(roleIdString));
                 roleIds.add(roleId);
             }
         }
@@ -169,18 +181,18 @@ public class UserEditorPage extends OkCancelPage {
     private void updateUserRolesFromRequest(HttpServletRequest request) {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
         if (loggedOnUser.canEditRolesFor(uneditedUser)) {
-            Set roleIdsSetFromRequest = getRoleIdsSetFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS);
+            Set<RoleId> roleIdsSetFromRequest = getRoleIdsSetFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS);
             RoleId[] userRoleIdsArray;
             if (loggedOnUser.isUserAdminAndNotSuperAdmin()) {
-                List userAdminRoleIds = Arrays.asList(loggedOnUser.getUserAdminRoleIds());
+                List<RoleId> userAdminRoleIds = Arrays.asList(loggedOnUser.getUserAdminRoleIds());
                 roleIdsSetFromRequest.retainAll(userAdminRoleIds);
 
-                Set userRoleIds = new HashSet(Arrays.asList(editedUser.getRoleIds()));
+                Set<RoleId> userRoleIds = new HashSet<>(Arrays.asList(editedUser.getRoleIds()));
                 userRoleIds.removeAll(userAdminRoleIds);
                 userRoleIds.addAll(roleIdsSetFromRequest);
-                userRoleIdsArray = (RoleId[]) userRoleIds.toArray(new RoleId[userRoleIds.size()]);
+                userRoleIdsArray = userRoleIds.toArray(new RoleId[userRoleIds.size()]);
             } else {
-                userRoleIdsArray = (RoleId[]) roleIdsSetFromRequest.toArray(new RoleId[roleIdsSetFromRequest.size()]);
+                userRoleIdsArray = roleIdsSetFromRequest.toArray(new RoleId[roleIdsSetFromRequest.size()]);
             }
             editedUser.setRoleIds(userRoleIdsArray);
         }
@@ -199,28 +211,6 @@ public class UserEditorPage extends OkCancelPage {
                 user.setPassword(password1);
             }
         }
-    }
-
-    /**
-     * @param login
-     * @param password
-     * @param passwordCheck
-     * @return
-     * @since 4.0.7
-     */
-    public static LocalizedMessage validatePassword(String login, String password, String passwordCheck) {
-        return StringUtils.isBlank(password)
-                ? ERROR__PASSWORD_LENGTH
-                : !password.equals(passwordCheck)
-                ? ERROR__PASSWORDS_DID_NOT_MATCH
-                : login.equalsIgnoreCase(password)
-                ? ERROR__PASSWORD_TOO_WEAK
-                : null;
-    }
-
-    private static boolean passwordPassesLengthRequirements(String password1) {
-        return password1.length() >= MINIMUM_PASSWORD_LENGTH
-                && password1.length() <= MAXIMUM_PASSWORD_LENGTH;
     }
 
     public String getPath(HttpServletRequest request) {
@@ -345,6 +335,10 @@ public class UserEditorPage extends OkCancelPage {
         return errorMessage;
     }
 
+    public void setErrorMessage(LocalizedMessage errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
     public String createRolesHtmlOptionList(HttpServletRequest request) {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
         RoleDomainObject[] roles = loggedOnUser.isUserAdminAndNotSuperAdmin() ? getRoles(loggedOnUser.getUserAdminRoleIds()) : getAllRolesExceptUsersRole();
@@ -361,19 +355,17 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     private String createRolesHtmlOptionList(RoleDomainObject[] allRoles, RoleDomainObject[] usersRoles) {
-        return Html.createOptionList(Arrays.asList(allRoles), new ArraySet(usersRoles), new RoleToStringPairTransformer());
+        return Html.createOptionList(Arrays.asList(allRoles), Arrays.asList(usersRoles), new RoleToStringPairTransformer());
     }
 
     public String createUserAdminRolesHtmlOptionList() {
         RoleDomainObject[] allRoles = getAllRolesExceptUsersRole();
-        Set allRolesSet = new HashSet(Arrays.asList(allRoles));
-        CollectionUtils.filter(allRolesSet, new Predicate() {
-            public boolean evaluate(Object o) {
-                RoleId roleId = ((RoleDomainObject) o).getId();
-                return !(roleId.equals(RoleId.SUPERADMIN) || roleId.equals(RoleId.USERADMIN));
-            }
+        Set<RoleDomainObject> allRolesSet = new HashSet<>(Arrays.asList(allRoles));
+        CollectionUtils.filter(allRolesSet, o -> {
+            RoleId roleId = ((RoleDomainObject) o).getId();
+            return !(roleId.equals(RoleId.SUPERADMIN) || roleId.equals(RoleId.USERADMIN));
         });
-        RoleDomainObject[] allUserAdminRoles = (RoleDomainObject[]) allRolesSet.toArray(new RoleDomainObject[allRolesSet.size()]);
+        RoleDomainObject[] allUserAdminRoles = allRolesSet.toArray(new RoleDomainObject[allRolesSet.size()]);
         RoleDomainObject[] usersUserAdminRoles = getRoles(editedUser.getUserAdminRoleIds());
 
         return createRolesHtmlOptionList(allUserAdminRoles, usersUserAdminRoles);
@@ -385,23 +377,12 @@ public class UserEditorPage extends OkCancelPage {
         return allRoles;
     }
 
-    public void setErrorMessage(LocalizedMessage errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
     public void setOkCommand(DispatchCommand okCommand) {
         this.okCommand = okCommand;
     }
 
     public UserDomainObject getUneditedUser() {
         return uneditedUser;
-    }
-
-    public static class RoleToStringPairTransformer extends ToStringPairTransformer {
-        protected String[] transformToStringPair(Object object) {
-            RoleDomainObject role = (RoleDomainObject) object;
-            return new String[]{"" + role.getId(), role.getName()};
-        }
     }
 
     public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -411,5 +392,12 @@ public class UserEditorPage extends OkCancelPage {
         }
 
         super.forward(request, response);
+    }
+
+    public static class RoleToStringPairTransformer extends ToStringPairTransformer {
+        protected String[] transformToStringPair(Object object) {
+            RoleDomainObject role = (RoleDomainObject) object;
+            return new String[]{"" + role.getId(), role.getName()};
+        }
     }
 }

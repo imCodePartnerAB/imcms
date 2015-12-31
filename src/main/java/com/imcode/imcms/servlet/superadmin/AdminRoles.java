@@ -101,7 +101,7 @@ public class AdminRoles extends HttpServlet {
 		}
 
 		final Object[] parameters = new String[0];
-		String[] rolesArr = (String[]) imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
+		String[] rolesArr = imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
 		List rolesV = Arrays.asList(rolesArr);
 
 		Map<String, String> vm = new HashMap<>();
@@ -130,7 +130,7 @@ public class AdminRoles extends HttpServlet {
 			if (req.getParameter("VIEW_ADMIN_ROLES") != null) {
 				// Lets get all ROLES from DB
 				final Object[] parameters = new String[0];
-				String[] rolesArr = (String[]) imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
+				String[] rolesArr = imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
 				List rolesV = Arrays.asList(rolesArr);
 
 

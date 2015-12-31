@@ -49,7 +49,7 @@ public class AdminIpAccess extends HttpServlet {
         // ********** GENERATE THE IP-ACCESS PAGE *********
         // Lets get all IP-accesses from DB
         final Object[] parameters = new String[0];
-        String[][] multi = (String[][]) imcref.getProcedureExecutor().executeProcedure("IPAccessesGetAll", parameters, new StringArrayArrayResultSetHandler());
+        String[][] multi = imcref.getProcedureExecutor().executeProcedure("IPAccessesGetAll", parameters, new StringArrayArrayResultSetHandler());
 
         // Lets build the variables for each record
         List<String> tags = new ArrayList<>();

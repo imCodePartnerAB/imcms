@@ -759,7 +759,7 @@ public class DefaultImcmsServices implements ImcmsServices {
 	 */
 	public String[][] getAllDocumentTypes(String langPrefixStr) {
 		final Object[] parameters = new String[]{langPrefixStr};
-		return (String[][]) getProcedureExecutor().executeProcedure("GetDocTypes", parameters, new StringArrayArrayResultSetHandler());
+		return getProcedureExecutor().executeProcedure("GetDocTypes", parameters, new StringArrayArrayResultSetHandler());
 	}
 
 	public File getIncludePath() {
