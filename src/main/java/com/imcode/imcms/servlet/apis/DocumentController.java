@@ -31,7 +31,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,6 +44,9 @@ import java.util.stream.Stream;
 @RestController
 @RequestMapping("/document")
 public class DocumentController {
+
+	private static final String BAD_ATTRIBUTES = "\"created-date\":\"\",\"created-time\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\",";
+
 	private static final Logger LOG = Logger.getLogger(DocumentController.class);
 
 	/**
@@ -186,6 +188,10 @@ public class DocumentController {
 			DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 			DocumentEntity documentEntity;
 
+			//before do smth needs to check data - replace wrong attributes
+			//todo: check data on JS side and send correct data to this method
+			data = checkData(data);
+
 			switch (type) {
 				case DocumentTypeDomainObject.URL_ID: {
 					documentEntity = new ObjectMapper().readValue(data, new TypeReference<UrlDocumentEntity>() {
@@ -239,6 +245,10 @@ public class DocumentController {
 		return result;
 	}
 
+	protected String checkData(String data) {
+		return data.replace(BAD_ATTRIBUTES, "");
+	}
+
 	@RequestMapping(method = RequestMethod.GET, value = "/getDateTimes/{id}")
 	protected Object getDateTimes(@PathVariable(value = "id") int id) {
 
@@ -262,11 +272,7 @@ public class DocumentController {
 		};
 
 		for (int i = 0; i < types.length; i++) {
-//			String[] dateTime = ((null == dates[i]) ? "-- --" : Utility.formatDateTime(dates[i])).split(" ");
 			String[] dateTime = Utility.formatDateTime(dates[i]).split(" ");
-//			Map<String, Object> dateTimeMap = new HashedMap<>();
-//			dateTimeMap.put("date", dateTime[0]);
-//			dateTimeMap.put("time", dateTime[1]);
 			map.put(types[i], new HashedMap<String, Object>() {{
 				put("date", dateTime[0]);
 				put("time", dateTime[1]);
@@ -275,15 +281,26 @@ public class DocumentController {
 		return map;
 	}
 
+	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/null")
+	protected Object nullDocDateTimes() {
+		Map<String, Object> result = new HashMap<>();
+		return result.put("result", true);
+	}
+
 	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/{id}")
-	protected Object changeDateTimes(@PathVariable(value = "id") int id,
+	protected Object changeDateTimes(@PathVariable(value = "id") Integer id,
 									 @RequestParam(value = "created", required = true, defaultValue = "") String created,
 									 @RequestParam(value = "modified", required = true, defaultValue = "") String modified,
 									 @RequestParam(value = "archived", required = true, defaultValue = "") String archived,
 									 @RequestParam(value = "published", required = true, defaultValue = "") String published,
 									 @RequestParam(value = "publication-end", required = true, defaultValue = "") String publicationEnd) {
+
 		//	/dateTimes/{id}?created=2010-08-08T10:10:00Z&modified=.......
 		Map<String, Object> result = new HashMap<>();
+
+		if (null == id) {
+			return result.put("result", true);
+		}
 		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
 
 		String[] dates = {
@@ -294,9 +311,7 @@ public class DocumentController {
 				publicationEnd
 		};
 
-		for (int i = 0; i < dates.length; i++) {
-			handleDateTime(i, doc, dates[i]);
-		}
+		handleDateTime(doc, dates);
 
 		try {
 			Imcms.getServices().getDocumentMapper().saveDocument(doc, Imcms.getUser());
@@ -312,38 +327,23 @@ public class DocumentController {
 		return result;
 	}
 
-	private void handleDateTime(int type, DocumentDomainObject doc, String value) {
-		try {
-			Date newDate;
-			if (value.equals("T:00Z")) {
-				newDate = null;
+	private void handleDateTime(DocumentDomainObject doc, String[] dates) {
+		List<Date> datesList = new ArrayList<>();
+		for (String date : dates) {
+			if ("T:00Z".equals(date) || "--T--:00Z".equals(date)) {
+				datesList.add(null);
 			} else {
-				newDate = DateUtils.addHours(Date.from(Instant.parse(value)), -2);
+				datesList.add(DateUtils.addHours(Date.from(Instant.parse(date)), -2));
 			}
-			switch (type) {
-				case 0:
-					doc.setCreatedDatetime(newDate);
-					break;
+		}
 
-				case 1:
-					doc.setModifiedDatetime(newDate);
-					break;
-
-				case 2:
-					doc.setArchivedDatetime(newDate);
-					break;
-
-				case 3:
-					doc.setPublicationStartDatetime(newDate);
-					break;
-
-				case 4:
-					doc.setPublicationEndDatetime(newDate);
-					break;
-
-				default:
-			}
-		} catch (DateTimeException ignore) {
+		if (5 == datesList.size()) {
+			Iterator<Date> iter = datesList.listIterator();
+			doc.setCreatedDatetime(iter.next());
+			doc.setModifiedDatetime(iter.next());
+			doc.setArchivedDatetime(iter.next());
+			doc.setPublicationStartDatetime(iter.next());
+			doc.setPublicationEndDatetime(iter.next());
 		}
 	}
 
