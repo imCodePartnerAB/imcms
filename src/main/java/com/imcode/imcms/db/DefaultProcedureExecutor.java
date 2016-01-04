@@ -45,7 +45,6 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
 				+ ArrayUtils.toString(parametersAtCorrectIndices) + " and body " + body);
 	}
 
-	@Override
 	public <T> T executeProcedure(String procedureName, Object[] params, ResultSetHandler resultSetHandler) {
 		Procedure procedure = getProcedure(procedureName);
 		Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure(procedure, params);

@@ -46,7 +46,6 @@ public class AdminDeleteDoc extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-
         // Lets check if the user is an admin, otherwise throw him out.
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
@@ -106,7 +105,6 @@ public class AdminDeleteDoc extends HttpServlet {
     /**
      * Collects the parameters from the request object
      */
-
     private Properties getParameters(HttpServletRequest req) {
 
         Properties params = new Properties();
@@ -121,7 +119,6 @@ public class AdminDeleteDoc extends HttpServlet {
     /**
      * Collects the parameters from the request object
      */
-
     private boolean validateParameters(Properties params) {
 
         if (params.values().contains("")) {
@@ -134,6 +131,4 @@ public class AdminDeleteDoc extends HttpServlet {
         }
         return true;
     }
-
-
 } // End of class

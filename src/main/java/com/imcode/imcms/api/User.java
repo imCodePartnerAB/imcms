@@ -5,272 +5,269 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 
 public class User {
-    private UserDomainObject internalUser;
+	private UserDomainObject internalUser;
 
-    public UserDomainObject getInternal() {
-        return internalUser;
-    }
+	User(UserDomainObject internalUser) {
+		this.internalUser = internalUser;
+	}
 
-    User(UserDomainObject internalUser) {
-        this.internalUser = internalUser;
-    }
+	public UserDomainObject getInternal() {
+		return internalUser;
+	}
 
-    public int getId() {
-        return internalUser.getId();
-    }
+	public int getId() {
+		return internalUser.getId();
+	}
 
-    public String getLoginName() {
-        return internalUser.getLoginName();
-    }
+	public String getLoginName() {
+		return internalUser.getLoginName();
+	}
 
-    public String getCompany() {
-        return internalUser.getCompany();
-    }
+	public void setLoginName(String loginName) {
+		internalUser.setLoginName(loginName);
+	}
 
-    public String getFirstName() {
-        return internalUser.getFirstName();
-    }
+	public String getCompany() {
+		return internalUser.getCompany();
+	}
 
-    public String getLastName() {
-        return internalUser.getLastName();
-    }
+	public void setCompany(String company) {
+		internalUser.setCompany(company);
+	}
 
-    public String getTitle() {
-        return internalUser.getTitle();
-    }
+	public String getFirstName() {
+		return internalUser.getFirstName();
+	}
 
-    public String getAddress() {
-        return internalUser.getAddress();
-    }
+	public void setFirstName(String firstName) {
+		internalUser.setFirstName(firstName);
+	}
 
-    public String getCity() {
-        return internalUser.getCity();
-    }
+	public String getLastName() {
+		return internalUser.getLastName();
+	}
 
-    public String getZip() {
-        return internalUser.getZip();
-    }
+	public void setLastName(String lastName) {
+		internalUser.setLastName(lastName);
+	}
 
-    public String getCountry() {
-        return internalUser.getCountry();
-    }
+	public String getTitle() {
+		return internalUser.getTitle();
+	}
 
-    /**
-     * @deprecated Use {@link #getProvince()}. Will be removed in 4.0.
-     */
-    public String getCountyCouncil() {
-        return internalUser.getProvince();
-    }
+	public void setTitle(String title) {
+		internalUser.setTitle(title);
+	}
 
-    public String getProvince() {
-        return internalUser.getProvince();
-    }
+	public String getAddress() {
+		return internalUser.getAddress();
+	}
 
-    public void setProvince(String province) {
-        internalUser.setProvince(province);
-    }
+	public void setAddress(String address) {
+		internalUser.setAddress(address);
+	}
 
-    public String getEmailAddress() {
-        return internalUser.getEmailAddress();
-    }
+	public String getCity() {
+		return internalUser.getCity();
+	}
 
-    public String getOtherPhone() {
-        return internalUser.getOtherPhone();
-    }
+	public void setCity(String city) {
+		internalUser.setCity(city);
+	}
 
-    public String getWorkPhone() {
-        return internalUser.getWorkPhone();
-    }
+	public String getZip() {
+		return internalUser.getZip();
+	}
 
-    public String getMobilePhone() {
-        return internalUser.getMobilePhone();
-    }
+	public void setZip(String zip) {
+		internalUser.setZip(zip);
+	}
 
-    public String getHomePhone() {
-        return internalUser.getHomePhone();
-    }
+	public String getCountry() {
+		return internalUser.getCountry();
+	}
 
-    public boolean isActive() {
-        return internalUser.isActive();
-    }
+	public void setCountry(String country) {
+		internalUser.setCountry(country);
+	}
 
-    public String toString() {
-        return getLoginName();
-    }
+	/**
+	 * @deprecated Use {@link #getProvince()}. Will be removed in 4.0.
+	 */
+	public String getCountyCouncil() {
+		return internalUser.getProvince();
+	}
 
-    /**
-     * @since 2.0
-     */
-    public boolean hasRole(Role role) {
-        return internalUser.hasRoleId(role.getInternal().getId());
-    }
+	/**
+	 * @deprecated Use {@link #setProvince(String)}. Will be removed in 4.0.
+	 */
+	public void setCountyCouncil(String countyCouncil) {
+		internalUser.setProvince(countyCouncil);
+	}
 
-    public boolean isDefaultUser() {
-        return internalUser.isDefaultUser();
-    }
+	public String getProvince() {
+		return internalUser.getProvince();
+	}
 
-    public boolean isSuperAdmin() {
-        return internalUser.isSuperAdmin();
-    }
+	public void setProvince(String province) {
+		internalUser.setProvince(province);
+	}
 
-    public boolean isUserAdmin() {
-        return internalUser.isUserAdmin();
-    }
+	public String getEmailAddress() {
+		return internalUser.getEmailAddress();
+	}
 
-    public boolean canEdit(Document document) {
-        return internalUser.canEdit(document.getInternal());
-    }
+	public void setEmailAddress(String emailAddress) {
+		internalUser.setEmailAddress(emailAddress);
+	}
 
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof User)) {
-            return false;
-        }
+	public String getOtherPhone() {
+		return internalUser.getOtherPhone();
+	}
 
-        final User user = (User) o;
+	public void setOtherPhone(String otherphone) {
+		internalUser.setOtherPhone(otherphone);
+	}
 
-        if (internalUser != null ? !internalUser.equals(user.internalUser) : user.internalUser != null) {
-            return false;
-        }
+	public String getWorkPhone() {
+		return internalUser.getWorkPhone();
+	}
 
-        return true;
-    }
+	public void setWorkPhone(String workphone) {
+		internalUser.setWorkPhone(workphone);
+	}
 
-    public int hashCode() {
-        return internalUser != null ? internalUser.hashCode() : 0;
-    }
+	public String getMobilePhone() {
+		return internalUser.getMobilePhone();
+	}
 
-    /**
-     * @since 2.0
-     */
-    public Role[] getRoles() {
-        RoleId[] roleDOs = internalUser.getRoleIds();
-        Role[] roles = new Role[roleDOs.length];
-        for (int i = 0; i < roleDOs.length; i++) {
-            roles[i] = new Role(Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRole(roleDOs[i]));
-        }
-        return roles;
-    }
+	public void setMobilePhone(String mobilephone) {
+		internalUser.setMobilePhone(mobilephone);
+	}
 
-    /**
-     * @since 2.0
-     */
-    public void setRoles(Role[] roles) {
-        RoleId[] roleIds = new RoleId[roles.length];
-        for (int i = 0; i < roles.length; i++) {
-            roleIds[i] = roles[i].getInternal().getId();
-        }
-        internalUser.setRoleIds(roleIds);
-    }
+	public String getHomePhone() {
+		return internalUser.getHomePhone();
+	}
 
-    /**
-     * @since 2.0
-     */
-    public void addRole(Role role) {
-        internalUser.addRoleId(role.getInternal().getId());
-    }
+	public void setHomePhone(String homephone) {
+		internalUser.setHomePhone(homephone);
+	}
 
-    /**
-     * @since 2.0
-     */
-    public void removeRole(Role role) {
-        internalUser.removeRoleId(role.getInternal().getId());
-    }
+	public boolean isActive() {
+		return internalUser.isActive();
+	}
 
-    public void setActive(boolean active) {
-        internalUser.setActive(active);
-    }
+	public void setActive(boolean active) {
+		internalUser.setActive(active);
+	}
 
-    public void setAddress(String address) {
-        internalUser.setAddress(address);
-    }
+	public String toString() {
+		return getLoginName();
+	}
 
-    public void setCity(String city) {
-        internalUser.setCity(city);
-    }
+	/**
+	 * @since 2.0
+	 */
+	public boolean hasRole(Role role) {
+		return internalUser.hasRoleId(role.getInternal().getId());
+	}
 
-    public void setCompany(String company) {
-        internalUser.setCompany(company);
-    }
+	public boolean isDefaultUser() {
+		return internalUser.isDefaultUser();
+	}
 
-    public void setCountry(String country) {
-        internalUser.setCountry(country);
-    }
+	public boolean isSuperAdmin() {
+		return internalUser.isSuperAdmin();
+	}
 
-    /**
-     * @deprecated Use {@link #setProvince(String)}. Will be removed in 4.0.
-     */
-    public void setCountyCouncil(String countyCouncil) {
-        internalUser.setProvince(countyCouncil);
-    }
+	public boolean isUserAdmin() {
+		return internalUser.isUserAdmin();
+	}
 
-    public void setEmailAddress(String emailAddress) {
-        internalUser.setEmailAddress(emailAddress);
-    }
+	public boolean canEdit(Document document) {
+		return internalUser.canEdit(document.getInternal());
+	}
 
-    public void setFaxPhone(String faxphone) {
-        internalUser.setFaxPhone(faxphone);
-    }
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof User)) {
+			return false;
+		}
 
-    public String getFaxPhone() {
-        return internalUser.getFaxPhone();
-    }
+		final User user = (User) o;
 
-    public void setFirstName(String firstName) {
-        internalUser.setFirstName(firstName);
-    }
+		return internalUser != null ? internalUser.equals(user.internalUser) : user.internalUser == null;
 
-    public void setHomePhone(String homephone) {
-        internalUser.setHomePhone(homephone);
-    }
+	}
 
-    public void setLastName(String lastName) {
-        internalUser.setLastName(lastName);
-    }
+	public int hashCode() {
+		return internalUser != null ? internalUser.hashCode() : 0;
+	}
 
-    public void setLoginName(String loginName) {
-        internalUser.setLoginName(loginName);
-    }
+	/**
+	 * @since 2.0
+	 */
+	public Role[] getRoles() {
+		RoleId[] roleDOs = internalUser.getRoleIds();
+		Role[] roles = new Role[roleDOs.length];
+		for (int i = 0; i < roleDOs.length; i++) {
+			roles[i] = new Role(Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRole(roleDOs[i]));
+		}
+		return roles;
+	}
 
-    public void setMobilePhone(String mobilephone) {
-        internalUser.setMobilePhone(mobilephone);
-    }
+	/**
+	 * @since 2.0
+	 */
+	public void setRoles(Role[] roles) {
+		RoleId[] roleIds = new RoleId[roles.length];
+		for (int i = 0; i < roles.length; i++) {
+			roleIds[i] = roles[i].getInternal().getId();
+		}
+		internalUser.setRoleIds(roleIds);
+	}
 
-    public void setOtherPhone(String otherphone) {
-        internalUser.setOtherPhone(otherphone);
-    }
+	/**
+	 * @since 2.0
+	 */
+	public void addRole(Role role) {
+		internalUser.addRoleId(role.getInternal().getId());
+	}
 
-    public void setPassword(String password) {
-        internalUser.setPassword(password);
-    }
+	/**
+	 * @since 2.0
+	 */
+	public void removeRole(Role role) {
+		internalUser.removeRoleId(role.getInternal().getId());
+	}
 
-    public void setTitle(String title) {
-        internalUser.setTitle(title);
-    }
+	public String getFaxPhone() {
+		return internalUser.getFaxPhone();
+	}
 
-    public void setWorkPhone(String workphone) {
-        internalUser.setWorkPhone(workphone);
-    }
+	public void setFaxPhone(String faxphone) {
+		internalUser.setFaxPhone(faxphone);
+	}
 
-    public void setZip(String zip) {
-        internalUser.setZip(zip);
-    }
+	public void setPassword(String password) {
+		internalUser.setPassword(password);
+	}
 
-    public void setLanguage(Language language) {
-        internalUser.setLanguageIso639_2(language.getIsoCode639_2());
-    }
+	public Language getLanguage() {
+		return Language.getLanguageByISO639_2(internalUser.getLanguageIso639_2());
+	}
 
-    public Language getLanguage() {
-        return Language.getLanguageByISO639_2(internalUser.getLanguageIso639_2());
-    }
+	public void setLanguage(Language language) {
+		internalUser.setLanguageIso639_2(language.getIsoCode639_2());
+	}
 
-    public String getSessionId() {
-        return internalUser.getSessionId();
-    }
+	public String getSessionId() {
+		return internalUser.getSessionId();
+	}
 
-    public void setSessionId(String sessionId) {
-        internalUser.setSessionId(sessionId);
-    }
+	public void setSessionId(String sessionId) {
+		internalUser.setSessionId(sessionId);
+	}
 }

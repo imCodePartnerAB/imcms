@@ -7,6 +7,7 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,7 +62,7 @@ public class TemplateService {
      * @throws NoPermissionException If the current user doesn't have permission to list the templates in the templategroup.
      */
     public Template[] getTemplates(TemplateGroup templateGroup) throws NoPermissionException {
-        List<TemplateDomainObject> templates = getTemplateMapper().getTemplatesInGroup(templateGroup.getInternal());
+        Collection<TemplateDomainObject> templates = getTemplateMapper().getTemplatesInGroup(templateGroup.getInternal());
         List<Template> result = new ArrayList<>(templates.size());
         result.addAll(templates.stream().map(Template::new).collect(Collectors.toList()));
         return result.toArray(new Template[result.size()]);

@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class TemplateChange extends HttpServlet {
@@ -143,7 +144,7 @@ public class TemplateChange extends HttpServlet {
 
 	private String createDocumentsUsingTemplateDialog(ImcmsServices imcref, UserDomainObject user,
 													  TemplateDomainObject template, String lang) {
-		List vec2 = new ArrayList();
+		List<String> vec2 = new ArrayList<>();
 		vec2.add("#template_list#");
 		vec2.add(imcref.getTemplateMapper().createHtmlOptionListOfTemplatesWithDocumentCount(user));
 		if (template != null) {
@@ -156,7 +157,7 @@ public class TemplateChange extends HttpServlet {
 	}
 
 	private String createRenameNameEmptyErrorDialog(String lang, ImcmsServices imcref, UserDomainObject user) {
-		List vec = new ArrayList();
+		List<String> vec = new ArrayList<>();
 		vec.add("#language#");
 		vec.add(lang);
 		return imcref.getAdminTemplate("template_rename_name_blank.html", user, vec);
@@ -202,7 +203,7 @@ public class TemplateChange extends HttpServlet {
 		int templateGroupId = Integer.parseInt(req.getParameter("templategroup"));
 		TemplateMapper templateMapper = imcref.getTemplateMapper();
 		TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById(templateGroupId);
-		List<TemplateDomainObject> templatesInGroup = templateMapper.getTemplatesInGroup(templateGroup);
+		Collection<TemplateDomainObject> templatesInGroup = templateMapper.getTemplatesInGroup(templateGroup);
 		boolean existsDocumentUsingTemplateInTemplateGroup = false;
 		for (TemplateDomainObject aTemplatesInGroup : templatesInGroup) {
 			if (templateMapper.getDocumentsUsingTemplate(aTemplatesInGroup).length > 0) {

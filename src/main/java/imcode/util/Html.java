@@ -72,18 +72,26 @@ public class Html {
 											  ToStringPairTransformer objectToStringPairTransformer) {
 		Set<E> selectedValuesSet = (null == selectedValues) ? new HashSet<>() : new HashSet<>(selectedValues);
 
-		return createOptionList(allValues.iterator(), selectedValuesSet, objectToStringPairTransformer);
+		return createOptionList(allValues, selectedValuesSet, objectToStringPairTransformer);
+	}
+
+	private static <E> String createOptionList(Collection<E> allValues, Set<E> selectedValues,
+											   ToStringPairTransformer objectToStringPairTransformer) {
+		StringBuffer htmlStr = new StringBuffer();
+		for (E valueObject : allValues) {
+			String[] valueAndNameStringPair = (String[]) objectToStringPairTransformer.transform(valueObject);
+			String value = valueAndNameStringPair[0];
+			String name = valueAndNameStringPair[1];
+			boolean valueSelected = selectedValues.contains(valueObject);
+			htmlStr.append(option(value, name, valueSelected));
+		}
+		return htmlStr.toString();
 	}
 
 	/**
 	 * Deprecated. Use one of another createOptionList() methods
 	 */
 	@Deprecated
-	public static <E> String createOptionList(Collection<E> allValues, Set<E> selectedValues,
-											  ToStringPairTransformer objectToStringPairTransformer) {
-		return createOptionList(allValues.iterator(), selectedValues, objectToStringPairTransformer);
-	}
-
 	private static <T> String createOptionList(Iterator<T> iterator, Set<T> selectedValuesSet,
 											   ToStringPairTransformer objectToStringPairTransformer) {
 		StringBuffer htmlStr = new StringBuffer();
@@ -200,10 +208,8 @@ public class Html {
 	}
 
 	public static String radio(String name, String value, boolean selected) {
-		return
-				"<input type=\"radio\" name=\"" + StringEscapeUtils.escapeHtml4(name) + "\" value=\""
-						+ StringEscapeUtils.escapeHtml4(value) + "\"" + (selected ? " checked" : "") + ">";
-
+		return "<input type=\"radio\" name=\"" + StringEscapeUtils.escapeHtml4(name) + "\" value=\""
+				+ StringEscapeUtils.escapeHtml4(value) + "\"" + (selected ? " checked" : "") + ">";
 	}
 
 	/**
@@ -225,8 +231,7 @@ public class Html {
 	}
 
 	public static String removeTags(String html) {
-		Perl5Util perl5util = new Perl5Util();
-		return perl5util.substitute("s!<.+?>!!g", html);
+		return new Perl5Util().substitute("s!<.+?>!!g", html);
 	}
 
 	public static String createUsersOptionList(ImcmsServices imcref) {
