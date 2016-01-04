@@ -58,7 +58,7 @@ public class CachingFileLoader {
 
 	public String getCachedFileStringIfRecent(File file) {
 		Map.Entry<String, Long> fileAndDate = fileCache.get(file);
-		if (file.lastModified() <= fileAndDate.getValue()) {
+		if (fileAndDate != null && file.lastModified() <= fileAndDate.getValue()) {
 			return fileAndDate.getKey();
 		}
 		return null;

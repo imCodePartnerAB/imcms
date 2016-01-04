@@ -33,65 +33,52 @@ public class Html {
 	};
 
 	private Html() {
-	}
 
-	//todo: remove these many overloaded methods
+	}
 
 	/**
 	 * @deprecated
 	 */
-	public static String createOptionList(List allValues, List<String> selectedValues) {
+	public static String createOptionList(List allValues, List selectedValues) {
 		StringBuffer htmlStr = new StringBuffer();
 
-		Set<String> selectedValuesSet = new HashSet<>(selectedValues);
+		Set selectedValuesSet = new HashSet(selectedValues);
 		for (int i = 0; i < allValues.size(); i += 2) {
 			String value = allValues.get(i).toString();
 			String name = allValues.get(i + 1).toString();
 			boolean valueSelected = selectedValuesSet.contains(value);
 			htmlStr.append(option(value, name, valueSelected));
-		}
+		} // end for
 
 		return htmlStr.toString();
 	}
 
-	public static <E> String createOptionList(Collection<E> allValues, ToStringPairTransformer transformer) {
-		return createOptionList(allValues, (List<E>) null, transformer);
+	public static <T> String createOptionList(Collection<T> allValues, ToStringPairTransformer transformer) {
+		return createOptionList(allValues, (Collection<T>) null, transformer);
 	}
 
-	public static <E> String createOptionList(Collection<E> allValues, Object selectedValue,
-											  ToStringPairTransformer objectToStringPairTransformer) {
+	public static String createOptionList(Collection allValues, Object selectedValue,
+										  ToStringPairTransformer objectToStringPairTransformer) {
 		return createOptionList(allValues, new Object[]{selectedValue}, objectToStringPairTransformer);
 	}
 
-	public static <E> String createOptionList(Collection<E> allValues, Object[] selectedValue,
-											  ToStringPairTransformer objectToStringPairTransformer) {
-		return createOptionList(allValues, Arrays.asList(selectedValue), objectToStringPairTransformer);
+	public static String createOptionList(Collection allValues, Object[] selectedValues,
+										  ToStringPairTransformer objectToStringPairTransformer) {
+		return createOptionList(allValues, Arrays.asList(selectedValues), objectToStringPairTransformer);
 	}
 
-	public static <E> String createOptionList(Collection<E> allValues, Collection<E> selectedValues,
+	public static <T> String createOptionList(Collection<T> allValues, Collection<T> selectedValues,
 											  ToStringPairTransformer objectToStringPairTransformer) {
-		Set<E> selectedValuesSet = (null == selectedValues) ? new HashSet<>() : new HashSet<>(selectedValues);
+		Set<T> selectedValuesSet = null != selectedValues ? new HashSet<>(selectedValues) : new HashSet<>();
 
 		return createOptionList(allValues, selectedValuesSet, objectToStringPairTransformer);
 	}
 
-	private static <E> String createOptionList(Collection<E> allValues, Set<E> selectedValues,
-											   ToStringPairTransformer objectToStringPairTransformer) {
-		StringBuffer htmlStr = new StringBuffer();
-		for (E valueObject : allValues) {
-			String[] valueAndNameStringPair = (String[]) objectToStringPairTransformer.transform(valueObject);
-			String value = valueAndNameStringPair[0];
-			String name = valueAndNameStringPair[1];
-			boolean valueSelected = selectedValues.contains(valueObject);
-			htmlStr.append(option(value, name, valueSelected));
-		}
-		return htmlStr.toString();
+	public static <T> String createOptionList(Collection<T> allValues, Set<T> selectedValues,
+											  ToStringPairTransformer objectToStringPairTransformer) {
+		return createOptionList(allValues.iterator(), selectedValues, objectToStringPairTransformer);
 	}
 
-	/**
-	 * Deprecated. Use one of another createOptionList() methods
-	 */
-	@Deprecated
 	private static <T> String createOptionList(Iterator<T> iterator, Set<T> selectedValuesSet,
 											   ToStringPairTransformer objectToStringPairTransformer) {
 		StringBuffer htmlStr = new StringBuffer();
@@ -119,7 +106,7 @@ public class Html {
 																	   DocumentDomainObject document, HttpServletRequest request) {
 		CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType(categoryType);
 		Arrays.sort(categories);
-		Set<CategoryDomainObject> documentSelectedCategories = categoryMapper.getCategoriesOfType(categoryType, document.getCategoryIds());
+		Set<?> documentSelectedCategories = categoryMapper.getCategoriesOfType(categoryType, document.getCategoryIds());
 
 		ToStringPairTransformer categoryToStringPairTransformer = new ToStringPairTransformer() {
 			protected String[] transformToStringPair(Object o) {
@@ -127,7 +114,7 @@ public class Html {
 				return new String[]{"" + category.getId(), category.getName()};
 			}
 		};
-		String categoryOptionList = createOptionList(Arrays.asList(categories).iterator(), documentSelectedCategories, categoryToStringPairTransformer);
+		String categoryOptionList = createOptionList(Arrays.asList(categories), documentSelectedCategories, categoryToStringPairTransformer);
 
 		if (1 == categoryType.getMaxChoices()) {
 			categoryOptionList = "<option>- " + (new LocalizedMessage("global/None")).toLocalizedString(request) + " -</option>" + categoryOptionList;
@@ -147,14 +134,14 @@ public class Html {
 		return createOptionListOfCategories(new TreeSet<>(notSelectedCategories), categoryType);
 	}
 
-	public static <T> String createOptionListOfCategories(Collection<T> categories, CategoryTypeDomainObject categoryType) {
+	public static String createOptionListOfCategories(Collection<?> categories, CategoryTypeDomainObject categoryType) {
 		ToStringPairTransformer categoryToStringPairTransformer = new ToStringPairTransformer() {
 			protected String[] transformToStringPair(Object object) {
 				CategoryDomainObject category = (CategoryDomainObject) object;
 				return new String[]{"" + category.getId(), category.getName()};
 			}
 		};
-		String categoryOptionList = createOptionList(categories, Collections.emptyList(), categoryToStringPairTransformer);
+		String categoryOptionList = createOptionList(categories, Arrays.asList(new String[]{}), categoryToStringPairTransformer);
 
 		if (1 == categoryType.getMaxChoices()) {
 			categoryOptionList = "<option></option>" + categoryOptionList;
@@ -208,8 +195,10 @@ public class Html {
 	}
 
 	public static String radio(String name, String value, boolean selected) {
-		return "<input type=\"radio\" name=\"" + StringEscapeUtils.escapeHtml4(name) + "\" value=\""
-				+ StringEscapeUtils.escapeHtml4(value) + "\"" + (selected ? " checked" : "") + ">";
+		return
+				"<input type=\"radio\" name=\"" + StringEscapeUtils.escapeHtml4(name) + "\" value=\""
+						+ StringEscapeUtils.escapeHtml4(value) + "\"" + (selected ? " checked" : "") + ">";
+
 	}
 
 	/**
@@ -231,7 +220,8 @@ public class Html {
 	}
 
 	public static String removeTags(String html) {
-		return new Perl5Util().substitute("s!<.+?>!!g", html);
+		Perl5Util perl5util = new Perl5Util();
+		return perl5util.substitute("s!<.+?>!!g", html);
 	}
 
 	public static String createUsersOptionList(ImcmsServices imcref) {
@@ -243,4 +233,5 @@ public class Html {
 			}
 		});
 	}
+
 }

@@ -192,8 +192,8 @@
 			<td>&nbsp;</td>
 			<td colspan="3" align="right">
 				<input type="submit" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__SEARCH_BUTTON %>"
-					   value="<? global/Search ?>" class="imcmsFormBtn" style="width:100">
-				<input type="reset" name="reset_btn" value="<? global/Reset ?>" class="imcmsFormBtn" style="width:100">
+					   value="<? global/Search ?>" class="imcmsFormBtn" style="width:100px">
+				<input type="reset" name="reset_btn" value="<? global/Reset ?>" class="imcmsFormBtn" style="width:100px">
 			</td>
 		</tr>
 	</table>
