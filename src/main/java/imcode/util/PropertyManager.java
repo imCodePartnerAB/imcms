@@ -1,5 +1,7 @@
 package imcode.util;
 
+import imcode.server.Imcms;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -52,6 +54,16 @@ public class PropertyManager {
 	 * @param rootPath the root path of web application
 	 */
 	public static void setConfigPathsByRoot(String rootPath) {
+		setConfigPath(new File(rootPath, DEFAULT_PROPERTIES_CONFIG_PATH));
+		setServerPropertiesPath(new File(configPath, SERVER_PROPERTIES_FILENAME));
+	}
+
+	/**
+	 * This static method must be called before any of the other static methods
+	 *
+	 * @param rootPath the root path of web application
+	 */
+	public static void setConfigPathsByRoot(File rootPath) {
 		setConfigPath(new File(rootPath, DEFAULT_PROPERTIES_CONFIG_PATH));
 		setServerPropertiesPath(new File(configPath, SERVER_PROPERTIES_FILENAME));
 	}
@@ -125,6 +137,9 @@ public class PropertyManager {
 	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
 	public static Properties getServerConfProperties() throws IOException {
+		if (null == configPath || null == serverPropertiesPath) {
+			setConfigPathsByRoot(Imcms.getPath());
+		}
 		return getProperties(serverPropertiesPath);
 	}
 
@@ -143,6 +158,9 @@ public class PropertyManager {
 	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
 	private static Properties getProperties(File file) throws IOException {
+		if (null == configPath) {
+			setConfigPathsByRoot(Imcms.getPath());
+		}
 		Properties properties = CACHE.get(file);
 		if (properties == null) {
 			try (FileInputStream in = new FileInputStream(file)) {
@@ -150,7 +168,9 @@ public class PropertyManager {
 				properties.load(in);
 				CACHE.put(file, properties);
 			} catch (IOException ex) {
-				throw new IOException("PropertyManager: File not found: " + file.getAbsolutePath());
+				IOException newEx = new IOException("PropertyManager: File not found: " + file.getAbsolutePath());
+				newEx.initCause(ex);
+				throw newEx;
 			}
 		}
 		return properties;
