@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Intended to load and cache properties from *.properties files.
+ * Intended to load and cache properties from *.properties files. Be sure that
+ * {@link PropertyManager#setConfigPathsByRoot} are called before server's configurations was read.
  */
 public class PropertyManager {
 
@@ -139,7 +140,13 @@ public class PropertyManager {
 	 */
 	public static Properties getServerConfProperties() throws IOException {
 		if (null == configPath || null == serverPropertiesPath) {
-			setConfigPathsByRoot(Imcms.getPath());
+			File path = Imcms.getPath();
+			if (null != path) {
+				setConfigPathsByRoot(path);
+			} else {
+				throw new IOException("ImCMS not initialized yet. Use this to read properties ONLY when " +
+						"setConfigPathsByRoot() was called before, or use getPropertiesFrom()");
+			}
 		}
 		return getProperties(serverPropertiesPath);
 	}
@@ -159,12 +166,9 @@ public class PropertyManager {
 	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
 	private static Properties getProperties(File file) throws IOException {
-		if (null == configPath) {
-			setConfigPathsByRoot(Imcms.getPath());
-		}
 		Properties properties = CACHE.get(file);
 		if (properties == null) {
-			try (FileInputStream in = new FileInputStream(file)) {
+			try (FileInputStream in = new FileInputStream(file.getAbsolutePath())) {
 				properties = new Properties();
 				properties.load(in);
 				CACHE.put(file, properties);
