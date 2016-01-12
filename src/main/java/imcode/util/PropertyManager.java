@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -167,8 +168,8 @@ public class PropertyManager {
 				properties = new Properties();
 				properties.load(in);
 				CACHE.put(file, properties);
-			} catch (IOException ex) {
-				IOException newEx = new IOException("PropertyManager: File not found: " + file.getAbsolutePath());
+			} catch (FileNotFoundException ex) {
+				FileNotFoundException newEx = new FileNotFoundException("PropertyManager: File not found: " + file.getAbsolutePath());
 				newEx.initCause(ex);
 				throw newEx;
 			}
