@@ -1,9 +1,6 @@
 First Web Site
 ==============
 
-In this article:
-
-
 
 1. First that you need it is download the `Apache Tomcat <http://tomcat.apache.org/download-80.cgi>`_.
 
