@@ -20,6 +20,7 @@ ImCMS Documentation
     document-engine/index
     fundamental/index
     content-management/index
+    image-archive/index
 
 .. include:: /common/contribute.txt
 
