@@ -2,8 +2,8 @@ Image Archive
 =============
 
 .. toctree::
-:titlesonly:
+    :titlesonly:
 
-        overview
-        server
-        client
+    overview
+    server
+    client
