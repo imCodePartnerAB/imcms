@@ -11,7 +11,7 @@ Introduction
 ------------
 
 Image Archive is divided into two parts: server and client. Both of them needs to be configured. Lets see how to
-configure the server-side.
+configure the server side.
 
 To set up Image Archive server we have application container:
 
