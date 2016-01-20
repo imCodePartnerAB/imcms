@@ -3,24 +3,36 @@ Configure IA client
 
 In this article:
     - `Introduction`_
-    - `Database Configuration`_
-    - `Hibernate Configuration`_
+    - `Database and Hibernate Configuration`_
     - `Image Archive Own Configuration`_
 
 Introduction
 ------------
 
-Image Archive is divided into two parts: server and client. Both of them needs to be configured. Lets see how to
-configure the client side.
+Image Archive is divided into two parts: server and client. Both of them needs to be configured.
 
-To set up Image Archive server we have application container:
+Client side includes into existing project by maven dependency:
 
-`https://svn.imcode.com/imcode/customers/imagearchive/trunk`
+.. code-block:: maven
 
-Set it up with next properties:
+    <dependency>
+	    <groupId>com.imcode.imcms.addon.imagearchive</groupId>
+		<artifactId>client</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<type>war</type>
+	</dependency>
+	<dependency>
+		<groupId>com.imcode.imcms.addon.imagearchive</groupId>
+		<artifactId>client</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<type>jar</type>
+		<classifier>classes</classifier>
+	</dependency>
 
-Database Configuration
-----------------------
+With this dependencies client's .war and required .jar are ready to use after some configuration. Most of next properties already available in project, but for full info lets see all required properties for client.
+
+Database and Hibernate Configuration
+------------------------------------
 
 * For SQL Server:
 .. code-block:: properties
@@ -45,8 +57,7 @@ Database Configuration
         jdbc-password =
 
 
-Hibernate Configuration
------------------------
+* Hibernate Configuration
 
 Automatically validates or exports schema DDL to the database when the ``SessionFactory`` is created.
 
@@ -68,15 +79,31 @@ Possible values:
 Image Archive Own Configuration
 -------------------------------
 
-URL to imCMS application that makes use of this Image Archive, as seen by the clients browser, in form:
+URL to the separate image archive application, as seen by the clients browser, in form:
 
-   **<host> [":" <port>] "/" <context-path>**
+   **<host> [":" <port>] "/" <context-path> "/archive"**
 
-For example: ``test.com/imcms`` or ``http://localhost:8080/skurup``
+For example: ``localhost:8080/client/archive`` or ``http://www.skurup.se/archive``
 
 .. code-block:: properties
 
-        imcms-root-url =
+    ImageArchiveUrl =
+
+
+URL to Image Archive server.
+
+For example: ``http://skurup-imagearchive.dev.imcode.com`` or ``http://localhost:8081``
+
+.. code-block:: properties
+
+    ia-server-url =
+
+
+IDs of the roles that are allowed to see the "Choose from image archive" button in image edit page, delimited by ",". If not specified, everyone is allowed.
+
+.. code-block:: properties
+
+    ImageArchiveAllowedRoleIds = 2
 
 
 Path where all the images that are uploaded to Image Archive will be stored, can be relative or absolute.
@@ -97,6 +124,14 @@ For example: ``/tmp`` or ``C:/tmp``
 .. code-block:: properties
 
         temp-path =
+
+
+Path to images, in file system and URL.
+
+.. code-block:: properties
+
+    ImageArchiveImagePath = archivedimages/
+    ImageArchiveImageUrl = /archivedimages/
 
 
 ImageMagick is a software suite for creating, editing and composing images. It can be downloaded from http://www.imagemagick.org. This path should lead to where ImageMagick is installed, and is required only on windows. For linux leave it empty.
@@ -135,13 +170,6 @@ This directory will be automatically created.
 .. code-block:: properties
 
         imcms-users-library-folder = users
-
-
-Images from Image Archive that are being used by imCMS will be stored here, can be relative or absolute.
-
-.. code-block:: properties
-
-        imcms-images-path =
 
 
 Next two properties may be empty:
