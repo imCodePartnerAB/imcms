@@ -72,6 +72,7 @@ URL to imCMS application that makes use of this Image Archive, as seen by the cl
    **<host> [":" <port>] "/" <context-path>**
 
 For example: ``test.com/imcms`` or ``http://localhost:8080/skurup``
+
 .. code-block:: properties
 
         imcms-root-url =
@@ -100,24 +101,28 @@ For example: ``/tmp`` or ``C:/tmp``
 ImageMagick is a software suite for creating, editing and composing images. It can be downloaded from http://www.imagemagick.org. This path should lead to where ImageMagick is installed, and is required only on windows. For linux leave it empty.
 
 For example: ``C:/program files/imagemagick-6.4.9-q16``
+
 .. code-block:: properties
 
         image-magick-path =
 
 
 Maximum size of an uploaded image in bytes. By default 250 MB.
+
 .. code-block:: properties
 
         max-image-upload-size = 262144000
 
 
 Maximum size of an uploaded ZIP archive in bytes. By default 250 MB.
+
 .. code-block:: properties
 
         max-zip-upload-size = 262144000
 
 
 URL path to login, in imCMS, relative to context path.
+
 .. code-block:: properties
 
         imcms-login-url-path = login
@@ -125,12 +130,14 @@ URL path to login, in imCMS, relative to context path.
 
 Name for a directory within libraries folder, that will contain each users personal library.
 This directory will be automatically created.
+
 .. code-block:: properties
 
         imcms-users-library-folder = users
 
 
 Images from Image Archive that are being used by imCMS will be stored here, can be relative or absolute.
+
 .. code-block:: properties
 
         imcms-images-path =
@@ -139,12 +146,14 @@ Images from Image Archive that are being used by imCMS will be stored here, can 
 Next two properties may be empty:
 
 Path to libraries, can be relative or absolute. Each folder in this directory will become a library in Image Archive - these folders can be created using imCMS file manager. Each library can contain one or more raw images which can be activated in Image Archive.
+
 .. code-block:: properties
 
         imcms-libraries-path =
 
 
 Absolute or relative paths separated by ";". Each path will become a library in Image archive, can be used for gaining access to old Image Archive.
+
 .. code-block:: properties
 
         imcms-old-library-paths =
