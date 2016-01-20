@@ -22,7 +22,7 @@ Set it up with next properties:
 
 * Database configuration:
 
-   For SQL Server
+For SQL Server:
 
 .. code-block:: properties
 
@@ -31,7 +31,7 @@ Set it up with next properties:
         hibernate-dialect = com.imcode.imcms.addon.imagearchive.util.SQLServerDialect
 
 
-   For MySQL
+For MySQL:
 
 .. code-block:: properties
 
@@ -40,7 +40,7 @@ Set it up with next properties:
         hibernate-dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 
 
-   For both:
+For both:
 
 .. code-block:: properties
 
