@@ -49,6 +49,7 @@ Hibernate Configuration
 -----------------------
 
 Automatically validates or exports schema DDL to the database when the ``SessionFactory`` is created.
+
 .. code-block:: properties
 
     hibernate-hbm2ddl-auto =
