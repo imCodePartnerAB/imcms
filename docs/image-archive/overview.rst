@@ -3,7 +3,7 @@ Overview
 
 In this article:
     - `Introduction`_
-    - `IA Configuration steps`_
+    - `IA Configuration Steps`_
 
 Introduction
 ------------
@@ -16,7 +16,7 @@ convenient with next things:
 * User has access to his own images
 * Use images from IA in imCMS (of course)
 
-IA Configuration steps
+IA Configuration Steps
 ----------------------
 
 There are two steps to get started use Image Archive:
