@@ -3,7 +3,9 @@ Configure IA server
 
 In this article:
     - `Introduction`_
-    - `Server Configuration`_
+    - `Database Configuration`_
+    - `Hibernate Configuration`_
+    - `Image Archive Own Configuration`_
 
 Introduction
 ------------
@@ -11,19 +13,16 @@ Introduction
 Image Archive is divided into two parts: server and client. Both of them needs to be configured. Lets see how to
 configure the server-side.
 
-Server Configuration
---------------------
-
 To set up Image Archive server we have application container:
 
 `https://svn.imcode.com/imcode/customers/imagearchive/trunk`
 
 Set it up with next properties:
 
-* Database configuration:
+Database Configuration
+----------------------
 
-For SQL Server:
-
+* For SQL Server:
 .. code-block:: properties
 
         jdbc-driver = net.sourceforge.jtds.jdbc.Driver
@@ -31,8 +30,7 @@ For SQL Server:
         hibernate-dialect = com.imcode.imcms.addon.imagearchive.util.SQLServerDialect
 
 
-For MySQL:
-
+* For MySQL:
 .. code-block:: properties
 
         jdbc-driver = com.mysql.jdbc.Driver
@@ -40,24 +38,23 @@ For MySQL:
         hibernate-dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 
 
-For both:
-
+* For both:
 .. code-block:: properties
 
         jdbc-username =
         jdbc-password =
 
 
-* Hibernate configuration
+Hibernate Configuration
+-----------------------
 
-   Automatically validates or exports schema DDL to the database when the ``SessionFactory`` is created.
-
+Automatically validates or exports schema DDL to the database when the ``SessionFactory`` is created.
 .. code-block:: properties
 
-        hibernate-hbm2ddl-auto =
+    hibernate-hbm2ddl-auto =
 
 
-   Possible values:
+Possible values:
 
    - **validate**: validate that the schema matches, make no changes to the schema of the database, you probably want this for production
 
@@ -67,100 +64,87 @@ For both:
 
    - **create-drop**: create the schema as in create above, but also drop the schema at the end of the session. This is great in early development or for testing.
 
-* Image Archive own configuration
+Image Archive Own Configuration
+-------------------------------
 
-   URL to imCMS application that makes use of this Image Archive, as seen by the clients browser, in form:
+URL to imCMS application that makes use of this Image Archive, as seen by the clients browser, in form:
 
    **<host> [":" <port>] "/" <context-path>**
 
-   For example: ``test.com/imcms`` or ``http://localhost:8080/skurup``
-
+For example: ``test.com/imcms`` or ``http://localhost:8080/skurup``
 .. code-block:: properties
 
         imcms-root-url =
 
 
-   Path where all the images that are uploaded to Image Archive will be stored, can be relative or absolute.
+Path where all the images that are uploaded to Image Archive will be stored, can be relative or absolute.
 
-   For example: ``/var/image_archive``
+For example: ``/var/image_archive``
 
    **! Be sure that user have rights to change folder content !**
-
 .. code-block:: properties
 
         storage-path =
 
 
-   Path where temporary images that are being processed are stored.
+Path where temporary images that are being processed are stored.
 
-   For example: ``/tmp`` or ``C:/tmp``
+For example: ``/tmp`` or ``C:/tmp``
 
    **! Be sure that user have rights to change folder content !**
-
 .. code-block:: properties
 
         temp-path =
 
 
-   ImageMagick is a software suite for creating, editing and composing images. It can be downloaded from http://www.imagemagick.org. This path should lead to where ImageMagick is installed, and is required only on windows. For linux leave it empty.
+ImageMagick is a software suite for creating, editing and composing images. It can be downloaded from http://www.imagemagick.org. This path should lead to where ImageMagick is installed, and is required only on windows. For linux leave it empty.
 
-   For example: ``C:/program files/imagemagick-6.4.9-q16``
-
+For example: ``C:/program files/imagemagick-6.4.9-q16``
 .. code-block:: properties
 
         image-magick-path =
 
 
-   Maximum size of an uploaded image in bytes. By default 250 MB.
-
+Maximum size of an uploaded image in bytes. By default 250 MB.
 .. code-block:: properties
 
         max-image-upload-size = 262144000
 
 
-   Maximum size of an uploaded ZIP archive in bytes. By default 250 MB.
-
+Maximum size of an uploaded ZIP archive in bytes. By default 250 MB.
 .. code-block:: properties
 
         max-zip-upload-size = 262144000
 
 
-   URL path to login, in imCMS, relative to context path.
-
+URL path to login, in imCMS, relative to context path.
 .. code-block:: properties
 
         imcms-login-url-path = login
 
 
-   Name for a directory within libraries folder, that will contain each users personal library.
-   This directory will be automatically created.
-
+Name for a directory within libraries folder, that will contain each users personal library.
+This directory will be automatically created.
 .. code-block:: properties
 
         imcms-users-library-folder = users
 
 
-   Images from Image Archive that are being used by imCMS will be stored here, can be relative or absolute.
-
+Images from Image Archive that are being used by imCMS will be stored here, can be relative or absolute.
 .. code-block:: properties
 
         imcms-images-path =
 
 
-   Next two properties may be empty:
+Next two properties may be empty:
 
-   Path to libraries, can be relative or absolute. Each folder in this directory will become a library in Image
-   Archive - these folders can be created using imCMS file manager. Each library can contain one or more raw images
-   which can be activated in Image Archive.
-
+Path to libraries, can be relative or absolute. Each folder in this directory will become a library in Image Archive - these folders can be created using imCMS file manager. Each library can contain one or more raw images which can be activated in Image Archive.
 .. code-block:: properties
 
         imcms-libraries-path =
 
 
-   Absolute or relative paths separated by ";". Each path will become a library in Image archive, can be used for
-   gaining access to old Image Archive.
-
+Absolute or relative paths separated by ";". Each path will become a library in Image archive, can be used for gaining access to old Image Archive.
 .. code-block:: properties
 
         imcms-old-library-paths =
