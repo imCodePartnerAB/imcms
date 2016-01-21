@@ -127,7 +127,7 @@ public class Imcms {
 	}
 
 	public static void setRootPath(String path) {
-		PropertyManager.setConfigPathsByRoot(path);
+		PropertyManager.setRoot(path);
 		setPath(new File(path));
 	}
 
@@ -165,7 +165,7 @@ public class Imcms {
 
 	public static Properties getServerProperties() {
 		try {
-			Properties properties = PropertyManager.getServerConfProperties();
+			Properties properties = PropertyManager.getServerProperties();
 			properties.setProperty("SolrHome", getSolrHome());
 			return properties;
 		} catch (IOException e) {
@@ -347,21 +347,6 @@ public class Imcms {
 
 	public static void setPrepareDatabaseOnStart(boolean prepareDatabaseOnStart) {
 		Imcms.prepareDatabaseOnStart = prepareDatabaseOnStart;
-	}
-
-	/**
-	 * @deprecated use {@link Imcms#setRootPath(String)}
-	 */
-	public static void setPath(File path, File prefsConfigPath) {
-		Imcms.path = path;
-		PropertyManager.setConfigPath(prefsConfigPath);
-	}
-
-	/**
-	 * @deprecated Use {@link PropertyManager#setServerPropertiesFileName(String)}.
-	 */
-	public static void setServerPropertiesFilename(String serverPropertiesFilename) {
-		PropertyManager.setServerPropertiesFileName(serverPropertiesFilename);
 	}
 
 	public static class StartupException extends RuntimeException {

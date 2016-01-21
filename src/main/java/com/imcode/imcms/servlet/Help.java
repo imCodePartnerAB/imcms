@@ -25,7 +25,7 @@ public class Help extends HttpServlet {
 		String propsFilePath = "/WEB-INF/help/helpdoc_" + lang + ".properties";
 
 		try {
-			int helpDoc = PropertyManager.getIntegerPropertyFrom(propsFilePath, helpDocName);
+			int helpDoc = Integer.parseInt(PropertyManager.getPropertyFrom(propsFilePath, helpDocName));
 			res.sendRedirect(String.valueOf(helpDoc));
 		} catch (NumberFormatException e) {
 			log.error("Help link error, help doc name: " + helpDocName + ",  no corresponding meta_id found.");

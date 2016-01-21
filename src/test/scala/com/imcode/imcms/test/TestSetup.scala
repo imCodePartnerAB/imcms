@@ -5,7 +5,6 @@ import java.io.File
 
 import _root_.imcode.server.Imcms
 import imcode.server.document.index.service.SolrServerFactory
-import imcode.util.PropertyManager
 import org.apache.commons.dbcp2.BasicDataSource
 import org.apache.commons.io.FileUtils
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
@@ -50,13 +49,8 @@ class TestSetup extends TestDb with TestSolr {
 
   object imcms {
     def init(start: Boolean = false, prepareDbOnStart: Boolean = false) {
-      dir("target/test-classes") |> {
-        path =>
-          Imcms.setPath(path, path)
-      }
 
       Imcms.setSQLScriptsPath(path("src/main/web/WEB-INF/sql"))
-      PropertyManager.setServerPropertiesFileName("server.properties")
       System.setProperty("com.imcode.imcms.test.basedir", basedir)
       // Can not be replaced with @Configuration since XML configuration always takes precedence over annotation configuration.
       Imcms.setApplicationContext(new FileSystemXmlApplicationContext("file:" + path("src/test/resources/applicationContext.xml")))
@@ -91,6 +85,15 @@ trait TestDb {
       }
     }
 
+    def prepare(recreateBeforePrepare: Boolean = false) {
+      if (recreateBeforePrepare) recreate()
+
+      val scriptsDir = test.path("src/main/web/WEB-INF/sql")
+      val schema = Schema.fromFile(test.file("src/main/resources/schema.xml")).setScriptsDir(scriptsDir)
+
+      new DB(createDataSource()).prepare(schema)
+    }
+
     def createDataSource(urlType: DataSourceUrlType.Value = DataSourceUrlType.WithDBName,
                          autocommit: DataSourceAutocommit.Value = DataSourceAutocommit.No): BasicDataSource = {
 
@@ -101,15 +104,6 @@ trait TestDb {
 
           ds.setDefaultAutoCommit(autocommit == DataSourceAutocommit.Yes)
       }
-    }
-
-    def prepare(recreateBeforePrepare: Boolean = false) {
-      if (recreateBeforePrepare) recreate()
-
-      val scriptsDir = test.path("src/main/web/WEB-INF/sql")
-      val schema = Schema.fromFile(test.file("src/main/resources/schema.xml")).setScriptsDir(scriptsDir)
-
-      new DB(createDataSource()).prepare(schema)
     }
 
     def recreate() {

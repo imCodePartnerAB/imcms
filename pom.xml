@@ -1149,7 +1149,6 @@
 						<exclude>**/Test*.java</exclude>
 						<exclude>**/*TestCase.java</exclude>
 					</excludes>
-					<compilerArgument>${javac.args}</compilerArgument>
 				</configuration>
 			</plugin>
 

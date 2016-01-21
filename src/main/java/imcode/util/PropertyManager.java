@@ -1,7 +1,9 @@
 package imcode.util;
 
 import imcode.server.Imcms;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,77 +15,63 @@ import java.util.Properties;
 
 /**
  * Intended to load and cache properties from *.properties files. Be sure that
- * {@link PropertyManager#setConfigPathsByRoot} are called before server's configurations was read.
+ * {@link PropertyManager#setRoot} are called before server's configurations was read.
  */
 public class PropertyManager {
 
 	/**
-	 * Default properties config file name.
+	 * Default server properties file path.
 	 */
-	private static final String SERVER_PROPERTIES_FILENAME = "server.properties";
+	private static final String SERVER_PROPERTIES_FILE = "WEB-INF/conf/server.properties";
+
+	private static final String ERR_MESSAGE = "ImCMS not initialized yet, root path not set. Wait for ImCMS do it "
+			+ "automatically or set it manually. Use this to read properties ONLY when setRoot() was called before.";
+
+	private static final Map<File, Properties> CACHE = Collections.synchronizedMap(new HashMap<>());
 
 	/**
-	 * Default properties config path relative to deployment path.
+	 * Root of Imcms. Needs to be initialised.
 	 */
-	private static final String DEFAULT_PROPERTIES_CONFIG_PATH = "WEB-INF/conf";
+	@NotNull
+	private static File root;
 
-	private final static Map<File, Properties> CACHE = Collections.synchronizedMap(new HashMap<>());
-
-	private static volatile String serverPropertiesFileName = SERVER_PROPERTIES_FILENAME;
-
-	/**
-	 * The configuration path, composed by webApp root and default properties config path.
-	 *
-	 * @see PropertyManager#DEFAULT_PROPERTIES_CONFIG_PATH
-	 * @see javax.servlet.ServletContext#getRealPath(String)
-	 */
-	private static File configPath;
-
-	/**
-	 * The server properties file path, composed by configuration path and server properties file name.
-	 *
-	 * @see PropertyManager#configPath
-	 * @see PropertyManager#SERVER_PROPERTIES_FILENAME
-	 */
-	private static File serverPropertiesPath;
+	@NotNull
+	private static File serverPropertiesFile;
 
 	private PropertyManager() {
 	}
 
-	/**
-	 * This static method must be called before any of the other static methods
-	 *
-	 * @param rootPath the root path of web application
-	 */
-	public static void setConfigPathsByRoot(String rootPath) {
-		setConfigPath(new File(rootPath, DEFAULT_PROPERTIES_CONFIG_PATH));
-		setServerPropertiesPath(new File(configPath, SERVER_PROPERTIES_FILENAME));
+	public static File getRoot() {
+		return root;
 	}
 
 	/**
-	 * This static method must be called before any of the other static methods
+	 * This method must be called before any other methods of this manager
 	 *
-	 * @param rootPath the root path of web application
+	 * @param newRoot the root path of web application
 	 */
-	public static void setConfigPathsByRoot(File rootPath) {
-		setConfigPath(new File(rootPath, DEFAULT_PROPERTIES_CONFIG_PATH));
-		setServerPropertiesPath(new File(configPath, SERVER_PROPERTIES_FILENAME));
-	}
-
-	public static void setConfigPath(File confPath) {
-		configPath = confPath;
+	@NotNull
+	public static void setRoot(String newRoot) {
+		if (StringUtils.isEmpty(newRoot)) {
+			throw new NullPointerException();
+		} else {
+			setRoot(new File(newRoot));
+		}
 	}
 
 	/**
-	 * It is equals {@code Integer.valueOf(getPropertyFrom(path, property))}
+	 * This method must be called before any other methods of this manager
 	 *
-	 * @param path     Path to properties file.
-	 * @param property The property which needs to be read.
-	 * @return {@code Integer} property
-	 * @throws IOException Throws {@code IOException} if file not found.
+	 * @param newRoot the root path of web application
 	 */
-	public static Integer getIntegerPropertyFrom(String path, String property) throws NumberFormatException, IOException {
-		return Integer.valueOf(getPropertyFrom(path, property));
+	@NotNull
+	public static void setRoot(File newRoot) {
+		if (null == newRoot) {
+			throw new NullPointerException(ERR_MESSAGE);
+		} else {
+			root = newRoot;
+			serverPropertiesFile = new File(root, SERVER_PROPERTIES_FILE);
+		}
 	}
 
 	/**
@@ -95,30 +83,19 @@ public class PropertyManager {
 	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
 	public static String getPropertyFrom(String path, String property) throws IOException {
-		return getProperties(new File(path)).getProperty(property);
+		return getPropertiesFrom(path).getProperty(property);
 	}
 
-	@SuppressWarnings("unused")
 	/**
-	 * Gets {@code Properties} by specified path.
+	 * Get {@code Properties} by specified path.
 	 *
-	 * @param path     Path to properties file.
+	 * @param path Path to properties file.
 	 * @return Asked properties.
 	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
 	public static Properties getPropertiesFrom(String path) throws IOException {
-		return getProperties(new File(path));
-	}
-
-	/**
-	 * Gets the {@code Property} representation of file or path to file due to configuration path.
-	 *
-	 * @param path Path to properties file.
-	 * @return {@code String} type of asked property
-	 * @throws IOException Throws {@code IOException} if file not found.
-	 */
-	public static Properties getPropsRelativeToConfPath(String path) throws IOException {
-		return getProperties(new File(configPath, path));
+		checkPaths();
+		return getProperties(new File(root, path));
 	}
 
 	/**
@@ -128,8 +105,8 @@ public class PropertyManager {
 	 * @return {@code String} value of asked property.
 	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
-	public static String getServerConfProperty(String property) throws IOException {
-		return getServerConfProperties().getProperty(property);
+	public static String getServerProperty(String property) throws IOException {
+		return getServerProperties().getProperty(property);
 	}
 
 	/**
@@ -138,17 +115,18 @@ public class PropertyManager {
 	 * @return The properties in the file.
 	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
-	public static Properties getServerConfProperties() throws IOException {
-		if (null == configPath || null == serverPropertiesPath) {
-			File path = Imcms.getPath();
-			if (null != path) {
-				setConfigPathsByRoot(path);
-			} else {
-				throw new IOException("ImCMS not initialized yet. Use this to read properties ONLY when " +
-						"setConfigPathsByRoot() was called before, or use getPropertiesFrom()");
-			}
+	public static Properties getServerProperties() throws IOException {
+		checkPaths();
+		return getProperties(serverPropertiesFile);
+	}
+
+	/**
+	 * Try get root path from ImCMS. Will throw {@link NullPointerException} if path is {@code null}.
+	 */
+	private static void checkPaths() {
+		if (null == root || null == serverPropertiesFile) {
+			setRoot(Imcms.getPath());
 		}
-		return getProperties(serverPropertiesPath);
 	}
 
 	/**
@@ -168,7 +146,7 @@ public class PropertyManager {
 	private static Properties getProperties(File file) throws IOException {
 		Properties properties = CACHE.get(file);
 		if (properties == null) {
-			try (FileInputStream in = new FileInputStream(file.getAbsolutePath())) {
+			try (FileInputStream in = new FileInputStream(file)) {
 				properties = new Properties();
 				properties.load(in);
 				CACHE.put(file, properties);
@@ -179,23 +157,5 @@ public class PropertyManager {
 			}
 		}
 		return properties;
-	}
-
-	@SuppressWarnings("unused")
-	public static File getServerPropertiesPath() {
-		return serverPropertiesPath;
-	}
-
-	public static void setServerPropertiesPath(File serverPropertiesPath) {
-		PropertyManager.serverPropertiesPath = serverPropertiesPath;
-	}
-
-	@SuppressWarnings("unused")
-	public static String getServerPropertiesFileName() {
-		return serverPropertiesFileName;
-	}
-
-	public static void setServerPropertiesFileName(String serverPropertiesFilename) {
-		PropertyManager.serverPropertiesFileName = serverPropertiesFilename;
 	}
 }

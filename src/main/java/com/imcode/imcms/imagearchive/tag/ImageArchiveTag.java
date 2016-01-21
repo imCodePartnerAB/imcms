@@ -64,7 +64,7 @@ public class ImageArchiveTag extends BodyTagSupport {
 			ParserParameters parserParameters = ParserParameters.fromRequest(request);
 			TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
 
-			String archiveUri = PropertyManager.getServerConfProperty("ImageArchiveURL");
+			String archiveUri = PropertyManager.getServerProperty("ImageArchiveURL");
 //			String archiveUri = getContextPath() + "/archive";
 			/* set by top.jsp, which is used only on major pages(aka not previews and overlays) to redirect to the last
 			* visited page inside iframe when switching languages using imcms lang switch(aka meta-id?imcms.document.language=lang)
