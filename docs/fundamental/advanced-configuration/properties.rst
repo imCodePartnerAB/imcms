@@ -17,25 +17,46 @@ Server properties
 """""""""""""""""
 
 While starting application, ImCMS automatically read its root path and goes to ``WEB-INF/conf/server.properties`` to
-read server properties. Only after this moment we can read server properties from cache. If you want to read some
-properties from any file (and server too) before ImCMS reads root path, you have to set root path manually using
-servletContext etc. (examples will be shown later).
+read server properties. Only after this moment we can read server properties from cache. If you get
+``FileNotFoundException`` or ``NullPointerException`` from PropertyManager, there are two explanations: you point wrong
+path to file or maybe you want to read some properties from any file (and server too) before ImCMS reads root path.
+So you have to check arguments (first of all). If not helps, there are two solutions: wait when ImCMS reads it's root
+path automatically (recommended), or set root path manually if ImCMS do not do that yet. ImCMS sets path from system root to ``target``
+folder. Try to find root path from something like:
+.. code-block:: java
+
+    ServletContext servletContext = filterConfig.getServletContext();
+	String rootPath = servletContext.getRealPath("/");
+
+And then set root by next method:
+.. code-block:: java
+
+    PropertyManager.setRoot(String rootPath);
+
+or if you find path by another way in ``File`` type:
+.. code-block:: java
+
+    PropertyManager.setRoot(File rootPath);
+
+**! Be sure that root path is set by you or ImCMS before read any properties !**
 
 If root path is set, properties from ``server.properties`` can be accessed by next methods:
 
 - read the value of ``property`` from server properties:
 .. code-block:: java
 
-    PropertyManager.getServerConfProperty(String property);
+    PropertyManager.getServerProperty(String property);
 
 - returns server properties in ``Properties`` type for next use:
 .. code-block:: java
 
-    PropertyManager.getServerConfProperties();
+    PropertyManager.getServerProperties();
 
 
 Properties in other files
 """""""""""""""""""""""""
+
+**! Be sure that root path is set by you or ImCMS before read any properties !**
 
 If you need to read some properties from another files, you may use next methods:
 
@@ -43,11 +64,6 @@ If you need to read some properties from another files, you may use next methods
 .. code-block:: java
 
     PropertyManager.getPropertyFrom(String path, String property);
-
-- read the Integer value of ``property`` from properties file by specified path:
-.. code-block:: java
-
-    PropertyManager.getIntegerPropertyFrom(String path, String property);
 
 - returns properties which lies by specified path in ``Properties`` type for next use:
 .. code-block:: java
