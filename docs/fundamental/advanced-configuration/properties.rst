@@ -18,11 +18,19 @@ Server properties
 
 While starting application, ImCMS automatically read its root path and goes to ``WEB-INF/conf/server.properties`` to
 read server properties. Only after this moment we can read server properties from cache. If you get
-``FileNotFoundException`` or ``NullPointerException`` from PropertyManager, there are two explanations: you point wrong
-path to file or maybe you want to read some properties from any file (and server too) before ImCMS reads root path.
-So you have to check arguments (first of all). If not helps, there are two solutions: wait when ImCMS reads it's root
-path automatically (recommended), or set root path manually if ImCMS do not do that yet. ImCMS sets path from system root to ``target``
-folder. Try to find root path from something like:
+``FileNotFoundException`` or ``NullPointerException`` from PropertyManager, there are two explanations:
+
+1. You point wrong path to properties file.
+
+2. You want to read some properties from any file (and server too) before ImCMS read its root path.
+
+So you have to check arguments (first of all). If not helps, there are two solutions:
+
+* Wait when ImCMS reads it's root path automatically (recommended).
+
+* Set root path manually if ImCMS do not do that yet.
+
+ImCMS sets path from system root to ``target`` folder. Try to find root path from something like:
 
 .. code-block:: java
 
