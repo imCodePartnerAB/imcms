@@ -10,8 +10,8 @@ In this article:
 Introduction
 ------------
 
-In ImCMS we have convenient service for working with *.properties files - ``imcode.util.PropertyManager``.
-This class has own cache of properties files for quick access.
+In ImCMS we have convenient service for working with *.properties files - ``imcode.util.PropertyManager``. This class
+has own cache of properties files for quick access.
 
 Server properties
 """""""""""""""""
