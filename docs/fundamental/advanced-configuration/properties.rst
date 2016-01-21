@@ -35,7 +35,7 @@ ImCMS sets path from system root to ``target`` folder. Try to find root path fro
 .. code-block:: java
 
     ServletContext servletContext = filterConfig.getServletContext();
-	String rootPath = servletContext.getRealPath("/");
+    String rootPath = servletContext.getRealPath("/");
 
 And then set root by next method:
 
