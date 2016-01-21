@@ -10,7 +10,6 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
-import imcode.util.PropertyManager;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -27,7 +26,6 @@ import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -93,20 +91,6 @@ public class ImcmsSetupFilter implements Filter {
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		ServletContext servletContext = filterConfig.getServletContext();
-		String p = servletContext.getRealPath("/");
-		PropertyManager.setRoot(p);
-		String s = System.getProperty("base.dir");
-		Properties pp;
-		String ss;
-		try {
-			pp = PropertyManager.getPropertiesFrom("WEB-INF/conf/imcms_eng.properties");
-			ss = PropertyManager.getPropertyFrom("WEB-INF/conf/imcms_eng.properties", "global/Now");
-			pp = PropertyManager.getServerProperties();
-			ss = PropertyManager.getServerProperty("SmtpPort");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		Imcms.setRootPath(servletContext.getRealPath("/"));
 		Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
 		try {
