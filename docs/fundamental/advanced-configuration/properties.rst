@@ -23,17 +23,20 @@ path to file or maybe you want to read some properties from any file (and server
 So you have to check arguments (first of all). If not helps, there are two solutions: wait when ImCMS reads it's root
 path automatically (recommended), or set root path manually if ImCMS do not do that yet. ImCMS sets path from system root to ``target``
 folder. Try to find root path from something like:
+
 .. code-block:: java
 
     ServletContext servletContext = filterConfig.getServletContext();
 	String rootPath = servletContext.getRealPath("/");
 
 And then set root by next method:
+
 .. code-block:: java
 
     PropertyManager.setRoot(String rootPath);
 
 or if you find path by another way in ``File`` type:
+
 .. code-block:: java
 
     PropertyManager.setRoot(File rootPath);
