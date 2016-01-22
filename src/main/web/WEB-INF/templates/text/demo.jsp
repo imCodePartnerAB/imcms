@@ -142,12 +142,6 @@
 		</div>
 	</section>
 
-	<div>
-		<imcms:imageArchive styleClass="imageArchive">
-			<link href="${contextPath}/css/tag_image_archive.css.jsp" rel="stylesheet" type="text/css"/>
-		</imcms:imageArchive>
-	</div>
-
 	<section class="footer-placeholder">
 		<section class="footer">
 			<div class="wrapper">
