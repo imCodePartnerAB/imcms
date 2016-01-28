@@ -110,7 +110,7 @@ Path where all the images that are uploaded to Image Archive will be stored, can
 
 For example: ``/var/image_archive``
 
-   **! Be sure that user have rights to change folder content !**
+.. warning:: Be sure that user have rights to change folder content.
 .. code-block:: properties
 
         storage-path =
@@ -120,7 +120,7 @@ Path where temporary images that are being processed are stored.
 
 For example: ``/tmp`` or ``C:/tmp``
 
-   **! Be sure that user have rights to change folder content !**
+.. warning:: Be sure that user have rights to change folder content.
 .. code-block:: properties
 
         temp-path =
