@@ -45,7 +45,15 @@ import java.util.stream.Stream;
 @RequestMapping("/document")
 public class DocumentController {
 
-	private static final List<String> WRONG_DATE = Arrays.asList("T:00Z", "--T--:00Z");
+	private static final String[] DATE_TYPES = {
+			"created",
+			"modified",
+			"archived",
+			"published",
+			"publication-end"
+	};
+
+	private static final Collection<String> WRONG_DATE = Collections.unmodifiableCollection(Arrays.asList("T:00Z", "--T--:00Z"));
 
 	private static final String BAD_ATTRIBUTES = "\"created-date\":\"\",\"created-time\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\",";
 
@@ -132,9 +140,14 @@ public class DocumentController {
 		SolrQuery solrQuery;
 
 		if (StringUtils.isNotBlank(term)) {
-			String query = Stream.of(new String[]{DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE,
-					DocumentIndex.FIELD__META_TEXT, DocumentIndex.FIELD__KEYWORD, DocumentIndex.FIELD__ALIAS,
-			}).map(field -> String.format("%s:*%s*", field, term)).collect(Collectors.joining(" "));
+			String query = Stream.of(new String[]{
+					DocumentIndex.FIELD__META_ID,
+					DocumentIndex.FIELD__META_HEADLINE,
+					DocumentIndex.FIELD__META_TEXT,
+					DocumentIndex.FIELD__KEYWORD,
+					DocumentIndex.FIELD__ALIAS,})
+					.map(field -> String.format("%s:*%s*", field, term))
+					.collect(Collectors.joining(" "));
 			solrQuery = new SolrQuery(query);
 		} else {
 			solrQuery = new SolrQuery("*:*");
@@ -142,23 +155,31 @@ public class DocumentController {
 
 		solrQuery.addSort(sort, SolrQuery.ORDER.valueOf(order));
 		documentStoredFieldsList = documentMapper.getDocumentIndex()
-				.search(solrQuery, Imcms.getUser()).documentStoredFieldsList()
-				.stream().map(DocumentStoredFields::id).collect(Collectors.toList());
+				.search(solrQuery, Imcms.getUser())
+				.documentStoredFieldsList()
+				.stream()
+				.map(DocumentStoredFields::id)
+				.collect(Collectors.toList());
 
-		documents = documentMapper.getDocuments(documentStoredFieldsList.stream().skip(skip).limit(take).collect(Collectors.toList()));
+		documents = documentMapper.getDocuments(documentStoredFieldsList.stream()
+				.skip(skip)
+				.limit(take)
+				.collect(Collectors.toList()));
 
-		result.addAll(documents.stream().map(document -> new HashMap<String, Object>() {
-			{
-				put("id", document.getId());
-				put("name", document.getName());
-				put("status", document.getLifeCyclePhase().toString().toUpperCase().substring(0, 1));
-				put("label", document.getHeadline());
-				put("isArchived", document.isArchived());
-				put("language", document.getLanguage().getName());
-				put("alias", document.getAlias());
-				put("type", document.getDocumentType().getName().toLocalizedString(Imcms.getUser()));
-			}
-		}).collect(Collectors.toList()));
+		result.addAll(documents.stream()
+				.map(document -> new HashMap<String, Object>() {
+					{
+						put("id", document.getId());
+						put("name", document.getName());
+						put("status", document.getLifeCyclePhase().toString().toUpperCase().substring(0, 1));
+						put("label", document.getHeadline());
+						put("isArchived", document.isArchived());
+						put("language", document.getLanguage().getName());
+						put("alias", document.getAlias());
+						put("type", document.getDocumentType().getName().toLocalizedString(Imcms.getUser()));
+					}
+				})
+				.collect(Collectors.toList()));
 		return result;
 	}
 
@@ -184,39 +205,31 @@ public class DocumentController {
 			DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 			DocumentEntity documentEntity;
 
-			//before do smth needs to check data - replace wrong attributes
+			//before do smth needs to check data to replace wrong attributes
 			//todo: check data on JS side and send correct data to here, then may delete the checkData(data) method
 			data = checkData(data);
 
 			switch (type) {
 				case DocumentTypeDomainObject.URL_ID: {
-					documentEntity = new ObjectMapper().readValue(data, new TypeReference<UrlDocumentEntity>() {
+					documentEntity = newMapper(data, new TypeReference<UrlDocumentEntity>() {
 					});
-					documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(UrlDocument.TYPE_ID,
-							documentMapper.getDocument(parentDocumentId),
-							Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
-
+					documentDomainObject = createOrGetDocument(type, parentDocumentId, documentEntity, documentMapper);
 					asUrlDocument((UrlDocumentDomainObject) documentDomainObject, (UrlDocumentEntity) documentEntity);
 				}
 				break;
 				case DocumentTypeDomainObject.FILE_ID: {
-					documentEntity = new ObjectMapper().readValue(data, new TypeReference<FileDocumentEntity>() {
+					documentEntity = newMapper(data, new TypeReference<FileDocumentEntity>() {
 					});
-					documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(FileDocument.TYPE_ID,
-							documentMapper.getDocument(parentDocumentId),
-							Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
+					documentDomainObject = createOrGetDocument(type, parentDocumentId, documentEntity, documentMapper);
 					asFileDocument((FileDocumentDomainObject) documentDomainObject, (FileDocumentEntity) documentEntity, file);
-
 				}
 				break;
 				case DocumentTypeDomainObject.TEXT_ID:
 				default: {
-					documentEntity = new ObjectMapper().readValue(data, new TypeReference<TextDocumentEntity>() {
+					int id = TextDocument.TYPE_ID;
+					documentEntity = newMapper(data, new TypeReference<TextDocumentEntity>() {
 					});
-					documentDomainObject = documentEntity.id == null ? documentMapper.createDocumentOfTypeFromParent(TextDocument.TYPE_ID,
-							documentMapper.getDocument(parentDocumentId),
-							Imcms.getUser()) : documentMapper.getDocument(documentEntity.id);
-
+					documentDomainObject = createOrGetDocument(id, parentDocumentId, documentEntity, documentMapper);
 					asTextDocument((TextDocumentDomainObject) documentDomainObject, (TextDocumentEntity) documentEntity);
 				}
 				break;
@@ -224,12 +237,13 @@ public class DocumentController {
 
 			prepareDocument(documentEntity, documentDomainObject);
 
-			if (documentEntity.id != null)
+			if (documentEntity.id != null) {
 				documentMapper.saveDocument(documentDomainObject, getContentMap(documentEntity), Imcms.getUser());
-			else
+			} else {
 				documentDomainObject.setId(documentMapper
 						.saveNewDocument(documentDomainObject, getContentMap(documentEntity), Imcms.getUser())
 						.getId());
+			}
 
 			documentEntity.id = documentDomainObject.getId();
 			result.put("result", true);
@@ -239,6 +253,16 @@ public class DocumentController {
 			result.put("result", false);
 		}
 		return result;
+	}
+
+	private <T, R> T newMapper(String data, TypeReference<R> typeReference) throws IOException {
+		return new ObjectMapper().readValue(data, typeReference);
+	}
+
+	private DocumentDomainObject createOrGetDocument(Integer typeId, Integer parentDocumentId, DocumentEntity documentEntity, DocumentMapper documentMapper) {
+		return documentEntity.id == null
+				? documentMapper.createDocumentOfTypeFromParent(typeId, documentMapper.getDocument(parentDocumentId), Imcms.getUser())
+				: documentMapper.getDocument(documentEntity.id);
 	}
 
 	protected String checkData(String data) {
@@ -251,19 +275,11 @@ public class DocumentController {
 		Map<String, Object> map = new HashedMap<>();
 		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
 
-		String[] types = {
-				"created",
-				"modified",
-				"archived",
-				"published",
-				"publication-end"
-		};
-
 		Date[] dates = doc.getArrDates();
 
-		for (int i = 0; i < types.length; i++) {
+		for (int i = 0; i < DATE_TYPES.length; i++) {
 			String[] dateTime = Utility.formatDateTime(dates[i]).split(" ");
-			map.put(types[i], new HashedMap<String, Object>() {{
+			map.put(DATE_TYPES[i], new HashedMap<String, Object>() {{
 				put("date", dateTime[0]);
 				put("time", dateTime[1]);
 			}});
@@ -379,7 +395,6 @@ public class DocumentController {
 	 *
 	 * @param id     document id
 	 * @param action special flag, that identify type of operation
-	 *
 	 * @throws ServletException
 	 * @throws IOException
 	 */
@@ -416,10 +431,10 @@ public class DocumentController {
 			DocumentEntity.LanguageEntity languageEntity = entity.languages.get(language.getName());
 			if (languageEntity.enabled)
 				contentMap.put(language, DocumentCommonContent.builder()
-								.headline(languageEntity.title)
-								.menuImageURL(languageEntity.image)
-								.menuText(languageEntity.menuText)
-								.build()
+						.headline(languageEntity.title)
+						.menuImageURL(languageEntity.image)
+						.menuText(languageEntity.menuText)
+						.build()
 				);
 		}
 		return contentMap;
@@ -427,7 +442,6 @@ public class DocumentController {
 
 	/**
 	 * Provide basic document preparation base on {@link DocumentEntity}
-	 *
 	 */
 	protected void prepareDocument(DocumentEntity documentEntity, DocumentDomainObject documentDomainObject) {
 		CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
@@ -588,11 +602,11 @@ public class DocumentController {
 		entity.categories = Stream.of(categoryMapper.getAllCategoryTypes())
 				.distinct()
 				.collect(Collectors.toMap(CategoryTypeDomainObject::getName,
-								val -> categoryMapper.getCategoriesOfType(val, document.getCategoryIds())
-										.stream()
-										.map(val1 -> val1 == null ? "" : val1.getName())
-										.collect(Collectors.toList())
-										.toArray(new String[0]))
+						val -> categoryMapper.getCategoriesOfType(val, document.getCategoryIds())
+								.stream()
+								.map(val1 -> val1 == null ? "" : val1.getName())
+								.collect(Collectors.toList())
+								.toArray(new String[0]))
 				);
 
 		Map<DocumentLanguage, DocumentCommonContent> contentMap = Imcms.getServices()

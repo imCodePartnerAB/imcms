@@ -237,7 +237,6 @@ public class DocumentMapper implements DocumentGetter {
 		return new GetterDocumentReference(childId, this);
 	}
 
-	@SuppressWarnings("unchecked")
 	/**
 	 * Saves doc as new.
 	 *
@@ -262,7 +261,6 @@ public class DocumentMapper implements DocumentGetter {
 		return saveNewDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
 	}
 
-	@SuppressWarnings("unchecked")
 	/**
 	 * Saves doc as new.
 	 * <p>
@@ -297,7 +295,7 @@ public class DocumentMapper implements DocumentGetter {
 
 		invalidateDocument(docId);
 
-		return (T) getWorkingDocument(docId, docClone.getLanguage());
+		return getWorkingDocument(docId, docClone.getLanguage());
 	}
 
 	/**
@@ -528,7 +526,6 @@ public class DocumentMapper implements DocumentGetter {
 		return documentSaver.getDocRepository().getMinDocumentId();
 	}
 
-
 	/**
 	 * Creates a new doc as a copy of an existing doc.
 	 * <p>
@@ -551,7 +548,6 @@ public class DocumentMapper implements DocumentGetter {
 
 		return workingDocument;
 	}
-
 
 	/**
 	 * Copies docs that share the same document id and version no.
@@ -599,7 +595,6 @@ public class DocumentMapper implements DocumentGetter {
 		return docCopyId;
 	}
 
-
 	public List<DocumentDomainObject> getDocumentsWithPermissionsForRole(final RoleDomainObject role) {
 		return new AbstractList<DocumentDomainObject>() {
 			private List<Integer> documentIds = nativeQueries.getDocumentsWithPermissionsForRole(role.getId().intValue());
@@ -614,7 +609,6 @@ public class DocumentMapper implements DocumentGetter {
 		};
 	}
 
-
 	/**
 	 * @param docId document id
 	 * @return default document in default language.
@@ -623,7 +617,6 @@ public class DocumentMapper implements DocumentGetter {
 	public <T extends DocumentDomainObject> T getDefaultDocument(int docId) {
 		return getDefaultDocument(docId, imcmsServices.getDocumentLanguages().getDefault());
 	}
-
 
 	/**
 	 * @param docId document id
@@ -634,7 +627,6 @@ public class DocumentMapper implements DocumentGetter {
 		return getWorkingDocument(docId, imcmsServices.getDocumentLanguages().getDefault());
 	}
 
-
 	/**
 	 * Returns document.
 	 * <p>
@@ -643,18 +635,17 @@ public class DocumentMapper implements DocumentGetter {
 	 *
 	 * @param docId document id.
 	 */
-	@SuppressWarnings("unchecked")
 	public <T extends DocumentDomainObject> T getDocument(int docId) {
 		UserDomainObject user = Imcms.getUser();
 		DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
 
 		return callback == null
-				? (T) getDefaultDocument(docId)
-				: (T) callback.getDoc(docId, this);
+				? getDefaultDocument(docId)
+				: callback.getDoc(docId, this);
 	}
 
 	/**
-	 * @param docId document id
+	 * @param docId    document id
 	 * @param language language
 	 * @return working document
 	 * @since 6.0
@@ -664,7 +655,7 @@ public class DocumentMapper implements DocumentGetter {
 	}
 
 	/**
-	 * @param docId document id
+	 * @param docId           document id
 	 * @param docLanguageCode language code
 	 * @return working document
 	 * @since 6.0
@@ -674,7 +665,7 @@ public class DocumentMapper implements DocumentGetter {
 	}
 
 	/**
-	 * @param docId document id
+	 * @param docId    document id
 	 * @param language language
 	 * @return default document
 	 * @since 6.0
@@ -683,9 +674,8 @@ public class DocumentMapper implements DocumentGetter {
 		return documentLoaderCachingProxy.getDefaultDoc(docId, language.getCode());
 	}
 
-
 	/**
-	 * @param docId document id
+	 * @param docId        document id
 	 * @param languageCode language code
 	 * @return default document
 	 * @since 6.0
@@ -693,7 +683,6 @@ public class DocumentMapper implements DocumentGetter {
 	public <T extends DocumentDomainObject> T getDefaultDocument(int docId, String languageCode) {
 		return documentLoaderCachingProxy.getDefaultDoc(docId, languageCode);
 	}
-
 
 	/**
 	 * Returns custom document.
@@ -706,7 +695,6 @@ public class DocumentMapper implements DocumentGetter {
 	public <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef) {
 		return documentLoaderCachingProxy.getCustomDoc(docRef);
 	}
-
 
 	public CategoryMapper getCategoryMapper() {
 		return categoryMapper;
@@ -853,20 +841,17 @@ public class DocumentMapper implements DocumentGetter {
 		);
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T extends DocumentDomainObject> List<T> findDocumentsByHeadline(String term) {
 		List<Integer> ids = getAllDocumentIds();
 		List<T> result = new ArrayList<>();
 		term = term.toLowerCase();
 		for (Integer id : ids) {
-			DocumentDomainObject document = getDocument(id);
+			T document = getDocument(id);
 			if (term.isEmpty() || document.getHeadline().toLowerCase().contains(term))
-				result.add((T) document);
+				result.add(document);
 		}
 		return result;
 	}
-
-	/////////	unused candidates to delete
 
 	public DocumentLoaderCachingProxy getDocumentLoaderCachingProxy() {
 		return documentLoaderCachingProxy;
