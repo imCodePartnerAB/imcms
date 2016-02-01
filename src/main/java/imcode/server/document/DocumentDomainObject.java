@@ -36,14 +36,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	 */
 	public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
 
-	@SuppressWarnings("unused")
 	/**
 	 * Document's internal id assigned by an application developer.
 	 * Intended to be used as a private identity to access documents through the API.
 	 */
 	public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_INTERNAL_ID = "imcms.document.internal.id";
 
-	@SuppressWarnings("unused")
 	/**
 	 * Legacy, property based modifier support.
 	 */
@@ -272,7 +270,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		properties.put(key, value);
 	}
 
-	@SuppressWarnings("unused")
 	public void removeProperty(String key) {
 		Map<String, String> properties = meta.getProperties();
 		properties.remove(key);
@@ -298,7 +295,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return meta.getActualModifiedDatetime();
 	}
 
-	@SuppressWarnings("unused")
 	public void setActualModifiedDatetime(Date modifiedDatetime) {
 		meta.setActualModifiedDatetime(modifiedDatetime);
 	}
@@ -335,7 +331,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return getRolePermissionMappings().clone();
 	}
 
-	@SuppressWarnings("unused")
 	public void setRoleIdsMappedToDocumentPermissionSetTypes(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
 		meta.setRoleIdToDocumentPermissionSetTypeMappings(roleIdToDocumentPermissionSetTypeMappings);
 	}
@@ -376,7 +371,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return meta.getRestrictedOneMorePrivilegedThanRestrictedTwo();
 	}
 
-	@SuppressWarnings("unused")
 	public void setRestrictedOneMorePrivilegedThanRestrictedTwo(boolean b) {
 		meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(b);
 	}
@@ -437,7 +431,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return getId();
 	}
 
-	@SuppressWarnings("unused")
 	public void removeAllCategories() {
 		meta.setCategoryIds(new HashSet<>());
 	}
@@ -513,6 +506,20 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	public void setCommonContent(DocumentCommonContent commonContent) {
 		this.commonContent = Objects.requireNonNull(commonContent, "commonContent argument can not be null.");
+	}
+
+	public List<Date> getListDates() {
+		return Arrays.asList(getArrDates());
+	}
+
+	public Date[] getArrDates() {
+		return new Date[]{
+				getCreatedDatetime(),
+				getModifiedDatetime(),
+				getArchivedDatetime(),
+				getPublicationStartDatetime(),
+				getPublicationEndDatetime()
+		};
 	}
 
 	public boolean isNew() {

@@ -45,6 +45,8 @@ import java.util.stream.Stream;
 @RequestMapping("/document")
 public class DocumentController {
 
+	private static final List<String> WRONG_DATE = Arrays.asList("T:00Z", "--T--:00Z");
+
 	private static final String BAD_ATTRIBUTES = "\"created-date\":\"\",\"created-time\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\",";
 
 	private static final Logger LOG = Logger.getLogger(DocumentController.class);
@@ -166,12 +168,6 @@ public class DocumentController {
 	 * {@link TextDocument}), parent document.
 	 * {@link DocumentEntity} represent web object, that connect client side with server side
 	 *
-	 * @param req
-	 * @param type
-	 * @param parentDocumentId
-	 * @param data
-	 * @param file
-	 * @return
 	 * @throws ServletException
 	 * @throws IOException
 	 */
@@ -189,7 +185,7 @@ public class DocumentController {
 			DocumentEntity documentEntity;
 
 			//before do smth needs to check data - replace wrong attributes
-			//todo: check data on JS side and send correct data to this method
+			//todo: check data on JS side and send correct data to here, then may delete the checkData(data) method
 			data = checkData(data);
 
 			switch (type) {
@@ -263,13 +259,7 @@ public class DocumentController {
 				"publication-end"
 		};
 
-		Date[] dates = {
-				doc.getCreatedDatetime(),
-				doc.getModifiedDatetime(),
-				doc.getArchivedDatetime(),
-				doc.getPublicationStartDatetime(),
-				doc.getPublicationEndDatetime()
-		};
+		Date[] dates = doc.getArrDates();
 
 		for (int i = 0; i < types.length; i++) {
 			String[] dateTime = Utility.formatDateTime(dates[i]).split(" ");
@@ -311,15 +301,17 @@ public class DocumentController {
 				publicationEnd
 		};
 
-		handleDateTime(doc, dates);
-
 		try {
+			handleDateTime(doc, dates);
 			Imcms.getServices().getDocumentMapper().saveDocument(doc, Imcms.getUser());
 			result.put("result", true);
 		} catch (DocumentSaveException e) {
 			e.printStackTrace();
 			LOG.error("Problem during date and time changing", e);
 			result.put("result", false);
+		} catch (IOException e) {
+			//all right, just don't need to save now
+			result.put("result", true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.put("result", true);
@@ -327,18 +319,21 @@ public class DocumentController {
 		return result;
 	}
 
-	private void handleDateTime(DocumentDomainObject doc, String[] dates) {
-		List<Date> datesList = new ArrayList<>();
+	private void handleDateTime(DocumentDomainObject doc, String[] dates) throws IOException {
+		LinkedList<Date> datesList = new LinkedList<>();
 		for (String date : dates) {
-			if ("T:00Z".equals(date) || "--T--:00Z".equals(date)) {
-				datesList.add(null);
-			} else {
-				datesList.add(DateUtils.addHours(Date.from(Instant.parse(date)), -2));
-			}
+			datesList.add(parseDate(date));
 		}
 
+		if (datesList.getFirst() == null) {
+			throw new IOException();
+			//means first date-time - date and time of document's creation - may not be null, so it
+			// seems that we have smth wrong and in this case we don't need to rewrite dates, just ignore
+		}
+
+		// full stack of dates - 5
 		if (5 == datesList.size()) {
-			Iterator<Date> iter = datesList.listIterator();
+			ListIterator<Date> iter = datesList.listIterator();
 			doc.setCreatedDatetime(iter.next());
 			doc.setModifiedDatetime(iter.next());
 			doc.setArchivedDatetime(iter.next());
@@ -347,11 +342,14 @@ public class DocumentController {
 		}
 	}
 
+	private Date parseDate(String date) {
+		return WRONG_DATE.contains(date) ? null : DateUtils.addHours(Date.from(Instant.parse(date)), -2);
+	}
+
 	/**
 	 * Provide API access to create copy of special document
 	 *
 	 * @param id id of document that should be copied
-	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/{id}/copy")
 	protected Object copyDocument(@PathVariable("id") Integer id) {
@@ -381,7 +379,7 @@ public class DocumentController {
 	 *
 	 * @param id     document id
 	 * @param action special flag, that identify type of operation
-	 * @return
+	 *
 	 * @throws ServletException
 	 * @throws IOException
 	 */
@@ -430,8 +428,6 @@ public class DocumentController {
 	/**
 	 * Provide basic document preparation base on {@link DocumentEntity}
 	 *
-	 * @param documentEntity
-	 * @param documentDomainObject
 	 */
 	protected void prepareDocument(DocumentEntity documentEntity, DocumentDomainObject documentDomainObject) {
 		CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
@@ -613,10 +609,6 @@ public class DocumentController {
 		}
 	}
 
-	/**
-	 * @param entity
-	 * @param document
-	 */
 	protected void asFileEntity(FileDocumentEntity entity, FileDocumentDomainObject document) {
 		if (document.getFiles().size() > 0) {
 			entity.files = document.getFiles().keySet().stream().toArray(String[]::new);
