@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Spring is used to instantiate but not to initialize the instance.
@@ -91,9 +92,7 @@ public class DocumentMapper implements DocumentGetter {
 	static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
 		File filePath = Imcms.getServices().getConfig().getFilePath();
 		File[] filesToDelete = filePath.listFiles(fileFilter);
-		for (File aFilesToDelete : filesToDelete) {
-			aFilesToDelete.delete();
-		}
+		Stream.of(filesToDelete).forEach(File::delete);
 	}
 
 	static void deleteAllFileDocumentFiles(FileDocumentDomainObject fileDocument) {
@@ -780,10 +779,10 @@ public class DocumentMapper implements DocumentGetter {
 	 */
 	public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
 		UserDomainObject user = Imcms.getUser();
-		DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
-		DocumentLanguage language = callback != null
-				? callback.getLanguage()
-				: imcmsServices.getDocumentLanguages().getDefault();
+
+		DocumentLanguage language = user == null
+				? imcmsServices.getDocumentLanguages().getDefault()
+				: user.getDocGetterCallback().getLanguage();
 
 		List<DocumentDomainObject> docs = new LinkedList<>();
 
