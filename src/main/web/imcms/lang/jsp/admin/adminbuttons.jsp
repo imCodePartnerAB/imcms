@@ -35,7 +35,7 @@ if (queryString == null) {
 } else {
     queryString = queryString.replaceAll("&" + ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE + "=\\w*", "");
 	queryString = queryString.replaceFirst("&?" + ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE + "=..", "");
-	baseURL.append("?" + queryString + "&" + ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE + "=");
+	baseURL.append("?").append(queryString).append("&").append(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE).append("=");
 }
 	
 
@@ -198,9 +198,6 @@ if (sFlags != null && sFlags.equals("1")) {
 	Iterator iterator = new ReverseListIterator(docVersionInfo.getVersions());
 %>
 
-<!-- vaadin adminbuttons -->
-<%--<jsp:include page="adminbuttons_vaadin.jsp"/>--%>
-<!-- end of vaadin adminbuttons -->
 
 <tr>
   <td>

@@ -63,7 +63,6 @@ public class LoopTag extends SimpleTagSupport implements IEditableTag {
 			}
 		}
 
-
 		if (editMode) {
 			try {
 				String content = writer.toString();
@@ -76,9 +75,6 @@ public class LoopTag extends SimpleTagSupport implements IEditableTag {
 				request.setAttribute("flags", parserParameters.getFlags());
 
 				try {
-
-                   /* content = Utility.getContents("/imcms/" + user.getLanguageIso639_2()
-							+ "/jsp/docadmin/text/edit_loop.jsp", request, response);*/
 					content = createEditor().setNo(no).wrap(content);
 					content = TagParser.addPreAndPost(attributes, content);
 				} catch (Exception e) {

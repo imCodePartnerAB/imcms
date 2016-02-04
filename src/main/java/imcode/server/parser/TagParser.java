@@ -473,33 +473,6 @@ public class TagParser {
 			}
 		}
 
-       /* if (textMode && (textDocumentToUse.getId() == document.getId())) {
-			HttpServletRequest request = documentRequest.getHttpServletRequest();
-            HttpServletResponse response = documentRequest.getHttpServletResponse();
-            String formatsAttribute = attributes.getProperty("formats", "");
-            String[] formats = null != formatsAttribute ? formatsAttribute.split("\\W+") : null;
-            request.setAttribute("document", documentRequest.getDocument());
-            request.setAttribute("textIndex", no);
-            String label = getLabel(attributes);
-            request.setAttribute("label", label);
-            request.setAttribute("content", result);
-            request.setAttribute("formats", formats);
-            request.setAttribute("rows", attributes.getProperty("rows"));
-
-            if (loopEntryRef != null) {
-                request.setAttribute("loopEntryRef", loopEntryRef);
-            }
-
-            try {
-                result = Utility.getContents("/imcms/" + documentRequest.getUser().getLanguageIso639_2()
-                        + "/jsp/docadmin/text/edit_text.jsp", request, response);
-            } catch (ServletException e) {
-                throw new UnhandledException(e);
-            } catch (IOException e) {
-                throw new UnhandledException(e);
-            }
-        }*/
-
 		result = StringUtils.isEmpty(Jsoup.parse(result).text()) ? attributes.getProperty("placeholder") : result;
 
 		result = StringUtils.isEmpty(result) ? "" : result;
