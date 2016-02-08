@@ -16,13 +16,11 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.PropertyManager;
-import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -164,14 +162,9 @@ public class Imcms {
 	}
 
 	public static Properties getServerProperties() {
-		try {
-			Properties properties = PropertyManager.getServerProperties();
-			properties.setProperty("SolrHome", getSolrHome());
-			return properties;
-		} catch (IOException e) {
-			logger.fatal("Failed to initialize imCMS", e);
-			throw new UnhandledException(e);
-		}
+		Properties properties = PropertyManager.getServerProperties();
+		properties.setProperty("SolrHome", getSolrHome());
+		return properties;
 	}
 
 	public static synchronized void restartCms() {

@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +25,8 @@ public class PropertyManager {
 
 	private static final String ERR_MESSAGE = "ImCMS not initialized yet, root path not set. Wait for ImCMS do it "
 			+ "automatically or set it manually. Use this to read properties ONLY when setRoot() was called before.";
+
+	private static final String NULL_MESS = "Properties can not be loaded, smth wrong with file or path.";
 
 	private static final Map<File, Properties> CACHE = Collections.synchronizedMap(new HashMap<>());
 
@@ -51,20 +52,6 @@ public class PropertyManager {
 	 * @param newRoot the root path of web application
 	 */
 	@NotNull
-	public static void setRoot(String newRoot) {
-		if (StringUtils.isEmpty(newRoot)) {
-			throw new NullPointerException();
-		} else {
-			setRoot(new File(newRoot));
-		}
-	}
-
-	/**
-	 * This method must be called before any other methods of this manager
-	 *
-	 * @param newRoot the root path of web application
-	 */
-	@NotNull
 	public static void setRoot(File newRoot) {
 		if (null == newRoot) {
 			throw new NullPointerException(ERR_MESSAGE);
@@ -75,14 +62,27 @@ public class PropertyManager {
 	}
 
 	/**
+	 * This method must be called before any other methods of this manager
+	 *
+	 * @param newRoot the root path of web application
+	 */
+	@NotNull
+	public static void setRoot(String newRoot) {
+		if (StringUtils.isEmpty(newRoot)) {
+			throw new NullPointerException();
+		} else {
+			setRoot(new File(newRoot));
+		}
+	}
+
+	/**
 	 * Gets the value of asked property.
 	 *
 	 * @param path     Path to properties file.
 	 * @param property The property which needs to be read.
 	 * @return {@code String} type of asked property
-	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
-	public static String getPropertyFrom(String path, String property) throws IOException {
+	public static String getPropertyFrom(String path, String property) {
 		return getPropertiesFrom(path).getProperty(property);
 	}
 
@@ -91,9 +91,8 @@ public class PropertyManager {
 	 *
 	 * @param path Path to properties file.
 	 * @return Asked properties.
-	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
-	public static Properties getPropertiesFrom(String path) throws IOException {
+	public static Properties getPropertiesFrom(String path) {
 		checkPaths();
 		return getProperties(new File(root, path));
 	}
@@ -103,9 +102,8 @@ public class PropertyManager {
 	 *
 	 * @param property The property which needs to be read from .
 	 * @return {@code String} value of asked property.
-	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
-	public static String getServerProperty(String property) throws IOException {
+	public static String getServerProperty(String property) {
 		return getServerProperties().getProperty(property);
 	}
 
@@ -113,9 +111,8 @@ public class PropertyManager {
 	 * Get {@code Properties} from a config file.
 	 *
 	 * @return The properties in the file.
-	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
-	public static Properties getServerProperties() throws IOException {
+	public static Properties getServerProperties() {
 		checkPaths();
 		return getProperties(serverPropertiesFile);
 	}
@@ -141,19 +138,16 @@ public class PropertyManager {
 	 *
 	 * @param file The file to load from.
 	 * @return The properties in the file.
-	 * @throws IOException Throws {@code IOException} if file not found.
 	 */
-	private static Properties getProperties(File file) throws IOException {
+	private static Properties getProperties(File file) {
 		Properties properties = CACHE.get(file);
 		if (properties == null) {
 			try (FileInputStream in = new FileInputStream(file)) {
 				properties = new Properties();
 				properties.load(in);
 				CACHE.put(file, properties);
-			} catch (FileNotFoundException ex) {
-				FileNotFoundException newEx = new FileNotFoundException("PropertyManager: File not found: " + file.getAbsolutePath());
-				newEx.initCause(ex);
-				throw newEx;
+			} catch (IOException ex) {
+				throw new NullPointerException(NULL_MESS);
 			}
 		}
 		return properties;

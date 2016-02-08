@@ -200,10 +200,10 @@ public class DocumentController {
 											@RequestParam(value = "file", required = false) MultipartFile file) throws ServletException, IOException {
 		Map<String, Object> result = new HashMap<>();
 		try {
-			DocumentDomainObject documentDomainObject;
+			DocumentDomainObject docDomainObject;
 
-			DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-			DocumentEntity documentEntity;
+			DocumentMapper docMapper = Imcms.getServices().getDocumentMapper();
+			DocumentEntity docEntity;
 
 			//before do smth needs to check data to replace wrong attributes
 			//todo: check data on JS side and send correct data to here, then may delete the checkData(data) method
@@ -211,43 +211,43 @@ public class DocumentController {
 
 			switch (type) {
 				case DocumentTypeDomainObject.URL_ID: {
-					documentEntity = newMapper(data, new TypeReference<UrlDocumentEntity>() {
+					docEntity = newMapper(data, new TypeReference<UrlDocumentEntity>() {
 					});
-					documentDomainObject = createOrGetDocument(type, parentDocumentId, documentEntity, documentMapper);
-					asUrlDocument((UrlDocumentDomainObject) documentDomainObject, (UrlDocumentEntity) documentEntity);
+					docDomainObject = createOrGetDoc(type, parentDocumentId, docEntity, docMapper);
+					asUrlDocument((UrlDocumentDomainObject) docDomainObject, (UrlDocumentEntity) docEntity);
 				}
 				break;
 				case DocumentTypeDomainObject.FILE_ID: {
-					documentEntity = newMapper(data, new TypeReference<FileDocumentEntity>() {
+					docEntity = newMapper(data, new TypeReference<FileDocumentEntity>() {
 					});
-					documentDomainObject = createOrGetDocument(type, parentDocumentId, documentEntity, documentMapper);
-					asFileDocument((FileDocumentDomainObject) documentDomainObject, (FileDocumentEntity) documentEntity, file);
+					docDomainObject = createOrGetDoc(type, parentDocumentId, docEntity, docMapper);
+					asFileDocument((FileDocumentDomainObject) docDomainObject, (FileDocumentEntity) docEntity, file);
 				}
 				break;
 				case DocumentTypeDomainObject.TEXT_ID:
 				default: {
 					int id = TextDocument.TYPE_ID;
-					documentEntity = newMapper(data, new TypeReference<TextDocumentEntity>() {
+					docEntity = newMapper(data, new TypeReference<TextDocumentEntity>() {
 					});
-					documentDomainObject = createOrGetDocument(id, parentDocumentId, documentEntity, documentMapper);
-					asTextDocument((TextDocumentDomainObject) documentDomainObject, (TextDocumentEntity) documentEntity);
+					docDomainObject = createOrGetDoc(id, parentDocumentId, docEntity, docMapper);
+					asTextDocument((TextDocumentDomainObject) docDomainObject, (TextDocumentEntity) docEntity);
 				}
 				break;
 			}
 
-			prepareDocument(documentEntity, documentDomainObject);
+			prepareDocument(docEntity, docDomainObject);
 
-			if (documentEntity.id != null) {
-				documentMapper.saveDocument(documentDomainObject, getContentMap(documentEntity), Imcms.getUser());
+			if (docEntity.id != null) {
+				docMapper.saveDocument(docDomainObject, getContentMap(docEntity), Imcms.getUser());
 			} else {
-				documentDomainObject.setId(documentMapper
-						.saveNewDocument(documentDomainObject, getContentMap(documentEntity), Imcms.getUser())
+				docDomainObject.setId(docMapper
+						.saveNewDocument(docDomainObject, getContentMap(docEntity), Imcms.getUser())
 						.getId());
 			}
 
-			documentEntity.id = documentDomainObject.getId();
+			docEntity.id = docDomainObject.getId();
 			result.put("result", true);
-			result.put("data", documentEntity);
+			result.put("data", docEntity);
 		} catch (Exception e) {
 			LOG.error("Problem during document creating", e);
 			result.put("result", false);
@@ -259,7 +259,7 @@ public class DocumentController {
 		return new ObjectMapper().readValue(data, typeReference);
 	}
 
-	private DocumentDomainObject createOrGetDocument(Integer typeId, Integer parentDocumentId, DocumentEntity documentEntity, DocumentMapper documentMapper) {
+	private DocumentDomainObject createOrGetDoc(Integer typeId, Integer parentDocumentId, DocumentEntity documentEntity, DocumentMapper documentMapper) {
 		return documentEntity.id == null
 				? documentMapper.createDocumentOfTypeFromParent(typeId, documentMapper.getDocument(parentDocumentId), Imcms.getUser())
 				: documentMapper.getDocument(documentEntity.id);
@@ -527,29 +527,29 @@ public class DocumentController {
 	 * @param entity   presented entity
 	 */
 	protected void asTextDocument(TextDocumentDomainObject document, TextDocumentEntity entity) {
-		TextDocumentPermissionSetDomainObject permissionSetDomainObject1 = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_1);
-		TextDocumentPermissionSetDomainObject permissionSetDomainObject2 = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_2);
-		DocumentPermissionSets documentPermissionSets = new DocumentPermissionSets();
+		TextDocumentPermissionSetDomainObject permissions1 = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_1);
+		TextDocumentPermissionSetDomainObject permissions2 = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_2);
+		DocumentPermissionSets docPermissions = new DocumentPermissionSets();
 
-		permissionSetDomainObject1.setEditImages(entity.permissions.get(0).canEditImage);
-		permissionSetDomainObject1.setEditMenus(entity.permissions.get(0).canEditMenu);
-		permissionSetDomainObject1.setEditTexts(entity.permissions.get(0).canEditText);
-		permissionSetDomainObject1.setEditLoops(entity.permissions.get(0).canEditLoop);
-		permissionSetDomainObject1.setEditDocumentInformation(entity.permissions.get(0).canEditDocumentInformation);
-		permissionSetDomainObject1.setEditPermissions(entity.permissions.get(0).canEditDocumentInformation);
+		permissions1.setEditImages(entity.permissions.get(0).canEditImage);
+		permissions1.setEditMenus(entity.permissions.get(0).canEditMenu);
+		permissions1.setEditTexts(entity.permissions.get(0).canEditText);
+		permissions1.setEditLoops(entity.permissions.get(0).canEditLoop);
+		permissions1.setEditDocumentInformation(entity.permissions.get(0).canEditDocumentInformation);
+		permissions1.setEditPermissions(entity.permissions.get(0).canEditDocumentInformation);
 
-		permissionSetDomainObject2.setEditImages(entity.permissions.get(1).canEditImage);
-		permissionSetDomainObject2.setEditMenus(entity.permissions.get(1).canEditMenu);
-		permissionSetDomainObject2.setEditTexts(entity.permissions.get(1).canEditText);
-		permissionSetDomainObject2.setEditLoops(entity.permissions.get(1).canEditLoop);
-		permissionSetDomainObject2.setEditDocumentInformation(entity.permissions.get(1).canEditDocumentInformation);
-		permissionSetDomainObject2.setEditPermissions(entity.permissions.get(1).canEditDocumentInformation);
+		permissions2.setEditImages(entity.permissions.get(1).canEditImage);
+		permissions2.setEditMenus(entity.permissions.get(1).canEditMenu);
+		permissions2.setEditTexts(entity.permissions.get(1).canEditText);
+		permissions2.setEditLoops(entity.permissions.get(1).canEditLoop);
+		permissions2.setEditDocumentInformation(entity.permissions.get(1).canEditDocumentInformation);
+		permissions2.setEditPermissions(entity.permissions.get(1).canEditDocumentInformation);
 
-		documentPermissionSets.setRestricted1(permissionSetDomainObject1);
-		documentPermissionSets.setRestricted2(permissionSetDomainObject2);
+		docPermissions.setRestricted1(permissions1);
+		docPermissions.setRestricted2(permissions2);
 
-		document.setPermissionSets(documentPermissionSets);
-		document.setPermissionSetsForNewDocument(documentPermissionSets);
+		document.setPermissionSets(docPermissions);
+		document.setPermissionSetsForNewDocument(docPermissions);
 
 		document.setTemplateName(entity.template);
 		document.setDefaultTemplateId(entity.defaultTemplate);
@@ -635,30 +635,30 @@ public class DocumentController {
 	}
 
 	protected void asTextEntity(TextDocumentEntity entity, TextDocumentDomainObject document) {
-		DocumentPermissionSets documentPermissionSets = document.getPermissionSets();
+		DocumentPermissionSets docPermissions = document.getPermissionSets();
 
-		TextDocumentPermissionSetDomainObject permissionSetDomainObject1 = ((TextDocumentPermissionSetDomainObject) documentPermissionSets.getRestricted1());
-		TextDocumentPermissionSetDomainObject permissionSetDomainObject2 = ((TextDocumentPermissionSetDomainObject) documentPermissionSets.getRestricted2());
+		TextDocumentPermissionSetDomainObject permissions1 = ((TextDocumentPermissionSetDomainObject) docPermissions.getRestricted1());
+		TextDocumentPermissionSetDomainObject permissions2 = ((TextDocumentPermissionSetDomainObject) docPermissions.getRestricted2());
 
-		TextDocumentPermission textDocumentPermission1 = new TextDocumentPermission();
-		TextDocumentPermission textDocumentPermission2 = new TextDocumentPermission();
+		TextDocumentPermission textDocPermission1 = new TextDocumentPermission();
+		TextDocumentPermission textDocPermission2 = new TextDocumentPermission();
 
-		textDocumentPermission1.canEditImage = permissionSetDomainObject1.getEditImages();
-		textDocumentPermission1.canEditLoop = permissionSetDomainObject1.getEditLoops();
-		textDocumentPermission1.canEditMenu = permissionSetDomainObject1.getEditMenus();
-		textDocumentPermission1.canEditText = permissionSetDomainObject1.getEditTexts();
-		textDocumentPermission1.canEditDocumentInformation = permissionSetDomainObject1.getEditDocumentInformation();
+		textDocPermission1.canEditImage = permissions1.getEditImages();
+		textDocPermission1.canEditLoop = permissions1.getEditLoops();
+		textDocPermission1.canEditMenu = permissions1.getEditMenus();
+		textDocPermission1.canEditText = permissions1.getEditTexts();
+		textDocPermission1.canEditDocumentInformation = permissions1.getEditDocumentInformation();
 
-		textDocumentPermission2.canEditImage = permissionSetDomainObject2.getEditImages();
-		textDocumentPermission2.canEditLoop = permissionSetDomainObject2.getEditLoops();
-		textDocumentPermission2.canEditMenu = permissionSetDomainObject2.getEditMenus();
-		textDocumentPermission2.canEditText = permissionSetDomainObject2.getEditTexts();
-		textDocumentPermission2.canEditDocumentInformation = permissionSetDomainObject2.getEditDocumentInformation();
+		textDocPermission2.canEditImage = permissions2.getEditImages();
+		textDocPermission2.canEditLoop = permissions2.getEditLoops();
+		textDocPermission2.canEditMenu = permissions2.getEditMenus();
+		textDocPermission2.canEditText = permissions2.getEditTexts();
+		textDocPermission2.canEditDocumentInformation = permissions2.getEditDocumentInformation();
 
 		entity.permissions = new ArrayList<>();
 
-		entity.permissions.add(textDocumentPermission1);
-		entity.permissions.add(textDocumentPermission2);
+		entity.permissions.add(textDocPermission1);
+		entity.permissions.add(textDocPermission2);
 
 		entity.template = document.getTemplateName();
 		entity.defaultTemplate = document.getDefaultTemplateName();
