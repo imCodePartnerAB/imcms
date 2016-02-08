@@ -2,8 +2,8 @@
 <%@ page
 
 		import="imcode.server.document.textdocument.TextDocumentDomainObject,
-		        imcode.server.user.UserDomainObject,
-		        imcode.server.parser.ParserParameters"
+				imcode.server.parser.ParserParameters,
+				imcode.server.user.UserDomainObject"
 
 		pageEncoding="UTF-8"
 
@@ -34,6 +34,6 @@
 	<img src="<%= cp %>/imcms/<%= lang %>/images/admin/red.gif" alt="edit menu <%= menuIndex%>" align="bottom"
 		 style="border:0 !important;"/></a>
 <%= content %>
-<a href="${editorUrl}">
-	<img src="<%= cp %>/imcms/<%= lang %>/images/admin/ico_txt.gif" alt="edit menu <%= menuIndex%>"
-		 style="border:0 !important;"/></a>
+<%--<a href="${editorUrl}">--%>
+<%--<img src="<%= cp %>/imcms/<%= lang %>/images/admin/ico_txt.gif" alt="edit menu <%= menuIndex%>"--%>
+<%--style="border:0 !important;"/></a>--%>
