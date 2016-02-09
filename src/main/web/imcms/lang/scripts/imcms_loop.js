@@ -56,8 +56,12 @@ Imcms.Loop.Loader.prototype = {
 			that.redirect(data.id);
 		})
 	},
-	update: function (data, loopId, callback) {
-		this._api.update({entries: JSON.stringify(data), loopId: loopId, meta: Imcms.document.meta}, callback);
+	update: function (loops, loopId, callback) {
+		this._api.update({
+			loopId: loopId,
+			meta: Imcms.document.meta,
+			noArr: JSON.stringify(this.generateNo(loops))
+		}, callback);
 	},
 	entriesList: function (data, callback) {
 		this._api.read(Imcms.Utils.margeObjectsProperties(Imcms.document, data), function (response) {
@@ -68,6 +72,13 @@ Imcms.Loop.Loader.prototype = {
 				callback({});
 			}
 		});
+	},
+	generateNo: function (loops) {
+		var res = [];
+		loops.forEach(function (loop) {
+			res.push(loop['no']);
+		});
+		return res;
 	}
 };
 
