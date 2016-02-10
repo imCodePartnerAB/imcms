@@ -1,6 +1,3 @@
-/**
- * Created by Shadowgun on 17.02.2015.
- */
 Imcms.Document = {};
 Imcms.Document.API = function () {
 
@@ -229,7 +226,7 @@ Imcms.Document.Viewer.prototype = {
 		this._target = options.target;
 		this._title = options.data ? "DOCUMENT " + options.data.id : "NEW DOCUMENT";
 		this.buildView();
-		this.buildValidator();
+		//this.buildValidator();
 		this.createModal();
 		this._loader.languagesList($.proxy(this.loadLanguages, this));
 		this._loader.rolesList($.proxy(this.loadRoles, this));
@@ -1628,6 +1625,12 @@ Imcms.Document.DocumentSearchDialog.prototype = {
 			.on("input", function () {
 				that.find(this.value());
 			})
+			.on('keydown', function(e) {
+				// pressing 'enter' in this field causes error, with this fix 'enter' (it's code is 13) ignored
+				if (e.which == 13) {
+					e.preventDefault();
+				}
+			})
 			.reference("searchField")
 			.placeholder("Type to find document")
 			.end()
@@ -1657,7 +1660,7 @@ Imcms.Document.DocumentSearchDialog.prototype = {
 		//    },
 		//    table = $(this._builder.ref("documentsTable").getHTMLElement());
 		//
-
+		//
 		//switch (sortingType) {
 		//    default:
 		//    case "id":
