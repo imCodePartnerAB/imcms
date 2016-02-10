@@ -1033,51 +1033,51 @@ Imcms.Document.Viewer.prototype = {
 				.attr("data-role-name", value.name)
 				.attr("value", value.roleId)
 				.attr("name", value.name.toLowerCase() + "-id")
-		).append(hiddenRemoveRole);
+			).append(hiddenRemoveRole);
 		removeButton = $("<button>").attr("type", "button").addClass("imcms-negative");
 		if (this._options.type === 2) {
 			this._builder.ref("access")
 				.row(
-				divWithHidden[0],
-				$("<input>")
-					.attr("type", "radio")
-					.attr("data-node-key", "access")
-					.attr("value", 3)
-					.attr("name", value.name.toLowerCase() + "-access")[0],
-				$("<input>")
-					.attr("type", "radio")
-					.attr("data-node-key", "access")
-					.attr("value", 0)
-					.attr("name", value.name.toLowerCase() + "-access")[0],
-				$("<input>")
-					.attr("type", "radio")
-					.attr("data-node-key", "access")
-					.attr("value", 1)
-					.attr("name", value.name.toLowerCase() + "-access")[0],
-				$("<input>")
-					.attr("type", "radio")
-					.attr("data-node-key", "access")
-					.attr("value", 2)
-					.attr("name", value.name.toLowerCase() + "-access")[0],
-				removeButton[0]
-			);
+					divWithHidden[0],
+					$("<input>")
+						.attr("type", "radio")
+						.attr("data-node-key", "access")
+						.attr("value", 3)
+						.attr("name", value.name.toLowerCase() + "-access")[0],
+					$("<input>")
+						.attr("type", "radio")
+						.attr("data-node-key", "access")
+						.attr("value", 0)
+						.attr("name", value.name.toLowerCase() + "-access")[0],
+					$("<input>")
+						.attr("type", "radio")
+						.attr("data-node-key", "access")
+						.attr("value", 1)
+						.attr("name", value.name.toLowerCase() + "-access")[0],
+					$("<input>")
+						.attr("type", "radio")
+						.attr("data-node-key", "access")
+						.attr("value", 2)
+						.attr("name", value.name.toLowerCase() + "-access")[0],
+					removeButton[0]
+				);
 		}
 		else {
 			this._builder.ref("access")
 				.row(
-				divWithHidden[0],
-				$("<input>")
-					.attr("type", "radio")
-					.attr("data-node-key", "access")
-					.attr("value", 3)
-					.attr("name", value.name.toLowerCase() + "-access")[0],
-				$("<input>")
-					.attr("type", "radio")
-					.attr("data-node-key", "access")
-					.attr("value", 0)
-					.attr("name", value.name.toLowerCase() + "-access")[0],
-				removeButton[0]
-			);
+					divWithHidden[0],
+					$("<input>")
+						.attr("type", "radio")
+						.attr("data-node-key", "access")
+						.attr("value", 3)
+						.attr("name", value.name.toLowerCase() + "-access")[0],
+					$("<input>")
+						.attr("type", "radio")
+						.attr("data-node-key", "access")
+						.attr("value", 0)
+						.attr("name", value.name.toLowerCase() + "-access")[0],
+					removeButton[0]
+				);
 			key = key == 3 || key == 0 ? key : 3;
 		}
 		currentRow = this._builder.ref("access").row(this._rowsCount);
@@ -1476,19 +1476,19 @@ Imcms.Document.ListAdapter.prototype = {
 			row;
 
 		this._container.row(data.id, data.label, data.alias, data.type, $("<span>")
-				.append($("<button>")
-					.click($.proxy(this.copyDocument, this, data.id))
-					.addClass("imcms-positive")
-					.text("Copy")
-					.attr("type", "button"))
-				.append($("<button>")
-					.click($.proxy(this.editDocument, this, data.id))
-					.addClass("imcms-positive")
-					.text("Edit…")
-					.attr("type", "button"))
-				.append(deleteButton
-					.addClass("imcms-negative")
-					.attr("type", "button"))[0]
+			.append($("<button>")
+				.click($.proxy(this.copyDocument, this, data.id))
+				.addClass("imcms-positive")
+				.text("Copy")
+				.attr("type", "button"))
+			.append($("<button>")
+				.click($.proxy(this.editDocument, this, data.id))
+				.addClass("imcms-positive")
+				.text("Edit…")
+				.attr("type", "button"))
+			.append(deleteButton
+				.addClass("imcms-negative")
+				.attr("type", "button"))[0]
 		);
 
 		row = this._container.row(position);
@@ -1625,7 +1625,7 @@ Imcms.Document.DocumentSearchDialog.prototype = {
 			.on("input", function () {
 				that.find(this.value());
 			})
-			.on('keydown', function(e) {
+			.on('keydown', function (e) {
 				// pressing 'enter' in this field causes error, with this fix 'enter' (it's code is 13) ignored
 				if (e.which == 13) {
 					e.preventDefault();
@@ -1713,7 +1713,7 @@ Imcms.Document.DocumentSearchDialog.prototype = {
 			}
 		});
 		var dialog = $(this._builder[0]).parents(".ui-dialog").removeClass()
-				.addClass("pop-up-form menu-viewer reset").css({position: "fixed"}),
+			.addClass("pop-up-form menu-viewer reset").css({position: "fixed"}),
 			header = dialog.children(".ui-dialog-titlebar").removeClass()
 				.addClass("imcms-header").append($("<div>").addClass("imcms-title").text("DOCUMENT SELECTOR")),
 			content = dialog.children(".ui-dialog-content").removeClass()
@@ -1795,14 +1795,14 @@ Imcms.Document.DocumentSearchDialog.prototype = {
 			.filter(function (pos) {
 				return pos >= startIndex;
 			}).each(function (pos, item) {
-				$(item).on("dragstart", function (event) {
-					$(".ui-widget-overlay").css("display", "none");
-					event.originalEvent.dataTransfer.setData("data", JSON.stringify(data[pos - 1]));
-				}).on("dragend", function () {
-					$(".ui-widget-overlay").css("display", "block");
-				}).attr("draggable", true);
+			$(item).on("dragstart", function (event) {
+				$(".ui-widget-overlay").css("display", "none");
+				event.originalEvent.dataTransfer.setData("data", JSON.stringify(data[pos - 1]));
+			}).on("dragend", function () {
+				$(".ui-widget-overlay").css("display", "block");
+			}).attr("draggable", true);
 
-			});
+		});
 
 
 		$(this._builder.ref("documentsTable").getHTMLElement()).find("th").each(function (pos, item) {

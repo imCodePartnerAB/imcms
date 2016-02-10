@@ -12,7 +12,7 @@
     <meta charset="utf-8"/>
 
     <script src="${pageContext.request.contextPath}/js/jquery.nearest.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/speakingurl/5.0.1/speakingurl.min.js"></script>
@@ -24,7 +24,7 @@
     <script src="${pageContext.request.contextPath}/imcms/jqtree/tree.jquery.js"></script>
 
     <link rel="stylesheet"
-          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css"/>
+          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/imcms/jqtree/jqtree.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/imcms/prism/prism.css">
 

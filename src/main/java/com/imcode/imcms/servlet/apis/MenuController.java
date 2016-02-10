@@ -25,91 +25,91 @@ import java.util.stream.Stream;
 /**
  * This Class provide access to operations with menus.
  * It is a simple {@link RestController}
- *
  */
 @RestController
 @RequestMapping("/menu")
 public class MenuController {
 
-    private ImcmsServices imcmsServices;
+	private ImcmsServices imcmsServices;
 
-    public MenuController() {
-        imcmsServices = Imcms.getServices();
-    }
+	public MenuController() {
+		imcmsServices = Imcms.getServices();
+	}
 
-    /**
-     * Provide API access to retrieve menu items
-     * @param documentId {@link TextDocumentDomainObject} id that menu has been specified with
-     * @param menuId {@link MenuDomainObject} id
-     * @return List of menu items entities
-     *
-     * @throws ServletException
-     * @throws IOException
-     */
-    @RequestMapping("/{documentId}-{menuId}")
-    protected Object getMenuItemsList(@PathVariable("documentId") Integer documentId,
-                           @PathVariable("menuId") Integer menuId) throws ServletException, IOException {
-        TextDocumentDomainObject document = imcmsServices.getDocumentMapper().getWorkingDocument(documentId);
-        MenuDomainObject menu = document.getMenu(menuId);
+	/**
+	 * Provide API access to retrieve menu items
+	 *
+	 * @param documentId {@link TextDocumentDomainObject} id that menu has been specified with
+	 * @param menuId     {@link MenuDomainObject} id
+	 * @return List of menu items entities
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	@RequestMapping("/{documentId}-{menuId}")
+	protected Object getMenuItemsList(@PathVariable("documentId") Integer documentId,
+									  @PathVariable("menuId") Integer menuId) throws ServletException, IOException {
 
-        return Stream.of(menu.getMenuItems()).map(it -> {
-            ObjectMapper m = new ObjectMapper();
+		TextDocumentDomainObject document = imcmsServices.getDocumentMapper().getWorkingDocument(documentId);
 
-            Map<String, Object> props = m.convertValue(it, new TypeReference<Map<String, Object>>() {
-            });
+		return Stream.of(document.getMenu(menuId).getMenuItems())
+				.map(it -> {
 
-            props.put("status", String.valueOf(it.getDocument().getLifeCyclePhase()).toUpperCase().substring(0, 1));
+					Map<String, Object> props = new ObjectMapper()
+							.convertValue(it, new TypeReference<Map<String, Object>>() {
+							});
 
-            return props;
-        }).collect(Collectors.toList());
-    }
+					String status = String.valueOf(it.getDocument().getLifeCyclePhase());
+					props.put("status", status.toUpperCase().substring(0, 1));
 
+					return props;
+				})
+				.collect(Collectors.toList());
+	}
 
-    /**
-     * Save menu to database.
-     * User is working with menu items, modifying it, adding new one, and all this actions are being during runtime,
-     * when he click save, all current menu items saved in database at once.
-     * There are no additional operations for remove and add special items, just save all changes at once.
-     *
-     * @param documentId {@link TextDocumentDomainObject} id that menu has been specified with
-     * @param menuId {@link MenuDomainObject} id
-     * @param data menu items
-     *
-     * @return
-     * @throws ServletException
-     * @throws IOException
-     */
-    @RequestMapping(value = "/{documentId}-{menuId}", method = RequestMethod.PUT)
-    protected Object saveMenu(@PathVariable("documentId") Integer documentId,
-                           @PathVariable("menuId") Integer menuId,
-                           @RequestBody MultiValueMap<String, String> data) throws ServletException, IOException {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            TextDocumentDomainObject document = documentMapper.getWorkingDocument(documentId);
-            MenuDomainObject menu = document.getMenu(menuId);
-            ArrayList<LinkedHashMap<String, Object>> menuItemsData = new ObjectMapper().readValue(data.getFirst("data"), new TypeReference<ArrayList<LinkedHashMap<String, Object>>>() {
-            });
+	/**
+	 * Save menu to database.
+	 * User is working with menu items, modifying it, adding new one, and all this actions are being during runtime,
+	 * when he click save, all current menu items saved in database at once.
+	 * There are no additional operations for remove and add special items, just save all changes at once.
+	 *
+	 * @param documentId {@link TextDocumentDomainObject} id that menu has been specified with
+	 * @param menuId     {@link MenuDomainObject} id
+	 * @param data       menu items
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/{documentId}-{menuId}", method = RequestMethod.PUT)
+	protected Object saveMenu(@PathVariable("documentId") Integer documentId,
+							  @PathVariable("menuId") Integer menuId,
+							  @RequestBody MultiValueMap<String, String> data) throws ServletException, IOException {
 
-            menu.removeAllMenuItems();
+		Map<String, Object> result = new HashMap<>();
+		try {
+			DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+			TextDocumentDomainObject document = documentMapper.getWorkingDocument(documentId);
+			MenuDomainObject menu = document.getMenu(menuId);
+			ArrayList<LinkedHashMap<String, Object>> menuItemsData = new ObjectMapper().readValue(data.getFirst("data"), new TypeReference<ArrayList<LinkedHashMap<String, Object>>>() {
+			});
 
-            for (LinkedHashMap<String, Object> entry : menuItemsData) {
-                String treeSortIndex = entry.get("tree-sort-index").toString();
-                Integer menuItemReferencedDocumentId = Integer.parseInt(entry.get("referenced-document").toString());
-                DocumentReference docIdentity = documentMapper.getDocumentReference(documentMapper.getWorkingDocument(menuItemReferencedDocumentId));
-                MenuItemDomainObject menuItem = new MenuItemDomainObject(docIdentity);
+			menu.removeAllMenuItems();
 
-                menuItem.setTreeSortIndex(treeSortIndex);
-                menu.addMenuItem(menuItem);
-            }
+			for (LinkedHashMap<String, Object> entry : menuItemsData) {
+				String treeSortIndex = entry.get("tree-sort-index").toString();
+				Integer menuItemReferencedDocumentId = Integer.parseInt(entry.get("referenced-document").toString());
+				DocumentReference docIdentity = documentMapper.getDocumentReference(documentMapper.getWorkingDocument(menuItemReferencedDocumentId));
+				MenuItemDomainObject menuItem = new MenuItemDomainObject(docIdentity);
 
-            documentMapper.saveTextDocMenu(TextDocMenuContainer.of(document.getVersionRef(), menuId, menu), Imcms.getUser());
-            result.put("result", true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("result", false);
-        }
+				menuItem.setTreeSortIndex(treeSortIndex);
+				menu.addMenuItem(menuItem);
+			}
 
-        return result;
-    }
+			documentMapper.saveTextDocMenu(TextDocMenuContainer.of(document.getVersionRef(), menuId, menu), Imcms.getUser());
+			result.put("result", true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.put("result", false);
+		}
+
+		return result;
+	}
 }
