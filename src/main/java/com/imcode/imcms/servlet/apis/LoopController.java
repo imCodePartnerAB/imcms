@@ -86,9 +86,7 @@ public class LoopController {
 			TextDocumentContentSaver textDocumentContentSaver = Imcms.getServices().getManagedBean(TextDocumentContentSaver.class);
 			Map<Integer, Boolean> loopMap = new HashMap<>();
 
-			for (Integer loopNo : listNo) {
-				loopMap.put(loopNo, true);
-			}
+			listNo.forEach(loopNo -> loopMap.put(loopNo, true));
 
 			textDocumentContentSaver.saveLoop(new TextDocLoopContainer(document.getVersionRef(), loopId, Loop.of(loopMap)));
 			Imcms.getServices().getDocumentMapper().invalidateDocument(metaId);
