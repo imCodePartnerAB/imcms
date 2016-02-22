@@ -107,7 +107,15 @@ public class AdminDoc extends HttpServlet {
 	 */
 	public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-		int metaId = Integer.parseInt(req.getParameter(PARAMETER__META_ID));
+		int metaId;
+
+		try {
+			metaId = Integer.parseInt(req.getParameter(PARAMETER__META_ID));
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return;
+		}
+
 		int flags = Integer.parseInt(Objects.toString(req.getParameter(PARAMETER__DISPATCH_FLAGS), "0"));
 
 		DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();

@@ -1712,14 +1712,29 @@ Imcms.Document.DocumentSearchDialog.prototype = {
 				}
 			}
 		});
-		var dialog = $(this._builder[0]).parents(".ui-dialog").removeClass()
-			.addClass("pop-up-form menu-viewer reset").css({position: "fixed"}),
-			header = dialog.children(".ui-dialog-titlebar").removeClass()
-				.addClass("imcms-header").append($("<div>").addClass("imcms-title").text("DOCUMENT SELECTOR")),
-			content = dialog.children(".ui-dialog-content").removeClass()
+		var dialog = $(this._builder[0]).parents(".ui-dialog")
+			.removeClass()
+			.addClass("pop-up-form menu-viewer reset")
+			.css({position: "fixed"}),
+
+			header = dialog.children(".ui-dialog-titlebar")
+				.removeClass()
+				.addClass("imcms-header")
+				.append($("<div>").addClass("imcms-title").text("DOCUMENT SELECTOR"))
+				.on('mousedown', function (e) {
+					// jquery-ui (or smth else) pins onmousedown event listener on this header and produces
+					// errors while clicking on it
+					e.preventDefault();
+				}),
+
+			content = dialog.children(".ui-dialog-content")
+				.removeClass()
 				.addClass("imcms-content"),
-			footer = dialog.children(".ui-dialog-buttonpane").removeClass()
+
+			footer = dialog.children(".ui-dialog-buttonpane")
+				.removeClass()
 				.addClass("imcms-footer"),
+
 			buttons = footer.find(".ui-button").removeClass();
 
 		header.find(".ui-dialog-title").remove();
@@ -1803,7 +1818,6 @@ Imcms.Document.DocumentSearchDialog.prototype = {
 			}).attr("draggable", true);
 
 		});
-
 
 		$(this._builder.ref("documentsTable").getHTMLElement()).find("th").each(function (pos, item) {
 			$("<div>").append($(item).html()).click(this.sort.bind(this, pos)).appendTo(item);

@@ -48,7 +48,12 @@ Array.prototype.remove = function (value) {
 			return uglyResult;
 		}
 
-		return $super.apply(this, arguments);
+		var context = this,
+			args = arguments;
+//	produces 'maximum call stack', so wrapped in setTimeout
+		return setTimeout(function () {
+			$super.apply(context, args);
+		}, 0)
 	};
 })(jQuery);
 
@@ -507,7 +512,6 @@ CKEDITOR.dialog.add("textHistory", function (e) {
 			});
 		})
 	});
-
 
 	return {
 		title: 'Text History Dialog',
