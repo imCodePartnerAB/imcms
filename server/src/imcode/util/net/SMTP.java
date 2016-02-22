@@ -79,10 +79,13 @@ public class SMTP {
 		}
 
 		public void enableTLS(String fromEmail, String password) {
+			final String userName = fromEmail;
+			final String pass = password;
+
 			mail.setStartTLSEnabled(true).setAuthenticator(new Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(fromEmail, password);
+					return new PasswordAuthentication(userName, pass);
 				}
 			});
 		}
