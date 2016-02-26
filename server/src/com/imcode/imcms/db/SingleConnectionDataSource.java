@@ -1,16 +1,14 @@
 package com.imcode.imcms.db;
 
 import com.imcode.db.jdbc.ConnectionWrapper;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.sql.DataSource;
-import java.sql.*;
 import java.io.PrintWriter;
-import java.util.Map;
+import java.sql.*;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang.NotImplementedException;
 
 public class SingleConnectionDataSource implements DataSource {
 
@@ -78,27 +76,22 @@ public class SingleConnectionDataSource implements DataSource {
                 throw new NotImplementedException();
             }
 
-            @Override
             public void setSchema(String schema) throws SQLException {
 
             }
 
-            @Override
             public String getSchema() throws SQLException {
                 return null;
             }
 
-            @Override
             public void abort(Executor executor) throws SQLException {
 
             }
 
-            @Override
             public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
 
             }
 
-            @Override
             public int getNetworkTimeout() throws SQLException {
                 return 0;
             }
@@ -125,7 +118,6 @@ public class SingleConnectionDataSource implements DataSource {
         return 0;
     }
 
-    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         return null;
     }
