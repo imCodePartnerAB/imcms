@@ -21,6 +21,7 @@ ImCMS Documentation
     fundamental/index
     content-management/index
     image-archive/index
+    bank-id/index
 
 .. include:: /common/contribute.txt
 
