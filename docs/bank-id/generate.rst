@@ -1,5 +1,5 @@
-Generate BankId
-===============
+Generate Test BankId
+====================
 
 In this guide tells about test bankId for testing environment
 
