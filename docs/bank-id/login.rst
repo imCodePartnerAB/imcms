@@ -3,7 +3,7 @@ Login
 
 To login with test bankId, follow next steps:
 
-1. :download:`- <https://bankid.com/assets/bankid/rp/BankID_7.1.0_BGC_CUSTOMERTEST.apk>` `Download <https://bankid.com/assets/bankid/rp/BankID_7.1.0_BGC_CUSTOMERTEST.apk>`_ BankID Security Application
+1. :download:`- <https://bankid.com/assets/bankid/rp/BankID_7.2.0_BGC_CUSTOMERTEST.apk>` `Download <https://bankid.com/assets/bankid/rp/BankID_7.2.0_BGC_CUSTOMERTEST.apk>`_ BankID Security Application
 If you haven't already installed BankID Security App, please download it from App Store, Google Play or Windows Phone Store.
 If you have some problems with installation, look here_ or this_.
 
