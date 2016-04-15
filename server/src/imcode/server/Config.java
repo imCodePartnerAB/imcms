@@ -1,14 +1,12 @@
 package imcode.server;
 
-import org.apache.commons.collections.EnumerationUtils;
+import imcode.server.user.RoleId;
 import org.apache.commons.lang.StringUtils;
 
-import imcode.server.user.RoleId;
-
 import java.io.File;
+import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.*;
-import java.nio.charset.Charset;
 
 public class Config {
 
@@ -59,6 +57,25 @@ public class Config {
     private String indexDisabledFileMimes;
     private Set<String> indexDisabledFileExtensionsSet = Collections.emptySet();
     private Set<String> indexDisabledFileMimesSet = Collections.emptySet();
+	private Map<String, AuthenticationMethodConfiguration> authenticationConfiguration;
+	private String cgiUserRoleName = "CGIUsers";
+	private String cgiMetadataUrl = "";
+	private String serverName = "http://localhost:8080";
+
+	public Map<String, AuthenticationMethodConfiguration> getAuthenticationConfiguration() {
+		return this.authenticationConfiguration;
+	}
+
+	public void setAuthenticationConfiguration(String methods) {
+		this.authenticationConfiguration = new HashMap<String, AuthenticationMethodConfiguration>();
+		String[] methodList = methods.split(",\\s?+");
+		int index = 1;
+
+		for (String authenticationMethodName : methodList) {
+			this.authenticationConfiguration.put(authenticationMethodName, (new AuthenticationMethodConfiguration()).setName(authenticationMethodName).setOrder(index));
+			++index;
+		}
+	}
 
     public String getWorkaroundUriEncoding() {
         return workaroundUriEncoding;
@@ -460,4 +477,28 @@ public class Config {
 
         return Collections.unmodifiableSet(distinctStrings);
     }
+
+	public String getCgiUserRoleName() {
+		return this.cgiUserRoleName;
+	}
+
+	public void setCgiUserRoleName(String cgiUserRoleName) {
+		this.cgiUserRoleName = cgiUserRoleName;
+	}
+
+	public String getCgiMetadataUrl() {
+		return this.cgiMetadataUrl;
+	}
+
+	public void setCgiMetadataUrl(String cgiMetadataUrl) {
+		this.cgiMetadataUrl = cgiMetadataUrl;
+	}
+
+	public String getServerName() {
+		return this.serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
 }

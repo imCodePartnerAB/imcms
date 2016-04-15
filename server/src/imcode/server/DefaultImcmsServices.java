@@ -1,61 +1,5 @@
 package imcode.server;
 
-import com.imcode.imcms.servlet.LoginPasswordManager;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.IndexDocumentFactory;
-import imcode.server.document.index.RebuildingDirectoryIndex;
-import imcode.server.parser.ParserParameters;
-import imcode.server.parser.TextDocumentParser;
-import imcode.server.user.Authenticator;
-import imcode.server.user.ChainedLdapUserAndRoleRegistry;
-import imcode.server.user.ExternalizedImcmsAuthenticatorAndUserRegistry;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.LdapUserAndRoleRegistry;
-import imcode.server.user.RoleGetter;
-import imcode.server.user.UserAndRoleRegistry;
-import imcode.server.user.UserDomainObject;
-import imcode.util.CachingFileLoader;
-import imcode.util.DateConstants;
-import imcode.util.Parser;
-import imcode.util.Utility;
-import imcode.util.io.FileUtility;
-import imcode.util.net.SMTP;
-
-import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.text.Collator;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
@@ -66,10 +10,40 @@ import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
+import com.imcode.imcms.servlet.LoginPasswordManager;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.TemplateMapper;
+import imcode.server.document.index.IndexDocumentFactory;
+import imcode.server.document.index.RebuildingDirectoryIndex;
 import imcode.server.kerberos.KerberosLoginService;
+import imcode.server.parser.ParserParameters;
+import imcode.server.parser.TextDocumentParser;
+import imcode.server.user.*;
 import imcode.util.*;
+import imcode.util.io.FileUtility;
+import imcode.util.net.SMTP;
+import org.apache.commons.beanutils.*;
+import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.WordUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+
+import java.beans.PropertyDescriptor;
+import java.io.*;
+import java.lang.reflect.Method;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.text.Collator;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
@@ -125,7 +99,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         initTemplateMapper();
         initImageCacheMapper();
         initTextDocParser();
-        
+
         kerberosLoginService = new KerberosLoginService(config);
     }
 
@@ -133,7 +107,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         if (!config.isSsoEnabled()) {
             return;
         }
-        
+
         if (config.isSsoUseLocalJaasConfig()) {
             File jaasConfigFile = new File(getRealContextPath(), "WEB-INF/conf/jaas.conf");
 
@@ -145,12 +119,12 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
             System.setProperty("java.security.krb5.conf", krbConfigFile.getAbsolutePath());
         }
-        
+
         if (config.isSsoKerberosDebug()) {
             System.setProperty("sun.security.krb5.debug", "true");
         }
     }
-    
+
     private void initKeyStore() {
         String keyStoreType = config.getKeyStoreType();
         if ( StringUtils.isBlank(keyStoreType) ) {
@@ -193,48 +167,58 @@ final public class DefaultImcmsServices implements ImcmsServices {
         Config config = new Config();
         ConvertUtils.register(new WebappRelativeFileConverter(), File.class);
         PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(config);
-        for ( int i = 0; i < propertyDescriptors.length; i++ ) {
-            PropertyDescriptor propertyDescriptor = propertyDescriptors[i];
-            if ( null == propertyDescriptor.getWriteMethod() ) {
-                continue;
-            }
-            String uncapitalizedPropertyName = propertyDescriptor.getName();
-            String capitalizedPropertyName = StringUtils.capitalize(uncapitalizedPropertyName);
-            String propertyValue = props.getProperty(capitalizedPropertyName);
-            if ( null != propertyValue ) {
-                try {
-                    BeanUtils.setProperty(config, uncapitalizedPropertyName, propertyValue);
-                } catch ( Exception e ) {
-                    log.error("Failed to set property " + capitalizedPropertyName, e.getCause());
-                    continue;
-                }
-            }
-            try {
-                String setPropertyValue = BeanUtils.getProperty(config, uncapitalizedPropertyName);
-                if ( null != setPropertyValue ) {
-                    log.info(capitalizedPropertyName + " = " + setPropertyValue);
-                } else {
-                    log.warn(capitalizedPropertyName + " not set.");
-                }
-            } catch ( Exception e ) {
-                log.error(e, e);
-            }
-        }
+
+		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+			Method extraWriteMethod = null;
+			if (null == propertyDescriptor.getWriteMethod()) {
+				extraWriteMethod = MethodUtils.getAccessibleMethod(Config.class, "set" + WordUtils.capitalize(propertyDescriptor.getName()), String.class);
+				if (extraWriteMethod == null) {
+					continue;
+				}
+			}
+
+			String uncapitalizedPropertyName = propertyDescriptor.getName();
+			String capitalizedPropertyName = StringUtils.capitalize(uncapitalizedPropertyName);
+			String propertyValue = props.getProperty(capitalizedPropertyName);
+			if (null != propertyValue) {
+				try {
+					if (extraWriteMethod == null) {
+						BeanUtils.setProperty(config, uncapitalizedPropertyName, propertyValue);
+					} else {
+						extraWriteMethod.invoke(config, propertyValue);
+					}
+				} catch (Exception e) {
+					log.error("Failed to set property " + capitalizedPropertyName, e.getCause());
+					continue;
+				}
+			}
+
+			try {
+				String property = BeanUtils.getProperty(config, uncapitalizedPropertyName);
+				if (null != property) {
+					log.info(capitalizedPropertyName + " = " + property);
+				} else {
+					log.warn(capitalizedPropertyName + " not set.");
+				}
+			} catch (Exception e) {
+				log.error(e);
+			}
+		}
 
         String jdbcDriver = props.getProperty("JdbcDriver");
-        DatabaseVendor vendor = DatabaseVendor.findByDriverClass(jdbcDriver);
-        if (vendor == null) {
+        DatabaseVendor databaseVendor = DatabaseVendor.findByDriverClass(jdbcDriver);
+        if(databaseVendor == null) {
             throw new RuntimeException("Failed to determine database vendor using JdbcDriver: " + jdbcDriver);
+        } else {
+            config.setDatabaseVendor(databaseVendor);
+            return config;
         }
-        config.setDatabaseVendor(vendor);
-
-        return config;
     }
 
     private void initSessionCounter() {
         int sessionCounter;
         Date sessionCounterDate;
-    	
+
         try {
             sessionCounter = getSessionCounterFromDb();
             sessionCounterDate = getSessionCounterDateFromDb();
@@ -242,7 +226,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             log.fatal("Failed to get SessionCounter from db.", ex);
             throw ex;
         }
-		
+
         log.info("SessionCounter: " + sessionCounter);
         log.info("SessionCounterDate: " + sessionCounterDate);
     }
@@ -272,7 +256,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void initTemplateMapper() {
         templateMapper = new TemplateMapper(this);
     }
-    
+
     private void initImageCacheMapper() {
     	imageCacheMapper = new ImageCacheMapper(database);
     }
@@ -338,14 +322,14 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     /**
      * Inits and adds secondary LdapUserAndRoleRegistry to the ChainedLdapUserAndRoleRegistry.
-     * 
+     *
      * @param chainedLdapUserAndRoleRegistry instance of ChainedLdapUserAndRoleRegistry
      * @param props configuration properties
      */
     private void initAndAddSecondaryLdapUserAndRoleRegistry(
             XMLConfig xmlConfig,
             ChainedLdapUserAndRoleRegistry chainedLdapUserAndRoleRegistry,
-            Properties props) {   
+            Properties props) {
 
         final String secondaryLdapPrefix = "Secondary";
         final int secondaryLdapPrefixLength = secondaryLdapPrefix.length();
@@ -360,7 +344,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             String name = (String)names.nextElement();
 
             if (name.startsWith(secondaryLdapPrefix)) {
-                String newName = name.substring(secondaryLdapPrefixLength);                
+                String newName = name.substring(secondaryLdapPrefixLength);
                 String value = props.getProperty(name);
 
                 secondaryLdapProperties.setProperty(newName, value);
@@ -368,7 +352,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         }
 
         if (secondaryLdapProperties.size() == 0) {
-            log.info("Secondary LDAP configuration parameters not found.");    
+            log.info("Secondary LDAP configuration parameters not found.");
         } else {
             log.info("Found secondary LDAP configuration parameters. " +
                     "Initializing secondary LDAP user and role registry");
@@ -383,7 +367,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
             boolean externalAuthenticatorIsSet = StringUtils.isNotBlank(externalAuthenticatorName);
             boolean externalUserAndRoleRegistryIsSet = StringUtils.isNotBlank(externalUserAndRoleMapperName);
-            
+
             if ( !externalAuthenticatorIsSet || !externalUserAndRoleRegistryIsSet ) {
                 log.error("Secondary LDAP configuration ignored. External authenticator and external usermapper should both be either set or not set.");
             } else {
@@ -400,12 +384,12 @@ final public class DefaultImcmsServices implements ImcmsServices {
                         || !(externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry)) {
                     log.error("Secondary LDAP configuration ignored. Both SecondaryExternalAuthenticator and SecondaryExternalUserAndRoleMapper properties should be set to LDAP.");
                 } else {
-                     chainedLdapUserAndRoleRegistry.addLink(externalAuthenticator, externalUserAndRoleRegistry);   
+                     chainedLdapUserAndRoleRegistry.addLink(externalAuthenticator, externalUserAndRoleRegistry);
                 }
             }
         }
     }
-    
+
 
     public synchronized int getSessionCounter() {
         return getSessionCounterFromDb();
@@ -461,7 +445,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public UserDomainObject verifyUser(String clientPrincipalName) {
         String login = clientPrincipalName.substring(0, clientPrincipalName.lastIndexOf('@'));
-        
+
         NDC.push("verifyUser");
         try {
             UserDomainObject result = null;
@@ -480,7 +464,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             NDC.pop();
         }
     }
-    
+
     private void logUserDeactivated(UserDomainObject user) {
         mainLog.info("->User '" + user.getLoginName() + "' failed to log in: User deactivated.");
     }
@@ -812,7 +796,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public ImageCacheMapper getImageCacheMapper() {
     	return imageCacheMapper;
     }
-    
+
     public LanguageMapper getLanguageMapper() {
         return this.languageMapper;
     }
@@ -828,7 +812,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public ProcedureExecutor getProcedureExecutor() {
         return procedureExecutor;
     }
-    
+
     public KerberosLoginService getKerberosLoginService() {
         return kerberosLoginService;
     }
