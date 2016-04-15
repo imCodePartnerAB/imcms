@@ -1,16 +1,15 @@
 package imcode.server.user.saml2;
 
 import imcode.server.user.saml2.store.SAMLRequestStore;
+import imcode.server.user.saml2.store.SAMLSessionInfo;
 import imcode.server.user.saml2.utils.SAMLUtils;
 import org.joda.time.DateTime;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.binding.encoding.HTTPRedirectDeflateEncoder;
-import org.opensaml.saml2.core.AuthnRequest;
-import org.opensaml.saml2.core.Issuer;
-import org.opensaml.saml2.core.impl.AuthnRequestBuilder;
-import org.opensaml.saml2.core.impl.IssuerBuilder;
+import org.opensaml.saml2.core.*;
+import org.opensaml.saml2.core.impl.*;
 import org.opensaml.util.URLBuilder;
 import org.opensaml.ws.message.encoder.MessageEncodingException;
 import org.opensaml.ws.transport.http.HTTPTransportUtils;
@@ -23,14 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-/**
- * Created by Shadowgun on 20.11.2014.
- */
 public class SAMLRequestSender {
     private static Logger log = LoggerFactory.getLogger(SAMLRequestSender.class);
     private SAMLAuthnRequestBuilder samlAuthnRequestBuilder =
             new SAMLAuthnRequestBuilder();
     private MessageEncoder messageEncoder = new MessageEncoder();
+	private SAMLLogoutRequestBuilder samlLogoutRequestBuilder = new SAMLLogoutRequestBuilder();
 
     public void sendSAMLAuthRequest(HttpServletRequest request, HttpServletResponse
             servletResponse, String spId, String acsUrl, String idpSSOUrl) throws Exception {
@@ -50,7 +47,6 @@ public class SAMLRequestSender {
         HTTPTransportUtils.addNoCacheHeaders(responseAdapter);
         HTTPTransportUtils.setUTF8Encoding(responseAdapter);
         responseAdapter.sendRedirect(redirectURL);
-
     }
 
     private static class SAMLAuthnRequestBuilder {
@@ -88,6 +84,7 @@ public class SAMLRequestSender {
             String encodedMessage = deflateAndBase64Encode(message);
             return buildRedirectURL(endpointURL, relayState, encodedMessage);
         }
+
         public String buildRedirectURL(String endpointURL, String relayState, String message) {
             URLBuilder urlBuilder = new URLBuilder(endpointURL);
             List<Pair<String, String>> queryParams = urlBuilder.getQueryParams();
@@ -101,4 +98,36 @@ public class SAMLRequestSender {
         }
     }
 
+	public void sendSAMLLogoutRequest(HttpServletRequest request, HttpServletResponse servletResponse, String spId, String idpSSOLogoutUrl, SAMLSessionInfo sessionInfo) throws Exception {
+		LogoutRequest logoutRequest = this.samlLogoutRequestBuilder.buildRequest(spId, sessionInfo);
+		String key = SAMLRequestStore.getInstance().storeRequest();
+		logoutRequest.setID(key);
+		log.debug("SAML Logout message : {} ", SAMLUtils.SAMLObjectToString(logoutRequest));
+		String redirectURL = this.messageEncoder.encode(logoutRequest, idpSSOLogoutUrl, request.getRequestURI());
+		HttpServletResponseAdapter responseAdapter = new HttpServletResponseAdapter(servletResponse, request.isSecure());
+		HTTPTransportUtils.addNoCacheHeaders(responseAdapter);
+		HTTPTransportUtils.setUTF8Encoding(responseAdapter);
+		responseAdapter.sendRedirect(redirectURL);
+	}
+
+	private static class SAMLLogoutRequestBuilder {
+       public LogoutRequest buildRequest(String spProviderId, SAMLSessionInfo info) {
+            IssuerBuilder issuerBuilder = new IssuerBuilder();
+            Issuer issuer = issuerBuilder.buildObject("urn:oasis:names:tc:SAML:2.0:assertion", "Issuer", "saml2p");
+            issuer.setValue(spProviderId);
+            DateTime issueInstant = new DateTime();
+            LogoutRequest logoutRequest = (new LogoutRequestBuilder()).buildObject("urn:oasis:names:tc:SAML:2.0:protocol", "LogoutRequest", "saml2p");
+            logoutRequest.setIssueInstant(issueInstant);
+            logoutRequest.setIssuer(issuer);
+            NameID nameID = (new NameIDBuilder()).buildObject("urn:oasis:names:tc:SAML:2.0:assertion", "NameID", "saml2");
+            nameID.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:transient");
+            nameID.setValue(info.getNameId());
+            SessionIndex sessionIndex = (new SessionIndexBuilder()).buildObject();
+            sessionIndex.setSessionIndex(info.getSessionIndex());
+            logoutRequest.setNameID(nameID);
+            logoutRequest.getSessionIndexes().add(sessionIndex);
+            logoutRequest.setVersion(SAMLVersion.VERSION_20);
+            return logoutRequest;
+        }
+    }
 }
