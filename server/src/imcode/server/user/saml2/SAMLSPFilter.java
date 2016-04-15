@@ -47,8 +47,8 @@ public class SAMLSPFilter implements Filter {
 		}
 
 		log.debug("Attempt to secure resource  is intercepted : {}", request.getRequestURL().toString());
-        /*
-          Check if response message is received from identity provider;
+		/*
+		  Check if response message is received from identity provider;
           In case of successful response system redirects user to relayState (initial) request
         */
 		String responseMessage = servletRequest.getParameter(SAML_AUTHN_RESPONSE_PARAMETER_NAME);

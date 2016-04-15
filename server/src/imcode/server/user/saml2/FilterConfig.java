@@ -35,22 +35,22 @@ public class FilterConfig {
 		spProviderId = serverConfig.getServerName();
 		acsUrl = this.spProviderId + config.getServletContext().getContextPath() + "/acs";
 		logoutUrl = config.getServletContext().getContextPath() + "/samlv2/logout";
-		if(isEnabled) {
+		if (isEnabled) {
 			try { // code was decompiled because some guy made deploy but forgot to commit...
 				HTTPMetadataProvider provider = new HTTPMetadataProvider(serverConfig.getCgiMetadataUrl(), 99999999);
 				provider.setParserPool(new BasicParserPool());
 				provider.initialize();
-				EntityDescriptor entityDescriptor = (EntityDescriptor)provider.getMetadata();
+				EntityDescriptor entityDescriptor = (EntityDescriptor) provider.getMetadata();
 				IDPSSODescriptor idpssoDescriptor = entityDescriptor.getIDPSSODescriptor("urn:oasis:names:tc:SAML:2.0:protocol");
 				Iterator services = idpssoDescriptor.getSingleSignOnServices().iterator();
-				if(services.hasNext()) {
-					SingleSignOnService singleLogoutService = (SingleSignOnService)services.next();
+				if (services.hasNext()) {
+					SingleSignOnService singleLogoutService = (SingleSignOnService) services.next();
 					this.idpSSOLoginUrl = singleLogoutService.getLocation();
 				}
 
 				services = idpssoDescriptor.getSingleLogoutServices().iterator();
-				if(services.hasNext()) {
-					SingleLogoutService singleLogoutService1 = (SingleLogoutService)services.next();
+				if (services.hasNext()) {
+					SingleLogoutService singleLogoutService1 = (SingleLogoutService) services.next();
 					this.idpSSOLogoutUrl = singleLogoutService1.getLocation();
 				}
 			} catch (MetadataProviderException e) {
