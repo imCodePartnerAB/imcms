@@ -43,7 +43,7 @@
 	<groupId>com.imcode.imcms</groupId>
 	<artifactId>imcms</artifactId>
 	<packaging>war</packaging>
-	<version>RB-4-SNAPSHOT</version>
+	<version>4.2.19</version>
 	<name>imCMS</name>
 
 	<properties>
@@ -289,7 +289,7 @@
 		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
-			<version>2.0.2</version>
+			<version>3.1</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-logging</artifactId>
@@ -381,6 +381,12 @@
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<version>1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.2</version>
 		</dependency>
 
 		<dependency>
