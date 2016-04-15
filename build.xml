@@ -548,7 +548,6 @@
         depends="check-build-properties,init-version-properties">
 
         <filter token="defaultlanguage" value="${defaultlanguage}"/>
-        <filter token="server-name" value="${server-name}"/>
         <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
         <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>
 
@@ -561,9 +560,14 @@
         <filter token="db-pass" value="${db-pass}"/>
         <filter token="db-maxconnections" value="${db-maxconnections}"/>
 
-        <filter token="authentication-method-1" value="${authentication-method-1}"/>
-        <filter token="authentication-method-2" value="${authentication-method-2}"/>
-        <filter token="cgi-authentication-method-url" value="${cgi-authentication-method-url}"/>
+		<filter token="server-name" value="${ServerName}"/>
+		<filter token="cgi-metadata-url" value="${CgiMetadataUrl}"/>
+		<filter token="authentication-configuration" value="${AuthenticationConfiguration}"/>
+		<filter token="cgi-user-role-name" value="${CgiUserRoleName}"/>
+
+        <!--<filter token="authentication-method-1" value="${authentication-method-1}"/>-->
+        <!--<filter token="authentication-method-2" value="${authentication-method-2}"/>-->
+        <!--<filter token="cgi-authentication-method-url" value="${cgi-authentication-method-url}"/>-->
 
         <filter token="external-authenticator" value="${external-authenticator}"/>
         <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
