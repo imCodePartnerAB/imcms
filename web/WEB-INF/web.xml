@@ -88,6 +88,16 @@
         <listener-class>com.imcode.imcms.servlet.ContextListener</listener-class>
     </listener>
 
+	<servlet>
+		<servlet-name>com.imcode.imcms.servlet.NextUrlKeeper</servlet-name>
+		<servlet-class>com.imcode.imcms.servlet.NextUrlKeeper</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>com.imcode.imcms.servlet.Redirector</servlet-name>
+		<servlet-class>com.imcode.imcms.servlet.Redirector</servlet-class>
+	</servlet>
+
     <servlet>
         <servlet-name>RD</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ReDirecter</servlet-class>
@@ -352,6 +362,16 @@
         <servlet-name>com.imcode.imcms.servlet.AjaxServlet</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.AjaxServlet</servlet-class>
     </servlet>
+
+	<servlet-mapping>
+		<servlet-name>com.imcode.imcms.servlet.NextUrlKeeper</servlet-name>
+		<url-pattern>/setNextUrl</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>com.imcode.imcms.servlet.Redirector</servlet-name>
+		<url-pattern>/redirectIfUserLoggedIn</url-pattern>
+	</servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
