@@ -141,6 +141,15 @@ public class SMTP {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
+		public void setReplyToAddresses(String[] replyToAddresses) {
+			try {
+				mail.setReplyTo(CollectionUtils.collect(Arrays.asList(replyToAddresses), new StringToInternetAddressTransformer()));
+			} catch (EmailException e) {
+				throw new UnhandledException(e);
+			}
+		}
+
 		public void setAttachments(DataSource[] attachments) {
 			try {
 				for (DataSource attachment : attachments) {

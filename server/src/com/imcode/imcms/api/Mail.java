@@ -100,6 +100,15 @@ public class Mail {
 	}
 
 	/**
+	 * Sets the 'reply to' addresses of this email
+	 *
+	 * @param replyToAddresses an array of String with addresses which will be in 'Reply to:' field.
+	 */
+	public void setReplyToAddresses(String[] replyToAddresses) {
+		internal.setReplyToAddresses(replyToAddresses);
+	}
+
+	/**
 	 * Enables TLS authentication.
 	 *
 	 * @param fromEmail email for authentication
