@@ -1,11 +1,13 @@
 package imcode.server.user.saml2.utils;
 
+import org.opensaml.Configuration;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.BasicSAMLMessageContext;
 import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.binding.decoding.HTTPPostDecoder;
 import org.opensaml.saml2.core.NameID;
+import org.opensaml.saml2.core.Response;
 import org.opensaml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.ws.security.SecurityPolicy;
 import org.opensaml.ws.security.SecurityPolicyResolver;
@@ -19,6 +21,7 @@ import org.opensaml.ws.transport.http.HttpServletResponseAdapter;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.io.Marshaller;
 import org.opensaml.xml.util.XMLHelper;
+import org.w3c.dom.Element;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,10 +33,10 @@ import java.util.List;
  */
 public class SAMLUtils {
 
-    public static SAMLMessageContext decodeSamlMessage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public static SAMLMessageContext<Response, SAMLObject, NameID> decodeSamlMessage(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        SAMLMessageContext<SAMLObject, SAMLObject, NameID> samlMessageContext =
-                new BasicSAMLMessageContext<SAMLObject, SAMLObject, NameID>();
+        SAMLMessageContext<Response, SAMLObject, NameID> samlMessageContext =
+                new BasicSAMLMessageContext<Response, SAMLObject, NameID>();
 
         HttpServletRequestAdapter httpServletRequestAdapter =
                 new HttpServletRequestAdapter(request);
@@ -44,8 +47,7 @@ public class SAMLUtils {
         samlMessageContext.setOutboundMessageTransport(httpServletResponseAdapter);
         samlMessageContext.setPeerEntityRole(IDPSSODescriptor.DEFAULT_ELEMENT_NAME);
 
-        SecurityPolicyResolver securityPolicyResolver =
-                getSecurityPolicyResolver(request.isSecure());
+        SecurityPolicyResolver securityPolicyResolver = getSecurityPolicyResolver(request.isSecure());
 
         samlMessageContext.setSecurityPolicyResolver(securityPolicyResolver);
         HTTPPostDecoder samlMessageDecoder = new HTTPPostDecoder();
@@ -65,9 +67,8 @@ public class SAMLUtils {
 
     public static String SAMLObjectToString(XMLObject samlObject) {
         try {
-            Marshaller marshaller =
-                    org.opensaml.Configuration.getMarshallerFactory().getMarshaller(samlObject);
-            org.w3c.dom.Element authDOM = marshaller.marshall(samlObject);
+            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(samlObject);
+            Element authDOM = marshaller.marshall(samlObject);
             StringWriter rspWrt = new StringWriter();
             XMLHelper.writeNode(authDOM, rspWrt);
             return rspWrt.toString();

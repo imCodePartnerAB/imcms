@@ -4,7 +4,10 @@ import imcode.server.user.saml2.store.SAMLSessionInfo;
 import imcode.server.user.saml2.store.SAMLSessionManager;
 import imcode.server.user.saml2.utils.OpenSamlBootstrap;
 import imcode.server.user.saml2.utils.SAMLUtils;
+import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.SAMLMessageContext;
+import org.opensaml.saml2.core.NameID;
+import org.opensaml.saml2.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +60,7 @@ public class SAMLSPFilter implements Filter {
 			log.debug("Response from Identity Provider is received");
 			try {
 				log.debug("Decoding of SAML message");
-				SAMLMessageContext samlMessageContext =
+				SAMLMessageContext<Response, SAMLObject, NameID> samlMessageContext =
 						SAMLUtils.decodeSamlMessage(request, response);
 				log.debug("SAML message has been decoded successfully");
 				samlMessageContext.setLocalEntityId(spProviderId);

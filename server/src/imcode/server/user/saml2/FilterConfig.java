@@ -11,7 +11,6 @@ import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.parse.BasicParserPool;
 
 import java.util.Iterator;
-import java.util.Map;
 
 public class FilterConfig {
 	public static final String EXCLUDED_URL_PATTERN_PARAMETER = "excludedUrlPattern";
@@ -29,11 +28,10 @@ public class FilterConfig {
 
 	public FilterConfig(javax.servlet.FilterConfig config) {
 		Config serverConfig = Imcms.getServices().getConfig();
-		Map configurationMap = serverConfig.getAuthenticationConfiguration();
-		isEnabled = configurationMap.containsKey(AUTHENTICATION_METHOD_NAME_PROP);
+		isEnabled = serverConfig.getAuthenticationConfiguration().containsKey(AUTHENTICATION_METHOD_NAME_PROP);
 		excludedUrlPattern = config.getInitParameter(EXCLUDED_URL_PATTERN_PARAMETER);
 		spProviderId = serverConfig.getServerName();
-		acsUrl = this.spProviderId + config.getServletContext().getContextPath() + "/acs";
+		acsUrl = spProviderId + config.getServletContext().getContextPath() + "/acs";
 		logoutUrl = config.getServletContext().getContextPath() + "/samlv2/logout";
 		if (isEnabled) {
 			try { // code was decompiled because some guy made deploy but forgot to commit...
@@ -45,13 +43,13 @@ public class FilterConfig {
 				Iterator services = idpssoDescriptor.getSingleSignOnServices().iterator();
 				if (services.hasNext()) {
 					SingleSignOnService singleLogoutService = (SingleSignOnService) services.next();
-					this.idpSSOLoginUrl = singleLogoutService.getLocation();
+					idpSSOLoginUrl = singleLogoutService.getLocation();
 				}
 
 				services = idpssoDescriptor.getSingleLogoutServices().iterator();
 				if (services.hasNext()) {
 					SingleLogoutService singleLogoutService1 = (SingleLogoutService) services.next();
-					this.idpSSOLogoutUrl = singleLogoutService1.getLocation();
+					idpSSOLogoutUrl = singleLogoutService1.getLocation();
 				}
 			} catch (MetadataProviderException e) {
 				e.printStackTrace();
@@ -60,31 +58,31 @@ public class FilterConfig {
 	}
 
 	public String getExcludedUrlPattern() {
-		return this.excludedUrlPattern;
+		return excludedUrlPattern;
 	}
 
 	public String getSpProviderId() {
-		return this.spProviderId;
+		return spProviderId;
 	}
 
 	public String getIdpSSOLoginUrl() {
-		return this.idpSSOLoginUrl;
+		return idpSSOLoginUrl;
 	}
 
 	public String getLogoutUrl() {
-		return this.logoutUrl;
+		return logoutUrl;
 	}
 
 	public String getAcsUrl() {
-		return this.acsUrl;
+		return acsUrl;
 	}
 
 	public Boolean isEnabled() {
-		return this.isEnabled;
+		return isEnabled;
 	}
 
 	public String getIdpSSOLogoutUrl() {
-		return this.idpSSOLogoutUrl;
+		return idpSSOLogoutUrl;
 	}
 
 	public void setIdpSSOLogoutUrl(String idpSSOLogoutUrl) {
