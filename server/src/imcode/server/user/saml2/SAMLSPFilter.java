@@ -64,13 +64,10 @@ public class SAMLSPFilter implements Filter {
 						SAMLUtils.decodeSamlMessage(request, response);
 				log.debug("SAML message has been decoded successfully");
 				samlMessageContext.setLocalEntityId(spProviderId);
-				//String relayState = getInitialRequestedResource(samlMessageContext);
 				checkSAMLResponse.verify(samlMessageContext);
 				log.debug("Starting and store SAML session..");
 				SAMLSessionManager.getInstance().createSAMLSession(request, response,
 						samlMessageContext);
-				// log.debug("User has been successfully authenticated in idP. Redirect to initial requested resource {}", relayState);
-				//response.sendRedirect(relayState);
 				return;
 			} catch (Exception e) {
 				throw new ServletException(e);
