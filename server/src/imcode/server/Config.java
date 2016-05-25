@@ -57,7 +57,7 @@ public class Config {
 	private String indexDisabledFileMimes;
 	private Set<String> indexDisabledFileExtensionsSet = Collections.emptySet();
 	private Set<String> indexDisabledFileMimesSet = Collections.emptySet();
-	private Map<String, AuthenticationMethodConfiguration> authenticationConfiguration;
+	private Map<String, AuthenticationMethodConfiguration> authenticationConfiguration = new HashMap<String, AuthenticationMethodConfiguration>();
 	private String cgiUserRoleName = "CGIUsers";
 	private String cgiMetadataUrl = "";
 	private String serverName = "http://localhost:8080";
@@ -98,16 +98,19 @@ public class Config {
 	}
 
 	public Map<String, AuthenticationMethodConfiguration> getAuthenticationConfiguration() {
-		return this.authenticationConfiguration;
+		return authenticationConfiguration;
 	}
 
 	public void setAuthenticationConfiguration(String methods) {
-		this.authenticationConfiguration = new HashMap<String, AuthenticationMethodConfiguration>();
 		String[] methodList = methods.split(",\\s?+");
 		int index = 1;
 
 		for (String authenticationMethodName : methodList) {
-			this.authenticationConfiguration.put(authenticationMethodName, (new AuthenticationMethodConfiguration()).setName(authenticationMethodName).setOrder(index));
+			AuthenticationMethodConfiguration configuration = new AuthenticationMethodConfiguration()
+					.setName(authenticationMethodName)
+					.setOrder(index);
+
+			authenticationConfiguration.put(authenticationMethodName, configuration);
 			++index;
 		}
 	}
@@ -118,7 +121,7 @@ public class Config {
 
 	public void setWorkaroundUriEncoding(String workaroundUriEncoding) {
 		Charset charset = StringUtils.isNotBlank(workaroundUriEncoding) ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset();
-		this.workaroundUriEncoding = charset.name();
+		workaroundUriEncoding = charset.name();
 	}
 
 	public File getFilePath() {
