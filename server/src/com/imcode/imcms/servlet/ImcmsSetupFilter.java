@@ -10,12 +10,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.NDC;
 
 import javax.servlet.*;
+import javax.servlet.http.*;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ResourceBundle;
@@ -84,7 +81,34 @@ public class ImcmsSetupFilter implements Filter {
                 } catch( NumberFormatException nfe ) {}
             }
         }
-        chain.doFilter( request, response );
+		try {
+			chain.doFilter( request, response );
+		} catch (Exception e) {
+			ServletRequest newRequest = new HttpServletRequestWrapper(request) {
+				@Override
+				public String getParameter(String name) {
+					String parameter = super.getParameter(name);
+					return checkParam(parameter);
+				}
+
+				@Override
+				public String[] getParameterValues(String paramName) {
+					String values[] = super.getParameterValues(paramName);
+					for (int index = 0; index < values.length; index++) {
+						values[index] = checkParam(values[index]);
+					}
+					return values;
+				}
+
+				private String checkParam(String parameter) {
+					if (parameter != null && parameter.contains(",")) {
+						parameter = parameter.split(",")[0];
+					}
+					return parameter;
+				}
+			};
+			chain.doFilter(newRequest, response);
+		}
     }
 
     public static String getDocumentIdString(ImcmsServices service, String path) {
