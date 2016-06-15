@@ -107,8 +107,12 @@ public class ImcmsSetupFilter implements Filter {
 					return parameter;
 				}
 			};
-			chain.doFilter(newRequest, response);
-		}
+            try {
+                chain.doFilter(newRequest, response);
+            } catch (Exception e1) {
+                e1.initCause(e).printStackTrace();
+            }
+        }
     }
 
     public static String getDocumentIdString(ImcmsServices service, String path) {
