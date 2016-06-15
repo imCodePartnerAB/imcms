@@ -4,9 +4,11 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.FallbackDecoder;
+import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.NDC;
 
 import javax.servlet.*;
@@ -20,6 +22,7 @@ import java.util.Set;
 
 public class ImcmsSetupFilter implements Filter {
 
+    private static final Log log = LogFactory.getLog(ImcmsSetupFilter.class);
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 
     public void doFilter( ServletRequest r, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
@@ -110,7 +113,9 @@ public class ImcmsSetupFilter implements Filter {
             try {
                 chain.doFilter(newRequest, response);
             } catch (Exception e1) {
-                e1.initCause(e).printStackTrace();
+                log.error(e);
+                log.error(e1);
+                ((HttpServletResponse)response).sendRedirect(request.getContextPath() + "/servlet/StartDoc");
             }
         }
     }
