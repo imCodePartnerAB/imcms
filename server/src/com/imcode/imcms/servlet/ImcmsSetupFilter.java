@@ -112,6 +112,7 @@ public class ImcmsSetupFilter implements Filter {
 			};
             try {
                 chain.doFilter(newRequest, response);
+            } catch (IllegalStateException ignore) {
             } catch (Exception e1) {
                 log.error(e);
                 log.error(e1);

@@ -1,2 +1,6 @@
 
 sql:
+     [copy] Copying 1 file to /home/serhii/IdeaProjects/imcms2/target/imcms/WEB-INF/sql
+     [copy] Copying 16 files to /home/serhii/IdeaProjects/imcms2/target/imcms/WEB-INF/sql/diff
+     [copy] Copying 1 file to /home/serhii/IdeaProjects/imcms2/target/imcms/WEB-INF/sql/diff
+     [copy] Copying 23 files to /home/serhii/IdeaProjects/imcms2/target/imcms/WEB-INF/sql/sprocs
