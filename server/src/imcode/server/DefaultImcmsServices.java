@@ -10,6 +10,7 @@ import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
+import com.imcode.imcms.services.ServerSettings;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
@@ -140,9 +141,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 			}
 		}
 
-		String jdbcDriver = props.getProperty("JdbcDriver");
+		String jdbcDriver = props.getProperty(ServerSettings.JDBC_DRIVER);
 		DatabaseVendor databaseVendor = DatabaseVendor.findByDriverClass(jdbcDriver);
 		if (databaseVendor == null) {
+		    log.error("Error with JdbcDriver settings! Check server properties!");
 			throw new RuntimeException("Failed to determine database vendor using JdbcDriver: " + jdbcDriver);
 		} else {
 			config.setDatabaseVendor(databaseVendor);

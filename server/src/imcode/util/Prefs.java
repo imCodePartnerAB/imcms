@@ -1,4 +1,4 @@
-package imcode.util ;
+package imcode.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,20 +14,22 @@ import java.util.Properties;
  */
 public class Prefs {
 
-    private final static Map CACHE = Collections.synchronizedMap(new HashMap());
+    private final static Map<File, Properties> CACHE = Collections.synchronizedMap(new HashMap<File, Properties>());
     private static File configPath;
 
     private Prefs() {
     }
 
-    /*
+    /**
      * This static method must be called before any of the other static methods
      */
     public static void setConfigPath(File confPath) {
         configPath = confPath;
     }
 
-    /** Flushes the cache, causing the files to be loaded again, when they are needed. */
+    /**
+     * Flushes the cache, causing the files to be loaded again, when they are needed.
+     */
     public static void flush() {
         CACHE.clear();
     }
@@ -48,17 +50,16 @@ public class Prefs {
      * @param file The file to load from.
      * @return The properties in the file.
      */
-
     private static Properties getProperties(File file) throws IOException {
-        Properties properties = (Properties) CACHE.get(file);
-        if ( properties == null ) {
+        Properties properties = CACHE.get(file);
+        if (properties == null) {
             FileInputStream in = null;
             try {
                 in = new FileInputStream(file);
                 properties = new Properties();
                 properties.load(in);
                 CACHE.put(file, properties);
-            } catch ( IOException ex ) {
+            } catch (IOException ex) {
                 throw new IOException("Prefs: File not found: " + file.getAbsolutePath());
             } finally {
                 if (null != in) {

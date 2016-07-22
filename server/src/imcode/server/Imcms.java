@@ -3,6 +3,8 @@ package imcode.server;
 import com.imcode.db.*;
 import com.imcode.db.Database;
 import com.imcode.imcms.db.*;
+import com.imcode.imcms.services.ServerSettings;
+import com.imcode.imcms.services.ServerSettingsChecker;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
@@ -22,7 +24,7 @@ import java.util.*;
 
 public class Imcms {
 
-    private static final String SERVER_PROPERTIES_FILENAME = "server.properties";
+    public static final String SERVER_PROPERTIES_FILENAME = "server.properties";
     public static final String ASCII_ENCODING = "US-ASCII";
     public static final String ISO_8859_1_ENCODING = "ISO-8859-1";
     public static final String UTF_8_ENCODING = "UTF-8";
@@ -143,27 +145,22 @@ public class Imcms {
         return apiDataSource;
     }
 
-    private static Properties getServerProperties() {
+    public static Properties getServerProperties() {
         try {
             return Prefs.getProperties(SERVER_PROPERTIES_FILENAME);
         } catch (IOException e) {
-            LOG.fatal("Failed to initialize imCMS", e);
+            LOG.fatal("Failed to initialize imCMS - can't read server properties!", e);
             throw new UnhandledException(e);
         }
     }
 
     private static BasicDataSource createDataSource(Properties props) {
 
-        String jdbcDriver = props.getProperty("JdbcDriver");
-        String jdbcUrl = props.getProperty("JdbcUrl");
-        String user = props.getProperty("User");
-        String password = props.getProperty("Password");
-        int maxConnectionCount = Integer.parseInt(props.getProperty("MaxConnectionCount"));
-
-        LOG.debug("JdbcDriver = " + jdbcDriver);
-        LOG.debug("JdbcUrl = " + jdbcUrl);
-        LOG.debug("User = " + user);
-        LOG.debug("MaxConnectionCount = " + maxConnectionCount);
+        String jdbcDriver = props.getProperty(ServerSettings.JDBC_DRIVER);
+        String jdbcUrl = props.getProperty(ServerSettings.JDBC_URL);
+        String user = props.getProperty(ServerSettings.DB_USER);
+        String password = props.getProperty(ServerSettings.DB_PASSWORD);
+        int maxConnectionCount = Integer.parseInt(props.getProperty(ServerSettings.DB_MAX_CONNECTIONS));
 
         return createDataSource(jdbcDriver, jdbcUrl, user, password, maxConnectionCount);
     }
@@ -221,8 +218,25 @@ public class Imcms {
 
             return basicDataSource;
         } catch (SQLException ex) {
-            String message = "Could not connect to database " + jdbcUrl + " with driver " + jdbcDriver + ": " + ex.getMessage() + " Error code: "
-                    + ex.getErrorCode() + " SQL State: " + ex.getSQLState();
+            String message;
+
+            if (StringUtils.trimToNull(jdbcDriver) == null) {
+                message = ServerSettingsChecker.getEmptyPropertyMessage(ServerSettings.JDBC_DRIVER);
+
+            } else if (StringUtils.trimToNull(jdbcUrl) == null) {
+                message = ServerSettingsChecker.getEmptyPropertyMessage(ServerSettings.JDBC_URL);
+
+            } else if (StringUtils.trimToNull(user) == null) {
+                message = ServerSettingsChecker.getEmptyPropertyMessage(ServerSettings.DB_USER);
+
+            } else if (StringUtils.trimToNull(password) == null) {
+                message = ServerSettingsChecker.getEmptyPropertyMessage(ServerSettings.DB_PASSWORD);
+
+            } else {
+                message = "Could not connect to database " + jdbcUrl + " with driver " + jdbcDriver + ": " + ex.getMessage() + " Error code: "
+                        + ex.getErrorCode() + " SQL State: " + ex.getSQLState();
+            }
+
             LOG.fatal(message, ex);
             throw new RuntimeException(message, ex);
         }

@@ -1,0 +1,46 @@
+package com.imcode.imcms.services;
+
+import imcode.server.Imcms;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.util.Properties;
+
+/**
+ * Created by Serhii from Ubrainians for Imcode
+ * on 22.07.16.
+ */
+public class ServerSettingsChecker {
+
+    private final static Logger LOG = Logger.getLogger(ServerSettingsChecker.class);
+
+    private static final String EMPTY_PROPERTY_MESSAGE = "Empty '%s' property! Check server settings!";
+
+    public static void check() {
+        LOG.info("Checking necessary server settings on empty values.");
+        Properties serverProperties = Imcms.getServerProperties();
+        boolean isSomePropEmpty = false;
+
+        for (String property : ServerSettings.DB_NECESSARY_SETTINGS) {
+            String value = serverProperties.getProperty(property);
+
+            if (StringUtils.trimToNull(value) == null) {
+                String message = "Necessary property '" + property + "' is not set! May cause errors!";
+                LOG.fatal(message);
+//                isSomePropEmpty = true;
+                throw new RuntimeException(message);
+            }
+        }
+
+        if (isSomePropEmpty) {
+            LOG.error("Some of properties are empty. Please, check them to avoid errors.");
+
+        } else {
+            LOG.info("All necessary properties are set into some values.");
+        }
+    }
+
+    public static String getEmptyPropertyMessage(String property) {
+        return String.format(EMPTY_PROPERTY_MESSAGE, property);
+    }
+}
