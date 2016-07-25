@@ -311,21 +311,6 @@ Imcms.Menu.Editor.prototype = {
 	_treeAdapter: {},
 	_dialogAdapter: {},
 	_autocompleteAdapter: {},
-	_currentTerm: "",
-
-	_source: function (term, callback) {
-		Imcms.Editors.Document.filteredDocumentList(term, callback)
-	},
-
-	fillDataToRaw: function () {
-		var $textField = $('.ui-autocomplete-input.ui-autocomplete-loading');
-		$textField.value(this._currentTerm + "!TEST!");
-	},
-
-	autocomplete: function (word) {
-		this._currentTerm = word;
-		this._source({term: word || "", sort: this._sort, order: this._order}, $.proxy(this.fillDataToRaw, this));
-	},
 	init: function () {
 		this._dialogAdapter = new Imcms.Document.DocumentSearchDialog(function (term, callback) {
 			Imcms.Editors.Document.filteredDocumentList(term, callback)
@@ -371,13 +356,6 @@ Imcms.Menu.Editor.prototype = {
 			.class("imcms-footer")
 			.reference("footer")
 			.text()
-			.on("input", this.autocomplete("1").bind(this))
-			.on('keydown', function (e) {
-				// pressing 'enter' in this field causes error, with this fix 'enter' (it's code is 13) ignored
-				if (e.which == 13) {
-					e.preventDefault();
-				}
-			})
 			.reference("findDocument")
 			.end()
 			.button()
@@ -462,9 +440,9 @@ Imcms.Menu.Editor.prototype = {
 		return this;
 	},
 	buildExtra: function () {
-		//this._autocompleteAdapter = new Imcms.Menu
-		//	.AutocompleteAdapter(this._builder.ref("findDocument").getHTMLElement(),
-		//	$.proxy(this._loader.read, this._loader));
+		this._autocompleteAdapter = new Imcms.Menu
+			.AutocompleteAdapter(this._builder.ref("findDocument").getHTMLElement(),
+			$.proxy(this._loader.read, this._loader));
 		this._frame = new Imcms.FrameBuilder()
 			.title("Menu Editor")
 			.click($.proxy(this.open, this))
