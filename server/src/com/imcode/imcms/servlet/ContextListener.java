@@ -30,7 +30,7 @@ public class ContextListener implements ServletContextListener {
 
         configureLogging(realPathToWebApp.toString(), configPath);
         ServerSettingsChecker.check();
-//        logPlatformInfo(servletContext.getServerInfo());
+        logPlatformInfo(servletContext.getServerInfo());
 
         try {
             Imcms.setPath(realPathToWebApp);

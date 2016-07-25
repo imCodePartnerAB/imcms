@@ -19,25 +19,18 @@ public class ServerSettingsChecker {
     public static void check() {
         LOG.info("Checking necessary server settings on empty values.");
         Properties serverProperties = Imcms.getServerProperties();
-        boolean isSomePropEmpty = false;
 
-        for (String property : ServerSettings.DB_NECESSARY_SETTINGS) {
+        for (String property : ServerSettings.NECESSARY_SETTINGS) {
             String value = serverProperties.getProperty(property);
 
             if (StringUtils.trimToNull(value) == null) {
-                String message = "Necessary property '" + property + "' is not set! May cause errors!";
+                String message = "Necessary property '" + property + "' is not set! Shutting down ImCMS.";
                 LOG.fatal(message);
-//                isSomePropEmpty = true;
                 throw new RuntimeException(message);
             }
         }
 
-        if (isSomePropEmpty) {
-            LOG.error("Some of properties are empty. Please, check them to avoid errors.");
-
-        } else {
-            LOG.info("All necessary properties are set into some values.");
-        }
+        LOG.info("All necessary properties are set into some values.");
     }
 
     public static String getEmptyPropertyMessage(String property) {

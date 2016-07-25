@@ -14,13 +14,15 @@ public class ServerSettings {
     public static final String DB_USER = "User";
     public static final String DB_PASSWORD = "Password";
     public static final String DB_MAX_CONNECTIONS = "MaxConnectionCount";
+    public static final String TEMPLATE_PATH = "TemplatePath";
 
-    public static final List<String> DB_NECESSARY_SETTINGS = Arrays.asList(
+    public static final List<String> NECESSARY_SETTINGS = Arrays.asList(
             JDBC_DRIVER,
             JDBC_URL,
             DB_USER,
             DB_PASSWORD,
-            DB_MAX_CONNECTIONS
+            DB_MAX_CONNECTIONS,
+            TEMPLATE_PATH
     );
 
 //    public static final List<String>
