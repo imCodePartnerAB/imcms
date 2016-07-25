@@ -9,7 +9,6 @@ import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
@@ -18,7 +17,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -316,7 +314,7 @@ public class TemplateChange extends HttpServlet {
 		String meta_id = req.getParameter("templates_doc");
 		String htmlStr = null;
 		if (meta_id != null) {
-			res.sendRedirect(URLEncoder.encode("AdminDoc?meta_id=" + meta_id, CharEncoding.UTF_8));
+			res.sendRedirect("AdminDoc?meta_id=" + meta_id);
 		} else {
 			htmlStr = createDocumentsUsingTemplateDialog(imcref, user, null, lang);
 		}
