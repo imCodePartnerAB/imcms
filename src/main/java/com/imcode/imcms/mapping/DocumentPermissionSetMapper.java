@@ -44,6 +44,7 @@ public class DocumentPermissionSetMapper {
             permissionPairs.add(new PermissionPair(TextDocumentPermissionSetDomainObject.EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID, textDocumentPermissionSet.getEditMenus()));
             permissionPairs.add(new PermissionPair(TextDocumentPermissionSetDomainObject.EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID, textDocumentPermissionSet.getEditTemplates()));
             permissionPairs.add(new PermissionPair(TextDocumentPermissionSetDomainObject.EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID, textDocumentPermissionSet.getEditIncludes()));
+            permissionPairs.add(new PermissionPair(TextDocumentPermissionSetDomainObject.EDIT_TEXT_DOCUMENT_LOOPS_PERMISSION_ID, textDocumentPermissionSet.getEditLoops()));
         } else {
             permissionPairs.add(new PermissionPair(DocumentPermissionSetDomainObject.EDIT_DOCUMENT_PERMISSION_ID, documentPermissionSet.getEdit()));
         }
