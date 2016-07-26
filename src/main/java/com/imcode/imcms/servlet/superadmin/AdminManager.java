@@ -130,7 +130,7 @@ public class AdminManager extends HttpServlet {
 											   LocalizedMessage errorMessage) throws IOException, ServletException {
 
 		String tabToShow = null != request.getParameter(REQUEST_PARAMETER__SHOW)
-				? request.getParameter(REQUEST_PARAMETER__SHOW) : PARAMETER_VALUE__SHOW_CREATE;
+				? request.getParameter(REQUEST_PARAMETER__SHOW) : PARAMETER_VALUE__SHOW_RECENT;
 
 		createAndShowAdminManagerPage(request, response, errorMessage, tabToShow);
 	}
@@ -187,12 +187,14 @@ public class AdminManager extends HttpServlet {
 		AdminManagerPage adminManagerPage = null;
 		switch (tabToShow) {
 			case PARAMETER_VALUE__SHOW_CREATE: {
-				AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
-				newDocumentsAdminManagerPage.setTabName(PARAMETER_VALUE__SHOW_CREATE);
-				newDocumentsAdminManagerPage.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0"));
-				adminManagerPage = newDocumentsAdminManagerPage;
+//				AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
+//				newDocumentsAdminManagerPage.setTabName(PARAMETER_VALUE__SHOW_CREATE);
+//				newDocumentsAdminManagerPage.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0"));
+//				adminManagerPage = newDocumentsAdminManagerPage;
+//
+//				break;
 
-				break;
+//                fallthrough due to IMCMS-94: no more 'create doc' feature in old admin menu
 			}
 			case PARAMETER_VALUE__SHOW_RECENT: {
 
