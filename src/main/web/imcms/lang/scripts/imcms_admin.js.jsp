@@ -92,7 +92,9 @@ String cp = request.getContextPath() ;
      ******************************************************************************************* */
 
         function openHelpW(helpDocName) {
-            window.open("@documentationurl@/Help?name=" + helpDocName + "&lang=$language", "help");
+            <%--window.open("@documentationurl@/Help?name=" + helpDocName + "&lang=$language", "help");--%>
+            <%-- IMCMS-94: replaced without arguments since we have new documentation--%>
+            window.open('@documentationurl@');
         }
 
         function popWinOpen(winW, winH, sUrl, sName, iResize, iScroll) {
