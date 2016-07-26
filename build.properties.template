@@ -100,11 +100,8 @@ webmaster-email = ${servermaster-email}
 defaultlanguage = eng
 
 
-# The imCMS documents is usually on the imCMS public site, http://doc.imcms.net/
-# If you want to install a local server for handling (modifying) the documents
-# change this:
-
-documentation-host = doc.imcms.net
+# Latest imCMS documentation url
+documentation-host = http://docs.imcms.net/en/latest/
 
 
 # ImageMagick is a software suite for creating, editing and composing images. It can be downloaded from http://www.imagemagick.org. 

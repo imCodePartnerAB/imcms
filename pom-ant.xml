@@ -151,8 +151,8 @@
 
         <filter token="defaultlanguage" value="${defaultlanguage}"/>
 
-        <filter token="documentationwebappurl" value="http://${documentation-host}/${version}"/>
-        <filter token="documentationurl" value="http://${documentation-host}/${version}"/>
+        <filter token="documentationwebappurl" value="${documentation-host}"/>
+        <filter token="documentationurl" value="${documentation-host}"/>
 
         <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
 
