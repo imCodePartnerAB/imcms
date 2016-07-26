@@ -1,9 +1,8 @@
-<%@ page import="com.imcode.db.DataSourceDatabase,
-                 com.imcode.imcms.api.ContentManagementSystem,
-                 com.imcode.imcms.mapping.ProfileMapper,
-                 com.imcode.imcms.servlet.beans.AdminManagerSubreport,
+<%@ page import="com.imcode.imcms.servlet.beans.AdminManagerSubreport,
                  com.imcode.imcms.servlet.superadmin.AdminManager,
-                 imcode.server.document.DocumentTypeDomainObject, imcode.server.document.Profile, imcode.util.jscalendar.JSCalendar, org.apache.commons.lang3.StringEscapeUtils, java.util.Iterator, java.util.List" %>
+                 imcode.util.jscalendar.JSCalendar,
+                 java.util.Iterator,
+                 java.util.List" %>
 <%@page contentType="text/html; charset=UTF-8" %><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
@@ -16,7 +15,8 @@
 
 <%
     Tab[] tabs = {
-        new Tab(AdminManager.PARAMETER_VALUE__SHOW_CREATE, "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0 ?>", "AdminManager?show=" + AdminManager.PARAMETER_VALUE__SHOW_CREATE ),
+// IMCMS-94: commented out because we don't create docs in this old menu any more
+//        new Tab(AdminManager.PARAMETER_VALUE__SHOW_CREATE, "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0 ?>", "AdminManager?show=" + AdminManager.PARAMETER_VALUE__SHOW_CREATE ),
         new Tab(AdminManager.PARAMETER_VALUE__SHOW_RECENT, "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1 ?>", "AdminManager?show=" + AdminManager.PARAMETER_VALUE__SHOW_RECENT ),
         new Tab(AdminManager.PARAMETER_VALUE__SHOW_REMINDERS, "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2 ?>", "AdminManager?show=" + AdminManager.PARAMETER_VALUE__SHOW_REMINDERS),
         new Tab(AdminManager.PARAMETER_VALUE__SHOW_SUMMARY, "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/3 ?>", "AdminManager?show=" + AdminManager.PARAMETER_VALUE__SHOW_SUMMARY),
@@ -86,56 +86,59 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 	} %>
 	<form method="POST" action="AdminManager">
 	<table border="0" cellspacing="0" cellpadding="2" width="656">
-    <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>"><%
-    if (AdminManager.PARAMETER_VALUE__SHOW_CREATE.equals( adminManagerPage.getTabName() ) || AdminManager.PARAMETER_VALUE__SHOW_RECENT.equals( adminManagerPage.getTabName() ) ) {%>
-	<tr>
-		<td><img src="<%= imagesPath %>/1x1.gif" width="1" height="26"></td>
-	</tr>
-	<tr>
-		<td colspan="2" height="22"><span class="imcmsAdmHeading"><? web/imcms/lang/jsp/admin/admin_manager.jsp/heading_create_new ?></span></td>
-	</tr>
-	<tr>
-		<td colspan="2"><img src="<%= imagesPath %>/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
-	</tr>
-	<tr>
-		<td>
-		<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_new ?>
-		<select name="<%= AdminManager.REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION %>"><%
-			DocumentTypeDomainObject[] documentTypes = {
-				DocumentTypeDomainObject.TEXT,
-				DocumentTypeDomainObject.URL,
-				DocumentTypeDomainObject.FILE,
-			} ;
-
-			for ( int i = 0; i < documentTypes.length; i++ ) {
-				DocumentTypeDomainObject documentType = documentTypes[i] ; %>
-			<option value="<%= documentType.getId() %>"><%= documentType.getName().toLocalizedString( request ) %></option><%
-			} %>
-			<option value="<%= AdminManager.REQUEST_PARAMETER__ACTION__COPY %>"><? global/Copy ?></option>
-		</select>
-		&nbsp;<? web/imcms/lang/jsp/admin/admin_manager.jsp/based_on ?>&nbsp;
-        <select onchange="getElementById('document_id').value = this.value;">
-            <option value=""></option>
-            <%
-                ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
-                DataSourceDatabase database = new DataSourceDatabase(cms.getDatabaseService().getDataSource());
-                ProfileMapper profileMapper = new ProfileMapper(database);
-                List<Profile> profiles = profileMapper.getAll();
-                for ( Profile profile : profiles ) {
-                    %><option value="<%= StringEscapeUtils.escapeHtml4(profile.getDocumentName()) %>"><%= StringEscapeUtils.escapeHtml4(profile.getName()) %></option><%
-                }
-            %>
-        </select>
-		&nbsp;<? web/imcms/lang/jsp/admin/admin_manager.jsp/with_document ?>&nbsp;
-		<input type="text" id="document_id" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="40" maxlength="255">&nbsp;
-		<input type="submit" name="<%= AdminManager.REQUEST_PARAMETER__CREATE_NEW_DOCUMENT %>" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_button ?>" class="imcmsFormBtnSmall"></td>
-	</tr>
-    <tr>
-		<td><img src="<%= imagesPath %>/1x1.gif" width="1" height="10"></td>
-	</tr>
-    </table><%
-	}
-
+    <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>">
+        <%-- IMCMS-94: commented out because we don't create docs in this old menu any more --%>
+        <%--<%--%>
+    <%--if (AdminManager.PARAMETER_VALUE__SHOW_CREATE.equals( adminManagerPage.getTabName() )--%>
+            <%--|| AdminManager.PARAMETER_VALUE__SHOW_RECENT.equals( adminManagerPage.getTabName() ) ) {--%>
+    <%--%>--%>
+	<%--<tr>--%>
+		<%--<td><img src="<%= imagesPath %>/1x1.gif" width="1" height="26"></td>--%>
+	<%--</tr>--%>
+	<%--<tr>--%>
+		<%--<td colspan="2" height="22"><span class="imcmsAdmHeading"><? web/imcms/lang/jsp/admin/admin_manager.jsp/heading_create_new ?></span></td>--%>
+	<%--</tr>--%>
+	<%--<tr>--%>
+		<%--<td colspan="2"><img src="<%= imagesPath %>/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>--%>
+	<%--</tr>--%>
+	<%--<tr>--%>
+		<%--<td>--%>
+		<%--<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_new ?>--%>
+		<%--<select name="<%= AdminManager.REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION %>"><%--%>
+			<%--DocumentTypeDomainObject[] documentTypes = {--%>
+				<%--DocumentTypeDomainObject.TEXT,--%>
+				<%--DocumentTypeDomainObject.URL,--%>
+				<%--DocumentTypeDomainObject.FILE,--%>
+			<%--} ;--%>
+			<%--for ( int i = 0; i < documentTypes.length; i++ ) {--%>
+				<%--DocumentTypeDomainObject documentType = documentTypes[i] ; %>--%>
+			<%--<option value="<%= documentType.getId() %>"><%= documentType.getName().toLocalizedString( request ) %></option><%--%>
+			<%--} %>--%>
+			<%--<option value="<%= AdminManager.REQUEST_PARAMETER__ACTION__COPY %>"><? global/Copy ?></option>--%>
+		<%--</select>--%>
+		<%--&nbsp;<? web/imcms/lang/jsp/admin/admin_manager.jsp/based_on ?>&nbsp;--%>
+        <%--<select onchange="getElementById('document_id').value = this.value;">--%>
+            <%--<option value=""></option>--%>
+            <%--<%--%>
+                <%--ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);--%>
+                <%--DataSourceDatabase database = new DataSourceDatabase(cms.getDatabaseService().getDataSource());--%>
+                <%--ProfileMapper profileMapper = new ProfileMapper(database);--%>
+                <%--List<Profile> profiles = profileMapper.getAll();--%>
+                <%--for ( Profile profile : profiles ) {--%>
+                    <%--%><option value="<%= StringEscapeUtils.escapeHtml4(profile.getDocumentName()) %>"><%= StringEscapeUtils.escapeHtml4(profile.getName()) %></option><%--%>
+                <%--}--%>
+            <%--%>--%>
+        <%--</select>--%>
+		<%--&nbsp;<? web/imcms/lang/jsp/admin/admin_manager.jsp/with_document ?>&nbsp;--%>
+		<%--<input type="text" id="document_id" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="40" maxlength="255">&nbsp;--%>
+		<%--<input type="submit" name="<%= AdminManager.REQUEST_PARAMETER__CREATE_NEW_DOCUMENT %>" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_button ?>" class="imcmsFormBtnSmall"></td>--%>
+	<%--</tr>--%>
+    <%--<tr>--%>
+		<%--<td><img src="<%= imagesPath %>/1x1.gif" width="1" height="10"></td>--%>
+	<%--</tr>--%>
+    <%--</table><%--%>
+	<%--}%>--%>
+        <%
 	List subreports = adminManagerPage.getSubreports() ;
 	for ( Iterator iterator = subreports.iterator(); iterator.hasNext(); ) {
 		AdminManagerSubreport subreport = (AdminManagerSubreport)iterator.next();
