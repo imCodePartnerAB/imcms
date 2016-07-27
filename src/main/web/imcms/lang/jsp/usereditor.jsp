@@ -15,7 +15,9 @@
 		} catch(Exception e) {}
     UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
     LocalizedMessage errorMessage = userEditorPage.getErrorMessage() ;
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><vel:velocity><html>
+%><%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<vel:velocity><html>
 <head>
 <title><? templates/sv/AdminUserResp.htm/1 ?></title>
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
@@ -162,26 +164,31 @@ function activateUseradmin_roles(){
 		<td>&nbsp;</td>
 		<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__EDITED_PHONE_NUMBER %>" size="16" maxlength="25" value="<%= userEditorPage.getCurrentPhoneNumber() %>"></td>
 		<td>&nbsp;</td>
-		<td><input type="submit" class="imcmsFormBtnSmall" value="<? templates/sv/AdminUserResp.htm/2004 ?>" name="<%= UserEditorPage.REQUEST_PARAMETER__ADD_PHONE_NUMBER %>"></td>
+        <c:if test="${not empty param['user_id']}">
+            <td><input type="submit" class="imcmsFormBtnSmall" value="<? templates/sv/AdminUserResp.htm/2004 ?>" name="<%= UserEditorPage.REQUEST_PARAMETER__ADD_PHONE_NUMBER %>"></td>
+        </c:if>
 	</tr>
 	</table></td>
 </tr>
-<tr>
-	<td class="imcmsAdmText">&nbsp;</td>
-	<td>
-	<table border="0" cellspacing="0" cellpadding="0">
-	<tr>
-		<td>
-		<select size="1" name="<%= UserEditorPage.REQUEST_PARAMETER__SELECTED_PHONE_NUMBER %>">
-		    <%= userEditorPage.getUserPhoneNumbersHtmlOptionList(request) %>
-		</select></td>
-		<td>&nbsp;</td>
-		<td><input type="submit" class="imcmsFormBtnSmall" name="<%= UserEditorPage.REQUEST_PARAMETER__EDIT_PHONE_NUMBER %>" value="<? templates/sv/AdminUserResp.htm/2005 ?>"></td>
-		<td>&nbsp;</td>
-		<td><input type="submit" class="imcmsFormBtnSmall" name="<%= UserEditorPage.REQUEST_PARAMETER__REMOVE_PHONE_NUMBER %>" value="<? templates/sv/AdminUserResp.htm/2006 ?>"></td>
-	</tr>
-	</table></td>
-</tr>
+<c:if test="${not empty param['user_id']}">
+    <tr>
+        <td class="imcmsAdmText">&nbsp;</td>
+        <td>
+            <table border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>
+                        <select size="1" name="<%= UserEditorPage.REQUEST_PARAMETER__SELECTED_PHONE_NUMBER %>">
+                            <%= userEditorPage.getUserPhoneNumbersHtmlOptionList(request) %>
+                        </select></td>
+                    <td>&nbsp;</td>
+                    <td><input type="submit" class="imcmsFormBtnSmall" name="<%= UserEditorPage.REQUEST_PARAMETER__EDIT_PHONE_NUMBER %>" value="<? templates/sv/AdminUserResp.htm/2005 ?>"></td>
+                    <td>&nbsp;</td>
+                    <td><input type="submit" class="imcmsFormBtnSmall" name="<%= UserEditorPage.REQUEST_PARAMETER__REMOVE_PHONE_NUMBER %>" value="<? templates/sv/AdminUserResp.htm/2006 ?>"></td>
+                </tr>
+            </table></td>
+    </tr>
+</c:if>
+
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/36 ?></td>
 	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__EMAIL %>" size="50" maxlength="50" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getEmailAddress())%>"></td>
