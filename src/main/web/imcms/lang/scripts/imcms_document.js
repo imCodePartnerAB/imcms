@@ -912,7 +912,7 @@ Imcms.Document.Viewer.prototype = {
 		$(collectionItem.page.getHTMLElement()).addClass("active");
 		this._activeContent = collectionItem;
 
-		if (id) {
+		if (id && typeof id == 'number') {
 			this.fillDateTimes(id);
 		}
 	},
