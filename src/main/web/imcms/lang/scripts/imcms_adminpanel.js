@@ -15,7 +15,10 @@ Imcms.Admin.Panel = {
 				left: $.cookie("admin-panel-location-left", Number) || 0,
 				top: $.cookie("admin-panel-location-top", Number) || 0
 			});
-
+		$(".admin-panel").draggable({
+			handle: ".admin-panel-draggable",
+			containment: "window"
+		});
 		if (!$adminPanel.length) {
 			return;
 		}
