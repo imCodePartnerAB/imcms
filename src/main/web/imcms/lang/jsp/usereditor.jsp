@@ -164,13 +164,13 @@ function activateUseradmin_roles(){
 		<td>&nbsp;</td>
 		<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__EDITED_PHONE_NUMBER %>" size="16" maxlength="25" value="<%= userEditorPage.getCurrentPhoneNumber() %>"></td>
 		<td>&nbsp;</td>
-        <c:if test="${not empty param['user_id']}">
+        <c:if test="${empty param['addUser']}">
             <td><input type="submit" class="imcmsFormBtnSmall" value="<? templates/sv/AdminUserResp.htm/2004 ?>" name="<%= UserEditorPage.REQUEST_PARAMETER__ADD_PHONE_NUMBER %>"></td>
         </c:if>
 	</tr>
 	</table></td>
 </tr>
-<c:if test="${not empty param['user_id']}">
+<c:if test="${empty param['addUser']}">
     <tr>
         <td class="imcmsAdmText">&nbsp;</td>
         <td>
