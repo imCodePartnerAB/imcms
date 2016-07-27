@@ -904,7 +904,7 @@ Imcms.Document.Viewer.prototype = {
 			.click($.proxy(this.cancel, this))
 			.appendTo($("body"));
 	},
-	changeTab: function (collectionItem) {
+	changeTab: function (collectionItem, id) {
 		$(this._activeContent.tab.getHTMLElement()).removeClass("active");
 		$(this._activeContent.page.getHTMLElement()).removeClass("active");
 
@@ -912,10 +912,8 @@ Imcms.Document.Viewer.prototype = {
 		$(collectionItem.page.getHTMLElement()).addClass("active");
 		this._activeContent = collectionItem;
 
-		// bad condition
-		//todo: change condition and/or arguments[1] (id) to smth better
-		if (typeof arguments[1] == 'number') {
-			this.fillDateTimes(arguments[1]);
+		if (id) {
+			this.fillDateTimes(id);
 		}
 	},
 	fillDateTimes: function (id) {
