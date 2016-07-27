@@ -23,7 +23,7 @@
 
 <body bgcolor="#FFFFFF">
 #gui_outer_start()
-#gui_head( "<? templates/sv/search/search_documents.html/1 ?>" )
+#gui_head( "<? web/imcms/lang/jsp/admin_session_counter.jsp/headline ?>" )
 
 
 <table border="0" cellspacing="0" cellpadding="0">

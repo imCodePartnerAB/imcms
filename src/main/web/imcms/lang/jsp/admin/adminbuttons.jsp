@@ -344,7 +344,9 @@ if (sFlags != null && sFlags.equals("1")) {
 <script type="text/javascript">
 //<![CDATA[
 function openHelpW(helpDocName){
-	window.open("@documentationurl@/Help?name=" + helpDocName + "&lang=$language","help");
+	<%--window.open("@documentationurl@/Help?name=" + helpDocName + "&lang=$language","help");--%>
+    <%-- IMCMS-94: replaced without arguments since we have new documentation--%>
+    window.open('@documentationurl@');
 }
 //]]>
 </script>
