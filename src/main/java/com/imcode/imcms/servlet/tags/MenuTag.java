@@ -29,17 +29,16 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 	public int doStartTag() throws JspException {
 		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
 		ParserParameters parserParameters = ParserParameters.fromRequest(request);
-		TextDocumentDomainObject document;
-		if (docId > 1001)
-			document = Imcms.getServices().getDocumentMapper().getDocument(docId);
-		else
-			document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
+
+		TextDocumentDomainObject document = (docId >= 1001)
+                ? Imcms.getServices().getDocumentMapper().getDocument(docId)
+                : (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
+
 		menuItemsCollection = document.getMenu(no).getMenuItemsVisibleToUserAsTree();
-		if (menuItemsCollection.size() > 0) {
-			return EVAL_BODY_BUFFERED;
-		} else {
-			return SKIP_BODY;
-		}
+
+        return (menuItemsCollection.size() > 0)
+                ? EVAL_BODY_BUFFERED
+                : SKIP_BODY;
 	}
 
 	public boolean nextMenuItem(MenuItemDomainObject menuItem) {
