@@ -1,26 +1,22 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.servlet.superadmin.UserEditorPage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.RoleId;
-import imcode.server.user.UserAlreadyExistsException;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.servlet.superadmin.UserEditorPage;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserBrowser extends HttpServlet {
 
@@ -60,27 +56,31 @@ public class UserBrowser extends HttpServlet {
 
     private void goToCreateUserPage(final UserFinder userFinder, HttpServletRequest request,
                                     HttpServletResponse response) throws ServletException, IOException {
-        final DispatchCommand returnCommand = new DispatchCommand() {
-            public void dispatch(HttpServletRequest request,
-                                 HttpServletResponse response) throws IOException, ServletException {
-                userFinder.forward(request, response);
-            }
-        };
+
+        final DispatchCommand returnCommand = userFinder::forward;
         final UserDomainObject newUser = new UserDomainObject();
         final UserEditorPage userEditorPage = new UserEditorPage(newUser, null, returnCommand);
-        DispatchCommand saveUserAndReturnCommand = new DispatchCommand() {
-            public void dispatch(HttpServletRequest request,
-                                 HttpServletResponse response) throws IOException, ServletException {
-                try {
-                    Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().addUser(newUser);
-                    returnCommand.dispatch(request, response);
-                } catch (UserAlreadyExistsException e) {
-                    userEditorPage.setErrorMessage(ERROR__USER_ALREADY_EXISTS);
-                    userEditorPage.forward(request, response);
+
+        userEditorPage.setOkCommand((request1, response1) -> {
+            try {
+                String phoneNumber = request1.getParameter(UserEditorPage.REQUEST_PARAMETER__EDITED_PHONE_NUMBER);
+                phoneNumber = StringUtils.trimToNull(phoneNumber);
+
+                if (phoneNumber != null) {
+                    String numberTypeIdStr = request1.getParameter(UserEditorPage.REQUEST_PARAMETER__PHONE_NUMBER_TYPE_ID);
+                    int numberTypeId = NumberUtils.toInt(numberTypeIdStr, 0);
+                    PhoneNumber number = new PhoneNumber(phoneNumber, PhoneNumberType.getPhoneNumberTypeById(numberTypeId));
+                    newUser.addPhoneNumber(number);
                 }
+
+                Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().addUser(newUser);
+                returnCommand.dispatch(request1, response1);
+            } catch (UserAlreadyExistsException e) {
+                userEditorPage.setErrorMessage(ERROR__USER_ALREADY_EXISTS);
+                userEditorPage.forward(request1, response1);
             }
-        };
-        userEditorPage.setOkCommand(saveUserAndReturnCommand);
+        });
+
         userEditorPage.forward(request, response);
     }
 
