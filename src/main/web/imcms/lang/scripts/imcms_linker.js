@@ -31,9 +31,16 @@ Linker.prototype = {
     
     get: function () {
         this._links.forEach(function (link) {
-
+            var name = arguments[0];
+            if (link.name == name) {
+                return this.buildLink(link, arguments); // need only 1... args, not all
+            }
         });
         // arg[0] is name of link
         // arg[>1] is args for link
+    },
+
+    buildLink: function (name, args) {
+        // return ready link
     }
 };
