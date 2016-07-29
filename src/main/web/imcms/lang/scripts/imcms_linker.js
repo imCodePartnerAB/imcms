@@ -16,7 +16,7 @@ var Linker = function (contextPath) {
         url: this._contextPath + _theOnlyStringLinkInApp,
         type: "GET",
         success: function (response) {
-            this._links = response.links;
+            this._links = response;
         }.bind(this)
     });
 };
@@ -27,5 +27,13 @@ Linker.prototype = {
 
     getLinks: function () {
         return this._links;
+    },
+    
+    get: function () {
+        this._links.forEach(function (link) {
+
+        });
+        // arg[0] is name of link
+        // arg[>1] is args for link
     }
 };
