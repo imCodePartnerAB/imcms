@@ -64,8 +64,12 @@ public class LinkService {
         }
     }
 
-    public static void find(String... args){
-
+    public static String find(String... args){
+        String link = linksMap.get(args[0]);
+        for (int i=1;i< args.length;i++){
+            link.replace("{"+i+"}",args[i]);
+        }
+        return link;
     }
 
 }
