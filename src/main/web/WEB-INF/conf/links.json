@@ -1,5 +1,4 @@
-{
-  "links": [
+ [
     {
       "name": "createDoc",
       "url": "/api/document",
@@ -40,4 +39,3 @@
       ]
     }
   ]
-}
