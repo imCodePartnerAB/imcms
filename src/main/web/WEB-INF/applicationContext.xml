@@ -28,7 +28,7 @@
 
 	<jpa:repositories base-package="com.imcode.imcms.mapping.jpa" entity-manager-factory-ref="myEmf"/>
 
-	<context:component-scan base-package="com.imcode.imcms.mapping, com.imcode.imcms.imagearchive"/>
+	<context:component-scan base-package="com.imcode.imcms.mapping, com.imcode.imcms.imagearchive, com.imcode.imcms.api.linker"/>
 	<context:property-placeholder location="/WEB-INF/conf/server.properties" system-properties-mode="NEVER"
 								  ignore-resource-not-found="true"/>
 

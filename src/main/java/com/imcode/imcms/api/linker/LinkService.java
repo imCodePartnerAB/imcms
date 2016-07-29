@@ -15,6 +15,7 @@ import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -22,25 +23,28 @@ import java.util.Map;
  * Created by 3emluk on 29.07.16.
  */
 @Service
-public  class LinkService {
+public class LinkService {
     @Autowired
     ServletContext servletContext;
-    private static Map<String,List<String>> linksMap = new HashedMap();
+    private static Map<String, String> linksMap = new HashedMap();
 
-//TODO must be private
-    public void initializeLinksMap(){
+    //TODO must be private
+    public void initializeLinksMap() {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-//        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//        mapper.configure(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         try {
 
             // Convert JSON string from file to Object
 
-
-//            File tmp = new File(String.valueOf(Paths.get(servletContext.getRealPath("/WEB-INF/conf/links.json"))));
-//            File webInfPath = new File(String.valueOf(this.getClass().getClassLoader().getResource("WEB-INF/conf/links.json")));
-
-            List<StringLink> links = mapper.readValue(new File(String.valueOf(Paths.get(servletContext.getRealPath("/WEB-INF/conf/links.json")))), new TypeReference<List<StringLink>>(){});
+            List<StringLink> links = mapper.readValue(new File(String.valueOf(Paths.get(servletContext.getRealPath("/WEB-INF/conf/links.json")))), new TypeReference<List<StringLink>>() {
+            });
+            for (StringLink stringLink : links) {
+                if (!linksMap.containsKey(stringLink.getName())) {
+                    linksMap.put(stringLink.getName(), stringLink.getUrl());
+                } else {
+                    linksMap.put(stringLink.getName() + "_" + System.currentTimeMillis(), stringLink.getUrl());
+                }
+            }
 
 
 //            user = mapper.readValue(new File("G:\\user.json"), User.class);
@@ -60,5 +64,8 @@ public  class LinkService {
         }
     }
 
+    public static void find(String... args){
+
+    }
 
 }
