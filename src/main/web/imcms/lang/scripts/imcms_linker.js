@@ -4,17 +4,18 @@
  */
 var Linker = function (contextPath) {
     this._contextPath = contextPath;
+    var _theOnlyStringLinkInApp = "/api/links.json";
+
     $.ajax({
-        url: this._contextPath + this._theOnlyStringLinkInApp,
+        url: this._contextPath + _theOnlyStringLinkInApp,
         type: "GET",
         success: function (response) {
             this._links = response;
         }.bind(this)
-    }).bind(this);
+    });
 };
 
 Linker.prototype = {
-    _theOnlyStringLinkInApp: "/api/links.json",
     _links: {},
     _contextPath: "",
 
