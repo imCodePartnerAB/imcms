@@ -30,6 +30,12 @@
 <!--<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/admin/image.css "/>-->
 <!--<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/admin/process.css "/>-->
 
+<script src="$contextPath/imcms/$language/scripts/imcms_linker.js"></script>
+<script type="text/javascript">
+    var Imcms = {};
+    Imcms.Linker = new Linker("$contextPath");
+</script>
+
 <script type="text/javascript" src="$contextPath/imcms/$language/scripts/imcms_base.js"></script>
 <script type="text/javascript"
         src="$contextPath/imcms/$language/scripts/imcms_bootstrap.js.jsp?meta_id=#getMetaId#&amp;language=$language&amp;flags=#getFlag#"></script>
