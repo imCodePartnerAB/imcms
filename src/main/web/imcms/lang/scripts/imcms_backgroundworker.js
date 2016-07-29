@@ -151,6 +151,11 @@ Imcms.BackgroundWorker = {
         $this.contentChangedListeners.forEach(function (item) {
             item.call($this);
         });
+        if( !$.cookie("userLoggedIn")) {
+            if ($("body").css('paddingLeft').length > 0) {
+                $("body").removeAttr('style');
+            }
+        }
     },
     /**
      * Close Process Window

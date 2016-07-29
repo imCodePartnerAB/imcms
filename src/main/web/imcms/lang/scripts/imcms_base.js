@@ -18,6 +18,10 @@ Imcms.Bootstrapper.prototype = {
     bootstrap: function (editmode) {
         if (editmode) {
             $("body").css({paddingLeft: 150, width: $(window).width() - 150});
+        } else {
+            if ($("body").css('paddingLeft').length > 0){
+                   $("body").removeAttr('style');
+            }
         }
 
         Imcms.Editors.Language = new Imcms.Language.Loader();

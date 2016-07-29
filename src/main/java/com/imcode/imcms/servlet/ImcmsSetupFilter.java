@@ -157,15 +157,24 @@ public class ImcmsSetupFilter implements Filter {
 				// In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
 				// -invalidates current session if it does not match to last user's session
 				// -redirects to the login page.
-			} else if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
-				String sessionId = session.getId();
-				String lastUserSessionId = service
-						.getImcmsAuthenticatorAndUserAndRoleMapper()
-						.getUserSessionId(user);
+			} else {
+				if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
+					String sessionId = session.getId();
+					String lastUserSessionId = service
+							.getImcmsAuthenticatorAndUserAndRoleMapper()
+							.getUserSessionId(user);
 
-				if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
-					VerifyUser.forwardToLoginPageTooManySessions(request, response);
-					return;
+					if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
+						VerifyUser.forwardToLoginPageTooManySessions(request, response);
+						return;
+					}
+				}
+                //Adding cookie to find out is user logged in
+				if (!user.isDefaultUser()) {
+					Cookie cookie = new Cookie("userLoggedIn", "true");
+					cookie.setMaxAge(session.getMaxInactiveInterval());
+					cookie.setPath("/");
+					response.addCookie(cookie);
 				}
 			}
 
