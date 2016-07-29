@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,10 @@ public class LogOut extends HttpServlet {
 
         Utility.removeRememberCdCookie(req, res);
         req.setAttribute("language", language);
+        Cookie cookie = new Cookie(ImcmsSetupFilter.USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(false));
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        res.addCookie(cookie);
         req.getRequestDispatcher("/login/logged_out.jsp").forward(req, res);
 
         Utility.makeUserLoggedOut(req);
