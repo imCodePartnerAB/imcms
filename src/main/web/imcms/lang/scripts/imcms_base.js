@@ -1,7 +1,9 @@
 /**
  * Created by Shadowgun on 12.02.2015.
  */
-var Imcms = {};
+if (!Imcms) {
+    var Imcms = {};
+}
 Imcms.Editors = {};
 Imcms.Editors.Text = {};
 Imcms.Editors.Menu = {};
