@@ -38,6 +38,7 @@ import java.util.Set;
 public class ImcmsSetupFilter implements Filter {
 
 	public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
+	public static final String USER_LOGGED_IN_COOKIE_NAME = "userLoggedIn";
 	private final Logger logger = Logger.getLogger(getClass());
 	private FilterDelegate filterDelegate;
 
@@ -171,7 +172,7 @@ public class ImcmsSetupFilter implements Filter {
 				}
                 //Adding cookie to find out is user logged in
 				if (!user.isDefaultUser()) {
-					Cookie cookie = new Cookie("userLoggedIn", "true");
+					Cookie cookie = new Cookie(USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(true));
 					cookie.setMaxAge(session.getMaxInactiveInterval());
 					cookie.setPath("/");
 					response.addCookie(cookie);

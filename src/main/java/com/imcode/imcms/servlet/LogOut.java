@@ -16,7 +16,7 @@ public class LogOut extends HttpServlet {
 
         Utility.removeRememberCdCookie(req, res);
         req.setAttribute("language", language);
-        Cookie cookie = new Cookie("userLoggedIn", "true");
+        Cookie cookie = new Cookie(ImcmsSetupFilter.USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(false));
         cookie.setMaxAge(0);
         cookie.setPath("/");
         res.addCookie(cookie);
