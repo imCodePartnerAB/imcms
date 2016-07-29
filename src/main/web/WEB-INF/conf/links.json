@@ -1,0 +1,43 @@
+{
+  "links": [
+    {
+      "name": "createDoc",
+      "url": "/api/document",
+      "args": []
+    },
+    {
+      "name": "createDoc",
+      "url": "/api/document/{1}",
+      "args": [
+        "id"
+      ]
+    },
+    {
+      "name": "create2Doc",
+      "url": "/api/document/",
+      "args": []
+    },
+    {
+      "name": "create2Doc",
+      "url": "/api/document/{1}/{2}",
+      "args": [
+        "id",
+        "mode"
+      ]
+    },
+    {
+      "name": "readDoc",
+      "url": "/api/document/{1}",
+      "args": [
+        "id"
+      ]
+    },
+    {
+      "name": "deleteDoc",
+      "url": "/api/document/{1}",
+      "args": [
+        "id"
+      ]
+    }
+  ]
+}
