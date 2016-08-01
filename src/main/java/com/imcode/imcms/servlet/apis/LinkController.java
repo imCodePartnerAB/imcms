@@ -14,7 +14,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * Created by 3emluk on 29.07.16.
+ * Created by 3emluk for imCode from Ubranians on 29.07.16.
+ * Controller is used to redirect links information in JSON format to client
+ *
+ * @author 3emluk
  */
 
 @RestController
@@ -23,6 +26,10 @@ public class LinkController {
     @Autowired
     ServletContext servletContext;
 
+    /**
+     * Send to client links information in JSON
+     * @return JSON with links information provided at links.json
+     */
     @RequestMapping(value = "/links", method = RequestMethod.GET)
     @ResponseBody
     public String getLinksConfigPath(){
