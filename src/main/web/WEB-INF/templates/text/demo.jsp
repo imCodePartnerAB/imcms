@@ -8,16 +8,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
+    <base href="${pageContext.request.contextPath}">
 	<title>${document.headline} - Powered by imCMS from imCode Partner AB</title>
 	<meta charset="utf-8"/>
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/imcms/css/template/demo.css"/>
 	<script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
     <script src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_linker.js"></script>
-    <script type="text/javascript">
-        <%-- Initialization of Imcmc js-side --%>
-        var Imcms = {};
-        Imcms.Linker = new Linker("${pageContext.request.contextPath}");
-    </script>
 </head>
 <body>
 <div class="container">
