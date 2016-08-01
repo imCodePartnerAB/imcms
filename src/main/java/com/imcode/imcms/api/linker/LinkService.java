@@ -153,6 +153,9 @@ public class LinkService {
     }
 
     public List<StringLink> getJSON(){
+        if (null == linksMap || linksMap.size() == 0) {
+            initializeLinksMap();
+        }
         return links;
     }
 }
