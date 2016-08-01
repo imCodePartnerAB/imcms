@@ -3,7 +3,10 @@ package com.imcode.imcms.api.linker;
 import java.util.List;
 
 /**
- * Created by 3emluk on 29.07.16.
+ * Created by 3emluk for imCode from Ubranians on 29.07.16.
+ * Used to save link arguments from JSON file
+ *
+ * @author 3emluk
  */
 public class StringLink {
     private String name;
