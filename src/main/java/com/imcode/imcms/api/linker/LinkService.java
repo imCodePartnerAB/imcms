@@ -97,7 +97,8 @@ public class LinkService {
         }
 
         String link = linksMap.get(args[0]);
-        if (link == null) {
+        if (link == null || findArgsAmount(link) != args.length - 1) {
+            link = null;
             for (Map.Entry<String, String> e : linksMap.entrySet()) {
                 if (e.getKey().startsWith(args[0])) {
                     if (findArgsAmount(e.getValue()) != args.length - 1) {
