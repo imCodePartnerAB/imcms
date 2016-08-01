@@ -2,6 +2,8 @@ package com.imcode.imcms.api.linker;
 
 import com.sun.org.apache.xpath.internal.functions.WrongNumberArgsException;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -30,17 +32,18 @@ import java.util.regex.Pattern;
  */
 @Service
 public class LinkService {
-    @Autowired
-    ServletContext servletContext;
     private final static String URL_PARAMETER_PATTERN = "\\{\\d{1,3}\\}";
-    private Map<String, String> linksMap = new HashedMap();
 
+    private ServletContext servletContext;
+    private static final Log logger = LogFactory.getLog(LinkService.class);
+    private Map<String, String> linksMap;
     private List<StringLink> links;
 
-//    TODO Find a way to initialize LinkService
-//    public LinkService() {
-//        initializeLinksMap();
-//    }
+    @Autowired
+    public LinkService(ServletContext servletContext) {
+        this.servletContext = servletContext;
+        initializeLinksMap();
+    }
 
     /**
      * Getting all links from JSON file and saving it in RAM
@@ -51,6 +54,7 @@ public class LinkService {
             // Convert JSON string from file to Object
             links = mapper.readValue(new File(String.valueOf(Paths.get(servletContext.getRealPath("/WEB-INF/conf/links.json")))), new TypeReference<List<StringLink>>() {
             });
+            linksMap = new HashedMap();
             for (StringLink stringLink : links) {
                 if (!linksMap.containsKey(stringLink.getName())) {
                     linksMap.put(stringLink.getName(), stringLink.getUrl());
@@ -59,12 +63,10 @@ public class LinkService {
                 }
             }
 
-        } catch (JsonGenerationException e) {
-            e.printStackTrace();
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
+        } catch (JsonGenerationException | JsonMappingException e) {
+            logger.error("Can't parse links.json file, " + e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error reading links.json, " + e.getMessage());
         }
     }
 
@@ -72,7 +74,7 @@ public class LinkService {
      * Getting amount of parameters in link pattern
      *
      * @param urlPattern
-     * @return
+     * @return amount of arguments in url
      */
     private int findArgsAmount(String urlPattern) {
         int count = 0;
@@ -94,10 +96,6 @@ public class LinkService {
      * @throws WrongNumberArgsException if link has different amount of arguments than described at lists.json
      */
     public String get(String... args) throws NameNotFoundException, WrongNumberArgsException {
-        if (null == linksMap || linksMap.size() == 0) {
-            initializeLinksMap();
-        }
-
         String link = linksMap.get(args[0]);
         if (link == null || findArgsAmount(link) != args.length - 1) {
             link = null;
@@ -152,10 +150,12 @@ public class LinkService {
         return "redirect:" + this.get(args);
     }
 
-    public List<StringLink> getJSON(){
-        if (null == linksMap || linksMap.size() == 0) {
-            initializeLinksMap();
-        }
+    /**
+     * Method for redirecting JSON from file
+     *
+     * @return List of Links from links.json
+     */
+    public List<StringLink> getJSON() {
         return links;
     }
 }
