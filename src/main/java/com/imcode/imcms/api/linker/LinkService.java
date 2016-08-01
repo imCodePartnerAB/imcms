@@ -11,7 +11,6 @@ import org.codehaus.jackson.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.naming.NameNotFoundException;
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
@@ -92,10 +91,8 @@ public class LinkService {
      * @param args First argument - name of link according to links.json
      *             All next arguments reflects order of mask "{}" at pattern
      * @return Completed link with provided arguments for pattern
-     * @throws NameNotFoundException    if link with provided name wasn't found or different amount of arguments
-     * @throws WrongNumberArgsException if link has different amount of arguments than described at lists.json
      */
-    public String get(String... args) throws NameNotFoundException, WrongNumberArgsException {
+    public String get(String... args) {
         String link = linksMap.get(args[0]);
         if (link == null || findArgsAmount(link) != args.length - 1) {
             link = null;
@@ -112,10 +109,12 @@ public class LinkService {
         }
 
         if (link == null) {
-            throw new NameNotFoundException();
+            logger.error("Link with name " + args[0] + " not found in links.json");
+            return null;
         }
         if (findArgsAmount(link) != args.length - 1) {
-            throw new WrongNumberArgsException("Arguments count doesn't match with pattern");
+            logger.error("Link with name " + args[0] + ", unexpected amount of arguments");
+            return null;
         }
 
         for (int i = 1; i < args.length; i++) {
@@ -130,10 +129,8 @@ public class LinkService {
      * @param args First argument - name of link according to links.json
      *             All next arguments reflects order of mask "{}" at pattern
      * @return Completed link with provided arguments for pattern
-     * @throws NameNotFoundException    if link with provided name wasn't found or different amount of arguments
-     * @throws WrongNumberArgsException if link has different amount of arguments than described at lists.json
      */
-    public String forward(String... args) throws NameNotFoundException, WrongNumberArgsException {
+    public String forward(String... args) {
         return "forward:" + this.get(args);
     }
 
@@ -143,10 +140,8 @@ public class LinkService {
      * @param args First argument - name of link according to links.json
      *             All next arguments reflects order of mask "{}" at pattern
      * @return Completed link with provided arguments for pattern
-     * @throws NameNotFoundException    if link with provided name wasn't found or different amount of arguments
-     * @throws WrongNumberArgsException if link has different amount of arguments than described at lists.json
      */
-    public String redirect(String... args) throws NameNotFoundException, WrongNumberArgsException {
+    public String redirect(String... args) {
         return "redirect:" + this.get(args);
     }
 
