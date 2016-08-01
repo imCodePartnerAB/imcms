@@ -20,19 +20,29 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by 3emluk on 29.07.16.
+ * Created by 3emluk for imCode from Ubranians on 29.07.16.
+ * Provided service allow to save same links for future reuse.
+ * There is possibility to parametrize links to make them more dynamic.
+ * All links and params for them are stored at links.json file.
+ * Repeating number of parameters is not allowed
+ *
+ * @author 3emluk
  */
 @Service
 public class LinkService {
     @Autowired
     ServletContext servletContext;
-    private  Map<String, String> linksMap = new HashedMap();
+    private final static String URL_PARAMETER_PATTERN = "\\{\\d{1,3}\\}";
+    private Map<String, String> linksMap = new HashedMap();
 
 //    TODO Find a way to initialize LinkService
 //    public LinkService() {
 //        initializeLinksMap();
 //    }
 
+    /**
+     * Getting all links from JSON file and saving it in RAM
+     */
     private void initializeLinksMap() {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -47,7 +57,6 @@ public class LinkService {
                 }
             }
 
-
         } catch (JsonGenerationException e) {
             e.printStackTrace();
         } catch (JsonMappingException e) {
@@ -57,8 +66,33 @@ public class LinkService {
         }
     }
 
+    /**
+     * Getting amount of parameters in link pattern
+     *
+     * @param urlPattern
+     * @return
+     */
+    private int findArgsAmount(String urlPattern) {
+        int count = 0;
+        Pattern pattern = Pattern.compile(URL_PARAMETER_PATTERN);
+        Matcher matcher = pattern.matcher(urlPattern);
+        while (matcher.find()) {
+            count++;
+        }
+        return count;
+    }
+
+    /**
+     * Gets link by it's name with filled in params according to url pattern
+     *
+     * @param args First argument - name of link according to links.json
+     *             All next arguments reflects order of mask "{}" at pattern
+     * @return Completed link with provided arguments for pattern
+     * @throws NameNotFoundException    if link with provided name wasn't found or different amount of arguments
+     * @throws WrongNumberArgsException if link has different amount of arguments than described at lists.json
+     */
     public String get(String... args) throws NameNotFoundException, WrongNumberArgsException {
-        if(null == linksMap || linksMap.size() == 0){
+        if (null == linksMap || linksMap.size() == 0) {
             initializeLinksMap();
         }
 
@@ -89,22 +123,30 @@ public class LinkService {
         return link;
     }
 
+    /**
+     * Gets link by it's name with filled in params according to url pattern and concatenates it with "forward:"
+     *
+     * @param args First argument - name of link according to links.json
+     *             All next arguments reflects order of mask "{}" at pattern
+     * @return Completed link with provided arguments for pattern
+     * @throws NameNotFoundException    if link with provided name wasn't found or different amount of arguments
+     * @throws WrongNumberArgsException if link has different amount of arguments than described at lists.json
+     */
     public String forward(String... args) throws NameNotFoundException, WrongNumberArgsException {
         return "forward:" + this.get(args);
     }
 
+    /**
+     * Gets link by it's name with filled in params according to url pattern and concatenates it with "redirect:"
+     *
+     * @param args First argument - name of link according to links.json
+     *             All next arguments reflects order of mask "{}" at pattern
+     * @return Completed link with provided arguments for pattern
+     * @throws NameNotFoundException    if link with provided name wasn't found or different amount of arguments
+     * @throws WrongNumberArgsException if link has different amount of arguments than described at lists.json
+     */
     public String redirect(String... args) throws NameNotFoundException, WrongNumberArgsException {
         return "redirect:" + this.get(args);
-    }
-
-    private int findArgsAmount(String urlPattern) {
-        int count = 0;
-        Pattern pattern = Pattern.compile("\\{\\d{1,3}\\}");
-        Matcher matcher = pattern.matcher(urlPattern);
-        while (matcher.find()) {
-            count++;
-        }
-        return count;
     }
 
 }
