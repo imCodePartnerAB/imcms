@@ -2,6 +2,8 @@ package com.imcode.imcms.api.linker;
 
 import com.sun.org.apache.xpath.internal.functions.WrongNumberArgsException;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -9,7 +11,6 @@ import org.codehaus.jackson.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.naming.NameNotFoundException;
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
@@ -30,17 +31,18 @@ import java.util.regex.Pattern;
  */
 @Service
 public class LinkService {
-    @Autowired
-    ServletContext servletContext;
     private final static String URL_PARAMETER_PATTERN = "\\{\\d{1,3}\\}";
-    private Map<String, String> linksMap = new HashedMap();
 
+    private ServletContext servletContext;
+    private static final Log logger = LogFactory.getLog(LinkService.class);
+    private Map<String, String> linksMap;
     private List<StringLink> links;
 
-//    TODO Find a way to initialize LinkService
-//    public LinkService() {
-//        initializeLinksMap();
-//    }
+    @Autowired
+    public LinkService(ServletContext servletContext) {
+        this.servletContext = servletContext;
+        initializeLinksMap();
+    }
 
     /**
      * Getting all links from JSON file and saving it in RAM
@@ -51,6 +53,7 @@ public class LinkService {
             // Convert JSON string from file to Object
             links = mapper.readValue(new File(String.valueOf(Paths.get(servletContext.getRealPath("/WEB-INF/conf/links.json")))), new TypeReference<List<StringLink>>() {
             });
+            linksMap = new HashedMap();
             for (StringLink stringLink : links) {
                 if (!linksMap.containsKey(stringLink.getName())) {
                     linksMap.put(stringLink.getName(), stringLink.getUrl());
@@ -59,12 +62,10 @@ public class LinkService {
                 }
             }
 
-        } catch (JsonGenerationException e) {
-            e.printStackTrace();
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
+        } catch (JsonGenerationException | JsonMappingException e) {
+            logger.error("Can't parse links.json file, " + e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error reading links.json, " + e.getMessage());
         }
     }
 
@@ -72,7 +73,7 @@ public class LinkService {
      * Getting amount of parameters in link pattern
      *
      * @param urlPattern
-     * @return
+     * @return amount of arguments in url
      */
     private int findArgsAmount(String urlPattern) {
         int count = 0;
@@ -90,14 +91,8 @@ public class LinkService {
      * @param args First argument - name of link according to links.json
      *             All next arguments reflects order of mask "{}" at pattern
      * @return Completed link with provided arguments for pattern
-     * @throws NameNotFoundException    if link with provided name wasn't found or different amount of arguments
-     * @throws WrongNumberArgsException if link has different amount of arguments than described at lists.json
      */
-    public String get(String... args) throws NameNotFoundException, WrongNumberArgsException {
-        if (null == linksMap || linksMap.size() == 0) {
-            initializeLinksMap();
-        }
-
+    public String get(String... args) {
         String link = linksMap.get(args[0]);
         if (link == null || findArgsAmount(link) != args.length - 1) {
             link = null;
@@ -114,10 +109,12 @@ public class LinkService {
         }
 
         if (link == null) {
-            throw new NameNotFoundException();
+            logger.error("Link with name " + args[0] + " not found in links.json");
+            return null;
         }
         if (findArgsAmount(link) != args.length - 1) {
-            throw new WrongNumberArgsException("Arguments count doesn't match with pattern");
+            logger.error("Link with name " + args[0] + ", unexpected amount of arguments");
+            return null;
         }
 
         for (int i = 1; i < args.length; i++) {
@@ -132,10 +129,8 @@ public class LinkService {
      * @param args First argument - name of link according to links.json
      *             All next arguments reflects order of mask "{}" at pattern
      * @return Completed link with provided arguments for pattern
-     * @throws NameNotFoundException    if link with provided name wasn't found or different amount of arguments
-     * @throws WrongNumberArgsException if link has different amount of arguments than described at lists.json
      */
-    public String forward(String... args) throws NameNotFoundException, WrongNumberArgsException {
+    public String forward(String... args) {
         return "forward:" + this.get(args);
     }
 
@@ -145,17 +140,17 @@ public class LinkService {
      * @param args First argument - name of link according to links.json
      *             All next arguments reflects order of mask "{}" at pattern
      * @return Completed link with provided arguments for pattern
-     * @throws NameNotFoundException    if link with provided name wasn't found or different amount of arguments
-     * @throws WrongNumberArgsException if link has different amount of arguments than described at lists.json
      */
-    public String redirect(String... args) throws NameNotFoundException, WrongNumberArgsException {
+    public String redirect(String... args) {
         return "redirect:" + this.get(args);
     }
 
-    public List<StringLink> getJSON(){
-        if (null == linksMap || linksMap.size() == 0) {
-            initializeLinksMap();
-        }
+    /**
+     * Method for redirecting JSON from file
+     *
+     * @return List of Links from links.json
+     */
+    public List<StringLink> getJSON() {
         return links;
     }
 }
