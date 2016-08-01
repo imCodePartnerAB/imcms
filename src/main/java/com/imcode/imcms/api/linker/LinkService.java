@@ -28,8 +28,12 @@ public class LinkService {
     ServletContext servletContext;
     private static Map<String, String> linksMap = new HashedMap();
 
+    public LinkService() {
+        initializeLinksMap();
+    }
+
     //TODO must be private
-    public void initializeLinksMap() {
+    private void initializeLinksMap() {
         ObjectMapper mapper = new ObjectMapper();
 //        mapper.configure(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         try {
@@ -64,10 +68,18 @@ public class LinkService {
         }
     }
 
-    public static String find(String... args){
+    public static String find(String... args) {
         String link = linksMap.get(args[0]);
-        for (int i=1;i< args.length;i++){
-            link.replace("{"+i+"}",args[i]);
+        if (link == null) {
+            for (Map.Entry<String, String> e : linksMap.entrySet()) {
+                if (e.getKey().startsWith(args[0])) {
+                    link = e.getValue();
+                    break;
+                }
+            }
+        }
+        for (int i = 1; i < args.length; i++) {
+            link.replace("{" + i + "}", args[i]);
         }
         return link;
     }
