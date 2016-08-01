@@ -37,11 +37,17 @@ Linker.prototype = {
      * @returns {string} built link
      */
     get: function (name, arg) {
-        var args = arguments;
+        var args = Array.prototype.slice
+            .call(arguments)
+            .filter(function (e) {
+                return (typeof e !== 'undefined' && e !== null);
+            });
 
-        var result = this._links.find(function (link) {
-            return (link.name == name && link.args.length == args.length - 1);
-        }).url;
+        var result = this._links
+            .find(function (link) {
+                return (link.name == name && link.args.length == args.length - 1);
+            })
+            .url;
 
         // 0 argument is link's name, 1.. is args to url so we start from 1
         for (var i = 1; i < args.length; i++) {
