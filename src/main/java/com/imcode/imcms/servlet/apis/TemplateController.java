@@ -23,9 +23,11 @@ public class TemplateController {
 
     @RequestMapping
     protected Object getTemplatesList() {
-
+    //TODO REMOVE Testing stuff
         try {
-            facade.getLinkService().find("readDoc","2331");
+            String str1 = facade.getLinkService().get("readDoc","2331");
+            String str2 = facade.getLinkService().redirect("readDoc","2331");
+            String str3 = facade.getLinkService().forward("readDoc","2331");
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         } catch (WrongNumberArgsException e) {

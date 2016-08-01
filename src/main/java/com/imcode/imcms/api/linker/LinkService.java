@@ -28,16 +28,16 @@ public class LinkService {
     ServletContext servletContext;
     private  Map<String, String> linksMap = new HashedMap();
 
-    public LinkService() {
+//    TODO Find a way to initialize LinkService
+//    public LinkService() {
 //        initializeLinksMap();
-    }
+//    }
 
     private void initializeLinksMap() {
         ObjectMapper mapper = new ObjectMapper();
         try {
             // Convert JSON string from file to Object
             List<StringLink> links = mapper.readValue(new File(String.valueOf(Paths.get(servletContext.getRealPath("/WEB-INF/conf/links.json")))), new TypeReference<List<StringLink>>() {
-//            List<StringLink> links = mapper.readValue(new File(String.valueOf(Thread.currentThread().getContextClassLoader().getResourceAsStream("/WEB-INF/conf/links.json"))), new TypeReference<List<StringLink>>() {
             });
             for (StringLink stringLink : links) {
                 if (!linksMap.containsKey(stringLink.getName())) {
@@ -48,14 +48,6 @@ public class LinkService {
             }
 
 
-//            user = mapper.readValue(new File("G:\\user.json"), User.class);
-            System.out.println("");
-
-            // Convert JSON string to Object
-//            String jsonInString = "{\"age\":33,\"messages\":[\"msg 1\",\"msg 2\"],\"name\":\"mkyong\"}";
-//            User user1 = mapper.readValue(jsonInString, User.class);
-//            System.out.println(user1);
-
         } catch (JsonGenerationException e) {
             e.printStackTrace();
         } catch (JsonMappingException e) {
@@ -65,7 +57,7 @@ public class LinkService {
         }
     }
 
-    public String find(String... args) throws NameNotFoundException, WrongNumberArgsException {
+    public String get(String... args) throws NameNotFoundException, WrongNumberArgsException {
         if(null == linksMap || linksMap.size() == 0){
             initializeLinksMap();
         }
@@ -95,6 +87,14 @@ public class LinkService {
             link = link.replace("{" + i + "}", args[i]);
         }
         return link;
+    }
+
+    public String forward(String... args) throws NameNotFoundException, WrongNumberArgsException {
+        return "forward:" + this.get(args);
+    }
+
+    public String redirect(String... args) throws NameNotFoundException, WrongNumberArgsException {
+        return "redirect:" + this.get(args);
     }
 
     private int findArgsAmount(String urlPattern) {
