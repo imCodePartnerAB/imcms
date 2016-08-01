@@ -3,14 +3,12 @@
  * on 28.07.16.
  *
  * Service for correct and convenient working with links
- * @param contextPath - context path of web app, set only if present, else ignore it.
  * @constructor
  */
-var Linker = function (contextPath) {
-    if (contextPath) {
-        this._contextPath = contextPath;
-    }
-    var _theOnlyStringLinkInApp = "/api/links.json";
+var Linker = function () {
+    // tag 'base' should be on every page and should hold context path
+    this._contextPath = $("base").attr("href");
+    var _theOnlyStringLinkInApp = "/api/links";
 
     $.ajax({
         url: this._contextPath + _theOnlyStringLinkInApp,
@@ -25,22 +23,34 @@ Linker.prototype = {
     _links: [],
     _contextPath: "",
 
+    /**
+     * @returns {Array} all links
+     */
     getLinks: function () {
         return this._links;
     },
-    
-    get: function () {
-        this._links.forEach(function (link) {
-            var name = arguments[0];
-            if (link.name == name) {
-                return this.buildLink(link, arguments); // need only 1... args, not all
-            }
-        });
-        // arg[0] is name of link
-        // arg[>1] is args for link
-    },
 
-    buildLink: function (name, args) {
-        // return ready link
+    /**
+     * Use it to get some link.
+     * @param {string} name - the name of url, from links.json file.
+     * @param {...string} arg - arguments for url in correct order
+     * @returns {string} built link
+     */
+    get: function (name, arg) {
+        var args = arguments;
+
+        var result = this._links.find(function (link) {
+            return (link.name == name && link.args.length == args.length - 1);
+        }).url;
+
+        // 0 argument is link's name, 1.. is args to url so we start from 1
+        for (var i = 1; i < args.length; i++) {
+            result = result.replace("{" + i + "}", args[i]);
+        }
+
+        return this._contextPath + result;
     }
 };
+
+var Imcms = {};
+Imcms.Linker = new Linker();
