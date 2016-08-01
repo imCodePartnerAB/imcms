@@ -1,12 +1,14 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.imagearchive.service.Facade;
+import com.sun.org.apache.xpath.internal.functions.WrongNumberArgsException;
 import imcode.server.Imcms;
 import imcode.server.document.TemplateDomainObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.naming.NameNotFoundException;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +24,14 @@ public class TemplateController {
     @RequestMapping
     protected Object getTemplatesList() {
 
-        facade.getLinkService().initializeLinksMap();
+        try {
+            facade.getLinkService().find("readDoc","2331");
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+        } catch (WrongNumberArgsException e) {
+            e.printStackTrace();
+        }
+
 
         return Imcms.getServices().getTemplateMapper().getAllTemplates()
                 .stream()
