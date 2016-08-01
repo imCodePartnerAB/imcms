@@ -33,8 +33,6 @@
 			name: "<%=resolveLangName(request)%>"
 		};
 
-		Imcms.contextPath = "<%=request.getContextPath()%>";
-
 		$.ajaxSetup({cache: false});
 		CKEDITOR.disableAutoInline = true;
 

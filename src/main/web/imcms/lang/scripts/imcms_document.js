@@ -3,10 +3,9 @@ Imcms.Document.API = function () {
 
 };
 Imcms.Document.API.prototype = {
-	path: Imcms.contextPath + "/api/document",
 	create: function (request, response) {
 		$.ajax({
-			url: this.path,
+			url: Imcms.Linker.get("document.create"),
 			type: "POST",
 			data: request,
 			success: response
@@ -14,7 +13,7 @@ Imcms.Document.API.prototype = {
 	},
 	read: function (request, response) {
 		$.ajax({
-			url: this.path + "/" + (request.id || ""),
+			url: Imcms.Linker.get("document.read", (request.id || "")),
 			type: "GET",
 			data: request,
 			success: response
@@ -22,7 +21,7 @@ Imcms.Document.API.prototype = {
 	},
 	create2: function (request, response, path) {
 		$.ajax({
-			url: this.path + "/" + (path ? path.join("/") : ""),
+			url: Imcms.Linker.get("document.create2", (path ? path.join("/") : null)),
 			type: "POST",
 			contentType: false,
 			processData: false,
@@ -32,7 +31,7 @@ Imcms.Document.API.prototype = {
 	},
 	delete: function (request, response) {
 		$.ajax({
-			url: this.path + "/" + request,
+			url: Imcms.Linker.get("document.delete", request),
 			type: "DELETE",
 			success: response
 		})
@@ -918,7 +917,7 @@ Imcms.Document.Viewer.prototype = {
 	},
 	fillDateTimes: function (id) {
 		$.ajax({
-			url: Imcms.contextPath + "/api/document/getDateTimes/" + id,
+			url: Imcms.Linker.get("dateTimes.fill", id),
 			type: "GET",
 			success: function (response) {
 				$.each(response, function (key, element) {
@@ -1164,7 +1163,7 @@ Imcms.Document.Viewer.prototype = {
 		$(this._builder[0]).fadeOut();
 	},
 	saveDateTimes: function (id) {
-		var url = Imcms.contextPath + "/api/document/dateTimes/" + id + "?" + this.resolveDateTimes();
+		var url = Imcms.Linker.get("dateTimes.save", id, this.resolveDateTimes());
 
 		$.ajax({
 			url: url,

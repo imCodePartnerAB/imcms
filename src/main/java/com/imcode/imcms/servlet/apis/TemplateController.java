@@ -22,10 +22,10 @@ public class TemplateController {
     @RequestMapping
     protected Object getTemplatesList() {
     //TODO REMOVE Testing stuff
-            String str1 = facade.getLinkService().get("readDoc","2331");
-            String str3 = facade.getLinkService().forward("readDoc","2331");
-            String str4 = facade.getLinkService().forward("readDoc","2331","draft");
-            String str5 = facade.getLinkService().forward("readDoc","2331","draft");
+            String str1 = facade.getLinkService().get("document.read","2331");
+            String str3 = facade.getLinkService().forward("document.read","2331");
+            String str4 = facade.getLinkService().forward("document.read","2331","draft");
+            String str5 = facade.getLinkService().forward("document.read","2331","draft");
 
 
         return Imcms.getServices().getTemplateMapper().getAllTemplates()

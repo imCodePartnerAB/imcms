@@ -18,7 +18,7 @@ Imcms.BackgroundWorker = {
         $this.processWindow = $("<div>")
             .addClass("process-window")
             .appendTo("body")
-            .append($("<img>").addClass("logo").attr("src", Imcms.contextPath + "/images/logo-imcms.png"))
+            .append($("<img>").addClass("logo").attr("src", Imcms.Linker.get("imcmsLogo")))
             .append($spinner)
             .css({width: $window.width(), height: $window.height(), padding: ($window.height() - 400) / 2 + "px 0"})
             .fadeIn(1000);

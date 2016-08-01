@@ -6,11 +6,10 @@ Imcms.File.API = function () {
 
 };
 Imcms.File.API.prototype = {
-	path: Imcms.contextPath + "/api/content/files",
 	create: function (request, response) {
 		Imcms.Logger.log("File.API::create :",
 			$.ajax.bind($, {
-				url: this.path + "/" + request.folder + "/" + request.file,
+				url: Imcms.Linker.get("files", request.folder, request.file),
 				type: "POST",
 				data: request,
 				success: response
@@ -19,7 +18,7 @@ Imcms.File.API.prototype = {
 	read: function (request, response) {
 		Imcms.Logger.log("File.API::read :",
 			$.ajax.bind($, {
-				url: this.path + "/" + request.folder + "/" + request.file,
+				url: Imcms.Linker.get("files", request.folder, request.file),
 				type: "GET",
 				success: response
 			}), request);
@@ -27,7 +26,7 @@ Imcms.File.API.prototype = {
 	update: function (request, response) {
 		Imcms.Logger.log("File.API::update :",
 			$.ajax.bind($, {
-				url: this.path + "/" + request.folder + "/" + request.file,
+				url: Imcms.Linker.get("files", request.folder, request.file),
 				type: "PATCH",
 				data: request,
 				success: response
@@ -36,7 +35,7 @@ Imcms.File.API.prototype = {
 	delete: function (request, response) {
 		Imcms.Logger.log("File.API::delete :",
 			$.ajax.bind($, {
-				url: this.path + "/" + request.folder + "/" + request.file,
+				url: Imcms.Linker.get("files", request.folder, request.file),
 				type: "DELETE",
 				success: response
 			}), request);

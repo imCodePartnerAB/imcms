@@ -1,41 +1,90 @@
- [
-    {
-      "name": "createDoc",
-      "url": "/api/document",
-      "args": []
-    },
-    {
-      "name": "createDoc",
-      "url": "/api/document/{1}",
-      "args": [
-        "id"
-      ]
-    },
-    {
-      "name": "create2Doc",
-      "url": "/api/document/",
-      "args": []
-    },
-    {
-      "name": "create2Doc",
-      "url": "/api/document/{1}/{2}",
-      "args": [
-        "id",
-        "mode"
-      ]
-    },
-    {
-      "name": "readDoc",
-      "url": "/api/document/{1}",
-      "args": [
-        "id"
-      ]
-    },
-    {
-      "name": "deleteDoc",
-      "url": "/api/document/{1}",
-      "args": [
-        "id"
-      ]
-    }
-  ]
+[
+  {
+    "name": "document.create",
+    "url": "/api/document",
+    "args": []
+  },
+  {
+    "name": "document.create2",
+    "url": "/api/document/",
+    "args": []
+  },
+  {
+    "name": "document.create2",
+    "url": "/api/document/{1}/{2}",
+    "args": [
+      "id",
+      "mode"
+    ]
+  },
+  {
+    "name": "document.read",
+    "url": "/api/document/{1}",
+    "args": [
+      "id"
+    ]
+  },
+  {
+    "name": "document.delete",
+    "url": "/api/document/{1}",
+    "args": [
+      "id"
+    ]
+  },
+  {
+    "name": "loop",
+    "url": "/api/loop",
+    "args": []
+  },
+  {
+    "name": "category",
+    "url": "/api/category",
+    "args": []
+  },
+  {
+    "name": "dateTimes.fill",
+    "url": "/api/document/getDateTimes/{1}",
+    "args": [
+      "id"
+    ]
+  },
+  {
+    "name": "dateTimes.save",
+    "url": "/api/document/dateTimes/{1}?{2}",
+    "args": [
+      "id",
+      "resolvedDateTimes"
+    ]
+  },
+  {
+    "name": "imcmsLogo",
+    "url": "/images/logo-imcms.png",
+    "args": []
+  },
+  {
+    "name": "files",
+    "url": "/api/content/files/{1}/{2}",
+    "args": [
+      "folder",
+      "file"
+    ]
+  },
+  {
+    "name": "folders",
+    "url": "/api/content/folders/{1}/{2}",
+    "args": [
+      "folderBase",
+      "folderName"
+    ]
+  },
+  {
+    "name": "content.image",
+    "url": "",
+    "args": []
+  },
+  {
+    "name": "",
+    "url": "",
+    "args": []
+  }
+]
