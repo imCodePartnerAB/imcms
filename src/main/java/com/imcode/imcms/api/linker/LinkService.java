@@ -35,6 +35,8 @@ public class LinkService {
     private final static String URL_PARAMETER_PATTERN = "\\{\\d{1,3}\\}";
     private Map<String, String> linksMap = new HashedMap();
 
+    private List<StringLink> links;
+
 //    TODO Find a way to initialize LinkService
 //    public LinkService() {
 //        initializeLinksMap();
@@ -47,7 +49,7 @@ public class LinkService {
         ObjectMapper mapper = new ObjectMapper();
         try {
             // Convert JSON string from file to Object
-            List<StringLink> links = mapper.readValue(new File(String.valueOf(Paths.get(servletContext.getRealPath("/WEB-INF/conf/links.json")))), new TypeReference<List<StringLink>>() {
+            links = mapper.readValue(new File(String.valueOf(Paths.get(servletContext.getRealPath("/WEB-INF/conf/links.json")))), new TypeReference<List<StringLink>>() {
             });
             for (StringLink stringLink : links) {
                 if (!linksMap.containsKey(stringLink.getName())) {
@@ -150,4 +152,7 @@ public class LinkService {
         return "redirect:" + this.get(args);
     }
 
+    public List<StringLink> getJSON(){
+        return links;
+    }
 }
