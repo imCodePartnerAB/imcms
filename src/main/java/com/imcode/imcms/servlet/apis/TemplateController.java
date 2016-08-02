@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/template")
 public class TemplateController {
 
-    @Autowired
-    Facade facade;
-
     @RequestMapping
     protected Object getTemplatesList() {
         return Imcms.getServices().getTemplateMapper().getAllTemplates()
