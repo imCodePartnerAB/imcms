@@ -4,10 +4,12 @@ import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.I18nMessage$;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
+import com.imcode.imcms.api.linker.LinkService;
 import com.imcode.imcms.db.BooleanFromRowFactory;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
+import com.imcode.imcms.imagearchive.service.Facade;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -25,8 +27,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -68,7 +72,19 @@ public class Utility {
 	private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
 	private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
+
+	@Autowired
+	private Facade facade;
+
+	private static Utility utility;
+
 	private Utility() {
+	}
+
+	@PostConstruct
+	public void init(){
+		utility = this;
+		utility.facade = this.facade;
 	}
 
 	/**
@@ -564,6 +580,19 @@ public class Utility {
 	@SuppressWarnings("unused")
 	public static Integer getInteger(Object object) {
 		return null == object ? null : ((Number) object).intValue();
+	}
+
+
+	public static LinkService getLinkService(){
+		return  utility.facade.getLinkService();
+	}
+
+	public Facade getFacade() {
+		return facade;
+	}
+
+	public void setFacade(Facade facade) {
+		this.facade = facade;
 	}
 
 	private static class ObjectPairToMapEntryTransformer implements Transformer {

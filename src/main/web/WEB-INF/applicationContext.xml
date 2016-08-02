@@ -89,6 +89,10 @@
 		<property name="fallbackToSystemLocale" value="false"/>
 		<property name="useCodeAsDefaultMessage" value="true"/>
 	</bean>
+<!--TODO Try to find better way-->
+	<bean id="utility" class="imcode.util.Utility" init-method="init">
+		<property name="facade" ref="facade"/>
+	</bean>
 
 	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
 		  p:driverClassName="${JdbcDriver}"

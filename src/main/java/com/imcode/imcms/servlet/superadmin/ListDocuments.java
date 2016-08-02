@@ -52,7 +52,7 @@ public class ListDocuments extends HttpServlet {
         }
 
         req.setAttribute(REQUEST_ATTRIBUTE__FORM_DATA, formData);
-        req.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2() + "/jsp/document_list.jsp").forward(req, res);
+        req.getRequestDispatcher(Utility.getLinkService().get("document.list", user.getLanguageIso639_2())).forward(req, res);
 
     }
 

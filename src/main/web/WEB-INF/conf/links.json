@@ -32,6 +32,13 @@
     ]
   },
   {
+    "name": "document.list",
+    "url": "/imcms/{1}/jsp/document_list.jsp",
+    "args": [
+      "language"
+    ]
+  },
+  {
     "name": "loop",
     "url": "/api/loop",
     "args": []
