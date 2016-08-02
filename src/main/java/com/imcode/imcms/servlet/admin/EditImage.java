@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import imcode.util.ImcmsImageUtils;
+import imcode.util.Utility;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.Map;
@@ -66,7 +67,7 @@ public class EditImage extends HttpServlet {
     }
 
     public static String linkTo(HttpServletRequest request, String returnPath) {
-        return request.getContextPath() + "/servlet/EditImage?" + REQUEST_PARAMETER__RETURN + "=" + returnPath;
+        return request.getContextPath() + Utility.getLinkService().get("admin.image.edit.return", REQUEST_PARAMETER__RETURN, returnPath);
     }
 
     public static ImageDomainObject getImage(HttpServletRequest request) {

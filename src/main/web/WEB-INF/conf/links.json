@@ -155,5 +155,13 @@
       "id",
       "flags"
     ]
+  },
+  {
+    "name": "admin.image.edit.return",
+    "url": "/servlet/EditImage?{1}={2}",
+    "args": [
+      "returnParameter",
+      "returnArgument"
+    ]
   }
 ]
