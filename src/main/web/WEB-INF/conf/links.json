@@ -163,5 +163,13 @@
       "returnParameter",
       "returnArgument"
     ]
+  },
+  {
+    "name": "admin.servlet.link.edit",
+    "url": "/servlet/EditLink?{1}={2}",
+    "args": [
+      "returnParameter",
+      "returnArgument"
+    ]
   }
 ]
