@@ -578,13 +578,9 @@ Imcms.Menu.API = function () {
 };
 
 Imcms.Menu.API.prototype = {
-	path: Imcms.contextPath + "/api/menu",
-
-	//path: "http://localhost:8080/imcms/api/menu",
-
 	delete: function (request, response) {
 		$.ajax({
-			url: this.path + "/" + request.meta + "-" + request.no,
+			url: Imcms.Linker.get("menu", request.meta, request.no),
 			type: "DELETE",
 			data: request,
 			success: response
@@ -593,7 +589,7 @@ Imcms.Menu.API.prototype = {
 
 	update: function (request, response) {
 		$.ajax({
-			url: this.path + "/" + request.meta + "-" + request.no,
+			url: Imcms.Linker.get("menu", request.meta, request.no),
 			type: "PUT",
 			data: request,
 			success: response
@@ -602,7 +598,7 @@ Imcms.Menu.API.prototype = {
 
 	read: function (request, response) {
 		$.ajax({
-			url: this.path + "/" + request.meta + "-" + request.no,
+			url: Imcms.Linker.get("menu", request.meta, request.no),
 			type: "GET",
 			data: request,
 			success: response
@@ -611,7 +607,7 @@ Imcms.Menu.API.prototype = {
 
 	create: function (request, response) {
 		$.ajax({
-			url: this.path + "/" + request.meta + "-" + request.no,
+			url: Imcms.Linker.get("menu", request.meta, request.no),
 			type: "POST",
 			data: request,
 			success: response

@@ -5,11 +5,10 @@ Imcms.Image = {};
 Imcms.Image.API = function () {
 };
 Imcms.Image.API.prototype = {
-    path: Imcms.contextPath + "/api/content/image",
     read: function (request, response) {
         Imcms.Logger.log("Image.API::read :",
             $.ajax.bind($, {
-                url: this.path + "/" + request.object,
+                url: Imcms.Linker.get("content.image", request.object),
                 type: "GET",
                 success: response
             }), request);
@@ -17,7 +16,7 @@ Imcms.Image.API.prototype = {
     update: function (request, response) {
         Imcms.Logger.log("Image.API::update :",
             $.ajax.bind($, {
-                url: this.path + "/" + request.object,
+                url: Imcms.Linker.get("content.image", request.object),
                 type: "POST",
                 data: request,
                 success: response
@@ -300,7 +299,7 @@ Imcms.Image.ImageViewAdapter.prototype = {
     },
     update: function (src) {
         this._imageSource = src;
-        this._imageView.attr("src", Imcms.contextPath + src.urlPathRelativeToContextPath)
+        this._imageView.attr("src", Imcms.Linker._contextPath + src.urlPathRelativeToContextPath)
     }
 };
 

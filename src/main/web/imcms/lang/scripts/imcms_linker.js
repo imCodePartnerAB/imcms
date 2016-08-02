@@ -8,11 +8,12 @@
 var Linker = function () {
     // tag 'base' should be on every page and should hold context path
     this._contextPath = $("base").attr("href");
-    var _theOnlyStringLinkInApp = "/api/links";
+    var linksPath = this._contextPath + "/api/links";
 
     $.ajax({
-        url: this._contextPath + _theOnlyStringLinkInApp,
+        url: linksPath,
         type: "GET",
+        async: false,
         success: function (response) {
             this._links = response;
         }.bind(this)

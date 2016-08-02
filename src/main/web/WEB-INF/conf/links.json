@@ -79,12 +79,47 @@
   },
   {
     "name": "content.image",
-    "url": "",
+    "url": "/api/content/image/{1}",
+    "args": [
+      "object"
+    ]
+  },
+  {
+    "name": "language",
+    "url": "/api/language",
     "args": []
   },
   {
-    "name": "",
-    "url": "",
+    "name": "menu",
+    "url": "/api/menu/{1}-{2}",
+    "args": [
+      "meta",
+      "no"
+    ]
+  },
+  {
+    "name": "permission",
+    "url": "/api/permission",
+    "args": []
+  },
+  {
+    "name": "role",
+    "url": "/api/role",
+    "args": []
+  },
+  {
+    "name": "template",
+    "url": "/api/template",
+    "args": []
+  },
+  {
+    "name": "text",
+    "url": "/api/text",
+    "args": []
+  },
+  {
+    "name": "text.validate",
+    "url": "/api/text/validate",
     "args": []
   }
 ]

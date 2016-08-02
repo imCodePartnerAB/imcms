@@ -20,10 +20,9 @@ Imcms.Permission.API = function () {
 
 };
 Imcms.Permission.API.prototype = {
-    path: Imcms.contextPath + "/api/permission",
     read: function (request, response) {
         $.ajax({
-            url: this.path,
+            url: Imcms.Linker.get("permission"),
             type: "GET",
             data: request,
             success: response
