@@ -85,8 +85,9 @@ public class ChangeImage extends HttpServlet {
                     public void dispatch(HttpServletRequest request,
                                          HttpServletResponse response) throws IOException {
                         String redirectURL = returnURL == null
-                                ? "AdminDoc?meta_id=" + document.getId() + "&flags="
-                                + ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES
+                                ? Utility.getLinkService().get("admin.document.redirect",
+                                String.valueOf(document.getId()),
+                                String.valueOf(ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES))
                                 : returnURL;
 
                         response.sendRedirect(redirectURL);

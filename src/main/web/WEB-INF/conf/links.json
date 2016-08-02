@@ -147,5 +147,13 @@
     "args": [
       "id"
     ]
+  },
+  {
+    "name": "admin.document.redirect",
+    "url": "AdminDoc?meta_id={1}&flags={2}",
+    "args": [
+      "id",
+      "flags"
+    ]
   }
 ]
