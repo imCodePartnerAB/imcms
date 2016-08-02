@@ -77,7 +77,7 @@ public class AdminDoc extends HttpServlet {
 					vec.add("#adminMode#");
 					vec.add(Html.getAdminButtons(user, document, req, res));
 					vec.add("#doc_type_description#");
-					vec.add(imcref.getAdminTemplate("adminbuttons/adminbuttons" + doc_type + "_description.html", user, null));
+					vec.add(imcref.getAdminTemplate(Utility.getLinkService().get("admin.adminButtons", String.valueOf(doc_type)), user, null));
 					Utility.setDefaultHtmlContentType(res);
 					res.getWriter().write(imcref.getAdminTemplate("docinfo.html", user, vec));
 					return;
@@ -198,7 +198,7 @@ public class AdminDoc extends HttpServlet {
 			request.setAttribute("document", document);
 			request.setAttribute("user", cms.getCurrentUser());
 
-			request.getRequestDispatcher("/WEB-INF/jsp/admin/edit_document.jsp").forward(request, response);
+			request.getRequestDispatcher(Utility.getLinkService().get("admin.document.edit")).forward(request, response);
 		}
 
 		@Override
@@ -223,7 +223,7 @@ public class AdminDoc extends HttpServlet {
 		}
 
 		public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException {
-			response.sendRedirect("AdminDoc?meta_id=" + document.getId());
+			response.sendRedirect(Utility.getLinkService().get("admin.document.redirect", String.valueOf(document.getId())));
 		}
 	}
 }

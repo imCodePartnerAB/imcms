@@ -128,5 +128,24 @@
     "name": "text.validate",
     "url": "/api/text/validate",
     "args": []
+  },
+  {
+    "name": "admin.adminButtons",
+    "url": "adminbuttons/adminbuttons{1}_description.html",
+    "args": [
+      "doc_type"
+    ]
+  },
+  {
+    "name": "admin.document.edit",
+    "url": "/WEB-INF/jsp/admin/edit_document.jsp",
+    "args": []
+  },
+  {
+    "name": "admin.document.redirect",
+    "url": "AdminDoc?meta_id={1}",
+    "args": [
+      "id"
+    ]
   }
 ]
