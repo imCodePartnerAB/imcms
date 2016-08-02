@@ -13,7 +13,14 @@
 	<meta charset="utf-8"/>
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/imcms/css/template/demo.css"/>
 	<script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
-    <script src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_linker.js"></script>
+    <%-- this is ES6-to-5 compiler --%>
+    <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+    <script src="https://google.github.io/traceur-compiler/bin/BrowserSystem.js"></script>
+    <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
+    <script type="module">
+        import "${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_linker.js";
+    </script>
+    <%--<script src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_linker.js"></script>--%>
 </head>
 <body>
 <div class="container">
