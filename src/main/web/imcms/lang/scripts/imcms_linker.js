@@ -39,21 +39,20 @@ Linker.prototype = {
      */
     get: function (name, arg) {
         var args = Array.prototype.slice
-            .call(arguments)
+            .call(arguments, 1) // 0 argument is link's name, 1.. is args to url so we start from 1
             .filter(function (e) {
                 return (typeof e !== 'undefined' && e !== null);
             });
 
         var result = this._links
             .find(function (link) {
-                return (link.name == name && link.args.length == args.length - 1);
+                return (link.name == name && link.args.length == args.length);
             })
             .url;
 
-        // 0 argument is link's name, 1.. is args to url so we start from 1
-        for (var i = 1; i < args.length; i++) {
-            result = result.replace("{" + i + "}", args[i]);
-        }
+        args.forEach(function (arg, index) {
+            result = result.replace("{" + (index + 1) + "}", arg);
+        });
 
         return this._contextPath + result;
     }
