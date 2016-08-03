@@ -46,6 +46,7 @@ body > .container > .header .menu ul {
 }
 
 body > .container > .header .menu ul > li {
+    text-align: center;
     float: left;
     display: block;
 }
@@ -55,6 +56,25 @@ body > .container > .header .menu ul > li a {
     line-height: 20px;
     padding: 10px;
     display: block;
+}
+
+body > .container > .header .menu ul > li > div {
+    text-decoration: none;
+    line-height: 20px;
+    padding: 10px;
+    display: none;
+}
+
+body > .container > .header .menu ul > li:hover > div {
+    text-decoration: none;
+    line-height: 20px;
+    padding: 10px;
+    display: block;
+}
+
+body > .container > .header .menu ul > li:hover div:hover,
+body > .container > .header .menu ul > li:hover div:hover a {
+    background-color: #70FAFF;
 }
 
 body > .container > .header .auth {
