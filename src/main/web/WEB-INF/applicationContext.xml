@@ -28,7 +28,7 @@
 
 	<jpa:repositories base-package="com.imcode.imcms.mapping.jpa" entity-manager-factory-ref="myEmf"/>
 
-	<context:component-scan base-package="com.imcode.imcms.mapping, com.imcode.imcms.imagearchive, com.imcode.imcms.api.linker"/>
+	<context:component-scan base-package="com.imcode.imcms.mapping, com.imcode.imcms.imagearchive, com.imcode.imcms.api.linker, imcode.util"/>
 	<context:property-placeholder location="/WEB-INF/conf/server.properties" system-properties-mode="NEVER"
 								  ignore-resource-not-found="true"/>
 
@@ -88,10 +88,6 @@
 		</property>
 		<property name="fallbackToSystemLocale" value="false"/>
 		<property name="useCodeAsDefaultMessage" value="true"/>
-	</bean>
-<!--TODO Try to find better way-->
-	<bean id="utility" class="imcode.util.Utility" init-method="init">
-		<property name="facade" ref="facade"/>
 	</bean>
 
 	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
