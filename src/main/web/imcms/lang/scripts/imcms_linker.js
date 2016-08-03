@@ -1,8 +1,16 @@
+Array.prototype.flatMap = function(lambda) {
+    return Array.prototype.concat.apply([], this.map(lambda));
+};
+
 /**
  * Created by Serhii from Ubrainians for Imcode
  * on 28.07.16.
  *
- * Service for correct and convenient working with links
+ * Service for correct and convenient working with links.
+ * Provides context path from <base> tag.
+ * Works with links from links.json file.
+ *
+ * @author Serhii
  */
 class Linker {
     constructor() {
@@ -30,15 +38,24 @@ class Linker {
     }
 
     /**
-     * Use it to get some link.
+     * Use it to get some link with context path.
      * @param {string} name - the name of url, from links.json file.
-     * @param {...string} arg - arguments for url in correct order
+     * @param {...string} [args] - arguments for url in correct order
      * @returns {string} built link
      */
-    get(name, arg) {
-        var args = Array.prototype.slice
-            .call(arguments, 1) // 0 argument is link's name, 1.. is args to url so we start from 1
-            .filter((arg) => typeof arg !== 'undefined' && arg !== null);
+    get(name, ...args) {
+        return this._contextPath + this.getRelative(name, args);
+    }
+
+    /**
+     * Use it to get some link without context path.
+     * @param {string} name - the name of url, from links.json file.
+     * @param {...string} [args] - arguments for url in correct order
+     * @returns {string} built link
+     */
+    getRelative(name, ...args) {
+        args = args.flatMap((arg) => arg); // [[]] -> []
+        args = args.filter((arg) => typeof arg !== 'undefined' && arg !== null);
 
         var result = this._links
             .find((link) => link.name == name && link.args.length == args.length)
@@ -48,7 +65,7 @@ class Linker {
             result = result.replace("{" + (index + 1) + "}", arg);
         });
 
-        return this._contextPath + result;
+        return result;
     }
 }
 
