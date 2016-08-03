@@ -1,20 +1,18 @@
 package com.imcode.imcms.api.linker;
 
-import com.sun.org.apache.xpath.internal.functions.WrongNumberArgsException;
-import org.apache.commons.collections.map.HashedMap;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -28,44 +26,42 @@ import java.util.regex.Pattern;
  * Repeating number of parameters is not allowed
  *
  * @author 3emluk
+ * edited by Serhii
  */
 @Service
 public class LinkService {
     private final static String URL_PARAMETER_PATTERN = "\\{\\d{1,3}\\}";
-
-    private ServletContext servletContext;
     private static final Log logger = LogFactory.getLog(LinkService.class);
-    private Map<String, String> linksMap;
+    private static final String LINKS_JSON = "/WEB-INF/conf/links.json";
+    private Map<String, String> linksMap = new HashedMap<>();
     private List<StringLink> links;
 
     @Autowired
     public LinkService(ServletContext servletContext) {
-        this.servletContext = servletContext;
-        initializeLinksMap();
+        String realPathToJSON = servletContext.getRealPath(LINKS_JSON);
+        try {
+            initializeLinksMap(realPathToJSON);
+        } catch (JsonGenerationException | JsonMappingException e) {
+            logger.error("Can't parse links.json file, " + e.getMessage());
+        } catch (IOException e) {
+            logger.error("Error reading links.json, " + e.getMessage());
+        }
     }
 
     /**
      * Getting all links from JSON file and saving it in RAM
      */
-    private void initializeLinksMap() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            // Convert JSON string from file to Object
-            links = mapper.readValue(new File(String.valueOf(Paths.get(servletContext.getRealPath("/WEB-INF/conf/links.json")))), new TypeReference<List<StringLink>>() {
-            });
-            linksMap = new HashedMap();
-            for (StringLink stringLink : links) {
-                if (!linksMap.containsKey(stringLink.getName())) {
-                    linksMap.put(stringLink.getName(), stringLink.getUrl());
-                } else {
-                    linksMap.put(stringLink.getName() + "_" + System.currentTimeMillis(), stringLink.getUrl());
-                }
+    private void initializeLinksMap(String realPathToJSON) throws IOException {
+        // Convert JSON string from file to Object
+        File linksJSON = new File(realPathToJSON);
+        links = new ObjectMapper().readValue(linksJSON, new TypeReference<List<StringLink>>() {
+        });
+        for (StringLink stringLink : links) {
+            if (!linksMap.containsKey(stringLink.getName())) {
+                linksMap.put(stringLink.getName(), stringLink.getUrl());
+            } else {
+                linksMap.put(stringLink.getName() + "_" + System.currentTimeMillis(), stringLink.getUrl());
             }
-
-        } catch (JsonGenerationException | JsonMappingException e) {
-            logger.error("Can't parse links.json file, " + e.getMessage());
-        } catch (IOException e) {
-            logger.error("Error reading links.json, " + e.getMessage());
         }
     }
 
