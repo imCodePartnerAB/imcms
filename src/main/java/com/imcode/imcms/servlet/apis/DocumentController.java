@@ -1,6 +1,9 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentCommonContent;
@@ -21,9 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -295,11 +295,11 @@ public class DocumentController {
 
 	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/{id}")
 	protected Object changeDateTimes(@PathVariable(value = "id") Integer id,
-									 @RequestParam(value = "created", required = true, defaultValue = "") String created,
-									 @RequestParam(value = "modified", required = true, defaultValue = "") String modified,
-									 @RequestParam(value = "archived", required = true, defaultValue = "") String archived,
-									 @RequestParam(value = "published", required = true, defaultValue = "") String published,
-									 @RequestParam(value = "publication-end", required = true, defaultValue = "") String publicationEnd) {
+									 @RequestParam(value = "created", defaultValue = "") String created,
+									 @RequestParam(value = "modified", defaultValue = "") String modified,
+									 @RequestParam(value = "archived", defaultValue = "") String archived,
+									 @RequestParam(value = "published", defaultValue = "") String published,
+									 @RequestParam(value = "publication-end", defaultValue = "") String publicationEnd) {
 
 		//	/dateTimes/{id}?created=2010-08-08T10:10:00Z&modified=.......
 		Map<String, Object> result = new HashMap<>();
