@@ -1,6 +1,3 @@
-/**
- * Created by Shadowgun on 08.04.2015.
- */
 Imcms.Admin = {};
 Imcms.Admin.Panel = {
 	init: function () {
@@ -13,7 +10,8 @@ Imcms.Admin.Panel = {
 			$doc = $(document),
 			$adminPanel = $(".admin-panel").css({
 				left: $.cookie("admin-panel-location-left", Number) || 0,
-				top: $.cookie("admin-panel-location-top", Number) || 0
+				top: $.cookie("admin-panel-location-top", Number) || 0,
+                width: 837 //experimental value
 			});
 
         $adminPanel.draggable({
@@ -23,7 +21,6 @@ Imcms.Admin.Panel = {
         if (!$adminPanel.length) {
 			return;
 		}
-
 
 		panelWidth = $adminPanel.width();
 		$adminPanel.css("minWidth", panelWidth);
