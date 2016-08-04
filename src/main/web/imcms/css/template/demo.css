@@ -73,6 +73,7 @@ body > .container > .header .menu ul > li:hover > div {
 }
 
 body > .container > .header .menu ul > li:hover div:hover,
+body > .container > .header .menu ul > li:hover > a:hover,
 body > .container > .header .menu ul > li:hover div:hover a {
     background-color: #70FAFF;
 }
