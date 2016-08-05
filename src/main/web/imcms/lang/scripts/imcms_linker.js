@@ -52,7 +52,7 @@ Linker.prototype = {
     _getLinks: function () {
         var linksFromCookies = Cookies.getJSON(this._linksCookiesKey);
 
-        if (linksFromCookies.length) {
+        if (linksFromCookies && linksFromCookies.length) {
             this._links = linksFromCookies;
 
         } else {
