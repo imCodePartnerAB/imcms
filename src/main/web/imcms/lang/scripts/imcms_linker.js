@@ -41,8 +41,7 @@ Linker.prototype = {
      */
     _setLinksToCookies: function () {
         Cookies.set(this._linksCookiesKey, this._links, {
-            expires: 1,
-            path: this._contextPath || "/"
+            expires: 1
         });
     },
 
@@ -51,7 +50,7 @@ Linker.prototype = {
      * @private
      */
     _getLinks: function () {
-        var linksFromCookies = Cookies.getJSON(this._linksCookiesKey, {path: this._contextPath || "/"});
+        var linksFromCookies = Cookies.getJSON(this._linksCookiesKey);
 
         if (linksFromCookies.length) {
             this._links = linksFromCookies;
@@ -138,7 +137,7 @@ Linker.prototype = {
      */
     _prepareArgs: function (args) {
         return Array.prototype.slice
-            .call(arguments, 1) // 0 argument is link's name, 1.. is args to url so we start from 1
+            .call(args, 1) // 0 argument is link's name, 1.. is args to url so we start from 1
             .flatMap(function (arg) { // [[]] -> []
                 return arg;
             })

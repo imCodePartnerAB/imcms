@@ -25,6 +25,11 @@
     ]
   },
   {
+    "name": "document.read",
+    "url": "/api/document/",
+    "args": []
+  },
+  {
     "name": "document.delete",
     "url": "/api/document/{1}",
     "args": [
