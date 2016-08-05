@@ -359,16 +359,9 @@ Imcms.Menu.Editor.prototype = {
 			.reference("findDocument")
 			.end()
 			.button()
-			.html("…")
-			.class("imcms-neutral browse")
-			.on("click", $.proxy(this._dialogAdapter.open, this._dialogAdapter))
-			.end()
-			.button()
 			.html("Add")
 			.class("imcms-positive add")
-			.on("click", $.proxy(function () {
-				this._addItem();
-			}, this))
+			.on("click", $.proxy(this._dialogAdapter.open, this._dialogAdapter))
 			.end()
 			.button()
 			.html("Create new…")
