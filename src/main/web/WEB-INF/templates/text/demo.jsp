@@ -13,6 +13,7 @@
 	<meta charset="utf-8"/>
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/imcms/css/template/demo.css"/>
 	<script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
+    <script src="${pageContext.request.contextPath}/js/js.cookie.js"></script>
     <script src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_linker.js"></script>
 </head>
 <body>

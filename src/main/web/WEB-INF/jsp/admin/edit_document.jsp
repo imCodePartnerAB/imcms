@@ -17,6 +17,7 @@
     <script src="${pageContext.request.contextPath}/js/jquery.nearest.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
+    <script src="${pageContext.request.contextPath}/js/js.cookie.js"></script>
 
     <script src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_linker.js"></script>
 
