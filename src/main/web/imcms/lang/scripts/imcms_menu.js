@@ -355,9 +355,6 @@ Imcms.Menu.Editor.prototype = {
 			.div()
 			.class("imcms-footer")
 			.reference("footer")
-			.text()
-			.reference("findDocument")
-			.end()
 			.button()
 			.html("Add")
 			.class("imcms-positive add")
@@ -433,9 +430,6 @@ Imcms.Menu.Editor.prototype = {
 		return this;
 	},
 	buildExtra: function () {
-		this._autocompleteAdapter = new Imcms.Menu
-			.AutocompleteAdapter(this._builder.ref("findDocument").getHTMLElement(),
-			$.proxy(this._loader.read, this._loader));
 		this._frame = new Imcms.FrameBuilder()
 			.title("Menu Editor")
 			.click($.proxy(this.open, this))
