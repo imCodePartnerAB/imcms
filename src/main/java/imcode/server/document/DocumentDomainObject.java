@@ -3,6 +3,7 @@ package imcode.server.document;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.UserService;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.mapping.container.DocRef;
@@ -525,4 +526,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	public boolean isNew() {
 		return getId() == ID_NEW;
 	}
+
+    public String[] getByUsersArr(UserService userService) {
+        Integer publisherId = getPublisherId();
+        return new String[]{
+                userService.getUser(getCreatorId()).getFirstName(),
+                "",
+                "",
+                 publisherId == null ? "" : userService.getUser(publisherId).getFirstName(),
+                "",
+        };
+    }
 }

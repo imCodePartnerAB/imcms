@@ -270,18 +270,22 @@ public class DocumentController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/getDateTimes/{id}")
-	protected Object getDateTimes(@PathVariable(value = "id") int id) {
+	protected Object getDateTimes(@PathVariable(value = "id") int id,
+                                  HttpServletRequest request) {
 
 		Map<String, Object> map = new HashedMap<>();
 		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
 
 		Date[] dates = doc.getArrDates();
+        String[] byUsers = doc.getByUsersArr(ContentManagementSystem.fromRequest(request).getUserService());
 
 		for (int i = 0; i < DATE_TYPES.length; i++) {
-			String[] dateTime = Utility.formatDateTime(dates[i]).split(" ");
+		    String userBy = byUsers[i];
+			String[] dateTimeBy = Utility.formatDateTime(dates[i]).split(" ");
 			map.put(DATE_TYPES[i], new HashedMap<String, Object>() {{
-				put("date", dateTime[0]);
-				put("time", dateTime[1]);
+				put("date", dateTimeBy[0]);
+				put("time", dateTimeBy[1]);
+                put("by", userBy);
 			}});
 		}
 		return map;
