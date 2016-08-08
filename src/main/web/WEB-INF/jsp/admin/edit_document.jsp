@@ -24,6 +24,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/speakingurl/5.0.1/speakingurl.min.js"></script>
     <script src="${pageContext.request.contextPath}/js/jquery.cookie.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/imcms/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="$contextPath/imcms/ckeditor/lang/sv.js"></script>
+    <script type="text/javascript" src="$contextPath/imcms/ckeditor/lang/en.js"></script>
     <script type="text/javascript"
             src="${pageContext.request.contextPath}/imcms/jsformbuilder/JSFormBuilder.js"></script>
     <script src="${pageContext.request.contextPath}/imcms/prism/prism.js"></script>
