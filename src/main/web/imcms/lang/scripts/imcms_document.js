@@ -1163,7 +1163,7 @@ Imcms.Document.Viewer.prototype = {
 		$(this._builder[0]).fadeOut();
 	},
 	saveDateTimes: function (id) {
-		var url = Imcms.Linker.get("dateTimes.save", id, this.resolveDateTimes());
+		var url = Imcms.Linker.get("dateTimes.save", id + "", this.resolveDateTimes());
 
 		$.ajax({
 			url: url,
