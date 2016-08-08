@@ -334,7 +334,7 @@ Imcms.Document.Viewer.prototype = {
 			.button()
 			.class("imcms-positive")
 			.html("OK")
-			.on("click", $.proxy(this.apply, this, this._options.data.id))
+			.on("click", $.proxy(this.apply, this))
 			.end()
 			.button()
 			.class("imcms-neutral")
@@ -914,20 +914,23 @@ Imcms.Document.Viewer.prototype = {
 	},
 	fillDateTimes: function () {
 	    var id = this._options.data.id;
-        setTimeout(function () {
-            $.ajax({
-                url: Imcms.Linker.get("dateTimes.fill", id),
-                type: "GET",
-                success: function (response) {
-                    $.each(response, function (key, element) {
-                        var date = key;
-                        $.each(element, function (key, element) {
-                            $("input[name=" + date + "-" + key + "]").val(element);
+
+        if (id) {
+            setTimeout(function () {
+                $.ajax({
+                    url: Imcms.Linker.get("dateTimes.fill", id),
+                    type: "GET",
+                    success: function (response) {
+                        $.each(response, function (key, element) {
+                            var date = key;
+                            $.each(element, function (key, element) {
+                                $("input[name=" + date + "-" + key + "]").val(element);
+                            });
                         });
-                    });
-                }
-            });
-        }, 500);
+                    }
+                });
+            }, 500);
+        }
 	},
 	loadTemplates: function (data) {
 		$.each(data, $.proxy(this.addTemplate, this));
@@ -1163,7 +1166,7 @@ Imcms.Document.Viewer.prototype = {
 		$(this._builder[0]).fadeOut();
 	},
 	saveDateTimes: function (id) {
-		var url = Imcms.Linker.get("dateTimes.save", id + "", this.resolveDateTimes());
+		var url = Imcms.Linker.get("dateTimes.save", id, this.resolveDateTimes());
 
 		$.ajax({
 			url: url,
@@ -1187,11 +1190,15 @@ Imcms.Document.Viewer.prototype = {
 		});
 		return url;
 	},
-	apply: function (id) {
+	apply: function () {
 		if (!$(this._builder[0]).find("form").valid()) {
 			return false;
 		}
-		this.saveDateTimes(id);
+
+		if (this._options.data.id) {
+            this.saveDateTimes(this._options.data.id);
+
+        }
 		this._options.onApply(this);
 		this.destroy();
 	},
