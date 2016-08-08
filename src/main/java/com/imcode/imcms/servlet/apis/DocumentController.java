@@ -55,7 +55,7 @@ public class DocumentController {
 
 	private static final Collection<String> WRONG_DATE = Collections.unmodifiableCollection(Arrays.asList("T:00Z", "--T--:00Z"));
 
-	private static final String BAD_ATTRIBUTES = "\"created-date\":\"\",\"created-time\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\",";
+	private static final String BAD_ATTRIBUTES = ",\"created-date\":\"\",\"created-time\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\"";
 
 	private static final Logger LOG = Logger.getLogger(DocumentController.class);
 
