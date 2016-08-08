@@ -364,7 +364,7 @@ Imcms.Document.Viewer.prototype = {
 				this.buildFile();
 				break;
 		}
-		this.buildDates(this._options.data.id);
+		this.buildDates();
 	},
 	buildLifeCycle: function () {
 		this._builder.ref("tabs")
@@ -785,7 +785,7 @@ Imcms.Document.Viewer.prototype = {
 		};
 		this._builder.ref("categories-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["categories"]));
 	},
-	buildDates: function (id) {
+	buildDates: function () {
 		this._builder.ref("tabs")
 			.div()
 			.reference("dates-tab")
@@ -896,38 +896,38 @@ Imcms.Document.Viewer.prototype = {
 			tab: this._builder.ref("dates-tab"),
 			page: this._builder.ref("dates-page")
 		};
-		this._builder.ref("dates-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["dates"], id));
-	},
+		this._builder.ref("dates-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["dates"]));
+        this.fillDateTimes();
+    },
 	createModal: function () {
 		$(this._modal = document.createElement("div")).addClass("modal")
 			.click($.proxy(this.cancel, this))
 			.appendTo($("body"));
 	},
-	changeTab: function (collectionItem, id) {
+	changeTab: function (collectionItem) {
 		$(this._activeContent.tab.getHTMLElement()).removeClass("active");
 		$(this._activeContent.page.getHTMLElement()).removeClass("active");
 
 		$(collectionItem.tab.getHTMLElement()).addClass("active");
 		$(collectionItem.page.getHTMLElement()).addClass("active");
 		this._activeContent = collectionItem;
-
-		if (id && typeof id == 'number') {
-			this.fillDateTimes(id);
-		}
 	},
-	fillDateTimes: function (id) {
-		$.ajax({
-			url: Imcms.Linker.get("dateTimes.fill", id),
-			type: "GET",
-			success: function (response) {
-				$.each(response, function (key, element) {
-					var date = key;
-					$.each(element, function (key, element) {
-						$("input[name=" + date + "-" + key + "]").val(element);
-					});
-				});
-			}
-		});
+	fillDateTimes: function () {
+	    var id = this._options.data.id;
+        setTimeout(function () {
+            $.ajax({
+                url: Imcms.Linker.get("dateTimes.fill", id),
+                type: "GET",
+                success: function (response) {
+                    $.each(response, function (key, element) {
+                        var date = key;
+                        $.each(element, function (key, element) {
+                            $("input[name=" + date + "-" + key + "]").val(element);
+                        });
+                    });
+                }
+            });
+        }, 500);
 	},
 	loadTemplates: function (data) {
 		$.each(data, $.proxy(this.addTemplate, this));
