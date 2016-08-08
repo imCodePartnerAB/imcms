@@ -1117,8 +1117,7 @@ Imcms.Document.Viewer.prototype = {
 	},
 	addCategory: function (categoryType, position, category) {
 		$(this._builder.ref(categoryType).getHTMLElement()).append(
-			$("<option>")
-				.val(category.name).text(category.name).attr("title", category.description)
+			$("<option>").val(category.name).text(category.name).attr("title", category.description)
 		);
 	},
 	addKeyword: function (position, keyword) {
@@ -1197,8 +1196,8 @@ Imcms.Document.Viewer.prototype = {
 
 		if (this._options.data.id) {
             this.saveDateTimes(this._options.data.id);
-
         }
+
 		this._options.onApply(this);
 		this.destroy();
 	},
