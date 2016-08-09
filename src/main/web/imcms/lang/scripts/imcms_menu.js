@@ -400,10 +400,6 @@ Imcms.Menu.Editor.prototype = {
 
 		$(this._builder[0]).appendTo("body").addClass("editor-form reset");
 
-
-		// console.log($.i18n.prop('msg_selLang', lang));
-		console.log(jQuery.i18n.prop('msg_hello'));
-
 		return this;
 	},
 	buildMenu: function () {
