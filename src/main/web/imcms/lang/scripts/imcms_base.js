@@ -23,6 +23,13 @@ Imcms.Bootstrapper.prototype = {
             }
         }
 
+        //Init of internalization plugin
+        $.i18n.properties({
+            name: 'imcms',
+            path: Imcms.Linker._contextPath + '/imcms/js/admin/',
+            mode: 'both',
+        });
+
         Imcms.Editors.Language = new Imcms.Language.Loader();
         Imcms.Editors.Template = new Imcms.Template.Loader();
         Imcms.Editors.Role = new Imcms.Role.Loader();

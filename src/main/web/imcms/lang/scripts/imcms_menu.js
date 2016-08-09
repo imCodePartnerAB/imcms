@@ -356,12 +356,12 @@ Imcms.Menu.Editor.prototype = {
 			.class("imcms-footer")
 			.reference("footer")
 			.button()
-			.html(Imcms.language.name.localeCompare("English")?"Search document":"Sök dokument")
+			.html($.i18n.prop('menu.search'))
 			.class("imcms-positive add")
 			.on("click", $.proxy(this._dialogAdapter.open, this._dialogAdapter))
 			.end()
 			.button()
-			.html(Imcms.language.name.localeCompare("English")?"New document":"Nytt dokument")
+			.html($.i18n.prop('menu.new'))
 			.class("imcms-neutral create-new")
 			.on("click", $.proxy(this._openDocumentViewer, this))
 			.end()
@@ -372,7 +372,7 @@ Imcms.Menu.Editor.prototype = {
 			.value(Imcms.Menu.TreeAdapter.Sorting.NAME)
 			.end()
 			.button()
-			.html(Imcms.language.name.localeCompare("English")?"Sort by alphabet":"Sortera alfabetiskt")
+			.html($.i18n.prop('menu\/sortAlphabet'))
 			.class("imcms-neutral create-new")
 			.on("click", $.proxy(this._sortItems, this))
 			.end()
@@ -381,7 +381,7 @@ Imcms.Menu.Editor.prototype = {
 			.value(Imcms.Menu.TreeAdapter.Sorting.ID)
 			.end()
 			.button()
-			.html(Imcms.language.name.localeCompare("English")?"Sort by ID number":"Sortera i nummerordning")
+			.html($.i18n.prop('menu.sortId'))
 			.class("imcms-neutral create-new")
 			.on("click", $.proxy(this._sortItems, this))
 			.end()
@@ -399,6 +399,10 @@ Imcms.Menu.Editor.prototype = {
 			.end();
 
 		$(this._builder[0]).appendTo("body").addClass("editor-form reset");
+
+
+		// console.log($.i18n.prop('msg_selLang', lang));
+		console.log(jQuery.i18n.prop('msg_hello'));
 
 		return this;
 	},

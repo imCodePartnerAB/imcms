@@ -19,6 +19,8 @@
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
     <script src="${pageContext.request.contextPath}/js/js.cookie.js"></script>
 
+    <script src="${pageContext.request.contextPath}/imcms/js/admin/jquery.i18n.properties.min.js"></script>
+
     <script src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_linker.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/speakingurl/5.0.1/speakingurl.min.js"></script>
