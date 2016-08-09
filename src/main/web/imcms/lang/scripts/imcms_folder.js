@@ -9,11 +9,10 @@ Imcms.Folder.API = function () {
 
 };
 Imcms.Folder.API.prototype = {
-    path: Imcms.contextPath + "/api/content/folders",
     create: function (request, response) {
         Imcms.Logger.log("Folder.API::create :",
             $.ajax.bind($, {
-                url: this.path + "/" + request.folderBase + "/" + request.folderName,
+                url: Imcms.Linker.get("folders", request.folderBase, request.folderName),
                 type: "POST",
                 success: response
             }), request);
@@ -21,7 +20,7 @@ Imcms.Folder.API.prototype = {
     read: function (request, response) {
         Imcms.Logger.log("Folder.API::read :",
             $.ajax.bind($, {
-                url: this.path + "/" + request.folder + "/",
+                url: Imcms.Linker.get("folders", request.folder, ""),
                 type: "GET",
                 success: response
             }), request);
@@ -29,7 +28,7 @@ Imcms.Folder.API.prototype = {
     update: function (request, response) {
         Imcms.Logger.log("Folder.API::update :",
             $.ajax.bind($, {
-                url: this.path + "/" + request.folderBase + "/" + request.folderName,
+                url: Imcms.Linker.get("folders", request.folderBase, request.folderName),
                 type: "PATCH",
                 data: request,
                 success: response
@@ -38,7 +37,7 @@ Imcms.Folder.API.prototype = {
     delete: function (request, response) {
         Imcms.Logger.log("Folder.API::delete :",
             $.ajax.bind($, {
-                url: this.path + "/" + request.folderBase + "/" + request.folderName,
+                url: Imcms.Linker.get("folders", request.folderBase, request.folderName),
                 type: "DELETE",
                 success: response
             }), request);

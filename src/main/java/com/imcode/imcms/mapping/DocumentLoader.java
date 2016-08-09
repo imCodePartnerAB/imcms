@@ -159,6 +159,7 @@ public class DocumentLoader {
 		DocumentMeta metaDO = new DocumentMeta();
 
 		metaDO.setArchivedDatetime(meta.getArchivedDatetime());
+        metaDO.setArchiverId(meta.getArchiverId());
 		metaDO.setCategoryIds(meta.getCategoryIds());
 		metaDO.setCreatedDatetime(meta.getCreatedDatetime());
 		metaDO.setCreatorId(meta.getCreatorId());
@@ -182,6 +183,7 @@ public class DocumentLoader {
 		//m.setPermissionSetsForNewDocuments(entity.getPermissionSetsForNewDocuments)
 		metaDO.setProperties(meta.getProperties());
 		metaDO.setPublicationEndDatetime(meta.getPublicationEndDatetime());
+        metaDO.setDepublisherId(meta.getDepublisherId());
 		metaDO.setPublicationStartDatetime(meta.getPublicationStartDatetime());
 		metaDO.setPublicationStatus(publicationStatusFromInt(meta.getPublicationStatusInt()));
 		metaDO.setPublisherId(meta.getPublisherId());

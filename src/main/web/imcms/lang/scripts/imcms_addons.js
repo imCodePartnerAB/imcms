@@ -47,13 +47,7 @@ Array.prototype.remove = function (value) {
 
 			return uglyResult;
 		}
-
-		var context = this,
-			args = arguments;
-//	produces 'maximum call stack', so wrapped in setTimeout
-		return setTimeout(function () {
-			$super.apply(context, args);
-		}, 0)
+        return $super.apply(this, arguments);
 	};
 })(jQuery);
 

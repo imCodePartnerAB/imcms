@@ -311,21 +311,6 @@ Imcms.Menu.Editor.prototype = {
 	_treeAdapter: {},
 	_dialogAdapter: {},
 	_autocompleteAdapter: {},
-	_currentTerm: "",
-
-	_source: function (term, callback) {
-		Imcms.Editors.Document.filteredDocumentList(term, callback)
-	},
-
-	fillDataToRaw: function () {
-		var $textField = $('.ui-autocomplete-input.ui-autocomplete-loading');
-		$textField.value(this._currentTerm + "!TEST!");
-	},
-
-	autocomplete: function (word) {
-		this._currentTerm = word;
-		this._source({term: word || "", sort: this._sort, order: this._order}, $.proxy(this.fillDataToRaw, this));
-	},
 	init: function () {
 		this._dialogAdapter = new Imcms.Document.DocumentSearchDialog(function (term, callback) {
 			Imcms.Editors.Document.filteredDocumentList(term, callback)
@@ -370,30 +355,13 @@ Imcms.Menu.Editor.prototype = {
 			.div()
 			.class("imcms-footer")
 			.reference("footer")
-			.text()
-			.on("input", this.autocomplete("1").bind(this))
-			.on('keydown', function (e) {
-				// pressing 'enter' in this field causes error, with this fix 'enter' (it's code is 13) ignored
-				if (e.which == 13) {
-					e.preventDefault();
-				}
-			})
-			.reference("findDocument")
-			.end()
 			.button()
-			.html("…")
-			.class("imcms-neutral browse")
+			.html($.i18n.prop('menu.search'))
+			.class("imcms-positive add")
 			.on("click", $.proxy(this._dialogAdapter.open, this._dialogAdapter))
 			.end()
 			.button()
-			.html("Add")
-			.class("imcms-positive add")
-			.on("click", $.proxy(function () {
-				this._addItem();
-			}, this))
-			.end()
-			.button()
-			.html("Create new…")
+			.html($.i18n.prop('menu.new'))
 			.class("imcms-neutral create-new")
 			.on("click", $.proxy(this._openDocumentViewer, this))
 			.end()
@@ -404,7 +372,7 @@ Imcms.Menu.Editor.prototype = {
 			.value(Imcms.Menu.TreeAdapter.Sorting.NAME)
 			.end()
 			.button()
-			.html("Sorting by alphabet")
+			.html($.i18n.prop('menu.sortAlphabet'))
 			.class("imcms-neutral create-new")
 			.on("click", $.proxy(this._sortItems, this))
 			.end()
@@ -413,7 +381,7 @@ Imcms.Menu.Editor.prototype = {
 			.value(Imcms.Menu.TreeAdapter.Sorting.ID)
 			.end()
 			.button()
-			.html("Sorting by Id")
+			.html($.i18n.prop('menu.sortId'))
 			.class("imcms-neutral create-new")
 			.on("click", $.proxy(this._sortItems, this))
 			.end()
@@ -462,9 +430,6 @@ Imcms.Menu.Editor.prototype = {
 		return this;
 	},
 	buildExtra: function () {
-		//this._autocompleteAdapter = new Imcms.Menu
-		//	.AutocompleteAdapter(this._builder.ref("findDocument").getHTMLElement(),
-		//	$.proxy(this._loader.read, this._loader));
 		this._frame = new Imcms.FrameBuilder()
 			.title("Menu Editor")
 			.click($.proxy(this.open, this))
@@ -600,13 +565,9 @@ Imcms.Menu.API = function () {
 };
 
 Imcms.Menu.API.prototype = {
-	path: Imcms.contextPath + "/api/menu",
-
-	//path: "http://localhost:8080/imcms/api/menu",
-
 	delete: function (request, response) {
 		$.ajax({
-			url: this.path + "/" + request.meta + "-" + request.no,
+			url: Imcms.Linker.get("menu", request.meta, request.no),
 			type: "DELETE",
 			data: request,
 			success: response
@@ -615,7 +576,7 @@ Imcms.Menu.API.prototype = {
 
 	update: function (request, response) {
 		$.ajax({
-			url: this.path + "/" + request.meta + "-" + request.no,
+			url: Imcms.Linker.get("menu", request.meta, request.no),
 			type: "PUT",
 			data: request,
 			success: response
@@ -624,7 +585,7 @@ Imcms.Menu.API.prototype = {
 
 	read: function (request, response) {
 		$.ajax({
-			url: this.path + "/" + request.meta + "-" + request.no,
+			url: Imcms.Linker.get("menu", request.meta, request.no),
 			type: "GET",
 			data: request,
 			success: response
@@ -633,7 +594,7 @@ Imcms.Menu.API.prototype = {
 
 	create: function (request, response) {
 		$.ajax({
-			url: this.path + "/" + request.meta + "-" + request.no,
+			url: Imcms.Linker.get("menu", request.meta, request.no),
 			type: "POST",
 			data: request,
 			success: response

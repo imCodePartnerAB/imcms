@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 
 public class EditLink extends HttpServlet {
@@ -69,7 +70,7 @@ public class EditLink extends HttpServlet {
     }
 
     public static String linkTo(HttpServletRequest request, String returnPath) {
-        return request.getContextPath()+"/servlet/EditLink?"+Parameter.RETURN+"="+returnPath ;
+        return request.getContextPath() + Utility.getLinkService().get("admin.servlet.link.edit", Parameter.RETURN.toString(), returnPath);
     }
 
     public static Link getLink(HttpServletRequest request) {

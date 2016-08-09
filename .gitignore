@@ -1,5 +1,4 @@
-/.idea/*
-/target/*
-/build.properties
-archive.zip
-imcms.iml
+build.properties
+.idea/
+build.log
+target/

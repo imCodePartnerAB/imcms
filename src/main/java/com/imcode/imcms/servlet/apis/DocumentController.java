@@ -1,6 +1,9 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentCommonContent;
@@ -21,9 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,7 +55,7 @@ public class DocumentController {
 
 	private static final Collection<String> WRONG_DATE = Collections.unmodifiableCollection(Arrays.asList("T:00Z", "--T--:00Z"));
 
-	private static final String BAD_ATTRIBUTES = "\"created-date\":\"\",\"created-time\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\",";
+	private static final String BAD_ATTRIBUTES = ",\"created-date\":\"\",\"created-time\":\"\",\"created-by\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"modified-by\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"archived-by\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"published-by\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\",\"publication-end-by\":\"\"";
 
 	private static final Logger LOG = Logger.getLogger(DocumentController.class);
 
@@ -270,18 +270,22 @@ public class DocumentController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/getDateTimes/{id}")
-	protected Object getDateTimes(@PathVariable(value = "id") int id) {
+	protected Object getDateTimes(@PathVariable(value = "id") int id,
+                                  HttpServletRequest request) {
 
 		Map<String, Object> map = new HashedMap<>();
 		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
 
 		Date[] dates = doc.getArrDates();
+        String[] byUsers = doc.getByUsersArr(ContentManagementSystem.fromRequest(request).getUserService());
 
 		for (int i = 0; i < DATE_TYPES.length; i++) {
-			String[] dateTime = Utility.formatDateTime(dates[i]).split(" ");
+		    String userBy = byUsers[i];
+			String[] dateTimeBy = Utility.formatDateTime(dates[i]).split(" ");
 			map.put(DATE_TYPES[i], new HashedMap<String, Object>() {{
-				put("date", dateTime[0]);
-				put("time", dateTime[1]);
+				put("date", dateTimeBy[0]);
+				put("time", dateTimeBy[1]);
+                put("by", userBy);
 			}});
 		}
 		return map;
@@ -295,11 +299,11 @@ public class DocumentController {
 
 	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/{id}")
 	protected Object changeDateTimes(@PathVariable(value = "id") Integer id,
-									 @RequestParam(value = "created", required = true, defaultValue = "") String created,
-									 @RequestParam(value = "modified", required = true, defaultValue = "") String modified,
-									 @RequestParam(value = "archived", required = true, defaultValue = "") String archived,
-									 @RequestParam(value = "published", required = true, defaultValue = "") String published,
-									 @RequestParam(value = "publication-end", required = true, defaultValue = "") String publicationEnd) {
+									 @RequestParam(value = "created", defaultValue = "") String created,
+									 @RequestParam(value = "modified", defaultValue = "") String modified,
+									 @RequestParam(value = "archived", defaultValue = "") String archived,
+									 @RequestParam(value = "published", defaultValue = "") String published,
+									 @RequestParam(value = "publication-end", defaultValue = "") String publicationEnd) {
 
 		//	/dateTimes/{id}?created=2010-08-08T10:10:00Z&modified=.......
 		Map<String, Object> result = new HashMap<>();
@@ -408,6 +412,7 @@ public class DocumentController {
 			case "archive": {
 				DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(id);
 				document.setArchivedDatetime(action.equals("unarchive") ? null : new Date());
+                document.setArchiverId(Imcms.getUser().getId());
 				try {
 					Imcms.getServices().getDocumentMapper().saveDocument(document, Imcms.getUser());
 					result.put("result", true);

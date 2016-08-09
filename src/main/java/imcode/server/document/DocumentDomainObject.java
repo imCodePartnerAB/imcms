@@ -3,6 +3,7 @@ package imcode.server.document;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.UserService;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.mapping.container.DocRef;
@@ -17,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Parent of all imCMS document types.
@@ -191,6 +193,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		meta.setArchivedDatetime(v);
 	}
 
+    public void setArchiverId(Integer id) {
+        meta.setArchiverId(id);
+    }
+
+    public Integer getArchiverId() {
+        return meta.getArchiverId();
+    }
+
 	public Set<Integer> getCategoryIds() {
 		return meta.getCategoryIds();
 	}
@@ -307,7 +317,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		meta.setPublicationEndDatetime(datetime);
 	}
 
-	public Date getPublicationStartDatetime() {
+    public void setDepublisherId(Integer id) {
+        meta.setDepublisherId(id);
+    }
+
+    public Integer getDepublisherId() {
+        return meta.getDepublisherId();
+    }
+
+    public Date getPublicationStartDatetime() {
 		return meta.getPublicationStartDatetime();
 	}
 
@@ -326,6 +344,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	public void setPublisher(UserDomainObject user) {
 		setPublisherId(user.getId());
 	}
+
+	public Integer getModifierId() {
+	    return Imcms.getServices().getDocumentMapper().getDocumentVersionInfo(getId()).getLatestVersion().getModifiedBy();
+    }
 
 	public RoleIdToDocumentPermissionSetTypeMappings getRoleIdsMappedToDocumentPermissionSetTypes() {
 		return getRolePermissionMappings().clone();
@@ -525,4 +547,21 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	public boolean isNew() {
 		return getId() == ID_NEW;
 	}
+
+    public String[] getByUsersArr(UserService userService) {
+
+        Integer[] usersIds = new Integer[] {
+                getCreatorId(),
+                getModifierId(),
+                getArchiverId(),
+                getPublisherId(),
+                getDepublisherId(),
+        };
+
+        return Stream.of(usersIds)
+                .map(userId -> Optional.ofNullable(userId)
+                        .map(id -> userService.getUser(id).getFirstName())
+                        .orElse("--"))
+                .toArray(String[]::new);
+    }
 }

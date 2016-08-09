@@ -622,11 +622,15 @@ boolean isIE7plus  = browser.isIE7plus() ;
 
         <%-- Moved from adminbuttons.jsp --%>
         function imcmsOpenHelpWin(helpDocName) {
-            window.open('@documentationurl@/Help?name=' + helpDocName + '&lang=$language', 'imcmsHelpWin');
+            <%--window.open('@documentationurl@/Help?name=' + helpDocName + '&lang=$language', 'imcmsHelpWin');--%>
+            <%-- IMCMS-94: replaced without arguments since we have new documentation--%>
+            window.open('@documentationurl@');
             return false;
         }
         function openHelpW(helpDocName) {
-            window.open('@documentationurl@/Help?name=' + helpDocName + '&lang=$language', 'imcmsHelpWin');
+            <%--window.open('@documentationurl@/Help?name=' + helpDocName + '&lang=$language', 'imcmsHelpWin');--%>
+            <%-- IMCMS-94: replaced without arguments since we have new documentation--%>
+            window.open('@documentationurl@');
         }
 
         </vel:velocity>

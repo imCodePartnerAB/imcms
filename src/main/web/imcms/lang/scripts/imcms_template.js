@@ -19,10 +19,9 @@ Imcms.Template.API = function () {
 
 };
 Imcms.Template.API.prototype = {
-    path: Imcms.contextPath + "/api/template",
     read: function (request, response) {
         $.ajax({
-            url: this.path,
+            url: Imcms.Linker.get("template"),
             type: "GET",
             data: request,
             success: response

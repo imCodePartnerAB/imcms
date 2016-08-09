@@ -39,18 +39,9 @@ public class DocumentMeta implements Serializable, Cloneable {
 
     // todo: rename to documentTypeId
     private volatile Integer documentType;
-
-    private volatile Integer creatorId;
-
     private volatile Boolean restrictedOneMorePrivilegedThanRestrictedTwo;
-
     private volatile Boolean linkableByOtherUsers;
-
     private volatile Boolean linkedForUnauthorizedUsers;
-
-    private volatile Date createdDatetime;
-
-    private volatile Date modifiedDatetime;
 
     /**
      * (Saved) value of modified dt at the time this meta was actually loaded.
@@ -62,10 +53,18 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile Date actualModifiedDatetime;
     private volatile boolean searchDisabled;
     private volatile String target;
+
+    private volatile Date createdDatetime;
+    private volatile Date modifiedDatetime;
     private volatile Date archivedDatetime;
-    private volatile Integer publisherId;
     private volatile Date publicationStartDatetime;
     private volatile Date publicationEndDatetime;
+
+    private volatile Integer creatorId;
+    // we haven't modifierId field
+    private volatile Integer archiverId;
+    private volatile Integer publisherId;
+    private volatile Integer depublisherId;
 
     private volatile Map<String, String> properties = new ConcurrentHashMap<>();
 
@@ -212,12 +211,28 @@ public class DocumentMeta implements Serializable, Cloneable {
         this.archivedDatetime = archivedDatetime;
     }
 
+    public Integer getArchiverId() {
+        return archiverId;
+    }
+
+    public void setArchiverId(Integer archiverId) {
+        this.archiverId = archiverId;
+    }
+
     public Integer getPublisherId() {
         return publisherId;
     }
 
     public void setPublisherId(Integer publisherId) {
         this.publisherId = publisherId;
+    }
+
+    public Integer getDepublisherId() {
+        return depublisherId;
+    }
+
+    public void setDepublisherId(Integer depublisherId) {
+        this.depublisherId = depublisherId;
     }
 
     public Date getPublicationStartDatetime() {

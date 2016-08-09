@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/template")
 public class TemplateController {
+
     @RequestMapping
     protected Object getTemplatesList() {
         return Imcms.getServices().getTemplateMapper().getAllTemplates()

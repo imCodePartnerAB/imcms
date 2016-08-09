@@ -19,7 +19,7 @@ Imcms.Category.API = function () {
 
 };
 Imcms.Category.API.prototype = {
-    path: Imcms.contextPath + "/api/category",
+    path: Imcms.Linker.get("category"),
     read: function (request, response) {
         $.ajax({
             url: this.path,

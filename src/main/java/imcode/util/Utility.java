@@ -4,10 +4,12 @@ import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.I18nMessage$;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
+import com.imcode.imcms.api.linker.LinkService;
 import com.imcode.imcms.db.BooleanFromRowFactory;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
+import com.imcode.imcms.imagearchive.service.Facade;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -25,6 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
 import javax.servlet.RequestDispatcher;
@@ -54,6 +58,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Component
 public class Utility {
 
 	public static final ResultSetHandler SINGLE_STRING_HANDLER = new SingleObjectHandler(new StringFromRowFactory());
@@ -68,7 +73,14 @@ public class Utility {
 	private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
 	private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
+    private static Facade facade;
+
 	private Utility() {
+	}
+
+	@Autowired
+	public void init(Facade facade){
+		Utility.facade = facade;
 	}
 
 	/**
@@ -397,16 +409,6 @@ public class Utility {
 		return Imcms.getServices().getLocalizedMessageProvider().getResourceBundle(Utility.getLoggedOnUser(request).getLanguageIso639_2());
 	}
 
-	@SuppressWarnings("unused")
-	public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String rememberCd) {
-		Cookie cookie = new Cookie("im_remember_cd", rememberCd);
-		cookie.setMaxAge(60 * 60 * 2);
-		cookie.setPath("/");
-
-		setCookieDomain(request, cookie);
-		response.addCookie(cookie);
-	}
-
 	public static void removeRememberCdCookie(HttpServletRequest request, HttpServletResponse response) {
 		Cookie cookie = new Cookie("im_remember_cd", "");
 		cookie.setMaxAge(0);
@@ -473,7 +475,35 @@ public class Utility {
 		return new MessageFormat(i(key)).format(args);
 	}
 
-	@SuppressWarnings("unused")
+    public static LinkService getLinkService(){
+        return facade.getLinkService();
+    }
+
+    public static Facade getFacade() {
+        return facade;
+    }
+
+    public static void setFacade(Facade facade) {
+        Utility.facade = facade;
+    }
+
+	/*
+
+				Unused methods
+
+	*/
+
+    @SuppressWarnings("unused")
+    public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String rememberCd) {
+        Cookie cookie = new Cookie("im_remember_cd", rememberCd);
+        cookie.setMaxAge(60 * 60 * 2);
+        cookie.setPath("/");
+
+        setCookieDomain(request, cookie);
+        response.addCookie(cookie);
+    }
+
+    @SuppressWarnings("unused")
 	public static int compareDatesWithNullFirst(Date date1, Date date2) {
 		if (null == date1 && null == date2) {
 			return 0;
@@ -495,12 +525,6 @@ public class Utility {
 			}
 		}
 	}
-
-	/*
-
-				Unused methods
-
-	*/
 
 	@SuppressWarnings("unchecked")
 	public static String createQueryStringFromParameterMultiMap(MultiMap requestParameters) {

@@ -10,12 +10,9 @@ Imcms.Text.API = function () {
 
 };
 Imcms.Text.API.prototype = {
-//    path: "/" + Imcms.contextPath + "api/text",
-    path: Imcms.contextPath + "/api/text",
-
     get: function (request, callback) {
         $.ajax({
-            url: this.path,
+            url: Imcms.Linker.get("text"),
             type: "GET",
             data: request,
             success: callback
@@ -23,7 +20,7 @@ Imcms.Text.API.prototype = {
     },
     update: function (request, callback) {
         $.ajax({
-            url: this.path,
+            url: Imcms.Linker.get("text"),
             type: "POST",
             data: request,
             success: callback
@@ -31,7 +28,7 @@ Imcms.Text.API.prototype = {
     },
     validate: function (request, callback) {
         $.ajax({
-            url: this.path + "/validate",
+            url: Imcms.Linker.get("text.validate"),
             type: "POST",
             data: request,
             success: callback

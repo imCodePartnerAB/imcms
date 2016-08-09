@@ -25,6 +25,7 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
     public final static int EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS;
     public final static int EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE;
     public final static int EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES;
+    public final static int EDIT_TEXT_DOCUMENT_LOOPS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_CONTENT_LOOPS;
 
     public TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject typeId) {
         super(typeId);
@@ -87,6 +88,7 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
         setEditMenus(0 != (permissionBits & EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID));
         setEditIncludes(0 != (permissionBits & EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID));
         setEditTemplates(0 != (permissionBits & EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID));
+        setEditLoops(0 != (permissionBits & EDIT_TEXT_DOCUMENT_LOOPS_PERMISSION_ID));
     }
 
     public void setAllowedTemplateGroupIds(Set<Integer> allowedTemplateGroupIds) {

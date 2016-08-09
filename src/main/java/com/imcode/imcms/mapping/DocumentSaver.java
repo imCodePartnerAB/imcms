@@ -429,6 +429,7 @@ public class DocumentSaver {
         Meta meta = new Meta();
 
         meta.setArchivedDatetime(metaDO.getArchivedDatetime());
+        meta.setArchiverId(metaDO.getArchiverId());
         meta.setCategoryIds(metaDO.getCategoryIds());
         meta.setCreatedDatetime(metaDO.getCreatedDatetime());
         meta.setCreatorId(metaDO.getCreatorId());
@@ -449,6 +450,7 @@ public class DocumentSaver {
         //e.setPermissionSetsForNewDocuments(m.getPermissionSetsForNewDocuments)
         meta.setProperties(metaDO.getProperties());
         meta.setPublicationEndDatetime(metaDO.getPublicationEndDatetime());
+        meta.setDepublisherId(metaDO.getDepublisherId());
         meta.setPublicationStartDatetime(metaDO.getPublicationStartDatetime());
         meta.setPublicationStatusInt(metaDO.getPublicationStatus().asInt());
         meta.setPublisherId(metaDO.getPublisherId());

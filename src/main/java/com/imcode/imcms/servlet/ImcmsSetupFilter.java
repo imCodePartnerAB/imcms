@@ -38,6 +38,7 @@ import java.util.Set;
 public class ImcmsSetupFilter implements Filter {
 
 	public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
+	public static final String USER_LOGGED_IN_COOKIE_NAME = "userLoggedIn";
 	private final Logger logger = Logger.getLogger(getClass());
 	private FilterDelegate filterDelegate;
 
@@ -157,15 +158,24 @@ public class ImcmsSetupFilter implements Filter {
 				// In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
 				// -invalidates current session if it does not match to last user's session
 				// -redirects to the login page.
-			} else if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
-				String sessionId = session.getId();
-				String lastUserSessionId = service
-						.getImcmsAuthenticatorAndUserAndRoleMapper()
-						.getUserSessionId(user);
+			} else {
+				if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
+					String sessionId = session.getId();
+					String lastUserSessionId = service
+							.getImcmsAuthenticatorAndUserAndRoleMapper()
+							.getUserSessionId(user);
 
-				if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
-					VerifyUser.forwardToLoginPageTooManySessions(request, response);
-					return;
+					if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
+						VerifyUser.forwardToLoginPageTooManySessions(request, response);
+						return;
+					}
+				}
+                //Adding cookie to find out is user logged in
+				if (!user.isDefaultUser()) {
+					Cookie cookie = new Cookie(USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(true));
+					cookie.setMaxAge(session.getMaxInactiveInterval());
+					cookie.setPath("/");
+					response.addCookie(cookie);
 				}
 			}
 

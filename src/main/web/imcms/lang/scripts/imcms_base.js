@@ -1,7 +1,6 @@
 /**
  * Created by Shadowgun on 12.02.2015.
  */
-var Imcms = {};
 Imcms.Editors = {};
 Imcms.Editors.Text = {};
 Imcms.Editors.Menu = {};
@@ -18,7 +17,18 @@ Imcms.Bootstrapper.prototype = {
     bootstrap: function (editmode) {
         if (editmode) {
             $("body").css({paddingLeft: 150, width: $(window).width() - 150});
+        } else {
+            if ($("body").css('paddingLeft').length > 0){
+                   $("body").removeAttr('style');
+            }
         }
+
+        //Init of internalization plugin
+        $.i18n.properties({
+            name: 'imcms',
+            path: Imcms.Linker.get('admin.localization.config'),
+            mode: 'both',
+        });
 
         Imcms.Editors.Language = new Imcms.Language.Loader();
         Imcms.Editors.Template = new Imcms.Template.Loader();

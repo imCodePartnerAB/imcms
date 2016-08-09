@@ -5,19 +5,29 @@
         pageEncoding="UTF-8"
 
 %>
+<imcms:variables/>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     <title>${document.headline} - Powered by imCMS from imCode Partner AB</title>
     <meta charset="utf-8"/>
+    <base href="${pageContext.request.contextPath}">
 
     <script src="${pageContext.request.contextPath}/js/jquery.nearest.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
+    <script src="${pageContext.request.contextPath}/js/js.cookie.js"></script>
+
+    <script src="${pageContext.request.contextPath}/imcms/js/admin/jquery.i18n.properties.min.js"></script>
+
+    <script src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_linker.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/speakingurl/5.0.1/speakingurl.min.js"></script>
     <script src="${pageContext.request.contextPath}/js/jquery.cookie.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/imcms/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="$contextPath/imcms/ckeditor/lang/sv.js"></script>
+    <script type="text/javascript" src="$contextPath/imcms/ckeditor/lang/en.js"></script>
     <script type="text/javascript"
             src="${pageContext.request.contextPath}/imcms/jsformbuilder/JSFormBuilder.js"></script>
     <script src="${pageContext.request.contextPath}/imcms/prism/prism.js"></script>

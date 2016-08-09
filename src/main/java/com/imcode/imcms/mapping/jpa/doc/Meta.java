@@ -160,6 +160,12 @@ public class Meta {
     @Temporal(TemporalType.TIMESTAMP)
     private Date archivedDatetime;
 
+    @Column(name = "archiver_id")
+    private Integer archiverId;
+
+    @Column(name = "depublisher_id")
+    private Integer depublisherId;
+
     // CHECKED	
     @Column(name = "publisher_id", nullable = true)
     private Integer publisherId;
@@ -474,5 +480,21 @@ public class Meta {
 
     public void setDefaultVersionNo(Integer defaultVersionNo) {
         this.defaultVersionNo = defaultVersionNo;
+    }
+
+    public Integer getArchiverId() {
+        return archiverId;
+    }
+
+    public void setArchiverId(Integer archiverId) {
+        this.archiverId = archiverId;
+    }
+
+    public Integer getDepublisherId() {
+        return depublisherId;
+    }
+
+    public void setDepublisherId(Integer depublisherId) {
+        this.depublisherId = depublisherId;
     }
 }

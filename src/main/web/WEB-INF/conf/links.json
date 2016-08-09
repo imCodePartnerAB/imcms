@@ -1,0 +1,180 @@
+[
+  {
+    "name": "document.create",
+    "url": "/api/document",
+    "args": []
+  },
+  {
+    "name": "document.create2",
+    "url": "/api/document/",
+    "args": []
+  },
+  {
+    "name": "document.create2",
+    "url": "/api/document/{1}/{2}",
+    "args": [
+      "id",
+      "mode"
+    ]
+  },
+  {
+    "name": "document.read",
+    "url": "/api/document/{1}",
+    "args": [
+      "id"
+    ]
+  },
+  {
+    "name": "document.delete",
+    "url": "/api/document/{1}",
+    "args": [
+      "id"
+    ]
+  },
+  {
+    "name": "document.list",
+    "url": "/imcms/{1}/jsp/document_list.jsp",
+    "args": [
+      "language"
+    ]
+  },
+  {
+    "name": "loop",
+    "url": "/api/loop",
+    "args": []
+  },
+  {
+    "name": "category",
+    "url": "/api/category",
+    "args": []
+  },
+  {
+    "name": "dateTimes.fill",
+    "url": "/api/document/getDateTimes/{1}",
+    "args": [
+      "id"
+    ]
+  },
+  {
+    "name": "dateTimes.save",
+    "url": "/api/document/dateTimes/{1}?{2}",
+    "args": [
+      "id",
+      "resolvedDateTimes"
+    ]
+  },
+  {
+    "name": "imcmsLogo",
+    "url": "/images/logo-imcms.png",
+    "args": []
+  },
+  {
+    "name": "files",
+    "url": "/api/content/files/{1}/{2}",
+    "args": [
+      "folder",
+      "file"
+    ]
+  },
+  {
+    "name": "folders",
+    "url": "/api/content/folders/{1}/{2}",
+    "args": [
+      "folderBase",
+      "folderName"
+    ]
+  },
+  {
+    "name": "content.image",
+    "url": "/api/content/image/{1}",
+    "args": [
+      "object"
+    ]
+  },
+  {
+    "name": "language",
+    "url": "/api/language",
+    "args": []
+  },
+  {
+    "name": "menu",
+    "url": "/api/menu/{1}-{2}",
+    "args": [
+      "meta",
+      "no"
+    ]
+  },
+  {
+    "name": "permission",
+    "url": "/api/permission",
+    "args": []
+  },
+  {
+    "name": "role",
+    "url": "/api/role",
+    "args": []
+  },
+  {
+    "name": "template",
+    "url": "/api/template",
+    "args": []
+  },
+  {
+    "name": "text",
+    "url": "/api/text",
+    "args": []
+  },
+  {
+    "name": "text.validate",
+    "url": "/api/text/validate",
+    "args": []
+  },
+  {
+    "name": "admin.adminButtons",
+    "url": "adminbuttons/adminbuttons{1}_description.html",
+    "args": [
+      "doc_type"
+    ]
+  },
+  {
+    "name": "admin.document.edit",
+    "url": "/WEB-INF/jsp/admin/edit_document.jsp",
+    "args": []
+  },
+  {
+    "name": "admin.document.redirect",
+    "url": "AdminDoc?meta_id={1}",
+    "args": [
+      "id"
+    ]
+  },
+  {
+    "name": "admin.document.redirect",
+    "url": "AdminDoc?meta_id={1}&flags={2}",
+    "args": [
+      "id",
+      "flags"
+    ]
+  },
+  {
+    "name": "admin.image.edit.return",
+    "url": "/servlet/EditImage?{1}={2}",
+    "args": [
+      "returnParameter",
+      "returnArgument"
+    ]
+  },
+  {
+    "name": "admin.servlet.link.edit",
+    "url": "/servlet/EditLink?{1}={2}",
+    "args": [
+      "returnParameter",
+      "returnArgument"
+    ]
+  },
+  {
+    "name": "admin.localization.config",
+    "url": "/imcms/js/admin/",
+    "args": []
+  }
+]

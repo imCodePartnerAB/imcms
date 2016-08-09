@@ -1,5 +1,6 @@
 package com.imcode.imcms.imagearchive.service;
 
+import com.imcode.imcms.api.linker.LinkService;
 import com.imcode.imcms.imagearchive.Config;
 import com.imcode.imcms.imagearchive.service.file.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class Facade {
     private LibraryService libraryService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private LinkService linkService;
 
 
     public Facade() {
@@ -59,5 +62,9 @@ public class Facade {
 
     public CategoryService getCategoryService() {
         return categoryService;
+    }
+
+    public LinkService getLinkService() {
+        return linkService;
     }
 }
