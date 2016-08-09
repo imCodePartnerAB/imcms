@@ -334,7 +334,7 @@ Imcms.Document.Viewer.prototype = {
 			.button()
 			.class("imcms-positive")
 			.html("OK")
-			.on("click", $.proxy(this.apply, this, this._options.data.id))
+			.on("click", $.proxy(this.apply, this))
 			.end()
 			.button()
 			.class("imcms-neutral")
@@ -364,7 +364,7 @@ Imcms.Document.Viewer.prototype = {
 				this.buildFile();
 				break;
 		}
-		this.buildDates(this._options.data.id);
+		this.buildDates();
 	},
 	buildLifeCycle: function () {
 		this._builder.ref("tabs")
@@ -785,7 +785,7 @@ Imcms.Document.Viewer.prototype = {
 		};
 		this._builder.ref("categories-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["categories"]));
 	},
-	buildDates: function (id) {
+	buildDates: function () {
 		this._builder.ref("tabs")
 			.div()
 			.reference("dates-tab")
@@ -795,10 +795,13 @@ Imcms.Document.Viewer.prototype = {
 		this._builder.ref("pages")
 			.div().reference("dates-page").class("dates-page imcms-page")
 
-			.div()
-			.class("imcms-label")
+			.span()
+			.class("date-times-label")
 			.html("Created:")
 			.end()
+            .span()
+            .html("By:")
+            .end()
 
 			.div()
 			.class("field")
@@ -812,10 +815,16 @@ Imcms.Document.Viewer.prototype = {
 			.name("created-time")
 			.placeholder("Empty")
 			.end()
+            .text()
+            .class("date-time")
+            .name("created-by")
+            .attr("readonly", true)
+            .placeholder("Empty")
+            .end()
 			.end()
 
-			.div()
-			.class("imcms-label")
+			.span()
+			.class("date-times-label")
 			.html("Modified:")
 			.end()
 
@@ -831,10 +840,16 @@ Imcms.Document.Viewer.prototype = {
 			.name("modified-time")
 			.placeholder("Empty")
 			.end()
+            .text()
+            .class("date-time")
+            .name("modified-by")
+            .attr("readonly", true)
+            .placeholder("Empty")
+            .end()
 			.end()
 
-			.div()
-			.class("imcms-label")
+			.span()
+			.class("date-times-label")
 			.html("Archived:")
 			.end()
 
@@ -850,10 +865,16 @@ Imcms.Document.Viewer.prototype = {
 			.name("archived-time")
 			.placeholder("Empty")
 			.end()
+            .text()
+            .class("date-time")
+            .name("archived-by")
+            .attr("readonly", true)
+            .placeholder("Empty")
+            .end()
 			.end()
 
-			.div()
-			.class("imcms-label")
+			.span()
+			.class("date-times-label")
 			.html("Published:")
 			.end()
 
@@ -869,10 +890,16 @@ Imcms.Document.Viewer.prototype = {
 			.name("published-time")
 			.placeholder("Empty")
 			.end()
+            .text()
+            .class("date-time")
+            .name("published-by")
+            .attr("readonly", true)
+            .placeholder("Empty")
+            .end()
 			.end()
 
-			.div()
-			.class("imcms-label")
+			.span()
+			.class("date-times-label")
 			.html("Publication end:")
 			.end()
 
@@ -888,6 +915,12 @@ Imcms.Document.Viewer.prototype = {
 			.name("publication-end-time")
 			.placeholder("Empty")
 			.end()
+            .text()
+            .class("date-time")
+            .name("publication-end-by")
+            .attr("readonly", true)
+            .placeholder("Empty")
+            .end()
 			.end()
 
 			.end();
@@ -896,38 +929,41 @@ Imcms.Document.Viewer.prototype = {
 			tab: this._builder.ref("dates-tab"),
 			page: this._builder.ref("dates-page")
 		};
-		this._builder.ref("dates-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["dates"], id));
-	},
+		this._builder.ref("dates-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["dates"]));
+        this.fillDateTimes();
+    },
 	createModal: function () {
 		$(this._modal = document.createElement("div")).addClass("modal")
 			.click($.proxy(this.cancel, this))
 			.appendTo($("body"));
 	},
-	changeTab: function (collectionItem, id) {
+	changeTab: function (collectionItem) {
 		$(this._activeContent.tab.getHTMLElement()).removeClass("active");
 		$(this._activeContent.page.getHTMLElement()).removeClass("active");
 
 		$(collectionItem.tab.getHTMLElement()).addClass("active");
 		$(collectionItem.page.getHTMLElement()).addClass("active");
 		this._activeContent = collectionItem;
-
-		if (id && typeof id == 'number') {
-			this.fillDateTimes(id);
-		}
 	},
-	fillDateTimes: function (id) {
-		$.ajax({
-			url: Imcms.Linker.get("dateTimes.fill", id),
-			type: "GET",
-			success: function (response) {
-				$.each(response, function (key, element) {
-					var date = key;
-					$.each(element, function (key, element) {
-						$("input[name=" + date + "-" + key + "]").val(element);
-					});
-				});
-			}
-		});
+	fillDateTimes: function () {
+	    var id = this._options.data.id;
+
+        if (id) {
+            setTimeout(function () {
+                $.ajax({
+                    url: Imcms.Linker.get("dateTimes.fill", id),
+                    type: "GET",
+                    success: function (response) {
+                        $.each(response, function (key, element) {
+                            var date = key;
+                            $.each(element, function (key, element) {
+                                $("input[name=" + date + "-" + key + "]").val(element);
+                            });
+                        });
+                    }
+                });
+            }, 500);
+        }
 	},
 	loadTemplates: function (data) {
 		$.each(data, $.proxy(this.addTemplate, this));
@@ -1114,8 +1150,7 @@ Imcms.Document.Viewer.prototype = {
 	},
 	addCategory: function (categoryType, position, category) {
 		$(this._builder.ref(categoryType).getHTMLElement()).append(
-			$("<option>")
-				.val(category.name).text(category.name).attr("title", category.description)
+			$("<option>").val(category.name).text(category.name).attr("title", category.description)
 		);
 	},
 	addKeyword: function (position, keyword) {
@@ -1163,7 +1198,7 @@ Imcms.Document.Viewer.prototype = {
 		$(this._builder[0]).fadeOut();
 	},
 	saveDateTimes: function (id) {
-		var url = Imcms.Linker.get("dateTimes.save", id + "", this.resolveDateTimes());
+		var url = Imcms.Linker.get("dateTimes.save", id, this.resolveDateTimes());
 
 		$.ajax({
 			url: url,
@@ -1187,11 +1222,15 @@ Imcms.Document.Viewer.prototype = {
 		});
 		return url;
 	},
-	apply: function (id) {
+	apply: function () {
 		if (!$(this._builder[0]).find("form").valid()) {
 			return false;
 		}
-		this.saveDateTimes(id);
+
+		if (this._options.data.id) {
+            this.saveDateTimes(this._options.data.id);
+        }
+
 		this._options.onApply(this);
 		this.destroy();
 	},

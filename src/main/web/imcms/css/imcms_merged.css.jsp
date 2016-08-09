@@ -782,8 +782,13 @@ editor theme
 }
 
 .date-time {
-	width: 300px !important;
+	width: 200px !important;
 	margin: 0 5px;
+}
+
+.date-times-label {
+    width: 460px;
+    float: left;
 }
 
 .pop-up-form .imcms-content .imcms-tabs {
