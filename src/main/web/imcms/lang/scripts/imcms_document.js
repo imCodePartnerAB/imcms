@@ -223,7 +223,7 @@ Imcms.Document.Viewer.prototype = {
 		this._options = options;
 		this._loader = options.loader;
 		this._target = options.target;
-		this._title = options.data ? "DOCUMENT " + options.data.id : "NEW DOCUMENT";
+		this._title = options.data.id ? "DOCUMENT " + options.data.id : "NEW DOCUMENT";
 		this.buildView();
 		//this.buildValidator();
 		this.createModal();
@@ -364,7 +364,11 @@ Imcms.Document.Viewer.prototype = {
 				this.buildFile();
 				break;
 		}
-		this.buildDates();
+
+		if (this._options.data.id) {
+		    console.log(this._options.data.id);
+            this.buildDates();
+        }
 	},
 	buildLifeCycle: function () {
 		this._builder.ref("tabs")
@@ -1031,22 +1035,20 @@ Imcms.Document.Viewer.prototype = {
 	fillDateTimes: function () {
 	    var id = this._options.data.id;
 
-        if (id) {
-            setTimeout(function () {
-                $.ajax({
-                    url: Imcms.Linker.get("dateTimes.fill", id),
-                    type: "GET",
-                    success: function (response) {
-                        $.each(response, function (key, element) {
-                            var date = key;
-                            $.each(element, function (key, element) {
-                                $("input[name=" + date + "-" + key + "]").val(element);
-                            });
+        setTimeout(function () {
+            $.ajax({
+                url: Imcms.Linker.get("dateTimes.fill", id),
+                type: "GET",
+                success: function (response) {
+                    $.each(response, function (key, element) {
+                        var date = key;
+                        $.each(element, function (key, element) {
+                            $("input[name=" + date + "-" + key + "]").val(element);
                         });
-                    }
-                });
-            }, 500);
-        }
+                    });
+                }
+            });
+        }, 500);
 	},
 	loadTemplates: function (data) {
 		$.each(data, $.proxy(this.addTemplate, this));
