@@ -21,7 +21,6 @@ import imcode.util.Utility;
 import imcode.util.io.FileInputStreamSource;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +30,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -193,8 +191,7 @@ public class DocumentController {
 	 * @throws IOException
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	protected Object createOrUpdateDocument(HttpServletRequest req,
-											@RequestParam("type") Integer type,
+	protected Object createOrUpdateDocument(@RequestParam("type") Integer type,
 											@RequestParam(value = "parent", defaultValue = "1001") Integer parentDocumentId,
 											@RequestParam("data") String data,
 											@RequestParam(value = "file", required = false) MultipartFile file) throws ServletException, IOException {
@@ -291,80 +288,80 @@ public class DocumentController {
 		return map;
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/null")
-	protected Object nullDocDateTimes() {
-		Map<String, Object> result = new HashMap<>();
-		return result.put("result", true);
-	}
-
-	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/{id}")
-	protected Object changeDateTimes(@PathVariable(value = "id") Integer id,
-									 @RequestParam(value = "created", defaultValue = "") String created,
-									 @RequestParam(value = "modified", defaultValue = "") String modified,
-									 @RequestParam(value = "archived", defaultValue = "") String archived,
-									 @RequestParam(value = "published", defaultValue = "") String published,
-									 @RequestParam(value = "publication-end", defaultValue = "") String publicationEnd) {
-
-		//	/dateTimes/{id}?created=2010-08-08T10:10:00Z&modified=.......
-		Map<String, Object> result = new HashMap<>();
-
-		if (null == id) {
-			return result.put("result", true);
-		}
-		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
-
-		String[] dates = {
-				created,
-				modified,
-				archived,
-				published,
-				publicationEnd
-		};
-
-		try {
-			handleDateTime(doc, dates);
-			Imcms.getServices().getDocumentMapper().saveDocument(doc, Imcms.getUser());
-			result.put("result", true);
-		} catch (DocumentSaveException e) {
-			e.printStackTrace();
-			LOG.error("Problem during date and time changing", e);
-			result.put("result", false);
-		} catch (IOException e) {
-			//all right, just don't need to save now
-			result.put("result", true);
-		} catch (Exception e) {
-			e.printStackTrace();
-			result.put("result", true);
-		}
-		return result;
-	}
-
-	private void handleDateTime(DocumentDomainObject doc, String[] dates) throws IOException {
-		LinkedList<Date> datesList = new LinkedList<>();
-		for (String date : dates) {
-			datesList.add(parseDate(date));
-		}
-
-		if (datesList.getFirst() == null) {
-			throw new IOException();
-			//means first date-time - date and time of document's creation - may not be null, so it
-			// seems that we have smth wrong and in this case we don't need to rewrite dates, just ignore
-		}
-
-		// full stack of dates - 5
-		if (5 == datesList.size()) {
-			ListIterator<Date> iter = datesList.listIterator();
-			doc.setCreatedDatetime(iter.next());
-			doc.setModifiedDatetime(iter.next());
-			doc.setArchivedDatetime(iter.next());
-			doc.setPublicationStartDatetime(iter.next());
-			doc.setPublicationEndDatetime(iter.next());
-		}
-	}
-
-	private Date parseDate(String date) {
-		return WRONG_DATE.contains(date) ? null : DateUtils.addHours(Date.from(Instant.parse(date)), -2);
-	}
+//	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/null")
+//	protected Object nullDocDateTimes() {
+//		Map<String, Object> result = new HashMap<>();
+//		return result.put("result", true);
+//	}
+//
+//	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/{id}")
+//	protected Object changeDateTimes(@PathVariable(value = "id") Integer id,
+//									 @RequestParam(value = "created", defaultValue = "") String created,
+//									 @RequestParam(value = "modified", defaultValue = "") String modified,
+//									 @RequestParam(value = "archived", defaultValue = "") String archived,
+//									 @RequestParam(value = "published", defaultValue = "") String published,
+//									 @RequestParam(value = "publication-end", defaultValue = "") String publicationEnd) {
+//
+//		//	/dateTimes/{id}?created=2010-08-08T10:10:00Z&modified=.......
+//		Map<String, Object> result = new HashMap<>();
+//
+//		if (null == id) {
+//			return result.put("result", true);
+//		}
+//		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
+//
+//		String[] dates = {
+//				created,
+//				modified,
+//				archived,
+//				published,
+//				publicationEnd
+//		};
+//
+//		try {
+//			handleDateTime(doc, dates);
+//			Imcms.getServices().getDocumentMapper().saveDocument(doc, Imcms.getUser());
+//			result.put("result", true);
+//		} catch (DocumentSaveException e) {
+//			e.printStackTrace();
+//			LOG.error("Problem during date and time changing", e);
+//			result.put("result", false);
+//		} catch (IOException e) {
+//			//all right, just don't need to save now
+//			result.put("result", true);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			result.put("result", true);
+//		}
+//		return result;
+//	}
+//
+//	private void handleDateTime(DocumentDomainObject doc, String[] dates) throws IOException {
+//		LinkedList<Date> datesList = new LinkedList<>();
+//		for (String date : dates) {
+//			datesList.add(parseDate(date));
+//		}
+//
+//		if (datesList.getFirst() == null) {
+//			throw new IOException();
+//			//means first date-time - date and time of document's creation - may not be null, so it
+//			// seems that we have smth wrong and in this case we don't need to rewrite dates, just ignore
+//		}
+//
+//		// full stack of dates - 5
+//		if (5 == datesList.size()) {
+//			ListIterator<Date> iter = datesList.listIterator();
+//			doc.setCreatedDatetime(iter.next());
+//			doc.setModifiedDatetime(iter.next());
+//			doc.setArchivedDatetime(iter.next());
+//			doc.setPublicationStartDatetime(iter.next());
+//			doc.setPublicationEndDatetime(iter.next());
+//		}
+//	}
+//
+//	private Date parseDate(String date) {
+//		return WRONG_DATE.contains(date) ? null : DateUtils.addHours(Date.from(Instant.parse(date)), -2);
+//	}
 
 	/**
 	 * Provide API access to create copy of special document

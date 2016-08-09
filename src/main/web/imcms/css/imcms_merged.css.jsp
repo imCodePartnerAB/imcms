@@ -786,6 +786,11 @@ editor theme
 	margin: 0 5px;
 }
 
+.date-time-short {
+    width: 120px !important;
+    margin: 0 5px;
+}
+
 .date-times-label {
     width: 460px;
     float: left;

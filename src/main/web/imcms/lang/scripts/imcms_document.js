@@ -366,7 +366,6 @@ Imcms.Document.Viewer.prototype = {
 		}
 
 		if (this._options.data.id) {
-		    console.log(this._options.data.id);
             this.buildDates();
         }
 	},
@@ -396,53 +395,67 @@ Imcms.Document.Viewer.prototype = {
 
 			.span()
 			.class("date-times-label")
-			.html("Archived:")
-			.end()
-
-			.div()
-			.class("field")
-			.text()
-			.class("date-time")
-			.name("archived-date")
-			.placeholder("Empty")
-			.end()
-			.text()
-			.class("date-time")
-			.name("archived-time")
-			.placeholder("Empty")
-			.end()
-            .button()
-            .class("imcms-positive")
-            .html("Now")
-            .on("click", this.addRolePermission.bind(this))
-            .end()
-			.end()
-
-			.span()
-			.class("date-times-label")
 			.html("Published:")
 			.end()
 
 			.div()
 			.class("field")
 			.text()
-			.class("date-time")
+			.class("date-time-short")
 			.name("published-date")
 			.placeholder("Empty")
 			.end()
 			.text()
-			.class("date-time")
+			.class("date-time-short")
 			.name("published-time")
 			.placeholder("Empty")
 			.end()
             .button()
             .class("imcms-positive")
             .html("Now")
-            .on("click", this.addRolePermission.bind(this))
+            .on("click", this.setDateTimeNow.bind(this, "published"))
             .end()
-			.end()
+            .text()
+            .class("date-time")
+            .name("published-date-time-saved")
+            .attr("readonly", true)
+            .attr("ignored", true)
+            .placeholder("Empty")
+            .end()
+            .end()
 
-			.span()
+            .span()
+            .class("date-times-label")
+            .html("Archived:")
+            .end()
+
+            .div()
+            .class("field")
+            .text()
+            .class("date-time-short")
+            .name("archived-date")
+            .placeholder("Empty")
+            .end()
+            .text()
+            .class("date-time-short")
+            .name("archived-time")
+            .placeholder("Empty")
+            .end()
+            .button()
+            .class("imcms-positive")
+            .html("Now")
+            .on("click", this.setDateTimeNow.bind(this, "archived"))
+            .end()
+            .text()
+            .class("date-time")
+            .name("archived-date-time-saved")
+            .attr("readonly", true)
+            .attr("ignored", true)
+            .placeholder("Empty")
+            .end()
+            .end()
+
+            .span()
 			.class("date-times-label")
 			.html("Publication end:")
 			.end()
@@ -450,21 +463,28 @@ Imcms.Document.Viewer.prototype = {
 			.div()
 			.class("field")
 			.text()
-			.class("date-time")
+			.class("date-time-short")
 			.name("publication-end-date")
 			.placeholder("Empty")
 			.end()
 			.text()
-			.class("date-time")
+			.class("date-time-short")
 			.name("publication-end-time")
 			.placeholder("Empty")
 			.end()
             .button()
             .class("imcms-positive")
             .html("Now")
-            .on("click", this.addRolePermission.bind(this))
+            .on("click", this.setDateTimeNow.bind(this, "depublished"))
             .end()
-			.end()
+            .text()
+            .class("date-time")
+            .name("publication-end-date-time-saved")
+            .attr("readonly", true)
+            .attr("ignored", true)
+            .placeholder("Empty")
+            .end()
+            .end()
 
 			.end();
 		this._contentCollection["life-cycle"] = {
@@ -473,6 +493,19 @@ Imcms.Document.Viewer.prototype = {
 		};
 		this._builder.ref("life-cycle-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["life-cycle"]));
 	},
+    setDateTimeNow: function (kindOfDate) {
+        switch (kindOfDate) {
+            case "archived" :
+                console.log("archived");
+                break;
+            case "published" :
+                console.log("published");
+                break;
+            case "depublished" :
+                console.log("depublished");
+                break;
+        }
+    },
 	buildAppearance: function () {
 		this._builder.ref("tabs")
 			.div()
@@ -886,18 +919,21 @@ Imcms.Document.Viewer.prototype = {
 			.class("date-time")
 			.name("created-date")
 			.attr("readonly", true)
+            .attr("ignored", true)
 			.placeholder("Empty")
 			.end()
 			.text()
 			.class("date-time")
 			.name("created-time")
 			.attr("readonly", true)
+            .attr("ignored", true)
 			.placeholder("Empty")
 			.end()
             .text()
             .class("date-time")
             .name("created-by")
             .attr("readonly", true)
+            .attr("ignored", true)
             .placeholder("Empty")
             .end()
 			.end()
@@ -913,18 +949,21 @@ Imcms.Document.Viewer.prototype = {
 			.class("date-time")
 			.name("modified-date")
 			.attr("readonly", true)
+            .attr("ignored", true)
 			.placeholder("Empty")
 			.end()
 			.text()
 			.class("date-time")
 			.name("modified-time")
 			.attr("readonly", true)
+            .attr("ignored", true)
 			.placeholder("Empty")
 			.end()
             .text()
             .class("date-time")
             .name("modified-by")
             .attr("readonly", true)
+            .attr("ignored", true)
             .placeholder("Empty")
             .end()
 			.end()
@@ -940,18 +979,21 @@ Imcms.Document.Viewer.prototype = {
 			.class("date-time")
 			.name("archived-date")
 			.attr("readonly", true)
+            .attr("ignored", true)
 			.placeholder("Empty")
 			.end()
 			.text()
 			.class("date-time")
 			.name("archived-time")
 			.attr("readonly", true)
+            .attr("ignored", true)
 			.placeholder("Empty")
 			.end()
             .text()
             .class("date-time")
             .name("archived-by")
             .attr("readonly", true)
+            .attr("ignored", true)
             .placeholder("Empty")
             .end()
 			.end()
@@ -967,18 +1009,21 @@ Imcms.Document.Viewer.prototype = {
 			.class("date-time")
 			.name("published-date")
 			.attr("readonly", true)
-			.placeholder("Empty")
+            .attr("ignored", true)
+            .placeholder("Empty")
 			.end()
 			.text()
 			.class("date-time")
 			.name("published-time")
 			.attr("readonly", true)
-			.placeholder("Empty")
+            .attr("ignored", true)
+            .placeholder("Empty")
 			.end()
             .text()
             .class("date-time")
             .name("published-by")
             .attr("readonly", true)
+            .attr("ignored", true)
             .placeholder("Empty")
             .end()
 			.end()
@@ -994,18 +1039,21 @@ Imcms.Document.Viewer.prototype = {
 			.class("date-time")
 			.name("publication-end-date")
 			.attr("readonly", true)
-			.placeholder("Empty")
+            .attr("ignored", true)
+            .placeholder("Empty")
 			.end()
 			.text()
 			.class("date-time")
 			.name("publication-end-time")
 			.attr("readonly", true)
-			.placeholder("Empty")
+            .attr("ignored", true)
+            .placeholder("Empty")
 			.end()
             .text()
             .class("date-time")
             .name("publication-end-by")
             .attr("readonly", true)
+            .attr("ignored", true)
             .placeholder("Empty")
             .end()
 			.end()
@@ -1040,11 +1088,15 @@ Imcms.Document.Viewer.prototype = {
                 url: Imcms.Linker.get("dateTimes.fill", id),
                 type: "GET",
                 success: function (response) {
-                    $.each(response, function (key, element) {
-                        var date = key;
-                        $.each(element, function (key, element) {
-                            $("input[name=" + date + "-" + key + "]").val(element);
+                    $.each(response, function (dateType, dateTimeBy) {
+                        $.each(dateTimeBy, function (dateOrTime, dateOrTimeValue) {
+                            $("input[name=" + dateType + "-" + dateOrTime + "]").val(dateOrTimeValue);
                         });
+
+                        $("input[name^=" + dateType + "]")
+                            .filter("[name$=saved]")
+                            .val(dateTimeBy.date + " " + dateTimeBy.time);
+
                     });
                 }
             });
@@ -1282,39 +1334,39 @@ Imcms.Document.Viewer.prototype = {
 		});
 		$(this._builder[0]).fadeOut();
 	},
-	saveDateTimes: function (id) {
-		var url = Imcms.Linker.get("dateTimes.save", id, this.resolveDateTimes());
-
-		$.ajax({
-			url: url,
-			type: "POST"
-		});
-	},
-	resolveDateTimes: function () {
-		var dates = [
-			"created",
-			"modified",
-			"archived",
-			"published",
-			"publication-end"
-		];
-
-		var url = "";
-
-		dates.forEach(function (date) {
-			url += date + "=" + $("input[name=" + date + "-date]").val() + "T"
-				+ $("input[name=" + date + "-time]").val() + ":00Z&";
-		});
-		return url;
-	},
+	// saveDateTimes: function (id) {
+	// 	var url = Imcms.Linker.get("dateTimes.save", id, this.resolveDateTimes());
+    //
+		// $.ajax({
+		// 	url: url,
+		// 	type: "POST"
+		// });
+	// },
+	// resolveDateTimes: function () {
+	// 	var dates = [
+			// "created",
+			// "modified",
+			// "archived",
+			// "published",
+			// "publication-end"
+		// ];
+        //
+        // var url = "";
+        //
+        // dates.forEach(function (date) {
+			// url += date + "=" + $("input[name=" + date + "-date]").val() + "T"
+			// 	+ $("input[name=" + date + "-time]").val() + ":00Z&";
+		// });
+		// return url;
+	// },
 	apply: function () {
 		if (!$(this._builder[0]).find("form").valid()) {
 			return false;
 		}
 
-		if (this._options.data.id) {
-            this.saveDateTimes(this._options.data.id);
-        }
+		// if (this._options.data.id) {
+         //    this.saveDateTimes(this._options.data.id);
+        // }
 
 		this._options.onApply(this);
 		this.destroy();
