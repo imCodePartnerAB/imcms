@@ -171,5 +171,10 @@
       "returnParameter",
       "returnArgument"
     ]
+  },
+  {
+    "name": "admin.localization.config",
+    "url": "/imcms/js/admin/",
+    "args": []
   }
 ]

@@ -26,7 +26,7 @@ Imcms.Bootstrapper.prototype = {
         //Init of internalization plugin
         $.i18n.properties({
             name: 'imcms',
-            path: Imcms.Linker._contextPath + '/imcms/js/admin/',
+            path: Imcms.Linker.get('admin.localization.config'),
             mode: 'both',
         });
 

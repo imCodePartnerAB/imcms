@@ -372,7 +372,7 @@ Imcms.Menu.Editor.prototype = {
 			.value(Imcms.Menu.TreeAdapter.Sorting.NAME)
 			.end()
 			.button()
-			.html($.i18n.prop('menu\/sortAlphabet'))
+			.html($.i18n.prop('menu.sortAlphabet'))
 			.class("imcms-neutral create-new")
 			.on("click", $.proxy(this._sortItems, this))
 			.end()
