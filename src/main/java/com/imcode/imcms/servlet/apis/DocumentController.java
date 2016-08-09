@@ -55,7 +55,7 @@ public class DocumentController {
 
 	private static final Collection<String> WRONG_DATE = Collections.unmodifiableCollection(Arrays.asList("T:00Z", "--T--:00Z"));
 
-	private static final String BAD_ATTRIBUTES = ",\"created-date\":\"\",\"created-time\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\"";
+	private static final String BAD_ATTRIBUTES = ",\"created-date\":\"\",\"created-time\":\"\",\"created-by\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"modified-by\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"archived-by\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"published-by\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\",\"publication-end-by\":\"\"";
 
 	private static final Logger LOG = Logger.getLogger(DocumentController.class);
 
@@ -412,6 +412,7 @@ public class DocumentController {
 			case "archive": {
 				DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(id);
 				document.setArchivedDatetime(action.equals("unarchive") ? null : new Date());
+                document.setArchiverId(Imcms.getUser().getId());
 				try {
 					Imcms.getServices().getDocumentMapper().saveDocument(document, Imcms.getUser());
 					result.put("result", true);
