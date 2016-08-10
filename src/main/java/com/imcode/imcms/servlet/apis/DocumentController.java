@@ -420,11 +420,14 @@ public class DocumentController {
     private Date getValidatedDateOrNull(String date, String time, Date documentDatetime) {
         if (isValidDateTime(date, time)) {
             try {
-                String oldDateStr = DATETIME_DOC_FORMAT.format(documentDatetime);
                 String newDateStr = date + " " + time;
-
-                Date oldDate = DATETIME_DOC_FORMAT.parse(oldDateStr);
                 Date newDate = DATETIME_DOC_FORMAT.parse(newDateStr);
+                Date oldDate = null;
+
+                if (documentDatetime != null) {
+                    String oldDateStr = DATETIME_DOC_FORMAT.format(documentDatetime);
+                    oldDate = DATETIME_DOC_FORMAT.parse(oldDateStr);
+                }
 
                 if (!newDate.equals(oldDate)) {
                     return newDate;
