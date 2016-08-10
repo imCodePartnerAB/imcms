@@ -126,7 +126,7 @@ public class DocumentController {
 	@RequestMapping(method = RequestMethod.GET)
 	protected Object getDocumentsList(@RequestParam(value = "filter", required = false) String term,
 									  @RequestParam(value = "skip", required = false, defaultValue = "0") int skip,
-									  @RequestParam(value = "take", required = false, defaultValue = "25") int take,
+									  @RequestParam(value = "take", required = false, defaultValue = "50") int take,
 									  @RequestParam(value = "sort", required = false, defaultValue = "meta_id") String sort,
 									  @RequestParam(value = "order", required = false, defaultValue = "asc") String order) throws ServletException, IOException {
 		List<Map<String, Object>> result = new ArrayList<>();
