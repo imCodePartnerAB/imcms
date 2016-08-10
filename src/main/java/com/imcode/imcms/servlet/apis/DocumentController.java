@@ -30,9 +30,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static imcode.util.DateConstants.DATETIME_DOC_FORMAT;
 
 /**
  * Realise API for working with  {@link DocumentDomainObject}
@@ -51,9 +54,8 @@ public class DocumentController {
 			"publication-end"
 	};
 
-	private static final Collection<String> WRONG_DATE = Collections.unmodifiableCollection(Arrays.asList("T:00Z", "--T--:00Z"));
-
-	private static final String BAD_ATTRIBUTES = ",\"created-date\":\"\",\"created-time\":\"\",\"created-by\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"modified-by\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"archived-by\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"published-by\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\",\"publication-end-by\":\"\"";
+//	private static final Collection<String> WRONG_DATE = Collections.unmodifiableCollection(Arrays.asList("T:00Z", "--T--:00Z"));
+//	private static final String BAD_ATTRIBUTES = ",\"created-date\":\"\",\"created-time\":\"\",\"created-by\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"modified-by\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"archived-by\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"published-by\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\",\"publication-end-by\":\"\"";
 
 	private static final Logger LOG = Logger.getLogger(DocumentController.class);
 
@@ -137,21 +139,20 @@ public class DocumentController {
 		List<Integer> documentStoredFieldsList;
 		SolrQuery solrQuery;
 
-		if (StringUtils.isNotBlank(term)) {
-			String query = Stream.of(new String[]{
+        String query = (StringUtils.isNotBlank(term))
+			? Stream.of(new String[]{
 					DocumentIndex.FIELD__META_ID,
 					DocumentIndex.FIELD__META_HEADLINE,
 					DocumentIndex.FIELD__META_TEXT,
 					DocumentIndex.FIELD__KEYWORD,
 					DocumentIndex.FIELD__ALIAS,})
 					.map(field -> String.format("%s:*%s*", field, term))
-					.collect(Collectors.joining(" "));
-			solrQuery = new SolrQuery(query);
-		} else {
-			solrQuery = new SolrQuery("*:*");
-		}
+					.collect(Collectors.joining(" "))
+                : "*:*";
 
-		solrQuery.addSort(sort, SolrQuery.ORDER.valueOf(order));
+        solrQuery = new SolrQuery(query);
+        solrQuery.addSort(sort, SolrQuery.ORDER.valueOf(order));
+
 		documentStoredFieldsList = documentMapper.getDocumentIndex()
 				.search(solrQuery, Imcms.getUser())
 				.documentStoredFieldsList()
@@ -202,22 +203,18 @@ public class DocumentController {
 			DocumentMapper docMapper = Imcms.getServices().getDocumentMapper();
 			DocumentEntity docEntity;
 
-			//before do smth needs to check data to replace wrong attributes
-			//todo: check data on JS side and send correct data to here, then may delete the checkData(data) method
-			data = checkData(data);
-
 			switch (type) {
 				case DocumentTypeDomainObject.URL_ID: {
 					docEntity = newMapper(data, new TypeReference<UrlDocumentEntity>() {
 					});
-					docDomainObject = createOrGetDoc(type, parentDocumentId, docEntity, docMapper);
+					docDomainObject = createOrGetDoc(type, parentDocumentId, docEntity.id, docMapper);
 					asUrlDocument((UrlDocumentDomainObject) docDomainObject, (UrlDocumentEntity) docEntity);
 				}
 				break;
 				case DocumentTypeDomainObject.FILE_ID: {
 					docEntity = newMapper(data, new TypeReference<FileDocumentEntity>() {
 					});
-					docDomainObject = createOrGetDoc(type, parentDocumentId, docEntity, docMapper);
+					docDomainObject = createOrGetDoc(type, parentDocumentId, docEntity.id, docMapper);
 					asFileDocument((FileDocumentDomainObject) docDomainObject, (FileDocumentEntity) docEntity, file);
 				}
 				break;
@@ -226,7 +223,7 @@ public class DocumentController {
 					int id = TextDocument.TYPE_ID;
 					docEntity = newMapper(data, new TypeReference<TextDocumentEntity>() {
 					});
-					docDomainObject = createOrGetDoc(id, parentDocumentId, docEntity, docMapper);
+					docDomainObject = createOrGetDoc(id, parentDocumentId, docEntity.id, docMapper);
 					asTextDocument((TextDocumentDomainObject) docDomainObject, (TextDocumentEntity) docEntity);
 				}
 				break;
@@ -256,14 +253,10 @@ public class DocumentController {
 		return new ObjectMapper().readValue(data, typeReference);
 	}
 
-	private DocumentDomainObject createOrGetDoc(Integer typeId, Integer parentDocumentId, DocumentEntity documentEntity, DocumentMapper documentMapper) {
-		return documentEntity.id == null
+	private DocumentDomainObject createOrGetDoc(Integer typeId, Integer parentDocumentId, Integer documentEntityId, DocumentMapper documentMapper) {
+		return documentEntityId == null
 				? documentMapper.createDocumentOfTypeFromParent(typeId, documentMapper.getDocument(parentDocumentId), Imcms.getUser())
-				: documentMapper.getDocument(documentEntity.id);
-	}
-
-	protected String checkData(String data) {
-		return data.replace(BAD_ATTRIBUTES, "");
+				: documentMapper.getDocument(documentEntityId);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/getDateTimes/{id}")
@@ -287,81 +280,6 @@ public class DocumentController {
 		}
 		return map;
 	}
-
-//	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/null")
-//	protected Object nullDocDateTimes() {
-//		Map<String, Object> result = new HashMap<>();
-//		return result.put("result", true);
-//	}
-//
-//	@RequestMapping(method = RequestMethod.POST, value = "/dateTimes/{id}")
-//	protected Object changeDateTimes(@PathVariable(value = "id") Integer id,
-//									 @RequestParam(value = "created", defaultValue = "") String created,
-//									 @RequestParam(value = "modified", defaultValue = "") String modified,
-//									 @RequestParam(value = "archived", defaultValue = "") String archived,
-//									 @RequestParam(value = "published", defaultValue = "") String published,
-//									 @RequestParam(value = "publication-end", defaultValue = "") String publicationEnd) {
-//
-//		//	/dateTimes/{id}?created=2010-08-08T10:10:00Z&modified=.......
-//		Map<String, Object> result = new HashMap<>();
-//
-//		if (null == id) {
-//			return result.put("result", true);
-//		}
-//		DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
-//
-//		String[] dates = {
-//				created,
-//				modified,
-//				archived,
-//				published,
-//				publicationEnd
-//		};
-//
-//		try {
-//			handleDateTime(doc, dates);
-//			Imcms.getServices().getDocumentMapper().saveDocument(doc, Imcms.getUser());
-//			result.put("result", true);
-//		} catch (DocumentSaveException e) {
-//			e.printStackTrace();
-//			LOG.error("Problem during date and time changing", e);
-//			result.put("result", false);
-//		} catch (IOException e) {
-//			//all right, just don't need to save now
-//			result.put("result", true);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			result.put("result", true);
-//		}
-//		return result;
-//	}
-//
-//	private void handleDateTime(DocumentDomainObject doc, String[] dates) throws IOException {
-//		LinkedList<Date> datesList = new LinkedList<>();
-//		for (String date : dates) {
-//			datesList.add(parseDate(date));
-//		}
-//
-//		if (datesList.getFirst() == null) {
-//			throw new IOException();
-//			//means first date-time - date and time of document's creation - may not be null, so it
-//			// seems that we have smth wrong and in this case we don't need to rewrite dates, just ignore
-//		}
-//
-//		// full stack of dates - 5
-//		if (5 == datesList.size()) {
-//			ListIterator<Date> iter = datesList.listIterator();
-//			doc.setCreatedDatetime(iter.next());
-//			doc.setModifiedDatetime(iter.next());
-//			doc.setArchivedDatetime(iter.next());
-//			doc.setPublicationStartDatetime(iter.next());
-//			doc.setPublicationEndDatetime(iter.next());
-//		}
-//	}
-//
-//	private Date parseDate(String date) {
-//		return WRONG_DATE.contains(date) ? null : DateUtils.addHours(Date.from(Instant.parse(date)), -2);
-//	}
 
 	/**
 	 * Provide API access to create copy of special document
@@ -445,48 +363,90 @@ public class DocumentController {
 	/**
 	 * Provide basic document preparation base on {@link DocumentEntity}
 	 */
-	protected void prepareDocument(DocumentEntity documentEntity, DocumentDomainObject documentDomainObject) {
+	protected void prepareDocument(DocumentEntity docEntity, DocumentDomainObject docDomainObject) {
 		CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
 
-		documentEntity.access.forEach(
-				(id, map) -> documentDomainObject.setDocumentPermissionSetTypeForRoleId(
-						new RoleId(id), DocumentPermissionSetTypeDomainObject.values()[Integer.parseInt(map.get("permission").toString())]));
+        docEntity.access.forEach((id, map) -> {
+            int permission = Integer.parseInt(map.get("permission").toString());
+            DocumentPermissionSetTypeDomainObject permissionSetType = DocumentPermissionSetTypeDomainObject.values()[permission];
+            docDomainObject.setDocumentPermissionSetTypeForRoleId(new RoleId(id), permissionSetType);
+        });
 
-		if (StringUtils.isNotEmpty(documentEntity.alias)) {
-			documentDomainObject.setAlias(documentEntity.alias);
-		} else {
-			documentDomainObject.setAlias(null);
-		}
+        String alias = StringUtils.isNotEmpty(docEntity.alias)
+                ? docEntity.alias
+                : null;
 
-		documentDomainObject.setSearchDisabled(documentEntity.isSearchDisabled);
-		documentDomainObject.setTarget(documentEntity.target);
-		documentDomainObject.setKeywords(documentEntity.keywords);
-		documentDomainObject.setPublicationStatus(Document.PublicationStatus.of(documentEntity.status));
-		documentDomainObject.setCategoryIds(
-				documentEntity.categories.entrySet().stream()
-						.filter(entry -> {
-							for (String item : entry.getValue()) {
-								if (!StringUtils.isNotEmpty(item)) {
-									return false;
-								}
-							}
-							return true;
-						})
-						.map(entry -> {
-							List<Integer> ids = new ArrayList<>();
-							for (String item : entry.getValue()) {
-								ids.add(categoryMapper.getCategoryByTypeAndName(
-										categoryMapper.getCategoryTypeByName(entry.getKey()),
-										item).getId());
-							}
-							return ids;
-						})
-						.flatMap(List::stream)
-						.collect(Collectors.toSet())
-		);
-	}
+        docDomainObject.setAlias(alias);
+		docDomainObject.setSearchDisabled(docEntity.isSearchDisabled);
+		docDomainObject.setTarget(docEntity.target);
+		docDomainObject.setKeywords(docEntity.keywords);
+		docDomainObject.setPublicationStatus(Document.PublicationStatus.of(docEntity.status));
+		docDomainObject.setCategoryIds(docEntity.categories
+                .entrySet()
+                .stream()
+                .filter(entry -> Arrays.stream(entry.getValue())
+                        .anyMatch(StringUtils::isNotEmpty)
+                )
+                .map(entry -> Arrays.stream(entry.getValue())
+                        .map(item -> {
+                            CategoryTypeDomainObject categoryType = categoryMapper.getCategoryTypeByName(entry.getKey());
+                            return categoryMapper.getCategoryByTypeAndName(categoryType, item).getId();
+                        })
+                        .collect(Collectors.toCollection(ArrayList::new))
+                )
+                .flatMap(List::stream)
+                .collect(Collectors.toSet())
+        );
 
-	/**
+        Date newPublishedDate = getValidatedDateOrNull(docEntity.publishedDate, docEntity.publishedTime,
+                docDomainObject.getPublicationStartDatetime());
+
+        Date newArchivedDate = getValidatedDateOrNull(docEntity.archivedDate, docEntity.archivedTime,
+                docDomainObject.getArchivedDatetime());
+
+        Date newDepublishDate = getValidatedDateOrNull(docEntity.publicationEndDate, docEntity.publicationEndTime,
+                docDomainObject.getPublicationEndDatetime());
+
+        if (newPublishedDate != null) {
+            docDomainObject.setPublicationStartDatetime(newPublishedDate);
+            docDomainObject.setPublisherId(Imcms.getUser().getId());
+        }
+
+        if (newArchivedDate != null) {
+            docDomainObject.setArchivedDatetime(newArchivedDate);
+            docDomainObject.setArchiverId(Imcms.getUser().getId());
+        }
+
+        if (newDepublishDate != null) {
+            docDomainObject.setPublicationEndDatetime(newDepublishDate);
+            docDomainObject.setDepublisherId(Imcms.getUser().getId());
+        }
+    }
+
+    private Date getValidatedDateOrNull(String date, String time, Date documentDatetime) {
+        if (isValidDateTime(date, time)) {
+            try {
+                String oldDateStr = DATETIME_DOC_FORMAT.format(documentDatetime);
+                Date oldDate = DATETIME_DOC_FORMAT.parse(oldDateStr);
+                String newDateStr = date + " " + time;
+                Date newDate = DATETIME_DOC_FORMAT.parse(newDateStr);
+                if (!newDate.equals(oldDate)) {
+                    return newDate;
+                }
+            } catch (ParseException ignore) {
+            }
+        }
+        return null;
+    }
+
+    private boolean isValidDateTime(String publishedDate, String publishedTime) {
+        return StringUtils.isNotBlank(publishedDate)
+                && !publishedDate.equals("--")
+                && StringUtils.isNotBlank(publishedTime)
+                && !publishedTime.equals("--");
+    }
+
+    /**
 	 * Prepare {@link FileDocumentDomainObject}
 	 *
 	 * @param document      prepared document
@@ -689,7 +649,25 @@ public class DocumentController {
 		public Map<String, String[]> categories;
 		public boolean isSearchDisabled;
 
-		private static class LanguageEntity {
+        @JsonProperty("published-date")
+        public String publishedDate;
+
+        @JsonProperty("published-time")
+        public String publishedTime;
+
+        @JsonProperty("archived-date")
+        public String archivedDate;
+
+        @JsonProperty("archived-time")
+        public String archivedTime;
+
+        @JsonProperty("publication-end-date")
+        public String publicationEndDate;
+
+        @JsonProperty("publication-end-time")
+        public String publicationEndTime;
+
+        private static class LanguageEntity {
 			public String code;
 			public boolean enabled;
 			public String image;
