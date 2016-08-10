@@ -54,9 +54,6 @@ public class DocumentController {
 			"publication-end"
 	};
 
-//	private static final Collection<String> WRONG_DATE = Collections.unmodifiableCollection(Arrays.asList("T:00Z", "--T--:00Z"));
-//	private static final String BAD_ATTRIBUTES = ",\"created-date\":\"\",\"created-time\":\"\",\"created-by\":\"\",\"modified-date\":\"\",\"modified-time\":\"\",\"modified-by\":\"\",\"archived-date\":\"\",\"archived-time\":\"\",\"archived-by\":\"\",\"published-date\":\"\",\"published-time\":\"\",\"published-by\":\"\",\"publication-end-date\":\"\",\"publication-end-time\":\"\",\"publication-end-by\":\"\"";
-
 	private static final Logger LOG = Logger.getLogger(DocumentController.class);
 
 	/**
@@ -92,7 +89,6 @@ public class DocumentController {
 			case DocumentTypeDomainObject.TEXT_ID:
 			default: {
 				result = new TextDocumentEntity();
-
 				asTextEntity((TextDocumentEntity) result, (TextDocumentDomainObject) documentDomainObject);
 
 				if (isPrototype) {
@@ -199,7 +195,6 @@ public class DocumentController {
 		Map<String, Object> result = new HashMap<>();
 		try {
 			DocumentDomainObject docDomainObject;
-
 			DocumentMapper docMapper = Imcms.getServices().getDocumentMapper();
 			DocumentEntity docEntity;
 
@@ -291,16 +286,13 @@ public class DocumentController {
 		Map<String, Object> result = new HashMap<>();
 
 		try {
-			Map<String, Object> map = new HashedMap<>();
-			DocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().copyDocument(
-					Imcms.getServices()
-							.getDocumentMapper()
-							.getDocument(id), Imcms.getUser()
-			);
+            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+            int docId = documentMapper.copyDocument(documentMapper.getDocument(id), Imcms.getUser()).getId();
 
-			map.put("id", documentDomainObject.getId());
 			result.put("result", true);
-			result.put("data", map);
+			result.put("data", new HashedMap<String, Object>(){{
+                put("id", docId);
+            }});
 		} catch (DocumentSaveException e) {
 			e.printStackTrace();
 			LOG.error("Problem during document creating", e);
@@ -322,6 +314,8 @@ public class DocumentController {
 									@RequestParam(value = "action", required = false, defaultValue = "") String action
 	) throws ServletException, IOException {
 		Map<String, Object> result = new HashMap<>();
+        boolean resultValue;
+
 		switch (action) {
 			case "unarchive":
 			case "archive": {
@@ -330,25 +324,28 @@ public class DocumentController {
                 document.setArchiverId(Imcms.getUser().getId());
 				try {
 					Imcms.getServices().getDocumentMapper().saveDocument(document, Imcms.getUser());
-					result.put("result", true);
+					resultValue = true;
 				} catch (DocumentSaveException e) {
 					e.printStackTrace();
-					result.put("result", false);
+					resultValue = false;
 				}
 			}
 			break;
 			default: {
 				Imcms.getServices().getDocumentMapper().deleteDocument(id);
-				result.put("result", true);
+				resultValue = true;
 			}
 		}
+        result.put("result", resultValue);
 		return result;
 	}
 
 	protected Map<DocumentLanguage, DocumentCommonContent> getContentMap(DocumentEntity entity) {
 		Map<DocumentLanguage, DocumentCommonContent> contentMap = new HashMap<>();
+
 		for (DocumentLanguage language : Imcms.getServices().getDocumentLanguages().getAll()) {
 			DocumentEntity.LanguageEntity languageEntity = entity.languages.get(language.getName());
+
 			if (languageEntity.enabled)
 				contentMap.put(language, DocumentCommonContent.builder()
 						.headline(languageEntity.title)
@@ -398,38 +395,37 @@ public class DocumentController {
                 .collect(Collectors.toSet())
         );
 
-        Date newPublishedDate = getValidatedDateOrNull(docEntity.publishedDate, docEntity.publishedTime,
-                docDomainObject.getPublicationStartDatetime());
+        Optional.ofNullable(getValidatedDateOrNull(docEntity.publishedDate, docEntity.publishedTime,
+                docDomainObject.getPublicationStartDatetime()))
+                .ifPresent(newPublishedDate -> {
+                    docDomainObject.setPublicationStartDatetime(newPublishedDate);
+                    docDomainObject.setPublisherId(Imcms.getUser().getId());
+                });
 
-        Date newArchivedDate = getValidatedDateOrNull(docEntity.archivedDate, docEntity.archivedTime,
-                docDomainObject.getArchivedDatetime());
+        Optional.ofNullable(getValidatedDateOrNull(docEntity.archivedDate, docEntity.archivedTime,
+                docDomainObject.getArchivedDatetime()))
+                .ifPresent(newArchivedDate -> {
+                    docDomainObject.setArchivedDatetime(newArchivedDate);
+                    docDomainObject.setArchiverId(Imcms.getUser().getId());
+                });
 
-        Date newDepublishDate = getValidatedDateOrNull(docEntity.publicationEndDate, docEntity.publicationEndTime,
-                docDomainObject.getPublicationEndDatetime());
-
-        if (newPublishedDate != null) {
-            docDomainObject.setPublicationStartDatetime(newPublishedDate);
-            docDomainObject.setPublisherId(Imcms.getUser().getId());
-        }
-
-        if (newArchivedDate != null) {
-            docDomainObject.setArchivedDatetime(newArchivedDate);
-            docDomainObject.setArchiverId(Imcms.getUser().getId());
-        }
-
-        if (newDepublishDate != null) {
-            docDomainObject.setPublicationEndDatetime(newDepublishDate);
-            docDomainObject.setDepublisherId(Imcms.getUser().getId());
-        }
+        Optional.ofNullable(getValidatedDateOrNull(docEntity.publicationEndDate, docEntity.publicationEndTime,
+                docDomainObject.getPublicationEndDatetime()))
+                .ifPresent(newPublicationEndDate -> {
+                    docDomainObject.setPublicationEndDatetime(newPublicationEndDate);
+                    docDomainObject.setDepublisherId(Imcms.getUser().getId());
+                });
     }
 
     private Date getValidatedDateOrNull(String date, String time, Date documentDatetime) {
         if (isValidDateTime(date, time)) {
             try {
                 String oldDateStr = DATETIME_DOC_FORMAT.format(documentDatetime);
-                Date oldDate = DATETIME_DOC_FORMAT.parse(oldDateStr);
                 String newDateStr = date + " " + time;
+
+                Date oldDate = DATETIME_DOC_FORMAT.parse(oldDateStr);
                 Date newDate = DATETIME_DOC_FORMAT.parse(newDateStr);
+
                 if (!newDate.equals(oldDate)) {
                     return newDate;
                 }
@@ -455,32 +451,33 @@ public class DocumentController {
 	 * @throws IOException
 	 * @throws ServletException
 	 */
-	protected void asFileDocument(FileDocumentDomainObject document, FileDocumentEntity entity, MultipartFile multipartFile) throws IOException, ServletException {
-		if (StringUtils.isNotEmpty(entity.defaultFile)) {
-			document.setDefaultFileId(entity.defaultFile);
-		}
+    protected void asFileDocument(FileDocumentDomainObject document, FileDocumentEntity entity, MultipartFile multipartFile) throws IOException, ServletException {
+        if (StringUtils.isNotEmpty(entity.defaultFile)) {
+            document.setDefaultFileId(entity.defaultFile);
+        }
 
-		Stream.of(entity.removedFiles).forEach(document::removeFile);
+        Stream.of(entity.removedFiles).forEach(document::removeFile);
 
-		if (multipartFile != null) {
-			FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
-			fileDocumentFile.setFilename(multipartFile.getOriginalFilename());
+        if (multipartFile != null) {
+            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
+            String originalFilename = multipartFile.getOriginalFilename();
+            fileDocumentFile.setFilename(originalFilename);
 
-			fileDocumentFile.setMimeType(multipartFile.getContentType());
-			File file = new File(Imcms.getServices().getConfig().getFilePath(), multipartFile.getOriginalFilename());
+            fileDocumentFile.setMimeType(multipartFile.getContentType());
+            File file = new File(Imcms.getServices().getConfig().getFilePath(), originalFilename);
 
-			if (!file.createNewFile() &&
-					document.getFile(multipartFile.getOriginalFilename()) != null) {
-				document.removeFile(multipartFile.getOriginalFilename());
-			}
+            if (!file.createNewFile() && document.getFile(originalFilename) != null) {
+                document.removeFile(originalFilename);
+            }
 
-			multipartFile.transferTo(file);
-			fileDocumentFile.setInputStreamSource(new FileInputStreamSource(file));
-			document.addFile(multipartFile.getOriginalFilename(), fileDocumentFile);
+            multipartFile.transferTo(file);
+            originalFilename = multipartFile.getOriginalFilename();
+            fileDocumentFile.setInputStreamSource(new FileInputStreamSource(file));
+            document.addFile(originalFilename, fileDocumentFile);
 
-			document.setDefaultFileId(multipartFile.getOriginalFilename());
-		}
-	}
+            document.setDefaultFileId(originalFilename);
+        }
+    }
 
 	/**
 	 * Prepare {@link TextDocumentDomainObject} using {@link TextDocumentEntity}
@@ -493,19 +490,21 @@ public class DocumentController {
 		TextDocumentPermissionSetDomainObject permissions2 = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_2);
 		DocumentPermissionSets docPermissions = new DocumentPermissionSets();
 
-		permissions1.setEditImages(entity.permissions.get(0).canEditImage);
-		permissions1.setEditMenus(entity.permissions.get(0).canEditMenu);
-		permissions1.setEditTexts(entity.permissions.get(0).canEditText);
-		permissions1.setEditLoops(entity.permissions.get(0).canEditLoop);
-		permissions1.setEditDocumentInformation(entity.permissions.get(0).canEditDocumentInformation);
-		permissions1.setEditPermissions(entity.permissions.get(0).canEditDocumentInformation);
+        TextDocumentPermission textDocPermission0 = entity.permissions.get(0);
+        permissions1.setEditImages(textDocPermission0.canEditImage);
+		permissions1.setEditMenus(textDocPermission0.canEditMenu);
+		permissions1.setEditTexts(textDocPermission0.canEditText);
+		permissions1.setEditLoops(textDocPermission0.canEditLoop);
+		permissions1.setEditDocumentInformation(textDocPermission0.canEditDocumentInformation);
+		permissions1.setEditPermissions(textDocPermission0.canEditDocumentInformation);
 
-		permissions2.setEditImages(entity.permissions.get(1).canEditImage);
-		permissions2.setEditMenus(entity.permissions.get(1).canEditMenu);
-		permissions2.setEditTexts(entity.permissions.get(1).canEditText);
-		permissions2.setEditLoops(entity.permissions.get(1).canEditLoop);
-		permissions2.setEditDocumentInformation(entity.permissions.get(1).canEditDocumentInformation);
-		permissions2.setEditPermissions(entity.permissions.get(1).canEditDocumentInformation);
+        TextDocumentPermission textDocPermission1 = entity.permissions.get(1);
+        permissions2.setEditImages(textDocPermission1.canEditImage);
+		permissions2.setEditMenus(textDocPermission1.canEditMenu);
+		permissions2.setEditTexts(textDocPermission1.canEditText);
+		permissions2.setEditLoops(textDocPermission1.canEditLoop);
+		permissions2.setEditDocumentInformation(textDocPermission1.canEditDocumentInformation);
+		permissions2.setEditPermissions(textDocPermission1.canEditDocumentInformation);
 
 		docPermissions.setRestricted1(permissions1);
 		docPermissions.setRestricted2(permissions2);
