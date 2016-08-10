@@ -9,7 +9,7 @@
     <property name="version" value="SET BY MAVEN"/>
 
     <tstamp>
-        <format property="compilationdate" pattern="d-MMMM-yyyy" locale="en,GB"/>
+        <format property="compilationdate" pattern="d-MM-yyyy" locale="en,GB"/>
     </tstamp>
 
     <property file="build.properties"/>
