@@ -475,7 +475,7 @@ Imcms.Document.Viewer.prototype = {
             .button()
             .class("imcms-positive")
             .html("Now")
-            .on("click", this.setDateTimeNow.bind(this, "depublished"))
+            .on("click", this.setDateTimeNow.bind(this, "publication-end"))
             .end()
             .text()
             .class("date-time")
