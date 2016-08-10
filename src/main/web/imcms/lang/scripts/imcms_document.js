@@ -494,17 +494,14 @@ Imcms.Document.Viewer.prototype = {
 		this._builder.ref("life-cycle-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["life-cycle"]));
 	},
     setDateTimeNow: function (kindOfDate) {
-        switch (kindOfDate) {
-            case "archived" :
-                console.log("archived");
-                break;
-            case "published" :
-                console.log("published");
-                break;
-            case "depublished" :
-                console.log("depublished");
-                break;
-        }
+	    var greenwichDate = new Date(), // get Greenwich date
+            dateArr = greenwichDate.toISOString().split("T"), // toISOString get the "2016-08-10T07:28:00.899Z"
+            date = dateArr[0], // before "T" we have date "2016-08-10"
+            timeArr = dateArr[1].split(":"), // "07:28:00.899Z" we split to set correct hours and skip sec
+            time = greenwichDate.getHours() + ":" + timeArr[1]; // correct time
+
+        $("input.date-time-short[name=" + kindOfDate + "-date]").val(date);
+        $("input.date-time-short[name=" + kindOfDate + "-time]").val(time);
     },
 	buildAppearance: function () {
 		this._builder.ref("tabs")
