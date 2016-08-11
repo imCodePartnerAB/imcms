@@ -178,8 +178,8 @@
     "args": []
   },
   {
-    "name": "admin.doc",
-    "url": "/servlet/AdminDoc?meta_id={1}&flags=65536",
+    "name": "document",
+    "url": "/{1}",
     "args": [
       "id"
     ]

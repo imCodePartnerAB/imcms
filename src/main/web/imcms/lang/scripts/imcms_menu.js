@@ -39,7 +39,7 @@ Imcms.Menu.TreeAdapter.prototype = {
 		$("<span>").addClass("column-right buttons").appendTo(treeElement).append(
 			$("<button>")
 				.addClass("imcms-neutral")
-                .html("<a href ='" + Imcms.Linker.get("admin.doc", docId) + "' target='_blank'>open<a/> ")
+                .html("<a href ='" + Imcms.Linker.get("document", docId) + "' target='_blank'>open<a/> ")
 				.attr("type", "button")
 		).append(
 			$("<button>")
