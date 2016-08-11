@@ -2040,7 +2040,7 @@ Imcms.Document.PagerHandler.prototype = {
 	_isHandled: false,
 	_pageNumber: 1,
 	_options: {
-		count: 50,
+		count: 20,
 		handler: function () {
 		},
 		itemsPointer: function () {
