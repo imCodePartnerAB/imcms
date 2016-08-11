@@ -1117,13 +1117,15 @@ Imcms.Document.Viewer.prototype = {
 			this.deserialize(this._options.data);
 	},
 	addLanguage: function (language, code) {
-		this._builder.ref("languages")
+        var shouldBeChecked = Imcms.language.name == language ? "checked" : "should-not";
+        this._builder.ref("languages")
 			.div()
 			.div()
 			.class("checkbox")
 			.checkbox()
 			.attr("data-node-key", "language")
 			.attr("data-node-value", language)
+            .attr(shouldBeChecked, shouldBeChecked)
 			.name("enabled")
 			.end()
 			.div()
