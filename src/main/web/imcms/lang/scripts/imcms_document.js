@@ -346,29 +346,32 @@ Imcms.Document.Viewer.prototype = {
 			.end();
 		$(this._builder[0]).appendTo($("body")).addClass("document-viewer pop-up-form reset");
 		this.buildAppearance();
-		this.buildLifeCycle();
-		this.buildKeywords();
-		this.buildCategories();
-		this.buildAccess();
-		switch (this._options.type) {
-			case 2:
-			{
-				this.buildPermissions();
-				this.buildTemplates();
-			}
-				break;
-			case 5:
-				this.buildLinking();
-				break;
-			case 8:
-				this.buildFile();
-				break;
-		}
+        switch (this._options.type) {
+            case 2:
+                this.buildStandard();
+                this.buildPermissions();
+                this.buildTemplates();
+                break;
+            case 5:
+                this.buildLinking();
+                this.buildStandard();
+                break;
+            case 8:
+                this.buildFile();
+                this.buildStandard();
+                break;
+        }
 
 		if (this._options.data.id) {
             this.buildDates();
         }
 	},
+    buildStandard: function () {
+        this.buildLifeCycle();
+        this.buildKeywords();
+        this.buildCategories();
+        this.buildAccess();
+    },
 	buildLifeCycle: function () {
 		this._builder.ref("tabs")
 			.div()
