@@ -225,7 +225,9 @@ public class DocumentMapper implements DocumentGetter {
 		documentMeta.setPublicationStartDatetime(now);
         documentMeta.setPublisherId(user.getId());
 		documentMeta.setArchivedDatetime(null);
+        documentMeta.setArchiverId(null);
 		documentMeta.setPublicationEndDatetime(null);
+        documentMeta.setDepublisherId(null);
 		documentMeta.setPublicationStatus(Document.PublicationStatus.NEW);
 	}
 
