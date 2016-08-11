@@ -1331,39 +1331,11 @@ Imcms.Document.Viewer.prototype = {
 		});
 		$(this._builder[0]).fadeOut();
 	},
-	// saveDateTimes: function (id) {
-	// 	var url = Imcms.Linker.get("dateTimes.save", id, this.resolveDateTimes());
-    //
-		// $.ajax({
-		// 	url: url,
-		// 	type: "POST"
-		// });
-	// },
-	// resolveDateTimes: function () {
-	// 	var dates = [
-			// "created",
-			// "modified",
-			// "archived",
-			// "published",
-			// "publication-end"
-		// ];
-        //
-        // var url = "";
-        //
-        // dates.forEach(function (date) {
-			// url += date + "=" + $("input[name=" + date + "-date]").val() + "T"
-			// 	+ $("input[name=" + date + "-time]").val() + ":00Z&";
-		// });
-		// return url;
-	// },
+
 	apply: function () {
 		if (!$(this._builder[0]).find("form").valid()) {
 			return false;
 		}
-
-		// if (this._options.data.id) {
-         //    this.saveDateTimes(this._options.data.id);
-        // }
 
 		this._options.onApply(this);
 		this.destroy();
