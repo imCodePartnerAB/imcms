@@ -32,13 +32,14 @@ Imcms.Menu.TreeAdapter.prototype = {
 	},
 	onCreateLi: function (node, $li) {
 		var treeElement = $li.find('.jqtree-element').empty();
-		$("<span>").text(node["doc-id"]).appendTo(treeElement);
+        var docId = node["doc-id"];
+        $("<span>").text(docId).appendTo(treeElement);
 		$("<span>").attr("data-name", "").text(node.name).appendTo(treeElement);
 		$("<span>").text(node.status).appendTo(treeElement);
 		$("<span>").addClass("column-right buttons").appendTo(treeElement).append(
 			$("<button>")
 				.addClass("imcms-neutral")
-				.html("<a href ='/servlet/AdminDoc?meta_id=" + node["doc-id"] + "&flags=65536' target='_blank'>open<a/> ")
+                .html("<a href ='" + Imcms.Linker.get("admin.doc", docId) + "' target='_blank'>open<a/> ")
 				.attr("type", "button")
 		).append(
 			$("<button>")

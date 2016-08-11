@@ -176,5 +176,12 @@
     "name": "admin.localization.config",
     "url": "/imcms/js/admin/",
     "args": []
+  },
+  {
+    "name": "admin.doc",
+    "url": "/servlet/AdminDoc?meta_id={1}&flags=65536",
+    "args": [
+      "id"
+    ]
   }
 ]
