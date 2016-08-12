@@ -11,7 +11,7 @@
   },
   {
     "name": "document.create2",
-    "url": "/api/document/{1}/{2}",
+    "url": "/api/document/{1}",
     "args": [
       "id",
       "mode"
