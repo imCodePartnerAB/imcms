@@ -75,6 +75,8 @@
     <script type="text/javascript"
             src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_category.js"></script>
     <script type="text/javascript"
+            src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_user.js"></script>
+    <script type="text/javascript"
             src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_document.js"></script>
     <script type="text/javascript"
             src="${pageContext.request.contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_role.js"></script>

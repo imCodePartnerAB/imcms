@@ -27,7 +27,7 @@ Imcms.Bootstrapper.prototype = {
         $.i18n.properties({
             name: 'imcms',
             path: Imcms.Linker.get('admin.localization.config'),
-            mode: 'both',
+            mode: 'both'
         });
 
         Imcms.Editors.Language = new Imcms.Language.Loader();
@@ -35,6 +35,7 @@ Imcms.Bootstrapper.prototype = {
         Imcms.Editors.Role = new Imcms.Role.Loader();
         Imcms.Editors.Permission = new Imcms.Permission.Loader();
         Imcms.Editors.Category = new Imcms.Category.Loader();
+        Imcms.Editors.User = new Imcms.User.Loader();
         Imcms.Editors.Document = new Imcms.Document.Loader();
         Imcms.Editors.Loop = new Imcms.Loop.Loader();
         Imcms.Editors.Menu = new Imcms.Menu.Loader();
