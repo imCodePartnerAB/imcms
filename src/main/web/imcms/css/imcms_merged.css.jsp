@@ -7,6 +7,10 @@ String cp = request.getContextPath() ;
 
 <%--BASE--%>
 
+.hidden {
+    display: none;
+}
+
 .reset,
 .reset * {
 	margin: 0;
