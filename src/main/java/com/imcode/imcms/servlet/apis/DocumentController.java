@@ -415,6 +415,9 @@ public class DocumentController {
                     docDomainObject.setPublicationEndDatetime(newPublicationEndDate);
                     docDomainObject.setDepublisherId(Imcms.getUser().getId());
                 });
+
+        // in case of new doc with specified publisher without publication start date/time
+        Optional.ofNullable(docEntity.publisherId).ifPresent(docDomainObject::setPublisherId);
     }
 
     private Date getValidatedDateOrNull(String date, String time, Date documentDatetime) {
@@ -668,6 +671,9 @@ public class DocumentController {
 
         @JsonProperty("publication-end-time")
         public String publicationEndTime;
+
+        @JsonProperty("publisher")
+        public Integer publisherId;
 
         private static class LanguageEntity {
 			public String code;
