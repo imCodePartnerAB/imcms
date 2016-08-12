@@ -175,5 +175,10 @@
     "args": [
       "id"
     ]
+  },
+  {
+    "name": "users",
+    "url": "/api/user",
+    "args": []
   }
 ]
