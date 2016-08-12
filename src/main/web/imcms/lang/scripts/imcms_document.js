@@ -1676,6 +1676,9 @@ Imcms.Document.ListAdapter.prototype = {
 			row;
 
 		this._container.row(data.id, data.label, data.alias, data.type, $("<span>")
+            .append($('<input>')
+                .addClass("field")
+                .attr("type", "checkbox"))
 			.append($("<button>")
 				.click($.proxy(this.copyDocument, this, data.id))
 				.addClass("imcms-positive")

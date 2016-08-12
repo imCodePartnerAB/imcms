@@ -1483,7 +1483,15 @@ ul.jqtree-tree ul.jqtree_common {
 .editor-document .imcms-content table tr td:last-child {
 	line-height: 0;
 	padding: 5px;
-	width: 186px;
+	width: 220px;
+}
+
+.editor-document .imcms-content table tr td input[type=checkbox] {
+    margin-left: 5px;
+    margin-right: 5px;
+    float: left;
+    height: 20px;
+    width: 20px;
 }
 
 .editor-document .imcms-content table tr td .imcms-positive {
