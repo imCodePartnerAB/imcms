@@ -298,7 +298,7 @@ editor theme
 .editor-form .imcms-content .field,
 .pop-up-form .imcms-content .field {
 	clear: both;
-	padding-top: 10px;
+	padding-top: 5px;
 }
 
 .editor-form .imcms-content .field label,
@@ -794,6 +794,7 @@ editor theme
 .date-times-label {
     width: 460px;
     float: left;
+    padding-top: 5px;
 }
 
 .pop-up-form .imcms-content .imcms-tabs {
