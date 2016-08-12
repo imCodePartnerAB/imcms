@@ -106,6 +106,9 @@ Imcms.Document.Loader.prototype = {
 	categoriesList: function (callback) {
 		Imcms.Editors.Category.read(callback);
 	},
+    usersList: function (callback) {
+        Imcms.Editors.User.read(callback);
+    },
 	redirect: function (id) {
 		location.href = "/imcms/docadmin?meta_id=" + id;
 	}
@@ -230,6 +233,7 @@ Imcms.Document.Viewer.prototype = {
 		this._loader.languagesList($.proxy(this.loadLanguages, this));
 		this._loader.rolesList($.proxy(this.loadRoles, this));
 		this._loader.categoriesList($.proxy(this.loadCategories, this));
+        this._loader.usersList($.proxy(this.loadUsers, this));
 		if (options.type === 2) {
 			this._loader.templatesList($.proxy(this.loadTemplates, this));
 		}
@@ -489,6 +493,22 @@ Imcms.Document.Viewer.prototype = {
             .end()
             .end()
 
+            .div()
+            .class("field")
+            .html("Publisher: ")
+            .text()
+            .name("published-by")
+            .attr("readonly", true)
+            .attr("ignored", true)
+            .placeholder("Empty")
+            .end()
+            .button()
+            .class("imcms-positive")
+            .html("Change publisher")
+            .on("click", this.openUsersList)
+            .end()
+            .end()
+
 			.end();
 		this._contentCollection["life-cycle"] = {
 			tab: this._builder.ref("life-cycle-tab"),
@@ -505,6 +525,9 @@ Imcms.Document.Viewer.prototype = {
 
         $("input.date-time-short[name=" + kindOfDate + "-date]").val(date);
         $("input.date-time-short[name=" + kindOfDate + "-time]").val(time);
+    },
+    openUsersList: function () {
+        $('#users-select').removeClass("hidden");
     },
 	buildAppearance: function () {
 		this._builder.ref("tabs")
@@ -1260,6 +1283,36 @@ Imcms.Document.Viewer.prototype = {
 		this._rowsCount++;
 		$("input[name=" + value.name.toLowerCase() + "-access]").filter("[value=" + key + "]").prop("checked", true);
 	},
+    loadUsers: function (users) {
+        this._builder.ref("life-cycle-page")
+            .div()
+            .id("users-select")
+            .class("section field hidden")
+            .select()
+            .name("publisher")
+            .reference("users-list")
+            .on("change", this.selectNewPublisher)
+            .end()
+            .end();
+
+        $.each(users, this.addUserToList.bind(this));
+    },
+    addUserToList: function (count, user) {
+        $(this._builder.ref("users-list").getHTMLElement()).append(
+            $("<option>").val(user.id).text(user.loginName)
+        );
+    },
+    selectNewPublisher: function () {
+        var $select = $('#users-select');
+        var $selected = $select.find('option:selected'),
+            newPublisher = {
+            loginName: $selected.text(),
+            id: $selected.val()
+        };
+
+        $('input[name=published-by]').val(newPublisher.loginName);
+        $select.addClass("hidden");
+    },
 	loadCategories: function (categories) {
 		$.each(categories, this.addCategoryType.bind(this));
 		if (this._options.data)
