@@ -560,7 +560,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
         return Stream.of(usersIds)
                 .map(userId -> Optional.ofNullable(userId)
-                        .map(id -> userService.getUser(id).getFirstName())
+                        .map(id -> userService.getUser(id).getLoginName())
                         .orElse("--"))
                 .toArray(String[]::new);
     }
