@@ -153,6 +153,16 @@ Imcms.Document.Editor.prototype = {
 			.html("Create new…")
 			.on("click", $.proxy(this.showDocumentViewer, this))
 			.end()
+            .button()
+            .class("imcms-positive hidden multifunctionalButton")
+            .html("Copy")
+            .on("click", this.copyChecked.bind(this))
+            .end()
+            .button()
+            .class("imcms-positive hidden multifunctionalButton")
+            .html("Archive")
+            .on("click", this.archiveChecked.bind(this))
+            .end()
 			.end()
 			.end();
 		$(this._builder[0])
@@ -195,7 +205,34 @@ Imcms.Document.Editor.prototype = {
 	},
 	close: function () {
 		$(this._builder[0]).fadeOut("fast");
-	}
+	},
+    copyChecked: function () {
+	    var loader = this._loader;
+        var documentListAdapter = this._documentListAdapter;
+
+        this.doWithAllCheckedDocs(function (id) {
+            loader.copyDocument(id, {});
+        });
+
+        setTimeout(function () {
+            documentListAdapter.reload();
+        }, 2000);
+    },
+    archiveChecked: function () {
+        this.doWithAllCheckedDocs(function (id) {
+            this._loader.archiveDocument(id);
+            $("input[doc-id=" + id + "]").nearest("tr").addClass("archived")
+        }.bind(this));
+    },
+    doWithAllCheckedDocs: function (apply) {
+        return $('input.doc-checkbox')
+            .filter(function (i, element) {
+                return $(element).is(":checked");
+            })
+            .map(function (i, element) {
+                apply($(element).attr("doc-id"));
+            })
+    }
 };
 
 Imcms.Document.Viewer = function (options) {
@@ -1677,8 +1714,10 @@ Imcms.Document.ListAdapter.prototype = {
 
 		this._container.row(data.id, data.label, data.alias, data.type, $("<span>")
             .append($('<input>')
-                .addClass("field")
-                .attr("type", "checkbox"))
+                .click(this.showMultifunctional)
+                .addClass("field doc-checkbox")
+                .attr("type", "checkbox")
+                .attr("doc-id", data.id))
 			.append($("<button>")
 				.click($.proxy(this.copyDocument, this, data.id))
 				.addClass("imcms-positive")
@@ -1710,6 +1749,18 @@ Imcms.Document.ListAdapter.prototype = {
 		deleteButton
 			.click($.proxy(this.deleteDocument, this, data.id, row));
 	},
+    showMultifunctional: function () {
+        var checked = $('input.doc-checkbox')
+            .filter(function (i, element) {
+                return $(element).is(":checked");
+            }).length;
+
+        if (checked) {
+            $('.multifunctionalButton').show();
+        } else {
+            $('.multifunctionalButton').hide();
+        }
+    },
 	buildPager: function () {
 		this._pagerHandler = new Imcms.Document.PagerHandler({
 			target: $(this._container.getHTMLElement()).parent()[0],

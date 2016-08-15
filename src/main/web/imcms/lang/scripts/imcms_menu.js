@@ -36,6 +36,15 @@ Imcms.Menu.TreeAdapter.prototype = {
         $("<span>").text(docId).appendTo(treeElement);
 		$("<span>").attr("data-name", "").text(node.name).appendTo(treeElement);
 		$("<span>").text(node.status).appendTo(treeElement);
+
+        $("<span>").addClass("column-right")
+            .appendTo(treeElement)
+            .append($('<input>')
+                .click($.proxy(this.showMultifunctional, this))
+                .addClass("field menu-doc-checkbox")
+                .attr("type", "checkbox")
+                .attr("menu-doc-id", docId));
+
 		$("<span>").addClass("column-right buttons").appendTo(treeElement).append(
 			$("<button>")
 				.addClass("imcms-neutral")
@@ -244,7 +253,19 @@ Imcms.Menu.TreeAdapter.prototype = {
 	reload: function (node, $li, data) {
 		//node.label = data.languages[Imcms.language.name].title;
 		//$li.find("[data-name]").text(node.label);
-	}
+	},
+    showMultifunctional: function () {
+        var checked = $('input.menu-doc-checkbox')
+            .filter(function (i, element) {
+                return $(element).is(":checked");
+            }).length;
+
+        if (checked) {
+            $('.multifunctionalMenuButton').show();
+        } else {
+            $('.multifunctionalMenuButton').hide();
+        }
+    }
 };
 Imcms.Menu.TreeAdapter.Sorting = {
 	NONE: false,
@@ -387,6 +408,16 @@ Imcms.Menu.Editor.prototype = {
 			.on("click", $.proxy(this._sortItems, this))
 			.end()
 			.end()
+            .button()
+            .class("imcms-positive hidden multifunctionalMenuButton")
+            .html("Copy")
+            .on("click", this.copyChecked.bind(this))
+            .end()
+            .button()
+            .class("imcms-positive hidden multifunctionalMenuButton")
+            .html("Archive")
+            .on("click", this.archiveChecked.bind(this))
+            .end()
 			.button()
 			.on("click", $.proxy(this.saveAndClose, this))
 			.html("Save and close")
@@ -504,7 +535,29 @@ Imcms.Menu.Editor.prototype = {
 	close: function () {
 		$(this._builder[0]).hide();
 		this._treeAdapter.reset();
-	}
+	},
+    copyChecked: function () {
+        this.doWithAllCheckedDocs(function (id) {
+            Imcms.Editors.Document.copyDocument(id, {});
+        });
+
+        $('input.menu-doc-checkbox').removeProp("checked");
+    },
+    archiveChecked: function () {
+        this.doWithAllCheckedDocs(function (id) {
+            Imcms.Editors.Document.archiveDocument(id);
+            $("input[menu-doc-id=" + id + "]").parent("div").addClass("archived")
+        }.bind(this));
+    },
+    doWithAllCheckedDocs: function (apply) {
+        return $('input.menu-doc-checkbox')
+            .filter(function (i, element) {
+                return $(element).is(":checked");
+            })
+            .map(function (i, element) {
+                apply($(element).attr("menu-doc-id"));
+            })
+    }
 };
 
 Imcms.Menu.Loader = function () {
@@ -559,7 +612,10 @@ Imcms.Menu.Loader.prototype = {
 	},
 	updateDocument: function (data, callback) {
 		Imcms.Editors.Document.update(data, callback);
-	}
+	},
+    usersList: function (callback) {
+        Imcms.Editors.User.read(callback);
+    }
 };
 
 Imcms.Menu.API = function () {

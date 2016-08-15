@@ -7,6 +7,7 @@ String cp = request.getContextPath() ;
 
 <%--BASE--%>
 
+.editor-form .imcms-footer .hidden,
 .hidden {
     display: none;
 }
@@ -189,6 +190,23 @@ editor theme
 .editor-form .imcms-footer .create-new {
 	float: left;
 	margin-left: 20px;
+}
+
+.editor-form .imcms-content ul li div.archived {
+    background: #eee;
+}
+
+.multifunctionalButton,
+.multifunctionalMenuButton {
+    margin-left: 20px;
+}
+
+.editor-form .imcms-content ul li div input[type=checkbox] {
+    height: 20px;
+    width: 20px;
+    float: left;
+    line-height: 20px;
+    margin-right: 5px;
 }
 
 .editor-base {
