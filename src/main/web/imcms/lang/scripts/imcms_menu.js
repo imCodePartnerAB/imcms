@@ -37,6 +37,10 @@ Imcms.Menu.TreeAdapter.prototype = {
 		$("<span>").attr("data-name", "").text(node.name).appendTo(treeElement);
 		$("<span>").text(node.status).appendTo(treeElement);
 
+        if (node.status == "A") { // means archived document
+            treeElement.addClass("archived");
+        }
+
         $("<span>").addClass("column-right")
             .appendTo(treeElement)
             .append($('<input>')
@@ -546,8 +550,10 @@ Imcms.Menu.Editor.prototype = {
     archiveChecked: function () {
         this.doWithAllCheckedDocs(function (id) {
             Imcms.Editors.Document.archiveDocument(id);
-            $("input[menu-doc-id=" + id + "]").parent("div").addClass("archived")
+            $($("input[menu-doc-id=" + id + "]").parents("div")[0]).addClass("archived")
         }.bind(this));
+
+        $('input.menu-doc-checkbox').removeProp("checked");
     },
     doWithAllCheckedDocs: function (apply) {
         return $('input.menu-doc-checkbox')
