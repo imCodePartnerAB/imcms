@@ -221,7 +221,7 @@ Imcms.Document.Editor.prototype = {
     archiveChecked: function () {
         this.doWithAllCheckedDocs(function (id) {
             this._loader.archiveDocument(id);
-            $("input[doc-id=" + id + "]").nearest("tr").addClass("archived")
+            $("input[doc-id=" + id + "]").parents("tr").first().addClass("archived")
         }.bind(this));
     },
     doWithAllCheckedDocs: function (apply) {
@@ -232,6 +232,18 @@ Imcms.Document.Editor.prototype = {
             .map(function (i, element) {
                 apply($(element).attr("doc-id"));
             })
+    }
+};
+
+Imcms.Document.MissingLangProperties = {
+    name: "missing-lang-prop",
+    defaultLang: {
+        name: "SHOW_IN_DEFAULT_LANGUAGE",
+        checked: true
+    },
+    doNotShow: {
+        name: "DO_NOT_SHOW",
+        checked: false
     }
 };
 
@@ -546,6 +558,26 @@ Imcms.Document.Viewer.prototype = {
             .end()
             .end()
 
+            .div()
+            .class("field")
+            .html("If requested language is missing")
+            .end()
+
+            .div()
+            .radio()
+            .name(Imcms.Document.MissingLangProperties.name)
+            .value(Imcms.Document.MissingLangProperties.defaultLang.name)
+            .label("Show in default language")
+            .end()
+            .end()
+            .div()
+            .radio()
+            .name(Imcms.Document.MissingLangProperties.name)
+            .value(Imcms.Document.MissingLangProperties.doNotShow.name)
+            .label("Don't show at all")
+            .end()
+            .end()
+
 			.end();
 		this._contentCollection["life-cycle"] = {
 			tab: this._builder.ref("life-cycle-tab"),
@@ -554,11 +586,11 @@ Imcms.Document.Viewer.prototype = {
 		this._builder.ref("life-cycle-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["life-cycle"]));
 	},
     setDateTimeNow: function (kindOfDate) {
-	    var greenwichDate = new Date(), // get Greenwich date
-            dateArr = greenwichDate.toISOString().split("T"), // toISOString get the "2016-08-10T07:28:00.899Z"
+	    var currentDate = new Date(), // get current date
+            dateArr = currentDate.toISOString().split("T"), // get date by Greenwich "2016-08-10T07:28:00.899Z"
             date = dateArr[0], // before "T" we have date "2016-08-10"
             timeArr = dateArr[1].split(":"), // "07:28:00.899Z" we split to set correct hours and skip sec
-            time = greenwichDate.getHours() + ":" + timeArr[1]; // correct time
+            time = currentDate.getHours() + ":" + timeArr[1]; // correct time
 
         $("input.date-time-short[name=" + kindOfDate + "-date]").val(date);
         $("input.date-time-short[name=" + kindOfDate + "-time]").val(time);
@@ -1140,6 +1172,7 @@ Imcms.Document.Viewer.prototype = {
 		$(collectionItem.page.getHTMLElement()).addClass("active");
 		this._activeContent = collectionItem;
 	},
+    // todo: rewrite using DocumentController.DocumentEntity and serialize/deserialize functions
 	fillDateTimes: function () {
 	    var id = this._options.data.id;
 
@@ -1453,7 +1486,13 @@ Imcms.Document.Viewer.prototype = {
 			var $this = $(this);
 			if ($this.is("[type=checkbox]")) {
 				result[$this.attr("name")] = $this.is(":checked")
-			} else {
+
+			} else if ($this.is("[type=radio]")) {
+			    // need to be inside upper 'if' to not fall into next 'else' block if not checked
+                if ($this.is(":checked")) {
+                    result[$this.attr("name")] = $this.val();
+                }
+            } else {
 				result[$this.attr("name")] = $this.val();
 			}
 		});
@@ -1516,10 +1555,11 @@ Imcms.Document.Viewer.prototype = {
 			var $this = $(this);
 			if ($this.is("[type=checkbox]")) {
 				$this.prop("checked", data[$this.attr("name")]);
-			} else {
+			} else if ($this.is("[type=radio][name=" + Imcms.Document.MissingLangProperties.name + "]")) {
+                $this.prop("checked", $this.val() == data[Imcms.Document.MissingLangProperties.name]);
+            } else {
 				$this.val(data[$this.attr("name")]);
 			}
-
 		});
 		$source.find("[data-node-key=language]").each(function () {
 			var $dataElement = $(this);
