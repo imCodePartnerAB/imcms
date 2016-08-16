@@ -418,6 +418,8 @@ public class DocumentController {
 
         // in case of new doc with specified publisher without publication start date/time
         Optional.ofNullable(docEntity.publisherId).ifPresent(docDomainObject::setPublisherId);
+
+        Optional.ofNullable(docEntity.missingLangProp).ifPresent(docDomainObject::setDisabledLanguageShowMode);
     }
 
     private Date getValidatedDateOrNull(String date, String time, Date documentDatetime) {
@@ -542,7 +544,8 @@ public class DocumentController {
 		CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
 		RoleGetter roleGetter = Imcms.getServices().getRoleGetter();
 
-		entity.type = document.getDocumentTypeId();
+        entity.missingLangProp = document.getDisabledLanguageShowMode().name();
+        entity.type = document.getDocumentTypeId();
 		entity.languages = new HashMap<>();
 		entity.alias = document.getAlias();
 		entity.id = document.getId();
@@ -674,6 +677,9 @@ public class DocumentController {
 
         @JsonProperty("publisher")
         public Integer publisherId;
+
+        @JsonProperty("missing-lang-prop")
+        public String missingLangProp;
 
         private static class LanguageEntity {
 			public String code;
