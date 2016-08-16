@@ -564,4 +564,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                         .orElse("--"))
                 .toArray(String[]::new);
     }
+
+    public DocumentMeta.DisabledLanguageShowMode getDisabledLanguageShowMode() {
+        return meta.getDisabledLanguageShowMode();
+    }
+
+    public void setDisabledLanguageShowMode(String disabledLanguageShowMode) {
+        meta.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(disabledLanguageShowMode));
+    }
 }
