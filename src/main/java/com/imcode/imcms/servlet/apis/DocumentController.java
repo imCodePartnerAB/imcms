@@ -26,7 +26,6 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
@@ -117,8 +116,6 @@ public class DocumentController {
 	 * @param sort  Optional parameter, that indicate the field field on which will be sorted
 	 * @param order Optional parameter, that indicate document ordering in list. By default is natural ordering
 	 * @return List of documents
-	 * @throws ServletException
-	 * @throws IOException
 	 * @see SolrQuery
 	 * @see DocumentIndex
 	 * @see DocumentIndex#search(SolrQuery, UserDomainObject)
@@ -128,7 +125,7 @@ public class DocumentController {
 									  @RequestParam(value = "skip", required = false, defaultValue = "0") int skip,
 									  @RequestParam(value = "take", required = false, defaultValue = "50") int take,
 									  @RequestParam(value = "sort", required = false, defaultValue = "meta_id") String sort,
-									  @RequestParam(value = "order", required = false, defaultValue = "asc") String order) throws ServletException, IOException {
+									  @RequestParam(value = "order", required = false, defaultValue = "asc") String order) {
 		List<Map<String, Object>> result = new ArrayList<>();
 		List<DocumentDomainObject> documents;
 		DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
@@ -184,14 +181,12 @@ public class DocumentController {
 	 * {@link TextDocument}), parent document.
 	 * {@link DocumentEntity} represent web object, that connect client side with server side
 	 *
-	 * @throws ServletException
-	 * @throws IOException
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	protected Object createOrUpdateDocument(@RequestParam("type") Integer type,
 											@RequestParam(value = "parent", defaultValue = "1001") Integer parentDocumentId,
 											@RequestParam("data") String data,
-											@RequestParam(value = "file", required = false) MultipartFile file) throws ServletException, IOException {
+											@RequestParam(value = "file", required = false) MultipartFile file) {
 		Map<String, Object> result = new HashMap<>();
 		try {
 			DocumentDomainObject docDomainObject;
@@ -306,13 +301,10 @@ public class DocumentController {
 	 *
 	 * @param id     document id
 	 * @param action special flag, that identify type of operation
-	 * @throws ServletException
-	 * @throws IOException
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	protected Object deleteDocument(@PathVariable("id") Integer id,
-									@RequestParam(value = "action", required = false, defaultValue = "") String action
-	) throws ServletException, IOException {
+									@RequestParam(value = "action", required = false, defaultValue = "") String action) {
 		Map<String, Object> result = new HashMap<>();
         boolean resultValue;
 
@@ -456,10 +448,9 @@ public class DocumentController {
 	 * @param document      prepared document
 	 * @param entity        presented entity
 	 * @param multipartFile file, that should be added to document
-	 * @throws IOException
-	 * @throws ServletException
+	 * @throws IOException - if an I/O error occurred
 	 */
-    protected void asFileDocument(FileDocumentDomainObject document, FileDocumentEntity entity, MultipartFile multipartFile) throws IOException, ServletException {
+    protected void asFileDocument(FileDocumentDomainObject document, FileDocumentEntity entity, MultipartFile multipartFile) throws IOException {
         if (StringUtils.isNotEmpty(entity.defaultFile)) {
             document.setDefaultFileId(entity.defaultFile);
         }
