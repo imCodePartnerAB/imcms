@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentCommonContent;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.*;
 import imcode.server.Imcms;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
@@ -41,6 +38,7 @@ import static imcode.util.DateConstants.DATETIME_DOC_FORMAT;
  *
  * @see RestController
  */
+@SuppressWarnings("unused")
 @RestController
 @RequestMapping("/document")
 public class DocumentController {
@@ -249,7 +247,15 @@ public class DocumentController {
 				: documentMapper.getDocument(documentEntityId);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/getDateTimes/{id}")
+    /**
+     * Gets Map with created, modified, archived, published and publish-end
+     * -date, -time and -user-by for specified document.
+     *
+     * @param id - document id
+     * @return - Map with created, modified, archived, publish-start and
+     * publish-end -date, -time and -user-by.
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/getDateTimes/{id}")
 	protected Object getDateTimes(@PathVariable(value = "id") int id,
                                   HttpServletRequest request) {
 
@@ -270,6 +276,19 @@ public class DocumentController {
 		}
 		return map;
 	}
+
+    /**
+     * Provides constant names of properties in case when page language is missing.
+     *
+     * @return Map with names of properties.
+     */
+	@RequestMapping(method = RequestMethod.GET, value = "/missing-lang-property")
+	protected Object getMissionLangProps() {
+	    return new HashedMap<String, Object>() {{
+	        put("default", Collections.singletonMap("name", DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name()));
+            put("doNotShow", Collections.singletonMap("name", DocumentMeta.DisabledLanguageShowMode.DO_NOT_SHOW.name()));
+        }};
+    }
 
 	/**
 	 * Provide API access to create copy of special document
