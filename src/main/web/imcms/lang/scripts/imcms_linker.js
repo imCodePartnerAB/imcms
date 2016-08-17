@@ -109,20 +109,20 @@ Linker.prototype = {
     /**
      * Use it to get some link with context path.
      * @param {string} name - the name of url, from links.json file.
-     * @param {...string} [args] - arguments for url in correct order
+     * @param {...string} [argsURL] - arguments for url in correct order
      * @returns {string} built link
      */
-    get: function (name, args) {
+    get: function (name, argsURL) {
         return this._contextPath + this._getURL(arguments);
     },
 
     /**
      * Use it to get some link without context path.
      * @param {string} name - the name of url, from links.json file.
-     * @param {...string} [args] - arguments for url in correct order
+     * @param {...string} [argsURL] - arguments for url in correct order
      * @returns {string} built link
      */
-    getRelative: function (name, args) {
+    getRelative: function (name, argsURL) {
         return this._getURL(arguments);
     },
 
@@ -131,12 +131,18 @@ Linker.prototype = {
      * @returns {string} requested URL
      * @private
      */
-    _getURL: function () {
-        if (arguments.length == 1) {
-            return this._getSimpleUrl(name);
+    _getURL: function (args) {
+        if (args.length == 1) {
+            return this._getSimpleUrl(args[0]);
         } else {
-            var urlArgs = this._prepareArgs(arguments);
-            return this._getLinkUrl(name, urlArgs);
+            var urlArgs = this._prepareArgs(args);
+
+            if (!urlArgs.length) {
+                return this._getSimpleUrl(args[0]);
+
+            } else {
+                return this._getLinkUrl(args[0], urlArgs);
+            }
         }
     },
 
