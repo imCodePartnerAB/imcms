@@ -2117,15 +2117,14 @@ Imcms.Document.DocumentSearchDialog.prototype = {
 
 		$(this._builder.ref("documentsTable").getHTMLElement()).find("tr")
 			.filter(function (pos) {
-				return pos >= startIndex;
+				return pos > startIndex;
 			}).each(function (pos, item) {
 			$(item).on("dragstart", function (event) {
 				$(".ui-widget-overlay").css("display", "none");
-				event.originalEvent.dataTransfer.setData("data", JSON.stringify(data[pos - 1]));
+				event.originalEvent.dataTransfer.setData("data", JSON.stringify(data[pos]));
 			}).on("dragend", function () {
 				$(".ui-widget-overlay").css("display", "block");
 			}).attr("draggable", true);
-
 		});
 
 		$(this._builder.ref("documentsTable").getHTMLElement()).find("th").each(function (pos, item) {
@@ -2179,7 +2178,7 @@ Imcms.Document.PagerHandler.prototype = {
 	_isHandled: false,
 	_pageNumber: 1,
 	_options: {
-		count: 20,
+		count: 50,
 		handler: function () {
 		},
 		itemsPointer: function () {
