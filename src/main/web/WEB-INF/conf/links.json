@@ -179,10 +179,5 @@
     "name": "users",
     "url": "/api/user",
     "args": []
-  },
-  {
-    "name": "document.lang.missing.props",
-    "url": "/api/document/missing-lang-properties",
-    "args": []
   }
 ]

@@ -277,19 +277,6 @@ public class DocumentController {
 		return map;
 	}
 
-    /**
-     * Provides constant names of properties in case when page language is missing.
-     *
-     * @return Map with names of properties.
-     */
-	@RequestMapping(method = RequestMethod.GET, value = "/missing-lang-properties")
-	protected Object getMissionLangProps() {
-	    return new HashedMap<String, Object>() {{
-	        put("default", Collections.singletonMap("name", DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name()));
-            put("doNotShow", Collections.singletonMap("name", DocumentMeta.DisabledLanguageShowMode.DO_NOT_SHOW.name()));
-        }};
-    }
-
 	/**
 	 * Provide API access to create copy of special document
 	 *

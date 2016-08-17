@@ -238,11 +238,11 @@ Imcms.Document.Editor.prototype = {
 Imcms.Document.MissingLangProperties = {
     name: "missing-lang-prop",
     defaultLang: {
-        name: "", // loads later
+        name: "SHOW_IN_DEFAULT_LANGUAGE",
         checked: true
     },
     doNotShow: {
-        name: "", // loads later
+        name: "DO_NOT_SHOW",
         checked: false
     }
 };
@@ -276,9 +276,6 @@ Imcms.Document.Viewer.prototype = {
 		this._loader = options.loader;
 		this._target = options.target;
 		this._title = options.data.id ? "DOCUMENT " + options.data.id : "NEW DOCUMENT";
-        if (!Imcms.Document.MissingLangProperties.defaultLang.name) {
-            this.loadMissingLangProps($.proxy(this.saveMissingLangProps, this));
-        }
 		this.buildView();
 		//this.buildValidator();
 		this.createModal();
@@ -299,18 +296,6 @@ Imcms.Document.Viewer.prototype = {
 		});
 		$(this._modal).fadeIn("fast");
 	},
-    loadMissingLangProps: function (callback) {
-        var path = Imcms.Linker.get("document.lang.missing.props");
-        $.ajax({
-            url: path,
-            type: "GET",
-            success: callback
-        });
-    },
-    saveMissingLangProps: function (response) {
-        Imcms.Document.MissingLangProperties.defaultLang.name = response.default.name;
-        Imcms.Document.MissingLangProperties.doNotShow.name = response.doNotShow.name;
-    },
 	buildValidator: function () {
 		$(this._builder[0]).find("form").validate({
 			rules: {
