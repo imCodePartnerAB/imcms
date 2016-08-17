@@ -282,7 +282,7 @@ public class DocumentController {
      *
      * @return Map with names of properties.
      */
-	@RequestMapping(method = RequestMethod.GET, value = "/missing-lang-property")
+	@RequestMapping(method = RequestMethod.GET, value = "/missing-lang-properties")
 	protected Object getMissionLangProps() {
 	    return new HashedMap<String, Object>() {{
 	        put("default", Collections.singletonMap("name", DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE.name()));
