@@ -2,17 +2,6 @@
  * Created by Shadowgun on 12.02.2015.
  */
 
-/**
- * Extension for Array
- * @param {*} value
- */
-Array.prototype.remove = function (value) {
-	while (true) {
-		var index = this.indexOf(value);
-		if (index < 0) return;
-		this.splice(index, 1);
-	}
-};
 /*
  JQuery Addons Data
  return all attr in tag that started with `data-`

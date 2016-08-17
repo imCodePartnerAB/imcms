@@ -15,6 +15,7 @@ var Linker = function () {
 
 Linker.prototype = {
     _links: [],
+    _simpleURLs: {},
     _contextPath: "",
     _linksCookiesKey: "links.json",
 
@@ -23,7 +24,7 @@ Linker.prototype = {
      * @private
      */
     _getLinksFromServer: function () {
-        var linksPath = this._contextPath + "/api/links";
+        var linksPath = this._contextPath + "/api/links"; // should be the only link in app
 
         $.ajax({
             url: linksPath,
@@ -46,6 +47,29 @@ Linker.prototype = {
     },
 
     /**
+     * Divides links with args (that needs builder) and simple URL
+     * @private
+     */
+    _divideLinks: function () {
+        this._links.filter(function (link) {
+            return !link.args.length;
+        }).forEach(function (simpleLink) {
+            this._links.remove(simpleLink);
+            this._simpleURLs[simpleLink.name] = simpleLink.url;
+        }.bind(this))
+    },
+
+    /**
+     * Make all steps to load links from server
+     * @private
+     */
+    _loadLinks: function () {
+        this._getLinksFromServer();
+        this._setLinksToCookies();
+        this._divideLinks();
+    },
+
+    /**
      * Gets links from cookies or from server if cookie is empty and then write cookie with 1 day expiration
      * @private
      */
@@ -54,15 +78,29 @@ Linker.prototype = {
 
         if (linksFromCookies && linksFromCookies.length) {
             this._links = linksFromCookies;
+            this._divideLinks();
 
         } else {
-            this._getLinksFromServer();
-            this._setLinksToCookies();
+            this._loadLinks();
         }
     },
 
     /**
-     * @returns {Array} all links
+     * @returns {string} context path
+     */
+    getContextPath: function () {
+        return this._contextPath;
+    },
+
+    /**
+     * @returns {Linker._simpleURLs|{}} URLs without arguments
+     */
+    getSimpleURLs: function () {
+        return this._simpleURLs;
+    },
+
+    /**
+     * @returns {Array} all links with args
      */
     getLinks: function () {
         return this._links;
@@ -75,8 +113,7 @@ Linker.prototype = {
      * @returns {string} built link
      */
     get: function (name, args) {
-        var urlArgs = this._prepareArgs(arguments);
-        return this._contextPath + this._getLinkUrl(name, urlArgs);
+        return this._contextPath + this._getURL(arguments);
     },
 
     /**
@@ -86,8 +123,38 @@ Linker.prototype = {
      * @returns {string} built link
      */
     getRelative: function (name, args) {
-        var urlArgs = this._prepareArgs(arguments);
-        return this._getLinkUrl(name, urlArgs);
+        return this._getURL(arguments);
+    },
+
+    /**
+     * Get simple URL or from link with builder
+     * @returns {string} requested URL
+     * @private
+     */
+    _getURL: function () {
+        if (arguments.length == 1) {
+            return this._getSimpleUrl(name);
+        } else {
+            var urlArgs = this._prepareArgs(arguments);
+            return this._getLinkUrl(name, urlArgs);
+        }
+    },
+
+    /**
+     * Returns URL by it's name from links.json file
+     * @param {string} name - the name of URL
+     * @returns {string} requested URL
+     * @private
+     */
+    _getSimpleUrl: function (name) {
+        var link = this._simpleURLs[name];
+
+        if (!link) {
+            this._loadLinks();
+            link = this._simpleURLs[name];
+        }
+
+        return link;
     },
 
     /**
@@ -101,8 +168,7 @@ Linker.prototype = {
         var link = this._getLink(name, args);
 
         if (!link) {
-            this._getLinksFromServer();
-            this._setLinksToCookies();
+            this._loadLinks();
             link = this._getLink(name, args);
         }
 
@@ -138,7 +204,7 @@ Linker.prototype = {
     _prepareArgs: function (args) {
         return Array.prototype.slice
             .call(args, 1) // 0 argument is link's name, 1.. is args to url so we start from 1
-            .flatMap(function (arg) { // [[]] -> []
+            .flatMap(function (arg) { // [[1],2] -> [1,2]
                 return arg;
             })
             .filter(function (arg) {
@@ -154,6 +220,18 @@ Linker.prototype = {
  */
 Array.prototype.flatMap = function (lambda) {
     return Array.prototype.concat.apply([], this.map(lambda));
+};
+
+/**
+ * Extension for Array to made convenient remove
+ * @param {*} value to remove from array
+ */
+Array.prototype.remove = function (value) {
+    while (true) {
+        var index = this.indexOf(value);
+        if (index < 0) return;
+        this.splice(index, 1);
+    }
 };
 
 var Imcms = {};
