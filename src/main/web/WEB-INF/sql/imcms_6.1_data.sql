@@ -392,9 +392,9 @@ VALUES
 INSERT INTO text_docs
   (meta_id, template_name, group_id, default_template_1, default_template_2, default_template)
 VALUES
-  (@start_document__meta_id, 'demo', 0, NULL, NULL, NULL),
-  (@start_document__meta_id+1, 'demo', 0, NULL, NULL, NULL),
-  (@start_document__meta_id+2, 'demo', 0, NULL, NULL, NULL);
+  (@start_document__meta_id, 'demo', 0, NULL, NULL, 'demo'),
+  (@start_document__meta_id+1, 'demo', 0, NULL, NULL, 'demo'),
+  (@start_document__meta_id+2, 'demo', 0, NULL, NULL, 'demo');
 
 --
 -- Data for table texts
