@@ -1381,6 +1381,7 @@ ul.jqtree-tree ul.jqtree_common {
 	overflow: hidden;
 }
 
+.editor-document .imcms-content table tr th,
 .document-viewer .imcms-content table tr th,
 .document-viewer .imcms-content table tr td {
 	font-weight: normal;
@@ -1388,6 +1389,7 @@ ul.jqtree-tree ul.jqtree_common {
 	vertical-align: top;
 }
 
+.editor-document .imcms-content table tr th,
 .document-viewer .imcms-content table tr th {
 	background: #0091e1;
 	color: white;
