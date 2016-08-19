@@ -123,6 +123,7 @@ Imcms.Document.Editor.prototype = {
 	_loader: {},
 	_documentListAdapter: {},
 	init: function () {
+
 		return this.buildView().buildDocumentsList();
 	},
 	buildView: function () {
@@ -160,14 +161,10 @@ Imcms.Document.Editor.prototype = {
 			.div()
 			.class("imcms-content")
 			.table()
-            .column("id")
-            .div()
-            .on("click", $.proxy(alert('YOLO'), this))
-
-            .end()
-            .column("title")
-            .column("alias")
-            .column("type")
+			.column("id", "document-sort", {doc_sorting: "meta_id"})
+			.column("title", "document-sort", {doc_sorting: "meta_headline"})
+			.column("alias", "document-sort", {doc_sorting: "alias"})
+			.column("type", "document-sort", {doc_sorting: "doc_type_id"})
             .column("test")
 			.reference("documentsList")
 			.end()
