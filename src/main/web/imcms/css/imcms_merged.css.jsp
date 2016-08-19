@@ -131,6 +131,14 @@ editor theme
 	overflow: hidden;
 }
 
+.editor-form .imcms-header .imcms-text-field {
+	background: #f0f0f0;
+	border: none;
+	padding: 5px 10px;
+	width: 400px;
+	outline: none;
+}
+
 .editor-form .imcms-header .imcms-title {
 	color: #fff;
 	line-height: 30px;

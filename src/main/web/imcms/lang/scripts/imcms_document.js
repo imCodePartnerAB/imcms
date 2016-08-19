@@ -126,6 +126,7 @@ Imcms.Document.Editor.prototype = {
 		return this.buildView().buildDocumentsList();
 	},
 	buildView: function () {
+		var that = this;
 		this._builder = new JSFormBuilder("<DIV>")
 			.form()
 			.div()
@@ -134,6 +135,22 @@ Imcms.Document.Editor.prototype = {
 			.html("Document Editor")
 			.class("imcms-title")
 			.end()
+
+			.text()
+			.class("imcms-text-field")
+			.on("input", function () {
+				that.find(this.value());
+			})
+			.on('keydown', function (e) {
+				// pressing 'enter' in this field causes error, with this fix 'enter' (it's code is 13) ignored
+				if (e.which == 13) {
+					e.preventDefault();
+				}
+			})
+			.reference("searchFieldDoc")
+			.placeholder("Type to find document")
+			.end()
+
 			.button()
 			.reference("closeButton")
 			.class("imcms-close-button")
@@ -237,7 +254,11 @@ Imcms.Document.Editor.prototype = {
             .map(function (i, element) {
                 apply($(element).attr("doc-id"));
             })
-    }
+	},
+	find: function (word) {
+		this._documentListAdapter.filterDocumentViewer(word);
+		this._documentListAdapter._pagerHandler.reset(word, "", "");
+	}
 };
 
 Imcms.Document.MissingLangProperties = {
@@ -1841,6 +1862,11 @@ Imcms.Document.ListAdapter.prototype = {
 			this._pagerHandler.reset();
 		}.bind(this));
 	},
+	reloadWithData: function (word) {
+		this._container.clear();
+		this._loader.filteredDocumentList({term: word || "", sort: "", order: ""}, $.proxy(this.buildList, this));
+		this._pagerHandler.reset(word, "", "");
+	},
 	deleteDocument: function (id, row) {
 		var deleteButton = $(row).find("button.imcms-negative"),
 			flag = deleteButton.attr("data-remove");
@@ -1887,6 +1913,9 @@ Imcms.Document.ListAdapter.prototype = {
 	},
 	saveDocument: function (viewer) {
 		this._loader.update(viewer.serialize(), $.proxy(this.reload, this));
+	},
+	filterDocumentViewer: function(word){
+		this.reloadWithData(word);
 	}
 };
 
@@ -2167,6 +2196,12 @@ Imcms.Document.PagerHandler.prototype = {
 	_waiter: undefined,
 	_isHandled: false,
 	_pageNumber: 1,
+
+	//Filter options
+	_term: "",
+	_sort: "",
+	_order: "",
+
 	_options: {
 		count: 50,
 		handler: function () {
@@ -2179,14 +2214,23 @@ Imcms.Document.PagerHandler.prototype = {
 		},
 		waiterContent: ""
 	},
-	init: function () {
+	init: function (term, sort, order) {
 		$(this._target).scroll(this.scrollHandler.bind(this)).bind('beforeShow', this.scrollHandler.bind(this));
 		this.scrollHandler();
+		this._term = term;
+		this._sort = sort;
+		this._order = order;
 	},
 	handleRequest: function (skip) {
 		this._addWaiterToTarget();
 		this._isHandled = true;
-		this._options.handler({skip: skip, take: this._options.count}, this.requestCompleted.bind(this));
+		this._options.handler({
+			skip: skip,
+			take: this._options.count,
+			term: this._term,
+			sort: this._sort,
+			order: this._order
+		}, this.requestCompleted.bind(this));
 	},
 	requestCompleted: function (data) {
 		this._options.resultProcessor(this._pageNumber * this._options.count, data);
@@ -2216,8 +2260,11 @@ Imcms.Document.PagerHandler.prototype = {
 	_removeWaiterFromTarget: function () {
 		this._waiter.remove();
 	},
-	reset: function () {
+	reset: function (term, sort, order) {
 		this._pageNumber = 1;
+		this._term = term;
+		this._sort = sort;
+		this._order = order;
 		this.scrollHandler();
 	}
 };
