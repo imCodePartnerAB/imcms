@@ -292,9 +292,22 @@ JSFormBuilder.Mixins.Table = {
         this._autoheader = true;
         return this;
     },
-    column: function () {
+    column: function (text, clazz, attributesObj) {
         var column = document.createElement("th");
-        column.innerHTML = arguments[0];
+        column.innerHTML = text;
+
+        if (clazz) {
+            column.className = clazz;
+        }
+
+        if (attributesObj) {
+            for (var attr in attributesObj) {
+                if (attributesObj.hasOwnProperty(attr)) {
+                    column.setAttribute(attr, attributesObj[attr]);
+                }
+            }
+        }
+
         if (jQuery) {
             jQuery(this._header.tr).append(column);
         }
