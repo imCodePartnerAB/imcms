@@ -194,11 +194,16 @@ Imcms.Document.Editor.prototype = {
 		return this;
 	},
 	buildDocumentsList: function () {
+		var that = this;
 		this._documentListAdapter =
 			new Imcms.Document.ListAdapter(
 				this._builder.ref("documentsList"),
 				this._loader
 			);
+		//Adding click event for sort
+		$(".document-sort").on("click", function () {
+			that.sort($(".imcms-text-field").val(), $(this).attr('doc_sorting'));
+		});
 	},
 	showDocumentViewer: function () {
 		new Imcms.Document.TypeViewer({
@@ -258,7 +263,9 @@ Imcms.Document.Editor.prototype = {
 	},
 	find: function (word) {
 		this._documentListAdapter.filterDocumentViewer(word);
-		this._documentListAdapter._pagerHandler.reset(word, "", "");
+	},
+	sort: function (word, sort) {
+		this._documentListAdapter.filterDocumentViewer(word, sort);
 	}
 };
 
@@ -1863,11 +1870,11 @@ Imcms.Document.ListAdapter.prototype = {
 			this._pagerHandler.reset();
 		}.bind(this));
 	},
-	reloadWithData: function (word) {
+	reloadWithData: function (word, sort) {
 		this._container.clear();
-		this._loader.filteredDocumentList({term: word || "", sort: "", order: ""}, $.proxy(this.buildList, this));
-		this._pagerHandler.reset(word, "", "");
-	},
+		this._pagerHandler.reset(word, sort);
+		this._loader.filteredDocumentList({term: word || "", sort: sort || "", order: this._pagerHandler._order}, $.proxy(this.buildList, this));
+    },
 	deleteDocument: function (id, row) {
 		var deleteButton = $(row).find("button.imcms-negative"),
 			flag = deleteButton.attr("data-remove");
@@ -1915,8 +1922,8 @@ Imcms.Document.ListAdapter.prototype = {
 	saveDocument: function (viewer) {
 		this._loader.update(viewer.serialize(), $.proxy(this.reload, this));
 	},
-	filterDocumentViewer: function(word){
-		this.reloadWithData(word);
+	filterDocumentViewer: function(word, sort){
+		this.reloadWithData(word, sort);
 	}
 };
 
@@ -2220,7 +2227,7 @@ Imcms.Document.PagerHandler.prototype = {
 		this.scrollHandler();
 		this._term = term;
 		this._sort = sort;
-		this._order = order;
+		this._order = order === undefined ? "asc" : order;
 	},
 	handleRequest: function (skip) {
 		this._addWaiterToTarget();
@@ -2261,11 +2268,17 @@ Imcms.Document.PagerHandler.prototype = {
 	_removeWaiterFromTarget: function () {
 		this._waiter.remove();
 	},
-	reset: function (term, sort, order) {
+	reset: function (term, sort) {
+		var oldSort = this._sort;
 		this._pageNumber = 1;
 		this._term = term;
 		this._sort = sort;
-		this._order = order;
+		if (this._sort === oldSort || oldSort == undefined) {
+			this._order = this._order === "asc" ? "desc" : "asc";
+		}
+		else {
+			this._order = "asc";
+		}
 		this.scrollHandler();
 	}
 };
