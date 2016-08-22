@@ -136,7 +136,8 @@ public class DocumentController {
 					DocumentIndex.FIELD__META_HEADLINE,
 					DocumentIndex.FIELD__META_TEXT,
 					DocumentIndex.FIELD__KEYWORD,
-					DocumentIndex.FIELD__ALIAS,})
+					DocumentIndex.FIELD__ALIAS,
+					DocumentIndex.FIELD__MODIFIED_DATETIME})
 					.map(field -> String.format("%s:*%s*", field, term))
 					.collect(Collectors.joining(" "))
                 : "*:*";
@@ -166,6 +167,7 @@ public class DocumentController {
 						put("isArchived", document.isArchived());
 						put("language", document.getLanguage().getName());
 						put("alias", document.getAlias());
+						put("lastModified", Utility.formatDateTime(document.getModifiedDatetime()));
 						put("type", document.getDocumentType().getName().toLocalizedString(Imcms.getUser()));
 					}
 				})

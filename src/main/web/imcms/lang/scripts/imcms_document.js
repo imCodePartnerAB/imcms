@@ -62,7 +62,10 @@ Imcms.Document.Loader.prototype = {
 		this._api.create2(data, callback);
 	},
 	documentsList: function (callback) {
-		this._api.read({}, callback);
+		this._api.read({
+		    sort: "modified_datetime",
+			order: "desc"
+		}, callback);
 	},
 	filteredDocumentList: function (params, callback) {
 		this._api.read({
@@ -164,6 +167,7 @@ Imcms.Document.Editor.prototype = {
 			.column("id", "document-sort", {doc_sorting: "meta_id"})
 			.column("title", "document-sort", {doc_sorting: "meta_headline"})
 			.column("alias", "document-sort", {doc_sorting: "alias"})
+			.column("last modified", "document-sort", {doc_sorting: "modified_datetime"})
 			.column("type", "document-sort", {doc_sorting: "doc_type_id"})
             .column("test")
 			.reference("documentsList")
@@ -1786,7 +1790,7 @@ Imcms.Document.ListAdapter.prototype = {
 		var deleteButton = $("<button>"),
 			row;
 
-		this._container.row(data.id, data.label, data.alias, data.type, $("<span>")
+		this._container.row(data.id, data.label, data.alias, data.lastModified, data.type, $("<span>")
             .append($('<input>')
                 .click(this.showMultifunctional)
                 .addClass("field doc-checkbox")
@@ -2223,11 +2227,11 @@ Imcms.Document.PagerHandler.prototype = {
 		waiterContent: ""
 	},
 	init: function (term, sort, order) {
+		this._term = term;
+		this._sort = sort === undefined ? "modified_datetime" : sort;
+		this._order = order === undefined ? (this._sort === "modified_datetime" ? "desc" : "asc") : order;
 		$(this._target).scroll(this.scrollHandler.bind(this)).bind('beforeShow', this.scrollHandler.bind(this));
 		this.scrollHandler();
-		this._term = term;
-		this._sort = sort;
-		this._order = order === undefined ? "asc" : order;
 	},
 	handleRequest: function (skip) {
 		this._addWaiterToTarget();
