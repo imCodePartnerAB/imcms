@@ -204,8 +204,8 @@ editor theme
     background: #eee;
 }
 
-.multifunctionalButton,
-.multifunctionalMenuButton {
+.pluralCopyArchButton,
+.pluralCopyArchMenuButton {
     margin-left: 20px;
 }
 
