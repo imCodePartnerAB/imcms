@@ -181,12 +181,12 @@ Imcms.Document.Editor.prototype = {
 			.on("click", $.proxy(this.showDocumentViewer, this))
 			.end()
             .button()
-            .class("imcms-positive hidden multifunctionalButton")
+            .class("imcms-positive hidden pluralCopyArchButton")
             .html("Copy")
             .on("click", this.copyChecked.bind(this))
             .end()
             .button()
-            .class("imcms-positive hidden multifunctionalButton")
+            .class("imcms-positive hidden pluralCopyArchButton")
             .html("Archive")
             .on("click", this.archiveChecked.bind(this))
             .end()
@@ -266,10 +266,10 @@ Imcms.Document.Editor.prototype = {
             })
 	},
 	find: function (word) {
-		this._documentListAdapter.filterDocumentViewer(word);
+		this._documentListAdapter.reloadWithData(word);
 	},
 	sort: function (word, sort) {
-		this._documentListAdapter.filterDocumentViewer(word, sort);
+		this._documentListAdapter.reloadWithData(word, sort);
 	}
 };
 
@@ -1790,9 +1790,15 @@ Imcms.Document.ListAdapter.prototype = {
 		var deleteButton = $("<button>"),
 			row;
 
+        // linked doc title
+        if (data.label) {
+            var linkURL = Imcms.Linker.getContextPath() + "/" + (data.alias ? data.alias : data.id);
+            data.label = $("<a>").attr("href", linkURL).html(data.label);
+        }
+
 		this._container.row(data.id, data.label, data.alias, data.lastModified, data.type, $("<span>")
             .append($('<input>')
-                .click(this.showMultifunctional)
+                .click(this.showPluralArchiveAndCopyButtons)
                 .addClass("field doc-checkbox")
                 .attr("type", "checkbox")
                 .attr("doc-id", data.id))
@@ -1827,16 +1833,16 @@ Imcms.Document.ListAdapter.prototype = {
 		deleteButton
 			.click($.proxy(this.deleteDocument, this, data.id, row));
 	},
-    showMultifunctional: function () {
+    showPluralArchiveAndCopyButtons: function () {
         var checked = $('input.doc-checkbox')
             .filter(function (i, element) {
                 return $(element).is(":checked");
             }).length;
 
         if (checked) {
-            $('.multifunctionalButton').show();
+            $('.pluralCopyArchButton').show();
         } else {
-            $('.multifunctionalButton').hide();
+            $('.pluralCopyArchButton').hide();
         }
     },
 	buildPager: function () {
@@ -1925,9 +1931,6 @@ Imcms.Document.ListAdapter.prototype = {
 	},
 	saveDocument: function (viewer) {
 		this._loader.update(viewer.serialize(), $.proxy(this.reload, this));
-	},
-	filterDocumentViewer: function(word, sort){
-		this.reloadWithData(word, sort);
 	}
 };
 

@@ -44,7 +44,7 @@ Imcms.Menu.TreeAdapter.prototype = {
         $("<span>").addClass("column-right")
             .appendTo(treeElement)
             .append($('<input>')
-                .click($.proxy(this.showMultifunctional, this))
+                .click($.proxy(this.showPluralArchiveAndCopyButtons, this))
                 .addClass("field menu-doc-checkbox")
                 .attr("type", "checkbox")
                 .attr("menu-doc-id", docId));
@@ -258,16 +258,16 @@ Imcms.Menu.TreeAdapter.prototype = {
 		//node.label = data.languages[Imcms.language.name].title;
 		//$li.find("[data-name]").text(node.label);
 	},
-    showMultifunctional: function () {
+    showPluralArchiveAndCopyButtons: function () {
         var checked = $('input.menu-doc-checkbox')
             .filter(function (i, element) {
                 return $(element).is(":checked");
             }).length;
 
         if (checked) {
-            $('.multifunctionalMenuButton').show();
+            $('.pluralCopyArchMenuButton').show();
         } else {
-            $('.multifunctionalMenuButton').hide();
+            $('.pluralCopyArchMenuButton').hide();
         }
     }
 };
@@ -413,12 +413,12 @@ Imcms.Menu.Editor.prototype = {
 			.end()
 			.end()
             .button()
-            .class("imcms-positive hidden multifunctionalMenuButton")
+            .class("imcms-positive hidden pluralCopyArchMenuButton")
             .html("Copy")
             .on("click", this.copyChecked.bind(this))
             .end()
             .button()
-            .class("imcms-positive hidden multifunctionalMenuButton")
+            .class("imcms-positive hidden pluralCopyArchMenuButton")
             .html("Archive")
             .on("click", this.archiveChecked.bind(this))
             .end()
