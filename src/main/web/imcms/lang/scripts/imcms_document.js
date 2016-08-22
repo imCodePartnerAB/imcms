@@ -1786,6 +1786,12 @@ Imcms.Document.ListAdapter.prototype = {
 		var deleteButton = $("<button>"),
 			row;
 
+        // linked doc title
+        if (data.label) {
+            var linkURL = Imcms.Linker.getContextPath() + "/" + (data.alias ? data.alias : data.id);
+            data.label = $("<a>").attr("href", linkURL).html(data.label);
+        }
+
 		this._container.row(data.id, data.label, data.alias, data.type, $("<span>")
             .append($('<input>')
                 .click(this.showPluralArchiveAndCopyButtons)
