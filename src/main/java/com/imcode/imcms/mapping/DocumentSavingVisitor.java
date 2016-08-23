@@ -34,6 +34,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         savingUser = user;
     }
 
+    // todo: check and (if needs) prepare like #visitUrlDocument()
     // runs inside transaction
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
         Version version = versionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
@@ -48,19 +49,10 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction
     public void visitUrlDocument(UrlDocumentDomainObject document) {
-        Version version = versionRepository.findByDocIdAndNo(document.getId(), document.getVersionNo());
-        UrlDocContent reference = new UrlDocContent();
+        UrlDocContent urlDocContent = docRepository.getUrlDocContent(document.getRef());
+        urlDocContent.setUrl(document.getUrl());
 
-        reference.setVersion(version);
-
-        reference.setUrl(document.getUrl());
-        reference.setUrlTarget("");
-        reference.setUrlText("");
-        reference.setUrlLanguagePrefix("");
-        reference.setUrlFrameName("");
-
-        docRepository.deleteUrlDocContent(document.getRef());
-        docRepository.saveUrlDocContent(reference);
+        docRepository.saveUrlDocContent(urlDocContent);
     }
 
     // runs inside transaction
