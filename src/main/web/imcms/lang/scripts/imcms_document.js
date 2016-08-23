@@ -73,7 +73,8 @@ Imcms.Document.Loader.prototype = {
 			skip: params.skip,
 			take: params.take,
 			sort: params.sort,
-			order: params.order
+			order: params.order,
+			userId: params.userId
 		}, callback);
 	},
 	getDocument: function (id, callback) {
@@ -126,7 +127,7 @@ Imcms.Document.Editor.prototype = {
 	_loader: {},
 	_documentListAdapter: {},
 	init: function () {
-
+		this._loader.usersList($.proxy(this.loadUsers, this));
 		return this.buildView().buildDocumentsList();
 	},
 	buildView: function () {
@@ -154,6 +155,8 @@ Imcms.Document.Editor.prototype = {
 			.reference("searchFieldDoc")
 			.placeholder("Type to find document")
 			.end()
+
+			.reference("document-editor-header")
 
 			.button()
 			.reference("closeButton")
@@ -225,6 +228,29 @@ Imcms.Document.Editor.prototype = {
 				}.bind(this));
 			}.bind(this)
 		});
+	},
+	loadUsers: function (users) {
+		this._builder.ref("document-editor-header")
+			.div()
+			.class("select field")
+			.select()
+			.id("user-filter-select")
+			.name("user")
+			.reference("user-filter-list")
+			.on("change", this.filterByUser.bind(this))
+			.end()
+			.end();
+
+		$.each(users, this.addUserToList.bind(this));
+	},
+	addUserToList: function (count, user) {
+		$(this._builder.ref("user-filter-list").getHTMLElement()).append(
+			$("<option>").val(user.id).text(user.loginName)
+		);
+	},
+	filterByUser: function () {
+		var userId = $( "#user-filter-select option:selected" ).val();
+		this._documentListAdapter.reloadWithData("", "", userId);
 	},
 	onApply: function (viewer) {
 		var data = viewer.serialize();
@@ -1880,10 +1906,10 @@ Imcms.Document.ListAdapter.prototype = {
 			this._pagerHandler.reset();
 		}.bind(this));
 	},
-	reloadWithData: function (word, sort) {
+	reloadWithData: function (word, sort, userId) {
 		this._container.clear();
-		this._pagerHandler.reset(word, sort);
-		this._loader.filteredDocumentList({term: word || "", sort: sort || "", order: this._pagerHandler._order}, $.proxy(this.buildList, this));
+		this._pagerHandler.reset(word, sort, userId);
+		this._loader.filteredDocumentList({term: word || "", sort: sort || "", order: this._pagerHandler._order, userId: userId || null}, $.proxy(this.buildList, this));
     },
 	deleteDocument: function (id, row) {
 		var deleteButton = $(row).find("button.imcms-negative"),
@@ -2216,6 +2242,7 @@ Imcms.Document.PagerHandler.prototype = {
 	_term: "",
 	_sort: "",
 	_order: "",
+	_userId: "",
 
 	_options: {
 		count: 50,
@@ -2244,7 +2271,8 @@ Imcms.Document.PagerHandler.prototype = {
 			take: this._options.count,
 			term: this._term,
 			sort: this._sort,
-			order: this._order
+			order: this._order,
+			userId: this._userId
 		}, this.requestCompleted.bind(this));
 	},
 	requestCompleted: function (data) {
@@ -2275,10 +2303,11 @@ Imcms.Document.PagerHandler.prototype = {
 	_removeWaiterFromTarget: function () {
 		this._waiter.remove();
 	},
-	reset: function (term, sort) {
+	reset: function (term, sort, userId) {
 		var oldSort = this._sort;
 		this._pageNumber = 1;
 		this._term = term;
+		this._userId = userId;
 		this._sort = sort;
 		if (this._sort === oldSort || oldSort == undefined) {
 			this._order = this._order === "asc" ? "desc" : "asc";

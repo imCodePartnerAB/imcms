@@ -139,6 +139,12 @@ editor theme
 	outline: none;
 }
 
+.editor-form .imcms-header .select {
+	background: #f0f0f0;
+	float: left;
+	margin-right: 10px;
+}
+
 .editor-form .imcms-header .imcms-title {
 	color: #fff;
 	line-height: 30px;
