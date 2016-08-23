@@ -123,7 +123,8 @@ public class DocumentController {
 									  @RequestParam(value = "skip", required = false, defaultValue = "0") int skip,
 									  @RequestParam(value = "take", required = false, defaultValue = "50") int take,
 									  @RequestParam(value = "sort", required = false, defaultValue = "meta_id") String sort,
-									  @RequestParam(value = "order", required = false, defaultValue = "asc") String order) {
+									  @RequestParam(value = "order", required = false, defaultValue = "asc") String order,
+									  @RequestParam(value = "userId", required = false) Integer userId) {
 		List<Map<String, Object>> result = new ArrayList<>();
 		List<DocumentDomainObject> documents;
 		DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
@@ -141,8 +142,11 @@ public class DocumentController {
 					.map(field -> String.format("%s:*%s*", field, term))
 					.collect(Collectors.joining(" "))
                 : "*:*";
-
-        solrQuery = new SolrQuery(query);
+		solrQuery = new SolrQuery(query);
+		if(userId !=null) {
+			String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + userId;
+			solrQuery.addFilterQuery(userFilter);
+		}
         solrQuery.addSort(sort, SolrQuery.ORDER.valueOf(order));
 
 		documentStoredFieldsList = documentMapper.getDocumentIndex()
