@@ -4,8 +4,8 @@ import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.servlet.tags.Editor.TextEditor;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.TagParser;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,9 +24,9 @@ public class TextTag extends SimpleImcmsTag {
         String documentProp = attributes.getProperty("document");
         DocumentRequest documentRequest = parserParameters.getDocumentRequest();
 
-        TextDocumentDomainObject doc = (TextDocumentDomainObject) (!StringUtils.isNotBlank(documentProp)
+        DocumentDomainObject doc = !StringUtils.isNotBlank(documentProp)
                 ? documentRequest.getDocument()
-                : Imcms.getServices().getDocumentMapper().getDocument(documentProp));
+                : Imcms.getServices().getDocumentMapper().getDocument(documentProp);
 
         boolean hasEditTexts = ((TextDocumentPermissionSetDomainObject) documentRequest.getUser().getPermissionSetFor(doc)).getEditTexts();
         if (TagParser.isEditable(attributes, hasEditTexts)) {
