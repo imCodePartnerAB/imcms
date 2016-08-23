@@ -1909,7 +1909,7 @@ Imcms.Document.ListAdapter.prototype = {
 	reloadWithData: function (word, sort, userId) {
 		this._container.clear();
 		this._pagerHandler.reset(word, sort, userId);
-		this._loader.filteredDocumentList({term: word || "", sort: sort || "", order: this._pagerHandler._order, userId: userId || null}, $.proxy(this.buildList, this));
+		this._loader.filteredDocumentList({term: word || "", sort: sort || "", order: this._pagerHandler._order, userId: this._pagerHandler._userId}, $.proxy(this.buildList, this));
     },
 	deleteDocument: function (id, row) {
 		var deleteButton = $(row).find("button.imcms-negative"),
@@ -2305,9 +2305,10 @@ Imcms.Document.PagerHandler.prototype = {
 	},
 	reset: function (term, sort, userId) {
 		var oldSort = this._sort;
-		this._pageNumber = 1;
+        var oldUserId = this._userId;
+        this._pageNumber = 1;
 		this._term = term;
-		this._userId = userId;
+		this._userId = userId == undefined && oldUserId != undefined ? oldUserId : userId;
 		this._sort = sort;
 		if (this._sort === oldSort || oldSort == undefined) {
 			this._order = this._order === "asc" ? "desc" : "asc";
