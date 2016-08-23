@@ -122,7 +122,7 @@ Imcms.Text.Editor.prototype = {
             ['w3cValidate', 'textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
         ]; // Custom minimized toolbar config
         editor.config.toolbar_plain = [
-            ['saveData', 'confirm', 'cancel']
+            ['textHistory', 'saveData', 'confirm', 'cancel']
         ]; // Custom minimized toolbar config
         editor.config.toolbar_maxToolbar = [
             ['Bold', 'Italic', 'Underline', 'Strike'],
