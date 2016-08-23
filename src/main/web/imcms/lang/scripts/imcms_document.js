@@ -141,7 +141,6 @@ Imcms.Document.Editor.prototype = {
 	_loader: {},
 	_documentListAdapter: {},
 	init: function () {
-		this._loader.usersList($.proxy(this.loadUsers, this));
 		return this.buildView().buildDocumentsList();
 	},
 	buildView: function () {
@@ -214,10 +213,11 @@ Imcms.Document.Editor.prototype = {
             .end()
 			.end()
 			.end();
-		$(this._builder[0])
-			.appendTo("body")
-			.addClass("editor-form editor-document reset");
-		return this;
+
+		$(this._builder[0]).appendTo("body").addClass("editor-form editor-document reset");
+        this._loader.usersList($.proxy(this.loadUsers, this));
+
+        return this;
 	},
 	buildDocumentsList: function () {
 		var that = this;
