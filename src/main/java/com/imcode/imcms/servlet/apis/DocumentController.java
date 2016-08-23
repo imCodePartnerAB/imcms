@@ -290,11 +290,14 @@ public class DocumentController {
 
 		try {
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            int docId = documentMapper.copyDocument(documentMapper.getDocument(id), Imcms.getUser()).getId();
+            DocumentDomainObject copyDocument = documentMapper.copyDocument(documentMapper.getDocument(id), Imcms.getUser());
+            int docId = copyDocument.getId();
+            String label = copyDocument.getHeadline();
 
 			result.put("result", true);
 			result.put("data", new HashedMap<String, Object>(){{
                 put("id", docId);
+                put("label", label);
             }});
 		} catch (DocumentSaveException e) {
 			e.printStackTrace();

@@ -542,10 +542,16 @@ Imcms.Menu.Editor.prototype = {
 	},
     copyChecked: function () {
         this.doWithAllCheckedDocs(function (id) {
-            Imcms.Editors.Document.copyDocument(id, {});
-        });
+            Imcms.Editors.Document.copyDocument(id, this.addItem.bind(this));
+        }.bind(this));
 
         $('input.menu-doc-checkbox').removeProp("checked");
+    },
+    addItem: function (response) {
+        if (!response.result) {
+            return;
+        }
+        this._addItem(response.data);
     },
     archiveChecked: function () {
         this.doWithAllCheckedDocs(function (id) {
