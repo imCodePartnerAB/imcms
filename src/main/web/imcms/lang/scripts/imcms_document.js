@@ -121,6 +121,20 @@ Imcms.Document.Loader.prototype = {
 Imcms.Document.Editor = function (loader) {
 	this._loader = loader;
 	this.init();
+	$('#data').jstree({
+		"core" : {
+			"data" : [
+				{ "text" : "Root node", "children" : [
+					{ "text" : "Child node 1" },
+					{ "text" : "Child node 2" }
+				]}
+			]
+		},
+		"checkbox" : {
+			"keep_selected_style" : false
+		},
+		"plugins" : [ "checkbox" ]
+	});
 };
 Imcms.Document.Editor.prototype = {
 	_builder: {},
@@ -157,6 +171,11 @@ Imcms.Document.Editor.prototype = {
 			.end()
 
 			.reference("document-editor-header")
+
+			.div()
+			.id("data")
+			.class("category")
+			.end()
 
 			.button()
 			.reference("closeButton")
