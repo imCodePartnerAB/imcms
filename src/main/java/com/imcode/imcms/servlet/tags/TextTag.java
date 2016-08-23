@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.servlet.tags.Editor.TextEditor;
+import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -20,15 +21,18 @@ public class TextTag extends SimpleImcmsTag {
                 : null;
 
         LoopEntryRef loopEntryRef = loopTag == null ? null : loopTag.getLoopEntryRef();
-        TextDocumentDomainObject doc = (TextDocumentDomainObject) (!StringUtils.isNotBlank(attributes.getProperty("document")) ?
-                parserParameters.getDocumentRequest().getDocument() :
-                Imcms.getServices().getDocumentMapper().getDocument(attributes.getProperty("document")));
-        if (TagParser.isEditable(attributes,
-                ((TextDocumentPermissionSetDomainObject) parserParameters.getDocumentRequest().getUser().getPermissionSetFor(doc)).getEditTexts())) {
-            ((TextEditor) editor)
-                    .setDocumentId(doc.getId())
+        String documentProp = attributes.getProperty("document");
+        DocumentRequest documentRequest = parserParameters.getDocumentRequest();
+
+        TextDocumentDomainObject doc = (TextDocumentDomainObject) (!StringUtils.isNotBlank(documentProp)
+                ? documentRequest.getDocument()
+                : Imcms.getServices().getDocumentMapper().getDocument(documentProp));
+
+        boolean hasEditTexts = ((TextDocumentPermissionSetDomainObject) documentRequest.getUser().getPermissionSetFor(doc)).getEditTexts();
+        if (TagParser.isEditable(attributes, hasEditTexts)) {
+            ((TextEditor) editor).setDocumentId(doc.getId())
                     .setContentType(attributes.getProperty("formats", "").contains("text") ? "text" : "html")
-                    .setLocale(parserParameters.getDocumentRequest().getDocument().getLanguage().getCode())
+                    .setLocale(documentRequest.getDocument().getLanguage().getCode())
                     .setLoopEntryRef(loopEntryRef)
                     .setNo(Integer.parseInt(attributes.getProperty("no")));
         } else {
