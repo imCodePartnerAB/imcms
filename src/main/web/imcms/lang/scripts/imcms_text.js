@@ -130,8 +130,6 @@ Imcms.Text.Editor.prototype = {
 
         editor.config.toolbar_minTextToolbar = [
             switchFormatToHtmlPlugin,
-            fontPlugins,
-            textParagraphPlugins,
             linkPlugins,
             imagesPlugins,
             textPlugins,
@@ -164,8 +162,6 @@ Imcms.Text.Editor.prototype = {
 
         editor.config.toolbar_maxTextToolbar = [
             switchFormatToHtmlPlugin,
-            fontPlugins,
-            textParagraphPlugins,
             linkPlugins,
             ['Image', 'openBrowser', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'],
             ['Styles', 'Format', 'Font', 'FontSize'],
