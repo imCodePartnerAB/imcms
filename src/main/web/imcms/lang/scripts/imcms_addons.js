@@ -324,7 +324,7 @@ CKEDITOR.plugins.add("switchFormatToHTML", {
         editor.addCommand("switchFormatToHTML", CKEDITOR.switchFormatCommandDefinition);
 
         editor.ui.addButton('switchFormatToHTML', {
-            label: 'Switch format to HTML.',
+            label: 'Switch format to HTML',
             command: "switchFormatToHTML",
             icon: "images/switch-between-html-and-text-mode.png"
         });
@@ -336,7 +336,7 @@ CKEDITOR.plugins.add("switchFormatToText", {
         editor.addCommand("switchFormatToText", CKEDITOR.switchFormatCommandDefinition);
 
         editor.ui.addButton('switchFormatToText', {
-            label: 'Switch format to text.',
+            label: 'Switch format to text',
             command: "switchFormatToText",
             icon: "images/plain_text.png"
         });
