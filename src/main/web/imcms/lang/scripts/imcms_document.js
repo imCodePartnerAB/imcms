@@ -121,26 +121,13 @@ Imcms.Document.Loader.prototype = {
 Imcms.Document.Editor = function (loader) {
 	this._loader = loader;
 	this.init();
-	$('#data').jstree({
-		"core" : {
-			"data" : [
-				{ "text" : "Root node", "children" : [
-					{ "text" : "Child node 1" },
-					{ "text" : "Child node 2" }
-				]}
-			]
-		},
-		"checkbox" : {
-			"keep_selected_style" : false
-		},
-		"plugins" : [ "checkbox" ]
-	});
 };
 Imcms.Document.Editor.prototype = {
 	_builder: {},
 	_loader: {},
 	_documentListAdapter: {},
 	init: function () {
+		this._loader.categoriesList($.proxy(this.loadCategories, this));
 		return this.buildView().buildDocumentsList();
 	},
 	buildView: function () {
@@ -172,8 +159,14 @@ Imcms.Document.Editor.prototype = {
 			.reference("document-editor-header")
 
 			.div()
-			.id("data")
+			.id("categoryFilterList")
 			.class("category")
+			.ul()
+			.li()
+			.html("Categories")
+			.reference("document-editor-category")
+			.end()
+			.end()
 			.end()
 
 			.button()
@@ -271,6 +264,40 @@ Imcms.Document.Editor.prototype = {
 		var userId = $( "#user-filter-select option:selected" ).val();
 		this._documentListAdapter.reloadWithData("", "", userId);
 	},
+
+	loadCategories: function (categories) {
+		$.each(categories, this.addCategoryType.bind(this));
+		$('#categoryFilterList').jstree({
+			"checkbox" : {
+				"keep_selected_style" : false
+			},
+			"plugins" : [ "checkbox" ]
+		});
+
+
+	},
+    addCategoryType: function (categoryType, options) {
+        this._builder.ref("document-editor-category")
+            .ul()
+            .li()
+            .html(categoryType)
+            .ul()
+            .reference(categoryType)
+            .end()
+            .end()
+            .end();
+        if (options.isMultiple) {
+            this._builder.ref(categoryType);
+        }
+
+        $.each(options.items, this.addCategory.bind(this, categoryType));
+    },
+	addCategory: function (categoryType, position, category) {
+		$(this._builder.ref(categoryType).getHTMLElement()).append(
+			$("<li>").val(category.name).text(category.name)
+		);
+	},
+
 	onApply: function (viewer) {
 		var data = viewer.serialize();
 		this._loader.update(data, $.proxy(function () {

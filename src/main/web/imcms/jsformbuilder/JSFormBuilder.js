@@ -110,7 +110,7 @@ JSFormBuilder.Classes.BaseAdapter = function () {
     else throw  "Element '" + arguments[0] + "' should instantiate from 'ContainerAdapter'";
 
     arguments[1] = arguments[1].toLowerCase();
-    if (["form", "input", "textarea", "label", "button", "fieldset", "legend", "select", "div", "span", "table"].indexOf(arguments[1]) > -1) {
+    if (["form", "input", "textarea", "label", "button", "fieldset", "legend", "select", "div", "span", "table", "ul", "li"].indexOf(arguments[1]) > -1) {
         arguments[1] = JSFormBuilder.capitaliseFirstLetter(arguments[1]);
         JSFormBuilder.mix(this, JSFormBuilder.Mixins[arguments[1]], JSFormBuilder.Mixins.AttributeBase, JSFormBuilder.Mixins.FunctionBase);
         JSFormBuilder.Classes[arguments[1]].apply(this);
@@ -482,6 +482,29 @@ JSFormBuilder.Mixins.Div = {
         return this;
     }
 };
+JSFormBuilder.Classes.Ul = function () {
+    this._element = document.createElement("ul");
+};
+
+JSFormBuilder.Mixins.Ul = {
+    html: function () {
+        if (arguments.length === 0) return this._element.innerHTML;
+        this._element.innerHTML = arguments[0];
+        return this;
+    }
+};
+
+JSFormBuilder.Classes.Li = function () {
+    this._element = document.createElement("li");
+};
+
+JSFormBuilder.Mixins.Li = {
+    html: function () {
+        if (arguments.length === 0) return this._element.innerHTML;
+        this._element.innerHTML = arguments[0];
+        return this;
+    }
+};
 
 JSFormBuilder.Classes.Span = function () {
     this._element = document.createElement("span");
@@ -503,7 +526,7 @@ JSFormBuilder.Mixins.Fieldset = {};
 JSFormBuilder.mix(JSFormBuilder.Mixins.Fieldset, JSFormBuilder.Mixins.Legend);
 
 JSFormBuilder.Classes.ContainerAdapter = function () {
-    if (["form", "fieldset", "div", "span"].indexOf(arguments[1]) > -1) {
+    if (["form", "fieldset", "div", "span", "ul", "li"].indexOf(arguments[1]) > -1) {
         JSFormBuilder.Classes.ContainerAdapter.__super__.constructor.apply(this, arguments);
         if (this._parent)
             this._localScope = this._parent._localScope;
@@ -536,6 +559,14 @@ JSFormBuilder.Mixins.ContainerAdapter = {
 
     div: function () {
         return this._wrap("div");
+    },
+
+    ul: function () {
+        return this._wrap("ul");
+    },
+
+    li: function () {
+        return this._wrap("li");
     },
 
     span: function () {
