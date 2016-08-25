@@ -280,28 +280,25 @@ CKEDITOR.dialog.add("documentSaver", function (e) {
 });
 
 CKEDITOR.defineToolbar = function (editor) {
-    if (editor.element.data("contenttype") === "text") {
-        editor.config.toolbarSize = 0;
-        return "plain";
+    var prefix;
 
-    } else if (editor.elementMode == 1) { // full-screen editor mode
-        if (editor.element.data("contenttype") === "from-html") {
-            editor.config.toolbarSize = 2;
-            return "maxTextToolbar";
-
-        } else {
-            editor.config.toolbarSize = 2;
-            return "maxHtmlToolbar";
-        }
+    if (editor.elementMode == 1) { // full-screen editor mode
+        editor.config.maxToolbar = true;
+        prefix = "max";
+        
     } else {
-        if (editor.element.data("contenttype") === "from-html") {
-            editor.config.toolbarSize = 1;
-            return "minTextToolbar";
+        editor.config.maxToolbar = false;
+        prefix = "min";
+    }
 
-        } else {
-            editor.config.toolbarSize = 1;
-            return "minHtmlToolbar";
-        }
+    if (editor.element.data("contenttype") === "text") {
+        return prefix + "PlainText";
+
+    } else if (editor.element.data("contenttype") === "from-html") {
+        return prefix + "TextToolbar";
+
+    } else {
+        return prefix + "HtmlToolbar";
     }
 };
 
