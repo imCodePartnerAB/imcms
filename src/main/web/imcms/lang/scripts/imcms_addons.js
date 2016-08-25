@@ -279,6 +279,73 @@ CKEDITOR.dialog.add("documentSaver", function (e) {
 	};
 });
 
+CKEDITOR.defineToolbar = function (editor) {
+    if (editor.element.data("contenttype") === "text") {
+        editor.config.toolbarSize = 0;
+        return "plain";
+
+    } else if (editor.elementMode == 1) { // full-screen editor mode
+        if (editor.element.data("contenttype") === "from-html") {
+            editor.config.toolbarSize = 2;
+            return "maxTextToolbar";
+
+        } else {
+            editor.config.toolbarSize = 2;
+            return "maxHtmlToolbar";
+        }
+    } else {
+        if (editor.element.data("contenttype") === "from-html") {
+            editor.config.toolbarSize = 1;
+            return "minTextToolbar";
+
+        } else {
+            editor.config.toolbarSize = 1;
+            return "minHtmlToolbar";
+        }
+    }
+};
+
+CKEDITOR.switchFormatCommandDefinition = {
+    // This command works in both editing modes.
+    modes: {wysiwyg: 1, source: 1},
+    // This command will not auto focus editor before execution.
+    editorFocus: false,
+    // This command requires no undo snapshot.
+    canUndo: false,
+
+    exec: function (editor) {
+        editor.element.data("contenttype") === "html"
+            ? editor.element.data("contenttype", "from-html")
+            : editor.element.data("contenttype", "html");
+
+        editor.execCommand("confirmChangesCommand");
+    }
+};
+
+CKEDITOR.plugins.add("switchFormatToHTML", {
+    init: function (editor) {
+        editor.addCommand("switchFormatToHTML", CKEDITOR.switchFormatCommandDefinition);
+
+        editor.ui.addButton('switchFormatToHTML', {
+            label: 'Switch format to HTML.',
+            command: "switchFormatToHTML",
+            icon: "images/switch-between-html-and-text-mode.png"
+        });
+    }
+});
+
+CKEDITOR.plugins.add("switchFormatToText", {
+    init: function (editor) {
+        editor.addCommand("switchFormatToText", CKEDITOR.switchFormatCommandDefinition);
+
+        editor.ui.addButton('switchFormatToText', {
+            label: 'Switch format to text.',
+            command: "switchFormatToText",
+            icon: "images/plain_text.png"
+        });
+    }
+});
+
 CKEDITOR.plugins.add("fileBrowser", {
 	init: function (editor) {
 
