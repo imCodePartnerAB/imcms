@@ -1,8 +1,8 @@
 /**
  * Created by Shadowgun on 13.02.2015.
  */
-/*
- Text Editer
+/**
+ Text Editor
  */
 Imcms.Text = {};
 
@@ -45,17 +45,14 @@ Imcms.Text.Editor.prototype = {
     init: function () {
         var textFrame = new Imcms.FrameBuilder().title("Text Editor");
 
-        CKEDITOR.on('instanceCreated', $.proxy(this, "_onCreated"));
-        CKEDITOR.on("confirmChanges", $.proxy(this, "_onConfirm"));
-        CKEDITOR.on("validateText", $.proxy(this, "_onValidateText"));
-        CKEDITOR.on("getTextHistory", $.proxy(this, "_onGetTextHistory"));
+        CKEDITOR.on('instanceCreated', this._onCreated.bind(this));
+        CKEDITOR.on("confirmChanges", this._onConfirm.bind(this));
+        CKEDITOR.on("validateText", this._onValidateText.bind(this));
+        CKEDITOR.on("getTextHistory", this._onGetTextHistory.bind(this));
 
         $("[contenteditable='true']").each(function (position, element) {
             element = $(element);
-
             CKEDITOR.inline(element[0]);
-
-
             element.parents("a").attr("onclick", "return false;");
 
             $("<div>").insertAfter(element).append(element).css({overflow: "hidden"});
@@ -73,7 +70,10 @@ Imcms.Text.Editor.prototype = {
     _onConfirm: function (event) {
         var data = jQuery(event.editor.element.$).data().prettify();
         data.meta = Imcms.document.meta;
-        data.content = event.editor.getData();
+
+        data.content = (data.contenttype && data.contenttype === "html")
+            ? $(event.editor.element.$).children().html()
+            : $(event.editor.element.$).html();
 
         this._api.update(data, event.data.callback || Imcms.BackgroundWorker.createTask({
                 showProcessWindow: true,
@@ -89,12 +89,10 @@ Imcms.Text.Editor.prototype = {
         // which is fired after the configuration file loading and
         // execution. This makes it possible to change the
         // configurations before the editor initialization takes place.
-        editor.on('configLoaded', $.proxy(this, "_onEditorLoaded"));
-
+        editor.on('configLoaded', this._onEditorLoaded.bind(this));
     },
     _onGetTextHistory: function (event) {
         var data = jQuery(event.editor.element.$).data().prettify();
-
         data.meta = Imcms.document.meta;
 
         this._api.get(data, event.data.callback);
@@ -106,53 +104,74 @@ Imcms.Text.Editor.prototype = {
         var editor = event.editor;
 
         // Remove unnecessary plugins to make the editor simpler.
-        editor.config.removePlugins = 'colorbutton,find,' +
-            'forms,newpage,removeformat,' +
-            'specialchar,stylescombo,templates';
-        editor.config.extraPlugins = editor.config.extraPlugins + ",documentSaver,fileBrowser,link,textHistory,w3cValidator,maximize,toolbarswitch";
-        editor.config.toolbar_minToolbar = [
-            ['Bold', 'Italic', 'Underline', 'Strike'],
-            ['NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Outdent', 'Indent'],
-            ['Link', 'Unlink', 'Anchor'],
-            ['Image', 'openBrowser'/*, 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'*/],
-            //['Styles', 'Format', 'Font', 'FontSize'],
-            ['TextColor', 'BGColor'],
-            // ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],
-            // ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
-            ['w3cValidate', 'textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
-        ]; // Custom minimized toolbar config
+        editor.config.removePlugins = 'colorbutton,find,forms,newpage,removeformat,specialchar,stylescombo,templates';
+        editor.config.extraPlugins = editor.config.extraPlugins + ",switchFormatToHTML,switchFormatToText,documentSaver,fileBrowser,link,textHistory,w3cValidator,maximize,toolbarswitch";
+
+        var fontPlugins = ['Bold', 'Italic', 'Underline', 'Strike'];
+        var textParagraphPlugins = ['NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Outdent', 'Indent'];
+        var linkPlugins = ['Link', 'Unlink', 'Anchor'];
+        var imagesPlugins = ['Image', 'openBrowser'];
+        var textPlugins = ['TextColor', 'BGColor'];
+        var imcmsCustomPlugins = ['w3cValidate', 'textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel'];
+        var switchFormatToTextPlugin = ['switchFormatToText'];
+        var switchFormatToHtmlPlugin = ['switchFormatToHTML'];
+
         editor.config.toolbar_plain = [
-            ['textHistory', 'saveData', 'confirm', 'cancel']
-        ]; // Custom minimized toolbar config
-        editor.config.toolbar_maxToolbar = [
-            ['Bold', 'Italic', 'Underline', 'Strike'],
-            ['NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Outdent', 'Indent'],
-            ['Link', 'Unlink', 'Anchor'],
+            ['textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
+        ]; // Custom minimized toolbar config for tag with attribute "formats"="text"
+
+        editor.config.toolbar_minTextToolbar = [
+            switchFormatToHtmlPlugin,
+            fontPlugins,
+            textParagraphPlugins,
+            linkPlugins,
+            imagesPlugins,
+            textPlugins,
+            imcmsCustomPlugins
+        ]; // Custom minimized toolbar config for tag without attribute "formats" but was changed to "Text"
+
+        editor.config.toolbar_minHtmlToolbar = [
+            switchFormatToTextPlugin,
+            fontPlugins,
+            textParagraphPlugins,
+            linkPlugins,
+            imagesPlugins,
+            textPlugins,
+            imcmsCustomPlugins
+        ]; // Custom minimized toolbar config for tag without attribute "formats" but was changed to "HTML"
+
+        editor.config.toolbar_maxHtmlToolbar = [
+            switchFormatToTextPlugin,
+            fontPlugins,
+            textParagraphPlugins,
+            linkPlugins,
             ['Image', 'openBrowser', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'],
             ['Styles', 'Format', 'Font', 'FontSize'],
-            ['TextColor', 'BGColor'],
+            textPlugins,
             ['Source'],
             ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],
             ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
-            ['w3cValidate', 'textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
-        ];
+            imcmsCustomPlugins
+        ]; // Custom maximized toolbar config for tag without attribute "formats" but was changed to "HTML"
+
+        editor.config.toolbar_maxTextToolbar = [
+            switchFormatToHtmlPlugin,
+            fontPlugins,
+            textParagraphPlugins,
+            linkPlugins,
+            ['Image', 'openBrowser', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'],
+            ['Styles', 'Format', 'Font', 'FontSize'],
+            textPlugins,
+            ['Source'],
+            ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],
+            ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
+            imcmsCustomPlugins
+        ]; // Custom maximized toolbar config for tag without attribute "formats" but was changed to "HTML"
+
         editor.toolbarLocation = "top";
-        editor.config.toolbar = editor.elementMode == 3 ? (editor.element.data("contenttype") === "html" ? 'minToolbar' : "plain") : 'maxToolbar';
-        editor.config.smallToolbar = 'minToolbar';
-        editor.config.maximizedToolbar = 'maxToolbar';
+
+        editor.config.toolbar = CKEDITOR.defineToolbar(editor);
+
         editor.config.allowedContent = true;
-        //editor.config.toolbar = 'MyToolbar';
-        //editor.config.toolbar_MyToolbar =
-        //    [
-        //        ['Bold', 'Italic', 'Underline', 'Strike'],
-        //        ['NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Outdent', 'Indent'],
-        //        ['Link', 'Unlink', 'Anchor'],
-        //        ['Image', 'openBrowser'/*, 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'*/],
-        //        //['Styles', 'Format', 'Font', 'FontSize'],
-        //        ['TextColor', 'BGColor'],
-        //        // ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],
-        //        // ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
-        //        ['resize', 'confirm', 'cancel']
-        //    ];
     }
 };
