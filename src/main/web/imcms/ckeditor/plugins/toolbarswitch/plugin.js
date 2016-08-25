@@ -97,7 +97,7 @@ CKEDITOR.plugins.add('toolbarswitch', {
         var lang = editor.lang;
         var commandFunction = {
             exec: function (editor) {
-                if (editor.config.toolbarSize < 2) {
+                if (editor.config.maxToolbar) {
                     // For switching to the small toolbar first minimize
                     editor.commands.maximize.exec();
                     switchMe(editor, function (e) {
