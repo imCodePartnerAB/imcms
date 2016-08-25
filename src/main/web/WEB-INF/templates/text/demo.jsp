@@ -130,7 +130,8 @@
 
 			<h2>Learn more</h2>
 
-			<imcms:text label="asdas" no="2" document="1001" mode="read" pre=""/>
+            <imcms:text label="asdas" no="2" document="1001" mode="read" pre=""/>
+            <imcms:text label="test" no="4" formats="text"/>
 		</div>
 		<div class="wrapper">
 			<imcms:loop no="1">
