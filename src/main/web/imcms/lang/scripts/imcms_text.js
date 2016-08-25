@@ -120,9 +120,13 @@ Imcms.Text.Editor.prototype = {
         var switchFormatToTextPlugin = ['switchFormatToText'];
         var switchFormatToHtmlPlugin = ['switchFormatToHTML'];
 
-        editor.config.toolbar_plain = [
+        editor.config.toolbar_minPlainText = [
             ['textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
         ]; // Custom minimized toolbar config for tag with attribute "formats"="text"
+
+        editor.config.toolbar_maxPlainText = [
+        ['textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
+        ]; // Custom maximized toolbar config for tag with attribute "formats"="text"
 
         editor.config.toolbar_minTextToolbar = [
             switchFormatToHtmlPlugin,
