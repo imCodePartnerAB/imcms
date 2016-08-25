@@ -145,6 +145,18 @@ editor theme
 	margin-right: 10px;
 }
 
+.editor-form .imcms-header .category {
+	background: #f0f0f0;
+	float: left;
+	margin-right: 10px;
+	margin-left: 10px;
+	width: 300px;
+	position: absolute;
+	z-index: 100000;
+	left: 40%;
+	top: 12px;
+}
+
 .editor-form .imcms-header .imcms-title {
 	color: #fff;
 	line-height: 30px;
