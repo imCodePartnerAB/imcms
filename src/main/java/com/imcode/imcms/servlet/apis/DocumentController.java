@@ -124,7 +124,8 @@ public class DocumentController {
 									  @RequestParam(value = "take", required = false, defaultValue = "50") int take,
 									  @RequestParam(value = "sort", required = false, defaultValue = "meta_id") String sort,
 									  @RequestParam(value = "order", required = false, defaultValue = "asc") String order,
-									  @RequestParam(value = "userId", required = false) Integer userId) {
+									  @RequestParam(value = "userId", required = false) Integer userId,
+									  @RequestParam(value = "categoriesId", required = false) List<Integer> categoriesId) {
 		List<Map<String, Object>> result = new ArrayList<>();
 		List<DocumentDomainObject> documents;
 		DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();

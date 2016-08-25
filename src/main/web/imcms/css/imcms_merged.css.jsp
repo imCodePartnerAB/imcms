@@ -777,12 +777,12 @@ editor theme
 	background: rgba(0, 0, 0, 0.1);
 }
 
-.editor-form .imcms-footer .imcms-neutral,
+.editor-form .imcms-neutral,
 .pop-up-form .imcms-footer .imcms-neutral {
 	background: #323232;
 }
 
-.editor-form .imcms-footer .imcms-neutral:hover,
+.editor-form .imcms-neutral:hover,
 .pop-up-form .imcms-footer .imcms-neutral:hover {
 	background: #484848;
 }

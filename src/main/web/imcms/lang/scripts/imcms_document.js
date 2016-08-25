@@ -15,6 +15,7 @@ Imcms.Document.API.prototype = {
 		$.ajax({
 			url: Imcms.Linker.get("document.read", (request.id || "")),
 			type: "GET",
+			traditional: true,
 			data: request,
 			success: response
 		});
@@ -74,7 +75,8 @@ Imcms.Document.Loader.prototype = {
 			take: params.take,
 			sort: params.sort,
 			order: params.order,
-			userId: params.userId
+			userId: params.userId,
+			categoriesId: params.categoriesId
 		}, callback);
 	},
 	getDocument: function (id, callback) {
@@ -136,6 +138,7 @@ Imcms.Document.Editor.prototype = {
 			.form()
 			.div()
 			.class("imcms-header")
+
 			.div()
 			.html("Document Editor")
 			.class("imcms-title")
@@ -167,6 +170,13 @@ Imcms.Document.Editor.prototype = {
 			.reference("document-editor-category")
 			.end()
 			.end()
+			.end()
+
+			.button()
+			.reference("findByCategoriesButton")
+			.class("imcms-neutral")
+			.html("Search by categories")
+			.on("click", $.proxy(this.findByCategories, this))
 			.end()
 
 			.button()
@@ -294,7 +304,7 @@ Imcms.Document.Editor.prototype = {
     },
 	addCategory: function (categoryType, position, category) {
 		$(this._builder.ref(categoryType).getHTMLElement()).append(
-			$("<li>").val(category.name).text(category.name)
+			$("<li>").attr('id', category.id).text(category.name)
 		);
 	},
 
@@ -342,7 +352,18 @@ Imcms.Document.Editor.prototype = {
 	},
 	sort: function (word, sort) {
 		this._documentListAdapter.reloadWithData(word, sort);
-	}
+	},
+	findByCategories: function () {
+		var checkedCategoriesId = [];
+		var checkedCategories = $("#categoryFilterList").jstree('get_selected', true);
+
+		$.each(checkedCategories, function (index, value) {
+			if (value.id.indexOf('_') < 0) {
+				checkedCategoriesId.push(value.id);
+			}
+		});
+		this._documentListAdapter.reloadWithData("", "", "", checkedCategoriesId);
+	},
 };
 
 Imcms.Document.MissingLangProperties = {
@@ -1952,10 +1973,10 @@ Imcms.Document.ListAdapter.prototype = {
 			this._pagerHandler.reset();
 		}.bind(this));
 	},
-	reloadWithData: function (word, sort, userId) {
+	reloadWithData: function (word, sort, userId, categoriesId) {
 		this._container.clear();
-		this._pagerHandler.reset(word, sort, userId);
-		this._loader.filteredDocumentList({term: word || "", sort: sort || "", order: this._pagerHandler._order, userId: this._pagerHandler._userId}, $.proxy(this.buildList, this));
+		this._pagerHandler.reset(word, sort, userId, categoriesId);
+		this._loader.filteredDocumentList({term: word || "", sort: sort || "", order: this._pagerHandler._order, userId: this._pagerHandler._userId, categoriesId: this._pagerHandler._categoriesId}, $.proxy(this.buildList, this));
     },
 	deleteDocument: function (id, row) {
 		var deleteButton = $(row).find("button.imcms-negative"),
@@ -2289,6 +2310,7 @@ Imcms.Document.PagerHandler.prototype = {
 	_sort: "",
 	_order: "",
 	_userId: "",
+	_categoriesId: [],
 
 	_options: {
 		count: 50,
@@ -2318,7 +2340,8 @@ Imcms.Document.PagerHandler.prototype = {
 			term: this._term,
 			sort: this._sort,
 			order: this._order,
-			userId: this._userId
+			userId: this._userId,
+			categoriesId: this._categoriesId
 		}, this.requestCompleted.bind(this));
 	},
 	requestCompleted: function (data) {
@@ -2349,9 +2372,10 @@ Imcms.Document.PagerHandler.prototype = {
 	_removeWaiterFromTarget: function () {
 		this._waiter.remove();
 	},
-	reset: function (term, sort, userId) {
+	reset: function (term, sort, userId, categoriesId) {
 		var oldSort = this._sort;
         var oldUserId = this._userId;
+        var oldCategoriesId = this._categoriesId;
         this._pageNumber = 1;
 		this._term = term;
 		this._userId = userId == undefined && oldUserId != undefined ? oldUserId : userId;
@@ -2362,6 +2386,8 @@ Imcms.Document.PagerHandler.prototype = {
 		else {
 			this._order = "asc";
 		}
+		this._categoriesId = categoriesId == [] && oldCategoriesId != [] ? oldCategoriesId : categoriesId;
+
 		this.scrollHandler();
 	}
 };
