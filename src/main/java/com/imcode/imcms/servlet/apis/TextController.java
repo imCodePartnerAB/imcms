@@ -17,6 +17,7 @@ import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -124,7 +125,7 @@ public class TextController {
 
         try {
             int contentTypeInt = Optional.ofNullable(contentType)
-                    .map(type -> type.contains("text")
+                    .map(type -> type.contains("text") || type.contains("from-html")
                             ? TextDomainObject.TEXT_TYPE_PLAIN
                             : TextDomainObject.TEXT_TYPE_HTML)
                     .orElse(TextDomainObject.TEXT_TYPE_HTML);
@@ -133,7 +134,7 @@ public class TextController {
                     DocRef.of(versionRef, locale),
                     loopEntryRefOpt,
                     textNo,
-                    new TextDomainObject(content.trim(), contentTypeInt));
+                    new TextDomainObject(StringEscapeUtils.unescapeHtml4(content).trim(), contentTypeInt));
 
             imcmsServices.getDocumentMapper().saveTextDocText(container, user);
         } catch (DocumentSaveException e) {
