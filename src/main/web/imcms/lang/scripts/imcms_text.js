@@ -119,13 +119,19 @@ Imcms.Text.Editor.prototype = {
         var imcmsCustomPlugins = ['w3cValidate', 'textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel'];
         var switchFormatToTextPlugin = ['switchFormatToText'];
         var switchFormatToHtmlPlugin = ['switchFormatToHTML'];
+        var plainTextPlugins = ['textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel'];
+        var imageUtilsAndOtherDefaultPlugins = ['Image', 'openBrowser', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'];
+        var advancedFontPlugins = ['Styles', 'Format', 'Font', 'FontSize'];
+        var sourcePlugin = ['Source'];
+        var textEditingPlugins = ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'];
+        var advancedActionsPlugins = ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'];
 
         editor.config.toolbar_minPlainText = [
-            ['textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
+            plainTextPlugins
         ]; // Custom minimized toolbar config for tag with attribute "formats"="text"
 
         editor.config.toolbar_maxPlainText = [
-        ['textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel']
+            plainTextPlugins
         ]; // Custom maximized toolbar config for tag with attribute "formats"="text"
 
         editor.config.toolbar_minTextToolbar = [
@@ -133,7 +139,7 @@ Imcms.Text.Editor.prototype = {
             linkPlugins,
             imagesPlugins,
             textPlugins,
-            imcmsCustomPlugins
+            plainTextPlugins
         ]; // Custom minimized toolbar config for tag without attribute "formats" but was changed to "Text"
 
         editor.config.toolbar_minHtmlToolbar = [
@@ -151,31 +157,29 @@ Imcms.Text.Editor.prototype = {
             fontPlugins,
             textParagraphPlugins,
             linkPlugins,
-            ['Image', 'openBrowser', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'],
-            ['Styles', 'Format', 'Font', 'FontSize'],
+            imageUtilsAndOtherDefaultPlugins,
+            advancedFontPlugins,
             textPlugins,
-            ['Source'],
-            ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],
-            ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
+            sourcePlugin,
+            textEditingPlugins,
+            advancedActionsPlugins,
             imcmsCustomPlugins
         ]; // Custom maximized toolbar config for tag without attribute "formats" but was changed to "HTML"
 
         editor.config.toolbar_maxTextToolbar = [
             switchFormatToHtmlPlugin,
             linkPlugins,
-            ['Image', 'openBrowser', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'],
-            ['Styles', 'Format', 'Font', 'FontSize'],
+            imageUtilsAndOtherDefaultPlugins,
+            advancedFontPlugins,
             textPlugins,
-            ['Source'],
-            ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],
-            ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'],
-            imcmsCustomPlugins
+            sourcePlugin,
+            textEditingPlugins,
+            advancedActionsPlugins,
+            plainTextPlugins
         ]; // Custom maximized toolbar config for tag without attribute "formats" but was changed to "HTML"
 
         editor.toolbarLocation = "top";
-
         editor.config.toolbar = CKEDITOR.defineToolbar(editor);
-
         editor.config.allowedContent = true;
     }
 };
