@@ -105,7 +105,11 @@ Imcms.Text.Editor.prototype = {
 
         // Remove unnecessary plugins to make the editor simpler.
         editor.config.removePlugins = 'colorbutton,find,forms,newpage,removeformat,specialchar,stylescombo,templates';
-        editor.config.extraPlugins = editor.config.extraPlugins + ",switchFormatToHTML,switchFormatToText,documentSaver,fileBrowser,link,textHistory,w3cValidator,maximize,toolbarswitch";
+        var customExtraPlugins = ",switchFormatToHTML,switchFormatToText,documentSaver,fileBrowser,link,textHistory,w3cValidator,maximize,toolbarswitch";
+
+        if (editor.config.extraPlugins.indexOf(customExtraPlugins) == -1) {
+            editor.config.extraPlugins = editor.config.extraPlugins + customExtraPlugins;
+        }
 
         var fontPlugins = ['Bold', 'Italic', 'Underline', 'Strike'];
         var textParagraphPlugins = ['NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Outdent', 'Indent'];
