@@ -318,7 +318,7 @@ CKEDITOR.switchFormatCommandDefinition = {
             ? editor.element.data("contenttype", "from-html")
             : editor.element.data("contenttype", "html");
 
-        editor.execCommand("confirmChangesCommand");
+        editor.execCommand("confirmChanges");
     }
 };
 
