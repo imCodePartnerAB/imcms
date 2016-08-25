@@ -6,6 +6,8 @@ import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.TagParser;
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,12 +31,34 @@ public class TextTag extends SimpleImcmsTag {
                 : Imcms.getServices().getDocumentMapper().getDocument(documentProp);
 
         boolean hasEditTexts = ((TextDocumentPermissionSetDomainObject) documentRequest.getUser().getPermissionSetFor(doc)).getEditTexts();
+
         if (TagParser.isEditable(attributes, hasEditTexts)) {
-            ((TextEditor) editor).setDocumentId(doc.getId())
-                    .setContentType(attributes.getProperty("formats", "").contains("text") ? "text" : "html")
-                    .setLocale(documentRequest.getDocument().getLanguage().getCode())
+            String locale = documentRequest.getDocument().getLanguage().getCode();
+            int textNo = Integer.parseInt(attributes.getProperty("no"));
+            String contentType = "html";
+
+            if (attributes.getProperty("formats", "").contains("text")) {
+                contentType = "text";
+
+            } else {
+                TextDocumentDomainObject textDoc = (TextDocumentDomainObject) doc;
+                TextDomainObject textDO = (loopTag == null)
+                        ? textDoc.getText(textNo)
+                        : textDoc.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, textNo));
+
+                if (textDO != null) {
+                    contentType = textDO.getType() == TextDomainObject.TEXT_TYPE_PLAIN
+                            ? "from-html"
+                            : "html";
+                }
+            }
+
+            ((TextEditor) editor)
+                    .setDocumentId(doc.getId())
+                    .setContentType(contentType)
+                    .setLocale(locale)
                     .setLoopEntryRef(loopEntryRef)
-                    .setNo(Integer.parseInt(attributes.getProperty("no")));
+                    .setNo(textNo);
         } else {
             editor = null;
         }
