@@ -2,9 +2,12 @@ package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.servlet.tags.Editor.TextEditor;
+import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.TagParser;
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,17 +23,42 @@ public class TextTag extends SimpleImcmsTag {
                 : null;
 
         LoopEntryRef loopEntryRef = loopTag == null ? null : loopTag.getLoopEntryRef();
-        TextDocumentDomainObject doc = (TextDocumentDomainObject) (!StringUtils.isNotBlank(attributes.getProperty("document")) ?
-                parserParameters.getDocumentRequest().getDocument() :
-                Imcms.getServices().getDocumentMapper().getDocument(attributes.getProperty("document")));
-        if (TagParser.isEditable(attributes,
-                ((TextDocumentPermissionSetDomainObject) parserParameters.getDocumentRequest().getUser().getPermissionSetFor(doc)).getEditTexts())) {
+        String documentProp = attributes.getProperty("document");
+        DocumentRequest documentRequest = parserParameters.getDocumentRequest();
+
+        DocumentDomainObject doc = !StringUtils.isNotBlank(documentProp)
+                ? documentRequest.getDocument()
+                : Imcms.getServices().getDocumentMapper().getDocument(documentProp);
+
+        boolean hasEditTexts = ((TextDocumentPermissionSetDomainObject) documentRequest.getUser().getPermissionSetFor(doc)).getEditTexts();
+
+        if (TagParser.isEditable(attributes, hasEditTexts)) {
+            String locale = documentRequest.getDocument().getLanguage().getCode();
+            int textNo = Integer.parseInt(attributes.getProperty("no"));
+            String contentType = "html";
+
+            if (attributes.getProperty("formats", "").contains("text")) {
+                contentType = "text";
+
+            } else {
+                TextDocumentDomainObject textDoc = (TextDocumentDomainObject) doc;
+                TextDomainObject textDO = (loopTag == null)
+                        ? textDoc.getText(textNo)
+                        : textDoc.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, textNo));
+
+                if (textDO != null) {
+                    contentType = textDO.getType() == TextDomainObject.TEXT_TYPE_PLAIN
+                            ? "from-html"
+                            : "html";
+                }
+            }
+
             ((TextEditor) editor)
                     .setDocumentId(doc.getId())
-                    .setContentType(attributes.getProperty("formats", "").contains("text") ? "text" : "html")
-                    .setLocale(parserParameters.getDocumentRequest().getDocument().getLanguage().getCode())
+                    .setContentType(contentType)
+                    .setLocale(locale)
                     .setLoopEntryRef(loopEntryRef)
-                    .setNo(Integer.parseInt(attributes.getProperty("no")));
+                    .setNo(textNo);
         } else {
             editor = null;
         }

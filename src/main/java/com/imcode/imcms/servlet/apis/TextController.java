@@ -17,6 +17,7 @@ import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -98,7 +100,8 @@ public class TextController {
                             @RequestParam("locale") String locale,
                             @RequestParam("meta") int docId,
                             @RequestParam("no") int textNo,
-                            @RequestParam(value = "loopentryref", required = false) String loopEntryRef) {
+                            @RequestParam(value = "loopentryref", required = false) String loopEntryRef,
+                            @RequestParam(value = "contenttype", required = false) String contentType) {
 
         UserDomainObject user = Imcms.getUser();
         TextDocumentDomainObject doc = imcmsServices.getDocumentMapper().getWorkingDocument(docId);
@@ -121,13 +124,19 @@ public class TextController {
         }
 
         try {
-            imcmsServices.getDocumentMapper().saveTextDocText(
-                    TextDocTextContainer.of(
-                            DocRef.of(versionRef, locale),
-                            loopEntryRefOpt, textNo,
-                            new TextDomainObject(content.trim(),
-                                    TextDomainObject.TEXT_TYPE_HTML)
-                    ), user);
+            int contentTypeInt = Optional.ofNullable(contentType)
+                    .map(type -> type.contains("text") || type.contains("from-html")
+                            ? TextDomainObject.TEXT_TYPE_PLAIN
+                            : TextDomainObject.TEXT_TYPE_HTML)
+                    .orElse(TextDomainObject.TEXT_TYPE_HTML);
+
+            TextDocTextContainer container = TextDocTextContainer.of(
+                    DocRef.of(versionRef, locale),
+                    loopEntryRefOpt,
+                    textNo,
+                    new TextDomainObject(StringEscapeUtils.unescapeHtml4(content).trim(), contentTypeInt));
+
+            imcmsServices.getDocumentMapper().saveTextDocText(container, user);
         } catch (DocumentSaveException e) {
             e.printStackTrace();
         }

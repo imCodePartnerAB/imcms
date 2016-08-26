@@ -279,6 +279,70 @@ CKEDITOR.dialog.add("documentSaver", function (e) {
 	};
 });
 
+CKEDITOR.defineToolbar = function (editor) {
+    var prefix;
+
+    if (editor.elementMode == 1) { // full-screen editor mode
+        editor.config.maxToolbar = true;
+        prefix = "max";
+        
+    } else {
+        editor.config.maxToolbar = false;
+        prefix = "min";
+    }
+
+    if (editor.element.data("contenttype") === "text") {
+        return prefix + "PlainText";
+
+    } else if (editor.element.data("contenttype") === "from-html") {
+        return prefix + "TextToolbar";
+
+    } else {
+        return prefix + "HtmlToolbar";
+    }
+};
+
+CKEDITOR.switchFormatCommandDefinition = {
+    // This command works in both editing modes.
+    modes: {wysiwyg: 1, source: 1},
+    // This command will not auto focus editor before execution.
+    editorFocus: false,
+    // This command requires no undo snapshot.
+    canUndo: false,
+
+    exec: function (editor) {
+        editor.element.data("contenttype") === "html"
+            ? editor.element.data("contenttype", "from-html")
+            : editor.element.data("contenttype", "html");
+
+        editor.execCommand("confirmChanges");
+    }
+};
+
+CKEDITOR.plugins.add("switchFormatToHTML", {
+    init: function (editor) {
+        editor.addCommand("switchFormatToHTML", CKEDITOR.switchFormatCommandDefinition);
+
+        editor.ui.addButton('switchFormatToHTML', {
+            label: 'Switch format to HTML',
+            command: "switchFormatToHTML",
+            icon: "images/switch-between-html-and-text-mode.png"
+        });
+    }
+});
+
+CKEDITOR.plugins.add("switchFormatToText", {
+    init: function (editor) {
+        editor.addCommand("switchFormatToText", CKEDITOR.switchFormatCommandDefinition);
+
+        editor.ui.addButton('switchFormatToText', {
+            label: 'Switch format to text',
+            command: "switchFormatToText",
+            icon: "images/plain_text.png"
+        });
+    }
+});
+
 CKEDITOR.plugins.add("fileBrowser", {
 	init: function (editor) {
 

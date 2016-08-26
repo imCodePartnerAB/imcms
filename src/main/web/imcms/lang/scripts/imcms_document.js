@@ -687,6 +687,11 @@ Imcms.Document.Viewer.prototype = {
             .on("click", this.openUsersList)
             .end()
             .end()
+            .div()
+            .reference("publisher-users-list")
+            .id("users-select")
+            .class("section field hidden")
+            .end()
 
             .div()
             .class("field")
@@ -1484,15 +1489,11 @@ Imcms.Document.Viewer.prototype = {
 		$("input[name=" + value.name.toLowerCase() + "-access]").filter("[value=" + key + "]").prop("checked", true);
 	},
     loadUsers: function (users) {
-        this._builder.ref("life-cycle-page")
-            .div()
-            .id("users-select")
-            .class("section field hidden")
+        this._builder.ref("publisher-users-list")
             .select()
             .name("publisher")
             .reference("users-list")
             .on("change", this.selectNewPublisher)
-            .end()
             .end();
 
         $.each(users, this.addUserToList.bind(this));

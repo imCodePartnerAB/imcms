@@ -34,15 +34,7 @@ function switchMe(editor, callback) {
     var origContentCss = editor.config.contentsCss;
     var origExtraPlugins = editor.config.extraPlugins;
 
-    var origToolbar = editor.config.toolbar;
-    var origSmallToolbar = editor.config.smallToolbar;
-    var origMaximizedToolbar = editor.config.maximizedToolbar;
-    var newToolbar;
-    if (origToolbar == origSmallToolbar) {
-        newToolbar = origMaximizedToolbar;
-    } else {
-        newToolbar = origSmallToolbar;
-    }
+    var newToolbar = CKEDITOR.defineToolbar(editor);
 
     // Copy data to original text element before getting rid of the old editor
     //var data = editor.getData();
@@ -59,8 +51,6 @@ function switchMe(editor, callback) {
                 customConfig: origCustomConfig,
                 contentsCss: origContentCss,
                 toolbar: newToolbar,
-                smallToolbar: origSmallToolbar,
-                maximizedToolbar: origMaximizedToolbar,
                 extraPlugins: origExtraPlugins,
                 on: {
                     instanceReady: function (e) {
@@ -81,8 +71,6 @@ function switchMe(editor, callback) {
                 customConfig: origCustomConfig,
                 contentsCss: origContentCss,
                 toolbar: newToolbar,
-                smallToolbar: origSmallToolbar,
-                maximizedToolbar: origMaximizedToolbar,
                 extraPlugins: origExtraPlugins,
                 on: {
                     instanceReady: function (e) {
@@ -109,7 +97,7 @@ CKEDITOR.plugins.add('toolbarswitch', {
         var lang = editor.lang;
         var commandFunction = {
             exec: function (editor) {
-                if (editor.config.toolbar == editor.config.maximizedToolbar) {
+                if (editor.config.maxToolbar) {
                     // For switching to the small toolbar first minimize
                     editor.commands.maximize.exec();
                     switchMe(editor, function (e) {
