@@ -132,22 +132,31 @@ public class DocumentController {
 		List<Integer> documentStoredFieldsList;
 		SolrQuery solrQuery;
 
-        String query = (StringUtils.isNotBlank(term))
-			? Stream.of(new String[]{
-					DocumentIndex.FIELD__META_ID,
-					DocumentIndex.FIELD__META_HEADLINE,
-					DocumentIndex.FIELD__META_TEXT,
-					DocumentIndex.FIELD__KEYWORD,
-					DocumentIndex.FIELD__ALIAS,
-					DocumentIndex.FIELD__MODIFIED_DATETIME})
-					.map(field -> String.format("%s:*%s*", field, term))
-					.collect(Collectors.joining(" "))
-                : "*:*";
+		String query = (StringUtils.isNotBlank(term))
+				? Stream.of(new String[]{
+				DocumentIndex.FIELD__META_ID,
+				DocumentIndex.FIELD__META_HEADLINE,
+				DocumentIndex.FIELD__META_TEXT,
+				DocumentIndex.FIELD__KEYWORD,
+				DocumentIndex.FIELD__ALIAS,
+				DocumentIndex.FIELD__MODIFIED_DATETIME})
+				.map(field -> String.format("%s:*%s*", field, term))
+				.collect(Collectors.joining(" "))
+				: "*:*";
+		if (categoriesId != null) {
+			query = String.join(" AND (", query, String.join(":", DocumentIndex.FIELD__CATEGORY_ID, "(")).concat(
+					categoriesId.stream()
+							.map(id -> id.toString())
+							.collect(Collectors.joining(" AND "))).concat("))");
+		}
+
 		solrQuery = new SolrQuery(query);
+
 		if(userId !=null) {
 			String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + userId;
 			solrQuery.addFilterQuery(userFilter);
 		}
+
         solrQuery.addSort(sort, SolrQuery.ORDER.valueOf(order));
 
 		documentStoredFieldsList = documentMapper.getDocumentIndex()
