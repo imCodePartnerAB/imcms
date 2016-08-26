@@ -153,10 +153,8 @@ public class DocumentController {
 
 		solrQuery = new SolrQuery(query);
 
-		if(userId !=null) {
-			String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + userId;
-			solrQuery.addFilterQuery(userFilter);
-		}
+		String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + userId != null ? userId.toString() : String.valueOf(Imcms.getUser().getId());
+		solrQuery.addFilterQuery(userFilter);
 
         solrQuery.addSort(sort, SolrQuery.ORDER.valueOf(order));
 
