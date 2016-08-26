@@ -129,7 +129,6 @@ Imcms.Document.Editor.prototype = {
 	_loader: {},
 	_documentListAdapter: {},
 	init: function () {
-		this._loader.categoriesList($.proxy(this.loadCategories, this));
 		return this.buildView().buildDocumentsList();
 	},
 	buildView: function () {
@@ -145,7 +144,7 @@ Imcms.Document.Editor.prototype = {
 			.end()
 
 			.text()
-			.class("imcms-text-field")
+			.class("imcms-text-field imcms-element")
 			.on("input", function () {
 				that.find(this.value());
 			})
@@ -174,7 +173,7 @@ Imcms.Document.Editor.prototype = {
 
 			.button()
 			.reference("findByCategoriesButton")
-			.class("imcms-neutral")
+			.class("imcms-neutral imcms-element")
 			.html("Search by categories")
 			.on("click", $.proxy(this.findByCategories, this))
 			.end()
@@ -219,7 +218,7 @@ Imcms.Document.Editor.prototype = {
 
 		$(this._builder[0]).appendTo("body").addClass("editor-form editor-document reset");
         this._loader.usersList($.proxy(this.loadUsers, this));
-
+		this._loader.categoriesList($.proxy(this.loadCategories, this));
         return this;
 	},
 	buildDocumentsList: function () {

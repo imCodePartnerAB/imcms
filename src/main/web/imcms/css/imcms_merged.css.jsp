@@ -135,14 +135,22 @@ editor theme
 	background: #f0f0f0;
 	border: none;
 	padding: 5px 10px;
-	width: 400px;
+	width: 300px;
 	outline: none;
 }
 
 .editor-form .imcms-header .select {
-	background: #f0f0f0;
 	float: left;
 	margin-right: 10px;
+}
+
+.editor-form .imcms-header select {
+	background: #f0f0f0;
+	border: none;
+	padding: 5px 10px;
+	width: 100px;
+	outline: none;
+	resize: none;
 }
 
 .editor-form .imcms-header .category {
@@ -152,8 +160,7 @@ editor theme
 	margin-left: 10px;
 	width: 300px;
 	position: absolute;
-	z-index: 100000;
-	left: 40%;
+	left: 37%;
 	top: 12px;
 }
 
@@ -807,6 +814,17 @@ editor theme
 .pop-up-form .imcms-header .imcms-close-button:focus {
 	border: none;
 	outline: none;
+}
+
+.editor-form .imcms-header .imcms-element{
+	margin: 0px 20px 0px 20px;
+}
+
+.editor-form .imcms-header .imcms-neutral{
+	margin-right: 20px;
+	margin-left: 20px;
+	position: absolute;
+	left: 55%;
 }
 
 .document-viewer .imcms-footer:before {
