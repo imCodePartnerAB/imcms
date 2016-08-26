@@ -113,6 +113,8 @@ public class DocumentController {
 	 * @param take  Optional parameter, that indicate how many document should be taken. Default value = 25
 	 * @param sort  Optional parameter, that indicate the field field on which will be sorted
 	 * @param order Optional parameter, that indicate document ordering in list. By default is natural ordering
+	 * @param userId Optional parameter, that indicate id of user for which documents must be shown. By default is showing for all users
+	 * @param categoriesId Optional parameter, that indicate document filtering by list of categories id. By default it's empty
 	 * @return List of documents
 	 * @see SolrQuery
 	 * @see DocumentIndex
