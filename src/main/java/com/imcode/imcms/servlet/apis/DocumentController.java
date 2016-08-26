@@ -113,6 +113,8 @@ public class DocumentController {
 	 * @param take  Optional parameter, that indicate how many document should be taken. Default value = 25
 	 * @param sort  Optional parameter, that indicate the field field on which will be sorted
 	 * @param order Optional parameter, that indicate document ordering in list. By default is natural ordering
+	 * @param userId Optional parameter, that indicate id of user for which documents must be shown. By default is showing for all users
+	 * @param categoriesId Optional parameter, that indicate document filtering by list of categories id. By default it's empty
 	 * @return List of documents
 	 * @see SolrQuery
 	 * @see DocumentIndex
@@ -124,29 +126,36 @@ public class DocumentController {
 									  @RequestParam(value = "take", required = false, defaultValue = "50") int take,
 									  @RequestParam(value = "sort", required = false, defaultValue = "meta_id") String sort,
 									  @RequestParam(value = "order", required = false, defaultValue = "asc") String order,
-									  @RequestParam(value = "userId", required = false) Integer userId) {
+									  @RequestParam(value = "userId", required = false) Integer userId,
+									  @RequestParam(value = "categoriesId", required = false) List<Integer> categoriesId) {
 		List<Map<String, Object>> result = new ArrayList<>();
 		List<DocumentDomainObject> documents;
 		DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 		List<Integer> documentStoredFieldsList;
 		SolrQuery solrQuery;
 
-        String query = (StringUtils.isNotBlank(term))
-			? Stream.of(new String[]{
-					DocumentIndex.FIELD__META_ID,
-					DocumentIndex.FIELD__META_HEADLINE,
-					DocumentIndex.FIELD__META_TEXT,
-					DocumentIndex.FIELD__KEYWORD,
-					DocumentIndex.FIELD__ALIAS,
-					DocumentIndex.FIELD__MODIFIED_DATETIME})
-					.map(field -> String.format("%s:*%s*", field, term))
-					.collect(Collectors.joining(" "))
-                : "*:*";
-		solrQuery = new SolrQuery(query);
-		if(userId !=null) {
-			String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + userId;
-			solrQuery.addFilterQuery(userFilter);
+		String query = (StringUtils.isNotBlank(term))
+				? String.join("","(" ,Stream.of(new String[]{
+				DocumentIndex.FIELD__META_ID,
+				DocumentIndex.FIELD__META_HEADLINE,
+				DocumentIndex.FIELD__META_TEXT,
+				DocumentIndex.FIELD__KEYWORD,
+				DocumentIndex.FIELD__ALIAS})
+				.map(field -> String.format("%s:*%s*", field, term))
+				.collect(Collectors.joining(" "))).concat(")")
+				: "*:*";
+		if (categoriesId != null) {
+			query = String.join(" AND (", query, String.join(":", DocumentIndex.FIELD__CATEGORY_ID, "(")).concat(
+					categoriesId.stream()
+							.map(id -> id.toString())
+							.collect(Collectors.joining(" AND "))).concat("))");
 		}
+
+		solrQuery = new SolrQuery(query);
+		int searchUserId = userId != null ? userId : Imcms.getUser().getId();
+		String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + searchUserId;
+		solrQuery.addFilterQuery(userFilter);
+
         solrQuery.addSort(sort, SolrQuery.ORDER.valueOf(order));
 
 		documentStoredFieldsList = documentMapper.getDocumentIndex()
