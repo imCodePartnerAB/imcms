@@ -2386,7 +2386,7 @@ Imcms.Document.PagerHandler.prototype = {
 		else {
 			this._order = "asc";
 		}
-		this._categoriesId = categoriesId == [] && oldCategoriesId != [] ? oldCategoriesId : categoriesId;
+		this._categoriesId = (categoriesId == undefined || categoriesId == []) && oldCategoriesId != [] ? oldCategoriesId : categoriesId;
 
 		this.scrollHandler();
 	}
