@@ -133,14 +133,14 @@ public class DocumentController {
 		SolrQuery solrQuery;
 
 		String query = (StringUtils.isNotBlank(term))
-				? Stream.of(new String[]{
+				? String.join("","(" ,Stream.of(new String[]{
 				DocumentIndex.FIELD__META_ID,
 				DocumentIndex.FIELD__META_HEADLINE,
 				DocumentIndex.FIELD__META_TEXT,
 				DocumentIndex.FIELD__KEYWORD,
 				DocumentIndex.FIELD__ALIAS})
 				.map(field -> String.format("%s:*%s*", field, term))
-				.collect(Collectors.joining(" "))
+				.collect(Collectors.joining(" "))).concat(")")
 				: "*:*";
 		if (categoriesId != null) {
 			query = String.join(" AND (", query, String.join(":", DocumentIndex.FIELD__CATEGORY_ID, "(")).concat(
