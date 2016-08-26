@@ -302,6 +302,7 @@ CKEDITOR.defineToolbar = function (editor) {
     }
 };
 
+CKEDITOR.wasSwitched = false;
 CKEDITOR.switchFormatCommandDefinition = {
     // This command works in both editing modes.
     modes: {wysiwyg: 1, source: 1},
@@ -315,7 +316,9 @@ CKEDITOR.switchFormatCommandDefinition = {
             ? editor.element.data("contenttype", "from-html")
             : editor.element.data("contenttype", "html");
 
+        CKEDITOR.wasSwitched = true;
         editor.execCommand("confirmChanges");
+        CKEDITOR.wasSwitched = false;
     }
 };
 

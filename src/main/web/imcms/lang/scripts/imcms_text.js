@@ -68,12 +68,18 @@ Imcms.Text.Editor.prototype = {
         });
     },
     _onConfirm: function (event) {
-        var data = jQuery(event.editor.element.$).data().prettify();
+        var editor = event.editor;
+        var data = jQuery(editor.element.$).data().prettify();
+        var isHtmlContent = (data.contenttype === "html");
         data.meta = Imcms.document.meta;
 
-        data.content = (data.contenttype && data.contenttype === "html")
-            ? $(event.editor.element.$).children().html()
-            : $(event.editor.element.$).html();
+        if (CKEDITOR.wasSwitched) {
+            isHtmlContent = !isHtmlContent;
+        }
+
+        data.content = isHtmlContent
+            ? $(editor.element.$).html()
+            : $(editor.element.$).children().html();
 
         this._api.update(data, event.data.callback || Imcms.BackgroundWorker.createTask({
                 showProcessWindow: true,
