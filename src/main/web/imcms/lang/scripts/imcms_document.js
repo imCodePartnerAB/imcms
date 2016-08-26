@@ -144,6 +144,7 @@ Imcms.Document.Editor.prototype = {
 			.end()
 
 			.text()
+			.id("freeTextSearchInput")
 			.class("imcms-text-field imcms-element")
 			.on("input", function () {
 				that.find(this.value());
@@ -361,6 +362,7 @@ Imcms.Document.Editor.prototype = {
 				checkedCategoriesId.push(value.id);
 			}
 		});
+		$("#freeTextSearchInput").val("");
 		this._documentListAdapter.reloadWithData("", "", "", checkedCategoriesId);
 	},
 };
