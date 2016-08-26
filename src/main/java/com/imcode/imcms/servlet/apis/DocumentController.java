@@ -138,8 +138,7 @@ public class DocumentController {
 				DocumentIndex.FIELD__META_HEADLINE,
 				DocumentIndex.FIELD__META_TEXT,
 				DocumentIndex.FIELD__KEYWORD,
-				DocumentIndex.FIELD__ALIAS,
-				DocumentIndex.FIELD__MODIFIED_DATETIME})
+				DocumentIndex.FIELD__ALIAS})
 				.map(field -> String.format("%s:*%s*", field, term))
 				.collect(Collectors.joining(" "))
 				: "*:*";
