@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,5 +32,10 @@ public class UserController {
                     put("id", user.getId());
                 }})
                 .collect(Collectors.toList());
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getCurrentUser")
+    public Object getCurrentuserUser(HttpServletRequest request) {
+        return Imcms.getUser();
     }
 }

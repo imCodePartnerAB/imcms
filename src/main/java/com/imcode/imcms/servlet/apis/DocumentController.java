@@ -151,10 +151,21 @@ public class DocumentController {
 							.collect(Collectors.joining(" AND "))).concat("))");
 		}
 
-		solrQuery = new SolrQuery(query);
-		int searchUserId = userId != null ? userId : Imcms.getUser().getId();
-		String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + searchUserId;
-		solrQuery.addFilterQuery(userFilter);
+        solrQuery = new SolrQuery(query);
+        Integer searchUserId = null;
+        if (userId != null) {
+            if (userId > 0) {
+                searchUserId = userId;
+            }
+        } else {
+            searchUserId = Imcms.getUser().getId();
+        }
+
+        if (searchUserId != null) {
+            String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + searchUserId;
+            solrQuery.addFilterQuery(userFilter);
+        }
+
 
         solrQuery.addSort(sort, SolrQuery.ORDER.valueOf(order));
 

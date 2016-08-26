@@ -179,5 +179,10 @@
     "name": "users",
     "url": "/api/user",
     "args": []
+  },
+  {
+    "name": "currentUser",
+    "url": "/api/user/getCurrentUser",
+    "args": []
   }
 ]

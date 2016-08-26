@@ -115,6 +115,9 @@ Imcms.Document.Loader.prototype = {
     usersList: function (callback) {
         Imcms.Editors.User.read(callback);
     },
+    currentUser: function (callback) {
+        Imcms.Editors.User.getCurrent(callback);
+    },
     redirect: function (id) {
         location.href = "/imcms/docadmin?meta_id=" + id;
     }
@@ -125,6 +128,7 @@ Imcms.Document.Editor = function (loader) {
     this.init();
 };
 Imcms.Document.Editor.prototype = {
+    _currentUser:"",
     _builder: {},
     _loader: {},
     _documentListAdapter: {},
@@ -218,6 +222,7 @@ Imcms.Document.Editor.prototype = {
             .end();
 
         $(this._builder[0]).appendTo("body").addClass("editor-form editor-document reset");
+        this._loader.currentUser($.proxy(this.setCurrentUser, this));
         this._loader.usersList($.proxy(this.loadUsers, this));
         this._loader.categoriesList($.proxy(this.loadCategories, this));
         return this;
@@ -263,11 +268,19 @@ Imcms.Document.Editor.prototype = {
             .end()
             .end();
 
+        //TODO move this to add user to list
+        $(this._builder.ref("user-filter-list").getHTMLElement()).append(
+                $("<option>").val("-1").text("All Documents")
+        );
         $.each(users, this.addUserToList.bind(this));
+    },
+    setCurrentUser: function (user) {
+        this._currentUser = user;
     },
     addUserToList: function (count, user) {
         $(this._builder.ref("user-filter-list").getHTMLElement()).append(
-            $("<option>").val(user.id).text(user.loginName)
+            user.id === this._currentUser.id ?
+                $("<option>").val(user.id).text("My Documents").attr('selected', 'selected') : $("<option>").val(user.id).text(user.loginName)
         );
     },
     filterByUser: function () {
