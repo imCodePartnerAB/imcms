@@ -29,70 +29,53 @@
 
 
 function switchMe(editor, callback) {
-
-    var origCustomConfig = editor.config.customConfig;
-    var origContentCss = editor.config.contentsCss;
-    var origExtraPlugins = editor.config.extraPlugins;
-
-    var newToolbar = CKEDITOR.defineToolbar(editor);
+    var editorConfig = {
+        customConfig: editor.config.customConfig,
+        contentsCss: editor.config.contentsCss,
+        toolbar: CKEDITOR.defineToolbar(editor),
+        extraPlugins: editor.config.extraPlugins
+    };
 
     // Copy data to original text element before getting rid of the old editor
-    //var data = editor.getData();
     var domTextElement = editor.element;
-    //jQuery(domTextElement).val(data);
 
     // Remove old editor and the DOM elements, else you get two editors
-    //var id = domTextElement.id;
+    editor.destroy();
     switch (editor.elementMode) {
-        case 3:
-        {
-            editor.destroy();
-            CKEDITOR.replace(domTextElement, {
-                customConfig: origCustomConfig,
-                contentsCss: origContentCss,
-                toolbar: newToolbar,
-                extraPlugins: origExtraPlugins,
-                on: {
-                    instanceReady: function (e) {
-                        //CKeditor_OnComplete(e.editor);
-                        if (callback) {
-                            callback.call(null, e);
-                        }
+        case 3: {
+            editorConfig.on = {
+                instanceReady: function (e) {
+                    if (callback) {
+                        callback.call(null, e);
                     }
                 }
-            });
-        }
+            };
+
+            CKEDITOR.replace(domTextElement, editorConfig);
             break;
-        case 1:
-        {
-          //  editor.execCommand('maximize');
-            editor.destroy();
-            CKEDITOR.inline(domTextElement, {
-                customConfig: origCustomConfig,
-                contentsCss: origContentCss,
-                toolbar: newToolbar,
-                extraPlugins: origExtraPlugins,
-                on: {
-                    instanceReady: function (e) {
-                        //CKeditor_OnComplete(e.editor);
-                        e.editor.focusManager.focus();
-                        e.editor.element.$.focus();
-                        if (callback) {
-                            callback.call(null, e);
-                        }
+        }
+        case 1: {
+            editorConfig.on = {
+                instanceReady: function (e) {
+                    e.editor.focusManager.focus();
+                    e.editor.element.$.focus();
+                    if (callback) {
+                        callback.call(null, e);
                     }
                 }
-            });
-        }
+            };
+
+            CKEDITOR.inline(domTextElement, editorConfig);
             break;
+        }
     }
 }
 
 CKEDITOR.plugins.add('toolbarswitch', {
     requires: ['button', 'toolbar', 'maximize'],
     lang: 'af,ar,bg,bn,bs,ca,cs,cy,da,de,el,en,en-au,en-ca,en-gb,eo,es,et,eu,fa,fi,fo,fr,fr-ca,gl,gu,he,hi,hr,hu,id,is,it,ja,ka,km,ko,ku,lt,lv,mk,mn,ms,nb,nl,no,pl,pt,pt-br,ro,ru,si,sk,sl,sq,sr,sr-latn,sv,th,tr,ug,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%
-    icons: 'toolbarswitch', // %REMOVE_LINE_CORE%
-    hidpi: true, // %REMOVE_LINE_CORE%
+    icons: 'toolbarswitch',
+    hidpi: true,
     init: function (editor) {
         var lang = editor.lang;
         var commandFunction = {
