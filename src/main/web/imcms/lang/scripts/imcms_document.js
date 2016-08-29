@@ -128,7 +128,7 @@ Imcms.Document.Editor = function (loader) {
     this.init();
 };
 Imcms.Document.Editor.prototype = {
-    _currentUser:"",
+    _currentUser: "",
     _builder: {},
     _loader: {},
     _documentListAdapter: {},
@@ -197,7 +197,7 @@ Imcms.Document.Editor.prototype = {
             .column("alias", "document-sort", {doc_sorting: "alias"})
             .column("last modified", "document-sort", {doc_sorting: "modified_datetime"})
             .column("type", "document-sort", {doc_sorting: "doc_type_id"})
-            .column("test")
+            .column("")
             .reference("documentsList")
             .end()
             .end()
@@ -269,7 +269,7 @@ Imcms.Document.Editor.prototype = {
             .end();
 
         //Adding option to get all documents
-        this.addUserToList(0, {id:-1, loginName:"All Documents"});
+        this.addUserToList(0, {id: -1, loginName: "All Documents"});
         $.each(users, this.addUserToList.bind(this));
     },
     setCurrentUser: function (user) {
@@ -282,7 +282,7 @@ Imcms.Document.Editor.prototype = {
         );
     },
     filterByUser: function () {
-        var userId = $("#user-filter-select option:selected").val();
+        var userId = $("#user-filter-select").find("option:selected").val();
         this._documentListAdapter.reloadWithData("", "", userId);
     },
 
@@ -294,8 +294,6 @@ Imcms.Document.Editor.prototype = {
             },
             "plugins": ["checkbox"]
         });
-
-
     },
     addCategoryType: function (categoryType, options) {
         this._builder.ref("document-editor-category")
@@ -375,7 +373,7 @@ Imcms.Document.Editor.prototype = {
         });
         $("#freeTextSearchInput").val("");
         this._documentListAdapter.reloadWithData("", "", "", checkedCategoriesId);
-    },
+    }
 };
 
 Imcms.Document.MissingLangProperties = {
@@ -438,61 +436,6 @@ Imcms.Document.Viewer.prototype = {
             top: $(window).height() / 2 - $builder.height() / 2
         });
         $(this._modal).fadeIn("fast");
-    },
-    buildValidator: function () {
-        $(this._builder[0]).find("form").validate({
-            rules: {
-                enabled: {
-                    required: true
-                },
-                alias: {
-                    remote: {
-                        url: this._loader._api.path,
-                        type: "GET",
-                        success: function (data) {
-                            var result = true,
-                                validator = $(this._builder[0]).find("form").data("validator"),
-                                element = $(this._builder[0]).find("input[name=alias]"),
-                                currentAlias = element.val(),
-                                previous, errors, message, submitted;
-
-                            element = element[0];
-                            previous = validator.previousValue(element);
-
-                            data.forEach(function (it) {
-                                result = !result ? false : it.alias != currentAlias || it.id == this._options.data.id;
-                            }.bind(this));
-
-                            validator.settings.messages[element.name].remote = previous.originalMessage;
-
-                            if (result) {
-                                submitted = validator.formSubmitted;
-                                validator.prepareElement(element);
-                                validator.formSubmitted = submitted;
-                                validator.successList.push(element);
-                                delete validator.invalid[element.name];
-                                validator.showErrors();
-                            } else {
-                                errors = {};
-                                message = validator.defaultMessage(element, "remote");
-                                errors[element.name] = previous.message = $.isFunction(message) ? message(value) : message;
-                                validator.invalid[element.name] = true;
-                                validator.showErrors(errors);
-                            }
-
-                            previous.valid = result;
-                            validator.stopRequest(element, result);
-                        }.bind(this)
-                    }
-                }
-            },
-            messages: {
-                alias: {
-                    remote: "This alias has already been taken"
-                }
-            },
-            ignore: ""
-        });
     },
     buildView: function () {
         this._builder = JSFormBuilder("<div>")
@@ -2168,9 +2111,9 @@ Imcms.Document.DocumentSearchDialog.prototype = {
             }
         });
         var dialog = $(this._builder[0]).parents(".ui-dialog")
-                .removeClass()
-                .addClass("pop-up-form menu-viewer reset")
-                .css({position: "fixed"}),
+            .removeClass()
+            .addClass("pop-up-form menu-viewer reset")
+            .css({position: "fixed"}),
 
             header = dialog.children(".ui-dialog-titlebar")
                 .removeClass()
