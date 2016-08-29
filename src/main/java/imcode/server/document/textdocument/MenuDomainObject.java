@@ -1,5 +1,6 @@
 package imcode.server.document.textdocument;
 
+import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
@@ -122,7 +123,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     public LinkedList<MenuItemDomainObject.TreeMenuItemDomainObject> getMenuItemsVisibleToUserAsTree() {
         sortOrder = MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
-        final LinkedList<MenuItemDomainObject> items = new LinkedList<>(Arrays.asList(getMenuItems()));
+        final LinkedList<MenuItemDomainObject> items = new LinkedList<>(Arrays.asList(getPublishedMenuItemsUserCanSee(Imcms.getUser())));
         return buildTree(items);
     }
 
@@ -131,14 +132,20 @@ public class MenuDomainObject implements Cloneable, Serializable {
         MenuItemDomainObject.TreeMenuItemDomainObject current = null;
         int currentLevel = 1;
         MenuItemDomainObject item;
+
         while ((item = items.peek()) != null) {
-            final int itemLevel = item.getTreeSortKey().getLevelCount();
+            TreeSortKeyDomainObject treeSortKey = item.getTreeSortKey();
+            final int itemLevel = treeSortKey.getLevelCount();
+
             if (current == null || itemLevel == currentLevel) {
-                current = new MenuItemDomainObject.TreeMenuItemDomainObject();
-                currentLevel = item.getTreeSortKey().getLevelCount();
-                current.setMenuItem(item);
-                tree.addLast(current);
+                if (shouldBeAdded(tree, item)) {
+                    current = new MenuItemDomainObject.TreeMenuItemDomainObject();
+                    currentLevel = treeSortKey.getLevelCount();
+                    current.setMenuItem(item);
+                    tree.addLast(current);
+                }
                 items.remove();
+
             } else if (itemLevel > currentLevel && itemLevel - currentLevel == 1) {
                 current.getSubMenuItems().addAll(buildTree(items));
             } else {
@@ -146,6 +153,27 @@ public class MenuDomainObject implements Cloneable, Serializable {
             }
         }
         return tree;
+    }
+
+    private boolean shouldBeAdded(LinkedList<MenuItemDomainObject.TreeMenuItemDomainObject> tree, MenuItemDomainObject item) {
+        if (tree.isEmpty()) {
+            return true; // this is the first item, add it without any checking!
+
+        } else {
+            TreeSortKeyDomainObject lastKey = tree.getLast().getMenuItem().getTreeSortKey();
+            TreeSortKeyDomainObject newKey = item.getTreeSortKey();
+            int highestLevelKey = 0;
+            int minLevelCount = 1;
+
+            if (lastKey.getLevelKey(highestLevelKey) == newKey.getLevelKey(highestLevelKey)) {
+                return true; // if last and new menu are sub-menu of same thing.
+
+            } else if ((lastKey.getLevelCount() == minLevelCount) && (newKey.getLevelCount() == minLevelCount)) {
+                return true; // if both are members of highest menu level
+            }
+        }
+
+        return false;
     }
 
     public Set<MenuItemDomainObject> getMenuItemsUnsorted() {
