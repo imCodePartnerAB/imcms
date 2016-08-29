@@ -134,22 +134,21 @@ public class DocumentController {
 		List<Integer> documentStoredFieldsList;
 		SolrQuery solrQuery;
 
-		String query = (StringUtils.isNotBlank(term))
-				? String.join("","(" ,Stream.of(new String[]{
-				DocumentIndex.FIELD__META_ID,
-				DocumentIndex.FIELD__META_HEADLINE,
-				DocumentIndex.FIELD__META_TEXT,
-				DocumentIndex.FIELD__KEYWORD,
-				DocumentIndex.FIELD__ALIAS})
-				.map(field -> String.format("%s:*%s*", field, term))
-				.collect(Collectors.joining(" "))).concat(")")
-				: "*:*";
-		if (categoriesId != null) {
-			query = String.join(" AND (", query, String.join(":", DocumentIndex.FIELD__CATEGORY_ID, "(")).concat(
-					categoriesId.stream()
-							.map(id -> id.toString())
-							.collect(Collectors.joining(" AND "))).concat("))");
-		}
+        String query = (StringUtils.isNotBlank(term))
+                ? Stream.of(new String[]{
+                DocumentIndex.FIELD__META_ID,
+                DocumentIndex.FIELD__META_HEADLINE,
+                DocumentIndex.FIELD__META_TEXT,
+                DocumentIndex.FIELD__KEYWORD,
+                DocumentIndex.FIELD__ALIAS})
+                .map(field -> String.format("%s:*%s*", field, term))
+                .collect(Collectors.joining(" "))
+                : "*:*";
+
+        if (categoriesId != null) {
+            query = "(" + query + ") AND (" + DocumentIndex.FIELD__CATEGORY_ID + ":(" // :)
+                    + categoriesId.stream().map(Object::toString).collect(Collectors.joining(" AND ")) + "))";
+        }
 
         solrQuery = new SolrQuery(query);
         Integer searchUserId = null;
