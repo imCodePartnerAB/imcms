@@ -268,10 +268,8 @@ Imcms.Document.Editor.prototype = {
             .end()
             .end();
 
-        //TODO move this to add user to list
-        $(this._builder.ref("user-filter-list").getHTMLElement()).append(
-                $("<option>").val("-1").text("All Documents")
-        );
+        //Adding option to get all documents
+        this.addUserToList(0, {id:-1, loginName:"All Documents"});
         $.each(users, this.addUserToList.bind(this));
     },
     setCurrentUser: function (user) {
