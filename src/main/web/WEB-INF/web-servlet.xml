@@ -1,27 +1,30 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:context="http://www.springframework.org/schema/context"
-	   xmlns:mvc="http://www.springframework.org/schema/mvc"
-	   xmlns="http://www.springframework.org/schema/beans"
-	   xsi:schemaLocation="
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
-	<context:property-placeholder location="/WEB-INF/conf/server.properties" system-properties-mode="NEVER"
-								  ignore-resource-not-found="true"/>
-	<bean id="multipartResolver"
-		  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <context:property-placeholder location="/WEB-INF/conf/server.properties" system-properties-mode="NEVER"
+                                  ignore-resource-not-found="true"/>
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 
-		<!-- setting maximum upload size -->
-		<property name="maxUploadSize" value="${ImageArchiveMaxImageUploadSize}"/>
+        <!-- setting maximum upload size -->
+        <property name="maxUploadSize" value="${ImageArchiveMaxImageUploadSize}"/>
 
-	</bean>
-	<context:component-scan base-package="com.imcode.imcms.servlet.apis"/>
-	<context:annotation-config/>
+    </bean>
+    <context:component-scan base-package="com.imcode.imcms.servlet.apis"/>
+    <context:annotation-config/>
 
-	<!-- Configure bean to convert JSON to POJO and vice versa -->
-	<bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-	</bean>
-	<mvc:annotation-driven/>
+    <!-- Configure bean to convert JSON to POJO and vice versa -->
+    <bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+    </bean>
+    <mvc:annotation-driven/>
 
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver"
+          p:viewClass="org.springframework.web.servlet.view.JstlView"
+          p:prefix="/WEB-INF/jsp/imcms/views/"
+          p:suffix=".jsp"/>
 </beans>
-  
