@@ -3,12 +3,14 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.DocRef;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -56,10 +58,13 @@ public class DocGetterCallback {
         DocumentDomainObject doc = docMapper.getDefaultDocument(docId, language);
 
         if (doc != null && !isDefaultLanguage) {
-            DocumentMeta meta = doc.getMeta();
+            Set<DocumentLanguage> docLanguages = Imcms.getServices()
+                    .getDocumentMapper()
+                    .getCommonContents(doc.getId())
+                    .keySet();
 
-            if (!meta.getEnabledLanguages().contains(language)) {
-                doc = meta.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE
+            if (!docLanguages.contains(language)) {
+                doc = doc.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE
                         ? docMapper.getDefaultDocument(docId)
                         : null;
             }
