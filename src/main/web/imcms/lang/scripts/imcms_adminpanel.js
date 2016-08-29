@@ -8,10 +8,12 @@ Imcms.Admin.Panel = {
 			cornerPointDistanceY = 0,
 			$draggable = $(".admin-panel-draggable"),
 			$doc = $(document),
-			$adminPanel = $(".admin-panel").css({
+			$adminPanel = $(".admin-panel");
+
+        $adminPanel.css({
 				left: $.cookie("admin-panel-location-left", Number) || 0,
 				top: $.cookie("admin-panel-location-top", Number) || 0,
-                width: 837 //experimental value
+                width: $adminPanel.width() + 10 //experimental value
 			});
 
         $adminPanel.draggable({
