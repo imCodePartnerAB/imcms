@@ -3,6 +3,7 @@ package imcode.server;
 import com.google.common.collect.Maps;
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
+import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentLanguageException;
 import com.imcode.imcms.api.DocumentLanguages;
@@ -19,6 +20,7 @@ import imcode.util.PropertyManager;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
+import javax.servlet.ServletRequest;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStream;
@@ -341,6 +343,10 @@ public class Imcms {
 	public static void setPrepareDatabaseOnStart(boolean prepareDatabaseOnStart) {
 		Imcms.prepareDatabaseOnStart = prepareDatabaseOnStart;
 	}
+
+    public static ContentManagementSystem fromRequest(ServletRequest request) {
+        return ContentManagementSystem.fromRequest(request);
+    }
 
 	public static class StartupException extends RuntimeException {
 		public StartupException(String message, Exception e) {
