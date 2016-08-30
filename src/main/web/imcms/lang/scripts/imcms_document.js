@@ -956,21 +956,29 @@ Imcms.Document.Viewer.prototype = {
             .end()
             .div()
 
+            .div()
+            .id("uploadedFilesContainer")
+            .class("hidden")
+            .html("Upload query")
             .table()
             .id("uploadedFiles")
-            .class("hidden")
             .reference("uploadedFiles")
             .column("name")
             .column("")
             .column("")
             .end()
+            .end()
 
+            .div()
+            .id("existingFilesContainer")
+            .html("Existing files")
             .table()
             .reference("files")
             .column("id")
             .column("name")
             .column("default")
             .column("")
+            .end()
             .end()
             .end()
             .end();
@@ -1551,7 +1559,7 @@ Imcms.Document.Viewer.prototype = {
 
     addUploadedFile: function (fileInput) {
         if ($("#uploadedFiles tr").length == 1) {
-            $("#uploadedFiles").removeClass("hidden");
+            $("#uploadedFilesContainer").removeClass("hidden");
         }
         var removeButton = $("<button>").attr("type", "button").addClass("imcms-negative");
         this._builder.ref("uploadedFiles").row(
@@ -1564,7 +1572,7 @@ Imcms.Document.Viewer.prototype = {
     removeUploadedFile: function (removeButton) {
         removeButton.parents("tr").remove();
         if ($("#uploadedFiles tr").length == 1) {
-            $("#uploadedFiles").addClass("hidden");
+            $("#uploadedFilesContainer").addClass("hidden");
         }
     },
 
