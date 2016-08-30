@@ -944,13 +944,12 @@ Imcms.Document.Viewer.prototype = {
 
             .file()
             .name("file1")
-            .label("File")
             .reference("file1")
             .end()
 
             .button()
             .class("imcms-positive")
-            .html("Upload File")
+            .html("Upload file")
             .on("click", $.proxy(this.uploadDocumentFile, this))
             .end()
 

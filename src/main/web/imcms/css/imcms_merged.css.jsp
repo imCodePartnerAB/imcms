@@ -901,6 +901,10 @@ editor theme
 	margin-right: 20px;
 }
 
+.pop-up-form .file-page  .imcms-positive {
+	margin-left: 20px;
+}
+
 .pop-up-form .imcms-footer .imcms-neutral {
 	background: #323232;
 }
