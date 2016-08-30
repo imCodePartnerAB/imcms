@@ -33,15 +33,15 @@
         <div class="wrapper">
             <c:if test="${textEdit}">
                 <imcms:text no="${textNo}" document="${document.id}"/>
-
+                <script>Imcms.SingleEdit.Text.init()</script>
             </c:if>
             <c:if test="${imageEdit}">
                 <imcms:image no="${imageNo}" document="${document.id}"/>
-
+                <script>Imcms.SingleEdit.Image.init()</script>
             </c:if>
             <c:if test="${menuEdit}">
                 <imcms:menu no='${menuNo}' docId="${document.id}"/>
-
+                <script>Imcms.SingleEdit.Menu.init()</script>
             </c:if>
             <c:if test="${noEdit}">
                 <h3><p>You should to set at least one parameter:</p>
