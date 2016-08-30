@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.apis;
 
+import imcode.server.Imcms;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,6 +41,8 @@ public class EditElementController {
         } else if (menuNo != null) {
             mav.addObject("menuNo", menuNo);
         }
+
+        mav.addObject("user", Imcms.getUser());
         return mav;
     }
 }

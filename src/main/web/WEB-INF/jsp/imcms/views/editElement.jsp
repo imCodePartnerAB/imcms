@@ -6,15 +6,18 @@
 <%@taglib prefix="imcms" uri="imcms" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-    <base href="${pageContext.request.contextPath}">
+    <base href="${contextPath}">
     <title>Powered by imCMS from imCode Partner AB</title>
     <meta charset="utf-8"/>
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/imcms/css/template/demo.css"/>
-    <script src="${pageContext.servletContext.contextPath}/js/editElement.js"></script>
+    <link rel="stylesheet" href="${contextPath}/imcms/css/template/demo.css"/>
+    <script src="${contextPath}/js/js.cookie.js"></script>
+    <script src="${contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_linker.js"></script>
+    <script src="${contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_edit_element.js"></script>
 </head>
 <body>
 <div class="container">
