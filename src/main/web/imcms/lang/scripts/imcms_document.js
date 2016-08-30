@@ -956,6 +956,13 @@ Imcms.Document.Viewer.prototype = {
 
             .end()
             .div()
+
+            .table()
+            .reference("uploadedFiles")
+            .column("name")
+            .column("")
+            .end()
+
             .table()
             .reference("files")
             .column("id")
@@ -1539,6 +1546,19 @@ Imcms.Document.Viewer.prototype = {
     removeFile: function (radio) {
         radio.attr("data-removed", "").parents("tr").hide();
     },
+
+    addUploadedFile: function (val) {
+        var removeButton = $("<button>").attr("type", "button").addClass("imcms-negative");
+        this._builder.ref("uploadedFiles").row(
+            val,
+            removeButton.click(this.removeUploadedFile.bind(this, removeButton))
+        )
+    },
+
+    removeUploadedFile: function (removeButton) {
+        removeButton.parents("tr").remove();
+    },
+
     removeKeyword: function () {
         $(this._builder.ref("keywordsList").getHTMLElement()).find("option:selected").remove();
     },
@@ -1573,6 +1593,7 @@ Imcms.Document.Viewer.prototype = {
         $item.attr("name", "tmp_file").addClass("hidden");
         $item.after($clone);
         $item.addClass("hidden");
+        this.addUploadedFile($item.prop("files")[0].name);
     },
 
     cancel: function () {
