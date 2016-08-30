@@ -1527,7 +1527,7 @@ Imcms.Document.Viewer.prototype = {
         }
     },
     addFile: function (key, val) {
-        var radio = $("<input>").attr("type", "radio").attr("name", "defaultFile").val(val);
+        var radio = $("<input>").attr("type", "radio").attr("name", "defaultFile").val(key);
         var idInput = $("<input>").attr("type", "text").attr("name", "file_").attr("oldId", key).val(key);
         this._builder.ref("files").row(
             idInput,
