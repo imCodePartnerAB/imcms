@@ -209,7 +209,7 @@ public class DocumentController {
 	protected Object createOrUpdateDocument(@RequestParam("type") Integer type,
 											@RequestParam(value = "parent", defaultValue = "1001") Integer parentDocumentId,
 											@RequestParam("data") String data,
-											@RequestParam(value = "file", required = false) MultipartFile file) {
+											@RequestParam(value = "file", required = false) MultipartFile[] files) {
 		Map<String, Object> result = new HashMap<>();
 		try {
 			DocumentDomainObject docDomainObject;
@@ -228,7 +228,7 @@ public class DocumentController {
 					docEntity = newMapper(data, new TypeReference<FileDocumentEntity>() {
 					});
 					docDomainObject = createOrGetDoc(type, parentDocumentId, docEntity.id, docMapper);
-					asFileDocument((FileDocumentDomainObject) docDomainObject, (FileDocumentEntity) docEntity, file);
+					asFileDocument((FileDocumentDomainObject) docDomainObject, (FileDocumentEntity) docEntity, files);
 				}
 				break;
 				case DocumentTypeDomainObject.TEXT_ID:
@@ -481,36 +481,40 @@ public class DocumentController {
 	 *
 	 * @param document      prepared document
 	 * @param entity        presented entity
-	 * @param multipartFile file, that should be added to document
+	 * @param multipartFiles file array, that should be added to document
 	 * @throws IOException - if an I/O error occurred
 	 */
-    protected void asFileDocument(FileDocumentDomainObject document, FileDocumentEntity entity, MultipartFile multipartFile) throws IOException {
+    protected void asFileDocument(FileDocumentDomainObject document, FileDocumentEntity entity, MultipartFile[] multipartFiles) throws IOException {
         if (StringUtils.isNotEmpty(entity.defaultFile)) {
             document.setDefaultFileId(entity.defaultFile);
         }
 
         Stream.of(entity.removedFiles).forEach(document::removeFile);
 
-        if (multipartFile != null) {
-            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
-            String originalFilename = multipartFile.getOriginalFilename();
-            fileDocumentFile.setFilename(originalFilename);
+		entity.editedFiles.forEach((k, v) -> document.changeFileId(k, v));
 
-            fileDocumentFile.setMimeType(multipartFile.getContentType());
-            File file = new File(Imcms.getServices().getConfig().getFilePath(), originalFilename);
+		if (multipartFiles != null) {
+			for (MultipartFile multipartFile : multipartFiles) {
+				FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
+				String originalFilename = multipartFile.getOriginalFilename();
+				fileDocumentFile.setFilename(originalFilename);
 
-            if (!file.createNewFile() && document.getFile(originalFilename) != null) {
-                document.removeFile(originalFilename);
-            }
+				fileDocumentFile.setMimeType(multipartFile.getContentType());
+				File file = new File(Imcms.getServices().getConfig().getFilePath(), originalFilename);
 
-            multipartFile.transferTo(file);
-            originalFilename = multipartFile.getOriginalFilename();
-            fileDocumentFile.setInputStreamSource(new FileInputStreamSource(file));
-            document.addFile(originalFilename, fileDocumentFile);
+				if (!file.createNewFile() && document.getFile(originalFilename) != null) {
+					document.removeFile(originalFilename);
+				}
 
-            document.setDefaultFileId(originalFilename);
-        }
-    }
+				multipartFile.transferTo(file);
+				originalFilename = multipartFile.getOriginalFilename();
+				fileDocumentFile.setInputStreamSource(new FileInputStreamSource(file));
+				document.addFile(originalFilename, fileDocumentFile);
+
+				document.setDefaultFileId(originalFilename);
+			}
+		}
+	}
 
 	/**
 	 * Prepare {@link TextDocumentDomainObject} using {@link TextDocumentEntity}
@@ -619,11 +623,12 @@ public class DocumentController {
 	}
 
 	protected void asFileEntity(FileDocumentEntity entity, FileDocumentDomainObject document) {
-		if (document.getFiles().size() > 0) {
-			entity.files = document.getFiles().keySet().stream().toArray(String[]::new);
-			entity.defaultFile = document.getDefaultFileId();
-		}
-	}
+        if (document.getFiles().size() > 0) {
+            entity.files = document.getFiles().entrySet().stream()
+                    .collect(Collectors.toMap(e -> e.getValue().getId(), e -> e.getValue().getFilename()));
+            entity.defaultFile = document.getDefaultFileId();
+        }
+    }
 
 	protected void asUrlEntity(UrlDocumentEntity entity, UrlDocumentDomainObject document) {
 		entity.url = document.getUrl();
@@ -736,7 +741,8 @@ public class DocumentController {
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private static class FileDocumentEntity extends DocumentEntity {
-		public String[] files;
+		public Map<String, String> files;
+		public Map<String, String> editedFiles;
 		public String[] removedFiles;
 		public String defaultFile;
 	}

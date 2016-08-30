@@ -941,18 +941,44 @@ Imcms.Document.Viewer.prototype = {
             .class("file-page imcms-page")
             .div()
             .class("select field")
+
             .file()
-            .name("file")
-            .label("File")
-            .reference("file")
+            .name("file1")
+            .reference("file1")
             .end()
+
+            .button()
+            .class("imcms-positive")
+            .html("Upload file")
+            .on("click", $.proxy(this.uploadDocumentFile, this))
+            .end()
+
             .end()
             .div()
+
+            .div()
+            .id("uploadedFilesContainer")
+            .class("hidden")
+            .html("Upload query")
+            .table()
+            .id("uploadedFiles")
+            .reference("uploadedFiles")
+            .column("name")
+            .column("")
+            .column("")
+            .end()
+            .end()
+
+            .div()
+            .id("existingFilesContainer")
+            .html("Existing files")
             .table()
             .reference("files")
+            .column("id")
             .column("name")
             .column("default")
             .column("")
+            .end()
             .end()
             .end()
             .end();
@@ -1518,8 +1544,10 @@ Imcms.Document.Viewer.prototype = {
         }
     },
     addFile: function (key, val) {
-        var radio = $("<input>").attr("type", "radio").attr("name", "defaultFile").val(val);
+        var radio = $("<input>").attr("type", "radio").attr("name", "defaultFile").val(key);
+        var idInput = $("<input>").attr("type", "text").attr("name", "file_").attr("oldId", key).val(key);
         this._builder.ref("files").row(
+            idInput,
             val,
             radio[0],
             $("<button>").attr("type", "button").addClass("imcms-negative").click(this.removeFile.bind(this, radio))[0]
@@ -1528,6 +1556,26 @@ Imcms.Document.Viewer.prototype = {
     removeFile: function (radio) {
         radio.attr("data-removed", "").parents("tr").hide();
     },
+
+    addUploadedFile: function (fileInput) {
+        if ($("#uploadedFiles tr").length == 1) {
+            $("#uploadedFilesContainer").removeClass("hidden");
+        }
+        var removeButton = $("<button>").attr("type", "button").addClass("imcms-negative");
+        this._builder.ref("uploadedFiles").row(
+            fileInput.prop("files")[0].name,
+            fileInput,
+            removeButton.click(this.removeUploadedFile.bind(this, removeButton))
+        )
+    },
+
+    removeUploadedFile: function (removeButton) {
+        removeButton.parents("tr").remove();
+        if ($("#uploadedFiles tr").length == 1) {
+            $("#uploadedFilesContainer").addClass("hidden");
+        }
+    },
+
     removeKeyword: function () {
         $(this._builder.ref("keywordsList").getHTMLElement()).find("option:selected").remove();
     },
@@ -1555,6 +1603,18 @@ Imcms.Document.Viewer.prototype = {
         this._options.onApply(this);
         this.destroy();
     },
+
+    uploadDocumentFile: function () {
+        if ($('input[type=file][name="file1"]').prop("files").length > 0) {
+            var $item = $('input[type=file][name="file1"]');
+            var $clone = $item.clone();
+            $item.attr("name", "tmp_file").addClass("hidden");
+            $item.after($clone);
+            $item.addClass("hidden");
+            this.addUploadedFile($item);
+        }
+    },
+
     cancel: function () {
         this._options.onCancel(this);
         this.destroy();
@@ -1626,7 +1686,22 @@ Imcms.Document.Viewer.prototype = {
             result["removedFiles"] = $source.find("input[type=radio][data-removed]").map(function (pos, item) {
                 return $(item).val();
             }).toArray();
-            formData.append("file", $source.find("input[name=file]")[0].files[0]);
+
+            // editedFiles
+            var tmp = {};
+            $source.find("input[name^=file_]").each(function () {
+                if ($(this).attr("oldId") != $(this).val()) {
+                    var obj = {};
+                    tmp[$(this).attr("oldId")] = $(this).val();
+                    return obj;
+                }
+            });
+            result["editedFiles"] = tmp;
+
+            $source.find("input[name$=_file]").each(function () {
+                var fileInput = $(this).prop("files")[0];
+                formData.append("file", fileInput);
+            });
         }
         formData.append("data", JSON.stringify(result));
         formData.append("type", this._options.type);
