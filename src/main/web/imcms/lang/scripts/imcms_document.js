@@ -1528,7 +1528,7 @@ Imcms.Document.Viewer.prototype = {
     },
     addFile: function (key, val) {
         var radio = $("<input>").attr("type", "radio").attr("name", "defaultFile").val(val);
-        var idInput = $("<input>").attr("type", "text").attr("name", "file_"+key).val(key);
+        var idInput = $("<input>").attr("type", "text").attr("name", "file_").attr("oldId", key).val(key);
         this._builder.ref("files").row(
             idInput,
             val,
@@ -1646,6 +1646,17 @@ Imcms.Document.Viewer.prototype = {
             result["removedFiles"] = $source.find("input[type=radio][data-removed]").map(function (pos, item) {
                 return $(item).val();
             }).toArray();
+
+            // editedFiles
+            var tmp = {};
+            $source.find("input[name^=file_]").each(function () {
+                if ($(this).attr("oldId") != $(this).val()) {
+                    var obj = {};
+                    tmp[$(this).attr("oldId")] = $(this).val();
+                    return obj;
+                }
+            });
+            result["editedFiles"] = tmp;
 
             $source.find("input[name$=_file]").each(function () {
                 var fileInput = $(this).prop("files")[0];

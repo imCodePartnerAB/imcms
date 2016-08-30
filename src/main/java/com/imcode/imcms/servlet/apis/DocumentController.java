@@ -491,6 +491,8 @@ public class DocumentController {
 
         Stream.of(entity.removedFiles).forEach(document::removeFile);
 
+		entity.editedFiles.forEach((k, v) -> document.changeFileId(k, v));
+
 		if (multipartFiles != null) {
 			for (MultipartFile multipartFile : multipartFiles) {
 				FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
@@ -740,6 +742,7 @@ public class DocumentController {
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private static class FileDocumentEntity extends DocumentEntity {
 		public Map<String, String> files;
+		public Map<String, String> editedFiles;
 		public String[] removedFiles;
 		public String defaultFile;
 	}
