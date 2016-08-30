@@ -1,13 +1,20 @@
 package com.imcode.imcms.servlet.apis;
 
-import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.TextDocumentViewing;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.parser.ParserParameters;
+import imcode.util.Utility;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Controller provides possibility to go to page with elements editing without going to it's docs.
@@ -32,12 +39,26 @@ public class EditElementController {
                                  @RequestParam(required = false) Integer textNo,
                                  @RequestParam(required = false) Integer imageNo,
                                  @RequestParam(required = false) Integer menuNo,
-                                 HttpServletRequest request) {
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) throws IOException, ServletException {
 
-        ContentManagementSystem cms = Imcms.fromRequest(request);
+        if (!Imcms.getUser().isSuperAdmin()) {
+            Utility.forwardToLogin(request, response);
+        }
 
-        ModelAndView mav = new ModelAndView("editElement");
-        mav.addObject("metaId", metaId);
+        DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(metaId);
+
+        if (null == document) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+
+        prepareRequest(document, request, response);
+
+        ModelAndView mav = new ModelAndView("editElement"); // jsp for element editing
+        mav.addObject("flags", ImcmsConstants.PERM_EDIT_DOCUMENT); // flags to use admin functionality
+
+        // add one or none of parameters
         if (textNo != null) {
             mav.addObject("textNo", textNo);
 
@@ -48,7 +69,18 @@ public class EditElementController {
             mav.addObject("menuNo", menuNo);
         }
 
-        mav.addObject("user", cms.getCurrentUser());
         return mav;
+    }
+
+    private void prepareRequest(DocumentDomainObject document,
+                                HttpServletRequest request,
+                                HttpServletResponse response) {
+        // this should be done to use tags functionality on page
+        ParserParameters parserParameters = new ParserParameters(document, request, response);
+        TextDocumentViewing.putInRequest(new TextDocumentViewing(parserParameters));
+        ParserParameters.putInRequest(parserParameters);
+
+        final int flags = ImcmsConstants.PERM_EDIT_DOCUMENT;
+        parserParameters.setFlags(flags);
     }
 }
