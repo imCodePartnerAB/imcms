@@ -22,6 +22,24 @@ public class DocumentRequest implements Cloneable {
 
     private Revisits revisits;
 
+    /**
+     * Simplest DocumentRequest constructor, when referrer document not needs.
+     *
+     * @param document desired document
+     * @param httpServletRequest request
+     * @param httpServletResponse response
+     */
+    public DocumentRequest(DocumentDomainObject document,
+                           HttpServletRequest httpServletRequest,
+                           HttpServletResponse httpServletResponse) {
+        this.serverObject = Imcms.getServices();
+        this.user = Imcms.getUser();
+        this.document = document;
+        this.referrer = null;
+        this.httpServletRequest = httpServletRequest;
+        this.httpServletResponse = httpServletResponse;
+    }
+
     public DocumentRequest(ImcmsServices serverObject, UserDomainObject user, DocumentDomainObject document,
                            DocumentDomainObject referrer, HttpServletRequest httpServletRequest,
                            HttpServletResponse httpServletResponse) {

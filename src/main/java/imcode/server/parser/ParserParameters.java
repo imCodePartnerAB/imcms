@@ -1,10 +1,12 @@
 package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermission;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class ParserParameters implements Cloneable {
 
@@ -16,6 +18,19 @@ public class ParserParameters implements Cloneable {
     private int flags;
     private boolean adminButtonsVisible = true;
     private int includeLevel = 5;
+
+    /**
+     * Constructor that encapsulates DocumentRequest instance
+     *
+     * @param document desired document
+     * @param request request
+     * @param response response
+     */
+    public ParserParameters(DocumentDomainObject document,
+                            HttpServletRequest request,
+                            HttpServletResponse response) {
+        this.documentRequest = new DocumentRequest(document, request, response);
+    }
 
     public ParserParameters(DocumentRequest documentRequest) {
         this.documentRequest = documentRequest;
