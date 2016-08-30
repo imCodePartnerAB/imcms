@@ -1,4 +1,5 @@
 /**
+ * Provides possibility to edit specified text/image/menu without document content.
  * Created by Serhii from Ubrainians for Imcode
  * on 30.08.16.
  */
@@ -8,7 +9,12 @@ Imcms.SingleEdit.Image = {};
 Imcms.SingleEdit.Menu = {};
 
 Imcms.SingleEdit.Text.init = function () {
-
+    CKEDITOR.on('instanceReady', function (event) {
+        var editor = event.editor;
+        if (editor.elementMode == 3) { // only if not full screen to prevent recycled switching
+            editor.execCommand('toolbarswitch');
+        }
+    })
 };
 
 Imcms.SingleEdit.Image.init = function () {
