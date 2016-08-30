@@ -958,8 +958,11 @@ Imcms.Document.Viewer.prototype = {
             .div()
 
             .table()
+            .id("uploadedFiles")
+            .class("hidden")
             .reference("uploadedFiles")
             .column("name")
+            .column("")
             .column("")
             .end()
 
@@ -1547,16 +1550,23 @@ Imcms.Document.Viewer.prototype = {
         radio.attr("data-removed", "").parents("tr").hide();
     },
 
-    addUploadedFile: function (val) {
+    addUploadedFile: function (fileInput) {
+        if ($("#uploadedFiles tr").length == 1) {
+            $("#uploadedFiles").removeClass("hidden");
+        }
         var removeButton = $("<button>").attr("type", "button").addClass("imcms-negative");
         this._builder.ref("uploadedFiles").row(
-            val,
+            fileInput.prop("files")[0].name,
+            fileInput,
             removeButton.click(this.removeUploadedFile.bind(this, removeButton))
         )
     },
 
     removeUploadedFile: function (removeButton) {
         removeButton.parents("tr").remove();
+        if ($("#uploadedFiles tr").length == 1) {
+            $("#uploadedFiles").addClass("hidden");
+        }
     },
 
     removeKeyword: function () {
@@ -1588,12 +1598,14 @@ Imcms.Document.Viewer.prototype = {
     },
 
     uploadDocumentFile: function () {
-        var $item = $('input[type=file][name="file1"]');
-        var $clone = $item.clone();
-        $item.attr("name", "tmp_file").addClass("hidden");
-        $item.after($clone);
-        $item.addClass("hidden");
-        this.addUploadedFile($item.prop("files")[0].name);
+        if ($('input[type=file][name="file1"]').prop("files").length > 0) {
+            var $item = $('input[type=file][name="file1"]');
+            var $clone = $item.clone();
+            $item.attr("name", "tmp_file").addClass("hidden");
+            $item.after($clone);
+            $item.addClass("hidden");
+            this.addUploadedFile($item);
+        }
     },
 
     cancel: function () {
