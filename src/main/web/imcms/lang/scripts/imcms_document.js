@@ -941,11 +941,19 @@ Imcms.Document.Viewer.prototype = {
             .class("file-page imcms-page")
             .div()
             .class("select field")
+
             .file()
-            .name("file")
+            .name("file1")
             .label("File")
-            .reference("file")
+            .reference("file1")
             .end()
+
+            .button()
+            .class("imcms-positive")
+            .html("Upload File")
+            .on("click", $.proxy(this.uploadDocumentFile, this))
+            .end()
+
             .end()
             .div()
             .table()
@@ -1555,6 +1563,15 @@ Imcms.Document.Viewer.prototype = {
         this._options.onApply(this);
         this.destroy();
     },
+
+    uploadDocumentFile: function () {
+        var $item = $('input[type=file][name="file1"]');
+        var $clone = $item.clone();
+        $item.attr("name", "tmp_file").addClass("hidden");
+        $item.after($clone);
+        $item.addClass("hidden");
+    },
+
     cancel: function () {
         this._options.onCancel(this);
         this.destroy();
@@ -1626,7 +1643,11 @@ Imcms.Document.Viewer.prototype = {
             result["removedFiles"] = $source.find("input[type=radio][data-removed]").map(function (pos, item) {
                 return $(item).val();
             }).toArray();
-            formData.append("file", $source.find("input[name=file]")[0].files[0]);
+
+            $source.find("input[name$=_file]").each(function () {
+                var fileInput = $(this).prop("files")[0];
+                formData.append("file", fileInput);
+            });
         }
         formData.append("data", JSON.stringify(result));
         formData.append("type", this._options.type);

@@ -209,7 +209,7 @@ public class DocumentController {
 	protected Object createOrUpdateDocument(@RequestParam("type") Integer type,
 											@RequestParam(value = "parent", defaultValue = "1001") Integer parentDocumentId,
 											@RequestParam("data") String data,
-											@RequestParam(value = "file", required = false) MultipartFile file) {
+											@RequestParam(value = "file", required = false) MultipartFile[] file) {
 		Map<String, Object> result = new HashMap<>();
 		try {
 			DocumentDomainObject docDomainObject;
@@ -228,7 +228,7 @@ public class DocumentController {
 					docEntity = newMapper(data, new TypeReference<FileDocumentEntity>() {
 					});
 					docDomainObject = createOrGetDoc(type, parentDocumentId, docEntity.id, docMapper);
-					asFileDocument((FileDocumentDomainObject) docDomainObject, (FileDocumentEntity) docEntity, file);
+					asFileDocument((FileDocumentDomainObject) docDomainObject, (FileDocumentEntity) docEntity, file[0]);
 				}
 				break;
 				case DocumentTypeDomainObject.TEXT_ID:
