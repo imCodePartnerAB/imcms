@@ -10,6 +10,11 @@
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
+<c:set var="textEdit" value="${textNo ne null}"/>
+<c:set var="imageEdit" value="${imageNo ne null}"/>
+<c:set var="menuEdit" value="${menuNo ne null}"/>
+<c:set var="noEdit" value="${textNo eq null and imageNo eq null and menuNo eq null}"/>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -26,56 +31,27 @@
 <div class="container">
     <section class="content">
         <div class="wrapper">
-            <c:choose>
-                <c:when test="${textNo ne null}">
-                    <imcms:text no="${textNo}" document="${document.id}"/>
-                </c:when>
-                <c:otherwise>
-                    <c:choose>
-                        <c:when test="${imageNo ne null}">
-                            <imcms:image no="${imageNo}" document="${document.id}"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:choose>
-                                <c:when test="${menuNo ne null}">
-                                    <imcms:menu no='${menuNo}' docId="${document.id}">
-                                        <ul>
-                                            <imcms:menuloop>
-                                                <imcms:menuitem>
-                                                    <li>
-                                                        <imcms:menuitemlink>
-                                                            ${menuitem.document.headline}
-                                                        </imcms:menuitemlink>
-                                                        <!-- sub menu definition -->
-                                                        <imcms:menuloop>
-                                                            <imcms:menuitem>
-                                                                <div>
-                                                                    <imcms:menuitemlink>
-                                                                        ${menuitem.document.headline}
-                                                                    </imcms:menuitemlink>
-                                                                </div>
-                                                            </imcms:menuitem>
-                                                        </imcms:menuloop>
-                                                    </li>
-                                                </imcms:menuitem>
-                                            </imcms:menuloop>
-                                        </ul>
-                                    </imcms:menu>
-                                </c:when>
-                                <c:otherwise>
-                                    <h3><p>You should to set at least one parameter:</p>
-                                        <ul>
-                                            <li>textNo</li>
-                                            <li>imageNo</li>
-                                            <li>menuNo</li>
-                                        </ul>
-                                    </h3>
-                                </c:otherwise>
-                            </c:choose>
-                        </c:otherwise>
-                    </c:choose>
-                </c:otherwise>
-            </c:choose>
+            <c:if test="${textEdit}">
+                <imcms:text no="${textNo}" document="${document.id}"/>
+
+            </c:if>
+            <c:if test="${imageEdit}">
+                <imcms:image no="${imageNo}" document="${document.id}"/>
+
+            </c:if>
+            <c:if test="${menuEdit}">
+                <imcms:menu no='${menuNo}' docId="${document.id}"/>
+
+            </c:if>
+            <c:if test="${noEdit}">
+                <h3><p>You should to set at least one parameter:</p>
+                    <ul>
+                        <li>textNo</li>
+                        <li>imageNo</li>
+                        <li>menuNo</li>
+                    </ul>
+                </h3>
+            </c:if>
         </div>
     </section>
 </div>
