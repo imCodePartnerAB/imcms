@@ -621,11 +621,12 @@ public class DocumentController {
 	}
 
 	protected void asFileEntity(FileDocumentEntity entity, FileDocumentDomainObject document) {
-		if (document.getFiles().size() > 0) {
-			entity.files = document.getFiles().keySet().stream().toArray(String[]::new);
-			entity.defaultFile = document.getDefaultFileId();
-		}
-	}
+        if (document.getFiles().size() > 0) {
+            entity.files = document.getFiles().entrySet().stream()
+                    .collect(Collectors.toMap(e -> e.getValue().getId(), e -> e.getValue().getFilename()));
+            entity.defaultFile = document.getDefaultFileId();
+        }
+    }
 
 	protected void asUrlEntity(UrlDocumentEntity entity, UrlDocumentDomainObject document) {
 		entity.url = document.getUrl();
@@ -738,7 +739,7 @@ public class DocumentController {
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private static class FileDocumentEntity extends DocumentEntity {
-		public String[] files;
+		public Map<String, String> files;
 		public String[] removedFiles;
 		public String defaultFile;
 	}

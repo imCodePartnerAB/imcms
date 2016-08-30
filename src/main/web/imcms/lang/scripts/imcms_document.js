@@ -958,6 +958,7 @@ Imcms.Document.Viewer.prototype = {
             .div()
             .table()
             .reference("files")
+            .column("id")
             .column("name")
             .column("default")
             .column("")
@@ -1527,7 +1528,9 @@ Imcms.Document.Viewer.prototype = {
     },
     addFile: function (key, val) {
         var radio = $("<input>").attr("type", "radio").attr("name", "defaultFile").val(val);
+        var idInput = $("<input>").attr("type", "text").attr("name", "file_"+key).val(key);
         this._builder.ref("files").row(
+            idInput,
             val,
             radio[0],
             $("<button>").attr("type", "button").addClass("imcms-negative").click(this.removeFile.bind(this, radio))[0]
