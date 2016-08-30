@@ -32,7 +32,9 @@
     <section class="content">
         <div class="wrapper">
             <c:if test="${textEdit}">
-                <imcms:text no="${textNo}" document="${document.id}"/>
+                <div id="textEdit" class="hidden">
+                    <imcms:text no="${textNo}" document="${document.id}"/>
+                </div>
                 <script>Imcms.SingleEdit.Text.init()</script>
             </c:if>
             <c:if test="${imageEdit}">
