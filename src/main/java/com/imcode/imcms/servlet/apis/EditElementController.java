@@ -1,10 +1,13 @@
 package com.imcode.imcms.servlet.apis;
 
+import com.imcode.imcms.api.ContentManagementSystem;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Controller provides possibility to go to page with elements editing without going to it's docs.
@@ -28,7 +31,10 @@ public class EditElementController {
     public ModelAndView editText(@RequestParam Integer metaId,
                                  @RequestParam(required = false) Integer textNo,
                                  @RequestParam(required = false) Integer imageNo,
-                                 @RequestParam(required = false) Integer menuNo) {
+                                 @RequestParam(required = false) Integer menuNo,
+                                 HttpServletRequest request) {
+
+        ContentManagementSystem cms = Imcms.fromRequest(request);
 
         ModelAndView mav = new ModelAndView("editElement");
         mav.addObject("metaId", metaId);
@@ -42,7 +48,7 @@ public class EditElementController {
             mav.addObject("menuNo", menuNo);
         }
 
-        mav.addObject("user", Imcms.getUser());
+        mav.addObject("user", cms.getCurrentUser());
         return mav;
     }
 }
