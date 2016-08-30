@@ -209,7 +209,7 @@ public class DocumentController {
 	protected Object createOrUpdateDocument(@RequestParam("type") Integer type,
 											@RequestParam(value = "parent", defaultValue = "1001") Integer parentDocumentId,
 											@RequestParam("data") String data,
-											@RequestParam(value = "file", required = false) MultipartFile[] file) {
+											@RequestParam(value = "file", required = false) MultipartFile[] files) {
 		Map<String, Object> result = new HashMap<>();
 		try {
 			DocumentDomainObject docDomainObject;
@@ -228,7 +228,7 @@ public class DocumentController {
 					docEntity = newMapper(data, new TypeReference<FileDocumentEntity>() {
 					});
 					docDomainObject = createOrGetDoc(type, parentDocumentId, docEntity.id, docMapper);
-					asFileDocument((FileDocumentDomainObject) docDomainObject, (FileDocumentEntity) docEntity, file[0]);
+					asFileDocument((FileDocumentDomainObject) docDomainObject, (FileDocumentEntity) docEntity, files);
 				}
 				break;
 				case DocumentTypeDomainObject.TEXT_ID:
@@ -481,36 +481,38 @@ public class DocumentController {
 	 *
 	 * @param document      prepared document
 	 * @param entity        presented entity
-	 * @param multipartFile file, that should be added to document
+	 * @param multipartFiles file array, that should be added to document
 	 * @throws IOException - if an I/O error occurred
 	 */
-    protected void asFileDocument(FileDocumentDomainObject document, FileDocumentEntity entity, MultipartFile multipartFile) throws IOException {
+    protected void asFileDocument(FileDocumentDomainObject document, FileDocumentEntity entity, MultipartFile[] multipartFiles) throws IOException {
         if (StringUtils.isNotEmpty(entity.defaultFile)) {
             document.setDefaultFileId(entity.defaultFile);
         }
 
         Stream.of(entity.removedFiles).forEach(document::removeFile);
 
-        if (multipartFile != null) {
-            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
-            String originalFilename = multipartFile.getOriginalFilename();
-            fileDocumentFile.setFilename(originalFilename);
+		if (multipartFiles != null) {
+			for (MultipartFile multipartFile : multipartFiles) {
+				FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
+				String originalFilename = multipartFile.getOriginalFilename();
+				fileDocumentFile.setFilename(originalFilename);
 
-            fileDocumentFile.setMimeType(multipartFile.getContentType());
-            File file = new File(Imcms.getServices().getConfig().getFilePath(), originalFilename);
+				fileDocumentFile.setMimeType(multipartFile.getContentType());
+				File file = new File(Imcms.getServices().getConfig().getFilePath(), originalFilename);
 
-            if (!file.createNewFile() && document.getFile(originalFilename) != null) {
-                document.removeFile(originalFilename);
-            }
+				if (!file.createNewFile() && document.getFile(originalFilename) != null) {
+					document.removeFile(originalFilename);
+				}
 
-            multipartFile.transferTo(file);
-            originalFilename = multipartFile.getOriginalFilename();
-            fileDocumentFile.setInputStreamSource(new FileInputStreamSource(file));
-            document.addFile(originalFilename, fileDocumentFile);
+				multipartFile.transferTo(file);
+				originalFilename = multipartFile.getOriginalFilename();
+				fileDocumentFile.setInputStreamSource(new FileInputStreamSource(file));
+				document.addFile(originalFilename, fileDocumentFile);
 
-            document.setDefaultFileId(originalFilename);
-        }
-    }
+				document.setDefaultFileId(originalFilename);
+			}
+		}
+	}
 
 	/**
 	 * Prepare {@link TextDocumentDomainObject} using {@link TextDocumentEntity}
