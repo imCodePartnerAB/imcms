@@ -24,15 +24,24 @@ Imcms.SingleEdit.Text.init = function () {
     })
 };
 
+/**
+ * Count fails to prevent recycling
+ * @type {number}
+ */
+Imcms.SingleEdit.Image.failCount = 0;
+
 Imcms.SingleEdit.Image.init = function () {
     // as there are no any event for Imcms.Editors.Image that it is initialized, we should use setTimeout
     setTimeout(function () {
         try {
             Imcms.Editors.Image._editorsList[0].open();
         } catch (e) {
-            console.log("SingleEdit.Image::init : Waiting for Imcms.Editors.Image initializing first.");
-            Imcms.SingleEdit.Image.init();
-            return;
+            if (Imcms.SingleEdit.Image.failCount < 20) {
+                Imcms.SingleEdit.Image.failCount++;
+                console.log("SingleEdit.Image::init : Waiting for Imcms.Editors.Image initializing first.");
+                Imcms.SingleEdit.Image.init();
+                return;
+            }
         }
 
         setTimeout(function () {
