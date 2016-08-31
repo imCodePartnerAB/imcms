@@ -184,5 +184,29 @@
     "name": "currentUser",
     "url": "/api/user/getCurrentUser",
     "args": []
+  },
+  {
+    "name": "editor.single.text",
+    "url": "/api/edit?metaId={1}&textNo={2}",
+    "args": [
+      "metaId",
+      "elementNo"
+    ]
+  },
+  {
+    "name": "editor.single.image",
+    "url": "/api/edit?metaId={1}&imageNo={2}",
+    "args": [
+      "metaId",
+      "elementNo"
+    ]
+  },
+  {
+    "name": "editor.single.menu",
+    "url": "/api/edit?metaId={1}&menuNo={2}",
+    "args": [
+      "metaId",
+      "elementNo"
+    ]
   }
 ]
