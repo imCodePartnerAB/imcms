@@ -9,6 +9,12 @@ Imcms.SingleEdit.Image = {};
 Imcms.SingleEdit.Menu = {};
 
 /**
+ * Count fails to prevent recycling
+ * @type {number}
+ */
+Imcms.SingleEdit.failCount = 0;
+
+/**
  * Indicates that CKEditor was switched (or not) to full-screen
  * @type {boolean}
  */
@@ -32,12 +38,6 @@ Imcms.SingleEdit.Text.init = function () {
 };
 
 /**
- * Count fails to prevent recycling
- * @type {number}
- */
-Imcms.SingleEdit.Image.failCount = 0;
-
-/**
  * Runs Image editor when it is initialized.
  */
 Imcms.SingleEdit.Image.init = function () {
@@ -46,8 +46,8 @@ Imcms.SingleEdit.Image.init = function () {
         try {
             $('.editor-frame').click();
         } catch (e) {
-            if (Imcms.SingleEdit.Image.failCount < 20) { // to prevent recycling
-                Imcms.SingleEdit.Image.failCount++;
+            if (Imcms.SingleEdit.failCount < 20) { // to prevent recycling
+                Imcms.SingleEdit.failCount++;
                 console.log("SingleEdit.Image::init : Waiting for Imcms.Editors.Image initializing first.");
                 Imcms.SingleEdit.Image.init();
                 return;
