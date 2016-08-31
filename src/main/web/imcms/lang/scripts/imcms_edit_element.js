@@ -44,7 +44,7 @@ Imcms.SingleEdit.Image.init = function () {
     // as there are no any event for Imcms.Editors.Image that it is initialized, we should use setTimeout
     setTimeout(function () {
         try {
-            Imcms.Editors.Image._editorsList[0].open();
+            $('.editor-frame').click();
         } catch (e) {
             if (Imcms.SingleEdit.Image.failCount < 20) { // to prevent recycling
                 Imcms.SingleEdit.Image.failCount++;
