@@ -160,6 +160,10 @@ Linker.prototype = {
             link = this._simpleURLs[name];
         }
 
+        if (!link) {
+            throw new Error("Can not found link with name '" + name + "'");
+        }
+
         return link;
     },
 
@@ -176,6 +180,10 @@ Linker.prototype = {
         if (!link) {
             this._loadLinks();
             link = this._getLink(name, args);
+        }
+
+        if (!link) {
+            throw new Error("Can not found link with name '" + name + "' and arguments [" + args + "]");
         }
 
         var result = link.url;
