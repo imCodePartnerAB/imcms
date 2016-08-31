@@ -38,7 +38,7 @@
                 <script>Imcms.SingleEdit.Text.init()</script>
             </c:if>
             <c:if test="${imageEdit}">
-                <div id="imageEdit" class="hidden">
+                <div id="tagWrap" class="hidden">
                     <imcms:image no="${imageNo}" document="${document.id}"/>
                 </div>
                 <script>Imcms.SingleEdit.Image.init()</script>

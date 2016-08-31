@@ -16,9 +16,8 @@ Imcms.SingleEdit.failCount = 0;
 
 /**
  * Unified editor calling
- * @param tagWrapperId - id for element that wraps tag with class="hidden"
  */
-Imcms.SingleEdit.openEditor = function (tagWrapperId) {
+Imcms.SingleEdit.openEditor = function () {
     // as there are no any event for Imcms.Editors that it is initialized, we should use setTimeout
     setTimeout(function () {
         try {
@@ -27,13 +26,13 @@ Imcms.SingleEdit.openEditor = function (tagWrapperId) {
             if (Imcms.SingleEdit.failCount < 20) { // to prevent recycling
                 Imcms.SingleEdit.failCount++;
                 console.log("SingleEdit::init : Waiting for Imcms.Editors initializing first.");
-                Imcms.SingleEdit.openEditor(tagWrapperId);
+                Imcms.SingleEdit.openEditor();
                 return;
             }
         }
 
         setTimeout(function () {
-            $(tagWrapperId).removeClass("hidden");
+            $("#tagWrap").removeClass("hidden");
         }, 500);
     }, 10);
 };
@@ -65,7 +64,7 @@ Imcms.SingleEdit.Text.init = function () {
  * Runs Image editor when it is initialized.
  */
 Imcms.SingleEdit.Image.init = function () {
-    Imcms.SingleEdit.openEditor("#imageEdit");
+    Imcms.SingleEdit.openEditor();
 };
 
 Imcms.SingleEdit.Menu.init = function () {
