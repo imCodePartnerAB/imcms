@@ -8,8 +8,15 @@ Imcms.SingleEdit.Text = {};
 Imcms.SingleEdit.Image = {};
 Imcms.SingleEdit.Menu = {};
 
+/**
+ * Indicates that CKEditor was switched (or not) to full-screen
+ * @type {boolean}
+ */
 Imcms.SingleEdit.Text.fired = false;
 
+/**
+ * When CKEditor loads, switches it to full-screen
+ */
 Imcms.SingleEdit.Text.init = function () {
     CKEDITOR.on('instanceReady', function (event) {
         if (!Imcms.SingleEdit.Text.fired) {
@@ -30,13 +37,16 @@ Imcms.SingleEdit.Text.init = function () {
  */
 Imcms.SingleEdit.Image.failCount = 0;
 
+/**
+ * Runs Image editor when it is initialized.
+ */
 Imcms.SingleEdit.Image.init = function () {
     // as there are no any event for Imcms.Editors.Image that it is initialized, we should use setTimeout
     setTimeout(function () {
         try {
             Imcms.Editors.Image._editorsList[0].open();
         } catch (e) {
-            if (Imcms.SingleEdit.Image.failCount < 20) {
+            if (Imcms.SingleEdit.Image.failCount < 20) { // to prevent recycling
                 Imcms.SingleEdit.Image.failCount++;
                 console.log("SingleEdit.Image::init : Waiting for Imcms.Editors.Image initializing first.");
                 Imcms.SingleEdit.Image.init();
