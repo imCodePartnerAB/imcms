@@ -68,7 +68,7 @@ Imcms.SingleEdit.Image.init = function () {
 };
 
 Imcms.SingleEdit.Menu.init = function () {
-
+    Imcms.SingleEdit.openEditor();
 };
 
 $(document).ready(function () {

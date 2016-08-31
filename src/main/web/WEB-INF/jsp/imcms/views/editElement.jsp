@@ -44,7 +44,9 @@
                 <script>Imcms.SingleEdit.Image.init()</script>
             </c:if>
             <c:if test="${menuEdit}">
-                <imcms:menu no='${menuNo}' docId="${document.id}"/>
+                <div id="tagWrap" class="hidden">
+                    <imcms:menu no='${menuNo}' docId="${document.id}"/>
+                </div>
                 <script>Imcms.SingleEdit.Menu.init()</script>
             </c:if>
             <c:if test="${noEdit}">
