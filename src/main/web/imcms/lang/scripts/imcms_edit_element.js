@@ -15,6 +15,30 @@ Imcms.SingleEdit.Menu = {};
 Imcms.SingleEdit.failCount = 0;
 
 /**
+ * Unified editor calling
+ * @param tagWrapperId - id for element that wraps tag with class="hidden"
+ */
+Imcms.SingleEdit.openEditor = function (tagWrapperId) {
+    // as there are no any event for Imcms.Editors that it is initialized, we should use setTimeout
+    setTimeout(function () {
+        try {
+            $('.editor-frame').click();
+        } catch (e) {
+            if (Imcms.SingleEdit.failCount < 20) { // to prevent recycling
+                Imcms.SingleEdit.failCount++;
+                console.log("SingleEdit::init : Waiting for Imcms.Editors initializing first.");
+                Imcms.SingleEdit.openEditor(tagWrapperId);
+                return;
+            }
+        }
+
+        setTimeout(function () {
+            $(tagWrapperId).removeClass("hidden");
+        }, 500);
+    }, 10);
+};
+
+/**
  * Indicates that CKEditor was switched (or not) to full-screen
  * @type {boolean}
  */
@@ -41,23 +65,7 @@ Imcms.SingleEdit.Text.init = function () {
  * Runs Image editor when it is initialized.
  */
 Imcms.SingleEdit.Image.init = function () {
-    // as there are no any event for Imcms.Editors.Image that it is initialized, we should use setTimeout
-    setTimeout(function () {
-        try {
-            $('.editor-frame').click();
-        } catch (e) {
-            if (Imcms.SingleEdit.failCount < 20) { // to prevent recycling
-                Imcms.SingleEdit.failCount++;
-                console.log("SingleEdit.Image::init : Waiting for Imcms.Editors.Image initializing first.");
-                Imcms.SingleEdit.Image.init();
-                return;
-            }
-        }
-
-        setTimeout(function () {
-            $("#imageEdit").removeClass("hidden");
-        }, 500);
-    }, 10);
+    Imcms.SingleEdit.openEditor("#imageEdit");
 };
 
 Imcms.SingleEdit.Menu.init = function () {
