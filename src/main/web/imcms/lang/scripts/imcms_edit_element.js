@@ -25,9 +25,26 @@ Imcms.SingleEdit.Text.init = function () {
 };
 
 Imcms.SingleEdit.Image.init = function () {
+    // as there are no any event for Imcms.Editors.Image that it is initialized, we should use setTimeout
+    setTimeout(function () {
+        try {
+            Imcms.Editors.Image._editorsList[0].open();
+        } catch (e) {
+            console.log("SingleEdit.Image::init : Waiting for Imcms.Editors.Image initializing first.");
+            Imcms.SingleEdit.Image.init();
+            return;
+        }
 
+        setTimeout(function () {
+            $("#imageEdit").removeClass("hidden");
+        }, 500);
+    }, 10);
 };
 
 Imcms.SingleEdit.Menu.init = function () {
 
 };
+
+$(document).ready(function () {
+    $("body").css("padding-left", 0);
+});
