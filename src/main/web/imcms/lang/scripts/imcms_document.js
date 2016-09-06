@@ -283,7 +283,7 @@ Imcms.Document.Editor.prototype = {
         $.each(users, this.addUserToList.bind(this));
     },
     setCurrentUser: function (user) {
-        this._currentUser = user;
+        this._currentUser = user[0];
     },
     addUserToList: function (count, user) {
         $(this._builder.ref("user-filter-list").getHTMLElement()).append(
