@@ -11,30 +11,19 @@ Imcms.User.Loader.prototype = {
     init: function () {
         this._api = new Imcms.User.API();
     },
-    read: function (callback) {
-        this._api.read({}, callback);
-    },
-    getCurrent: function (callback) {
-        this._api.getCurrent({}, callback);
+    read: function (data, callback) {
+        this._api.read(data, callback);
     }
 };
 
 Imcms.User.API = function () {
-
 };
+
 Imcms.User.API.prototype = {
     path: Imcms.Linker.get("users"),
     read: function (request, response) {
         $.ajax({
             url: this.path,
-            type: "GET",
-            data: request,
-            success: response
-        });
-    },
-    getCurrent: function (request, response) {
-        $.ajax({
-            url: Imcms.Linker.get("currentUser"),
             type: "GET",
             data: request,
             success: response

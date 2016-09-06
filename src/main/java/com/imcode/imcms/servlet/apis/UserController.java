@@ -2,10 +2,11 @@ package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
-import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,8 +24,15 @@ import java.util.stream.Stream;
 public class UserController {
 
     @RequestMapping(method = RequestMethod.GET)
-    public Object getUsers(HttpServletRequest request) {
-        User[] allUsers = ContentManagementSystem.fromRequest(request).getUserService().getAllUsers();
+    public Object getUsers(@RequestParam(value = "current", required = false) Boolean current,
+                           HttpServletRequest request) {
+
+        current = BooleanUtils.toBoolean(current);
+        ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
+
+        User[] allUsers = (current)
+                ? new User[]{cms.getCurrentUser()}
+                : cms.getUserService().getAllUsers();
 
         return Stream.of(allUsers)
                 .map(user -> new HashMap<String, Object>() {{
@@ -32,10 +40,5 @@ public class UserController {
                     put("id", user.getId());
                 }})
                 .collect(Collectors.toList());
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/getCurrentUser")
-    public Object getCurrentuserUser(HttpServletRequest request) {
-        return Imcms.getUser();
     }
 }

@@ -586,6 +586,13 @@ Imcms.Menu.Loader.prototype = {
 			that._menuHelpers[pos] = new Imcms.Menu.Editor(element, that);
 		});
 	},
+    datesList: function (id, callback) {
+        $.ajax({
+            url: Imcms.Linker.get("dateTimes.fill", id),
+            type: "GET",
+            success: callback
+        });
+    },
 	languagesList: function (callback) {
 		Imcms.Editors.Language.read(callback);
 	},

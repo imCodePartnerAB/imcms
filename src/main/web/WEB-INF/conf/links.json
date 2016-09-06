@@ -181,11 +181,6 @@
     "args": []
   },
   {
-    "name": "currentUser",
-    "url": "/api/user/getCurrentUser",
-    "args": []
-  },
-  {
     "name": "editor.single.text",
     "url": "/api/edit?metaId={1}&textNo={2}",
     "args": [

@@ -100,6 +100,13 @@ Imcms.Document.Loader.prototype = {
         this._api.delete(data + "?action=unarchive", function () {
         });
     },
+    datesList: function (id, callback) {
+        $.ajax({
+            url: Imcms.Linker.get("dateTimes.fill", id),
+            type: "GET",
+            success: callback
+        });
+    },
     languagesList: function (callback) {
         Imcms.Editors.Language.read(callback);
     },
@@ -113,10 +120,10 @@ Imcms.Document.Loader.prototype = {
         Imcms.Editors.Category.read(callback);
     },
     usersList: function (callback) {
-        Imcms.Editors.User.read(callback);
+        Imcms.Editors.User.read({}, callback);
     },
     currentUser: function (callback) {
-        Imcms.Editors.User.getCurrent(callback);
+        Imcms.Editors.User.read({current: true}, callback);
     },
     redirect: function (id) {
         location.href = "/imcms/docadmin?meta_id=" + id;
@@ -128,7 +135,10 @@ Imcms.Document.Editor = function (loader) {
     this.init();
 };
 Imcms.Document.Editor.prototype = {
-    _currentUser: "",
+    _currentUser: {
+        id: "",
+        loginName: ""
+    },
     _builder: {},
     _loader: {},
     _documentListAdapter: {},
@@ -420,16 +430,24 @@ Imcms.Document.Viewer.prototype = {
         this.buildView();
         //this.buildValidator();
         this.createModal();
-        this._loader.languagesList($.proxy(this.loadLanguages, this));
-        this._loader.rolesList($.proxy(this.loadRoles, this));
-        this._loader.categoriesList($.proxy(this.loadCategories, this));
-        this._loader.usersList($.proxy(this.loadUsers, this));
+
+        this._loader.languagesList(this.loadLanguages.bind(this));
+        this._loader.rolesList(this.loadRoles.bind(this));
+        this._loader.categoriesList(this.loadCategories.bind(this));
+        this._loader.usersList(this.loadUsers.bind(this));
+
         if (options.type === 2) {
-            this._loader.templatesList($.proxy(this.loadTemplates, this));
+            this._loader.templatesList(this.loadTemplates.bind(this));
         }
 
-        if (options.data)
+        if (options.data) {
             this.deserialize(options.data);
+        }
+
+        if (this._options.data.id) {
+            this._loader.datesList(this._options.data.id, this.loadDates.bind(this));
+        }
+
         var $builder = $(this._builder[0]);
         $builder.fadeIn("fast").css({
             left: $(window).width() / 2 - $builder.width() / 2,
@@ -1274,7 +1292,6 @@ Imcms.Document.Viewer.prototype = {
             page: this._builder.ref("dates-page")
         };
         this._builder.ref("dates-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["dates"]));
-        this.fillDateTimes();
     },
     createModal: function () {
         $(this._modal = document.createElement("div")).addClass("modal")
@@ -1288,29 +1305,6 @@ Imcms.Document.Viewer.prototype = {
         $(collectionItem.tab.getHTMLElement()).addClass("active");
         $(collectionItem.page.getHTMLElement()).addClass("active");
         this._activeContent = collectionItem;
-    },
-    // todo: rewrite using DocumentController.DocumentEntity and serialize/deserialize functions
-    fillDateTimes: function () {
-        var id = this._options.data.id;
-
-        setTimeout(function () {
-            $.ajax({
-                url: Imcms.Linker.get("dateTimes.fill", id),
-                type: "GET",
-                success: function (response) {
-                    $.each(response, function (dateType, dateTimeBy) {
-                        $.each(dateTimeBy, function (dateOrTime, dateOrTimeValue) {
-                            $("input[name=" + dateType + "-" + dateOrTime + "]").val(dateOrTimeValue);
-                        });
-
-                        $("input[name^=" + dateType + "]")
-                            .filter("[name$=saved]")
-                            .val(dateTimeBy.date + " " + dateTimeBy.time);
-
-                    });
-                }
-            });
-        }, 500);
     },
     loadTemplates: function (data) {
         $.each(data, $.proxy(this.addTemplate, this));
@@ -1495,6 +1489,20 @@ Imcms.Document.Viewer.prototype = {
 
         $('input[name=published-by]').val(newPublisher.loginName);
         $select.addClass("hidden");
+    },
+    loadDates: function (dateTimeMadeByForDateType) {
+        setTimeout(function () {
+            $.each(dateTimeMadeByForDateType, this.addDateTimeMadeBy.bind(this));
+        }.bind(this), 100);
+    },
+    addDateTimeMadeBy: function (dateType, dateTimeMadeBy) {
+        $.each(dateTimeMadeBy, function (name, value) {
+            $("input[name=" + dateType + "-" + name + "]").val(value);
+        });
+
+        $("input[name^=" + dateType + "]")
+            .filter("[name$=saved]")
+            .val(dateTimeMadeBy.date + " " + dateTimeMadeBy.time);
     },
     loadCategories: function (categories) {
         $.each(categories, this.addCategoryType.bind(this));

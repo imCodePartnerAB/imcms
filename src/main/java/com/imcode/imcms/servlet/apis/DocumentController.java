@@ -421,34 +421,45 @@ public class DocumentController {
                 .collect(Collectors.toSet())
         );
 
-        Optional.ofNullable(getValidatedDateOrNull(docEntity.publishedDate, docEntity.publishedTime,
-                docDomainObject.getPublicationStartDatetime()))
+        Date publishedDate = getValidDateOrNull(docEntity.publishedDate, docEntity.publishedTime,
+                docDomainObject.getPublicationStartDatetime());
+
+        Date archivedDate = getValidDateOrNull(docEntity.archivedDate, docEntity.archivedTime,
+                docDomainObject.getArchivedDatetime());
+
+        Date publicationEndDate = getValidDateOrNull(docEntity.publicationEndDate, docEntity.publicationEndTime,
+                docDomainObject.getPublicationEndDatetime());
+
+        Optional.ofNullable(publishedDate)
                 .ifPresent(newPublishedDate -> {
                     docDomainObject.setPublicationStartDatetime(newPublishedDate);
                     docDomainObject.setPublisherId(Imcms.getUser().getId());
                 });
 
-        Optional.ofNullable(getValidatedDateOrNull(docEntity.archivedDate, docEntity.archivedTime,
-                docDomainObject.getArchivedDatetime()))
+        Optional.ofNullable(archivedDate)
                 .ifPresent(newArchivedDate -> {
                     docDomainObject.setArchivedDatetime(newArchivedDate);
                     docDomainObject.setArchiverId(Imcms.getUser().getId());
                 });
 
-        Optional.ofNullable(getValidatedDateOrNull(docEntity.publicationEndDate, docEntity.publicationEndTime,
-                docDomainObject.getPublicationEndDatetime()))
-                .ifPresent(newPublicationEndDate -> {
-                    docDomainObject.setPublicationEndDatetime(newPublicationEndDate);
-                    docDomainObject.setDepublisherId(Imcms.getUser().getId());
-                });
+        if (!isValidDateTime(docEntity.publicationEndDate, docEntity.publicationEndTime)) {
+            docDomainObject.setPublicationEndDatetime(null);
+            docDomainObject.setDepublisherId(null);
+
+        } else {
+            Optional.ofNullable(publicationEndDate)
+                    .ifPresent(newPublicationEndDate -> {
+                        docDomainObject.setPublicationEndDatetime(newPublicationEndDate);
+                        docDomainObject.setDepublisherId(Imcms.getUser().getId());
+                    });
+        }
 
         // in case of new doc with specified publisher without publication start date/time
         Optional.ofNullable(docEntity.publisherId).ifPresent(docDomainObject::setPublisherId);
-
         Optional.ofNullable(docEntity.missingLangProp).ifPresent(docDomainObject::setDisabledLanguageShowMode);
     }
 
-    private Date getValidatedDateOrNull(String date, String time, Date documentDatetime) {
+    private Date getValidDateOrNull(String date, String time, Date documentDatetime) {
         if (isValidDateTime(date, time)) {
             try {
                 String newDateStr = date + " " + time;
