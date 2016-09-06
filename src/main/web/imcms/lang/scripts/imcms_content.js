@@ -489,9 +489,15 @@ Imcms.Content.FileUploader.prototype = {
 		var dragAndDropArea = $(this._target),
 			that = this,
 			draggingcount = 0;
+            //TODO check if file in another way for future
+			// testContent = function (event) {
+			// 	return event.dataTransfer.types.some(function (val) {
+			// 		return "files" === val.toLowerCase()
+			// 	})
+			// };
 
 		$('.files-wrapper').on("dragenter", function (event) {
-			if (!testContent(event)) return false;
+			// if (!testContent(event)) return false;
 			dragAndDropArea.find(".dropzone").addClass("hover");
 			draggingcount++;
 			event.stopPropagation();
@@ -501,8 +507,7 @@ Imcms.Content.FileUploader.prototype = {
 
 		$('.files-wrapper').on("dragover", function (event) {
 			// dragAndDropArea.append($("<div>").addClass("dropzone"));
-			// if()
-			if (!testContent(event)) return false;
+			// if (!testContent(event)) return false;
 			dragAndDropArea.find(".dropzone").addClass("hover");
 			event.stopPropagation();
 			event.preventDefault();
@@ -510,8 +515,7 @@ Imcms.Content.FileUploader.prototype = {
 		});
 
 		$('.files-wrapper').on("dragleave", function (event) {
-			$(this).find("input").hasClass('h5_validator_error')
-			if (!testContent(event)) return false;
+			// if (!testContent(event)) return false;
 			draggingcount--;
 			if (draggingcount === 0) {
 				dragAndDropArea.find(".dropzone").removeClass("hover");
@@ -524,7 +528,7 @@ Imcms.Content.FileUploader.prototype = {
 
 		dragAndDropArea[0].ondrop = function (event) {
 			event.preventDefault();
-			if (!testContent(event)) return false;
+			// if (!testContent(event)) return false;
 			dragAndDropArea.find(".dropzone").removeClass("hover");
 
 			var postedFile = event.dataTransfer.files[0];
