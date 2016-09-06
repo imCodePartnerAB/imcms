@@ -644,6 +644,11 @@ Imcms.Document.Viewer.prototype = {
             .attr("ignored", true)
             .placeholder("Empty")
             .end()
+            .button()
+            .class("imcms-positive")
+            .html("Clear")
+            .on("click", this.setDateTimeEmpty.bind(this, "publication-end"))
+            .end()
             .end()
 
             .div()
@@ -695,14 +700,25 @@ Imcms.Document.Viewer.prototype = {
         this._builder.ref("life-cycle-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["life-cycle"]));
     },
     setDateTimeNow: function (kindOfDate) {
-        var currentDate = new Date(), // get current date
-            dateArr = currentDate.toISOString().split("T"), // get date by Greenwich "2016-08-10T07:28:00.899Z"
-            date = dateArr[0], // before "T" we have date "2016-08-10"
-            timeArr = dateArr[1].split(":"), // "07:28:00.899Z" we split to set correct hours and skip sec
-            time = currentDate.getHours() + ":" + timeArr[1]; // correct time
+        var currentDate = new Date(),
+            dateTime = {
+                date: currentDate.toISOString().slice(0, 10), // smth like "2016-09-06"
+                time: currentDate.getHours() + ":" + currentDate.getMinutes()
+            };
 
-        $("input.date-time-short[name=" + kindOfDate + "-date]").val(date);
-        $("input.date-time-short[name=" + kindOfDate + "-time]").val(time);
+        this.setDateTime(kindOfDate, dateTime);
+    },
+    setDateTimeEmpty: function (kindOfDate) {
+        var dateTime = {
+            date: "--",
+            time: "--"
+        };
+
+        this.setDateTime(kindOfDate, dateTime);
+    },
+    setDateTime: function (kindOfDate, dateTimeObj) {
+        $("input.date-time-short[name=" + kindOfDate + "-date]").val(dateTimeObj.date);
+        $("input.date-time-short[name=" + kindOfDate + "-time]").val(dateTimeObj.time);
     },
     openUsersList: function () {
         $('#users-select').removeClass("hidden");
