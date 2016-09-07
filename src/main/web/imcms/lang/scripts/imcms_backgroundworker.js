@@ -123,14 +123,13 @@ Imcms.BackgroundWorker = {
         $this.completedTasksOptions.push(tskOpt);
 
         if (!$this.registeredTasks.length) {
-            var redirectURL = $this.completedTasksOptions
+            var redirectOption = $this.completedTasksOptions
                 .find(function (option) {
                     return option.redirectURL; // find first option with redirecting, other will be ignored!
-                })
-                .redirectURL;
+                });
 
-            if (redirectURL) {
-                location.href = redirectURL;
+            if (redirectOption) {
+                location.href = redirectOption.redirectURL;
 
             } else if ($this.completedTasksOptions.some(function (element) {
                     return element.refreshPage;
