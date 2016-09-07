@@ -46,7 +46,27 @@ Imcms.Document.Loader = function () {
 Imcms.Document.Loader.prototype = {
     _api: new Imcms.Document.API(),
     _editor: {},
-    show: function () {
+    show: function (windowMode) {
+        if(windowMode){
+            $(this._editor._builder[0]).addClass("window-mode pop-up-form");
+
+        //     $(this._editor._builder[0]).parents(".ui-dialog").removeClass()
+        // .addClass("pop-up-form menu-viewer reset")
+        //     $(this._editor._builder[0]).dialog({
+        //         height: 500,
+        //                 width: 700,
+        //                 modal: true,
+        //                 buttons: {
+        //                 //     "Add selected": $.proxy(this._onApply, this),
+        //                     Cancel: function () {
+        //                         $(this).dialog("destroy");
+        //                     }
+        //                 }
+        //
+        //     });
+        //
+
+        }
         this._editor.open();
     },
     init: function () {
@@ -202,6 +222,7 @@ Imcms.Document.Editor.prototype = {
             .div()
             .class("imcms-content")
             .table()
+            .on("click", $.proxy(this.onSelectElement, this))
             .column("id", "document-sort", {doc_sorting: "meta_id"})
             .column("title", "document-sort", {doc_sorting: "meta_headline"})
             .column("alias", "document-sort", {doc_sorting: "alias"})
@@ -218,6 +239,14 @@ Imcms.Document.Editor.prototype = {
             .html("Create new…")
             .on("click", $.proxy(this.showDocumentViewer, this))
             .end()
+
+            .button()
+            .class("imcms-positive create-new")
+            // .hidden()
+            .html("Add selected…")
+            .on("click", $.proxy(this.addSelected, this))
+            .end()
+
             .button()
             .class("imcms-positive hidden pluralCopyArchButton")
             .html("Copy")
@@ -326,6 +355,30 @@ Imcms.Document.Editor.prototype = {
             $("<li>").attr('id', category.id).text(category.name)
         );
     },
+    onSelectElement: function (e) {
+        var $table = $(e.currentTarget),
+//            tableOffset = $table.offset();
+            element = $table.find("tbody tr").filter(function (index, element) {
+                return $.contains(element, e.target);
+            });
+        if (!element.length) {
+            return false;
+        }
+        element = element[0];
+        if (this._selectedRow)
+            this._selectedRow.className = "";
+        this._selectedRow = element;
+        this._selectedRow.className = "clicked";
+    },
+    addSelected: function () {
+        var data = {
+            id: this._selectedRow.children[0].innerHTML,
+            label: this._selectedRow.children[1].children[0] != null ? this._selectedRow.children[1].children[0].innerHTML : ""
+        };
+        Imcms.Editors.Menu._menuHelpers[0]._addItem(data);
+        this.close();
+    },
+
 
     onApply: function (viewer) {
         var data = viewer.serialize();
@@ -1933,6 +1986,33 @@ Imcms.Document.ListAdapter.prototype = {
     },
     buildList: function (data) {
         $.each(data, $.proxy(this.addDocumentToList, this));
+
+        var count = this._pagerHandler._options.count;
+        var pageNumber = this._pagerHandler._pageNumber - 1;
+
+        $(this._container.getHTMLElement()).find("tr")
+            .filter(function (pos) {
+                return pos >= pageNumber * count;
+            }).each(function (pos, item) {
+            $(item).on("dragstart", function (event) {
+                $(".ui-widget-overlay").css("display", "none");
+
+                //Required to get correct label from table
+                var tmpData = {};
+                tmpData['name'] = data[pos].name;
+                tmpData['alias'] = data[pos].alias;
+                tmpData['language'] = data[pos].language;
+                tmpData['id'] = data[pos].id;
+                tmpData['label'] = [data[pos].label[0] != null ? data[pos].label[0].innerText : ""];
+                tmpData['lastModified'] = data[pos].lastModified;
+                tmpData['type'] = data[pos].type;
+                tmpData['status'] = data[pos].status;
+                event.originalEvent.dataTransfer.setData("data", JSON.stringify(tmpData));
+            }).on("dragend", function () {
+                $(".ui-widget-overlay").css("display", "block");
+            }).attr("draggable", true);
+        });
+
     },
     addDocumentToList: function (position, data) {
         var deleteButton = $("<button>"),

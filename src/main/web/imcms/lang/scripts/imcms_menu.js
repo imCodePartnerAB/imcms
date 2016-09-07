@@ -338,10 +338,6 @@ Imcms.Menu.Editor.prototype = {
 	_dialogAdapter: {},
 	_autocompleteAdapter: {},
 	init: function () {
-		this._dialogAdapter = new Imcms.Document.DocumentSearchDialog(function (term, callback) {
-			Imcms.Editors.Document.filteredDocumentList(term, callback)
-		}).result($.proxy(this._addItem, this));
-
 		return this.buildEditor()
 			.buildMenu()
 			.buildExtra();
@@ -384,7 +380,7 @@ Imcms.Menu.Editor.prototype = {
 			.button()
 			.html($.i18n.prop('menu.search'))
 			.class("imcms-positive add")
-			.on("click", $.proxy(this._dialogAdapter.open, this._dialogAdapter))
+			.on("click", $.proxy(this._openDocumentEditor, this))
 			.end()
 			.button()
 			.html($.i18n.prop('menu.new'))
@@ -513,6 +509,11 @@ Imcms.Menu.Editor.prototype = {
 			}.bind(this)
 		});
 	},
+
+	_openDocumentEditor: function () {
+		Imcms.Editors.Document.show(true);
+	},
+
 	_onDrop: function (event) {
 		event.preventDefault();
 		var data = JSON.parse(event.dataTransfer.getData("data"));

@@ -1348,6 +1348,11 @@ ul.jqtree-tree ul.jqtree_common {
 	z-index: 99999;
 }
 
+.editor-form.editor-document.window-mode{
+	z-index: 100000;
+	left: 400px;
+}
+
 .editor-content .imcms-content .content-preview {
 	width: 130px;
 	height: 130px;
@@ -1606,6 +1611,11 @@ ul.jqtree-tree ul.jqtree_common {
 	visibility: visible;
 	text-align: center;
 	background-image: none;
+}
+
+.editor-document .imcms-content table tr.clicked td {
+	background: #0091e1;
+	color: white;
 }
 
 .waiter {
