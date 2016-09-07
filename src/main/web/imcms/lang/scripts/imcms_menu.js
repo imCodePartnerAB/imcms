@@ -526,20 +526,31 @@ Imcms.Menu.Editor.prototype = {
 			this._addItem({id: answer.data.id, label: answer.data.languages[Imcms.language.name].title});
 		}, this));
 	},
-	saveAndClose: function () {
-		$(this._builder[0]).hide();
-		var response = Imcms.Utils.margeObjectsProperties(
-			{data: JSON.stringify(this._treeAdapter.collect())},
-			$(this._target).data());
-		this._loader.updateMenu(response, Imcms.BackgroundWorker.createTask({
-			showProcessWindow: true,
-			refreshPage: true
-		}));
-	},
-	close: function () {
-		$(this._builder[0]).hide();
-		this._treeAdapter.reset();
-	},
+    addCloseEvent: function () {
+        window.dispatchEvent(new CustomEvent("imcmsEditorClose"), {
+            detail: {
+                editor: "menu"
+            }
+        });
+    },
+    saveAndClose: function () {
+        this.addCloseEvent();
+        $(this._builder[0]).hide();
+
+        var response = Imcms.Utils.margeObjectsProperties(
+            {data: JSON.stringify(this._treeAdapter.collect())},
+            $(this._target).data());
+
+        this._loader.updateMenu(response, Imcms.BackgroundWorker.createTask({
+            showProcessWindow: true,
+            refreshPage: true
+        }));
+    },
+    close: function () {
+        this.addCloseEvent();
+        $(this._builder[0]).hide();
+        this._treeAdapter.reset();
+    },
     copyChecked: function () {
         this.doWithAllCheckedDocs(function (id) {
             Imcms.Editors.Document.copyDocument(id, this.addItem.bind(this));
