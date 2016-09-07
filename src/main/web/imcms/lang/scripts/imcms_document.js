@@ -49,22 +49,129 @@ Imcms.Document.Loader.prototype = {
     show: function (windowMode) {
         if(windowMode){
             $(this._editor._builder[0]).addClass("window-mode pop-up-form");
+            // $(this._editor._builder[0]).addClass("pop-up-form menu-viewer reset");
+            // $(this._editor._builder[0]).addClass("ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-resizable");
 
+
+
+            // $(this._editor._builder[0]).addClass("window-mode pop-up-form");
+            //
+            //     $(this._editor._builder[0]).parents(".ui-dialog").removeClass()
+            // .addClass("pop-up-form menu-viewer reset")
+            //     $(this._editor._builder[0]).dialog({
+            //         height: 500,
+            //                 width: 700,
+            //                 modal: true
+            //         //         buttons: {
+            //                 //     "Add selected": $.proxy(this._onApply, this),
+            //                 //     Cancel: function () {
+            //                 //         $(this).dialog("destroy");
+            //                 //     }
+            //                 // }
+            //
+            //     });
+            //
+
+
+
+
+        //
         //     $(this._editor._builder[0]).parents(".ui-dialog").removeClass()
-        // .addClass("pop-up-form menu-viewer reset")
+        // .addClass("pop-up-form window-mode reset")
+        // // .addClass("window-mode")
         //     $(this._editor._builder[0]).dialog({
         //         height: 500,
-        //                 width: 700,
-        //                 modal: true,
-        //                 buttons: {
-        //                 //     "Add selected": $.proxy(this._onApply, this),
-        //                     Cancel: function () {
-        //                         $(this).dialog("destroy");
-        //                     }
-        //                 }
-        //
+        //         // autoOpen: false,
+        //         width: 700,
+        //         modal: true,
+        //         buttons: {
+        //             Cancel: function () {
+        //                 $(this).dialog("destroy");
+        //             }
+        //         }
         //     });
-        //
+
+            //
+            // var dialog = $(this._editor._builder[0]).parents(".ui-dialog");
+            // //             .removeClass()
+            // //             .addClass("pop-up-form reset")
+            // //             .css({position: "fixed"});
+            // //
+            //         header = dialog.children(".ui-dialog-titlebar")
+            //             .removeClass();
+            // //     ,         // .addClass("imcms-header")
+            // //
+            //         content = dialog.children(".ui-dialog-content").append($(this._editor._builder[0]))
+            //             // .removeClass()
+            // //             .addClass("imcms-content");
+            // //
+            //         footer = dialog.children(".ui-dialog-buttonpane")
+            //             // .removeClass()
+            //  // ,           // .addClass("imcms-footer"),
+            // //
+            //         buttons = footer.find(".ui-button").removeClass();
+            // //
+            //     header.find(".ui-dialog-title").remove();
+            //     header.children("button").remove();
+
+
+            //
+            //     // $(buttons[0]).addClass("imcms-positive");
+            //     $(buttons[0]).addClass("imcms-neutral cancel-button");
+
+
+
+
+
+            // buildDialog: function () {
+            //     this._dialog = $(this._builder[0]).dialog({
+            //         autoOpen: false,
+            //         height: 500,
+            //         width: 700,
+            //         modal: true,
+            //         buttons: {
+            //             "Add selected": $.proxy(this._onApply, this),
+            //             Cancel: function () {
+            //                 $(this).dialog("close");
+            //             }
+            //         }
+            //     });
+            //     var dialog = $(this._builder[0]).parents(".ui-dialog")
+            //             .removeClass()
+            //             .addClass("pop-up-form menu-viewer reset")
+            //             .css({position: "fixed"}),
+            //
+            //         header = dialog.children(".ui-dialog-titlebar")
+            //             .removeClass()
+            //             .addClass("imcms-header")
+            //             .append($("<div>").addClass("imcms-title").text("DOCUMENT SELECTOR"))
+            //             .on('mousedown', function (e) {
+            //                 // jquery-ui (or smth else) pins onmousedown event listener on this header and produces
+            //                 // errors while clicking on it
+            //                 e.preventDefault();
+            //             }),
+            //
+            //         content = dialog.children(".ui-dialog-content")
+            //             .removeClass()
+            //             .addClass("imcms-content"),
+            //
+            //         footer = dialog.children(".ui-dialog-buttonpane")
+            //             .removeClass()
+            //             .addClass("imcms-footer"),
+            //
+            //         buttons = footer.find(".ui-button").removeClass();
+            //
+            //     header.find(".ui-dialog-title").remove();
+            //     header.children("button").empty().removeClass().addClass("imcms-close-button");
+            //
+            //     $(buttons[0]).addClass("imcms-positive");
+            //     $(buttons[1]).addClass("imcms-neutral cancel-button");
+
+
+
+
+
+
 
         }
         this._editor.open();
@@ -1985,33 +2092,35 @@ Imcms.Document.ListAdapter.prototype = {
         this.buildPager();
     },
     buildList: function (data) {
+        console.log(data);
         $.each(data, $.proxy(this.addDocumentToList, this));
 
-        var count = this._pagerHandler._options.count;
-        var pageNumber = this._pagerHandler._pageNumber - 1;
-
-        $(this._container.getHTMLElement()).find("tr")
-            .filter(function (pos) {
-                return pos >= pageNumber * count;
-            }).each(function (pos, item) {
-            $(item).on("dragstart", function (event) {
-                $(".ui-widget-overlay").css("display", "none");
-
-                //Required to get correct label from table
-                var tmpData = {};
-                tmpData['name'] = data[pos].name;
-                tmpData['alias'] = data[pos].alias;
-                tmpData['language'] = data[pos].language;
-                tmpData['id'] = data[pos].id;
-                tmpData['label'] = [data[pos].label[0] != null ? data[pos].label[0].innerText : ""];
-                tmpData['lastModified'] = data[pos].lastModified;
-                tmpData['type'] = data[pos].type;
-                tmpData['status'] = data[pos].status;
-                event.originalEvent.dataTransfer.setData("data", JSON.stringify(tmpData));
-            }).on("dragend", function () {
-                $(".ui-widget-overlay").css("display", "block");
-            }).attr("draggable", true);
-        });
+        // var count = this._pagerHandler._options.count;
+        // var pageNumber = this._pagerHandler._pageNumber - 1;
+        //
+        // $(this._container.getHTMLElement()).find("tr")
+        //     .filter(function (pos) {
+        //         // return pos >= pageNumber * count;
+        //         return pos >= 0;
+        //     }).each(function (pos, item) {
+        //     $(item).on("dragstart", function (event) {
+        //         $(".ui-widget-overlay").css("display", "none");
+        //         console.log(data[pos]);
+        //         //Required to get correct label from table
+        //         var tmpData = {};
+        //         tmpData['name'] = data[pos].name;
+        //         tmpData['alias'] = data[pos].alias;
+        //         tmpData['language'] = data[pos].language;
+        //         tmpData['id'] = data[pos].id;
+        //         tmpData['label'] = [data[pos].label[0] != null ? data[pos].label[0].innerText : ""];
+        //         tmpData['lastModified'] = data[pos].lastModified;
+        //         tmpData['type'] = data[pos].type;
+        //         tmpData['status'] = data[pos].status;
+        //         event.originalEvent.dataTransfer.setData("data", JSON.stringify(tmpData));
+        //     }).on("dragend", function () {
+        //         $(".ui-widget-overlay").css("display", "block");
+        //     }).attr("draggable", true);
+        // });
 
     },
     addDocumentToList: function (position, data) {
@@ -2060,6 +2169,38 @@ Imcms.Document.ListAdapter.prototype = {
         }.bind(this));
         deleteButton
             .click($.proxy(this.deleteDocument, this, data.id, row));
+
+
+
+
+        var count = this._pagerHandler._options.count;
+        var pageNumber = this._pagerHandler._pageNumber - 1;
+
+        $(this._container.getHTMLElement()).find("tr")
+            .filter(function (pos) {
+                // return pos >= pageNumber * count;
+                return pos >= 0;
+            }).each(function (pos, item) {
+            $(item).on("dragstart", function (event) {
+                $(".ui-widget-overlay").css("display", "none");
+                console.log(data[pos]);
+                //Required to get correct label from table
+                var tmpData = {};
+                tmpData['name'] = data[pos].name;
+                tmpData['alias'] = data[pos].alias;
+                tmpData['language'] = data[pos].language;
+                tmpData['id'] = data[pos].id;
+                tmpData['label'] = [data[pos].label[0] != null ? data[pos].label[0].innerText : ""];
+                tmpData['lastModified'] = data[pos].lastModified;
+                tmpData['type'] = data[pos].type;
+                tmpData['status'] = data[pos].status;
+                event.originalEvent.dataTransfer.setData("data", JSON.stringify(tmpData));
+            }).on("dragend", function () {
+                $(".ui-widget-overlay").css("display", "block");
+            }).attr("draggable", true);
+        });
+
+
     },
     showPluralArchiveAndCopyButtons: function () {
         var checked = $('input.doc-checkbox')
