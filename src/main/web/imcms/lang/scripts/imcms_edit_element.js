@@ -57,7 +57,7 @@ Imcms.SingleEdit = {
                 }
 
                 // add event listener to redirect to document when editor closes
-                window.addEventListener("imcmsEditorClose", function () {
+                Imcms.Events.on("imcmsEditorClose", function () {
                     Imcms.BackgroundWorker.createTask({
                         showProcessWindow: true,
                         redirectURL: Imcms.Linker.get("admin.document.redirect.full", Imcms.document.meta)

@@ -526,15 +526,8 @@ Imcms.Menu.Editor.prototype = {
 			this._addItem({id: answer.data.id, label: answer.data.languages[Imcms.language.name].title});
 		}, this));
 	},
-    addCloseEvent: function () {
-        window.dispatchEvent(new CustomEvent("imcmsEditorClose"), {
-            detail: {
-                editor: "menu"
-            }
-        });
-    },
     saveAndClose: function () {
-        this.addCloseEvent();
+        Imcms.Events.addEvent("imcmsEditorClose", {editor: "menu"});
         $(this._builder[0]).hide();
 
         var response = Imcms.Utils.margeObjectsProperties(
@@ -547,7 +540,7 @@ Imcms.Menu.Editor.prototype = {
         }));
     },
     close: function () {
-        this.addCloseEvent();
+        Imcms.Events.addEvent("imcmsEditorClose", {editor: "menu"});
         $(this._builder[0]).hide();
         this._treeAdapter.reset();
     },
