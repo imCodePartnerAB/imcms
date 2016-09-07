@@ -147,7 +147,7 @@ Imcms.Loop.Editor.prototype = {
 	},
 	buildLoopsList: function (data) {
 		if (!data) {
-			this._loader.entriesList({loopId: $(this._target).data().prettify().no}, $.proxy(this.buildLoopsList, this));
+			this._loader.entriesList({loopId: $(this._target).data().no}, $.proxy(this.buildLoopsList, this));
 			return this;
 		}
 		this._loopListAdapter =
@@ -169,7 +169,7 @@ Imcms.Loop.Editor.prototype = {
 	save: function () {
 		this._loader.update(
 			this._loopListAdapter.collect(),
-			$(this._target).data().prettify().no,
+			$(this._target).data().no,
 			Imcms.BackgroundWorker.createTask({refreshPage: true})
 		);
 		this.close();

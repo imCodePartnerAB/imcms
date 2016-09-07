@@ -89,7 +89,7 @@ Imcms.Image.Editor.prototype = {
     _source: {},
     _primarySource: {},
     init: function () {
-        var data = $(this._element).data().prettify();
+        var data = $(this._element).data();
         this._id = data.no;
         this._meta = data.meta;
         this._loopId = data.loop;

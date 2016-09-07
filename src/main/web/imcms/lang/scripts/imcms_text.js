@@ -69,7 +69,7 @@ Imcms.Text.Editor.prototype = {
     },
     _onConfirm: function (event) {
         var editor = event.editor;
-        var data = jQuery(editor.element.$).data().prettify();
+        var data = jQuery(editor.element.$).data();
         var isHtmlContent = (data.contenttype === "html");
         data.meta = Imcms.document.meta;
 
@@ -98,7 +98,7 @@ Imcms.Text.Editor.prototype = {
         editor.on('configLoaded', this._onEditorLoaded.bind(this));
     },
     _onGetTextHistory: function (event) {
-        var data = jQuery(event.editor.element.$).data().prettify();
+        var data = jQuery(event.editor.element.$).data();
         data.meta = Imcms.document.meta;
 
         this._api.get(data, event.data.callback);
