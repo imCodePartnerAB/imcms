@@ -34,46 +34,42 @@ Imcms.SingleEdit = {
             })
         }
     },
-    Image: {
-        /**
-         * Runs Image editor when it is initialized
-         */
-        init: function () {
-            Imcms.SingleEdit.openEditor();
-        }
-    },
-    Menu: {
-        /**
-         * Runs Menu editor when it is initialized
-         */
-        init: function () {
-            Imcms.SingleEdit.openEditor();
-        }
-    },
 
     /**
-     * Unified editor calling
+     * Unified editor
      */
-    openEditor: function () {
-        // as there are no any event for Imcms.Editors that it is initialized, we should use setTimeout
-        setTimeout(function () {
-            try {
-                $('.editor-frame').click();
-            } catch (e) {
-                if (Imcms.SingleEdit.failCount < 50) { // to prevent recycling
-                    Imcms.SingleEdit.failCount++;
-                    console.log("SingleEdit::init : Waiting for Imcms.Editors initializing first.");
-                    Imcms.SingleEdit.openEditor();
-                    return;
-                }
-            }
-
+    Editor: {
+        /**
+         * Unified editor calling, runs when editor is loaded
+         */
+        init: function () {
+            // as there are no any event for Imcms.Editors that it is initialized, we should use setTimeout
             setTimeout(function () {
-                $("#tagWrap").removeClass("hidden");
-            }, 500);
-        }, 10);
+                try {
+                    $('.editor-frame').click();
+                } catch (e) {
+                    if (Imcms.SingleEdit.failCount < 50) { // to prevent recycling
+                        Imcms.SingleEdit.failCount++;
+                        console.log("SingleEdit::init : Waiting for Imcms.Editors initializing first.");
+                        Imcms.SingleEdit.Editor.init();
+                        return;
+                    }
+                }
+
+                // add event listener to redirect to document when editor closes
+                window.addEventListener("imcmsEditorClose", function () {
+                    Imcms.BackgroundWorker.createTask({
+                        showProcessWindow: true,
+                        redirectURL: Imcms.Linker.get("admin.document.redirect.full", Imcms.document.meta)
+                    })()
+                });
+            }, 15);
+        }
     }
 };
+
+// prevents document's body shift to right as usually in edit mode
+Imcms.isEditMode = false;
 
 $(document).ready(function () {
     $("body").css("padding-left", 0);
