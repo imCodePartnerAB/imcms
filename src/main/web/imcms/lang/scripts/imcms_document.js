@@ -54,10 +54,8 @@ Imcms.Document.Loader.prototype = {
                 modal: true,
             });
 
-            var dialog = $(this._editor._builder[0]).parents(".ui-dialog");
-
-
-            dialog.replaceWith($(".window-mode")).addClass("ui-dialog");
+            // Replacing dialog modal with own div
+            $(this._editor._builder[0]).parents(".ui-dialog").replaceWith($(".window-mode")).addClass("ui-dialog");
 
             $(this._editor._builder[0]).on("dialogclose", function (event, ui) {
                 $(this).removeClass("window-mode");
