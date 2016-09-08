@@ -57,7 +57,10 @@ function switchMe(editor, callback) {
         case 1: {
             editorConfig.on = {
                 instanceReady: function (e) {
-                    e.editor.focusManager.focus();
+                    try {
+                        e.editor.focusManager.focus();
+                    } catch (ignore) {
+                    }
                     e.editor.element.$.focus();
                     if (callback) {
                         callback.call(null, e);
