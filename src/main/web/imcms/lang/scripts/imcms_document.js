@@ -48,7 +48,7 @@ Imcms.Document.Loader.prototype = {
     _editor: {},
     show: function (windowMode) {
         if(windowMode){
-            $(this._editor._builder[0]).addClass("window-mode");
+            $(this._editor._builder[0]).addClass("window-mode pop-up-form");
             // $(this._editor._builder[0]).addClass("pop-up-form menu-viewer reset");
             // $(this._editor._builder[0]).addClass("ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-resizable");
 
