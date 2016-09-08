@@ -262,11 +262,7 @@ Imcms.Image.Editor.prototype = {
         $(this._builder[0]).fadeOut("fast");
 
         // fire event imcmsEditorClose for listeners in any another part of app
-        window.dispatchEvent(new CustomEvent("imcmsEditorClose", {
-            detail: {
-                editor: "image"
-            }
-        }))
+        Imcms.Events.fire("imcmsEditorClose");
     },
     open: function () {
         this._getSource(this._source);

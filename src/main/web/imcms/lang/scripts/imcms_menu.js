@@ -528,7 +528,7 @@ Imcms.Menu.Editor.prototype = {
 		}, this));
 	},
     saveAndClose: function () {
-        Imcms.Events.addEvent("imcmsEditorClose", {editor: "menu"});
+        Imcms.Events.fire("imcmsEditorClose");
         $(this._builder[0]).hide();
 
         var response = Imcms.Utils.margeObjectsProperties(
@@ -541,7 +541,7 @@ Imcms.Menu.Editor.prototype = {
         }));
     },
     close: function () {
-        Imcms.Events.addEvent("imcmsEditorClose", {editor: "menu"});
+        Imcms.Events.fire("imcmsEditorClose");
         $(this._builder[0]).hide();
         this._treeAdapter.reset();
     },

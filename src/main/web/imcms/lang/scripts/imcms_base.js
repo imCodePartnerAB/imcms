@@ -132,15 +132,3 @@ Imcms.FrameBuilder.prototype = {
         return $("<div>").addClass("imcms-title").html(this._title);
     }
 };
-
-Imcms.Events = {
-    addEvent: function (name, detail) {
-        window.dispatchEvent(new CustomEvent(name), {
-            detail: detail
-        });
-    },
-
-    on: function (name, callback) {
-        window.addEventListener(name, callback);
-    }
-};
