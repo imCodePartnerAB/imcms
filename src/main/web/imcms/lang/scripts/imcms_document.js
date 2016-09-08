@@ -2087,40 +2087,41 @@ Imcms.Document.ListAdapter.prototype = {
     _ul: {},
     _loader: {},
     _pagerHandler: undefined,
+    _pageNumber: -1,
     init: function () {
         this._loader.documentsList($.proxy(this.buildList, this));
         this.buildPager();
     },
     buildList: function (data) {
-        console.log(data);
+        this._pageNumber++;
         $.each(data, $.proxy(this.addDocumentToList, this));
 
-        // var count = this._pagerHandler._options.count;
-        // var pageNumber = this._pagerHandler._pageNumber - 1;
-        //
-        // $(this._container.getHTMLElement()).find("tr")
-        //     .filter(function (pos) {
-        //         // return pos >= pageNumber * count;
-        //         return pos >= 0;
-        //     }).each(function (pos, item) {
-        //     $(item).on("dragstart", function (event) {
-        //         $(".ui-widget-overlay").css("display", "none");
-        //         console.log(data[pos]);
-        //         //Required to get correct label from table
-        //         var tmpData = {};
-        //         tmpData['name'] = data[pos].name;
-        //         tmpData['alias'] = data[pos].alias;
-        //         tmpData['language'] = data[pos].language;
-        //         tmpData['id'] = data[pos].id;
-        //         tmpData['label'] = [data[pos].label[0] != null ? data[pos].label[0].innerText : ""];
-        //         tmpData['lastModified'] = data[pos].lastModified;
-        //         tmpData['type'] = data[pos].type;
-        //         tmpData['status'] = data[pos].status;
-        //         event.originalEvent.dataTransfer.setData("data", JSON.stringify(tmpData));
-        //     }).on("dragend", function () {
-        //         $(".ui-widget-overlay").css("display", "block");
-        //     }).attr("draggable", true);
-        // });
+        var count = this._pagerHandler._options.count;
+        var pageNumber = this._pageNumber;
+
+        $(this._container.getHTMLElement()).find("tr")
+            .filter(function (pos) {
+                return pos >= pageNumber * count;
+            }).each(function (pos, item) {
+            $(item).on("dragstart", function (event) {
+                var realPos = pos - 1;
+
+                $(".ui-widget-overlay").css("display", "none");
+                //Required to get correct label from table
+                var tmpData = {};
+                tmpData['name'] = data[realPos].name;
+                tmpData['alias'] = data[realPos].alias;
+                tmpData['language'] = data[realPos].language;
+                tmpData['id'] = data[realPos].id;
+                tmpData['label'] = [data[realPos].label[0] != null ? data[realPos].label[0].innerText : ""];
+                tmpData['lastModified'] = data[realPos].lastModified;
+                tmpData['type'] = data[realPos].type;
+                tmpData['status'] = data[realPos].status;
+                event.originalEvent.dataTransfer.setData("data", JSON.stringify(tmpData));
+            }).on("dragend", function () {
+                $(".ui-widget-overlay").css("display", "block");
+            }).attr("draggable", true);
+        });
 
     },
     addDocumentToList: function (position, data) {
@@ -2169,38 +2170,6 @@ Imcms.Document.ListAdapter.prototype = {
         }.bind(this));
         deleteButton
             .click($.proxy(this.deleteDocument, this, data.id, row));
-
-
-
-
-        var count = this._pagerHandler._options.count;
-        var pageNumber = this._pagerHandler._pageNumber - 1;
-
-        $(this._container.getHTMLElement()).find("tr")
-            .filter(function (pos) {
-                // return pos >= pageNumber * count;
-                return pos >= 0;
-            }).each(function (pos, item) {
-            $(item).on("dragstart", function (event) {
-                $(".ui-widget-overlay").css("display", "none");
-                console.log(data[pos]);
-                //Required to get correct label from table
-                var tmpData = {};
-                tmpData['name'] = data[pos].name;
-                tmpData['alias'] = data[pos].alias;
-                tmpData['language'] = data[pos].language;
-                tmpData['id'] = data[pos].id;
-                tmpData['label'] = [data[pos].label[0] != null ? data[pos].label[0].innerText : ""];
-                tmpData['lastModified'] = data[pos].lastModified;
-                tmpData['type'] = data[pos].type;
-                tmpData['status'] = data[pos].status;
-                event.originalEvent.dataTransfer.setData("data", JSON.stringify(tmpData));
-            }).on("dragend", function () {
-                $(".ui-widget-overlay").css("display", "block");
-            }).attr("draggable", true);
-        });
-
-
     },
     showPluralArchiveAndCopyButtons: function () {
         var checked = $('input.doc-checkbox')
@@ -2246,12 +2215,14 @@ Imcms.Document.ListAdapter.prototype = {
         this._container.clear();
         this._loader.documentsList(function (data) {
             this.buildList(data);
+            this._pageNumber = -1;
             this._pagerHandler.reset();
         }.bind(this));
     },
     reloadWithData: function (word, sort, userId, categoriesId) {
         this._container.clear();
         this._pagerHandler.reset(word, sort, userId, categoriesId);
+        this._pageNumber = -1;
         this._loader.filteredDocumentList({
             term: word || "",
             sort: sort || "",
