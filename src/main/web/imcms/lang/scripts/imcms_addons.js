@@ -119,13 +119,18 @@ CKEDITOR.plugins.add("documentSaver", {
                 e.on("focus", e.focusHandler);
             }
         };
-        var confirmCommandDefinition = CKEDITOR.newCommandWithExecution(confirmCommandFunction);
-        editor.addCommand("confirmChanges", confirmCommandDefinition);
+        var confirmCommandWithEvent = CKEDITOR.newCommandWithExecution(
+            Imcms.Events.getCallbackOr("TextEditorRedirect", confirmCommandFunction)
+        );
+        editor.addCommand("confirmChanges", confirmCommandWithEvent);
         editor.ui.addButton('confirm', {
             label: 'Save all changes',
             command: "confirmChanges",
             icon: "images/ic_apply.png"
         });
+
+        var confirmCommand = CKEDITOR.newCommandWithExecution(confirmCommandFunction);
+        editor.addCommand("confirmChangesWithoutEvent", confirmCommand);
 
         var cancelCommandFunction = function (e) {
             var newEditor = switchToolbarCommandFunction(e),
@@ -147,7 +152,9 @@ CKEDITOR.plugins.add("documentSaver", {
                 hideCommand(e);
             }
         };
-        var cancelCommandDefinition = CKEDITOR.newCommandWithExecution(cancelCommandFunction);
+        var cancelCommandDefinition = CKEDITOR.newCommandWithExecution(
+            Imcms.Events.getCallbackOr("TextEditorRedirect", cancelCommandFunction)
+        );
         editor.addCommand("cancelChanges", cancelCommandDefinition);
         editor.ui.addButton('cancel', {
             label: 'Cancel all changes and restore document to previous state',
@@ -238,7 +245,7 @@ CKEDITOR.switchFormatCommandDefinition = CKEDITOR.newCommandWithExecution(functi
         : editor.element.data("contenttype", "html");
 
     CKEDITOR.wasSwitched = true;
-    editor.execCommand("confirmChanges");
+    editor.execCommand("confirmChangesWithoutEvent");
     CKEDITOR.wasSwitched = false;
 });
 

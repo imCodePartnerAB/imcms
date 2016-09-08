@@ -12,25 +12,22 @@ Imcms.SingleEdit = {
 
     Text: {
         /**
-         * Indicates that CKEditor was switched (or not) to full-screen
-         * @type {boolean}
-         */
-        fired: false,
-
-        /**
          * When CKEditor loads, switches it to full-screen
          */
         init: function () {
             CKEDITOR.on('instanceReady', function (event) {
-                if (!Imcms.SingleEdit.Text.fired) {
-                    var editor = event.editor;
+                var editor = event.editor;
 
-                    if (editor.elementMode == 3) { // only if not full screen to prevent recycled switching
-                        editor.execCommand('toolbarswitch');
-                    }
-
-                    Imcms.SingleEdit.Text.fired = true;
+                if (editor.config.toolbar.indexOf("max") != 0) {
+                    editor.execCommand('toolbarswitch');
                 }
+            });
+
+            Imcms.Events.on("TextEditorRedirect", function () {
+                Imcms.BackgroundWorker.createTask({
+                    showProcessWindow: true,
+                    redirectURL: Imcms.Linker.get("admin.document.redirect.full", Imcms.document.meta)
+                })()
             })
         }
     },
