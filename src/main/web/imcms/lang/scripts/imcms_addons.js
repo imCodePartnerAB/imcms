@@ -104,7 +104,7 @@ CKEDITOR.plugins.add("documentSaver", {
 
         editor.on('blur', editor.blurHandler);
 
-        var confirmCommandFunction = function (e, callback) {
+        var confirmNoEvent = function (e, callback) {
             if (!callback) {
                 e = switchToolbarCommandFunction(e);
             }
@@ -119,9 +119,13 @@ CKEDITOR.plugins.add("documentSaver", {
                 e.on("focus", e.focusHandler);
             }
         };
-        var confirmCommandWithEvent = CKEDITOR.newCommandWithExecution(
-            Imcms.Events.getCallbackOr("TextEditorRedirect", confirmCommandFunction)
-        );
+
+        var confirmWithEvent = function (e) {
+            e = switchToolbarCommandFunction(e);
+            var callback = Imcms.Events.getCallback("TextEditorRedirect");
+            CKEDITOR.fire("confirmChanges", {callback: callback}, e);
+        };
+        var confirmCommandWithEvent = CKEDITOR.newCommandWithExecution(confirmWithEvent);
         editor.addCommand("confirmChanges", confirmCommandWithEvent);
         editor.ui.addButton('confirm', {
             label: 'Save all changes',
@@ -129,8 +133,8 @@ CKEDITOR.plugins.add("documentSaver", {
             icon: "images/ic_apply.png"
         });
 
-        var confirmCommand = CKEDITOR.newCommandWithExecution(confirmCommandFunction);
-        editor.addCommand("confirmChangesWithoutEvent", confirmCommand);
+        var confirmCommandNoEvent = CKEDITOR.newCommandWithExecution(confirmNoEvent);
+        editor.addCommand("confirmChangesWithoutEvent", confirmCommandNoEvent);
 
         var cancelCommandFunction = function (e) {
             var newEditor = switchToolbarCommandFunction(e),
@@ -167,7 +171,7 @@ CKEDITOR.plugins.add("documentSaver", {
                 .css({
                     backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_loader.gif" + ")"
                 });
-            confirmCommandFunction(e, function () {
+            confirmNoEvent(e, function () {
                 $button.css({
                     backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_save.png" + ")"
                 });
