@@ -166,7 +166,6 @@ Imcms.Text.Editor.prototype = {
             imageUtilsAndOtherDefaultPlugins,
             advancedFontPlugins,
             textPlugins,
-            sourcePlugin,
             textEditingPlugins,
             advancedActionsPlugins,
             imcmsCustomPlugins
@@ -178,7 +177,6 @@ Imcms.Text.Editor.prototype = {
             imageUtilsAndOtherDefaultPlugins,
             advancedFontPlugins,
             textPlugins,
-            sourcePlugin,
             textEditingPlugins,
             advancedActionsPlugins,
             plainTextPlugins
