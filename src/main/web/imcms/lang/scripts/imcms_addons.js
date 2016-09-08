@@ -67,6 +67,15 @@ CKEDITOR.define("confirmChanges", {});
 CKEDITOR.define("validateText", {});
 CKEDITOR.define("getTextHistory", {});
 
+CKEDITOR.newCommandWithExecution = function (executionFunc) {
+    return {
+        modes: {wysiwyg: 1, source: 1},// This command works in both editing modes.
+        editorFocus: false,// This command will not auto focus editor before execution.
+        canUndo: false,// This command requires no undo snapshot.
+        exec: executionFunc
+    }
+};
+
 CKEDITOR.plugins.add("documentSaver", {
 	init: function (editor) {
 		var pluginName = "documentSaver";
@@ -92,115 +101,77 @@ CKEDITOR.plugins.add("documentSaver", {
 				}
 			}
 		};
-		var confirmCommandFunction = function (e, callback) {
-			if (!callback) {
-				e = switchToolbarCommandFunction(e);
-			}
-			CKEDITOR.fire("confirmChanges", {callback: callback}, e);
-			editor.documentSnapshot = e.getData();
-			e.resetDirty();
-			if (!callback) {
-				e.removeListener('blur', e.blurHandler);
-				e.focusManager.unlock();
-				e.element.$.blur();
-				e.focusManager.blur();
-				e.on("focus", e.focusHandler);
-			}
-		};
-		var confirmCommandDefinition =
-		{
-			// This command works in both editing modes.
-			modes: {wysiwyg: 1, source: 1},
 
-			// This command will not auto focus editor before execution.
-			editorFocus: false,
+        editor.on('blur', editor.blurHandler);
 
-			// This command requires no undo snapshot.
-			canUndo: false,
+        var confirmCommandFunction = function (e, callback) {
+            if (!callback) {
+                e = switchToolbarCommandFunction(e);
+            }
+            CKEDITOR.fire("confirmChanges", {callback: callback}, e);
+            editor.documentSnapshot = e.getData();
+            e.resetDirty();
+            if (!callback) {
+                e.removeListener('blur', e.blurHandler);
+                e.focusManager.unlock();
+                e.element.$.blur();
+                e.focusManager.blur();
+                e.on("focus", e.focusHandler);
+            }
+        };
+        var confirmCommandDefinition = CKEDITOR.newCommandWithExecution(confirmCommandFunction);
+        editor.addCommand("confirmChanges", confirmCommandDefinition);
+        editor.ui.addButton('confirm', {
+            label: 'Save all changes',
+            command: "confirmChanges",
+            icon: "images/ic_apply.png"
+        });
 
-			exec: confirmCommandFunction
-		};
-		editor.addCommand("confirmChanges", confirmCommandDefinition);
-		var saveCommandFunction = function (e) {
-			var $button = $('.' + e.id).find('.cke_button__savedata_icon')
-				.css({
-					backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_loader.gif" + ")"
-				});
-			confirmCommandFunction(e, function () {
-				$button.css({
-					backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_save.png" + ")"
-				});
-			});
-		};
-		var saveCommandDefinition =
-		{
-			// This command works in both editing modes.
-			modes: {wysiwyg: 1, source: 1},
+        var cancelCommandFunction = function (e) {
+            var newEditor = switchToolbarCommandFunction(e),
+                hideCommand = function (e) {
+                    setTimeout(function () {
+                        e.removeListener('instanceReady', hideCommand);
+                        e.setData(e.documentSnapshot);
+                        e.removeListener('blur', e.blurHandler);
+                        e.focusManager.unlock();
+                        e.element.$.blur();
+                        e.focusManager.blur();
+                        e.on("focus", e.focusHandler);
+                    }, 1);
+                };
+            if (newEditor != e) {
+                newEditor.on('instanceReady', hideCommand.bind(null, newEditor));
 
-			// This command will not auto focus editor before execution.
-			editorFocus: false,
+            } else {
+                hideCommand(e);
+            }
+        };
+        var cancelCommandDefinition = CKEDITOR.newCommandWithExecution(cancelCommandFunction);
+        editor.addCommand("cancelChanges", cancelCommandDefinition);
+        editor.ui.addButton('cancel', {
+            label: 'Cancel all changes and restore document to previous state',
+            command: "cancelChanges",
+            icon: "images/ic_cancel.png"
+        });
 
-			// This command requires no undo snapshot.
-			canUndo: false,
-
-			exec: saveCommandFunction
-		};
-		editor.addCommand("saveChanges", saveCommandDefinition);
-		var cancelCommandFunction = function (e) {
-			var newEditor = switchToolbarCommandFunction(e),
-				hideCommand = function (e) {
-					setTimeout(function () {
-						e.removeListener('instanceReady', hideCommand);
-						e.setData(e.documentSnapshot);
-						e.removeListener('blur', e.blurHandler);
-						e.focusManager.unlock();
-						e.element.$.blur();
-						e.focusManager.blur();
-						e.on("focus", e.focusHandler);
-					}, 1);
-				};
-			if (newEditor != e) {
-				newEditor.on('instanceReady', hideCommand.bind(null, newEditor));
-			}
-			else {
-				hideCommand(e);
-			}
-		};
-		var cancelCommandDefinition =
-		{
-			// This command works in both editing modes.
-			modes: {wysiwyg: 1, source: 1},
-
-			// This command will not auto focus editor before execution.
-			editorFocus: false,
-
-			// This command requires no undo snapshot.
-			canUndo: false,
-
-			exec: cancelCommandFunction
-		};
-		editor.on('blur', editor.blurHandler);
-
-
-		editor.addCommand("cancelChanges", cancelCommandDefinition);
-		editor.ui.addButton('confirm',
-			{
-				label: 'Save all changes',
-				command: "confirmChanges",
-				icon: "images/ic_apply.png"
-			});
-		editor.ui.addButton('cancel',
-			{
-				label: 'Cancel all changes and restore document to previous state',
-				command: "cancelChanges",
-				icon: "images/ic_cancel.png"
-			});
-		editor.ui.addButton('saveData',
-			{
-				label: 'Save all changes',
-				command: "saveChanges",
-				icon: "images/ic_save.png"
-			});
+        var saveCommandDefinition = CKEDITOR.newCommandWithExecution(function (e) {
+            var $button = $('.' + e.id).find('.cke_button__savedata_icon')
+                .css({
+                    backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_loader.gif" + ")"
+                });
+            confirmCommandFunction(e, function () {
+                $button.css({
+                    backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_save.png" + ")"
+                });
+            });
+        });
+        editor.addCommand("saveChanges", saveCommandDefinition);
+        editor.ui.addButton('saveData', {
+            label: 'Save all changes',
+            command: "saveChanges",
+            icon: "images/ic_save.png"
+        });
 	}
 });
 CKEDITOR.dialog.add("documentSaver", function (e) {
@@ -261,24 +232,15 @@ CKEDITOR.defineToolbar = function (editor) {
 };
 
 CKEDITOR.wasSwitched = false;
-CKEDITOR.switchFormatCommandDefinition = {
-    // This command works in both editing modes.
-    modes: {wysiwyg: 1, source: 1},
-    // This command will not auto focus editor before execution.
-    editorFocus: false,
-    // This command requires no undo snapshot.
-    canUndo: false,
+CKEDITOR.switchFormatCommandDefinition = CKEDITOR.newCommandWithExecution(function (editor) {
+    editor.element.data("contenttype") === "html"
+        ? editor.element.data("contenttype", "from-html")
+        : editor.element.data("contenttype", "html");
 
-    exec: function (editor) {
-        editor.element.data("contenttype") === "html"
-            ? editor.element.data("contenttype", "from-html")
-            : editor.element.data("contenttype", "html");
-
-        CKEDITOR.wasSwitched = true;
-        editor.execCommand("confirmChanges");
-        CKEDITOR.wasSwitched = false;
-    }
-};
+    CKEDITOR.wasSwitched = true;
+    editor.execCommand("confirmChanges");
+    CKEDITOR.wasSwitched = false;
+});
 
 CKEDITOR.plugins.add("switchFormatToHTML", {
     init: function (editor) {
@@ -321,31 +283,16 @@ CKEDITOR.plugins.add("fileBrowser", {
 			}
 			editor.focusManager.focus();
 			editor.element.$.focus();
-
 		};
 
-		var openBrowserCommandDefinition =
-		{
-			// This command works in both editing modes.
-			modes: {wysiwyg: 1, source: 1},
-
-			// This command will not auto focus editor before execution.
-			editorFocus: false,
-
-			// This command requires no undo snapshot.
-			canUndo: false,
-
-			exec: onChooseFile
-		};
+		var openBrowserCommandDefinition = CKEDITOR.newCommandWithExecution(onChooseFile);
 		editor.addCommand("openBrowser", openBrowserCommandDefinition);
 
-
-		editor.ui.addButton('openBrowser',
-			{
-				label: 'Open Image Browser',
-				command: "openBrowser",
-				icon: "images/ic_images.png"
-			});
+        editor.ui.addButton('openBrowser', {
+            label: 'Open Image Browser',
+            command: "openBrowser",
+            icon: "images/ic_images.png"
+        });
 	}
 });
 
@@ -370,30 +317,15 @@ CKEDITOR.plugins.add("w3cValidator", {
 				}
 			}, e);
 		};
-		var w3cValidateCommandDefinition =
-		{
-			// This command works in both editing modes.
-			modes: {wysiwyg: 1, source: 1},
-
-			// This command will not auto focus editor before execution.
-			editorFocus: false,
-
-			// This command requires no undo snapshot.
-			canUndo: false,
-
-			exec: w3cValidateCommand
-		};
-
+		var w3cValidateCommandDefinition = CKEDITOR.newCommandWithExecution(w3cValidateCommand);
 		editor.addCommand("w3cValidate", w3cValidateCommandDefinition);
 		editor.addCommand("w3cValidateDialog", new CKEDITOR.dialogCommand("w3cValidationResultDialog"));
 
-
-		editor.ui.addButton('w3cValidate',
-			{
-				label: 'Validate Content over W3C',
-				command: "w3cValidate",
-				icon: "images/ic_w3c.png"
-			});
+        editor.ui.addButton('w3cValidate', {
+            label: 'Validate Content over W3C',
+            command: "w3cValidate",
+            icon: "images/ic_w3c.png"
+        });
 	}
 });
 CKEDITOR.dialog.add("w3cValidationResultDialog", function (e) {
@@ -409,10 +341,8 @@ CKEDITOR.dialog.add("w3cValidationResultDialog", function (e) {
 			$sourceContainer = $("<div>").appendTo($container),
 			$source = $("<code>").addClass("language-html").html(item.line + ": " + item.source.replace(/(<([^>]+)>)/ig, "")).appendTo($sourceContainer);
 
-
 		Prism.highlightElement($source[0]);
 	});
-
 
 	return {
 		title: 'Validation Result Dialog',
@@ -452,29 +382,15 @@ CKEDITOR.plugins.add("textHistory", {
 				}
 			}, e);
 		};
-		var textHistoryCommandDefinition =
-		{
-			// This command works in both editing modes.
-			modes: {wysiwyg: 1, source: 1},
-
-			// This command will not auto focus editor before execution.
-			editorFocus: false,
-
-			// This command requires no undo snapshot.
-			canUndo: false,
-
-			exec: textHistoryCommand
-		};
-
+		var textHistoryCommandDefinition = CKEDITOR.newCommandWithExecution(textHistoryCommand);
 		editor.addCommand("textHistory", textHistoryCommandDefinition);
 		editor.addCommand("textHistoryDialog", new CKEDITOR.dialogCommand("textHistory"));
 
-		editor.ui.addButton('textHistory',
-			{
-				label: 'Text History',
-				command: "textHistory",
-				icon: "images/ic_history.png"
-			});
+        editor.ui.addButton('textHistory', {
+            label: 'Text History',
+            command: "textHistory",
+            icon: "images/ic_history.png"
+        });
 	}
 });
 
