@@ -41,13 +41,13 @@
                 <div id="tagWrap" class="hidden">
                     <imcms:image no="${imageNo}" document="${document.id}"/>
                 </div>
-                <script>Imcms.SingleEdit.Image.init()</script>
+                <script>Imcms.SingleEdit.Editor.init()</script>
             </c:if>
             <c:if test="${menuEdit}">
                 <div id="tagWrap" class="hidden">
                     <imcms:menu no='${menuNo}' docId="${document.id}"/>
                 </div>
-                <script>Imcms.SingleEdit.Menu.init()</script>
+                <script>Imcms.SingleEdit.Editor.init()</script>
             </c:if>
             <c:if test="${noEdit}">
                 <h3><p>You should to set at least one parameter:</p>

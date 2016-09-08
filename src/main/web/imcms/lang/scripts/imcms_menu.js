@@ -351,7 +351,7 @@ Imcms.Menu.Editor.prototype = {
 			.class("imcms-header")
 			.div()
 			.on("drop", this._onDrop.bind(this))
-			.html("Menu Editor " + this._target.data().prettify().meta + "-" + this._target.data().prettify().no)
+			.html("Menu Editor " + $(this._target).data().meta + "-" + $(this._target).data().no)
 			.class("imcms-title")
 			.end()
 			/*.button()
@@ -435,7 +435,7 @@ Imcms.Menu.Editor.prototype = {
 		return this;
 	},
 	buildMenu: function () {
-		this._loader.read(this._target.data().prettify(), function (data) {
+		this._loader.read($(this._target).data(), function (data) {
 			var result = [];
 			data.forEach(function (it) {
 				var treePosition = it["treeSortIndex"].match(/[0-9]|\./) ?
@@ -527,20 +527,24 @@ Imcms.Menu.Editor.prototype = {
 			this._addItem({id: answer.data.id, label: answer.data.languages[Imcms.language.name].title});
 		}, this));
 	},
-	saveAndClose: function () {
-		$(this._builder[0]).hide();
-		var response = Imcms.Utils.margeObjectsProperties(
-			{data: JSON.stringify(this._treeAdapter.collect())},
-			this._target.data().prettify());
-		this._loader.updateMenu(response, Imcms.BackgroundWorker.createTask({
-			showProcessWindow: true,
-			refreshPage: true
-		}));
-	},
-	close: function () {
-		$(this._builder[0]).hide();
-		this._treeAdapter.reset();
-	},
+    saveAndClose: function () {
+        Imcms.Events.addEvent("imcmsEditorClose", {editor: "menu"});
+        $(this._builder[0]).hide();
+
+        var response = Imcms.Utils.margeObjectsProperties(
+            {data: JSON.stringify(this._treeAdapter.collect())},
+            $(this._target).data());
+
+        this._loader.updateMenu(response, Imcms.BackgroundWorker.createTask({
+            showProcessWindow: true,
+            refreshPage: true
+        }));
+    },
+    close: function () {
+        Imcms.Events.addEvent("imcmsEditorClose", {editor: "menu"});
+        $(this._builder[0]).hide();
+        this._treeAdapter.reset();
+    },
     copyChecked: function () {
         this.doWithAllCheckedDocs(function (id) {
             Imcms.Editors.Document.copyDocument(id, this.addItem.bind(this));

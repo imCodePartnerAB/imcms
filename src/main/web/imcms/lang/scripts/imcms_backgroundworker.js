@@ -1,5 +1,7 @@
 /**
  * Created by Shadowgun on 04.06.2015.
+ *
+ * Edited by Serhii Maksymchuk on 07.09.2016
  */
 Imcms.BackgroundWorker = {
     registeredTasks: [],
@@ -8,12 +10,22 @@ Imcms.BackgroundWorker = {
     contentChangedListeners: [],
 
     /**
-     *
+     * Options for every task, all are optional
+     */
+    Options: {
+        refreshPage: false,
+        showProcessWindow: false,
+        redirectURL: ""
+    },
+
+    /**
+     * Creates process window with gif logo while BackgroundWorker works
      */
     createProcessWindow: function () {
         var $this = Imcms.BackgroundWorker,
             $window = $(window),
             $spinner = $("<div>").addClass("spinner");
+
         $("body").css({overflow: "hidden"});
         $this.processWindow = $("<div>")
             .addClass("process-window")
@@ -29,7 +41,7 @@ Imcms.BackgroundWorker = {
 
     /**
      * Create Background work and show process window while work undone
-     * @param opt
+     * @param opt - see {@link Imcms.BackgroundWorker.Options}
      * @return {Function|*}
      */
     createTask: function (opt) {
@@ -111,7 +123,15 @@ Imcms.BackgroundWorker = {
         $this.completedTasksOptions.push(tskOpt);
 
         if (!$this.registeredTasks.length) {
-            if ($this.completedTasksOptions.some(function (element) {
+            var redirectOption = $this.completedTasksOptions
+                .find(function (option) {
+                    return option.redirectURL; // find first option with redirecting, other will be ignored!
+                });
+
+            if (redirectOption) {
+                location.href = redirectOption.redirectURL;
+
+            } else if ($this.completedTasksOptions.some(function (element) {
                     return element.refreshPage;
                 })) {
                 $this.reloadPage()
@@ -125,8 +145,16 @@ Imcms.BackgroundWorker = {
      * Reload Page and replace <body> with new
      */
     reloadPage: function () {
+        Imcms.BackgroundWorker.loadPage(location.href);
+    },
+
+    /**
+     * Loads Page by url and replaces <body> with new
+     * @param url - url of result page
+     */
+    loadPage: function (url) {
         $.ajax({
-            url: location.href,
+            url: url,
             success: Imcms.BackgroundWorker.refreshPageContent
         });
     },
@@ -139,24 +167,24 @@ Imcms.BackgroundWorker = {
         var $this = Imcms.BackgroundWorker;
         var pattern = /<body[^>]*>((.|[\n\r])*)<\/body>/im;
 
-        //$('html[manifest=saveappoffline.appcache]').attr('content', '');
         content = pattern.exec(content)[0];
         content = $($.parseHTML($.trim(content)));
 
         $("body>*").remove();
-        $("body").append(content).append($this.processWindow);
+        var $body = $("body");
+        $body.append(content).append($this.processWindow);
+
+        if (!$.cookie("userLoggedIn")) {
+            Imcms.isEditMode = false;
+        }
 
         new Imcms.Bootstrapper().bootstrap(Imcms.isEditMode);
 
         $this.contentChangedListeners.forEach(function (item) {
             item.call($this);
         });
-        if( !$.cookie("userLoggedIn")) {
-            if ($("body").css('paddingLeft').length > 0) {
-                $("body").removeAttr('style');
-            }
-        }
     },
+
     /**
      * Close Process Window
      * Usually it happens when all tasks have been done
@@ -178,9 +206,6 @@ Imcms.BackgroundWorker = {
      * @param {Function} listener
      */
     addOnContentChangedListener: function (listener) {
-        var $this = Imcms.BackgroundWorker;
-
-        $this.contentChangedListeners.push(listener);
+        Imcms.BackgroundWorker.contentChangedListeners.push(listener);
     }
 };
-Imcms.BackgroundWorker.Options = {refreshPage: false, showProcessWindow: false};

@@ -182,7 +182,7 @@ Linker.prototype = {
             link = this._getLink(name, args);
         }
 
-        if (!link) {
+        if (!link || !link.url) {
             throw new Error("Can not found link with name '" + name + "' and arguments [" + args + "]");
         }
 

@@ -89,7 +89,7 @@ Imcms.Image.Editor.prototype = {
     _source: {},
     _primarySource: {},
     init: function () {
-        var data = $(this._element).data().prettify();
+        var data = $(this._element).data();
         this._id = data.no;
         this._meta = data.meta;
         this._loopId = data.loop;
@@ -260,6 +260,13 @@ Imcms.Image.Editor.prototype = {
         this._source = this._primarySource;
         this._isShowed = false;
         $(this._builder[0]).fadeOut("fast");
+
+        // fire event imcmsEditorClose for listeners in any another part of app
+        window.dispatchEvent(new CustomEvent("imcmsEditorClose", {
+            detail: {
+                editor: "image"
+            }
+        }))
     },
     open: function () {
         this._getSource(this._source);

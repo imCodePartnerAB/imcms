@@ -140,6 +140,13 @@
     ]
   },
   {
+    "name": "admin.document.redirect.full",
+    "url": "/servlet/AdminDoc?meta_id={1}",
+    "args": [
+      "metaId"
+    ]
+  },
+  {
     "name": "admin.document.redirect",
     "url": "AdminDoc?meta_id={1}&flags={2}",
     "args": [
