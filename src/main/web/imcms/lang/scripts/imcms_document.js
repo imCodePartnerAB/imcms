@@ -386,7 +386,9 @@ Imcms.Document.Editor.prototype = {
     },
     close: function () {
         $(this._builder[0]).fadeOut("fast");
-        $(this._builder[0]).dialog('close');
+        if ($(this._builder[0]).hasClass('ui-dialog-content')) {
+            $(this._builder[0]).dialog('close');
+        }
     },
     copyChecked: function () {
         var loader = this._loader;
