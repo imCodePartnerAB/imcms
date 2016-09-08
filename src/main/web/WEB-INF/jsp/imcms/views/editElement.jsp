@@ -9,10 +9,6 @@
 <imcms:variables/>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
-
-<c:set var="textEdit" value="${textNo ne null}"/>
-<c:set var="imageEdit" value="${imageNo ne null}"/>
-<c:set var="menuEdit" value="${menuNo ne null}"/>
 <c:set var="noEdit" value="${textNo eq null and imageNo eq null and menuNo eq null}"/>
 
 <!DOCTYPE html>
@@ -31,19 +27,19 @@
 <div class="container">
     <section class="content">
         <div class="wrapper">
-            <c:if test="${textEdit}">
+            <c:if test="${textNo ne null}">
                 <div id="textEdit" class="hidden">
                     <imcms:text no="${textNo}" document="${document.id}"/>
                 </div>
                 <script>Imcms.SingleEdit.Text.init()</script>
             </c:if>
-            <c:if test="${imageEdit}">
+            <c:if test="${imageNo ne null}">
                 <div id="tagWrap" class="hidden">
                     <imcms:image no="${imageNo}" document="${document.id}"/>
                 </div>
                 <script>Imcms.SingleEdit.Editor.init()</script>
             </c:if>
-            <c:if test="${menuEdit}">
+            <c:if test="${menuNo ne null}">
                 <div id="tagWrap" class="hidden">
                     <imcms:menu no='${menuNo}' docId="${document.id}"/>
                 </div>
