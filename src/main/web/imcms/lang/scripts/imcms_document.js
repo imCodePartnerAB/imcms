@@ -48,7 +48,7 @@ Imcms.Document.Loader.prototype = {
     _editor: {},
     show: function (windowMode) {
         if(windowMode){
-            $(this._editor._builder[0]).addClass("window-mode pop-up-form");
+            $(this._editor._builder[0]).addClass("window-mode");
             // $(this._editor._builder[0]).addClass("pop-up-form menu-viewer reset");
             // $(this._editor._builder[0]).addClass("ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-resizable");
 
@@ -58,21 +58,77 @@ Imcms.Document.Loader.prototype = {
             //
             //     $(this._editor._builder[0]).parents(".ui-dialog").removeClass()
             // .addClass("pop-up-form menu-viewer reset")
-            //     $(this._editor._builder[0]).dialog({
-            //         height: 500,
-            //                 width: 700,
-            //                 modal: true
-            //         //         buttons: {
-            //                 //     "Add selected": $.proxy(this._onApply, this),
-            //                 //     Cancel: function () {
-            //                 //         $(this).dialog("destroy");
-            //                 //     }
-            //                 // }
-            //
-            //     });
-            //
+                $(this._editor._builder[0]).dialog({
+                    // height: 500,
+                    //         width: 700,
+                            modal: true,
+                            buttons: {
+                            //     "Add selected": $.proxy(this._onApply, this),
+                                Cancel: function () {
+                                    $(this).dialog("close");
+                                }
+                            }
+
+                });
 
 
+
+
+
+            var dialog = $(this._editor._builder[0]).parents(".ui-dialog"),
+                // .replaceWith($(".window-mode"));
+
+
+
+
+
+                    footer = dialog.children(".ui-dialog-buttonpane"),
+            //             // .removeClass()
+            //  // ,           // .addClass("imcms-footer"),
+            // //
+                    buttons = footer.find(".ui-button");
+            // //
+            //     header.find(".ui-dialog-title").remove();
+            //     header.children("button").remove();
+
+
+            // var
+            // var events = $(buttons[0]).data('events');
+            // var $other_link = $(".editor-document.window-mode.imcms-close-button");
+            // if ( events ) {
+            //     for ( var eventType in events ) {
+            //         for ( var idx in events[eventType] ) {
+            //             this will essentially do $other_link.click( fn ) for each bound event
+                        // $other_link[ eventType ]( events[eventType][idx].handler );
+                    // }
+                // }
+            // }
+
+            buttons.remove();
+            dialog.replaceWith($(".window-mode"));
+
+            // $(buttons[0]).clone
+            //
+            //     // $(buttons[0]).addClass("imcms-positive");
+            //     $(buttons[0]).addClass("imcms-neutral cancel-button");
+
+
+
+
+
+
+
+            // //             .removeClass()
+            // //             .addClass("pop-up-form reset")
+            // //             .css({position: "fixed"});
+            // //
+            //         header = dialog.children(".ui-dialog-titlebar")
+            //             .removeClass();
+            // //     ,         // .addClass("imcms-header")
+            // //
+            //         content = dialog.children(".ui-dialog-content").append($(this._editor._builder[0]))
+            //             // .removeClass()
+            // //             .addClass("imcms-content");
 
 
         //
