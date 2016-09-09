@@ -34,7 +34,7 @@ String cp = request.getContextPath() ;
 	font: normal normal normal 12px Arial, Helvetica, Tahoma, Verdana, Sans-Serif;
 	color: #000;
 	text-align: left;
-	white-space: nowrap;
+	white-space: normal;
 	cursor: auto;
 	float: none;
 }
