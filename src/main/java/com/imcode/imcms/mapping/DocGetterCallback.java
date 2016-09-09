@@ -9,9 +9,11 @@ import imcode.server.user.UserDomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Parametrized callback for DocumentMapper#getDocument method.
@@ -61,7 +63,11 @@ public class DocGetterCallback {
             Set<DocumentLanguage> docLanguages = Imcms.getServices()
                     .getDocumentMapper()
                     .getCommonContents(doc.getId())
-                    .keySet();
+                    .entrySet()
+                    .stream()
+                    .filter(langToContent -> langToContent.getValue().getEnabled())
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toCollection(HashSet::new));
 
             if (!docLanguages.contains(language)) {
                 doc = doc.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE
