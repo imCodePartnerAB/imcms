@@ -59,7 +59,7 @@ public class DocGetterCallback {
 
         DocumentDomainObject doc = docMapper.getDefaultDocument(docId, language);
 
-        if (doc != null && !isDefaultLanguage) {
+        if (doc != null) {
             Set<DocumentLanguage> docLanguages = Imcms.getServices()
                     .getDocumentMapper()
                     .getCommonContents(doc.getId())
