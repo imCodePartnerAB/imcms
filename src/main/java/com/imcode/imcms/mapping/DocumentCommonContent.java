@@ -12,6 +12,7 @@ public final class DocumentCommonContent implements Serializable {
         private String headline;
         private String menuText;
         private String menuImageURL;
+        private Boolean enabled;
 
         public Builder() {
         }
@@ -20,10 +21,11 @@ public final class DocumentCommonContent implements Serializable {
             this.headline = documentCommonContent.headline;
             this.menuText = documentCommonContent.menuText;
             this.menuImageURL = documentCommonContent.menuImageURL;
+            this.enabled = documentCommonContent.enabled;
         }
 
         public DocumentCommonContent build() {
-            return new DocumentCommonContent(headline, menuText, menuImageURL);
+            return new DocumentCommonContent(headline, menuText, menuImageURL, enabled);
         }
 
 
@@ -39,6 +41,11 @@ public final class DocumentCommonContent implements Serializable {
 
         public Builder menuText(String menuText) {
             this.menuText = menuText;
+            return this;
+        }
+
+        public Builder enabled(Boolean enabled) {
+            this.enabled = enabled;
             return this;
         }
     }
@@ -67,14 +74,20 @@ public final class DocumentCommonContent implements Serializable {
      */
     private final String menuImageURL;
 
+    /**
+     * Is current language enabled
+     */
+    private final Boolean enabled;
+
     public DocumentCommonContent() {
-        this("", "", "");
+        this("", "", "", null);
     }
 
-    public DocumentCommonContent(String headline, String menuText, String menuImageURL) {
+    public DocumentCommonContent(String headline, String menuText, String menuImageURL, Boolean enabled) {
         this.headline = headline;
         this.menuText = menuText;
         this.menuImageURL = menuImageURL;
+        this.enabled = enabled;
     }
 
     @Override
@@ -99,6 +112,7 @@ public final class DocumentCommonContent implements Serializable {
                 .add("headline", headline)
                 .add("menuText", menuText)
                 .add("menuImageUrl", menuImageURL)
+                .add("enabled", enabled)
                 .toString();
     }
 
@@ -112,5 +126,9 @@ public final class DocumentCommonContent implements Serializable {
 
     public String getMenuImageURL() {
         return menuImageURL;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
     }
 }

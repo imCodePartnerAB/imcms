@@ -9,11 +9,10 @@ import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
-
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,8 +50,15 @@ public class DocumentContentMapper {
                 docRef.getId(), docRef.getLanguageCode()));
     }
 
-
+    /**
+     * Use {@link DocumentContentMapper#saveCommonContent(DocumentDomainObject)}
+     */
+    @Deprecated
     public void saveCommonContent(DocumentDomainObject doc, UserDomainObject user) {
+        saveCommonContent(doc);
+    }
+
+    public void saveCommonContent(DocumentDomainObject doc) {
         Language language = languageRepository.findByCode(doc.getLanguage().getCode());
         CommonContent dcc = commonContentRepository.findByDocIdAndLanguage(doc.getId(), language);
 
@@ -67,6 +73,7 @@ public class DocumentContentMapper {
         dcc.setHeadline(dccDO.getHeadline());
         dcc.setMenuText(dccDO.getMenuText());
         dcc.setMenuImageURL(dccDO.getMenuImageURL());
+        dcc.setEnabled(dccDO.getEnabled());
 
         commonContentRepository.save(dcc);
     }
@@ -78,6 +85,7 @@ public class DocumentContentMapper {
                 .headline(commonContent.getHeadline())
                 .menuImageURL(commonContent.getMenuImageURL())
                 .menuText(commonContent.getMenuText())
+                .enabled(commonContent.getEnabled())
                 .build();
     }
 }

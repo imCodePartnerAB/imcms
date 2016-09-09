@@ -372,14 +372,14 @@ public class DocumentController {
 		for (DocumentLanguage language : Imcms.getServices().getDocumentLanguages().getAll()) {
 			DocumentEntity.LanguageEntity languageEntity = entity.languages.get(language.getName());
 
-			if (languageEntity.enabled)
-				contentMap.put(language, DocumentCommonContent.builder()
-						.headline(languageEntity.title)
-						.menuImageURL(languageEntity.image)
-						.menuText(languageEntity.menuText)
-						.build()
-				);
-		}
+            contentMap.put(language, DocumentCommonContent.builder()
+                    .headline(languageEntity.title)
+                    .menuImageURL(languageEntity.image)
+                    .menuText(languageEntity.menuText)
+                    .enabled(languageEntity.enabled)
+                    .build()
+            );
+        }
 		return contentMap;
 	}
 
@@ -624,12 +624,15 @@ public class DocumentController {
 
 		for (Map.Entry<DocumentLanguage, DocumentCommonContent> entry : contentMap.entrySet()) {
 			DocumentEntity.LanguageEntity languageEntity = new DocumentEntity.LanguageEntity();
-			languageEntity.code = entry.getKey().getCode();
-			languageEntity.enabled = true;
-			languageEntity.image = entry.getValue().getMenuImageURL();
-			languageEntity.menuText = entry.getValue().getMenuText();
-			languageEntity.title = entry.getValue().getHeadline();
-			entity.languages.put(entry.getKey().getName(), languageEntity);
+            DocumentLanguage language = entry.getKey();
+            DocumentCommonContent commonContent = entry.getValue();
+
+            languageEntity.code = language.getCode();
+			languageEntity.enabled = commonContent.getEnabled();
+            languageEntity.image = commonContent.getMenuImageURL();
+			languageEntity.menuText = commonContent.getMenuText();
+			languageEntity.title = commonContent.getHeadline();
+			entity.languages.put(language.getName(), languageEntity);
 		}
 	}
 

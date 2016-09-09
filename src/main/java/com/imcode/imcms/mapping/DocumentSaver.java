@@ -147,7 +147,7 @@ public class DocumentSaver {
             doc.setMeta(meta);
             doc.setVersionNo(nextVersion.getNo());
 
-            documentContentMapper.saveCommonContent(doc, user);
+            documentContentMapper.saveCommonContent(doc);
         }
 
         // Currently only text doc has i18n content.
@@ -191,6 +191,7 @@ public class DocumentSaver {
             ormDcc.setHeadline(dcc.getHeadline());
             ormDcc.setMenuImageURL(dcc.getMenuImageURL());
             ormDcc.setMenuText(dcc.getMenuText());
+            ormDcc.setEnabled(dcc.getEnabled());
 
             if (ormDcc.getId() == null) {
                 Language ormLanguage = languageRepository.findByCode(language.getCode());
@@ -244,7 +245,7 @@ public class DocumentSaver {
             doc.setMeta(meta);
             doc.setVersionNo(copyVersion.getNo());
 
-            documentContentMapper.saveCommonContent(doc, user);
+            documentContentMapper.saveCommonContent(doc);
         }
 
         // Currently only text docs contain non-common i18n content
@@ -312,6 +313,7 @@ public class DocumentSaver {
             jpaDcc.setMenuImageURL(dcc.getMenuImageURL());
             jpaDcc.setMenuText(dcc.getMenuText());
             jpaDcc.setLanguage(jpaLanguage);
+            jpaDcc.setEnabled(dcc.getEnabled());
 
             commonContentRepository.save(jpaDcc);
         });

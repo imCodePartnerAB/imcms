@@ -45,6 +45,12 @@ public class CommonContent {
     @Column(name = "menu_image_url")
     private String menuImageURL;
 
+    /**
+     * Flag indicates is current language enabled for document
+     */
+    @Column(name = "is_enabled")
+    private Boolean isEnabled;
+
     public CommonContent() {
     }
 
@@ -54,6 +60,16 @@ public class CommonContent {
         this.headline = headline;
         this.menuText = menuText;
         this.menuImageURL = menuImageURL;
+    }
+
+    public CommonContent(Integer docId, Language language, String headline, String menuText, String menuImageURL,
+                         Boolean isEnabled) {
+        this.docId = docId;
+        this.language = language;
+        this.headline = headline;
+        this.menuText = menuText;
+        this.menuImageURL = menuImageURL;
+        this.isEnabled = isEnabled;
     }
 
     @Override
@@ -121,5 +137,13 @@ public class CommonContent {
 
     public void setMenuImageURL(String menuImageURL) {
         this.menuImageURL = menuImageURL;
+    }
+
+    public Boolean getEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        isEnabled = enabled;
     }
 }
