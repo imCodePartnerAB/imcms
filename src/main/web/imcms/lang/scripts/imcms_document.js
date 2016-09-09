@@ -638,6 +638,11 @@ Imcms.Document.Viewer.prototype = {
             .attr("ignored", true)
             .placeholder("Empty")
             .end()
+            .button()
+            .class("imcms-positive")
+            .html("Clear")
+            .on("click", this.setDateTimeEmpty.bind(this, "published"))
+            .end()
             .end()
 
             .span()
@@ -668,6 +673,11 @@ Imcms.Document.Viewer.prototype = {
             .attr("readonly", true)
             .attr("ignored", true)
             .placeholder("Empty")
+            .end()
+            .button()
+            .class("imcms-positive")
+            .html("Clear")
+            .on("click", this.setDateTimeEmpty.bind(this, "archived"))
             .end()
             .end()
 
