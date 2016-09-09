@@ -48,6 +48,7 @@ Imcms.Document.Loader.prototype = {
     _editor: {},
     show: function (windowMode) {
         if (windowMode) {
+            $("#addSelectedDE").removeClass("hidden");
             $(this._editor._builder[0]).addClass("window-mode ");
 
             $(this._editor._builder[0]).dialog({
@@ -59,6 +60,7 @@ Imcms.Document.Loader.prototype = {
 
             $(this._editor._builder[0]).on("dialogclose", function (event, ui) {
                 $(this).removeClass("window-mode");
+                $("#addSelectedDE").addClass("hidden");
                 $(this).dialog('destroy');
             });
         }
@@ -236,8 +238,8 @@ Imcms.Document.Editor.prototype = {
             .end()
 
             .button()
-            .class("imcms-positive create-new")
-            // .hidden()
+            .id("addSelectedDE")
+            .class("imcms-positive create-new hidden")
             .html("Add selected…")
             .on("click", $.proxy(this.addSelected, this))
             .end()
