@@ -123,4 +123,8 @@ public class DocGetterCallback {
         this.language = language;
         this.isDefaultLanguage = isDefaultLanguage;
     }
+
+    public void setLanguage(DocumentLanguage language) {
+        this.language = language;
+    }
 }

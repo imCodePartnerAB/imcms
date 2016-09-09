@@ -1,6 +1,9 @@
 package imcode.server.document.textdocument;
 
+import com.imcode.imcms.mapping.DocGetterCallback;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
@@ -156,8 +159,23 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     private boolean shouldBeAdded(LinkedList<MenuItemDomainObject.TreeMenuItemDomainObject> tree, MenuItemDomainObject item) {
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        int docId = item.getDocument().getId();
+
+        DocGetterCallback docGetterCallback = Imcms.getServices()
+                .getImcmsAuthenticatorAndUserAndRoleMapper()
+                .getDefaultUser() // check callback as default user because admin should see docs in menu as others
+                .getDocGetterCallback();
+
+        docGetterCallback.setLanguage(item.getDocument().getLanguage());
+        DocumentDomainObject doc = docGetterCallback.getDoc(docId, documentMapper);
+
+        if (doc == null) {
+            return false; // if user hasn't permissions to see document
+        }
+
         if (tree.isEmpty()) {
-            return true; // this is the first item, add it without any checking!
+            return true; // this is the first item, add it without level checking!
 
         } else {
             TreeSortKeyDomainObject lastKey = tree.getLast().getMenuItem().getTreeSortKey();
