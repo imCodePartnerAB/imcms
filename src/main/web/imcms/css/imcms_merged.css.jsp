@@ -132,36 +132,55 @@ editor theme
 }
 
 .editor-form .imcms-header .imcms-text-field {
+	float: left;
 	background: #f0f0f0;
 	border: none;
 	padding: 5px 10px;
-	width: 300px;
+	margin-right: 10px;
+	margin-left: 10px;
+	width: 15%;
 	outline: none;
 }
 
 .editor-form .imcms-header .select {
 	float: left;
+	width: 10%;
 	margin-right: 10px;
+	margin-left: 10px;
+	border: none;
+	padding: 0px;
+	outline: none;
 }
 
 .editor-form .imcms-header select {
-	background: #f0f0f0;
 	border: none;
 	padding: 5px 10px;
-	width: 100px;
+	outline: none;
+	background: #f0f0f0;
+	border: none;
 	outline: none;
 	resize: none;
+	float: left;
+	width: 100%;
 }
 
 .editor-form .imcms-header .category {
 	background: #f0f0f0;
 	float: left;
 	margin-right: 10px;
-	margin-left: 10px;
-	width: 300px;
-	position: absolute;
-	left: 37%;
+	margin-left: 20px;
+	width: 20%;
+	height: 29px;
 	top: 12px;
+}
+
+.editor-form .imcms-header .category .jstree-container-ul {
+	background: #f0f0f0;
+	float: left;
+	margin-left: 0px;
+	width: 20%;
+	position: absolute;
+	padding-top: 5px;
 }
 
 .editor-form .imcms-header .imcms-title {
@@ -816,15 +835,9 @@ editor theme
 	outline: none;
 }
 
-.editor-form .imcms-header .imcms-element{
-	margin: 0px 20px 0px 20px;
-}
-
 .editor-form .imcms-header .imcms-neutral{
 	margin-right: 20px;
 	margin-left: 20px;
-	position: absolute;
-	left: 55%;
 }
 
 .document-viewer .imcms-footer:before {
@@ -1349,7 +1362,9 @@ ul.jqtree-tree ul.jqtree_common {
 }
 
 .editor-form.editor-document.window-mode{
+	display: block;
 	z-index: 100000;
+	width: 70%;
 	left: 400px;
 }
 

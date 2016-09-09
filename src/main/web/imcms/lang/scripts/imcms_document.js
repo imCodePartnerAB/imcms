@@ -54,6 +54,7 @@ Imcms.Document.Loader.prototype = {
             $(this._editor._builder[0]).dialog({
                 modal: true,
             });
+            $(this._editor._builder[0]).removeAttr("style");
 
             // Replacing dialog modal with own div
             $(this._editor._builder[0]).parents(".ui-dialog").replaceWith($(".window-mode")).addClass("ui-dialog");
@@ -190,7 +191,9 @@ Imcms.Document.Editor.prototype = {
             .placeholder("Type to find document")
             .end()
 
+            .div()
             .reference("document-editor-header")
+            .end()
 
             .div()
             .id("categoryFilterList")
