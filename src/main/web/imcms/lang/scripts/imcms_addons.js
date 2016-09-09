@@ -661,7 +661,10 @@ Imcms.Events = {
      * @param name event's name
      */
     fire: function (name) {
-        Imcms.Events.getCallback(name).call();
+        var callback = Imcms.Events.getCallback(name);
+        if (callback) {
+            callback.call();
+        }
     },
 
     /**
