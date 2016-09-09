@@ -1363,7 +1363,7 @@ ul.jqtree-tree ul.jqtree_common {
 
 .editor-form.editor-document.window-mode{
 	display: block;
-	z-index: 100000;
+	z-index: 1005;
 	width: 70%;
 	left: 400px;
 }
