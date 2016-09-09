@@ -363,9 +363,9 @@ Imcms.Document.Editor.prototype = {
         }
         element = element[0];
         if (this._selectedRow)
-            this._selectedRow.className = "";
+            $(this._selectedRow).removeClass("clicked");
         this._selectedRow = element;
-        this._selectedRow.className = "clicked";
+        $(this._selectedRow).addClass("clicked");
     },
     addSelected: function () {
         var data = {
