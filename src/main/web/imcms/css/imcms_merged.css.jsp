@@ -1365,7 +1365,7 @@ ul.jqtree-tree ul.jqtree_common {
 	display: block;
 	z-index: 1006;
 	width: 70%;
-	left: 400px;
+	left: 15%;
 }
 
 .editor-content .imcms-content .content-preview {
