@@ -268,7 +268,12 @@ public class TextDocument extends Document {
 			child = visitor.getDocument();
 		}
 
-		public Document getDocument() {
+        public MenuItem(MenuItemDomainObject menuItem, DocumentDomainObject document, ContentManagementSystem contentManagementSystem) {
+            this.internalMenuItem = menuItem;
+            this.child = new Document(document, contentManagementSystem);
+        }
+
+        public Document getDocument() {
 			return child;
 		}
 
@@ -442,7 +447,7 @@ public class TextDocument extends Document {
 			for (MenuItemDomainObject menuItemDomainObject : menuItemsDomainObjects) {
 				DocumentDomainObject document = menuItemDomainObject.getDocument();
 				if (documentPredicate.evaluateDocument(document)) {
-					menuItems.add(new MenuItem(menuItemDomainObject, contentManagementSystem));
+					menuItems.add(new MenuItem(menuItemDomainObject, document, contentManagementSystem));
 				}
 			}
 			return menuItems.toArray(new MenuItem[menuItems.size()]);

@@ -4,7 +4,9 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.UserService;
+import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.DocumentCommonContent;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
@@ -571,5 +573,21 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setDisabledLanguageShowMode(String disabledLanguageShowMode) {
         meta.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(disabledLanguageShowMode));
+    }
+
+    public static DocumentDomainObject asDefaultUser(int docId, DocumentLanguage language) {
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+
+        DocGetterCallback docGetterCallback = Imcms.getServices()
+                .getImcmsAuthenticatorAndUserAndRoleMapper()
+                .getDefaultUser() // check callback as default user because admin should see docs in menu as others
+                .getDocGetterCallback();
+
+        docGetterCallback.setLanguage(language);
+        return docGetterCallback.getDoc(docId, documentMapper);
+    }
+
+    public static DocumentDomainObject asDefaultUser(DocumentDomainObject document) {
+        return DocumentDomainObject.asDefaultUser(document.getId(), document.getLanguage());
     }
 }

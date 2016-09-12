@@ -1,9 +1,11 @@
 package com.imcode.imcms.servlet.tags;
 
-import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.TextDocument;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.tags.Editor.MenuEditor;
 import imcode.server.Imcms;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentReference;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
@@ -43,8 +45,13 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 
 	public boolean nextMenuItem(MenuItemDomainObject menuItem) {
 		if (menuItem != null) {
+            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+            DocumentDomainObject document = DocumentDomainObject.asDefaultUser(menuItem.getDocument());
+            DocumentReference docIdentity = documentMapper.getDocumentReference(document);
+            menuItem.setDocumentReference(docIdentity);
+
 			this.menuItem = menuItem;
-			pageContext.setAttribute("menuitem", new TextDocument.MenuItem(menuItem, ContentManagementSystem.fromRequest(pageContext.getRequest())));
+			pageContext.setAttribute("menuitem", new TextDocument.MenuItem(menuItem, document, Imcms.fromRequest(pageContext.getRequest())));
 			return true;
 		} else {
 			invalidateMenuItem();
