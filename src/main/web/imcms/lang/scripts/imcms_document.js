@@ -2010,37 +2010,27 @@ Imcms.Document.ListAdapter.prototype = {
                 return pos >= pageNumber * count;
             }).each(function (pos, item) {
             $(item).on("dragstart", function (event) {
-                var realPos = pos - 1;
-
-                $(".ui-widget-overlay").css("display", "none");
-                //Required to get correct label from table
-                var tmpData = {};
-                tmpData['name'] = data[realPos].name;
-                tmpData['alias'] = data[realPos].alias;
-                tmpData['language'] = data[realPos].language;
-                tmpData['id'] = data[realPos].id;
-                tmpData['label'] = [data[realPos].label[0] != null ? data[realPos].label[0].innerText : ""];
-                tmpData['lastModified'] = data[realPos].lastModified;
-                tmpData['type'] = data[realPos].type;
-                tmpData['status'] = data[realPos].status;
-                event.originalEvent.dataTransfer.setData("data", JSON.stringify(tmpData));
-            }).on("dragend", function () {
-                $(".ui-widget-overlay").css("display", "block");
-            }).attr("draggable", true);
+                    var realPos = pos - 1;
+                    $(".ui-widget-overlay").css("display", "none");
+                    event.originalEvent.dataTransfer.setData("data", JSON.stringify(data[realPos]));
+                })
+                .on("dragend", function () {
+                    $(".ui-widget-overlay").css("display", "block");
+                })
+                .attr("draggable", true);
         });
-
     },
     addDocumentToList: function (position, data) {
         var deleteButton = $("<button>"),
-            row;
+            row, label;
 
         // linked doc title
         if (data.label) {
             var linkURL = Imcms.Linker.getContextPath() + "/" + (data.alias ? data.alias : data.id);
-            data.label = $("<a>").attr("href", linkURL).html(data.label);
+            label = $("<a>").attr("href", linkURL).html(data.label);
         }
 
-        this._container.row(data.id, data.label, data.alias, data.lastModified, data.type, $("<span>")
+        this._container.row(data.id, label, data.alias, data.lastModified, data.type, $("<span>")
             .append($('<input>')
                 .click(this.showPluralArchiveAndCopyButtons)
                 .addClass("field doc-checkbox")
