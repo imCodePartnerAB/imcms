@@ -137,7 +137,6 @@ editor theme
 	border: none;
 	padding: 5px 10px;
 	margin-right: 10px;
-	margin-left: 10px;
 	width: 15%;
 	outline: none;
 }
@@ -146,7 +145,6 @@ editor theme
 	float: left;
 	width: 10%;
 	margin-right: 10px;
-	margin-left: 10px;
 	border: none;
 	padding: 0px;
 	outline: none;
@@ -817,7 +815,7 @@ editor theme
 .pop-up-form .imcms-header .imcms-close-button {
 	cursor: pointer;
 	float: right;
-	margin: 0 20px;
+	margin: 0 20px 0 0;
 	padding: 0;
 	border: none;
 	width: 20px;
@@ -837,7 +835,6 @@ editor theme
 
 .editor-form .imcms-header .imcms-neutral{
 	margin-right: 20px;
-	margin-left: 20px;
 }
 
 .document-viewer .imcms-footer:before {
