@@ -9,9 +9,9 @@ import imcode.server.user.UserDomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -60,19 +60,27 @@ public class DocGetterCallback {
         DocumentDomainObject doc = docMapper.getDefaultDocument(docId, language);
 
         if (doc != null) {
-            Set<DocumentLanguage> docLanguages = Imcms.getServices()
+            List<DocumentLanguage> docLanguages = Imcms.getServices()
                     .getDocumentMapper()
                     .getCommonContents(doc.getId())
                     .entrySet()
                     .stream()
                     .filter(langToContent -> langToContent.getValue().getEnabled())
                     .map(Map.Entry::getKey)
-                    .collect(Collectors.toCollection(HashSet::new));
+                    .collect(Collectors.toCollection(ArrayList::new));
 
             if (!docLanguages.contains(language)) {
-                doc = doc.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE
-                        ? docMapper.getDefaultDocument(docId)
-                        : null;
+                if (doc.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.DO_NOT_SHOW
+                        || docLanguages.isEmpty()) {// none of languages are set as enabled, should not be seen
+                    doc = null;
+
+                } else if (docLanguages.size() == 1) {
+                    doc = docMapper.getDefaultDocument(docId, docLanguages.get(0));
+
+                } else {
+                    doc = docMapper.getDefaultDocument(docId);
+
+                }
             }
         }
 
