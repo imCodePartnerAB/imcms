@@ -747,7 +747,7 @@ Imcms.Document.Viewer.prototype = {
             .radio()
             .name(Imcms.Document.MissingLangProperties.name)
             .value(Imcms.Document.MissingLangProperties.defaultLang.name)
-            .label("Show in default language")
+            .label("Show in default language if enabled")
             .end()
             .end()
             .div()
