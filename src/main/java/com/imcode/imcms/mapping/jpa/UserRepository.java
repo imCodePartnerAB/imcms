@@ -13,6 +13,8 @@ public interface UserRepository extends JpaRepository<User, Integer>, UserReposi
 
     User findByLogin(String login);
 
+    User findByLoginAndActiveIsTrue(String login);
+
     User findByLoginIgnoreCase(String login);
 
     @Query("SELECT u FROM User u WHERE LOWER(u.email) = LOWER (?1)")

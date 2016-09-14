@@ -130,6 +130,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 		return StringUtils.isBlank(loginName) ? null : toDomainObject(userRepository.findByLogin(loginName));
 	}
 
+	public UserDomainObject getActiveUser(String loginName) {
+		return StringUtils.isBlank(loginName) ? null : toDomainObject(userRepository.findByLoginAndActiveIsTrue(loginName));
+	}
+
 	/**
 	 * @param login login
 	 * @return user or null if user can not be found.
@@ -342,12 +346,19 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 	}
 
 	public synchronized void addUser(UserDomainObject user) throws UserAlreadyExistsException {
-		if (null != getUser(user.getLoginName())) {
+		if (null != getActiveUser(user.getLoginName())) {
 			throw new UserAlreadyExistsException(
 					"A user with the name \"" + user.getLoginName() + "\" already exists.");
 		}
 		try {
-			modifyPasswordIfNecessary(user);
+
+			UserDomainObject deactivatedUser =getUser(user.getLoginName());
+			if(!deactivatedUser.isActive()){
+				deactivatedUser.setLoginName(deactivatedUser.getLoginName() + "_" +  System.currentTimeMillis());
+				deactivatedUser.setEmailAddress(deactivatedUser.getEmailAddress() + "_" +  System.currentTimeMillis());
+				saveUser(deactivatedUser);
+			}
+				modifyPasswordIfNecessary(user);
 
 			Number newUserId = (Number) services.getDatabase().execute(new InsertIntoTableDatabaseCommand("users", new String[][]{
 					{"login_name", user.getLoginName()},

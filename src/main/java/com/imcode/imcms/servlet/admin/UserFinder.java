@@ -64,6 +64,10 @@ public class UserFinder extends WebComponent {
         this.selectUserCommand.selectUser(selectedUser, request, response);
     }
 
+    public void archiveUser(UserDomainObject selectedUser, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        this.selectUserCommand.selectUser(selectedUser, request, response);
+    }
+
     public void setSelectUserCommand(SelectUserCommand selectUserCommand) {
         this.selectUserCommand = selectUserCommand;
     }
