@@ -21,7 +21,7 @@
 
 	<groupId>com.imcode.imcms</groupId>
 	<artifactId>imcms</artifactId>
-	<version>6.0.0-alpha106-SNAPSHOT</version>
+	<version>6.0.0-alpha106</version>
 	<packaging>war</packaging>
 
 	<name>imCMS</name>
