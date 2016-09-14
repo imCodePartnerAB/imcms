@@ -162,6 +162,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public UserDomainObject getUser(String loginName) {
         return StringUtils.isBlank(loginName) ? null : getUserFromSqlRow(sqlSelectUserByName(loginName));
     }
+    public UserDomainObject getActiveUser(String loginName) {
+        return StringUtils.isBlank(loginName) ? null :  getUserFromSqlRow(sqlSelectActiveUserByName(loginName));
+    }
 
 
     /**
@@ -189,6 +192,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         final Object[] parameters = new String[] { loginName.trim() };
         return (String[]) services.getDatabase().execute(new SqlQueryCommand(sqlSelectUsers(services)
                                                                              + " WHERE login_name = ?", parameters, Utility.STRING_ARRAY_HANDLER));
+    }
+
+    private String[] sqlSelectActiveUserByName(String loginName) {
+        final Object[] parameters = new String[] { loginName.trim() };
+        return (String[]) services.getDatabase().execute(new SqlQueryCommand(sqlSelectUsers(services)
+                + " WHERE login_name = ? AND active = 1", parameters, Utility.STRING_ARRAY_HANDLER));
     }
 
     private String[] sqlSelectUserByLoginIgnoreCase(String login) {
@@ -466,11 +475,18 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public synchronized void addUser(UserDomainObject user) throws UserAlreadyExistsException {
-        if ( null != getUser(user.getLoginName()) ) {
+        if ( null != getActiveUser(user.getLoginName()) ) {
             throw new UserAlreadyExistsException(
                     "A user with the name \"" + user.getLoginName() + "\" already exists.");
         }
         try {
+            UserDomainObject deactivatedUser = getUser(user.getLoginName());
+            if (!deactivatedUser.isActive()) {
+                deactivatedUser.setLoginName(deactivatedUser.getLoginName() + "_" + System.currentTimeMillis());
+                deactivatedUser.setEmailAddress(deactivatedUser.getEmailAddress() + "_" + System.currentTimeMillis());
+                saveUser(deactivatedUser);
+            }
+
             modifyPasswordIfNecessary(user);
 
             String externalColumn = DatabaseUtils.isDatabaseMSSql(services) ? "[external]" : "external";

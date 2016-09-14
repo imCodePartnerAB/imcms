@@ -1,5 +1,9 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.SaveException;
+import com.imcode.imcms.api.User;
+import com.imcode.imcms.api.UserService;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
@@ -26,6 +30,7 @@ public class UserBrowser extends HttpServlet {
     public static final String REQUEST_ATTRIBUTE__FORM_DATA = "formData";
     private static final String JSP__USER_BROWSER = "/jsp/userbrowser.jsp";
     public static final String REQUEST_PARAMETER__SELECT_USER_BUTTON = "selectUserButton";
+    public static final String REQUEST_PARAMETER__ARCHIVE_USER_BUTTON = "archiveUserButton";
     public static final String REQUEST_PARAMETER__ADD_USER = "addUser";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
     private static final LocalizedMessage ERROR__USER_ALREADY_EXISTS = new LocalizedMessage("error/servlet/AdminUserProps/username_already_exists");
@@ -46,6 +51,26 @@ public class UserBrowser extends HttpServlet {
             }
         } else if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
             userFinder.cancel( request, response );
+
+        } else if (null != request.getParameter(REQUEST_PARAMETER__ARCHIVE_USER_BUTTON)) {
+            UserDomainObject selectedUser = getSelectedUserFromRequest(request);
+            if (null == selectedUser && !userFinder.isNullSelectable()) {
+                listUsers(request, response);
+            } else {
+                ContentManagementSystem contentManagementSystem = ContentManagementSystem.fromRequest( request );
+                UserService userService = contentManagementSystem.getUserService();
+                String userLoginName = selectedUser.getLoginName();
+                User user = userService.getUser( userLoginName );
+                user.setActive(false);
+                try {
+                    userService.saveUser(user);
+                    listUsers(request, response);
+                } catch (SaveException e) {
+                    e.printStackTrace();
+                    listUsers(request, response);
+                }
+            }
+
         } else if ( null != request.getParameter( REQUEST_PARAMETER__ADD_USER ) && userFinder.isUsersAddable() ) {
             goToCreateUserPage(userFinder, request, response);
         }

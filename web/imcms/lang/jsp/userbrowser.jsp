@@ -118,6 +118,13 @@
                 name="<%= UserBrowser.REQUEST_PARAMETER__SELECT_USER_BUTTON %>"
                 value="<%= userFinder.getSelectButtonText().toLocalizedString(request) %>"
                 style="width:10em">
+
+                <div><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"></div>
+                <input type="submit" class="imcmsFormBtnSmall"
+                       name="<%= UserBrowser.REQUEST_PARAMETER__ARCHIVE_USER_BUTTON %>"
+                       value="<? templates/sv/AdminChangeUser.htm/2008 ?>"
+                       style="width:10em">
+
             <%
                 UserDomainObject user = Utility.getLoggedOnUser(request);
                 if (userFinder.isUsersAddable() && (user.isSuperAdmin() || user.isUserAdminAndCanEditAtLeastOneRole())) { %>
