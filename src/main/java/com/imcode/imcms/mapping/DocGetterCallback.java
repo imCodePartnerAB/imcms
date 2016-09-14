@@ -69,23 +69,20 @@ public class DocGetterCallback {
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toCollection(ArrayList::new));
 
-            if (!docLanguages.contains(language)) {
-                if (doc.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.DO_NOT_SHOW
-                        || docLanguages.isEmpty()) {// none of languages are set as enabled, should not be seen
-                    doc = null;
-
-                } else if (docLanguages.size() == 1) {
-                    doc = docMapper.getDefaultDocument(docId, docLanguages.get(0));
-
-                } else {
-                    doc = docMapper.getDefaultDocument(docId);
-
-                }
+            if (!docLanguages.contains(language)) { // current language is disabled for current document
+                doc = shouldDocBeShownWithDefaultLang(doc, docLanguages)
+                        ? docMapper.getDefaultDocument(docId)
+                        : null;
             }
         }
 
         return doc;
     };
+
+    private boolean shouldDocBeShownWithDefaultLang(DocumentDomainObject doc, List<DocumentLanguage> docLanguages) {
+        return (doc.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE
+                && docLanguages.contains(Imcms.getServices().getDocumentLanguages().getDefault()));
+    }
 
     public DocGetterCallback(UserDomainObject user) {
         this.user = user;
