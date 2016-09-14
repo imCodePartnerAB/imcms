@@ -481,7 +481,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         }
         try {
             UserDomainObject deactivatedUser = getUser(user.getLoginName());
-            if (!deactivatedUser.isActive()) {
+            if (null != deactivatedUser && !deactivatedUser.isActive()) {
                 deactivatedUser.setLoginName(deactivatedUser.getLoginName() + "_" + System.currentTimeMillis());
                 deactivatedUser.setEmailAddress(deactivatedUser.getEmailAddress() + "_" + System.currentTimeMillis());
                 saveUser(deactivatedUser);
