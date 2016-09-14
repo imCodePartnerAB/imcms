@@ -61,10 +61,10 @@ public class UserBrowser extends HttpServlet {
             if (null == selectedUser && !userFinder.isNullSelectable()) {
                 listUsers(request, response);
             } else {
-                ContentManagementSystem contentManagementSystem = ContentManagementSystem.fromRequest( request );
+                ContentManagementSystem contentManagementSystem = ContentManagementSystem.fromRequest(request);
                 UserService userService = contentManagementSystem.getUserService();
                 String userLoginName = selectedUser.getLoginName();
-                User user = userService.getUser( userLoginName );
+                User user = userService.getUser(userLoginName);
                 user.setActive(false);
                 try {
                     userService.saveUser(user);
