@@ -352,13 +352,13 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 		}
 		try {
 
-			UserDomainObject deactivatedUser =getUser(user.getLoginName());
-			if(!deactivatedUser.isActive()){
-				deactivatedUser.setLoginName(deactivatedUser.getLoginName() + "_" +  System.currentTimeMillis());
-				deactivatedUser.setEmailAddress(deactivatedUser.getEmailAddress() + "_" +  System.currentTimeMillis());
+			UserDomainObject deactivatedUser = getUser(user.getLoginName());
+			if (null != deactivatedUser && !deactivatedUser.isActive()) {
+				deactivatedUser.setLoginName(deactivatedUser.getLoginName() + "_" + System.currentTimeMillis());
+				deactivatedUser.setEmailAddress(deactivatedUser.getEmailAddress() + "_" + System.currentTimeMillis());
 				saveUser(deactivatedUser);
 			}
-				modifyPasswordIfNecessary(user);
+			modifyPasswordIfNecessary(user);
 
 			Number newUserId = (Number) services.getDatabase().execute(new InsertIntoTableDatabaseCommand("users", new String[][]{
 					{"login_name", user.getLoginName()},
