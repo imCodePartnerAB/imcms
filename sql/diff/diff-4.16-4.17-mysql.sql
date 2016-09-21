@@ -1,0 +1,2 @@
+ALTER TABLE url_docs
+  MODIFY COLUMN url_ref TEXT NOT NULL;

@@ -42,7 +42,7 @@
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/url_document.jsp/1001 ?>&nbsp;</td>
-	<td><input type="text" name="<%= EditUrlDocumentPageFlow.REQUEST_PARAMETER__URL_DOC__URL %>" size="62" maxlength="255"
+	<td><input type="text" name="<%= EditUrlDocumentPageFlow.REQUEST_PARAMETER__URL_DOC__URL %>" size="62" maxlength="2000"
                 value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getUrl(), "" )) %>"></td>
 </tr>
 <tr>
