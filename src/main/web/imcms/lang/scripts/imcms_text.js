@@ -99,7 +99,13 @@ Imcms.Text.Editor.prototype = {
     },
     _onGetTextHistory: function (event) {
         var data = jQuery(event.editor.element.$).data();
-        data.meta = Imcms.document.meta;
+
+        data = { // sending only needed data, other can produce errors
+            locale: data.locale,
+            loopentryref: data.loopentryref,
+            meta: Imcms.document.meta,
+            no: data.no
+        };
 
         this._api.get(data, event.data.callback);
     },
