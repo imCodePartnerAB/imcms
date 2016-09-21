@@ -431,22 +431,24 @@ CKEDITOR.dialog.add("textHistory", function (e) {
 		groupedData[key].push(it);
 	});
 
-	$.each(groupedData, function (key, list) {
-		$("<div>").addClass("imcms-separator").text(key).appendTo($leftPanel);
+    $.each(groupedData, function (key, list) {
+        $("<div>").addClass("imcms-separator").text(key).appendTo($leftPanel);
 
-		list.forEach(function (item) {
-			$("<div>").appendTo($leftPanel).append(item.modifiedBy + " | " + item.modifiedDate.toLocaleTimeString()).click(function () {
-				if ($selected) {
-					$selected.removeClass("selected");
-				}
+        list.forEach(function (item) {
+            $("<div>").appendTo($leftPanel)
+                .append(item.modifiedDate.toLocaleTimeString() + " | " + item.modifiedBy)
+                .click(function () {
+                    if ($selected) {
+                        $selected.removeClass("selected");
+                    }
 
-				$content.html(item.text);
+                    $content.html(item.text);
 
-				$selected = $(this).addClass("selected");
-				selectedItem = item;
-			});
-		})
-	});
+                    $selected = $(this).addClass("selected");
+                    selectedItem = item;
+                });
+        })
+    });
 
 	return {
 		title: 'Text History Dialog',
