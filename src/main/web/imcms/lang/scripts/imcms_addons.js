@@ -408,7 +408,7 @@ CKEDITOR.plugins.add("textHistory", {
 CKEDITOR.dialog.add("textHistory", function (e) {
 	var $wrapper = $("<div>").addClass("imcms-text-history"),
 		$leftPanel = $("<div>").addClass("imcms-left-panel").appendTo($wrapper),
-		$content = $("<div>").addClass(".imcms-content").appendTo($wrapper),
+		$content = $("<div>").addClass("imcms-content").css("max-width", "600px").appendTo($wrapper),
 		data = $(e.element.$).data("textHistoryData").map(function (it) {
 			it.modifiedDate = new Date(it.modifiedDate);
 

@@ -79,7 +79,7 @@ Imcms.Text.Editor.prototype = {
 
         data.content = isHtmlContent
             ? $(editor.element.$).html()
-            : $(editor.element.$).children().html();
+            : $(editor.element.$).text();
 
         this._api.update(data, event.data.callback || Imcms.BackgroundWorker.createTask({
                 showProcessWindow: true,
