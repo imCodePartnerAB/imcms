@@ -1761,6 +1761,15 @@ ul.jqtree-tree ul.jqtree_common {
 	width: 85px;
 }
 
+.editor-image .imcms-content .admin-panel-language img {
+	margin: 6px;
+}
+
+.editor-image .imcms-content .admin-panel-language img.active {
+	background: #ebf0ff;
+	padding: 0 6px;
+	border-radius: 5px;
+}
 <%--IMAGE--%>
 
 <%--PROCESS--%>

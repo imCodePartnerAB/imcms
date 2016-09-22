@@ -167,8 +167,15 @@ public class ImageController {
     public ImageDomainObject getImage(
             @PathVariable("id") Integer id, @PathVariable("docId") Integer docId,
             @RequestParam(value = "loopId", required = false) Integer loopId,
-            @RequestParam(value = "entryId", required = false) Integer entryId) {
-        TextDocumentDomainObject textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
+            @RequestParam(value = "entryId", required = false) Integer entryId,
+            @RequestParam(value = "langCode", required = false) String langCode) {
+
+        TextDocumentDomainObject textDocument;
+        if (null == langCode || langCode.equals("")) {
+            textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
+        } else {
+            textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
+        }
 
         if (loopId != null && entryId != null) {
             return textDocument.getImage(TextDocumentDomainObject.LoopItemRef.of(loopId, entryId, id));
@@ -183,8 +190,16 @@ public class ImageController {
             @RequestParam(value = "loopId", required = false) Integer loopId,
             @RequestParam(value = "entryId", required = false) Integer loopRefId,
             @RequestParam(value = "sharedMode", required = false, defaultValue = "false") boolean sharedMode,
+            @RequestParam(value = "langCode", required = false) String langCode,
             @RequestParam("imageDomainObject") ImageDomainObject imageDomainObject) throws DocumentSaveException {
-        TextDocumentDomainObject textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
+
+        TextDocumentDomainObject textDocument;
+        if (null == langCode || langCode.equals("")) {
+            textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
+        } else {
+            textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
+        }
+
         LoopEntryRef entryRef = loopId != null && loopRefId != null ?
                 LoopEntryRef.of(loopId, loopRefId) : null;
 

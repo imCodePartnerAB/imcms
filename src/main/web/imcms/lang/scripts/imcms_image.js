@@ -36,12 +36,12 @@ Imcms.Image.Loader.prototype = {
     initEditor: function (position, element) {
         this._editorsList[position] = new Imcms.Image.Editor(element, this);
     },
-    getById: function (id, meta, callback) {
-        this._api.read({object: ((meta || Imcms.document.meta) + "-" + id)},
+    getById: function (id, meta, langCode, callback) {
+        this._api.read({object: ((meta || Imcms.document.meta) + "-" + id + "?langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::getById : ", callback));
     },
-    getByLoopItemRef: function (id, loopId, entryId, meta, callback) {
-        this._api.read({object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId)},
+    getByLoopItemRef: function (id, loopId, entryId, meta, langCode, callback) {
+        this._api.read({object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::getByLoopItemRef : ", callback));
     },
     getByPath: function (path, callback) {
@@ -51,18 +51,18 @@ Imcms.Image.Loader.prototype = {
         this._api.read({object: folder + name + "-" + width + "-" + height + "." + extension},
             callback);
     },
-    save: function (id, meta, isShared, data, callback) {
+    save: function (id, meta, isShared, langCode, data, callback) {
         this._api.update({
             sharedMode: isShared,
             imageDomainObject: JSON.stringify(data),
-            object: ((meta || Imcms.document.meta) + "-" + id)
+            object: ((meta || Imcms.document.meta) + "-" + id + "?langCode=" + langCode)
         }, Imcms.Logger.log.bind(this, "Image::save : ", callback));
     },
-    saveLoopItem: function (id, meta, isShared, loopId, entryId, data, callback) {
+    saveLoopItem: function (id, meta, isShared, loopId, entryId, langCode, data, callback) {
         this._api.update({
             sharedMode: isShared,
             imageDomainObject: JSON.stringify(data),
-            object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId)
+            object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)
         }, Imcms.Logger.log.bind(this, "Image::saveLoopItem : ", callback));
     }
 };
@@ -88,6 +88,8 @@ Imcms.Image.Editor.prototype = {
     _isLoaded: false,
     _source: {},
     _primarySource: {},
+    _language:undefined,
+
     init: function () {
         var data = $(this._element).data();
         this._id = data.no;
@@ -96,10 +98,10 @@ Imcms.Image.Editor.prototype = {
         this._entryId = data.entry;
         this.buildView().buildExtra();
         if (data.loop && data.entry) {
-            this._loader.getByLoopItemRef(this._id, data.loop, data.entry, this._meta, this.initSource.bind(this));
+            this._loader.getByLoopItemRef(this._id, data.loop, data.entry, this._meta, '', this.initSource.bind(this));
         }
         else {
-            this._loader.getById(this._id, this._meta, this.initSource.bind(this));
+            this._loader.getById(this._id, this._meta, '', this.initSource.bind(this));
         }
     },
     initSource: function (data) {
@@ -194,8 +196,26 @@ Imcms.Image.Editor.prototype = {
             onChooseFile: $.proxy(this._onChooseFile, this)
         });
         this._infoViewAdapter.update(data);
+
+        $(this._builder.ref("image-editor-language").getHTMLElement())
+            .append($("<img>").addClass("content-preview-image" + this._language === 'en' ? 'active' : '').attr("id", "enSwitch").attr("src", Imcms.Linker._contextPath + '/images/ic_english.png').data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, 'en')))
+            .append($("<img>").addClass("content-preview-image" + this._language === 'sv' ? 'active' : '').attr("id", "svSwitch").attr("src", Imcms.Linker._contextPath + '/images/ic_swedish.png').data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, 'sv')));
         return this;
     },
+
+    _onLanguageChanged: function (lang) {
+        var data = $(this._element).data();
+
+        this._language = lang;
+
+        if (data.loop && data.entry) {
+            this._loader.getByLoopItemRef(data.no, data.loop, data.entry, data.meta, this._language, this.initSource.bind(this));
+        }
+        else {
+            this._loader.getById(data.no, data.meta, this._language, this.initSource.bind(this));
+        }
+    },
+
     _onDisplaySizeChanged: function (size) {
         this._imageCropper.changeDestinationRect(+size.width, +size.height);
     },
@@ -236,6 +256,7 @@ Imcms.Image.Editor.prototype = {
                 this._meta,
                 this._infoViewAdapter.isSharedMode(),
                 this._loopId, this._entryId,
+                this._language,
                 collectedData,
                 Imcms.BackgroundWorker.createTask({
                     showProcessWindow: true,
@@ -247,6 +268,7 @@ Imcms.Image.Editor.prototype = {
             this._loader.save(this._id,
                 this._meta,
                 this._infoViewAdapter.isSharedMode(),
+                this._language,
                 collectedData,
                 Imcms.BackgroundWorker.createTask({
                     showProcessWindow: true,
@@ -447,6 +469,11 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .name("sharedMode")
             .end()
             .end()
+
+            .div()
+            .class("admin-panel-language field")
+            .reference("image-editor-language")
+            .end();
     },
     update: function (source) {
         this._imageSource = source;
