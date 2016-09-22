@@ -370,24 +370,13 @@ CKEDITOR.dialog.add("textHistory", function (e) {
 
     var buttonsShowed = false;
 
-    function switchContentAndType() {
-        if (selectedItem.type == "html") {
-            $content.text($content.html());
-            selectedItem.type = "from-html";
-
-        } else {
-            $content.html($content.text());
-            selectedItem.type = "html";
-        }
-    }
-
-    function addTextHistoryButton(text) {
+    function addTextHistoryButton(text, onClick) {
         return $("<button>")
             .addClass("imcms-neutral")
             .css("float", "right")
             .html(text)
             .appendTo($wrapper)
-            .click(switchContentAndType);
+            .click(onClick);
     }
 
     $.each(groupedData, function (key, list) {
@@ -398,8 +387,18 @@ CKEDITOR.dialog.add("textHistory", function (e) {
                 .append(item.modifiedDate.format("HH:MM:ss") + " | " + item.modifiedBy)
                 .click(function () {
                     if (!buttonsShowed) {
-                        addTextHistoryButton("As HTML");
-                        addTextHistoryButton("As Text");
+                        addTextHistoryButton("As HTML", function () {
+                            if (selectedItem.type !== "html") {
+                                $content.html($content.text());
+                                selectedItem.type = "html";
+                            }
+                        });
+                        addTextHistoryButton("As Text", function () {
+                            if (selectedItem.type === "html") {
+                                $content.text($content.html());
+                                selectedItem.type = "from-html";
+                            }
+                        });
                         buttonsShowed = true;
                     }
 
