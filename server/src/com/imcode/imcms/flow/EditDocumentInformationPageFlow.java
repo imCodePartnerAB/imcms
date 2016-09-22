@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.File;
+import java.text.Collator;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -295,10 +296,19 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             errors.remove(ALIAS_ERROR__USED_BY_SYSTEM);
             String oldAlias = document.getAlias();
             String newAlias = request.getParameter(REQUEST_PARAMETER__DOCUMENT_ALIAS).trim().replaceAll("[%?]", "");
-            if(oldAlias==null || !newAlias.equals(oldAlias.toLowerCase()) && newAlias.length()>0){
+            if(oldAlias==null || !newAlias.toLowerCase().equals(oldAlias.toLowerCase()) && newAlias.length()>0){
                 Set<String> allAlias = documentMapper.getAllDocumentAlias();
                 File path = new File( Imcms.getPath(), newAlias );
-                if (allAlias.contains(newAlias.toLowerCase())) {
+                Collator collator = Collator.getInstance(new Locale(languageIso639_2));
+                collator.setStrength(Collator.PRIMARY);
+                boolean contains = false;
+                for (String alias : allAlias) {
+                    contains = collator.equals(alias.toLowerCase(), newAlias.toLowerCase());
+                    if (contains) {
+                        break;
+                    }
+                }
+                if (contains) {
                     errors.add(ALIAS_ERROR__ALREADY_EXIST) ;
                     newAlias = oldAlias;
                 }else if (newAlias.length()>0 && path.exists()) {
