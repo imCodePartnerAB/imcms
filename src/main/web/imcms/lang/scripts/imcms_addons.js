@@ -108,7 +108,7 @@ CKEDITOR.plugins.add("documentSaver", {
             if (!callback) {
                 e = switchToolbarCommandFunction(e);
             }
-            CKEDITOR.fire("confirmChanges", {callback: callback}, e);
+            CKEDITOR.fire("confirmChangesEvent", {callback: callback}, e);
             editor.documentSnapshot = e.getData();
             e.resetDirty();
             if (!callback) {
@@ -123,7 +123,7 @@ CKEDITOR.plugins.add("documentSaver", {
         var confirmWithEvent = function (e) {
             e = switchToolbarCommandFunction(e);
             var callback = Imcms.Events.getCallback("TextEditorRedirect");
-            CKEDITOR.fire("confirmChanges", {callback: callback}, e);
+            CKEDITOR.fire("confirmChangesEvent", {callback: callback}, e);
         };
         var confirmCommandWithEvent = CKEDITOR.newCommandWithExecution(confirmWithEvent);
         editor.addCommand("confirmChanges", confirmCommandWithEvent);
@@ -242,24 +242,13 @@ CKEDITOR.defineToolbar = function (editor) {
     }
 };
 
-CKEDITOR.wasSwitched = false;
-CKEDITOR.switchFormatCommandDefinition = CKEDITOR.newCommandWithExecution(function (editor) {
-    editor.element.data("contenttype") === "html"
-        ? editor.element.data("contenttype", "from-html")
-        : editor.element.data("contenttype", "html");
-
-    CKEDITOR.wasSwitched = true;
-    editor.execCommand("confirmChangesWithoutEvent");
-    CKEDITOR.wasSwitched = false;
-});
+CKEDITOR.switchFormat = false;
 
 CKEDITOR.plugins.add("switchFormatToHTML", {
     init: function (editor) {
-        editor.addCommand("switchFormatToHTML", CKEDITOR.switchFormatCommandDefinition);
-
         editor.ui.addButton('switchFormatToHTML', {
             label: 'Switch format to HTML',
-            command: "switchFormatToHTML",
+            command: "switchFormat",
             icon: "images/switch-between-html-and-text-mode.png"
         });
     }
@@ -267,11 +256,9 @@ CKEDITOR.plugins.add("switchFormatToHTML", {
 
 CKEDITOR.plugins.add("switchFormatToText", {
     init: function (editor) {
-        editor.addCommand("switchFormatToText", CKEDITOR.switchFormatCommandDefinition);
-
         editor.ui.addButton('switchFormatToText', {
             label: 'Switch format to text',
-            command: "switchFormatToText",
+            command: "switchFormat",
             icon: "images/plain_text.png"
         });
     }
@@ -406,20 +393,32 @@ CKEDITOR.plugins.add("textHistory", {
 });
 
 CKEDITOR.dialog.add("textHistory", function (e) {
-	var $wrapper = $("<div>").addClass("imcms-text-history"),
-		$leftPanel = $("<div>").addClass("imcms-left-panel").appendTo($wrapper),
-		$content = $("<div>").addClass("imcms-content").css("max-width", "600px").appendTo($wrapper),
-		data = $(e.element.$).data("textHistoryData").map(function (it) {
-			it.modifiedDate = new Date(it.modifiedDate);
+    var $wrapper = $("<div>").addClass("imcms-text-history"),
+        $leftPanel = $("<div>").addClass("imcms-left-panel").appendTo($wrapper),
 
-			return it;
-		}).sort(function (a, b) {
-			return (a.modifiedDate > b.modifiedDate ? -1 : (a.modifiedDate == b.modifiedDate ? 0 : 1));
-		}),
-		groupedData = {},
-		$selected = undefined,
-		selectedItem;
+        $content = $("<div>").addClass("imcms-content")
+            .css({
+                "max-width": "600px",
+                "float": "right"
+            })
+            .appendTo($wrapper),
 
+        data = $(e.element.$).data("textHistoryData")
+            .map(function (textHistoryData) {
+                textHistoryData.modifiedDate = new Date(textHistoryData.modifiedDate);
+                textHistoryData.type = (textHistoryData.type == "HTML")
+                    ? "html"
+                    : "from-html";
+                return textHistoryData;
+            })
+            .sort(function (a, b) {
+                return (a.modifiedDate > b.modifiedDate ? -1 : (a.modifiedDate == b.modifiedDate ? 0 : 1));
+            }),
+
+        groupedData = {},
+        $selected = undefined,
+        selectedItem,
+        previousType;
 
 	data.forEach(function (it) {
 		var key = it.modifiedDate.toLocaleDateString();
@@ -431,6 +430,28 @@ CKEDITOR.dialog.add("textHistory", function (e) {
 		groupedData[key].push(it);
 	});
 
+    var buttonsShowed = false;
+
+    function switchContentAndType() {
+        if (selectedItem.type == "html") {
+            $content.text($content.html());
+            selectedItem.type = "from-html";
+
+        } else {
+            $content.html($content.text());
+            selectedItem.type = "html";
+        }
+    }
+
+    function addTextHistoryButton(text) {
+        return $("<button>")
+            .addClass("imcms-neutral")
+            .css("float", "right")
+            .html(text)
+            .appendTo($wrapper)
+            .click(switchContentAndType);
+    }
+
     $.each(groupedData, function (key, list) {
         $("<div>").addClass("imcms-separator").text(key).appendTo($leftPanel);
 
@@ -438,14 +459,24 @@ CKEDITOR.dialog.add("textHistory", function (e) {
             $("<div>").appendTo($leftPanel)
                 .append(item.modifiedDate.toLocaleTimeString() + " | " + item.modifiedBy)
                 .click(function () {
+                    if (!buttonsShowed) {
+                        addTextHistoryButton("As HTML");
+                        addTextHistoryButton("As Text");
+                        buttonsShowed = true;
+                    }
+
                     if ($selected) {
                         $selected.removeClass("selected");
                     }
 
-                    $content.html(item.text);
+                    var callFunc = (item.type === "html")
+                        ? "html"
+                        : "text";
 
+                    $content[callFunc](item.text);
                     $selected = $(this).addClass("selected");
                     selectedItem = item;
+                    previousType = item.type;
                 });
         })
     });
@@ -455,7 +486,20 @@ CKEDITOR.dialog.add("textHistory", function (e) {
 		width: 600,
 		height: 400,
 		onOk: function () {
-			e.setData(selectedItem.text);
+            if (selectedItem) {
+                e.setData(""); // clear previous text
+                var contentType = $(e.element.$).data("contenttype");
+
+                var callFunc = (contentType === "html")
+                    ? "insertHtml"
+                    : "insertText";
+
+                e[callFunc](selectedItem.text);
+
+                if (selectedItem.type !== contentType) {
+                    e.execCommand("switchFormat");
+                }
+            }
 		},
 		contents: [
 			{

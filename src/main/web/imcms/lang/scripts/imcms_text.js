@@ -46,7 +46,7 @@ Imcms.Text.Editor.prototype = {
         var textFrame = new Imcms.FrameBuilder().title("Text Editor");
 
         CKEDITOR.on('instanceCreated', this._onCreated.bind(this));
-        CKEDITOR.on("confirmChanges", this._onConfirm.bind(this));
+        CKEDITOR.on("confirmChangesEvent", this._onConfirm.bind(this));
         CKEDITOR.on("validateText", this._onValidateText.bind(this));
         CKEDITOR.on("getTextHistory", this._onGetTextHistory.bind(this));
 
@@ -69,22 +69,32 @@ Imcms.Text.Editor.prototype = {
     },
     _onConfirm: function (event) {
         var editor = event.editor;
-        var data = jQuery(editor.element.$).data();
-        var isHtmlContent = (data.contenttype === "html");
-        data.meta = Imcms.document.meta;
+        var data = $(editor.element.$).data();
 
-        if (CKEDITOR.wasSwitched) {
-            isHtmlContent = !isHtmlContent;
+        if (data.content === undefined) { // to prevent strange confirmation that fires more and more times after saving
+            data.meta = Imcms.document.meta;
+
+            var isHtmlContent = (data.contenttype === "html");
+            var callFunc = (isHtmlContent)
+                ? "html"
+                : "text";
+
+            data.content = $(editor.element.$)[callFunc]();
+
+            if (CKEDITOR.switchFormat) {
+                data.contenttype = (isHtmlContent)
+                    ? "from-html"
+                    : "html";
+
+                CKEDITOR.switchFormat = false;
+            }
+
+            this._api.update(data, event.data.callback || Imcms.BackgroundWorker.createTask({
+                    showProcessWindow: true,
+                    refreshPage: true
+                })
+            );
         }
-
-        data.content = isHtmlContent
-            ? $(editor.element.$).html()
-            : $(editor.element.$).text();
-
-        this._api.update(data, event.data.callback || Imcms.BackgroundWorker.createTask({
-                showProcessWindow: true,
-                refreshPage: true
-            }));
     },
     _onCreated: function (event) {
         var editor = event.editor;
@@ -114,6 +124,12 @@ Imcms.Text.Editor.prototype = {
     },
     _onEditorLoaded: function (event) {
         var editor = event.editor;
+
+        // commands definition
+        editor.addCommand("switchFormat", CKEDITOR.newCommandWithExecution(function (editor) {
+            CKEDITOR.switchFormat = true;
+            editor.execCommand("confirmChangesWithoutEvent");
+        }));
 
         // Remove unnecessary plugins to make the editor simpler.
         editor.config.removePlugins = 'colorbutton,find,forms,newpage,removeformat,specialchar,stylescombo,templates';
@@ -180,10 +196,6 @@ Imcms.Text.Editor.prototype = {
         editor.config.toolbar_maxTextToolbar = [
             switchFormatToHtmlPlugin,
             linkPlugins,
-            imageUtilsAndOtherDefaultPlugins,
-            advancedFontPlugins,
-            textPlugins,
-            textEditingPlugins,
             advancedActionsPlugins,
             plainTextPlugins
         ]; // Custom maximized toolbar config for tag without attribute "formats" but was changed to "HTML"
