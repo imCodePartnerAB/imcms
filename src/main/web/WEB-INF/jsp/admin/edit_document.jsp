@@ -1,5 +1,4 @@
 <%@ taglib prefix="imcms" uri="imcms" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%@ page
 
         contentType="text/html; charset=UTF-8"
@@ -7,8 +6,6 @@
 
 %>
 <imcms:variables/>
-<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
-<c:set var="lang" value="${user.language.isoCode639_2}"/>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
