@@ -71,16 +71,20 @@ public class TextController {
             if (items.length > 1)
                 loopEntryRefOpt = LoopEntryRef.of(Integer.parseInt(items[0]), Integer.parseInt(items[1]));
         }
-        Collection<TextHistory> textHistories = loopEntryRefOpt == null ?
-                contentLoader.getTextHistory(docRef, textNo) :
-                contentLoader.getTextHistory(docRef,
-                        new com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef(loopEntryRefOpt.getLoopNo(), loopEntryRefOpt.getEntryNo()),
+        Collection<TextHistory> textHistories = (loopEntryRefOpt == null)
+                ? contentLoader.getTextHistory(docRef, textNo)
+                : contentLoader.getTextHistory(
+                        docRef,
+                        new com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef(
+                                loopEntryRefOpt.getLoopNo(),
+                                loopEntryRefOpt.getEntryNo()),
                         textNo);
 
         return textHistories.stream().map(it -> new Object() {
             public String modifiedBy = it.getModifiedBy().getFirstName();
             public String modifiedDate = it.getModifiedDt().toString();
             public String text = it.getText();
+            public String type = it.getType().name();
         }).collect(Collectors.toList());
     }
 

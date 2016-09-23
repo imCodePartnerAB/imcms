@@ -3,16 +3,23 @@ Generate Test BankId
 
 In this guide tells about test bankId for testing environment
 
-1. Login with your real/legal bankId on https://demo.bankid.com
+.. attention:: You can generate test bankId only with exist BankId account.
 
-2. Go into "Issue BankID for Test"
+#. Install BankId Application. Instruction for different devices you can find `here <https://www.bankid.com/assets/bankid/rp/how-to-get-bankid-for-test-v1.4.pdf>`_.
 
-3. Generate person: https://fejk.se/
+#. Login with your real/legal bankId on https://demo.bankid.com .
 
-4. Fill out form "Issue Mobile BankID" and submit
+#. Go into "Issue BankID for Test".
 
-5. Send activation code
+#. Generate person: https://fejk.se/ .
+
+#. Fill out form "Issue Mobile BankID" and submit.
+
+#. Send activation code.
 
 .. note::
-    With the BankId you have you can login and generate more, so you should have a test bankId on your computer to be able to generate new bankId's
+    With the one BankId you can login and generate more, so you should have a test bankId on your computer to be able to generate new bankId's.
 
+.. seealso::
+    If you have some problems with generation test bankId, or other questions, please visit
+    `this <https://www.bankid.com/bankid-i-dina-tjanster/rp-info>`_ page.

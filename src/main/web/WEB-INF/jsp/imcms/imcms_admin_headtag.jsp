@@ -48,6 +48,8 @@
 <script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_logger.js"></script>
 <script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_utils.js"></script>
 <script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_addons.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_ckeditor_extension.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_events.js"></script>
 <script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_loop.js"></script>
 <script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_menu.js"></script>
 <script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_text.js"></script>

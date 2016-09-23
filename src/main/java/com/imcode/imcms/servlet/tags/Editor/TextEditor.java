@@ -2,13 +2,11 @@ package com.imcode.imcms.servlet.tags.Editor;
 
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 
-/**
- * Created by Shadowgun on 24.12.2014.
- */
 public class TextEditor extends BaseEditor {
     private int no;
     private String locale;
     private String contentType;
+    private String label;
     private LoopEntryRef loopEntryRef;
     private int documentId;
 
@@ -21,6 +19,7 @@ public class TextEditor extends BaseEditor {
                 .addParam("no", no)
                 .addParam("meta", documentId)
                 .addParam("locale", locale)
+                .addParam("label", label)
                 .addParam("LoopEntryRef",
                         loopEntryRef == null ? "" :
                                 String.format("%s_%s", loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo()));
@@ -49,6 +48,11 @@ public class TextEditor extends BaseEditor {
 
     public TextEditor setContentType(String contentType) {
         this.contentType = contentType;
+        return this;
+    }
+
+    public TextEditor setLabel(String label) {
+        this.label = label;
         return this;
     }
 }

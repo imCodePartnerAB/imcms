@@ -67,7 +67,7 @@ String cp = request.getContextPath() ;
 	float: left;
 	width: 30%;
 	overflow: auto;
-	height: 420px;
+	height: 462px;
 	margin: -20px 5px -20px -10px;
 }
 
@@ -781,7 +781,8 @@ editor theme
 }
 
 .editor-form .imcms-neutral,
-.pop-up-form .imcms-neutral {
+.pop-up-form .imcms-neutral,
+.imcms-text-history .imcms-neutral {
 	background: rgba(0, 0, 0, 0.2);
 	border: none;
 	color: #fff;
@@ -797,16 +798,19 @@ editor theme
 }
 
 .editor-form .imcms-neutral:hover,
-.pop-up-form .imcms-neutral:hover {
+.pop-up-form .imcms-neutral:hover,
+.imcms-text-history .imcms-neutral:hover {
 	background: rgba(0, 0, 0, 0.1);
 }
 
 .editor-form .imcms-neutral,
-.pop-up-form .imcms-footer .imcms-neutral {
+.pop-up-form .imcms-footer .imcms-neutral,
+.imcms-text-history .imcms-neutral {
 	background: #323232;
 }
 
 .editor-form .imcms-neutral:hover,
+.imcms-text-history .imcms-neutral:hover,
 .pop-up-form .imcms-footer .imcms-neutral:hover {
 	background: #484848;
 }
@@ -833,7 +837,8 @@ editor theme
 	outline: none;
 }
 
-.editor-form .imcms-header .imcms-neutral{
+.editor-form .imcms-header .imcms-neutral,
+.imcms-text-history .imcms-neutral {
 	margin-right: 20px;
 }
 
