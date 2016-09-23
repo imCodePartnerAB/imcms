@@ -97,9 +97,6 @@
 		%>
 
 		<div class="imcms-typed-form-container" id="imcms-bankid-login-tab" style="display:none">
-			<iframe>
-
-			</iframe>
 		</div>
 		<div class="imcms-typed-form-container" id="imcms-default-login-tab">
 
@@ -216,45 +213,15 @@
 			}
 
 			$(".imcms-tab").click(function (e) {
-				var imcmsBakIdLoginTab = $("#imcms-bankid-login-tab"),
-					iframe = $("iframe");
 				switch ($(this).attr('id')) {
 					case "imcms-default-tab":
 					{
-						iframe.attr("src", "");
-						imcmsBakIdLoginTab.animate({
-							height: 200
-						}, 500, function () {
-							$("#imcms-bankid-tab").removeClass("imcms-tab-active");
-							$("#imcms-bankid-login-tab").css({display: 'none'});
-							$("#imcms-default-login-tab").css({display: 'block'});
-							$("#imcms-default-tab").addClass("imcms-tab-active");
-						});
-
 					}
 						break;
 					case "imcms-bankid-tab":
 					{
-						e.preventDefault();
-
-						imcmsBakIdLoginTab.css({display: 'block'});
-						$("#imcms-bankid-tab").addClass("imcms-tab-active");
-						imcmsBakIdLoginTab.animate({
-							height: 500
-						}, 500, function () {
-							iframe.css({height: 500});
-							iframe.attr("src", location.protocol + '//' + location.host + "<%=request.getContextPath()+"/VerifyUserViaBankId" %>");
-						});
-						$("#imcms-default-login-tab").css({display: 'none'});
-						$("#imcms-default-tab").removeClass("imcms-tab-active");
-						iframe.load(function () {
-							try {
-								parent.redirectIfUserLoggedIn();
-							}
-							catch (e) {
-								console.error(e);
-							}
-						});
+						parent.redirectIfUserLoggedIn();
+						location.href = location.protocol + '//' + location.host + "<%=request.getContextPath()+"/VerifyUserViaBankId" %>";
 					}
 						break;
 				}

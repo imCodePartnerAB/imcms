@@ -1,5 +1,6 @@
 package imcode.server.user.saml2;
 
+import imcode.server.Imcms;
 import imcode.server.user.saml2.store.SAMLSessionInfo;
 import imcode.server.user.saml2.store.SAMLSessionManager;
 import imcode.server.user.saml2.utils.OpenSamlBootstrap;
@@ -68,7 +69,13 @@ public class SAMLSPFilter implements Filter {
 				log.debug("Starting and store SAML session..");
 				SAMLSessionManager.getInstance().createSAMLSession(request, response,
 						samlMessageContext);
-				return;
+				String serverName = Imcms.getServerProperties().getProperty("ServerName");
+				if (serverName != null) {
+					response.sendRedirect((serverName.endsWith("/") ? serverName.substring(0, serverName.length() - 1) : serverName)
+							+ request.getContextPath());
+				} else {
+					return;
+				}
 			} catch (Exception e) {
 				throw new ServletException(e);
 			}
