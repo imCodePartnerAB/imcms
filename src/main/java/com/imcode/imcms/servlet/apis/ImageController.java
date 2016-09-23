@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.apis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.TextDocumentContentSaver;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocImageContainer;
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
@@ -171,7 +172,7 @@ public class ImageController {
             @RequestParam(value = "langCode", required = false) String langCode) {
 
         TextDocumentDomainObject textDocument;
-        if (null != langCode && (langCode.equals("en") || langCode.equals("sv"))) {
+        if (Imcms.getServices().getDocumentLanguages().getAll().stream().anyMatch(e -> langCode.equals(e.getCode()))) {
             textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
         } else {
             textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
@@ -194,7 +195,7 @@ public class ImageController {
             @RequestParam("imageDomainObject") ImageDomainObject imageDomainObject) throws DocumentSaveException {
 
         TextDocumentDomainObject textDocument;
-        if (null != langCode && (langCode.equals("en") || langCode.equals("sv"))) {
+        if (Imcms.getServices().getDocumentLanguages().getAll().stream().anyMatch(e -> langCode.equals(e.getCode()))) {
             textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
         } else {
             textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
@@ -237,6 +238,40 @@ public class ImageController {
         } catch (DocumentSaveException e) {
             throw new ShouldNotBeThrownException(e);
         }
+        return true;
+    }
+
+    @RequestMapping(value = "/{docId}-{id}", method = RequestMethod.DELETE)
+    public boolean deleteImage(
+            @PathVariable("id") Integer id, @PathVariable("docId") Integer docId,
+            @RequestParam(value = "loopId", required = false) Integer loopId,
+            @RequestParam(value = "entryId", required = false) Integer entryId,
+            @RequestParam(value = "langCode", required = false) String langCode) {
+
+        TextDocumentDomainObject textDocument;
+        if (Imcms.getServices().getDocumentLanguages().getAll().stream().anyMatch(e -> langCode.equals(e.getCode()))) {
+            textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
+        } else {
+            textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
+        }
+
+//        Required to delete generated image later
+        ImageDomainObject imageDomainObject;
+
+        if (loopId != null && entryId != null) {
+            imageDomainObject = textDocument.getImage(TextDocumentDomainObject.LoopItemRef.of(loopId, entryId, id));
+            textDocument.deleteImage(TextDocumentDomainObject.LoopItemRef.of(loopId, entryId, id));
+        } else {
+            imageDomainObject = textDocument.getImage(id);
+            textDocument.deleteImage(id);
+        }
+
+//        Removing previously generated file
+        if (!StringUtils.isBlank(imageDomainObject.getGeneratedFilename())) {
+            imageDomainObject.getGeneratedFile().delete();
+        }
+        TextDocumentContentSaver textDocumentContentSaver = Imcms.getServices().getManagedBean(TextDocumentContentSaver.class);
+        textDocumentContentSaver.updateContent(textDocument, Imcms.getUser());
         return true;
     }
 }
