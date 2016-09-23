@@ -88,7 +88,7 @@ Imcms.Image.Editor.prototype = {
     _isLoaded: false,
     _source: {},
     _primarySource: {},
-    _language:undefined,
+    _language:'',
 
     init: function () {
         var data = $(this._element).data();
@@ -98,10 +98,10 @@ Imcms.Image.Editor.prototype = {
         this._entryId = data.entry;
         this.buildView().buildExtra();
         if (data.loop && data.entry) {
-            this._loader.getByLoopItemRef(this._id, data.loop, data.entry, this._meta, '', this.initSource.bind(this));
+            this._loader.getByLoopItemRef(this._id, data.loop, data.entry, this._meta, this._language, this.initSource.bind(this));
         }
         else {
-            this._loader.getById(this._id, this._meta, '', this.initSource.bind(this));
+            this._loader.getById(this._id, this._meta, this._language, this.initSource.bind(this));
         }
     },
     initSource: function (data) {
@@ -198,14 +198,13 @@ Imcms.Image.Editor.prototype = {
         this._infoViewAdapter.update(data);
 
         $(this._builder.ref("image-editor-language").getHTMLElement())
-            .append($("<img>").addClass("content-preview-image" + this._language === 'en' ? 'active' : '').attr("id", "enSwitch").attr("src", Imcms.Linker._contextPath + '/images/ic_english.png').data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, 'en')))
-            .append($("<img>").addClass("content-preview-image" + this._language === 'sv' ? 'active' : '').attr("id", "svSwitch").attr("src", Imcms.Linker._contextPath + '/images/ic_swedish.png').data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, 'sv')));
+            .append($("<img>").addClass("content-preview-image").addClass(this._language === 'en' ? 'active' : '').attr("id", "enSwitch").attr("src", Imcms.Linker._contextPath + '/images/ic_english.png').data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, 'en')))
+            .append($("<img>").addClass("content-preview-image").addClass(this._language === 'sv' ? 'active' : '').attr("id", "svSwitch").attr("src", Imcms.Linker._contextPath + '/images/ic_swedish.png').data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, 'sv')));
         return this;
     },
 
     _onLanguageChanged: function (lang) {
         var data = $(this._element).data();
-
         this._language = lang;
 
         if (data.loop && data.entry) {

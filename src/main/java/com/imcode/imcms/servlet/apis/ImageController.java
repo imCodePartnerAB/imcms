@@ -171,10 +171,10 @@ public class ImageController {
             @RequestParam(value = "langCode", required = false) String langCode) {
 
         TextDocumentDomainObject textDocument;
-        if (null == langCode || langCode.equals("")) {
-            textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
-        } else {
+        if (null != langCode && (langCode.equals("en") || langCode.equals("sv"))) {
             textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
+        } else {
+            textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
         }
 
         if (loopId != null && entryId != null) {
@@ -194,10 +194,10 @@ public class ImageController {
             @RequestParam("imageDomainObject") ImageDomainObject imageDomainObject) throws DocumentSaveException {
 
         TextDocumentDomainObject textDocument;
-        if (null == langCode || langCode.equals("")) {
-            textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
-        } else {
+        if (null != langCode && (langCode.equals("en") || langCode.equals("sv"))) {
             textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
+        } else {
+            textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
         }
 
         LoopEntryRef entryRef = loopId != null && loopRefId != null ?
