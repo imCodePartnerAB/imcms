@@ -215,10 +215,16 @@ Imcms.Image.Editor.prototype = {
         });
         this._infoViewAdapter.update(data);
 
-        $(this._builder.ref("image-editor-language").getHTMLElement())
-            .append($("<img>").addClass("content-preview-image").addClass(this._language === 'en' ? 'active' : '').attr("id", "enSwitch").attr("src", Imcms.Linker._contextPath + '/images/ic_english.png').data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, 'en')))
-            .append($("<img>").addClass("content-preview-image").addClass(this._language === 'sv' ? 'active' : '').attr("id", "svSwitch").attr("src", Imcms.Linker._contextPath + '/images/ic_swedish.png').data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, 'sv')));
+        Imcms.Editors.Language.read(this.addLanguageSwitches.bind(this));
         return this;
+    },
+
+    addLanguageSwitches: function (id) {
+        $.each(id, $.proxy(this.addLanguageSwitch, this));
+    },
+    addLanguageSwitch: function (language, code) {
+        $(this._builder.ref("image-editor-language").getHTMLElement())
+            .append($("<img>").addClass("content-preview-image").addClass(this._language === code ? 'active' : '').attr("id", code + "Switch").attr("src", Imcms.Linker._contextPath + '/images/ic_' + language.toLowerCase() + '.png').data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, code)))
     },
 
     _onLanguageChanged: function (lang) {
