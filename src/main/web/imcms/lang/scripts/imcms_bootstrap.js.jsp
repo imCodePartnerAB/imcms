@@ -20,6 +20,7 @@
 	Integer typeId = document.getDocumentTypeId();
 	Integer id = document.getId();
 	String label = document.getHeadline();
+	String langCode = document.getLanguage().getCode();
 %>
 		Imcms.isEditMode = <%= request.getParameterMap().containsKey("flags")
 		 && Integer.valueOf(request.getParameter("flags")) > 0 %>;
@@ -27,7 +28,8 @@
 			"id": <%=id%>,
 			"meta": <%=metaId%>,
 			"type": <%=typeId%>,
-			"label": "<%=label%>"
+			"label": "<%=label%>",
+			"langCode": "<%=langCode%>"
 		};
 		Imcms.language = {
 			name: "<%=resolveLangName(request)%>"
