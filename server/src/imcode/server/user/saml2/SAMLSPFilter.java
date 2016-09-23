@@ -71,8 +71,7 @@ public class SAMLSPFilter implements Filter {
 						samlMessageContext);
 				String serverName = Imcms.getServerProperties().getProperty("ServerName");
 				if (serverName != null) {
-					response.sendRedirect((serverName.endsWith("/") ? serverName.substring(0, serverName.length() - 1) : serverName)
-							+ request.getContextPath());
+					response.sendRedirect(serverName + request.getContextPath());
 				} else {
 					return;
 				}
