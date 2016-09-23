@@ -57,14 +57,18 @@ Imcms.Text.Editor.prototype = {
 
             $("<div>").insertAfter(element).append(element).css({overflow: "hidden"});
 
-            var currentFrame = textFrame.click(function (e) {
-                currentFrame.hide();
-                element.focus();
-                element.trigger(e);
-                element.blur(function () {
-                    currentFrame.show();
-                });
-            }).build().insertBefore(element);
+            var title = element.data("no") + " | " + element.data("label"),
+                currentFrame = textFrame.click(function (e) {
+                    currentFrame.hide();
+                    element.focus();
+                    element.trigger(e);
+                    element.blur(function () {
+                        currentFrame.show();
+                    });
+                })
+                .build()
+                .attr("title", title)
+                .insertBefore(element);
         });
     },
     _onConfirm: function (event) {
