@@ -59,16 +59,16 @@ Imcms.Text.Editor.prototype = {
 
             var title = element.data("no") + " | " + element.data("label"),
                 currentFrame = textFrame.click(function (e) {
-                    currentFrame.hide();
-                    element.focus();
-                    element.trigger(e);
-                    element.blur(function () {
-                        currentFrame.show();
-                    });
-                })
-                .build()
-                .attr("title", title)
-                .insertBefore(element);
+                        currentFrame.hide();
+                        element.focus();
+                        element.trigger(e);
+                        element.blur(function () {
+                            currentFrame.show();
+                        });
+                    })
+                    .build()
+                    .attr("title", title)
+                    .insertBefore(element);
         });
     },
     _onConfirm: function (event) {
