@@ -9,6 +9,7 @@ public class TextEditor extends BaseEditor {
     private String label;
     private LoopEntryRef loopEntryRef;
     private int documentId;
+    private String showlabel;
 
     @Override
     public String wrap(String content) {
@@ -20,9 +21,10 @@ public class TextEditor extends BaseEditor {
                 .addParam("meta", documentId)
                 .addParam("locale", locale)
                 .addParam("label", label)
-                .addParam("LoopEntryRef",
-                        loopEntryRef == null ? "" :
-                                String.format("%s_%s", loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo()));
+                .addParam("showlabel", showlabel)
+                .addParam("LoopEntryRef", (loopEntryRef != null)
+                        ? String.format("%s_%s", loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo())
+                        : "");
         return super.wrap(content);
     }
 
@@ -53,6 +55,11 @@ public class TextEditor extends BaseEditor {
 
     public TextEditor setLabel(String label) {
         this.label = label;
+        return this;
+    }
+
+    public TextEditor setShowlabel(String showLabel) {
+        this.showlabel = showLabel;
         return this;
     }
 }

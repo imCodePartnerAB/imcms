@@ -54,11 +54,13 @@ public class TextTag extends SimpleImcmsTag {
             }
 
             String label = attributes.getProperty("label", "");
+            String showLabel = attributes.getProperty("showlabel", "false");
 
             ((TextEditor) editor)
                     .setDocumentId(doc.getId())
                     .setContentType(contentType)
                     .setLabel(label)
+                    .setShowlabel(showLabel)
                     .setLocale(locale)
                     .setLoopEntryRef(loopEntryRef)
                     .setNo(textNo);
@@ -98,5 +100,9 @@ public class TextTag extends SimpleImcmsTag {
 
     public void setPlaceholder(String placeholder) {
         attributes.setProperty("placeholder", placeholder);
+    }
+
+    public void setShowlabel(boolean showLabel) {
+        attributes.setProperty("showlabel", "" + showLabel);
     }
 }

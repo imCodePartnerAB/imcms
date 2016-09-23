@@ -126,12 +126,12 @@
         <div class="wrapper">
             <h1>${document.headline}</h1>
 
-            <imcms:text label="test label 1" no="1" document="${document.id}"/>
+            <imcms:text label="test label" no="1" document="${document.id}"/>
 
             <h2>Learn more</h2>
 
-            <imcms:text label="label test" no="2" document="1001" mode="read" pre=""/>
-            <imcms:text label="label test once more" no="4" formats="text"/>
+            <imcms:text no="2" document="1001" mode="read" pre=""/>
+            <imcms:text label="label test 2" no="4" formats="text" showlabel="true"/>
         </div>
         <div class="wrapper">
             <imcms:loop no="1">
@@ -140,7 +140,6 @@
                     <div class="description">
                         <imcms:text no="1" document="${document.id}"/>
                     </div>
-
                 </div>
             </imcms:loop>
         </div>
@@ -150,7 +149,7 @@
         <section class="footer">
             <div class="wrapper">
                 <div class="additional">
-                    <imcms:text no="3" document="1001"
+                    <imcms:text no="3" document="1001" label="label test once more" showlabel="true"
                                 placeholder="<i>now empty text field can be filled with attr `placeholder`</i>"/>
                 </div>
                 <div class="logo">

@@ -93,6 +93,10 @@
 			<name>post</name>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>showlabel</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 	</tag>
 
 	<tag>
