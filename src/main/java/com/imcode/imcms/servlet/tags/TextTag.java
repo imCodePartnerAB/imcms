@@ -53,9 +53,12 @@ public class TextTag extends SimpleImcmsTag {
                 }
             }
 
+            String label = attributes.getProperty("label", "");
+
             ((TextEditor) editor)
                     .setDocumentId(doc.getId())
                     .setContentType(contentType)
+                    .setLabel(label)
                     .setLocale(locale)
                     .setLoopEntryRef(loopEntryRef)
                     .setNo(textNo);

@@ -20,7 +20,7 @@
     <jsp:include page="/WEB-INF/jsp/imcms/imcms_admin_headtag.jsp">
         <jsp:param name="flags" value="${flags}"/>
     </jsp:include>
-    <link rel="stylesheet" href="${contextPath}/imcms/css/template/demo.css"/>
+    <%--<link rel="stylesheet" href="${contextPath}/imcms/css/template/demo.css"/>--%>
     <script src="${contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_edit_element.js"></script>
 </head>
 <body>
