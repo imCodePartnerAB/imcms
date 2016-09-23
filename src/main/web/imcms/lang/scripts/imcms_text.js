@@ -69,6 +69,12 @@ Imcms.Text.Editor.prototype = {
                     .build()
                     .attr("title", title)
                     .insertBefore(element);
+
+            if (element.data("showlabel")) {
+                $("<div>").addClass("text-editor-label")
+                    .text(element.data("label"))
+                    .insertBefore(element);
+            }
         });
     },
     _onConfirm: function (event) {
