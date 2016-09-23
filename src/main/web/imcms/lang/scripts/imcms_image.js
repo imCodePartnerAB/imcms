@@ -21,6 +21,14 @@ Imcms.Image.API.prototype = {
                 data: request,
                 success: response
             }), request);
+    },
+    delete: function (request, response) {
+        Imcms.Logger.log("Image.API::delete :",
+            $.ajax.bind($, {
+                url: Imcms.Linker.get("content.image", request.object),
+                type: "DELETE",
+                success: response
+            }), request);
     }
 };
 
@@ -64,6 +72,14 @@ Imcms.Image.Loader.prototype = {
             imageDomainObject: JSON.stringify(data),
             object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)
         }, Imcms.Logger.log.bind(this, "Image::saveLoopItem : ", callback));
+    },
+    remove: function (id, meta, langCode, callback) {
+        this._api.delete({object: ((meta || Imcms.document.meta) + "-" + id + "?langCode=" + langCode)},
+            Imcms.Logger.log.bind(this, "Image::remove : ", callback));
+    },
+    removeLoopItem: function (id, loopId, entryId, meta, langCode, callback) {
+        this._api.delete({object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
+            Imcms.Logger.log.bind(this, "Image::removeLoopItem : ", callback));
     }
 };
 
@@ -194,7 +210,8 @@ Imcms.Image.Editor.prototype = {
         this._infoViewAdapter = new Imcms.Image.ImageInfoAdapter({
             infoRef: this._builder.ref("infoView"),
             onDisplaySizeChanged: this._onDisplaySizeChanged.bind(this),
-            onChooseFile: $.proxy(this._onChooseFile, this)
+            onChooseFile: $.proxy(this._onChooseFile, this),
+            onRemoveImage: $.proxy(this._onRemoveImage, this)
         });
         this._infoViewAdapter.update(data);
 
@@ -226,6 +243,19 @@ Imcms.Image.Editor.prototype = {
         });
         $(this._builder[0]).fadeOut("fast");
     },
+
+    _onRemoveImage: function () {
+        var data = $(this._element).data();
+        if (data.loop && data.entry) {
+            this._loader.removeLoopItem(data.no, data.loop, data.entry, data.meta, this._language,
+                Imcms.BackgroundWorker.createTask({refreshPage: true}));
+        }
+        else {
+            this._loader.remove(data.no, data.meta, this._language,
+                Imcms.BackgroundWorker.createTask({refreshPage: true}));
+        }
+    },
+
     _onFileChosen: function (data) {
         if (data) {
             var clonedData = jQuery.extend(true, {}, data);
@@ -344,6 +374,8 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         infoRef: null,
         onChooseFile: function () {
         },
+        onRemoveImage: function () {
+        },
         onCropChanged: function () {
         },
         onDisplaySizeChanged: function () {
@@ -382,6 +414,11 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .on("click", this._options.onChooseFile)
             .label(this._imageSource.urlPathRelativeToContextPath || "")
             .end()
+            .end()
+            .button()
+            .html("Remove image")
+            .class("imcms-neutral choose-image")
+            .on("click", this._options.onRemoveImage)
             .end()
             .div()
             .class("field free-transformation-field")

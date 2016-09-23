@@ -300,6 +300,14 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return image;
     }
 
+    public void deleteImage(int no) {
+        images.remove(no);
+    }
+
+    public void deleteImage(LoopItemRef loopItemRef) {
+        loopImages.remove(loopItemRef);
+    }
+
     private ConcurrentHashMap<Integer, MenuDomainObject> cloneMenusMap() {
         ConcurrentHashMap<Integer, MenuDomainObject> menusClone = new ConcurrentHashMap<>();
 
