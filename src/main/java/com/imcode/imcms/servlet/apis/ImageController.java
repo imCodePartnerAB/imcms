@@ -172,7 +172,7 @@ public class ImageController {
             @RequestParam(value = "langCode", required = false) String langCode) {
 
         TextDocumentDomainObject textDocument;
-        if (null != langCode && (langCode.equals("en") || langCode.equals("sv"))) {
+        if (Imcms.getServices().getDocumentLanguages().getAll().stream().anyMatch(e -> langCode.equals(e.getCode()))) {
             textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
         } else {
             textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
@@ -195,7 +195,7 @@ public class ImageController {
             @RequestParam("imageDomainObject") ImageDomainObject imageDomainObject) throws DocumentSaveException {
 
         TextDocumentDomainObject textDocument;
-        if (null != langCode && (langCode.equals("en") || langCode.equals("sv"))) {
+        if (Imcms.getServices().getDocumentLanguages().getAll().stream().anyMatch(e -> langCode.equals(e.getCode()))) {
             textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
         } else {
             textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
@@ -249,7 +249,7 @@ public class ImageController {
             @RequestParam(value = "langCode", required = false) String langCode) {
 
         TextDocumentDomainObject textDocument;
-        if (null != langCode && (langCode.equals("en") || langCode.equals("sv"))) {
+        if (Imcms.getServices().getDocumentLanguages().getAll().stream().anyMatch(e -> langCode.equals(e.getCode()))) {
             textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
         } else {
             textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
