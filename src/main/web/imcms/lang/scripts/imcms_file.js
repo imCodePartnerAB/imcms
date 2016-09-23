@@ -1,6 +1,3 @@
-/**
- * Created by Shadowgun on 24.03.2015.
- */
 Imcms.File = {};
 Imcms.File.API = function () {
 
@@ -8,10 +5,12 @@ Imcms.File.API = function () {
 Imcms.File.API.prototype = {
 	create: function (request, response) {
 		Imcms.Logger.log("File.API::create :",
-			$.ajax.bind($, {
-				url: Imcms.Linker.get("files", request.folder, request.file),
+			$.ajax({
+				url: Imcms.Linker.get("files", request.folder, request.filename),
+                contentType: false,
+                processData: false,
 				type: "POST",
-				data: request,
+				data: request.data,
 				success: response
 			}), request);
 	},
@@ -40,7 +39,6 @@ Imcms.File.API.prototype = {
 				success: response
 			}), request);
 	}
-
 };
 
 Imcms.File.Loader = function () {
@@ -95,5 +93,14 @@ Imcms.File.Loader.prototype = {
 			{folder: folder || "", file: filename || "*.*"},
 			Imcms.Logger.log.bind(this, "File::remove : ", callback)
 		)
-	}
+	},
+    addPictureFile: function (file, folder, callback) {
+        var data = new FormData();
+        data.append("file", file);
+
+        this._api.create(
+            {folder: folder || "", filename: file.name, data: data},
+            Imcms.Logger.log.bind(this, "File::addPictureFile : ", callback)
+        )
+    }
 };

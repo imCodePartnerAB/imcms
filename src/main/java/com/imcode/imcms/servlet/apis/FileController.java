@@ -41,13 +41,11 @@ public class FileController {
      * @return Return created {@link Pattern}
      */
     private static Pattern filterOf(String filename, String extension) {
-        return Pattern
-                .compile(
-                        String.format(FILE_FILTER_PATTERN,
-                                filename.replace("*", ".*"),
-                                extension.replace("*", ".*")
-                        )
-                );
+        final String filterText = String.format(FILE_FILTER_PATTERN,
+                filename.replace("*", ".*"),
+                extension.replace("*", ".*")
+        );
+        return Pattern.compile(filterText);
     }
 
     /**
@@ -126,11 +124,14 @@ public class FileController {
         String path = FolderController.folderFromRequest(request);
         Directory base = new Directory(Imcms.getServices().getConfig().getImagePath());
         File folderTo = base.find(URLDecoder.decode(body.get("to").get(0), "UTF-8")).getSource();
-        return Stream.of(base
-                .find(path)
+        final File[] files = base.find(path)
                 .getSource()
-                .listFiles((dir, item) -> fileFilterPattern.matcher(item).matches()))
-                .allMatch(file -> file.renameTo(new File(folderTo, file.getName())));
+                .listFiles((dir, item) -> fileFilterPattern.matcher(item).matches());
+
+        return (files != null
+                && Stream.of(files)
+                .allMatch(file -> file.renameTo(new File(folderTo, file.getName())))
+        );
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = {"/**/{filename}.{extension}"})
@@ -138,10 +139,11 @@ public class FileController {
                           @PathVariable("filename") String filename) {
         final Pattern fileFilterPattern = filterOf(filename, extension);
         String path = FolderController.folderFromRequest(request);
-        return Stream.of(new Directory(Imcms.getServices().getConfig().getImagePath())
+        final File[] files = new Directory(Imcms.getServices().getConfig().getImagePath())
                 .find(path)
                 .getSource()
-                .listFiles((dir, item) -> fileFilterPattern.matcher(item).matches())).allMatch(File::delete);
+                .listFiles((dir, item) -> fileFilterPattern.matcher(item).matches());
 
+        return (files != null && Stream.of(files).allMatch(File::delete));
     }
 }

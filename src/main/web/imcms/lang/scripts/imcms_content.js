@@ -1,7 +1,3 @@
-/**
- * Created by Shadowgun on 24.03.2015.
- */
-
 Imcms.Content = {};
 Imcms.Content.Loader = function () {
 	this.init();
@@ -11,6 +7,20 @@ Imcms.Content.Loader.prototype = {
 	init: function () {
 		this._editor = new Imcms.Content.Editor(this);
 	},
+    addPictureFile: function (file, folder, callback) {
+        if (file.type != "image/jpeg" &&
+            file.type != "image/jpg" &&
+            file.type != "image/png" &&
+            file.type != "image/gif") {
+            throw "Wrong file extension!"; // todo: show validation error message
+        }
+
+        if (file.size > 4194304) { // todo: rewrite this "magic" digits
+            throw "File is too large!"; // todo: show validation error message
+        }
+
+        Imcms.Editors.File.addPictureFile(file, folder, callback)
+    },
 	getAllPictures: function (folder, callback) {
 		Imcms.Editors.File.getAllPictures(folder, callback)
 	},
@@ -104,9 +114,10 @@ Imcms.Content.Editor.prototype = {
 			.div()
 			.class("imcms-footer")
 			.div()
-			.class("browse imcms-neutral")
-			.div()
-			.html("Upload file…")
+			.class("browse-image")
+			.file()
+            .name("image-upload")
+            .on("change", this._onFileChosen.bind(this))
 			.end()
 			.file()
 			.class("hidden")
@@ -125,6 +136,28 @@ Imcms.Content.Editor.prototype = {
 		$(this._builder[0]).appendTo("body").addClass("editor-form editor-content reset");
 		return this;
 	},
+    _onFileChosen: function () {
+        var file = $(this._builder[0])
+            .find("input[type=file][name=image-upload]")[0]
+            .files[0];
+
+        try {
+            Imcms.BackgroundWorker.createTask({showProcessWindow: true})();
+            var folder = unescape(encodeURIComponent(this._escapeMainFolder(this._foldersTree.tree('getSelectedNode')).id));
+            this._loader.addPictureFile(file, folder, function(){});
+        } catch (error) {
+            console.log(error);
+            // ignore for now because we have an error that do not broke work flow - 406 (Not Acceptable)
+            //todo: rewrite to check is this error from controller FileAlreadyExistsException or not
+        } finally {
+            setTimeout(function () {
+                this._onFileUploaded();
+            }.bind(this), 2000);
+            // Imcms.BackgroundWorker.createTask()();
+        }
+
+        $("input[type=file][name=image-upload]").val("")
+    },
 	buildFoldersTree: function () {
 		this._foldersTree = new Imcms.Content.TreeAdapter({
 			tree: this._builder.ref("folders").getHTMLElement(),
@@ -546,7 +579,7 @@ Imcms.Content.FileUploader.prototype = {
 			var request = new XMLHttpRequest();
 
 			//request.onreadystatechange = mt.stateChange;
-			request.open("POST", "/api/content/files/" + postedFile.name);
+			request.open("POST", Imcms.Linker.getContextPath() + "/api/content/files/" + postedFile.name);
 			request.onreadystatechange = that._options.onFileUploaded;
 			request.setRequestHeader("X-FILE-NAME", postedFile.name);
 			request.setRequestHeader("contentType", "multipart/form-data");
@@ -558,7 +591,7 @@ Imcms.Content.FileUploader.prototype = {
 		var formData = new FormData();
 		formData.append('file', file);
 		$.ajax({
-			url: "/api/content/files/" + file.name,
+			url: Imcms.Linker.getContextPath() + "/api/content/files/" + file.name,
 			data: formData,
 			// THIS MUST BE DONE FOR FILE UPLOADING
 			contentType: false,
