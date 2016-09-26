@@ -213,6 +213,7 @@
 			}
 
 			$(".imcms-tab").click(function (e) {
+				redirectIfUserLoggedIn();
 				switch ($(this).attr('id')) {
 					case "imcms-default-tab":
 					{
@@ -220,7 +221,6 @@
 						break;
 					case "imcms-bankid-tab":
 					{
-						parent.redirectIfUserLoggedIn();
 						location.href = location.protocol + '//' + location.host + "<%=request.getContextPath()+"/VerifyUserViaBankId" %>";
 					}
 						break;

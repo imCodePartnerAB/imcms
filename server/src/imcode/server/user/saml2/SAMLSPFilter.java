@@ -1,10 +1,12 @@
 package imcode.server.user.saml2;
 
+import com.imcode.imcms.servlet.Redirector;
 import imcode.server.Imcms;
 import imcode.server.user.saml2.store.SAMLSessionInfo;
 import imcode.server.user.saml2.store.SAMLSessionManager;
 import imcode.server.user.saml2.utils.OpenSamlBootstrap;
 import imcode.server.user.saml2.utils.SAMLUtils;
+import imcode.util.Utility;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.saml2.core.NameID;
@@ -43,6 +45,7 @@ public class SAMLSPFilter implements Filter {
 	  /*
 	   * Check if request is not refer to CGI-IDP - ignore it;
       */
+		String serverName = Imcms.getServerProperties().getProperty("ServerName");
 		if (!isFilteredRequest(request) || !filterConfig.isEnabled()) {
 			log.debug("According to {} configuration parameter request is ignored + {}",
 					new Object[]{FilterConfig.EXCLUDED_URL_PATTERN_PARAMETER, request.getRequestURI()});
@@ -69,9 +72,8 @@ public class SAMLSPFilter implements Filter {
 				log.debug("Starting and store SAML session..");
 				SAMLSessionManager.getInstance().createSAMLSession(request, response,
 						samlMessageContext);
-				String serverName = Imcms.getServerProperties().getProperty("ServerName");
-				if (serverName != null) {
-					response.sendRedirect(serverName + request.getContextPath());
+				if (serverName != null && !response.isCommitted()) {
+					response.sendRedirect(serverName + request.getContextPath() + "/servlet/StartDoc");
 				} else {
 					return;
 				}
@@ -102,16 +104,27 @@ public class SAMLSPFilter implements Filter {
 			SAMLSessionManager.getInstance().loginUser(samlSessionInfo, request, response);
 			log.debug("SAML session exists and valid: grant access to secure resource");
 			//chain.doFilter(request, response);
-			return;
+			if (serverName != null && !response.isCommitted()) {
+				response.sendRedirect(serverName + request.getContextPath() + "/servlet/StartDoc");
+			} else {
+				return;
+			}
 		}
         /*
         * Create SAML request and redirect user to CGI service for authentication
          */
 		log.debug("Sending authentication request to idP");
 		try {
-			samlRequestSender.sendSAMLAuthRequest(request, response,
-					spProviderId, filterConfig.getAcsUrl(),
-					filterConfig.getIdpSSOLoginUrl());
+			if (Utility.getLoggedOnUser(request).isDefaultUser()) {
+				samlRequestSender.sendSAMLAuthRequest(request, response,
+						spProviderId, filterConfig.getAcsUrl(),
+						filterConfig.getIdpSSOLoginUrl());
+			} else if (serverName != null && !response.isCommitted()) {
+				response.sendRedirect(serverName + request.getContextPath() + "/servlet/StartDoc");
+			} else {
+				return;
+			}
+
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}
