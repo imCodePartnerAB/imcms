@@ -1,10 +1,13 @@
 package imcode.util.net;
 
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import imcode.server.Imcms;
 import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
@@ -39,23 +42,54 @@ public class SMTP {
 		this.port = port;
 	}
 
-	public void sendMail(Mail mail)
-			throws IOException {
-		HtmlEmail email = mail.getMail();
+    public void sendMail(Mail mail)
+            throws IOException {
+        Email email = mail.getMail();
 
-		try {
-			email.setHostName(host);
-			email.setSmtpPort(port);
-			email.setCharset("UTF-8");
-			email.send();
-		} catch (EmailException e) {
-			if (Utility.throwableContainsMessageContaining(e, "no object DCH")) {
-				throw new UnhandledException("\"no object DCH\" Likely cause: the activation jar-file cannot see the mail jar-file. Different ClassLoaders?", e);
-			} else {
-				throw new UnhandledException(e);
-			}
-		}
-	}
+        try {
+            setEncryption(email);
+
+            email.setHostName(host);
+            email.setSmtpPort(port);
+            email.setCharset("UTF-8");
+            email.send();
+        } catch (EmailException e) {
+            if (Utility.throwableContainsMessageContaining(e, "no object DCH")) {
+                throw new UnhandledException("\"no object DCH\" Likely cause: the activation jar-file cannot see the mail jar-file. Different ClassLoaders?", e);
+            } else {
+                throw new UnhandledException(e);
+            }
+        }
+    }
+
+    private void setEncryption(Email mail) {
+        final String encryptionProtocol = getServerProperty("encryption.protocol");
+        final String accountMail = getServerProperty("mail.address");
+        final String accountMailPassword = getServerProperty("mail.password");
+
+        if ((encryptionProtocol != null) && (accountMail != null) && (accountMailPassword != null)) {
+            if (encryptionProtocol.toLowerCase().equals("tls")) {
+                mail.setStartTLSEnabled(true);
+
+            } else if (encryptionProtocol.toLowerCase().equals("ssl")) {
+                mail.setSSLOnConnect(true);
+
+            } else {
+                return;
+            }
+
+            mail.setAuthenticator(new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(accountMail, accountMailPassword);
+                }
+            });
+        }
+    }
+
+    private String getServerProperty(String key) {
+        return StringUtils.trimToNull(Imcms.getServerProperties().getProperty(key));
+    }
 
 	public static class Mail {
 
@@ -76,18 +110,6 @@ public class SMTP {
 			setToAddresses(toAddresses);
 			setSubject(subject);
 			setBody(body);
-		}
-
-		public void enableTLS(String fromEmail, String password) {
-			final String userName = fromEmail;
-			final String pass = password;
-
-			mail.setStartTLSEnabled(true).setAuthenticator(new Authenticator() {
-				@Override
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(userName, pass);
-				}
-			});
 		}
 
 		@SuppressWarnings("unchecked")

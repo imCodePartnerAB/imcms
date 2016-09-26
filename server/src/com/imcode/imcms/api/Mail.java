@@ -107,14 +107,4 @@ public class Mail {
 	public void setReplyToAddresses(String[] replyToAddresses) {
 		internal.setReplyToAddresses(replyToAddresses);
 	}
-
-	/**
-	 * Enables TLS authentication.
-	 *
-	 * @param fromEmail email for authentication
-	 * @param password  password for authentication
-	 */
-	public void enableTLS(String fromEmail, String password) {
-		internal.enableTLS(fromEmail, password);
-	}
 }
