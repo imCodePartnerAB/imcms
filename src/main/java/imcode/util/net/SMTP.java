@@ -1,10 +1,13 @@
 package imcode.util.net;
 
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import imcode.util.PropertyManager;
 import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
@@ -41,10 +44,12 @@ public class SMTP {
 
 	public void sendMail(Mail mail)
 			throws IOException {
-		HtmlEmail email = mail.getMail();
+		Email email = mail.getMail();
 
 		try {
-			email.setHostName(host);
+            setEncryption(email);
+
+            email.setHostName(host);
 			email.setSmtpPort(port);
 			email.setCharset("UTF-8");
 			email.send();
@@ -56,6 +61,35 @@ public class SMTP {
 			}
 		}
 	}
+
+	private void setEncryption(Email mail) {
+        final String encryptionProtocol = getServerProperty("encryption.protocol");
+        final String accountMail = getServerProperty("mail.address");
+        final String accountMailPassword = getServerProperty("mail.password");
+
+        if ((encryptionProtocol != null) && (accountMail != null) && (accountMailPassword != null)) {
+            if (encryptionProtocol.toLowerCase().equals("tls")) {
+                mail.setStartTLSEnabled(true);
+
+            } else if (encryptionProtocol.toLowerCase().equals("ssl")) {
+                mail.setSSLOnConnect(true);
+
+            } else {
+                return;
+            }
+
+            mail.setAuthenticator(new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(accountMail, accountMailPassword);
+                }
+            });
+        }
+    }
+
+	private String getServerProperty(String key) {
+        return StringUtils.trimToNull(PropertyManager.getServerProperties().getProperty(key));
+    }
 
 	public static class Mail {
 
@@ -76,15 +110,6 @@ public class SMTP {
 			setToAddresses(toAddresses);
 			setSubject(subject);
 			setBody(body);
-		}
-
-		public void enableTLS(String fromEmail, String password) {
-			mail.setStartTLSEnabled(true).setAuthenticator(new Authenticator() {
-				@Override
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(fromEmail, password);
-				}
-			});
 		}
 
 		public void setBccAddresses(String[] bccAddresses) {
