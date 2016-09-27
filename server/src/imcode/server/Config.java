@@ -58,9 +58,9 @@ public class Config {
 	private Set<String> indexDisabledFileExtensionsSet = Collections.emptySet();
 	private Set<String> indexDisabledFileMimesSet = Collections.emptySet();
 	private Map<String, AuthenticationMethodConfiguration> authenticationConfiguration = new HashMap<String, AuthenticationMethodConfiguration>();
-	private String cgiUserRoleName = "CGIUsers";
-	private String cgiMetadataUrl = "";
-	private String serverName = "http://localhost:8080";
+	private String cgiUserRoleName;
+	private String cgiMetadataUrl;
+	private String serverName;
 
 	private static List<RoleId> convertRoleIds(String roleIdsString) {
 		String[] ids = StringUtils.split(roleIdsString, ',');
@@ -497,7 +497,7 @@ public class Config {
 	}
 
 	public String getServerName() {
-		return Imcms.getServerName();
+		return this.serverName;
 	}
 
 	public void setServerName(String serverName) {

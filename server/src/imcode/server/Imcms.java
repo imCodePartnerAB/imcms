@@ -83,7 +83,7 @@ public class Imcms {
     }
 
     public static String getServerName() {
-        return getServerProperties().getProperty("server-name", "http://localhost:8080");
+        return getServerProperties().getProperty("ServerName", "http://localhost:8080");
     }
 
     public static Map<String, AuthenticationMethodConfiguration> getAuthenticationConfiguration() {

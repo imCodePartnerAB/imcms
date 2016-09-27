@@ -181,14 +181,9 @@
         <filter token="db-pass" value="${db-pass}"/>
         <filter token="db-maxconnections" value="${db-maxconnections}"/>
 
-		<filter token="server-name" value="$ServerName}"/>
-		<filter token="cgi-metadata-url" value="$CgiMetadataUrl}"/>
-		<filter token="authentication-configuration" value="$AuthenticationConfiguration}"/>
-		<filter token="cgi-user-role-name" value="$CgiUserRoleName}"/>
-
-		<!--<filter token="authentication-method-1" value="${authentication-method-1}"/>-->
-		<!--<filter token="authentication-method-2" value="${authentication-method-2}"/>-->
-		<!--<filter token="cgi-authentication-method-url" value="${cgi-authentication-method-url}"/>-->
+		<filter token="cgi-metadata-url" value="${cgi-metadata-url}"/>
+		<filter token="authentication-configuration" value="${authentication-configuration}"/>
+		<filter token="cgi-user-role-name" value="${cgi-user-role-name}"/>
 
         <filter token="external-authenticator" value="${external-authenticator}"/>
         <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
