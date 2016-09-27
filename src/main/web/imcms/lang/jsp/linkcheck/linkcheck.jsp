@@ -98,6 +98,7 @@ if (doCheckLinks) {
 				document.getId() %> - <%= StringEscapeUtils.escapeHtml4( document.getHeadline() ) %></a></td>
 	<td nowrap><%
 				if (documentMenuPairsContainingUrlDocument.length > 0) {
+//                    todo: remove dead reference to /servlet/DocumentReferences or whole this page if not used any more
 					%><a href="<%= request.getContextPath() %>/servlet/DocumentReferences?<%=
 					DocumentReferences.REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID %>=<%=
 					document.getId() %>&<%=
