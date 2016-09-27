@@ -1,14 +1,5 @@
-<%@ page
-	
-	contentType="text/javascript"
-	pageEncoding="UTF-8"
-	
-%><%@ taglib prefix="vel" uri="imcmsvelocity" %><%
-
-String cp = request.getContextPath() ;
-
-%>
-        <vel:velocity>
+<%@ page import="imcode.server.Imcms"%>
+        <%@ page contentType="text/javascript" pageEncoding="UTF-8"%>
 
     /* *******************************************************************************************
      *         Browser sniffer                                                                   *
@@ -94,7 +85,9 @@ String cp = request.getContextPath() ;
         function openHelpW(helpDocName) {
             <%--window.open("@documentationurl@/Help?name=" + helpDocName + "&lang=$language", "help");--%>
             <%-- IMCMS-94: replaced without arguments since we have new documentation--%>
-            window.open('@documentationurl@');
+            <%--window.open('@documentationurl@'); --%>
+            <%-- IMCMS-149: replaced with URL from system properties since we do not use velocity tag here --%>
+            window.open("<%= Imcms.getServerProperties().getProperty("documentation-host") %>");
         }
 
         function popWinOpen(winW, winH, sUrl, sName, iResize, iScroll) {
@@ -113,4 +106,3 @@ String cp = request.getContextPath() ;
                 window.open(sUrl, sName, "resizable=" + iResize + ",menubar=0,scrollbars=" + iScroll + ",width=" + winW + ",height=" + winH);
             }
         }
-        </vel:velocity>

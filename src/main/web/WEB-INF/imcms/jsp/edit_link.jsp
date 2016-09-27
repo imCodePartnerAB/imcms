@@ -58,10 +58,11 @@
 		<meta http-equiv="Cache-Control" content="no-cache">
 
 		<link rel="stylesheet" type="text/css" href="<%= cp %>/imcms/css/imcms_admin.css.jsp"/>
-		<script type="text/javascript" src="<%= cp %>/imcms/$language/scripts/imcms_admin.js.jsp"></script>
+		<script type="text/javascript" src="<%= cp %>/imcms/scripts/imcms_admin.js.jsp"></script>
 		<link rel="stylesheet" type="text/css" href="<%= cp %>/imcms/css/imcms4_admin.css.jsp"/>
 		<script type="text/javascript"
-				src="<%= cp %>/imcms/swe/scripts/imcms4_admin_script.js.jsp?loadJq=false"></script>
+				src="<%= cp %>/imcms/scripts/imcms4_admin_script.js.jsp?loadJq=false"></script>
+        <%-- there is no any /imcms/scripts/imcms4_admin_script.js.jsp --%>
 		<link rel="stylesheet" type="text/css" media="all"
 			  href="<%= cp %>/imcms/scripts/autocomplete/imcms_jquery.autocomplete.css.jsp"/>
 		<script type="text/javascript"

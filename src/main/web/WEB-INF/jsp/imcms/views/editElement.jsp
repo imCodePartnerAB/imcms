@@ -21,7 +21,7 @@
         <jsp:param name="flags" value="${flags}"/>
     </jsp:include>
     <%--<link rel="stylesheet" href="${contextPath}/imcms/css/template/demo.css"/>--%>
-    <script src="${contextPath}/imcms/${user.language.isoCode639_2}/scripts/imcms_edit_element.js"></script>
+    <script src="${contextPath}/imcms/scripts/imcms_edit_element.js"></script>
 </head>
 <body>
 <div class="container">

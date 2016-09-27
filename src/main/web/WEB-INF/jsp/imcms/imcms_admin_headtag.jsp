@@ -9,7 +9,6 @@
 <imcms:variables/>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
-<c:set var="language" value="${user.language.isoCode639_2}"/>
 
 <base href="${contextPath}">
 
@@ -39,31 +38,29 @@
 <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_merged.css.jsp"/>
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/themes/default/style.min.css" />
 
-<script src="${contextPath}/imcms/${language}/scripts/imcms_linker.js"></script>
+<script src="${contextPath}/imcms/scripts/imcms_linker.js"></script>
 
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_base.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_base.js"></script>
 <script type="text/javascript"
-        src="${contextPath}/imcms/${language}/scripts/imcms_bootstrap.js.jsp?meta_id=${document.id}&amp;language=${language}&amp;flags=${flags}"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_adminpanel.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_logger.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_utils.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_addons.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_ckeditor_extension.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_events.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_loop.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_menu.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_text.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_language.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_template.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_category.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_user.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_document.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_role.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_permission.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_file.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_folder.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_content.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_image.js"></script>
-<script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_backgroundworker.js"></script>
-
-
+        src="${contextPath}/imcms/scripts/imcms_bootstrap.js.jsp?meta_id=${document.id}&amp;language=${user.language.isoCode639_2}&amp;flags=${flags}"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_adminpanel.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_logger.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_utils.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_addons.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_ckeditor_extension.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_events.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_loop.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_menu.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_text.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_language.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_template.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_category.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_user.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_document.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_role.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_permission.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_file.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_folder.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_content.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_image.js"></script>
+<script type="text/javascript" src="${contextPath}/imcms/scripts/imcms_backgroundworker.js"></script>

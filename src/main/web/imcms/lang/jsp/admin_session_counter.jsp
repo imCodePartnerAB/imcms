@@ -16,7 +16,7 @@
 <title><? templates/sv/search/search_documents.html/1 ?></title>
 
 <link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css.jsp" type="text/css">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+<script src="$contextPath/imcms/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts() %>
 
 </head>

@@ -4,7 +4,7 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-    <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+    <script src="$contextPath/imcms/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 </head>
 <body>
     #gui_outer_start()

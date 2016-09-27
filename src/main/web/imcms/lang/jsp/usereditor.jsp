@@ -21,7 +21,7 @@
 <head>
 <title><? templates/sv/AdminUserResp.htm/1 ?></title>
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+<script src="$contextPath/imcms/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 <script language="javascript">
 <!--
 function evalPrepareAdd() {
