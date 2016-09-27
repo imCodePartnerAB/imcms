@@ -17,11 +17,11 @@ Next property sets the authentication method URL:
 
 where **url** is different:
 
-    * for testing: https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/req/0/0
+    * for testing: https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0
 
-    * for production: https://m00-mg-local.idp.funktionstjanster.se/samlv2/idp/req/0/0
+    * for production: https://m00-mg-local.idp.funktionstjanster.se/samlv2/idp/metadata/0/0
 
-And the last one - server name, like **localhost:8080** or **https://www.somesite.se** :
+And the last one - server name, like **http://localhost:8080** or **https://www.somesite.se** :
 
 .. code-block:: properties
 
