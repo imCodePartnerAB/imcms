@@ -1,7 +1,7 @@
 package imcode.server.user.saml2;
 
-import com.imcode.imcms.servlet.Redirector;
 import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import imcode.server.user.saml2.store.SAMLSessionInfo;
 import imcode.server.user.saml2.store.SAMLSessionManager;
 import imcode.server.user.saml2.utils.OpenSamlBootstrap;
@@ -45,7 +45,7 @@ public class SAMLSPFilter implements Filter {
 	  /*
 	   * Check if request is not refer to CGI-IDP - ignore it;
       */
-		String serverName = Imcms.getServerProperties().getProperty("ServerName");
+		String serverName = Imcms.getServerName();
 		if (!isFilteredRequest(request) || !filterConfig.isEnabled()) {
 			log.debug("According to {} configuration parameter request is ignored + {}",
 					new Object[]{FilterConfig.EXCLUDED_URL_PATTERN_PARAMETER, request.getRequestURI()});
@@ -115,7 +115,8 @@ public class SAMLSPFilter implements Filter {
          */
 		log.debug("Sending authentication request to idP");
 		try {
-			if (Utility.getLoggedOnUser(request).isDefaultUser()) {
+			UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
+			if (loggedOnUser != null && loggedOnUser.isDefaultUser()) {
 				samlRequestSender.sendSAMLAuthRequest(request, response,
 						spProviderId, filterConfig.getAcsUrl(),
 						filterConfig.getIdpSSOLoginUrl());

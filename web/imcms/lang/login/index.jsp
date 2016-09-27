@@ -54,22 +54,12 @@
 	</table>
 	#gui_mid()
 	<div id="imcms-login-container">
-		<% if (loginConfiguration.size() > 1) {
-			if (loginConfiguration.containsKey("cgi")
-					&& loginConfiguration.containsKey("loginPassword")
-					&& loginConfiguration.get("loginPassword").getOrder() < loginConfiguration.get("cgi").getOrder()) { %>
+		<% if (loginConfiguration.size() > 1) {%>
 		<div id="imcms-login-container-tabs">
 			<div class="imcms-tab imcms-tab-active" id="imcms-default-tab"><? templates/login/index.html/2008 ?></div>
 			<div class="imcms-tab" id="imcms-bankid-tab"><? templates/login/index.html/2009 ?></div>
 			<div style="clear:both"></div>
 		</div>
-		<% } else {%>
-		<div id="imcms-login-container-tabs">
-			<div class="imcms-tab imcms-tab-active" id="imcms-bankid-tab"><? templates/login/index.html/2009 ?></div>
-			<div class="imcms-tab" id="imcms-default-tab"><? templates/login/index.html/2008 ?></div>
-			<div style="clear:both"></div>
-		</div>
-		<% } %>
 
 		<script>
 			$(document).ready(function () {

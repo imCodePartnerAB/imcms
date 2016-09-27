@@ -497,7 +497,7 @@ public class Config {
 	}
 
 	public String getServerName() {
-		return this.serverName;
+		return Imcms.getServerName();
 	}
 
 	public void setServerName(String serverName) {
