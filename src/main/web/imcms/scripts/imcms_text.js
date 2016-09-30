@@ -187,6 +187,7 @@ Imcms.Text.Editor.prototype = {
             linkPlugins,
             imagesPlugins,
             textPlugins,
+            sourcePlugin,
             imcmsCustomPlugins
         ]; // Custom minimized toolbar config for tag without attribute "formats" but was changed to "HTML"
 
@@ -199,6 +200,7 @@ Imcms.Text.Editor.prototype = {
             advancedFontPlugins,
             textPlugins,
             textEditingPlugins,
+            sourcePlugin,
             advancedActionsPlugins,
             imcmsCustomPlugins
         ]; // Custom maximized toolbar config for tag without attribute "formats" but was changed to "HTML"
