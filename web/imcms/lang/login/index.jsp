@@ -170,40 +170,7 @@
 			   value="<%=StringEscapeUtils.escapeHtml(next_url)%>">
 		<%}%>
 		<script>
-			function urlParam(name) {
-				var results = new RegExp('[\?&amp;]' + name + '=([^&amp;#]*)').exec(window.location.href);
-				return results ? results[1] : undefined;
-			}
-
-			var jqr = $;
-
-			jqr.ajax({
-				url: '<im:contextpath/>' + "/setNextUrl",
-				method: "POST",
-				data: {next_url: window.location.href}
-			});
-
-			function redirectIfUserLoggedIn() {
-				var next_meta = $('#nextMeta').val();
-				var next_url = $('#nextUrl').val();
-
-				jqr.ajax({
-					url: '<im:contextpath/>' + "/redirectIfUserLoggedIn",
-					method: "POST",
-					data: {
-						"next_url": next_url,
-						"next_meta": next_meta
-					},
-					success: function (json) {
-						if (json && json.redirect) {
-							parent.window.location.href = json.redirect;
-						}
-					}
-				});
-			}
-
 			$(".imcms-tab").click(function (e) {
-				redirectIfUserLoggedIn();
 				switch ($(this).attr('id')) {
 					case "imcms-default-tab":
 					{
