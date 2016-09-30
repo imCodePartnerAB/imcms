@@ -13,7 +13,8 @@
 	if (!user.canEdit(document)) return;
 	Boolean canEditDocumentInfo =
 			user.getPermissionSetFor(document).getEditDocumentInformation();
-	Boolean editMode = request.getParameterMap().containsKey("flags");
+	boolean editMode = request.getParameterMap().containsKey("flags");
+    boolean previewMode = false;
 	String contextPath = request.getContextPath();
 	String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext()).replace("imCMS", "<span>imCMS</span>");
 	DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().getLanguage();
@@ -37,12 +38,12 @@
 				</a>
 			</div>
 		</section>
-		<section id="read" data-mode="readonly" class="admin-panel-content-section <%=editMode?"":"active"%>">
+		<section id="read" data-mode="readonly" class="admin-panel-content-section <%=editMode||previewMode?"":"active"%>">
 			<a href="<%=contextPath%>/<%=StringUtils.defaultString(document.getAlias(), String.valueOf(document.getId()))%>"
 			   target="_self">
 				<div class="admin-panel-button">
 					<div class="admin-panel-button-image"></div>
-					<span class="admin-panel-button-description">Read-only</span>
+					<span class="admin-panel-button-description">Public</span>
 				</div>
 			</a>
 		</section>
@@ -54,7 +55,24 @@
 				</div>
 			</a>
 		</section>
-		<div class="admin-panel-content-separator"></div>
+        <section id="preview" data-mode="preview" class="admin-panel-content-section <%=previewMode?"active":""%>">
+            <a href="<%=contextPath%>/<%=StringUtils.defaultString(document.getAlias(), String.valueOf(document.getId()))%>"
+               target="_self">
+                <div class="admin-panel-button">
+                    <div class="admin-panel-button-image"></div>
+                    <span class="admin-panel-button-description">Preview</span>
+                </div>
+            </a>
+        </section>
+        <section id="publish" data-mode="publish" class="admin-panel-content-section">
+            <a href="<%=contextPath%>/<%=StringUtils.defaultString(document.getAlias(), String.valueOf(document.getId()))%>"
+               target="_self">
+                <div class="admin-panel-button">
+                    <div class="admin-panel-button-image">Publish offline version</div>
+                </div>
+            </a>
+        </section>
+        <div class="admin-panel-content-separator"></div>
 		<section id="info" data-mode="info"
 				 class="admin-panel-content-section <%= canEditDocumentInfo?"":"admin-panel-content-section-disabled"%>">
 			<a href="#" target="_self" onclick="<%= canEditDocumentInfo?"pageInfo();":""%> return false;">

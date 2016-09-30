@@ -522,7 +522,8 @@ editor theme
 	opacity: 0.3;
 }
 
-.admin-panel-content-section[data-mode=readonly] .admin-panel-button-image {
+.admin-panel-content-section[data-mode=readonly] .admin-panel-button-image,
+.admin-panel-content-section[data-mode=preview] .admin-panel-button-image {
 	background: url("<%=cp%>/images/ic_readonly.png") no-repeat;
 }
 
@@ -547,7 +548,9 @@ editor theme
 }
 
 .admin-panel-content-section.active[data-mode=readonly] .admin-panel-button .admin-panel-button-image,
-.admin-panel-content-section[data-mode=readonly] .admin-panel-button:hover .admin-panel-button-image {
+.admin-panel-content-section[data-mode=readonly] .admin-panel-button:hover .admin-panel-button-image,
+.admin-panel-content-section.active[data-mode=preview] .admin-panel-button .admin-panel-button-image,
+.admin-panel-content-section[data-mode=preview] .admin-panel-button:hover .admin-panel-button-image {
 	background: url("<%=cp%>/images/ic_readonly.png") 0 -32px no-repeat;
 }
 
