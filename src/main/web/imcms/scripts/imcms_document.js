@@ -1735,7 +1735,7 @@ Imcms.Document.Viewer.prototype = {
         $(this._modal).remove();
     },
     serialize: function () {
-        var result = {languages: {}, access: {}, keywords: [], categories: {}, docVersion: {no: null, modifiedDt: null}},
+        var result = {languages: {}, access: {}, keywords: [], categories: {}},
             $source = $(this._builder[0]),
             formData = new FormData();
         $source.find("[name]").filter(function () {
