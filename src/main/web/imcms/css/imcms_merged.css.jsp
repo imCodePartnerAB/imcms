@@ -865,6 +865,11 @@ editor theme
 	padding-left: 220px;
 }
 
+.text-short {
+    width: 40px !important;
+    margin: 0 5px;
+}
+
 .date-time {
 	width: 200px !important;
 	margin: 0 5px;

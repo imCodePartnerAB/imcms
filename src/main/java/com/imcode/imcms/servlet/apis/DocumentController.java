@@ -600,6 +600,11 @@ public class DocumentController {
 		CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
 		RoleGetter roleGetter = Imcms.getServices().getRoleGetter();
 
+        entity.docVersion = Imcms.getServices()
+                .getDocumentMapper()
+                .getDocumentVersionInfo(document.getId())
+                .getLatestVersion();
+
         entity.missingLangProp = document.getDisabledLanguageShowMode().name();
         entity.type = document.getDocumentTypeId();
 		entity.languages = new HashMap<>();
@@ -740,6 +745,8 @@ public class DocumentController {
 
         @JsonProperty("missing-lang-prop")
         public String missingLangProp;
+
+        public DocumentVersion docVersion;
 
         private static class LanguageEntity {
 			public String code;

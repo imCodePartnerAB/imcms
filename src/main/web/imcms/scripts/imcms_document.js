@@ -498,6 +498,7 @@ Imcms.Document.Viewer.prototype = {
 
         if (options.data) {
             this.deserialize(options.data);
+
         }
 
         if (this._options.data.id) {
@@ -750,11 +751,31 @@ Imcms.Document.Viewer.prototype = {
             .label("Show in default language if enabled")
             .end()
             .end()
+
             .div()
             .radio()
             .name(Imcms.Document.MissingLangProperties.name)
             .value(Imcms.Document.MissingLangProperties.doNotShow.name)
             .label("Don't show at all")
+            .end()
+            .end()
+
+            .div()
+            .class("field")
+            .html("Current version: ")
+            .text()
+            .class("text-short")
+            .name("document-version")
+            .attr("readonly", true)
+            .attr("ignored", true)
+            .placeholder("Empty")
+            .end()
+            .text()
+            .class("date-time-short")
+            .name("document-version-date")
+            .attr("readonly", true)
+            .attr("ignored", true)
+            .placeholder("Empty")
             .end()
             .end()
 
@@ -1714,7 +1735,7 @@ Imcms.Document.Viewer.prototype = {
         $(this._modal).remove();
     },
     serialize: function () {
-        var result = {languages: {}, access: {}, keywords: [], categories: {}},
+        var result = {languages: {}, access: {}, keywords: [], categories: {}, docVersion: {no: null, modifiedDt: null}},
             $source = $(this._builder[0]),
             formData = new FormData();
         $source.find("[name]").filter(function () {
@@ -1823,6 +1844,14 @@ Imcms.Document.Viewer.prototype = {
                     $dataElement.val(data.languages[language][$dataElement.attr("name")]);
             }
         });
+
+        if (data.docVersion) {
+            var version = data.docVersion;
+            $source.find("[name=document-version]").first().val(version.no);
+            $source.find("[name=document-version-date]").first()
+                .val(new Date(version.modifiedDt).format("yyyy-mm-dd"));
+        }
+
         this._builder.ref("access").clear();
         this._rowsCount = 0;
         $.each(data.access, this.addRolePermission.bind(this));
