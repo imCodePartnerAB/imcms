@@ -82,7 +82,7 @@ public class TextController {
 
         return textHistories.stream().map(it -> new Object() {
             public String modifiedBy = it.getModifiedBy().getFirstName();
-            public String modifiedDate = it.getModifiedDt().toString();
+            public long modifiedDate = it.getModifiedDt().getTime();
             public String text = it.getText();
             public String type = it.getType().name();
         }).collect(Collectors.toList());
