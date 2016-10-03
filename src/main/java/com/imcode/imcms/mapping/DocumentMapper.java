@@ -491,6 +491,18 @@ public class DocumentMapper implements DocumentGetter {
 		return propertyRepository.findAllAliases();
 	}
 
+    /**
+     * @param documentIdentity document id or alias.
+     * @return working version of a document or null if document can not be found.
+     */
+    public <T extends DocumentDomainObject> T getWorkingDocument(String documentIdentity) {
+        Integer documentId = toDocumentId(documentIdentity);
+
+        return documentId == null
+                ? null
+                : getWorkingDocument(documentId);
+    }
+
 	/**
 	 * @param documentIdentity document id or alias.
 	 * @return latest version of a document or null if document can not be found.

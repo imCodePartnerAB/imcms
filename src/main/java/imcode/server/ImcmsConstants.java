@@ -135,4 +135,6 @@ public class ImcmsConstants {
 	private ImcmsConstants() {
 		throw new AssertionError();
 	}
+
+	public static final String REQUEST_PARAM__WORKING_PREVIEW = "working-preview";
 }

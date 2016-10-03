@@ -11,6 +11,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -218,7 +219,10 @@ public class ImcmsSetupFilter implements Filter {
 
 		if (resourcePaths == null || resourcePaths.size() == 0) {
 			String documentIdString = getDocumentIdString(service, path);
-			DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
+
+            DocumentDomainObject document = (BooleanUtils.toBoolean(request.getParameter("working-preview")))
+                    ? service.getDocumentMapper().getWorkingDocument(documentIdString)
+                    : service.getDocumentMapper().getDocument(documentIdString);
 
 			if (null != document) {
 				try {
