@@ -603,7 +603,7 @@ public class DocumentController {
         entity.docVersion = Imcms.getServices()
                 .getDocumentMapper()
                 .getDocumentVersionInfo(document.getId())
-                .getLatestVersion();
+                .getDefaultVersion();
 
         entity.missingLangProp = document.getDisabledLanguageShowMode().name();
         entity.type = document.getDocumentTypeId();
