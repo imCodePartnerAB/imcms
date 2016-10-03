@@ -498,7 +498,7 @@ Imcms.Document.Viewer.prototype = {
 
         if (options.data) {
             this.deserialize(options.data);
-
+            // todo: clear deserialized data to prevent repeating in next deserialize() calls
         }
 
         if (this._options.data.id) {
