@@ -1849,7 +1849,7 @@ Imcms.Document.Viewer.prototype = {
             var version = data.docVersion;
             $source.find("[name=document-version]").first().val(version.no);
             $source.find("[name=document-version-date]").first()
-                .val(new Date(version.modifiedDt).format("yyyy-mm-dd"));
+                .val(new Date(version.createdDt).format("yyyy-mm-dd"));
         }
 
         this._builder.ref("access").clear();
