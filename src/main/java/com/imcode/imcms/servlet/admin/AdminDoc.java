@@ -55,7 +55,7 @@ public class AdminDoc extends HttpServlet {
 			history.push(meta_id);
 		}
 
-		DocumentDomainObject document = imcref.getDocumentMapper().getDocument(meta_id);
+		DocumentDomainObject document = imcref.getDocumentMapper().getWorkingDocument(meta_id);
 
 		if (null == document) {
 			res.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -160,7 +160,7 @@ public class AdminDoc extends HttpServlet {
 		} else if (document instanceof FileDocumentDomainObject && ImcmsConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags) {
 			pageFlow = new EditDocPageFlow(document);
 		} else if (ImcmsConstants.DISPATCH_FLAG__PUBLISH == flags) {
-			pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.MakeDocumentVersionCommand(), user);
+            pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.PublishWorkingVersionCommand(), user);
 		} else if (ImcmsConstants.DISPATCH_FLAG__SET_DEFAULT_VERSION == flags) {
 			try {
 				Integer no = Integer.parseInt(req.getParameter("no"));

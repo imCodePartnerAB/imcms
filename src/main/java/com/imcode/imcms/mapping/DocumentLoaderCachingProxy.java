@@ -112,7 +112,7 @@ public class DocumentLoaderCachingProxy {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends DocumentDomainObject> T getDefaultDoc(final int docId, final String docLanguageCode) {
-		return (T) workingDocs.getOrPut(new DocCacheKey(docId, docLanguageCode), () -> {
+		return (T) defaultDocs.getOrPut(new DocCacheKey(docId, docLanguageCode), () -> {
 			DocumentMeta meta = getMeta(docId);
 
 			if (meta == null) {

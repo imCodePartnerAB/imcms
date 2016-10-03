@@ -4,6 +4,7 @@
 		%>
 <%@ page import="com.imcode.imcms.servlet.Version" %>
 <%@ page import="imcode.server.Imcms" %>
+<%@ page import="imcode.server.ImcmsConstants" %>
 <%@ page import="imcode.server.document.DocumentDomainObject" %>
 <%@ page import="imcode.server.user.UserDomainObject" %>
 <%@ page import="org.apache.commons.lang3.StringUtils" %>
@@ -11,10 +12,9 @@
 	UserDomainObject user = (UserDomainObject) request.getAttribute("user");
 	DocumentDomainObject document = (DocumentDomainObject) request.getAttribute("document");
 	if (!user.canEdit(document)) return;
-	Boolean canEditDocumentInfo =
-			user.getPermissionSetFor(document).getEditDocumentInformation();
-	boolean editMode = request.getParameterMap().containsKey("flags");
-    boolean previewMode = false;
+	Boolean canEditDocumentInfo = user.getPermissionSetFor(document).getEditDocumentInformation();
+	boolean editMode = ("" + ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS).equals(request.getParameter("flags"));
+    boolean previewMode = false; // todo: fix preview mode definition
 	String contextPath = request.getContextPath();
 	String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext()).replace("imCMS", "<span>imCMS</span>");
 	DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().getLanguage();
@@ -48,7 +48,8 @@
 			</a>
 		</section>
 		<section id="edit" data-mode="edit" class="admin-panel-content-section <%=editMode?"active":""%>">
-			<a href="<%=contextPath%>/servlet/AdminDoc?meta_id=<%=document.getId()%>&flags=65536" target="_self">
+			<a href="<%=contextPath%>/servlet/AdminDoc?meta_id=<%=document.getId()%>&flags=<%=ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS%>"
+               target="_self">
 				<div class="admin-panel-button">
 					<div class="admin-panel-button-image"></div>
 					<span class="admin-panel-button-description">Edit</span>
@@ -65,7 +66,7 @@
             </a>
         </section>
         <section id="publish" data-mode="publish" class="admin-panel-content-section">
-            <a href="<%=contextPath%>/<%=StringUtils.defaultString(document.getAlias(), String.valueOf(document.getId()))%>"
+            <a href="<%=contextPath%>/servlet/AdminDoc?meta_id=<%=document.getId()%>&flags=<%=ImcmsConstants.DISPATCH_FLAG__PUBLISH%>"
                target="_self">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image">Publish offline version</div>

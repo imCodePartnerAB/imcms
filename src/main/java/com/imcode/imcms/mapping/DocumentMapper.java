@@ -379,8 +379,7 @@ public class DocumentMapper implements DocumentGetter {
 		List<DocumentDomainObject> docs = new LinkedList<>();
 
 		for (DocumentLanguage language : imcmsServices.getDocumentLanguages().getAll()) {
-			DocRef docRef = DocRef.of(docId, DocumentVersion.WORKING_VERSION_NO, language.getCode());
-			DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDoc(docRef);
+			DocumentDomainObject doc = getWorkingDocument(docId, language);
 			docs.add(doc);
 		}
 
@@ -939,6 +938,21 @@ public class DocumentMapper implements DocumentGetter {
 			Imcms.getServices().getDocumentMapper().changeDocumentDefaultVersion(document.getId(), docVersionNo, user);
 		}
 	}
+
+    /**
+     * Makes new version from a working/draft version and sets it as default version for current doc.
+     *
+     * @since 6.0
+     */
+	public static class PublishWorkingVersionCommand extends DocumentPageFlow.SaveDocumentCommand {
+
+        @Override
+        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+            final DocumentMapper mapper = Imcms.getServices().getDocumentMapper();
+            final DocumentVersion newVersion = mapper.makeDocumentVersion(document.getId(), user);
+            mapper.changeDocumentDefaultVersion(document.getId(), newVersion.getNo(), user);
+        }
+    }
 
 	private static class FileDocumentFileFilter implements FileFilter {
 
