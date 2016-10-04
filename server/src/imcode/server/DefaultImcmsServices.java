@@ -96,7 +96,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
 		initTemplateMapper();
 		initImageCacheMapper();
 		initTextDocParser();
-		initInternalErrorServlet();
 
 		kerberosLoginService = new KerberosLoginService(config);
 	}
@@ -395,10 +394,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
 				}
 			}
 		}
-	}
-
-	private void initInternalErrorServlet() {
-		InternalError.setDatabase(database);
 	}
 
 	public synchronized int getSessionCounter() {
