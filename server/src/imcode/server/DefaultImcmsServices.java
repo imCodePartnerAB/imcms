@@ -11,6 +11,7 @@ import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.services.ServerSettings;
+import com.imcode.imcms.servlet.InternalError;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
@@ -95,6 +96,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 		initTemplateMapper();
 		initImageCacheMapper();
 		initTextDocParser();
+		initInternalErrorServlet();
 
 		kerberosLoginService = new KerberosLoginService(config);
 	}
@@ -393,6 +395,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 				}
 			}
 		}
+	}
+
+	private void initInternalErrorServlet() {
+		InternalError.setDatabase(database);
 	}
 
 	public synchronized int getSessionCounter() {

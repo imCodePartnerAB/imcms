@@ -353,6 +353,11 @@
         <servlet-class>com.imcode.imcms.servlet.AjaxServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.InternalError</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.InternalError</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <url-pattern>/imcms/admin/profile/*</url-pattern>
@@ -623,6 +628,11 @@
         <url-pattern>/servlet/AjaxServlet</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.InternalError</servlet-name>
+        <url-pattern>/servlet/InternalError</url-pattern>
+    </servlet-mapping>
+
     <session-config>
         <session-timeout>
             30
@@ -722,7 +732,7 @@
 
     <error-page>
         <exception-type>java.lang.Throwable</exception-type>
-        <location>/imcms/internalerrorpage.jsp</location>
+        <location>/servlet/InternalError</location>
     </error-page>
 
     <error-page>

@@ -71,4 +71,12 @@
       <script location="diff-4.16-4.17-mssql.sql"/>
     </vendor>
   </diff>
+  <diff version="4.18">
+    <vendor name="mysql">
+      <script location="diff-4.17-4.18-mysql.sql"/>
+    </vendor>
+    <vendor name="mssql">
+      <script location="diff-4.17-4.18-mssql.sql"/>
+    </vendor>
+  </diff>
 </schema-upgrade>
