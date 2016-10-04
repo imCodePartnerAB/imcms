@@ -8,17 +8,10 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.TagParser;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.servlet.jsp.tagext.TagAdapter;
-
 public class ImageTag extends SimpleImcmsTag {
 
     protected String getContent(TagParser tagParser) {
-//        LoopTag loopTag = (LoopTag)findAncestorWithClass(this, LoopTag.class);
-
-        TagAdapter loopTagAdapter = (TagAdapter) findAncestorWithClass(this, TagAdapter.class);
-        LoopTag loopTag = loopTagAdapter != null && loopTagAdapter.getAdaptee() instanceof LoopTag
-                ? (LoopTag) loopTagAdapter.getAdaptee()
-                : null;
+        LoopTag loopTag = (LoopTag) findAncestorWithClass(this, LoopTag.class);
 
         LoopEntryRef loopEntryRef = loopTag == null ? null : loopTag.getLoopEntryRef();
         TextDocumentDomainObject doc = (TextDocumentDomainObject) (!StringUtils.isNotBlank(attributes.getProperty("document")) ?
