@@ -11,7 +11,7 @@
 	<tag>
 		<name>loop</name>
 		<tag-class>com.imcode.imcms.servlet.tags.LoopTag</tag-class>
-		<body-content>scriptless</body-content>
+		<body-content>JSP</body-content>
 
 		<attribute>
 			<name>no</name>

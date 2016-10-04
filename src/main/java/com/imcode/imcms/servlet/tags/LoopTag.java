@@ -9,143 +9,152 @@ import imcode.server.parser.TagParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-public class LoopTag extends SimpleTagSupport implements IEditableTag {
+public class LoopTag extends BodyTagSupport implements IEditableTag {
 
-	/**
-	 * Loop no in a TextDocument.
-	 */
-	private int no;
 
-	/**
-	 * Label - common imcms attribute.
-	 */
-	private String label;
+    /**
+     * Loop number in a TextDocument.
+     */
+    private volatile int no;
 
-	private Properties attributes = new Properties();
+    private volatile Loop loop;
 
-	private LoopEntryRef loopEntryRef;
+    private volatile Iterator loopIterator;
 
-	@Override
-	public void doTag() throws JspException, IOException {
-		PageContext pageContext = (PageContext) getJspContext();
-		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-//        HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
-		ParserParameters parserParameters = ParserParameters.fromRequest(request);
-		TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
-		Loop loop = document.getLoop(no);
-//        UserDomainObject user = Utility.getLoggedOnUser(request);
-		boolean editMode = TagParser.isEditable(attributes, parserParameters.isContentLoopMode());
-		StringWriter writer = new StringWriter();
+    private volatile Map.Entry<Integer, Boolean> currentEntry;
 
-		if (loop == null) {
-			loop = Loop.singleEntry();
+    private volatile Properties attributes = new Properties();
 
-			document.setLoop(no, loop);
-		}
+    /**
+     * Label - common imcms attribute.
+     */
+    private volatile String label;
 
-		for (Map.Entry<Integer, Boolean> entry : loop.getEntries().entrySet()) {
-			int entryNo = entry.getKey();
-			boolean enabled = entry.getValue();
+    private volatile boolean editMode;
 
-			loopEntryRef = LoopEntryRef.of(no, entryNo);
+    private volatile HttpServletRequest request;
 
-			if (editMode) {
-				getJspBody().invoke(writer);
-			} else if (enabled) {
-				getJspBody().invoke(null);
-			}
-		}
+    private volatile TextDocumentDomainObject document;
 
-		if (editMode) {
-			try {
-				String content = writer.toString();
+    private volatile ParserParameters parserParameters;
 
-				request.setAttribute("loopNo", no);
-				request.setAttribute("loop", loop);
-				request.setAttribute("content", content);
-				request.setAttribute("document", document);
-				request.setAttribute("label", label);
-				request.setAttribute("flags", parserParameters.getFlags());
+    private volatile LoopEditor editor;
 
-				try {
-					content = createEditor().setNo(no).wrap(content);
-					content = TagParser.addPreAndPost(attributes, content);
-				} catch (Exception e) {
-					throw new JspException(e);
-				}
+    @Override
+    public int doStartTag() throws JspException {
 
-				pageContext.getOut().write(content);
-			} catch (Exception e) {
-				throw new JspException(e);
-			}
-		}
-	}
+        request = (HttpServletRequest) pageContext.getRequest();
+        parserParameters = ParserParameters.fromRequest(request);
+        document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
+        editMode = TagParser.isEditable(attributes, parserParameters.isContentLoopMode());
 
-	public int getNo() {
-		return no;
-	}
+        loop = document.getLoop(no);
 
-	public void setNo(int no) {
-		this.no = no;
-	}
+        if (loop == null) {
+            loop = Loop.singleEntry();
 
-	public void setMode(String mode) {
-		attributes.setProperty("mode", mode);
-	}
+            document.setLoop(no, loop);
+        }
+        loopIterator = loop.getEntries().entrySet().iterator();
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
+        if (loopIterator.hasNext()) {
+            currentEntry = (Map.Entry<Integer, Boolean>) loopIterator.next();
+            return EVAL_BODY_BUFFERED;
+        } else {
+            currentEntry = null;
+            return SKIP_BODY;
+        }
+    }
 
-	public void setPre(String pre) {
-		attributes.setProperty("pre", pre);
-	}
+    @Override
+    public int doAfterBody() throws JspException {
+        if (loopIterator.hasNext()) {
+            currentEntry = (Map.Entry<Integer, Boolean>) loopIterator.next();
+            return EVAL_BODY_AGAIN;
+        } else {
+            currentEntry = null;
+            return SKIP_BODY;
+        }
+    }
 
-	public void setPost(String post) {
-		attributes.setProperty("post", post);
-	}
+    @Override
+    public int doEndTag() throws JspException {
+        try {
 
-	public LoopEntryRef getLoopEntryRef() {
-		return loopEntryRef;
-	}
+            String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
+            if (TagParser.isEditable(attributes, parserParameters.isMenuMode())) {
+                editor = createEditor().setNo(no);
+                bodyContentString = editor.wrap(bodyContentString);
+            }
+            bodyContentString = TagParser.addPreAndPost(attributes, bodyContentString);
 
-	@Override
-	public LoopEditor createEditor() {
-		return new LoopEditor();
-	}
+            if (editMode) {
+                try {
+                    request.setAttribute("loopNo", no);
+                    request.setAttribute("loop", loop);
+                    request.setAttribute("content", bodyContentString);
+                    request.setAttribute("document", document);
+                    request.setAttribute("label", label);
+                    request.setAttribute("flags", parserParameters.getFlags());
+                } catch (Exception e) {
+                    throw new JspException(e);
+                }
+            }
+            pageContext.getOut().write(bodyContentString);
+        } catch (IOException | RuntimeException e) {
+            throw new JspException(e);
+        }
+        return EVAL_PAGE;
+    }
 
-//    @Override
-//    public int doAfterBody() throws JspException {
-//        if (editMode) {
-//            BodyContent bodyContent = getBodyContent();
-//            String viewFragment = bodyContent.getString();
-//
-//            request.setAttribute("document", document);
-//            request.setAttribute("contentLoop", loop);
-//            //request.setAttribute("content", currentLoopEntry);
-//            request.setAttribute("flags", parserParameters.getFlags());
-//            request.setAttribute("viewFragment", viewFragment);
-//            request.setAttribute("contentsCount", contentsCount);
-//            request.setAttribute("isFirstContent", firstContent);
-//            request.setAttribute("isLastContent", lastContent);
-//
-//            try {
-//                viewFragment = Utility.getContents(
-//                        "/WEB-INF/admin/textdoc/contentloop/tag/content.jsp",
-//                        request, response);
-//
-//                result.append(viewFragment);
-//                bodyContent.clearBody();
-//            } catch (Exception e) {
-//                throw new JspException(e);
-//            }
-//        }
-//    }
+
+    public void setNo(int no) {
+        this.no = no;
+    }
+
+    public int getNo() {
+        return no;
+    }
+
+    public void setMode(String mode) {
+        attributes.setProperty("mode", mode);
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setPre(String pre) {
+        attributes.setProperty("pre", pre);
+    }
+
+    public void setPost(String post) {
+        attributes.setProperty("post", post);
+    }
+
+    public Loop getLoop() {
+        return loop;
+    }
+
+    public void setLoop(Loop loop) {
+        this.loop = loop;
+    }
+
+    public LoopEntryRef getLoopEntryRef() {
+        return LoopEntryRef.of(no, currentEntry.getKey());
+    }
+
+    // @Override
+    public LoopEditor createEditor() {
+        return new LoopEditor();
+    }
 }
+
+
+
