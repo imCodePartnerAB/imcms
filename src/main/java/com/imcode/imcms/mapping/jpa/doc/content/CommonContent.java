@@ -51,9 +51,19 @@ public class CommonContent {
     @Column(name = "is_enabled")
     private Boolean isEnabled;
 
+    /**
+     * Related document version number
+     */
+    @Column(name = "version_no")
+    private Integer versionNo;
+
     public CommonContent() {
     }
 
+    /**
+     * @deprecated use {@link #CommonContent(Integer, Language, String, String, String, Boolean, Integer)}
+     */
+    @Deprecated
     public CommonContent(Integer docId, Language language, String headline, String menuText, String menuImageURL) {
         this.docId = docId;
         this.language = language;
@@ -63,13 +73,14 @@ public class CommonContent {
     }
 
     public CommonContent(Integer docId, Language language, String headline, String menuText, String menuImageURL,
-                         Boolean isEnabled) {
+                         Boolean isEnabled, Integer versionNo) {
         this.docId = docId;
         this.language = language;
         this.headline = headline;
         this.menuText = menuText;
         this.menuImageURL = menuImageURL;
         this.isEnabled = isEnabled;
+        this.versionNo = versionNo;
     }
 
     @Override
@@ -145,5 +156,13 @@ public class CommonContent {
 
     public void setEnabled(Boolean enabled) {
         isEnabled = enabled;
+    }
+
+    public Integer getVersionNo() {
+        return versionNo;
+    }
+
+    public void setVersionNo(Integer versionNo) {
+        this.versionNo = versionNo;
     }
 }

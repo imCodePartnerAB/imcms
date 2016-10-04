@@ -183,7 +183,8 @@ public class DocumentSaver {
         metaRepository.saveAndFlush(jpaMeta);
 
         commonContents.forEach((language, dcc) -> {
-            CommonContent ormDcc = commonContentRepository.findByDocIdAndLanguageCode(doc.getId(), language.getCode());
+            CommonContent ormDcc = commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(
+                    doc.getId(), doc.getVersionNo(), language.getCode());
             if (ormDcc == null) {
                 ormDcc = new CommonContent();
             }
@@ -192,6 +193,8 @@ public class DocumentSaver {
             ormDcc.setMenuImageURL(dcc.getMenuImageURL());
             ormDcc.setMenuText(dcc.getMenuText());
             ormDcc.setEnabled(dcc.getEnabled());
+            ormDcc.setVersionNo(dcc.getVersionNo());
+            ormDcc.setVersionNo(doc.getVersionNo());
 
             if (ormDcc.getId() == null) {
                 Language ormLanguage = languageRepository.findByCode(language.getCode());

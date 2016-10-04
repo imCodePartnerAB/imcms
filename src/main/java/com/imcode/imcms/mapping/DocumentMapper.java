@@ -579,7 +579,8 @@ public class DocumentMapper implements DocumentGetter {
 		String copyHeadlineSuffix = "(Copy/Kopia)";
 
 		DocumentMeta documentMeta = documentLoader.loadMeta(versionRef.getDocId());
-		Map<DocumentLanguage, DocumentCommonContent> dccMap = documentContentMapper.getCommonContents(versionRef.getDocId());
+		Map<DocumentLanguage, DocumentCommonContent> dccMap = documentContentMapper
+                .getCommonContents(versionRef.getDocId(), versionRef.getNo());
 		List<DocumentDomainObject> newDocs = new LinkedList<>();
 
 		makeDocumentLookNew(documentMeta, user);
@@ -883,9 +884,9 @@ public class DocumentMapper implements DocumentGetter {
                 .forEach(category -> document.removeCategoryId(category.getId()));
 	}
 
-	public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId) {
-		return documentContentMapper.getCommonContents(docId);
-	}
+    public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId, int versionNo) {
+        return documentContentMapper.getCommonContents(docId, versionNo);
+    }
 
 	@SuppressWarnings("unused")
 	public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {

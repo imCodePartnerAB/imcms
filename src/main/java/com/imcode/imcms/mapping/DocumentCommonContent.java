@@ -13,6 +13,7 @@ public final class DocumentCommonContent implements Serializable {
         private String menuText;
         private String menuImageURL;
         private Boolean enabled;
+        private Integer versionNo;
 
         public Builder() {
         }
@@ -22,10 +23,11 @@ public final class DocumentCommonContent implements Serializable {
             this.menuText = documentCommonContent.menuText;
             this.menuImageURL = documentCommonContent.menuImageURL;
             this.enabled = documentCommonContent.enabled;
+            this.versionNo = documentCommonContent.versionNo;
         }
 
         public DocumentCommonContent build() {
-            return new DocumentCommonContent(headline, menuText, menuImageURL, enabled);
+            return new DocumentCommonContent(headline, menuText, menuImageURL, enabled, versionNo);
         }
 
 
@@ -46,6 +48,11 @@ public final class DocumentCommonContent implements Serializable {
 
         public Builder enabled(Boolean enabled) {
             this.enabled = enabled;
+            return this;
+        }
+
+        public Builder versionNo(Integer versionNo) {
+            this.versionNo = versionNo;
             return this;
         }
     }
@@ -79,15 +86,22 @@ public final class DocumentCommonContent implements Serializable {
      */
     private final Boolean enabled;
 
+    /**
+     * Version of document
+     */
+    private final Integer versionNo;
+
     public DocumentCommonContent() {
-        this("", "", "", null);
+        this("", "", "", null, 0);
     }
 
-    public DocumentCommonContent(String headline, String menuText, String menuImageURL, Boolean enabled) {
+    public DocumentCommonContent(String headline, String menuText, String menuImageURL, Boolean enabled,
+                                 Integer versionNo) {
         this.headline = headline;
         this.menuText = menuText;
         this.menuImageURL = menuImageURL;
         this.enabled = enabled;
+        this.versionNo = versionNo;
     }
 
     @Override
@@ -113,6 +127,7 @@ public final class DocumentCommonContent implements Serializable {
                 .add("menuText", menuText)
                 .add("menuImageUrl", menuImageURL)
                 .add("enabled", enabled)
+                .add("versionNo", versionNo)
                 .toString();
     }
 
@@ -130,5 +145,9 @@ public final class DocumentCommonContent implements Serializable {
 
     public Boolean getEnabled() {
         return enabled;
+    }
+
+    public Integer getVersionNo() {
+        return versionNo;
     }
 }

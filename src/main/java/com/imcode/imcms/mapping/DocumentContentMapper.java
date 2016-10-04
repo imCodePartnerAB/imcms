@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
@@ -29,11 +30,20 @@ public class DocumentContentMapper {
     @Inject
     private DocumentLanguageMapper languageMapper;
 
+    /**
+     * @deprecated use {@link #getCommonContents(int, int)}
+     */
     @Transactional(propagation = Propagation.SUPPORTS)
+    @Deprecated
     public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId) {
+        return getCommonContents(docId, DocumentVersion.WORKING_VERSION_NO);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId, int versionNo) {
         Map<DocumentLanguage, DocumentCommonContent> result = new HashMap<>();
 
-        for (CommonContent commonContent : commonContentRepository.findByDocId(docId)) {
+        for (CommonContent commonContent : commonContentRepository.findByDocIdAndVersionNo(docId, versionNo)) {
             result.put(
                     languageMapper.toApiObject(commonContent.getLanguage()),
                     toApiObject(commonContent)
@@ -43,11 +53,11 @@ public class DocumentContentMapper {
         return result;
     }
 
-
     @Transactional(propagation = Propagation.SUPPORTS)
     public DocumentCommonContent getCommonContent(DocRef docRef) {
-        return toApiObject(commonContentRepository.findByDocIdAndLanguageCode(
-                docRef.getId(), docRef.getLanguageCode()));
+        final CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(
+                docRef.getId(), docRef.getVersionNo(), docRef.getLanguageCode());
+        return toApiObject(commonContent);
     }
 
     /**
@@ -60,7 +70,8 @@ public class DocumentContentMapper {
 
     public void saveCommonContent(DocumentDomainObject doc) {
         Language language = languageRepository.findByCode(doc.getLanguage().getCode());
-        CommonContent dcc = commonContentRepository.findByDocIdAndLanguage(doc.getId(), language);
+        CommonContent dcc = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
+                doc.getId(), doc.getVersionNo(), language);
 
         if (dcc == null) {
             dcc = new CommonContent();
@@ -74,6 +85,7 @@ public class DocumentContentMapper {
         dcc.setMenuText(dccDO.getMenuText());
         dcc.setMenuImageURL(dccDO.getMenuImageURL());
         dcc.setEnabled(dccDO.getEnabled());
+        dcc.setVersionNo(doc.getVersionNo());
 
         commonContentRepository.save(dcc);
     }

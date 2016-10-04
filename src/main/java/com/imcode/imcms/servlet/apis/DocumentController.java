@@ -63,7 +63,7 @@ public class DocumentController {
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	public Object getDocumentById(@PathVariable("id") Integer id,
 								  @RequestParam(value = "isPrototype", required = false) boolean isPrototype) {
-		DocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().getDocument(id);
+		DocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().getWorkingDocument(id);
 		DocumentEntity result;
 
 		switch (documentDomainObject.getDocumentTypeId()) {
@@ -270,7 +270,7 @@ public class DocumentController {
 	private DocumentDomainObject createOrGetDoc(Integer typeId, Integer parentDocumentId, Integer documentEntityId, DocumentMapper documentMapper) {
 		return documentEntityId == null
 				? documentMapper.createDocumentOfTypeFromParent(typeId, documentMapper.getDocument(parentDocumentId), Imcms.getUser())
-				: documentMapper.getDocument(documentEntityId);
+				: documentMapper.getWorkingDocument(documentEntityId);
 	}
 
     /**
@@ -378,6 +378,7 @@ public class DocumentController {
                     .menuImageURL(languageEntity.image)
                     .menuText(languageEntity.menuText)
                     .enabled(languageEntity.enabled)
+                    .versionNo(DocumentVersion.WORKING_VERSION_NO)
                     .build()
             );
         }
@@ -641,7 +642,7 @@ public class DocumentController {
 				);
 
 		Map<DocumentLanguage, DocumentCommonContent> contentMap = Imcms.getServices()
-				.getDocumentMapper().getCommonContents(document.getId());
+				.getDocumentMapper().getCommonContents(document.getId(), document.getVersionNo());
 
 		for (Map.Entry<DocumentLanguage, DocumentCommonContent> entry : contentMap.entrySet()) {
 			DocumentEntity.LanguageEntity languageEntity = new DocumentEntity.LanguageEntity();
