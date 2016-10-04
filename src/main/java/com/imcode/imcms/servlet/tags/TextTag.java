@@ -26,9 +26,9 @@ public class TextTag extends SimpleImcmsTag {
         String documentProp = attributes.getProperty("document");
         DocumentRequest documentRequest = parserParameters.getDocumentRequest();
 
-        DocumentDomainObject doc = !StringUtils.isNotBlank(documentProp)
+        DocumentDomainObject doc = StringUtils.isBlank(documentProp)
                 ? documentRequest.getDocument()
-                : Imcms.getServices().getDocumentMapper().getDocument(documentProp);
+                : Imcms.getServices().getDocumentMapper().getVersionedDocument(documentProp, pageContext.getRequest());
 
         boolean hasEditTexts = ((TextDocumentPermissionSetDomainObject) documentRequest.getUser().getPermissionSetFor(doc)).getEditTexts();
 
