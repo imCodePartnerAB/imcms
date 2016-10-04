@@ -4,14 +4,12 @@ import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.tags.Editor.MenuEditor;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentReference;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TagParser;
-import org.apache.commons.lang3.BooleanUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -34,18 +32,9 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
 		ParserParameters parserParameters = ParserParameters.fromRequest(request);
 
-        TextDocumentDomainObject document;
-
-        if (isValidDocId()) {
-            if (isWorkingDocumentVersion(request)) {
-                document = Imcms.getServices().getDocumentMapper().getWorkingDocument(docId);
-
-            } else {
-                document = Imcms.getServices().getDocumentMapper().getDocument(docId);
-            }
-        } else {
-            document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
-        }
+        TextDocumentDomainObject document = (docId >= 1001)
+                ? Imcms.getServices().getDocumentMapper().getVersionedDocument(docId, request)
+                : (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
 
 		menuItemsCollection = document.getMenu(no).getMenuItemsVisibleToUserAsTree();
 
@@ -53,15 +42,6 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
                 ? EVAL_BODY_BUFFERED
                 : SKIP_BODY;
 	}
-
-    private boolean isWorkingDocumentVersion(HttpServletRequest request) {
-        return ("" + ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS).equals(request.getParameter("flags"))
-                || BooleanUtils.toBoolean(request.getParameter(ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW));
-    }
-
-    private boolean isValidDocId() {
-        return (docId >= 1001);
-    }
 
 	public boolean nextMenuItem(MenuItemDomainObject menuItem) {
 		if (menuItem != null) {
