@@ -6,7 +6,7 @@ Imcms.Loop.API.prototype = {
 	path: Imcms.Linker.get("loop"),
 	create: function (request, response) {
 		$.ajax({
-			url: this.path,
+			url: this.path + window.location.search,
 			type: "POST",
 			data: request,
 			success: response
@@ -14,7 +14,7 @@ Imcms.Loop.API.prototype = {
 	},
 	read: function (request, response) {
 		$.ajax({
-			url: this.path,
+			url: this.path + window.location.search,
 			type: "GET",
 			data: request,
 			success: response
@@ -22,7 +22,7 @@ Imcms.Loop.API.prototype = {
 	},
 	create2: function (request, response) {
 		$.ajax({
-			url: this.path,
+			url: this.path + window.location.search,
 			type: "PUT",
 			data: request,
 			success: response
@@ -30,7 +30,7 @@ Imcms.Loop.API.prototype = {
 	},
 	update: function (request, response) {
 		$.ajax({
-			url: this.path,
+			url: this.path + window.location.search,
 			type: "POST",
 			data: request,
 			success: response

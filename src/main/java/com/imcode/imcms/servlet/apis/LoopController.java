@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,22 +30,19 @@ public class LoopController {
 
 	@RequestMapping
 	protected Object getLoop(@RequestParam("meta") Integer metaId,
-							 @RequestParam("loopId") Integer loopId) throws ServletException, IOException {
+							 @RequestParam("loopId") Integer loopId,
+                             HttpServletRequest request) throws ServletException, IOException {
 		Map<String, Object> result = new HashMap<>();
 		try {
-			TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(metaId);
+            TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getVersionedDocument(metaId, request);
 			DocRef docRef = DocRef.of(document.getVersionRef(), document.getLanguage().getCode());
 			TextDocumentContentLoader textDocumentContentLoader = Imcms.getServices().getManagedBean(TextDocumentContentLoader.class);
 			TextDocumentContentSaver textDocumentContentSaver = Imcms.getServices().getManagedBean(TextDocumentContentSaver.class);
 			List<Map<String, Object>> entriesList = new ArrayList<>();
-			Loop loop = textDocumentContentLoader.getLoop(
-					document.getVersionRef(),
-					loopId);
+			Loop loop = textDocumentContentLoader.getLoop(document.getVersionRef(), loopId);
 
 			if (loop == null) {
-
 				textDocumentContentSaver.updateContent(document, Imcms.getUser());
-
 				loop = textDocumentContentLoader.getLoop(document.getVersionRef(), loopId);
 			}
 
@@ -82,7 +80,7 @@ public class LoopController {
 		Map<String, Object> result = new HashMap<>();
 		List<Integer> listNo = parseNo(noArr);
 		try {
-			TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(metaId);
+			TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getWorkingDocument(metaId);
 			TextDocumentContentSaver textDocumentContentSaver = Imcms.getServices().getManagedBean(TextDocumentContentSaver.class);
 			Map<Integer, Boolean> loopMap = new HashMap<>();
 
