@@ -7,15 +7,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import javax.inject.Inject;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {JpaConfiguration.class})
@@ -51,7 +50,7 @@ public class CommonContentRepositoryTest {
     public void testFindByDocId() throws Exception {
         recreateCommonContents();
 
-        List<CommonContent> commonContents = commonContentRepository.findByDocId(1001);
+        List<CommonContent> commonContents = commonContentRepository.findByDocIdAndVersionNo(1001, 0);
 
         assertThat(commonContents.size(), is(2));
     }
@@ -61,7 +60,7 @@ public class CommonContentRepositoryTest {
         recreateCommonContents();
 
         Language se = languageRepository.findByCode("se");
-        CommonContent commonContent = commonContentRepository.findByDocIdAndLanguage(1001, se);
+        CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(1001, 0, se);
 
         assertNotNull(commonContent);
         assertEquals("headline_se", commonContent.getHeadline());
@@ -71,7 +70,7 @@ public class CommonContentRepositoryTest {
     public void testFindByDocIdAndDocLanguageCode() throws Exception {
         recreateCommonContents();
 
-        CommonContent commonContent = commonContentRepository.findByDocIdAndLanguageCode(1001, "se");
+        CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(1001, 0, "se");
 
         assertNotNull(commonContent);
         assertEquals("headline_se", commonContent.getHeadline());

@@ -440,7 +440,7 @@ public class TagParser {
 	 *                   - rows
 	 */
 	public String tagText(Properties attributes, LoopEntryRef loopEntryRef) {
-		TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
+		TextDocumentDomainObject textDocumentToUse = document;
 
 		if (shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse == null) {
 			return "";
@@ -500,8 +500,7 @@ public class TagParser {
 						   HttpServletRequest httpServletRequest, ImcmsServices service,
 						   LoopEntryRef loopEntryRef) {
 
-		TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
-		if (shouldOutputNothingAccordingToMode(attributes, imageMode) || textDocumentToUse == null) {
+		if (shouldOutputNothingAccordingToMode(attributes, imageMode) || document == null) {
 			return "";
 		}
 		// Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
@@ -515,8 +514,8 @@ public class TagParser {
 			implicitImageIndex[0] = imageIndex + 1;
 		}
 		ImageDomainObject image = loopEntryRef == null
-				? textDocumentToUse.getImage(imageIndex)
-				: textDocumentToUse.getImage(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), imageIndex));
+				? document.getImage(imageIndex)
+				: document.getImage(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), imageIndex));
 
 		if (image == null) {
 			image = DEFAULT_IMAGE;
@@ -538,8 +537,8 @@ public class TagParser {
 			imageTag = ImcmsImageUtils.getImageHtmlTag(image, httpServletRequest, attributes);
 		}
 
-		if (imageMode && (textDocumentToUse.getId() == document.getId())) {
-			String[] replace_tags = getLabelTags(attributes, imageIndex, imageTag, textDocumentToUse);
+		if (imageMode && (document.getId() == document.getId())) {
+			String[] replace_tags = getLabelTags(attributes, imageIndex, imageTag, document);
 			String admin_template_file;
 			if ("".equals(imageTag)) { // no data in the db-field.
 				admin_template_file = "textdoc/admin_no_image.frag";

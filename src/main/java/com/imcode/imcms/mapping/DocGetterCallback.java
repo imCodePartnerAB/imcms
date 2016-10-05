@@ -62,7 +62,7 @@ public class DocGetterCallback {
         if (doc != null) {
             List<DocumentLanguage> docLanguages = Imcms.getServices()
                     .getDocumentMapper()
-                    .getCommonContents(doc.getId())
+                    .getCommonContents(doc.getId(), doc.getVersionNo())
                     .entrySet()
                     .stream()
                     .filter(langToContent -> langToContent.getValue().getEnabled())

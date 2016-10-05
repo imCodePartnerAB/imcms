@@ -1,13 +1,17 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.mapping.TextDocumentContentSaver;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocImageContainer;
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.textdocument.*;
 import imcode.util.ImcmsImageUtils;
@@ -22,9 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -97,115 +103,78 @@ public class ImageController {
         });
     }
 
-    String getPreviewLink(String url,
-                          String width,
-                          String height) {
+    private String getPreviewLink(String url, String width, String height) {
+        return new StringBuilder("/servlet/ImagePreview?")
+                .append("path=")
+                .append(Utility.encodeUrl(url))
 
-        StringBuilder builder = new StringBuilder("/servlet/ImagePreview?");
+                .append("&width=")
+                .append(width)
+                .append("&height=")
+                .append(height)
 
-        builder.append("path=");
-        builder.append(Utility.encodeUrl(url));
-
-        builder.append("&width=");
-        builder.append(width);
-        builder.append("&height=");
-        builder.append(height);
-
-        builder.append("&format=");
-        builder.append(Format.PNG.name().toLowerCase());
-
-        /*ImageDomainObject.CropRegion region = image.getCropRegion();
-        if (region.isValid()) {
-            builder.append("&crop_x1=");
-            builder.append(region.getCropX1());
-            builder.append("&crop_y1=");
-            builder.append(region.getCropY1());
-            builder.append("&crop_x2=");
-            builder.append(region.getCropX2());
-            builder.append("&crop_y2=");
-            builder.append(region.getCropY2());
-        }
-
-        builder.append("&rangle=");
-        builder.append(image.getRotateDirection().getAngle());
-
-       /* if (!forPreview && image.getGeneratedFilename() != null) {
-            builder.append("&gen_file=");
-            builder.append(image.getGeneratedFilename());
-        }*/
-
-        builder.append("&resize=");
-        builder.append(Resize.FORCE.name().toLowerCase());
-
-        return builder.toString();
-
+                .append("&format=")
+                .append(Format.PNG.name().toLowerCase())
+                .append("&resize=")
+                .append(Resize.FORCE.name().toLowerCase())
+                .toString();
     }
 
     @RequestMapping("/**/{name}-{width}-{height}.{extension}")
-    public String getImage(
-            HttpServletRequest request,
-            @PathVariable("name") String name,
-            @PathVariable("width") String width,
-            @PathVariable("height") String height,
-            @PathVariable("extension") String extension) {
+    public String getImage(HttpServletRequest request,
+                           @PathVariable("name") String name,
+                           @PathVariable("width") String width,
+                           @PathVariable("height") String height,
+                           @PathVariable("extension") String extension) {
         AbstractFileSource[] urls = fileController.read(request, extension, name);
-        if (urls.length > 0) {
-            return getPreviewLink(urls[0].getUrlPathRelativeToContextPath(), width, height);
-        }
-        return "";
+
+        return (urls.length > 0)
+                ? getPreviewLink(urls[0].getUrlPathRelativeToContextPath(), width, height)
+                : "";
     }
 
     @RequestMapping("/**/{name}.{extension}")
-    public ImageSource getImage(
-            HttpServletRequest request,
-            @PathVariable("name") String name,
-            @PathVariable("extension") String extension) {
+    public ImageSource getImage(HttpServletRequest request,
+                                @PathVariable("name") String name,
+                                @PathVariable("extension") String extension) {
         AbstractFileSource[] urls = fileController.read(request, extension, name);
         return (ImageSource) urls[0];
     }
 
     @RequestMapping(value = "/{docId}-{id}", method = RequestMethod.GET)
-    public ImageDomainObject getImage(
-            @PathVariable("id") Integer id, @PathVariable("docId") Integer docId,
-            @RequestParam(value = "loopId", required = false) Integer loopId,
-            @RequestParam(value = "entryId", required = false) Integer entryId,
-            @RequestParam(value = "langCode", required = false) String langCode) {
+    public ImageDomainObject getImage(@PathVariable("id") Integer id,
+                                      @PathVariable("docId") Integer docId,
+                                      @RequestParam(value = "loopId", required = false) Integer loopId,
+                                      @RequestParam(value = "entryId", required = false) Integer entryId,
+                                      @RequestParam(value = "langCode", required = false) String langCode,
+                                      HttpServletRequest request) {
 
-        TextDocumentDomainObject textDocument;
-        if (Imcms.getServices().getDocumentLanguages().getAll().stream().anyMatch(e -> langCode.equals(e.getCode()))) {
-            textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
-        } else {
-            textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
-        }
+        TextDocumentDomainObject textDocument = getDocWithLanguageAndVersion(docId, langCode, request);
 
-        if (loopId != null && entryId != null) {
-            return textDocument.getImage(TextDocumentDomainObject.LoopItemRef.of(loopId, entryId, id));
-        }
-
-        return textDocument.getImage(id);
+        return (loopId != null && entryId != null)
+                ? textDocument.getImage(TextDocumentDomainObject.LoopItemRef.of(loopId, entryId, id))
+                : textDocument.getImage(id);
     }
 
     @RequestMapping(value = "/**/{docId}-{id}", method = RequestMethod.POST)
     public boolean updateImage(
-            @PathVariable("id") Integer id, @PathVariable("docId") Integer docId,
+            @PathVariable("id") Integer id,
+            @PathVariable("docId") Integer docId,
             @RequestParam(value = "loopId", required = false) Integer loopId,
             @RequestParam(value = "entryId", required = false) Integer loopRefId,
             @RequestParam(value = "sharedMode", required = false, defaultValue = "false") boolean sharedMode,
             @RequestParam(value = "langCode", required = false) String langCode,
-            @RequestParam("imageDomainObject") ImageDomainObject imageDomainObject) throws DocumentSaveException {
+            @RequestParam("imageDomainObject") ImageDomainObject imageDomainObject,
+            HttpServletRequest request) throws DocumentSaveException {
 
-        TextDocumentDomainObject textDocument;
-        if (Imcms.getServices().getDocumentLanguages().getAll().stream().anyMatch(e -> langCode.equals(e.getCode()))) {
-            textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
-        } else {
-            textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
-        }
+        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        TextDocumentDomainObject textDocument = getDocWithLanguageAndVersion(docId, langCode, request);
 
-        LoopEntryRef entryRef = loopId != null && loopRefId != null ?
-                LoopEntryRef.of(loopId, loopRefId) : null;
+        LoopEntryRef entryRef = (loopId != null && loopRefId != null)
+                ? LoopEntryRef.of(loopId, loopRefId)
+                : null;
 
-
-        if (!StringUtils.isBlank(imageDomainObject.getGeneratedFilename())) {
+        if (StringUtils.isNotBlank(imageDomainObject.getGeneratedFilename())) {
             imageDomainObject.getGeneratedFile().delete();
         }
 
@@ -214,22 +183,22 @@ public class ImageController {
 
         try {
             if (sharedMode) {
-                Imcms.getServices()
-                        .getDocumentMapper()
-                        .saveTextDocImages(
-                                TextDocImagesContainer.of(textDocument.getVersionRef(), entryRef, id, Imcms.getServices().getDocumentLanguages()
-                                        .getAll()
-                                        .stream()
-                                        .collect(Collectors.toMap((val) -> val, (val) -> imageDomainObject))),
-                                Imcms.getUser()
-                        );
+                final Map<DocumentLanguage, ImageDomainObject> langToImage = Imcms.getServices()
+                        .getDocumentLanguages()
+                        .getAll()
+                        .stream()
+                        .collect(Collectors.toMap((val) -> val, (val) -> imageDomainObject));
+
+                final TextDocImagesContainer textDocImagesContainer = TextDocImagesContainer
+                        .of(textDocument.getVersionRef(), entryRef, id, langToImage);
+
+                documentMapper.saveTextDocImages(textDocImagesContainer, Imcms.getUser());
+
             } else {
-                Imcms.getServices()
-                        .getDocumentMapper()
-                        .saveTextDocImage(
-                                TextDocImageContainer.of(textDocument.getRef(), entryRef, id, imageDomainObject),
-                                Imcms.getUser()
-                        );
+                final TextDocImageContainer textDocImageContainer = TextDocImageContainer
+                        .of(textDocument.getRef(), entryRef, id, imageDomainObject);
+
+                documentMapper.saveTextDocImage(textDocImageContainer, Imcms.getUser());
             }
         } catch (NoPermissionToEditDocumentException e) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
@@ -242,18 +211,14 @@ public class ImageController {
     }
 
     @RequestMapping(value = "/{docId}-{id}", method = RequestMethod.DELETE)
-    public boolean deleteImage(
-            @PathVariable("id") Integer id, @PathVariable("docId") Integer docId,
-            @RequestParam(value = "loopId", required = false) Integer loopId,
-            @RequestParam(value = "entryId", required = false) Integer entryId,
-            @RequestParam(value = "langCode", required = false) String langCode) {
+    public boolean deleteImage(@PathVariable("id") Integer id,
+                               @PathVariable("docId") Integer docId,
+                               @RequestParam(value = "loopId", required = false) Integer loopId,
+                               @RequestParam(value = "entryId", required = false) Integer entryId,
+                               @RequestParam(value = "langCode", required = false) String langCode,
+                               HttpServletRequest request) {
 
-        TextDocumentDomainObject textDocument;
-        if (Imcms.getServices().getDocumentLanguages().getAll().stream().anyMatch(e -> langCode.equals(e.getCode()))) {
-            textDocument = Imcms.getServices().getDocumentMapper().getDefaultDocument(docId, langCode);
-        } else {
-            textDocument = Imcms.getServices().getDocumentMapper().getDocument(docId);
-        }
+        TextDocumentDomainObject textDocument = getDocWithLanguageAndVersion(docId, langCode, request);
 
 //        Required to delete generated image later
         ImageDomainObject imageDomainObject;
@@ -267,11 +232,26 @@ public class ImageController {
         }
 
 //        Removing previously generated file
-        if (!StringUtils.isBlank(imageDomainObject.getGeneratedFilename())) {
+        if (StringUtils.isNotBlank(imageDomainObject.getGeneratedFilename())) {
             imageDomainObject.getGeneratedFile().delete();
         }
-        TextDocumentContentSaver textDocumentContentSaver = Imcms.getServices().getManagedBean(TextDocumentContentSaver.class);
-        textDocumentContentSaver.updateContent(textDocument, Imcms.getUser());
+
+        Imcms.getServices().getManagedBean(TextDocumentContentSaver.class).updateContent(textDocument, Imcms.getUser());
+
         return true;
+    }
+
+    private <T extends DocumentDomainObject> T getDocWithLanguageAndVersion(int docId,
+                                                                            String langCode,
+                                                                            ServletRequest request) {
+        final ImcmsServices services = Imcms.getServices();
+        final boolean containsLang = services.getDocumentLanguages()
+                .getAll()
+                .stream()
+                .anyMatch(e -> langCode.equals(e.getCode()));
+
+        return (containsLang)
+                ? services.getDocumentMapper().getVersionedDocument(docId, langCode, request)
+                : services.getDocumentMapper().getVersionedDocument(docId, request);
     }
 }

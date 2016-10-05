@@ -32,8 +32,8 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
 		ParserParameters parserParameters = ParserParameters.fromRequest(request);
 
-		TextDocumentDomainObject document = (docId >= 1001)
-                ? Imcms.getServices().getDocumentMapper().getDocument(docId)
+        TextDocumentDomainObject document = (docId >= 1001)
+                ? Imcms.getServices().getDocumentMapper().getVersionedDocument(docId, request)
                 : (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
 
 		menuItemsCollection = document.getMenu(no).getMenuItemsVisibleToUserAsTree();

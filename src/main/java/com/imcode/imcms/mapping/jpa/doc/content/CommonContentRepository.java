@@ -7,12 +7,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CommonContentRepository extends JpaRepository<CommonContent, Integer>, CommonContentRepositoryCustom {
+public interface CommonContentRepository extends JpaRepository<CommonContent, Integer> {
 
-    List<CommonContent> findByDocId(int docId);
+    List<CommonContent> findByDocIdAndVersionNo(int docId, int versionNo);
 
-    CommonContent findByDocIdAndLanguage(int docId, Language language);
+    CommonContent findByDocIdAndVersionNoAndLanguage(int docId, int versionNo, Language language);
 
-    CommonContent findByDocIdAndLanguageCode(int docId, String code);
+    CommonContent findByDocIdAndVersionNoAndLanguageCode(int docId, int versionNo, String code);
 }
-

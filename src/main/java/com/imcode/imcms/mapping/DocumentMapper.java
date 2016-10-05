@@ -12,6 +12,7 @@ import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
@@ -22,11 +23,13 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.oro.text.perl.Perl5Util;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.servlet.ServletRequest;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.*;
@@ -576,7 +579,8 @@ public class DocumentMapper implements DocumentGetter {
 		String copyHeadlineSuffix = "(Copy/Kopia)";
 
 		DocumentMeta documentMeta = documentLoader.loadMeta(versionRef.getDocId());
-		Map<DocumentLanguage, DocumentCommonContent> dccMap = documentContentMapper.getCommonContents(versionRef.getDocId());
+		Map<DocumentLanguage, DocumentCommonContent> dccMap = documentContentMapper
+                .getCommonContents(versionRef.getDocId(), versionRef.getNo());
 		List<DocumentDomainObject> newDocs = new LinkedList<>();
 
 		makeDocumentLookNew(documentMeta, user);
@@ -713,7 +717,8 @@ public class DocumentMapper implements DocumentGetter {
 		return categoryMapper;
 	}
 
-	public void setCategoryMapper(CategoryMapper categoryMapper) {
+    @SuppressWarnings("unused")
+    public void setCategoryMapper(CategoryMapper categoryMapper) {
 		this.categoryMapper = categoryMapper;
 	}
 
@@ -810,15 +815,80 @@ public class DocumentMapper implements DocumentGetter {
 		return docs;
 	}
 
-	private void removeNonInheritedCategories(DocumentDomainObject document) {
+    /**
+     * Get document version by document id or alias, parameters in request and language code
+     * @param documentIdentity document id or alias
+     * @return document with needed version and language or null
+     * @since 6.0
+     */
+    public <T extends DocumentDomainObject> T getVersionedDocument(String documentIdentity,
+                                                                   String langCode,
+                                                                   ServletRequest request) {
+        Integer documentId = toDocumentId(documentIdentity);
+
+        return (documentId != null)
+                ? getVersionedDocument(documentId, langCode, request)
+                : null;
+    }
+
+    /**
+     * Get document version by document id, parameters in request and language code
+     * @return document with needed version and language or null
+     * @since 6.0
+     */
+    public <T extends DocumentDomainObject> T getVersionedDocument(int docId, String langCode, ServletRequest request) {
+        return (isWorkingDocumentVersion(request))
+                ? getWorkingDocument(docId, langCode)
+                : getDefaultDocument(docId, langCode);
+    }
+
+    /**
+     * Get document version by document id or alias and parameters in request
+     * @param documentIdentity document id or alias
+     * @return document with needed version or null
+     * @since 6.0
+     */
+    public <T extends DocumentDomainObject> T getVersionedDocument(String documentIdentity, ServletRequest request) {
+        Integer documentId = toDocumentId(documentIdentity);
+
+        return (documentId != null)
+                ? getVersionedDocument(documentId, request)
+                : null;
+    }
+
+    /**
+     * Get document version by document id and parameters in request
+     * @return document with needed version or null
+     * @since 6.0
+     */
+    public <T extends DocumentDomainObject> T getVersionedDocument(int docId, ServletRequest request) {
+        return (isWorkingDocumentVersion(request))
+                ? getWorkingDocument(docId)
+                : getDocument(docId);
+    }
+
+    /**
+     * Checks is request parameters points to working document version or not
+     * @return true if requesting a working version
+     * @since 6.0
+     */
+    public boolean isWorkingDocumentVersion(ServletRequest request) {
+        return ("" + ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS).equals(request.getParameter("flags"))
+                || BooleanUtils.toBoolean(request.getParameter(ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW));
+    }
+
+    private void removeNonInheritedCategories(DocumentDomainObject document) {
 		Set<CategoryDomainObject> categories = getCategoryMapper().getCategories(document.getCategoryIds());
-		categories.stream().filter(category -> !category.getType().isInherited()).forEach(category -> document.removeCategoryId(category.getId()));
+		categories.stream()
+                .filter(category -> !category.getType().isInherited())
+                .forEach(category -> document.removeCategoryId(category.getId()));
 	}
 
-	public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId) {
-		return documentContentMapper.getCommonContents(docId);
-	}
+    public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId, int versionNo) {
+        return documentContentMapper.getCommonContents(docId, versionNo);
+    }
 
+	@SuppressWarnings("unused")
 	public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {
 		List<String[]> result = nativeQueries.getAllMimeTypesWithDescriptions(user.getLanguageIso639_2());
 
@@ -831,21 +901,25 @@ public class DocumentMapper implements DocumentGetter {
 		return mimeTypes;
 	}
 
+	@SuppressWarnings("unused")
 	public String[] getAllMimeTypes() {
 		List<String> allMimeTypes = nativeQueries.getAllMimeTypes();
 		return allMimeTypes.toArray(new String[allMimeTypes.size()]);
 	}
 
+	@SuppressWarnings("unused")
 	public List<Integer> getParentDocsIds(DocumentDomainObject doc) {
 		return menuRepository.getParentDocsIds(doc.getId(), doc.getVersionNo());
 	}
 
+	@SuppressWarnings("unused")
 	public IntRange getDocumentIdRange() {
 		Integer[] minMaxPair = documentSaver.getDocRepository().getMinMaxDocumentIds();
 
 		return minMaxPair[0] == null ? null : new IntRange(minMaxPair[0], minMaxPair[1]);
 	}
 
+	@SuppressWarnings("unused")
 	public <T extends DocumentDomainObject> T getCustomDocumentInDefaultLanguage(DocRef docRef) {
 		return getCustomDocument(
 				DocRef.buillder(docRef)
@@ -854,6 +928,7 @@ public class DocumentMapper implements DocumentGetter {
 		);
 	}
 
+	@SuppressWarnings("unused")
 	public <T extends DocumentDomainObject> List<T> findDocumentsByHeadline(String term) {
 		List<Integer> ids = getAllDocumentIds();
 		List<T> result = new ArrayList<>();
@@ -866,6 +941,7 @@ public class DocumentMapper implements DocumentGetter {
 		return result;
 	}
 
+	@SuppressWarnings("unused")
 	public DocumentLoaderCachingProxy getDocumentLoaderCachingProxy() {
 		return documentLoaderCachingProxy;
 	}
@@ -880,7 +956,8 @@ public class DocumentMapper implements DocumentGetter {
 	 * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
 	 * @see com.imcode.imcms.servlet.tags.LoopTag
 	 */
-	public synchronized void saveTextDocTexts(TextDocTextsContainer container, UserDomainObject user)
+    @SuppressWarnings("unused")
+    public synchronized void saveTextDocTexts(TextDocTextsContainer container, UserDomainObject user)
 			throws NoPermissionInternalException, DocumentSaveException {
 		try {
 			documentSaver.saveTexts(container, user);
@@ -889,12 +966,13 @@ public class DocumentMapper implements DocumentGetter {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@Deprecated
 	void setCreatedAndModifiedDatetimes(DocumentDomainObject document, Date date) {
 		setCreatedAndModifiedDatetimes(document.getMeta(), date);
 	}
 
-	/**
+    /**
 	 * Document save options.
 	 * Currently applies to text documents only.
 	 */
@@ -924,6 +1002,7 @@ public class DocumentMapper implements DocumentGetter {
 	/**
 	 * Makes a version from a working/draft version.
 	 */
+	@SuppressWarnings("unused")
 	public static class MakeDocumentVersionCommand extends DocumentPageFlow.SaveDocumentCommand {
 
 		@Override

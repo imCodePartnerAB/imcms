@@ -8,7 +8,7 @@ Imcms.Image.API.prototype = {
     read: function (request, response) {
         Imcms.Logger.log("Image.API::read :",
             $.ajax.bind($, {
-                url: Imcms.Linker.get("content.image", request.object),
+                url: Imcms.Linker.get("content.image", request.object) + this._parseURL(),
                 type: "GET",
                 success: response
             }), request);
@@ -16,7 +16,7 @@ Imcms.Image.API.prototype = {
     update: function (request, response) {
         Imcms.Logger.log("Image.API::update :",
             $.ajax.bind($, {
-                url: Imcms.Linker.get("content.image", request.object),
+                url: Imcms.Linker.get("content.image", request.object) + this._parseURL(),
                 type: "POST",
                 data: request,
                 success: response
@@ -25,10 +25,16 @@ Imcms.Image.API.prototype = {
     delete: function (request, response) {
         Imcms.Logger.log("Image.API::delete :",
             $.ajax.bind($, {
-                url: Imcms.Linker.get("content.image", request.object),
+                url: Imcms.Linker.get("content.image", request.object) + this._parseURL(),
                 type: "DELETE",
                 success: response
             }), request);
+    },
+    _parseURL: function () {
+        var searchURL = window.location.search;
+        return (searchURL && searchURL.charAt(0) === "?")
+            ? "&" + searchURL.slice(1)
+            : "";
     }
 };
 
