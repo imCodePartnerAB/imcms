@@ -25,7 +25,7 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
 
     private Loop loop;
 
-    private Iterator loopIterator;
+    private Iterator<Map.Entry<Integer, Boolean>> loopIterator;
 
     private volatile Map.Entry<Integer, Boolean> currentEntry;
 
@@ -63,19 +63,13 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
         }
         loopIterator = loop.getEntries().entrySet().iterator();
 
-        if (loopIterator.hasNext()) {
-            currentEntry = (Map.Entry<Integer, Boolean>) loopIterator.next();
-            return EVAL_BODY_BUFFERED;
-        } else {
-            currentEntry = null;
-            return SKIP_BODY;
-        }
+        return doAfterBody();
     }
 
     @Override
     public int doAfterBody() throws JspException {
         if (loopIterator.hasNext()) {
-            currentEntry = (Map.Entry<Integer, Boolean>) loopIterator.next();
+            currentEntry = loopIterator.next();
             return EVAL_BODY_AGAIN;
         } else {
             currentEntry = null;
