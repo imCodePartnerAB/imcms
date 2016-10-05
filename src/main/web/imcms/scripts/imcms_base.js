@@ -20,9 +20,9 @@ Imcms.Bootstrapper.prototype = {
             }
         }
 
-        //Init of internalization plugin
+        //Init of internationalization plugin
         $.i18n.properties({
-            name: 'imcms',
+            name: 'imcms_jquery_i18n',
             path: Imcms.Linker.get('admin.localization.config'),
             mode: 'both'
         });

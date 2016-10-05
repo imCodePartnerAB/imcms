@@ -28,7 +28,7 @@
 <script src="${contextPath}/imcms/jqtree/tree.jquery.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/jstree.min.js"></script>
 
-<script src="${contextPath}/imcms/js/admin/jquery.i18n.properties.min.js"></script>
+<script src="${contextPath}/js/jquery.i18n.properties.min.js"></script>
 
 <link rel="stylesheet"
       href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css"/>

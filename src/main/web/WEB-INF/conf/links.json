@@ -172,7 +172,7 @@
   },
   {
     "name": "admin.localization.config",
-    "url": "/imcms/js/admin/",
+    "url": "/locale/",
     "args": []
   },
   {
