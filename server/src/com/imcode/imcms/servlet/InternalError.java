@@ -1,12 +1,12 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.db.Database;
+import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.db.commands.SqlUpdateCommand;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.servlet.ServletException;
@@ -28,10 +28,10 @@ public class InternalError extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Throwable exceptionFromRequest = (Throwable)request.getAttribute("javax.servlet.error.exception");
-
-        saveError(exceptionFromRequest, request);
-
         UserDomainObject user = Utility.getLoggedOnUser(request);
+
+        saveError(exceptionFromRequest, request, user.getId());
+
         String language = "eng";
         if ( null != user ) {
             language = user.getLanguageIso639_2();
@@ -40,49 +40,39 @@ public class InternalError extends HttpServlet {
         request.getRequestDispatcher("/imcms/" + language + "/jsp/internalerrorpage.jsp").forward(request, response);
     }
 
-    private void saveError(Throwable throwable, HttpServletRequest request) {
+    private void saveError(Throwable throwable, HttpServletRequest request, Integer userId) {
         Throwable cause = throwable.getCause();
         String persistenceCause = cause == null
                 ? throwable.getClass().getName() : ExceptionUtils.getRootCauseMessage(throwable);
         String message = throwable.getMessage();
         String persistenceMessage = message == null
                 ? throwable.getClass().getSimpleName() : ExceptionUtils.getMessage(throwable);
-        String stackTrace = ExceptionUtils.getStackTrace(throwable);
-        String persistencePlacement = getPlacement(stackTrace);
+        String persistenceStackTrace = ExceptionUtils.getStackTrace(throwable);
+        Long errorId = generateErrorId(persistenceMessage, persistenceCause, persistenceStackTrace);
         Database database = Imcms.getServices().getDatabase();
-        database.execute(new InsertIntoTableDatabaseCommand("internal_error", new Object[][] {
-                {"message", persistenceMessage},
-                {"cause", persistenceCause},
-                {"placement", persistencePlacement}
-        }));
-        request.setAttribute("message", persistenceMessage);
-        request.setAttribute("cause", persistenceCause);
-        //velocity
-        request.setAttribute("placement", persistencePlacement == null
-                ? persistencePlacement : persistencePlacement.replaceAll("\\(", "[").replaceAll("\\)", "]"));
-    }
-
-    private String getPlacement(String stackTrace) {
-        String determiner = "at ";
-        String separator = ";";
-
-        StringBuilder placement = new StringBuilder();
-
-        int indexOf = stackTrace.indexOf(determiner);
-
-        if (indexOf != -1) {
-
-            while (indexOf != -1) {
-                String substring = stackTrace.substring(indexOf, stackTrace.indexOf(')', indexOf) + 1);
-                placement.append(substring);
-                placement.append(separator);
-                indexOf = stackTrace.indexOf(determiner, indexOf + 1);
-            }
-
-            return placement.toString();
+        try {
+            database.execute(new InsertIntoTableDatabaseCommand("errors", new Object[][]{
+                    {"error_id", errorId},
+                    {"message", persistenceMessage},
+                    {"cause", persistenceCause},
+                    {"stack_trace", persistenceStackTrace}
+            }));
+        } catch (DatabaseException ignored) {
         }
 
-        return null;
+        database.execute(new SqlUpdateCommand( "INSERT INTO errors_users_crossref (error_id, user_id) VALUES(?,?) " +
+                                                "ON DUPLICATE KEY UPDATE times=times+1, update_date=now()",
+                                                new Object[]{errorId, userId} )
+        );
+
+        request.setAttribute("error-id", errorId);
+    }
+
+    private Long generateErrorId(String persistenceMessage, String persistenceCause, String persistenceStackTrace) {
+        long errorId = persistenceMessage.hashCode();
+        errorId += persistenceCause.hashCode();
+        errorId += persistenceStackTrace.hashCode();
+        return errorId;
     }
 
 }

@@ -1,8 +1,23 @@
-CREATE TABLE internal_error (
-  error_id INT IDENTITY (1, 1) NOT NULL,
+CREATE TABLE errors (
+  error_id BIGINT NOT NULL,
   message TEXT NOT NULL,
   cause TEXT NOT NULL,
-  placement TEXT NULL,
-  CONSTRAINT [PK_internal_error] PRIMARY KEY CLUSTERED ([error_id] ASC));
+  stack_trace TEXT NOT NULL,
+  discover_date DATETIME NOT NULL DEFAULT NOW(),
+  viewed BIT NOT NULL DEFAULT 0,
+  resolved BIT NOT NULL DEFAULT 0,
+  PRIMARY KEY (error_id)
+);
+
+CREATE TABLE errors_users_crossref (
+  error_id BIGINT NOT NULL,
+  user_id INT NOT NULL,
+  times INT NOT NULL DEFAULT 1,
+  start_date DATETIME NOT NULL DEFAULT NOW(),
+  update_date DATETIME NOT NULL DEFAULT NOW(),
+  CONSTRAINT errors_users_crossref_PK_error_id_errors_user_id_users  PRIMARY KEY (error_id, user_id),
+  CONSTRAINT errors_users_crossref_FK_error_id_errors FOREIGN KEY (error_id) REFERENCES errors (error_id),
+  CONSTRAINT errors_users_crossref_FK_user_id_users FOREIGN KEY (user_id) REFERENCES users (user_id),
+);
 
 UPDATE database_version SET major = 4, minor = 18;
