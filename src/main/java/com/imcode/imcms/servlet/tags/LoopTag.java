@@ -21,30 +21,30 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
     /**
      * Loop number in a TextDocument.
      */
-    private volatile int no;
+    private int no;
 
-    private volatile Loop loop;
+    private Loop loop;
 
-    private volatile Iterator loopIterator;
+    private Iterator loopIterator;
 
     private volatile Map.Entry<Integer, Boolean> currentEntry;
 
-    private volatile Properties attributes = new Properties();
+    private Properties attributes = new Properties();
 
     /**
      * Label - common imcms attribute.
      */
-    private volatile String label;
+    private String label;
 
-    private volatile boolean editMode;
+    private boolean editMode;
 
-    private volatile HttpServletRequest request;
+    private HttpServletRequest request;
 
-    private volatile TextDocumentDomainObject document;
+    private TextDocumentDomainObject document;
 
-    private volatile ParserParameters parserParameters;
+    private ParserParameters parserParameters;
 
-    private volatile LoopEditor editor;
+    private LoopEditor editor;
 
     @Override
     public int doStartTag() throws JspException {
