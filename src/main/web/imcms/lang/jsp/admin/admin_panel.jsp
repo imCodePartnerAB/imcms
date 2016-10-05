@@ -1,68 +1,71 @@
-<%@ page
-		contentType="text/html; charset=UTF-8"
-		import="com.imcode.imcms.api.DocumentLanguage"
-		%>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="im" uri="imcms" %>
 <%@ page import="com.imcode.imcms.servlet.Version" %>
-<%@ page import="imcode.server.Imcms" %>
 <%@ page import="imcode.server.ImcmsConstants" %>
-<%@ page import="imcode.server.document.DocumentDomainObject" %>
-<%@ page import="imcode.server.user.UserDomainObject" %>
-<%@ page import="org.apache.commons.lang3.StringUtils" %>
 <%@ page import="org.apache.commons.lang3.BooleanUtils" %>
+<im:variables/>
 <%
-	UserDomainObject user = (UserDomainObject) request.getAttribute("user");
-	DocumentDomainObject document = (DocumentDomainObject) request.getAttribute("document");
-	if (!user.canEdit(document)) return;
-	Boolean canEditDocumentInfo = user.getPermissionSetFor(document).getEditDocumentInformation();
-	boolean editMode = ("" + ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS).equals(request.getParameter("flags"));
+    if (!user.canEdit(document)) {
+        return;
+    }
+
+    boolean editMode = ("" + ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS).equals(request.getParameter("flags"));
+    pageContext.setAttribute("isEditMode", editMode);
+
     boolean previewMode = BooleanUtils.toBoolean(request.getParameter(ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW));
-	String contextPath = request.getContextPath();
-	String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext()).replace("imCMS", "<span>imCMS</span>");
-	DocumentLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().getLanguage();
+    pageContext.setAttribute("isPreviewMode", previewMode);
+
+    String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext()).replace("imCMS", "<span>imCMS</span>");
+    pageContext.setAttribute("imcmsVersion", imcmsVersion);
+
+    pageContext.setAttribute("permEditTextDocumentTexts", ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS);
+    pageContext.setAttribute("requestParamWorkingPreview", ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW);
+    pageContext.setAttribute("dispatchFlagPublish", ImcmsConstants.DISPATCH_FLAG__PUBLISH);
 %>
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<c:set var="currentLangCode" value="${user.internal.docGetterCallback.language.code}"/>
+<c:set var="docAliasOrId" value="${document.alias ne null ? document.alias : document.id}"/>
+<c:set var="canEditDocInfo" value="${user.internal.getPermissionSetFor(document.internal).editDocumentInformation}"/>
 <%-- todo: replace ugly urls using Linker --%>
+
 <div class="admin-panel reset">
-	<div class="admin-panel-draggable"></div>
-	<div class="admin-panel-content">
-		<section id="languages" class="admin-panel-content-section  admin-panel-content-section-language">
-			<div class="admin-panel-version"><%=imcmsVersion%>
-			</div>
-			<div class="admin-panel-language">
-				<a href="<%=contextPath%>/servlet/GetDoc?meta_id=<%=document.getId()%>&lang=en"
-				   title="English/English (default current)"
-				   class="<%=currentLanguage.getCode().equals("en")?"active":""%>">
-					<img src="<%=contextPath%>/images/ic_english.png" alt="" style="border:0;">
-				</a>
-				<a href="<%=contextPath%>/servlet/GetDoc?meta_id=<%=document.getId()%>&lang=sv"
-				   title="Swedish/Svenska"
-				   class="<%=currentLanguage.getCode().equals("sv")?"active":""%>">
-					<img src="<%=contextPath%>/images/ic_swedish.png" alt="" style="border:0;">
-				</a>
-			</div>
-		</section>
-		<section id="read" data-mode="readonly" class="admin-panel-content-section <%=editMode||previewMode?"":"active"%>">
-			<a href="<%=contextPath%>/<%=StringUtils.defaultString(document.getAlias(), String.valueOf(document.getId()))%>"
-			   target="_self">
-				<div class="admin-panel-button">
-					<div class="admin-panel-button-image"></div>
-					<span class="admin-panel-button-description">Public</span>
-				</div>
-			</a>
-		</section>
-		<section id="edit" data-mode="edit" class="admin-panel-content-section <%=editMode?"active":""%>">
-			<a href="<%=contextPath%>/servlet/AdminDoc?meta_id=<%=document.getId()%>&flags=<%=ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS%>"
+    <div class="admin-panel-draggable"></div>
+    <div class="admin-panel-content">
+        <section id="languages" class="admin-panel-content-section  admin-panel-content-section-language">
+            <div class="admin-panel-version">${imcmsVersion}
+            </div>
+            <div class="admin-panel-language">
+                <a href="${contextPath}/servlet/GetDoc?meta_id=${document.id}&lang=en"
+                   title="English/English (default current)" class="${currentLangCode eq 'en' ? 'active' : ''}">
+                    <img src="${contextPath}/images/ic_english.png" alt="" style="border:0;">
+                </a>
+                <a href="${contextPath}/servlet/GetDoc?meta_id=${document.id}&lang=sv" title="Swedish/Svenska"
+                   class="${currentLangCode eq 'sv' ? 'active' : ''}">
+                    <img src="${contextPath}/images/ic_swedish.png" alt="" style="border:0;">
+                </a>
+            </div>
+        </section>
+        <section id="read" data-mode="readonly"
+                 class="admin-panel-content-section ${isEditMode or isPreviewMode ? "" : "active"}">
+            <a href="${contextPath}/${docAliasOrId}" target="_self">
+                <div class="admin-panel-button">
+                    <div class="admin-panel-button-image"></div>
+                    <span class="admin-panel-button-description">Public</span>
+                </div>
+            </a>
+        </section>
+        <section id="edit" data-mode="edit" class="admin-panel-content-section ${isEditMode ? "active" : ""}">
+            <a href="${contextPath}/servlet/AdminDoc?meta_id=${document.id}&flags=${permEditTextDocumentTexts}"
                target="_self">
-				<div class="admin-panel-button">
-					<div class="admin-panel-button-image"></div>
-					<span class="admin-panel-button-description">Edit</span>
-				</div>
-			</a>
-		</section>
-        <section id="preview" data-mode="preview" class="admin-panel-content-section <%=previewMode?"active":""%>">
-            <a href="<%=contextPath + "/"
-             + StringUtils.defaultString(document.getAlias(), String.valueOf(document.getId()))
-              + "?" + ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW + "=true"%>"
-               target="_self">
+                <div class="admin-panel-button">
+                    <div class="admin-panel-button-image"></div>
+                    <span class="admin-panel-button-description">Edit</span>
+                </div>
+            </a>
+        </section>
+        <section id="preview" data-mode="preview" class="admin-panel-content-section ${isPreviewMode ? "active" : ""}">
+            <a href="${contextPath}/${docAliasOrId}?${requestParamWorkingPreview}=true" target="_self">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image"></div>
                     <span class="admin-panel-button-description">Preview</span>
@@ -70,60 +73,59 @@
             </a>
         </section>
         <section id="publish" data-mode="publish" class="admin-panel-content-section">
-            <a href="<%=contextPath%>/servlet/AdminDoc?meta_id=<%=document.getId()%>&flags=<%=ImcmsConstants.DISPATCH_FLAG__PUBLISH%>"
-               target="_self">
+            <a href="${contextPath}/servlet/AdminDoc?meta_id=${document.id}&flags=${dispatchFlagPublish}" target="_self">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image">Publish offline version</div>
                 </div>
             </a>
         </section>
         <div class="admin-panel-content-separator"></div>
-		<section id="info" data-mode="info"
-				 class="admin-panel-content-section <%= canEditDocumentInfo?"":"admin-panel-content-section-disabled"%>">
-			<a href="#" target="_self" onclick="<%= canEditDocumentInfo?"pageInfo();":""%> return false;">
-				<div class="admin-panel-button">
-					<div class="admin-panel-button-image"></div>
-					<span class="admin-panel-button-description">Page info</span>
-				</div>
-			</a>
-		</section>
-		<section id="additionalInfo" data-mode="info"
-				 class="admin-panel-content-section <%= canEditDocumentInfo?"":"admin-panel-content-section-disabled"%>">
-			<a href="#" target="_self" onclick="return false;">
-				<div class="admin-panel-button">
-					<div>
-						<span><%=document.getId()%></span> <%=document.getLifeCyclePhase().toString().substring(0, 1).toUpperCase()%>
-					</div>
-				</div>
-			</a>
-		</section>
-		<div class="admin-panel-content-separator"></div>
-		<section id="docs" data-mode="docs"
-				 class="admin-panel-content-section <%= canEditDocumentInfo?"":"admin-panel-content-section-disabled"%>">
-			<a href="#" target="_self" onclick="<%= canEditDocumentInfo?"Imcms.Admin.Panel.docs();":""%> return false;">
-				<div class="admin-panel-button">
-					<div class="admin-panel-button-image"></div>
-					<span class="admin-panel-button-description">Documents</span>
-				</div>
-			</a>
-		</section>
-		<div class="admin-panel-content-separator"></div>
-		<section id="admin" data-mode="admin" class="admin-panel-content-section">
-			<a href="<%=contextPath%>/servlet/AdminManager" target="_self">
-				<div class="admin-panel-button">
-					<div class="admin-panel-button-image"></div>
-					<span class="admin-panel-button-description">Admin</span>
-				</div>
-			</a>
-		</section>
-		<div class="admin-panel-content-separator"></div>
-		<section id="logout" data-mode="logout" class="admin-panel-content-section">
-			<a href="<%=contextPath%>/servlet/LogOut" target="_self">
-				<div class="admin-panel-button">
-					<div class="admin-panel-button-image"></div>
-					<span class="admin-panel-button-description">Logout</span>
-				</div>
-			</a>
-		</section>
-	</div>
+        <section id="info" data-mode="info"
+                 class="admin-panel-content-section${canEditDocInfo ? "" : " admin-panel-content-section-disabled"}">
+            <a href="#" target="_self" onclick="${canEditDocInfo ? "pageInfo();" : ""}return false;">
+                <div class="admin-panel-button">
+                    <div class="admin-panel-button-image"></div>
+                    <span class="admin-panel-button-description">Page info</span>
+                </div>
+            </a>
+        </section>
+        <section id="additionalInfo" data-mode="info"
+                 class="admin-panel-content-section${canEditDocInfo ? "" : " admin-panel-content-section-disabled"}">
+            <a href="#" target="_self" onclick="return false;">
+                <div class="admin-panel-button">
+                    <div>
+                        <span>${document.id}</span>${document.internal.lifeCyclePhase.toString().substring(0, 1).toUpperCase()}
+                    </div>
+                </div>
+            </a>
+        </section>
+        <div class="admin-panel-content-separator"></div>
+        <section id="docs" data-mode="docs"
+                 class="admin-panel-content-section${canEditDocInfo ? "" : " admin-panel-content-section-disabled"}">
+            <a href="#" target="_self" onclick="${canEditDocInfo ? "Imcms.Admin.Panel.docs();" : ""}return false;">
+                <div class="admin-panel-button">
+                    <div class="admin-panel-button-image"></div>
+                    <span class="admin-panel-button-description">Documents</span>
+                </div>
+            </a>
+        </section>
+        <div class="admin-panel-content-separator"></div>
+        <section id="admin" data-mode="admin" class="admin-panel-content-section">
+            <a href="${contextPath}/servlet/AdminManager" target="_self">
+                <div class="admin-panel-button">
+                    <div class="admin-panel-button-image"></div>
+                    <span class="admin-panel-button-description">Admin</span>
+                </div>
+            </a>
+        </section>
+        <div class="admin-panel-content-separator"></div>
+        <section id="logout" data-mode="logout" class="admin-panel-content-section">
+            <a href="${contextPath}/servlet/LogOut" target="_self">
+                <div class="admin-panel-button">
+                    <div class="admin-panel-button-image"></div>
+                    <span class="admin-panel-button-description">Logout</span>
+                </div>
+            </a>
+        </section>
+    </div>
 </div>
