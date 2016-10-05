@@ -60,7 +60,6 @@ public class DocumentSaver {
 
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
 
-
     /**
      * Updates doc's last modified date time if it was not set explicitly.
      *
@@ -83,7 +82,8 @@ public class DocumentSaver {
      * @throws IllegalStateException if a text refers non-existing content loop.
      */
     @Transactional
-    public void saveText(TextDocTextContainer container, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveText(TextDocTextContainer container, UserDomainObject user)
+            throws NoPermissionInternalException, DocumentSaveException {
         textDocumentContentSaver.saveText(container, user);
         docRepository.touch(container.getDocVersionRef(), user);
     }
@@ -110,7 +110,8 @@ public class DocumentSaver {
     }
 
     @Transactional
-    public void saveImage(TextDocImageContainer container, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveImage(TextDocImageContainer container, UserDomainObject user)
+            throws NoPermissionInternalException, DocumentSaveException {
         textDocumentContentSaver.saveImage(container, user);
         docRepository.touch(container.getVersionRef(), user);
     }
@@ -126,7 +127,6 @@ public class DocumentSaver {
         }
     }
 
-
     /**
      * @param docs
      * @param user
@@ -141,31 +141,16 @@ public class DocumentSaver {
         DocumentDomainObject firstDoc = docs.get(0);
         DocumentMeta meta = firstDoc.getMeta().clone();
         DocumentVersion nextVersion = versionMapper.create(meta.getId(), user.getId());
-        DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
-        for (DocumentDomainObject doc : docs) {
-            doc.setMeta(meta);
-            doc.setVersionNo(nextVersion.getNo());
-
-            documentContentMapper.saveCommonContent(doc);
-        }
-
-        // Currently only text doc has i18n content.
-        if (!(firstDoc instanceof TextDocumentDomainObject)) {
-            firstDoc.accept(docCreatingVisitor);
-        } else {
-            textDocumentContentSaver.createCommonContent((TextDocumentDomainObject) firstDoc, user);
-
-            for (DocumentDomainObject doc : docs) {
-                textDocumentContentSaver.createI18nContent((TextDocumentDomainObject) doc, user);
-            }
-        }
+        saveContent(user, docs, meta, nextVersion.getNo(), firstDoc);
 
         return nextVersion;
     }
 
     @Transactional
-    public void updateDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContents, DocumentDomainObject oldDoc,
+    public void updateDocument(DocumentDomainObject doc,
+                               Map<DocumentLanguage, DocumentCommonContent> commonContents,
+                               DocumentDomainObject oldDoc,
                                UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -178,7 +163,11 @@ public class DocumentSaver {
             documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, doc, user, oldDoc);
         }
 
-        DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDoc, documentMapper.getImcmsServices(), user);
+        DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(
+                oldDoc,
+                documentMapper.getImcmsServices(),
+                user
+        );
 
         metaRepository.saveAndFlush(jpaMeta);
 
@@ -210,7 +199,6 @@ public class DocumentSaver {
         docRepository.touch(doc.getVersionRef(), user, doc.getModifiedDatetime());
     }
 
-
     /**
      * @param docs
      * @param user
@@ -230,30 +218,37 @@ public class DocumentSaver {
 
         meta.setId(null);
         Meta jpaMeta = toJpaObject(meta);
-
         newUpdateDocumentRolePermissions(jpaMeta, firstDoc, user, null);
 
         // Update permissions
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, firstDoc, user, null);
-
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
         meta.setId(newDocId);
 
-        docRepository.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, Integer.toString(newDocId));
+        docRepository.insertPropertyIfNotExists(
+                newDocId,
+                DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
+                Integer.toString(newDocId)
+        );
+        int versionNo = versionRepository.create(newDocId, user.getId()).getNo();
 
-        Version copyVersion = versionRepository.create(newDocId, user.getId());
-        DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
+        saveContent(user, docs, meta, versionNo, firstDoc);
 
+        return newDocId;
+    }
+
+    private void saveContent(UserDomainObject user, List<DocumentDomainObject> docs, DocumentMeta meta, int no,
+                             DocumentDomainObject firstDoc) {
         for (DocumentDomainObject doc : docs) {
             doc.setMeta(meta);
-            doc.setVersionNo(copyVersion.getNo());
+            doc.setVersionNo(no);
 
             documentContentMapper.saveCommonContent(doc);
         }
 
         // Currently only text docs contain non-common i18n content
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
-            firstDoc.accept(docCreatingVisitor);
+            firstDoc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
         } else {
             textDocumentContentSaver.createCommonContent((TextDocumentDomainObject) firstDoc, user);
 
@@ -261,15 +256,12 @@ public class DocumentSaver {
                 textDocumentContentSaver.createI18nContent((TextDocumentDomainObject) doc, user);
             }
         }
-
-        return newDocId;
     }
-
 
     /**
      * Please note that custom (limited) permissions might be changed on save:
-     * -If saving user is a super-admin or have full perms on a doc, then all custom perms settings are merely inherited.
-     * -Otherwise custom (lim1 and lim2) perms are replaced with permissions set for new document.
+     * -If saving user is a super-admin or have full perms on a doc, then all custom perms settings are merely inherited
+     * -Otherwise custom (lim1 and lim2) perms are replaced with permissions set for new document
      * <p/>
      * If user is a super-admin or has full permissions on a new document then
      *
@@ -283,8 +275,10 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public <T extends DocumentDomainObject> int saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> dccMap,
-                                                                EnumSet<DocumentMapper.SaveOpts> saveOpts, UserDomainObject user)
+    public <T extends DocumentDomainObject> int saveNewDocument(T doc,
+                                                                Map<DocumentLanguage, DocumentCommonContent> dccMap,
+                                                                EnumSet<DocumentMapper.SaveOpts> saveOpts,
+                                                                UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         checkDocumentForSave(doc);
@@ -301,10 +295,8 @@ public class DocumentSaver {
         }
 
         Meta jpaMeta = toJpaObject(metaDO);
-
         newUpdateDocumentRolePermissions(jpaMeta, doc, user, null);
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, doc, user, null);
-
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
 
         dccMap.forEach((language, dcc) -> {
@@ -321,16 +313,20 @@ public class DocumentSaver {
             commonContentRepository.save(jpaDcc);
         });
 
-        docRepository.insertPropertyIfNotExists(newDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, String.valueOf(newDocId));
+        docRepository.insertPropertyIfNotExists(
+                newDocId,
+                DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
+                String.valueOf(newDocId)
+        );
 
         Version version = versionRepository.create(newDocId, user.getId());
         doc.setVersionNo(version.getNo());
         doc.setId(newDocId);
 
-        DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
-        doc.accept(docCreatingVisitor);
+        doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
 
-        if (doc instanceof TextDocumentDomainObject && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
+        if (doc instanceof TextDocumentDomainObject
+                && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
             Map<DocumentLanguage, TextDomainObject> texts1 = new HashMap<>();
             Map<DocumentLanguage, TextDomainObject> texts2 = new HashMap<>();
 
@@ -353,7 +349,6 @@ public class DocumentSaver {
         return newDocId;
     }
 
-
     /**
      * Various non security checks.
      *
@@ -361,11 +356,11 @@ public class DocumentSaver {
      * @throws NoPermissionInternalException
      * @throws DocumentSaveException
      */
-    private void checkDocumentForSave(DocumentDomainObject document) throws NoPermissionInternalException, DocumentSaveException {
+    private void checkDocumentForSave(DocumentDomainObject document)
+            throws NoPermissionInternalException, DocumentSaveException {
         documentMapper.getCategoryMapper().checkMaxDocumentCategoriesOfType(document);
         checkIfAliasAlreadyExist(document);
     }
-
 
     /**
      * Update meta roles to permissions set mapping.
@@ -384,28 +379,35 @@ public class DocumentSaver {
 
         // Copy original document' roles to mapping with NONE(4) permissions-set assigned
         if (null != oldDocument) {
-            RoleIdToDocumentPermissionSetTypeMappings.Mapping[] oldDocumentMappings = oldDocument.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings();
+            RoleIdToDocumentPermissionSetTypeMappings.Mapping[] oldDocumentMappings = oldDocument
+                    .getRoleIdsMappedToDocumentPermissionSetTypes()
+                    .getMappings();
+
             for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : oldDocumentMappings) {
                 mappings.setPermissionSetTypeForRole(mapping.getRoleId(), DocumentPermissionSetTypeDomainObject.NONE);
             }
         }
 
         // Copy modified or new document' roles to mapping
-        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] documentMappings = document.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings();
+        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] documentMappings = document
+                .getRoleIdsMappedToDocumentPermissionSetTypes()
+                .getMappings();
+
         for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : documentMappings) {
             mappings.setPermissionSetTypeForRole(mapping.getRoleId(), mapping.getDocumentPermissionSetType());
         }
 
         RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappingsArray = mappings.getMappings();
-
         Map<Integer, Integer> roleIdToPermissionSetIdMap = jpaMeta.getRoleIdToPermissionSetIdMap();
 
         for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : mappingsArray) {
             RoleId roleId = mapping.getRoleId();
             DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
 
-            if (null == oldDocument
-                    || user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
+            final boolean canSetDocumentPermissionSetTypeForRoleIdOnDocument = user
+                    .canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument);
+
+            if (null == oldDocument || canSetDocumentPermissionSetTypeForRoleIdOnDocument) {
 
                 // According to schema design NONE value can not be save into the DB table
                 if (documentPermissionSetType.equals(DocumentPermissionSetTypeDomainObject.NONE)) {
@@ -439,10 +441,15 @@ public class DocumentSaver {
         meta.setCreatedDatetime(metaDO.getCreatedDatetime());
         meta.setCreatorId(metaDO.getCreatorId());
         meta.setDefaultVersionNo(metaDO.getDefaultVersionNo());
-        meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(metaDO.getDisabledLanguageShowMode().name()));
+        meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(
+                metaDO.getDisabledLanguageShowMode().name()
+        ));
         meta.setDocumentType(metaDO.getDocumentType());
 
-        Set<Language> enabledLanguages = metaDO.getEnabledLanguages().stream().map(l -> languageRepository.findByCode(l.getCode())).collect(Collectors.toSet());
+        Set<Language> enabledLanguages = metaDO.getEnabledLanguages()
+                .stream()
+                .map(l -> languageRepository.findByCode(l.getCode()))
+                .collect(Collectors.toSet());
 
         meta.setEnabledLanguages(enabledLanguages);
         meta.setId(metaDO.getId());
@@ -459,7 +466,9 @@ public class DocumentSaver {
         meta.setPublicationStartDatetime(metaDO.getPublicationStartDatetime());
         meta.setPublicationStatusInt(metaDO.getPublicationStatus().asInt());
         meta.setPublisherId(metaDO.getPublisherId());
-        meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(metaDO.getRestrictedOneMorePrivilegedThanRestrictedTwo());
+        meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(
+                metaDO.getRestrictedOneMorePrivilegedThanRestrictedTwo()
+        );
         meta.setRoleIdToPermissionSetIdMap(
                 Stream.of(metaDO.getRoleIdToDocumentPermissionSetTypeMappings().getMappings())
                         .collect(
