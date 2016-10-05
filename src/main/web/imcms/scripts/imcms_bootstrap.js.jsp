@@ -9,20 +9,20 @@
 	Integer id = document.getId();
 	String label = document.getHeadline();
 	DocumentLanguage language = document.getLanguage();
-	String languageName = language.getName();
-	String langCode = language.getCode();
 %>
         Imcms.isEditMode = <%= request.getParameterMap().containsKey("flags")
 		 && Integer.valueOf(request.getParameter("flags")) > 0 %>;
+
         Imcms.document = {
             id: <%=id%>,
             meta: <%=metaId%>,
             type: <%=typeId%>,
-            label: "<%=label%>",
-            langCode: "<%=langCode%>"
+            label: "<%=label%>"
         };
         Imcms.language = {
-            name: "<%=languageName%>"
+            name: "<%=language.getName()%>",
+            nativeName: "<%=language.getNativeName()%>",
+            code: "<%=language.getCode()%>"
         };
 
         $.ajaxSetup({cache: false});

@@ -118,7 +118,7 @@ Imcms.Image.Editor.prototype = {
         this._meta = data.meta;
         this._loopId = data.loop;
         this._entryId = data.entry;
-        this._language = Imcms.document.langCode;
+        this._language = Imcms.language.code;
         this.buildView().buildExtra();
         if (data.loop && data.entry) {
             this._loader.getByLoopItemRef(this._id, data.loop, data.entry, this._meta, this._language, this.initSource.bind(this));
