@@ -13,7 +13,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.jstl.core.Config;
+import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 /**
  * Created by ruslan on 04.10.16.
@@ -27,17 +30,18 @@ public class InternalError extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Throwable exceptionFromRequest = (Throwable)request.getAttribute("javax.servlet.error.exception");
+        Throwable exceptionFromRequest = (Throwable) request.getAttribute("javax.servlet.error.exception");
+
         UserDomainObject user = Utility.getLoggedOnUser(request);
 
         saveError(exceptionFromRequest, request, user.getId());
 
-        String language = "eng";
-        if ( null != user ) {
-            language = user.getLanguageIso639_2();
-        }
         request.setAttribute("javax.servlet.error.exception" , null);
-        request.getRequestDispatcher("/imcms/" + language + "/jsp/internalerrorpage.jsp").forward(request, response);
+
+        ResourceBundle resourceBundle = Utility.getResourceBundle(request);
+        Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
+
+        request.getRequestDispatcher("/imcms/500.jsp").forward(request, response);
     }
 
     private void saveError(Throwable throwable, HttpServletRequest request, Integer userId) {
