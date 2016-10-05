@@ -210,5 +210,12 @@
       "metaId",
       "elementNo"
     ]
+  },
+  {
+    "name": "admin.publish.offline.version",
+    "url": "/servlet/AdminDoc?meta_id={1}&flags=4194304",
+    "args": [
+      "metaId"
+    ]
   }
 ]

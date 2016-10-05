@@ -930,6 +930,7 @@ editor theme
 
 .pop-up-form .imcms-footer .imcms-neutral {
 	background: #323232;
+    margin-right: 20px;
 }
 
 .pop-up-form .imcms-footer .imcms-neutral:hover {

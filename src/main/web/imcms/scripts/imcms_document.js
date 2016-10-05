@@ -491,7 +491,9 @@ Imcms.Document.Viewer.prototype = {
         this._loader.rolesList(this.loadRoles.bind(this));
         this._loader.categoriesList(this.loadCategories.bind(this));
         this._loader.usersList(this.loadUsers.bind(this));
-
+        if (this._options.data.id) {
+            this._loader.datesList(this._options.data.id, this.loadDates.bind(this));
+        }
         if (options.type === 2) {
             this._loader.templatesList(this.loadTemplates.bind(this));
         }
@@ -499,10 +501,6 @@ Imcms.Document.Viewer.prototype = {
         if (options.data) {
             this.deserialize(options.data);
             // todo: clear deserialized data to prevent repeating in next deserialize() calls
-        }
-
-        if (this._options.data.id) {
-            this._loader.datesList(this._options.data.id, this.loadDates.bind(this));
         }
 
         var $builder = $(this._builder[0]);
@@ -527,7 +525,7 @@ Imcms.Document.Viewer.prototype = {
             .button()
             .reference("closeButton")
             .class("imcms-close-button")
-            .on("click", $.proxy(this.cancel, this))
+            .on("click", this.cancel.bind(this))
             .end()
             .end()
             .div()
@@ -548,12 +546,18 @@ Imcms.Document.Viewer.prototype = {
             .button()
             .class("imcms-positive")
             .html("OK")
-            .on("click", $.proxy(this.apply, this))
+            .on("click", this.apply.bind(this))
             .end()
             .button()
             .class("imcms-neutral")
             .html("Cancel")
-            .on("click", $.proxy(this.cancel, this))
+            .on("click", this.cancel.bind(this))
+            .end()
+            .button()
+            .id("save-and-publish-button")
+            .class("imcms-negative")
+            .html("Save and publish this version")
+            .on("click", this.publish.bind(this))
             .end()
             .end()
             .end()
@@ -764,18 +768,32 @@ Imcms.Document.Viewer.prototype = {
             .class("field")
             .html("Current version: ")
             .text()
+            .id("published-doc-version")
             .class("text-short")
-            .name("document-version")
+            .attr("data-node-key", "document-version")
             .attr("readonly", true)
             .attr("ignored", true)
             .placeholder("Empty")
             .end()
             .text()
             .class("date-time-short")
-            .name("document-version-date")
+            .attr("data-node-key", "document-version-date")
             .attr("readonly", true)
             .attr("ignored", true)
             .placeholder("Empty")
+            .end()
+            .end()
+
+            .div()
+            .id("offline-version-changed-message")
+            .div()
+            .class("field")
+            .html("This offline version has changes.")
+            .end()
+            .div()
+            .id("save-as-new-version-message")
+            .class("field")
+            .html("Please press \"Save and publish this version\" to publish as: version ")
             .end()
             .end()
 
@@ -1669,7 +1687,7 @@ Imcms.Document.Viewer.prototype = {
     },
 
     addUploadedFile: function (fileInput) {
-        if ($("#uploadedFiles tr").length == 1) {
+        if ($("#uploadedFiles").find("tr").length == 1) {
             $("#uploadedFilesContainer").removeClass("hidden");
         }
         var removeButton = $("<button>").attr("type", "button").addClass("imcms-negative");
@@ -1682,7 +1700,7 @@ Imcms.Document.Viewer.prototype = {
 
     removeUploadedFile: function (removeButton) {
         removeButton.parents("tr").remove();
-        if ($("#uploadedFiles tr").length == 1) {
+        if ($("#uploadedFiles").find("tr").length == 1) {
             $("#uploadedFilesContainer").addClass("hidden");
         }
     },
@@ -1716,8 +1734,9 @@ Imcms.Document.Viewer.prototype = {
     },
 
     uploadDocumentFile: function () {
-        if ($('input[type=file][name="file1"]').prop("files").length > 0) {
-            var $item = $('input[type=file][name="file1"]');
+        var $fileInput = $('input[type=file][name="file1"]');
+        if ($fileInput.prop("files").length > 0) {
+            var $item = $fileInput;
             var $clone = $item.clone();
             $item.attr("name", "tmp_file").addClass("hidden");
             $item.after($clone);
@@ -1725,7 +1744,9 @@ Imcms.Document.Viewer.prototype = {
             this.addUploadedFile($item);
         }
     },
-
+    publish: function () {
+        window.location.href = Imcms.Linker.get("admin.publish.offline.version", this._options.data.id);
+    },
     cancel: function () {
         this._options.onCancel(this);
         this.destroy();
@@ -1846,30 +1867,51 @@ Imcms.Document.Viewer.prototype = {
         });
 
         if (data.docVersion) {
-            var version = data.docVersion;
-            $source.find("[name=document-version]").first().val(version.no);
-            $source.find("[name=document-version-date]").first()
-                .val(new Date(version.createdDt).format("yyyy-mm-dd"));
+            var version = data.docVersion,
+                formattedDate = new Date(version.createdDt).format("yyyy-mm-dd");
+
+            $source.find("[data-node-key=document-version]")
+                .first()
+                .val(version.no);
+
+            $source.find("[data-node-key=document-version-date]")
+                .first()
+                .val(formattedDate);
+
+            var $saveAsNewVersionMessage = $("#save-as-new-version-message");
+            $saveAsNewVersionMessage.html($saveAsNewVersionMessage.html() + ++version.no);
+
+            delete data.docVersion;
         }
 
-        this._builder.ref("access").clear();
-        this._rowsCount = 0;
-        $.each(data.access, this.addRolePermission.bind(this));
+        if (data.access) {
+            this._builder.ref("access").clear();
+            this._rowsCount = 0;
+            $.each(data.access, this.addRolePermission.bind(this));
+            delete data.access;
+        }
 
-        $(this._builder.ref("keywordsList").getHTMLElement()).empty();
-        $.each(data.keywords, this.addKeyword.bind(this));
+        if (data.keywords) {
+            $(this._builder.ref("keywordsList").getHTMLElement()).empty();
+            $.each(data.keywords, this.addKeyword.bind(this));
+            delete data.keywords;
+        }
 
-        $.each(data.categories, function (categoryType, selectedCategories) {
-            selectedCategories.forEach(function (selectedCategory) {
-                $source
-                    .find("select[name='" + categoryType + "']")
-                    .find("option[value='" + selectedCategory + "']")
-                    .attr("selected", "");
+        if (data.categories) {
+            $.each(data.categories, function (categoryType, selectedCategories) {
+                selectedCategories.forEach(function (selectedCategory) {
+                    $source
+                        .find("select[name='" + categoryType + "']")
+                        .find("option[value='" + selectedCategory + "']")
+                        .attr("selected", "");
+                });
+
+                $($source.find("select[name='" + categoryType + "']")).multiselect();
             });
+            delete data.categories;
+        }
 
-            $($source.find("select[name='" + categoryType + "']")).multiselect();
-        });
-        if (this._options.type === 2 && data.permissions) {
+        if (data.permissions && this._options.type === 2) {
             $.each(data.permissions, function (index, value) {
                 var $elements = $source.find("[data-node-key=permissions]").filter("[data-node-value=" + ++index + "]");
                 $.each(value, function (key, val) {
@@ -1878,15 +1920,17 @@ Imcms.Document.Viewer.prototype = {
                     }
                 });
             });
+            delete data.permissions;
         }
 
-        if (this._options.type === 8 && data.files) {
+        if (data.files && this._options.type === 8) {
             this._builder.ref("files").clear();
             $.each(data.files, this.addFile.bind(this));
             $(this._builder.ref("files").getHTMLElement())
                 .find("input[name=defaultFile]")
                 .filter('[value="' + data.defaultFile + '"]')
                 .prop('checked', true);
+            delete data.files;
         }
     }
 };
