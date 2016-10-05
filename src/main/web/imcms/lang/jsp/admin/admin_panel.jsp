@@ -4,6 +4,8 @@
 <%@ page import="com.imcode.imcms.servlet.Version" %>
 <%@ page import="imcode.server.ImcmsConstants" %>
 <%@ page import="org.apache.commons.lang3.BooleanUtils" %>
+<%@ page import="imcode.server.Imcms" %>
+<%@ page import="com.imcode.imcms.api.DocumentVersionInfo" %>
 <im:variables/>
 <%
     if (!user.canEdit(document)) {
@@ -22,6 +24,21 @@
     pageContext.setAttribute("permEditTextDocumentTexts", ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS);
     pageContext.setAttribute("requestParamWorkingPreview", ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW);
     pageContext.setAttribute("dispatchFlagPublish", ImcmsConstants.DISPATCH_FLAG__PUBLISH);
+
+    final DocumentVersionInfo documentVersionInfo = Imcms.getServices()
+            .getDocumentMapper()
+            .getDocumentVersionInfo(document.getId());
+
+    final long workingVersionModifiedTime = documentVersionInfo.getWorkingVersion()
+            .getModifiedDt()
+            .getTime();
+
+    final long defaultVersionModifiedTime = documentVersionInfo.getDefaultVersion()
+            .getModifiedDt()
+            .getTime();
+
+    final boolean hasNewerVersion = (workingVersionModifiedTime > defaultVersionModifiedTime);
+    pageContext.setAttribute("hasNewerVersion", hasNewerVersion);
 %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 <c:set var="currentLangCode" value="${user.internal.docGetterCallback.language.code}"/>
@@ -47,7 +64,7 @@
             </div>
         </section>
         <section id="read" data-mode="readonly"
-                 class="admin-panel-content-section ${isEditMode or isPreviewMode ? "" : "active"}">
+                 class="admin-panel-content-section${isEditMode or isPreviewMode ? "" : " active"}">
             <a href="${contextPath}/${docAliasOrId}" target="_self">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image"></div>
@@ -55,7 +72,7 @@
                 </div>
             </a>
         </section>
-        <section id="edit" data-mode="edit" class="admin-panel-content-section ${isEditMode ? "active" : ""}">
+        <section id="edit" data-mode="edit" class="admin-panel-content-section${isEditMode ? " active" : ""}">
             <a href="${contextPath}/servlet/AdminDoc?meta_id=${document.id}&flags=${permEditTextDocumentTexts}"
                target="_self">
                 <div class="admin-panel-button">
@@ -64,7 +81,7 @@
                 </div>
             </a>
         </section>
-        <section id="preview" data-mode="preview" class="admin-panel-content-section ${isPreviewMode ? "active" : ""}">
+        <section id="preview" data-mode="preview" class="admin-panel-content-section${isPreviewMode ? " active" : ""}">
             <a href="${contextPath}/${docAliasOrId}?${requestParamWorkingPreview}=true" target="_self">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image"></div>
@@ -72,7 +89,7 @@
                 </div>
             </a>
         </section>
-        <section id="publish" data-mode="publish" class="admin-panel-content-section">
+        <section id="publish" data-mode="publish" class="admin-panel-content-section${hasNewerVersion ? " has-version-changed" : ""}">
             <a href="${contextPath}/servlet/AdminDoc?meta_id=${document.id}&flags=${dispatchFlagPublish}" target="_self">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image">Publish offline version</div>

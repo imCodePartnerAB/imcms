@@ -620,6 +620,10 @@ editor theme
 	text-align: center;
 }
 
+.admin-panel-content-section.has-version-changed .admin-panel-button {
+    background-color: #FF756F;
+}
+
 .admin-panel-content-section.active .admin-panel-button,
 .admin-panel-content-section .admin-panel-button:hover {
 	background-color: #ebf0ff;
