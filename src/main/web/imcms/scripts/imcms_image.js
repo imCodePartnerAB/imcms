@@ -223,8 +223,14 @@ Imcms.Image.Editor.prototype = {
         $.each(id, $.proxy(this.addLanguageSwitch, this));
     },
     addLanguageSwitch: function (language, code) {
-        $(this._builder.ref("image-editor-language").getHTMLElement())
-            .append($("<img>").addClass("content-preview-image").addClass(this._language === code ? 'active' : '').attr("id", code + "Switch").attr("src", Imcms.Linker._contextPath + '/images/ic_' + language.toLowerCase() + '.png').data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, code)))
+        var languageContainer = $(this._builder.ref("image-editor-language").getHTMLElement());
+        if (languageContainer.find("#" + code + "Switch").length == 0) {
+            languageContainer.append($("<img>").addClass("content-preview-image")
+                .addClass(this._language === code ? 'active' : '')
+                .attr("id", code + "Switch")
+                .attr("src", Imcms.Linker._contextPath + '/images/ic_' + language.toLowerCase() + '.png')
+                .data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, code)))
+        }
     },
 
     _onLanguageChanged: function (lang) {
