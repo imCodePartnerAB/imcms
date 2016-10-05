@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.flow.ChangeDocDefaultVersionPageFlow;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.PageFlow;
@@ -55,7 +56,8 @@ public class AdminDoc extends HttpServlet {
 			history.push(meta_id);
 		}
 
-		DocumentDomainObject document = imcref.getDocumentMapper().getWorkingDocument(meta_id);
+        final DocumentLanguage language = Imcms.getUser().getDocGetterCallback().getLanguage();
+        DocumentDomainObject document = imcref.getDocumentMapper().getWorkingDocument(meta_id, language);
 
 		if (null == document) {
 			res.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -64,12 +66,14 @@ public class AdminDoc extends HttpServlet {
 
 		int doc_type = document.getDocumentTypeId();
 
-		Integer userflags = (Integer) session.getAttribute(PARAMETER__DISPATCH_FLAGS);        // Get the flags from the user-object
+		Integer userFlags = (Integer) session.getAttribute(PARAMETER__DISPATCH_FLAGS);
+        // Get the flags from the user-object
 		session.removeAttribute(PARAMETER__DISPATCH_FLAGS);
-		int flags = userflags == null ? 0 : userflags;    // Are there flags? Set to 0 if not.
+		int flags = userFlags == null ? 0 : userFlags;    // Are there flags? Set to 0 if not.
 
 		try {
-			flags = Integer.parseInt(req.getParameter(PARAMETER__DISPATCH_FLAGS));    // Check if we have a "flags" in the request too. In that case it takes precedence.
+			flags = Integer.parseInt(req.getParameter(PARAMETER__DISPATCH_FLAGS));
+            // Check if we have a "flags" in the request too. In that case it takes precedence.
 		} catch (NumberFormatException ex) {
 			if (flags == 0) {
 				if (doc_type != 1 && doc_type != 2) {
@@ -77,7 +81,11 @@ public class AdminDoc extends HttpServlet {
 					vec.add("#adminMode#");
 					vec.add(Html.getAdminButtons(user, document, req, res));
 					vec.add("#doc_type_description#");
-					vec.add(imcref.getAdminTemplate(Utility.getLinkService().get("admin.adminButtons", String.valueOf(doc_type)), user, null));
+
+                    final String adminButtonsLink = Utility.getLinkService()
+                            .get("admin.adminButtons", String.valueOf(doc_type));
+
+                    vec.add(imcref.getAdminTemplate(adminButtonsLink, user, null));
 					Utility.setDefaultHtmlContentType(res);
 					res.getWriter().write(imcref.getAdminTemplate("docinfo.html", user, vec));
 					return;
@@ -86,7 +94,7 @@ public class AdminDoc extends HttpServlet {
 		}
 
 		if (!user.canEdit(document)) {
-			GetDoc.viewDoc("" + meta_id, req, res);
+			GetDoc.viewDoc(String.valueOf(meta_id), req, res);
 			return;
 		}
 
