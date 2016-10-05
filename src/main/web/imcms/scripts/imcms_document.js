@@ -555,7 +555,7 @@ Imcms.Document.Viewer.prototype = {
             .end()
             .button()
             .id("save-and-publish-button")
-            .class("imcms-negative")
+            .class("imcms-negative" + (this.shouldSaveVersionBeHidden() ? " hidden" : ""))
             .html("Save and publish this version")
             .on("click", this.publish.bind(this))
             .end()
@@ -786,6 +786,7 @@ Imcms.Document.Viewer.prototype = {
 
             .div()
             .id("offline-version-changed-message")
+            .class("field" + (this.shouldSaveVersionBeHidden() ? " hidden" : ""))
             .div()
             .class("field")
             .html("This offline version has changes.")
@@ -803,6 +804,16 @@ Imcms.Document.Viewer.prototype = {
             page: this._builder.ref("life-cycle-page")
         };
         this._builder.ref("life-cycle-tab").on("click", $.proxy(this.changeTab, this, this._contentCollection["life-cycle"]));
+    },
+    shouldSaveVersionBeHidden: function () {
+        var versions = this._options.data.versions;
+
+        if (!versions) {
+            return true;
+        }
+
+        // means that default (public) version in never than working (offline) version
+        return (versions.default.modifiedDt >= versions.working.modifiedDt);
     },
     setDateTimeNow: function (kindOfDate) {
         var currentDate = new Date(),
@@ -1866,22 +1877,23 @@ Imcms.Document.Viewer.prototype = {
             }
         });
 
-        if (data.docVersion) {
-            var version = data.docVersion,
-                formattedDate = new Date(version.createdDt).format("yyyy-mm-dd");
+        if (data.versions && !data.versions.isBuilded) {
+            var defaultVersion = data.versions.default,
+                workingVersion = data.versions.working,
+                formattedDate = new Date(defaultVersion.createdDt).format("yyyy-mm-dd");
 
             $source.find("[data-node-key=document-version]")
                 .first()
-                .val(version.no);
+                .val(defaultVersion.no);
 
             $source.find("[data-node-key=document-version-date]")
                 .first()
                 .val(formattedDate);
 
             var $saveAsNewVersionMessage = $("#save-as-new-version-message");
-            $saveAsNewVersionMessage.html($saveAsNewVersionMessage.html() + ++version.no);
+            $saveAsNewVersionMessage.html($saveAsNewVersionMessage.html() + ++defaultVersion.no);
 
-            delete data.docVersion;
+            data.versions.isBuilded = true;
         }
 
         if (data.access) {

@@ -600,17 +600,24 @@ public class DocumentController {
 	protected void prepareEntity(DocumentEntity entity, DocumentDomainObject document) {
 		CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
 		RoleGetter roleGetter = Imcms.getServices().getRoleGetter();
+        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        final int documentId = document.getId();
 
-        entity.docVersion = Imcms.getServices()
-                .getDocumentMapper()
-                .getDocumentVersionInfo(document.getId())
-                .getDefaultVersion();
+        {
+            final DocumentVersionInfo documentVersionInfo = documentMapper.getDocumentVersionInfo(documentId);
+            final DocumentVersion defaultVersion = documentVersionInfo.getDefaultVersion();
+            final DocumentVersion workingVersion = documentVersionInfo.getWorkingVersion();
+
+            entity.versions = new HashMap<>();
+            entity.versions.put("working", workingVersion);
+            entity.versions.put("default", defaultVersion);
+        }
 
         entity.missingLangProp = document.getDisabledLanguageShowMode().name();
         entity.type = document.getDocumentTypeId();
 		entity.languages = new HashMap<>();
 		entity.alias = document.getAlias();
-		entity.id = document.getId();
+		entity.id = documentId;
 		entity.status = document.getPublicationStatus().asInt();
 		entity.target = document.getTarget();
 		entity.isSearchDisabled = document.isSearchDisabled();
@@ -641,8 +648,7 @@ public class DocumentController {
 								.toArray(new String[0]))
 				);
 
-		Map<DocumentLanguage, DocumentCommonContent> contentMap = Imcms.getServices()
-				.getDocumentMapper().getCommonContents(document.getId(), document.getVersionNo());
+		Map<DocumentLanguage, DocumentCommonContent> contentMap = documentMapper.getCommonContents(documentId, document.getVersionNo());
 
 		for (Map.Entry<DocumentLanguage, DocumentCommonContent> entry : contentMap.entrySet()) {
 			DocumentEntity.LanguageEntity languageEntity = new DocumentEntity.LanguageEntity();
@@ -747,7 +753,7 @@ public class DocumentController {
         @JsonProperty("missing-lang-prop")
         public String missingLangProp;
 
-        public DocumentVersion docVersion;
+        public Map<String, DocumentVersion> versions;
 
         private static class LanguageEntity {
 			public String code;

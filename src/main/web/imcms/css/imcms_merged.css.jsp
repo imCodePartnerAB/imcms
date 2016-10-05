@@ -9,7 +9,7 @@ String cp = request.getContextPath() ;
 
 .editor-form .imcms-footer .hidden,
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .reset,
