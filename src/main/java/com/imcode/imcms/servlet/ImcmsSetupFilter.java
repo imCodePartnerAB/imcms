@@ -219,7 +219,9 @@ public class ImcmsSetupFilter implements Filter {
 		if (resourcePaths == null || resourcePaths.size() == 0) {
 			String documentIdString = getDocumentIdString(service, path);
 
-            DocumentDomainObject document = service.getDocumentMapper().getVersionedDocument(documentIdString, request);
+            final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
+            DocumentDomainObject document = service.getDocumentMapper()
+                    .getVersionedDocument(documentIdString, langCode, request);
 
 			if (null != document) {
 				try {

@@ -1,19 +1,22 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.DocumentRequest;
-import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
-import imcode.server.ImcmsServices;
-import imcode.server.Revisits;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentTypeDomainObject;
-import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.HtmlDocumentDomainObject;
-import imcode.server.document.UrlDocumentDomainObject;
+import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.*;
+import imcode.server.document.*;
+import imcode.server.kerberos.KerberosLoginResult;
+import imcode.server.kerberos.KerberosLoginStatus;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
+import org.apache.oro.text.perl.Perl5Util;
 
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.*;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,24 +24,6 @@ import java.net.SocketException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Stack;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
-import org.apache.oro.text.perl.Perl5Util;
-
-import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.kerberos.KerberosLoginResult;
-import imcode.server.kerberos.KerberosLoginStatus;
 
 /**
  * Retrieves document by metaId.
@@ -71,9 +56,9 @@ public class GetDoc extends HttpServlet {
      */
     public static void viewDoc(String documentId, HttpServletRequest req,
                                HttpServletResponse res) throws IOException, ServletException {
-        ImcmsServices imcref = Imcms.getServices();
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument(documentId);
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
+        DocumentDomainObject document = documentMapper.getVersionedDocument(documentId, langCode, req);
 
         if (null == document) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
