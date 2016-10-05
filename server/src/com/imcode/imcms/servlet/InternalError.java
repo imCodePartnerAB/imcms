@@ -8,6 +8,7 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,6 +23,8 @@ import java.util.ResourceBundle;
  * Created by ruslan on 04.10.16.
  */
 public class InternalError extends HttpServlet {
+
+    private final static Logger LOGGER = Logger.getLogger(InternalError.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -62,12 +65,15 @@ public class InternalError extends HttpServlet {
                     {"stack_trace", persistenceStackTrace}
             }));
         } catch (DatabaseException ignored) {
+            LOGGER.info("Error with id " + errorId + " reported");
         }
 
         database.execute(new SqlUpdateCommand( "INSERT INTO errors_users_crossref (error_id, user_id) VALUES(?,?) " +
                                                 "ON DUPLICATE KEY UPDATE times=times+1, update_date=now()",
                                                 new Object[]{errorId, userId} )
         );
+
+        LOGGER.info("Internal error has occurred: error id =" + errorId + "; " + " user id =" + userId + ";");
 
         request.setAttribute("error-id", errorId);
     }
