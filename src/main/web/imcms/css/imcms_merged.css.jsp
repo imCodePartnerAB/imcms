@@ -869,18 +869,23 @@ editor theme
 	padding-left: 220px;
 }
 
-.text-short {
-    width: 40px !important;
+.pop-up-form .imcms-content .field input.text-short {
+    width: 40px;
     margin: 0 5px;
 }
 
-.date-time {
-	width: 200px !important;
+.pop-up-form .imcms-content .field input.date-time {
+	width: 200px;
 	margin: 0 5px;
 }
 
-.date-time-short {
-    width: 120px !important;
+.pop-up-form .imcms-content .field input.date-time-short {
+    width: 120px;
+    margin: 0 5px;
+}
+
+.pop-up-form .imcms-content .field input.date-time-medium {
+    width: 150px;
     margin: 0 5px;
 }
 

@@ -776,7 +776,7 @@ Imcms.Document.Viewer.prototype = {
             .placeholder("Empty")
             .end()
             .text()
-            .class("date-time-short")
+            .class("date-time-medium")
             .attr("data-node-key", "document-version-date")
             .attr("readonly", true)
             .attr("ignored", true)
@@ -1880,7 +1880,7 @@ Imcms.Document.Viewer.prototype = {
         if (data.versions && !data.versions.isBuilded) {
             var defaultVersion = data.versions.default,
                 workingVersion = data.versions.working,
-                formattedDate = new Date(defaultVersion.createdDt).format("yyyy-mm-dd");
+                formattedDate = new Date(defaultVersion.createdDt).format("yyyy-mm-dd HH:MM:ss");
 
             $source.find("[data-node-key=document-version]")
                 .first()
