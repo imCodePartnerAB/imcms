@@ -1,10 +1,12 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.db.Database;
-import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
+import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -55,17 +57,31 @@ public class InternalError extends HttpServlet {
         String persistenceMessage = message == null
                 ? throwable.getClass().getSimpleName() : ExceptionUtils.getMessage(throwable);
         String persistenceStackTrace = ExceptionUtils.getStackTrace(throwable);
-        Long errorId = generateErrorId(persistenceMessage, persistenceCause, persistenceStackTrace);
-        Database database = Imcms.getServices().getDatabase();
+        Long hash = generateHash(persistenceMessage, persistenceCause, persistenceStackTrace);
+
+        ImcmsServices imcref = Imcms.getServices();
+        Database database = imcref.getDatabase();
+
+        Long errorId;
         try {
-            database.execute(new InsertIntoTableDatabaseCommand("errors", new Object[][]{
-                    {"error_id", errorId},
+            errorId = (Long) database.execute(new InsertIntoTableDatabaseCommand("errors", new Object[][]{
+                    {"hash", hash},
+                    {"url", request.getHeader("referer") },
                     {"message", persistenceMessage},
                     {"cause", persistenceCause},
                     {"stack_trace", persistenceStackTrace}
             }));
-        } catch (DatabaseException ignored) {
-            LOGGER.info("Error with id " + errorId + " reported");
+        } catch (IntegrityConstraintViolationException e) {
+            errorId = Long.parseLong( (String)
+                    database.execute(
+                            new SqlQueryCommand(
+                                "SELECT errors.error_id FROM errors WHERE hash = ? ",
+                                new Object[]{ hash },
+                                Utility.SINGLE_STRING_HANDLER
+                            )
+                    )
+            );
+            LOGGER.info("Error with id " + errorId + " is already reported");
         }
 
         database.execute(new SqlUpdateCommand( "INSERT INTO errors_users_crossref (error_id, user_id) VALUES(?,?) " +
@@ -73,16 +89,16 @@ public class InternalError extends HttpServlet {
                                                 new Object[]{errorId, userId} )
         );
 
-        LOGGER.info("Internal error has occurred: error id =" + errorId + "; " + " user id =" + userId + ";");
+        LOGGER.info("Internal error has occurred: {errorId =" + errorId + "; " + " userId =" + userId + "};");
 
         request.setAttribute("error-id", errorId);
     }
 
-    private Long generateErrorId(String persistenceMessage, String persistenceCause, String persistenceStackTrace) {
-        long errorId = persistenceMessage.hashCode();
-        errorId += persistenceCause.hashCode();
-        errorId += persistenceStackTrace.hashCode();
-        return errorId;
+    private Long generateHash(String persistenceMessage, String persistenceCause, String persistenceStackTrace) {
+        long hashCode = persistenceMessage.hashCode();
+        hashCode += persistenceCause.hashCode();
+        hashCode += persistenceStackTrace.hashCode();
+        return hashCode;
     }
 
 }
