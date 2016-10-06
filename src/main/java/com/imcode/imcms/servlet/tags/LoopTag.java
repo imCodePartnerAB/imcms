@@ -44,8 +44,6 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
 
     private ParserParameters parserParameters;
 
-    private LoopEditor editor;
-
     @Override
     public int doStartTag() throws JspException {
 
@@ -83,7 +81,7 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
 
             String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
             if (TagParser.isEditable(attributes, parserParameters.isMenuMode())) {
-                editor = createEditor().setNo(no);
+                LoopEditor editor = createEditor().setNo(no);
                 bodyContentString = editor.wrap(bodyContentString);
             }
             bodyContentString = TagParser.addPreAndPost(attributes, bodyContentString);
