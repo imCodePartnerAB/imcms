@@ -39,11 +39,16 @@
 
     final boolean hasNewerVersion = (workingVersionModifiedTime > defaultVersionModifiedTime);
     pageContext.setAttribute("hasNewerVersion", hasNewerVersion);
+
+    final boolean canEditDocInfo = user.getInternal().getPermissionSetFor(document.getInternal()).getEditDocumentInformation();
+    pageContext.setAttribute("canEditDocInfo", canEditDocInfo);
+
+    final String documentLifeCyclePhase = document.getInternal().getLifeCyclePhase().toString().substring(0, 1).toUpperCase();
+    pageContext.setAttribute("documentLifeCyclePhase", documentLifeCyclePhase);
 %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 <c:set var="currentLangCode" value="${user.internal.docGetterCallback.language.code}"/>
 <c:set var="docAliasOrId" value="${document.alias ne null ? document.alias : document.id}"/>
-<c:set var="canEditDocInfo" value="${user.internal.getPermissionSetFor(document.internal).editDocumentInformation}"/>
 <%-- todo: replace ugly urls using Linker --%>
 
 <div class="admin-panel reset">
@@ -111,7 +116,7 @@
             <a href="#" target="_self" onclick="return false;">
                 <div class="admin-panel-button">
                     <div>
-                        <span>${document.id}</span>${document.internal.lifeCyclePhase.toString().substring(0, 1).toUpperCase()}
+                        <span>${document.id}</span>${documentLifeCyclePhase}
                     </div>
                 </div>
             </a>
