@@ -4,7 +4,6 @@ CREATE TABLE errors (
   message TEXT NOT NULL,
   cause TEXT NOT NULL,
   stack_trace TEXT NOT NULL,
-  url TEXT NULL,
   viewed BIT NOT NULL DEFAULT 0,
   resolved BIT NOT NULL DEFAULT 0,
   PRIMARY KEY (error_id)
@@ -13,6 +12,7 @@ CREATE TABLE errors (
 CREATE TABLE errors_users_crossref (
   error_id BIGINT NOT NULL,
   user_id INT NOT NULL,
+  url TEXT NULL,
   times INT NOT NULL DEFAULT 1,
   discover_date DATETIME NOT NULL DEFAULT NOW(),
   update_date DATETIME NOT NULL DEFAULT NOW(),

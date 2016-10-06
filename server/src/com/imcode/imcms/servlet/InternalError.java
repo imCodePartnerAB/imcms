@@ -66,7 +66,6 @@ public class InternalError extends HttpServlet {
         try {
             errorId = (Long) database.execute(new InsertIntoTableDatabaseCommand("errors", new Object[][]{
                     {"hash", hash},
-                    {"url", request.getHeader("referer") },
                     {"message", persistenceMessage},
                     {"cause", persistenceCause},
                     {"stack_trace", persistenceStackTrace}
@@ -84,9 +83,10 @@ public class InternalError extends HttpServlet {
             LOGGER.info("Error with id " + errorId + " is already reported");
         }
 
-        database.execute(new SqlUpdateCommand( "INSERT INTO errors_users_crossref (error_id, user_id) VALUES(?,?) " +
+        String url = request.getHeader("referer");
+        database.execute(new SqlUpdateCommand( "INSERT INTO errors_users_crossref (error_id, user_id, url) VALUES(?,?,?) " +
                                                 "ON DUPLICATE KEY UPDATE times=times+1, update_date=now()",
-                                                new Object[]{errorId, userId} )
+                                                new Object[]{errorId, userId, url} )
         );
 
         LOGGER.info("Internal error has occurred: {errorId =" + errorId + "; " + " userId =" + userId + "};");
@@ -94,7 +94,9 @@ public class InternalError extends HttpServlet {
         request.setAttribute("error-id", errorId);
     }
 
-    private Long generateHash(String persistenceMessage, String persistenceCause, String persistenceStackTrace) {
+    private Long generateHash(String persistenceMessage,
+                              String persistenceCause,
+                              String persistenceStackTrace) {
         long hashCode = persistenceMessage.hashCode();
         hashCode += persistenceCause.hashCode();
         hashCode += persistenceStackTrace.hashCode();

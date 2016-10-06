@@ -4,7 +4,6 @@ CREATE TABLE errors (
   message TEXT NOT NULL,
   cause TEXT NOT NULL,
   stack_trace TEXT NOT NULL,
-  url TEXT NULL,
   viewed TINYINT(1) NOT NULL DEFAULT 0,
   resolved TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (error_id)
@@ -13,6 +12,7 @@ CREATE TABLE errors (
 CREATE TABLE errors_users_crossref (
   error_id INT(11) NOT NULL,
   user_id INT(11) NOT NULL,
+  url TEXT NULL,
   times INT(11) NOT NULL DEFAULT 1,
   discover_date DATETIME NOT NULL DEFAULT NOW(),
   update_date DATETIME NOT NULL DEFAULT NOW(),
