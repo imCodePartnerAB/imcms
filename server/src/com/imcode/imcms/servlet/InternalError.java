@@ -67,7 +67,7 @@ public class InternalError extends HttpServlet {
         String errorUrl = request.getHeader("referer");
 
         String serverName = Imcms.getServerName();
-        String jdbcUrl = Imcms.getServerProperties().getProperty("JDBCUrl");
+        String jdbcUrl = Imcms.getServerProperties().getProperty("JdbcUrl");
         String databaseName = jdbcUrl.substring(jdbcUrl.lastIndexOf('/'), jdbcUrl.contains("?")
                 ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
 
