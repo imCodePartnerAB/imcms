@@ -1,15 +1,19 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.db.Database;
-import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.exceptions.IntegrityConstraintViolationException;
+
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -19,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -39,7 +45,7 @@ public class InternalError extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser(request);
 
-        saveError(exceptionFromRequest, request, user.getId());
+        sendError(exceptionFromRequest, request, user.getId());
 
         request.setAttribute("javax.servlet.error.exception" , null);
 
@@ -49,49 +55,48 @@ public class InternalError extends HttpServlet {
         request.getRequestDispatcher("/imcms/500.jsp").forward(request, response);
     }
 
-    private void saveError(Throwable throwable, HttpServletRequest request, Integer userId) {
-        Throwable cause = throwable.getCause();
-        String persistenceCause = cause == null
+    private void sendError(Throwable throwable, HttpServletRequest request, Integer userId) throws IOException {
+        Throwable causeThrowable = throwable.getCause();
+        String cause = causeThrowable == null
                 ? throwable.getClass().getName() : ExceptionUtils.getRootCauseMessage(throwable);
-        String message = throwable.getMessage();
-        String persistenceMessage = message == null
+        String messageString = throwable.getMessage();
+        String message = messageString == null
                 ? throwable.getClass().getSimpleName() : ExceptionUtils.getMessage(throwable);
-        String persistenceStackTrace = ExceptionUtils.getStackTrace(throwable);
-        Long hash = generateHash(persistenceMessage, persistenceCause, persistenceStackTrace);
+        String stackTrace = ExceptionUtils.getStackTrace(throwable);
+        Long hash = generateHash(message, cause, stackTrace);
+        String errorUrl = request.getHeader("referer");
 
-        ImcmsServices imcref = Imcms.getServices();
-        Database database = imcref.getDatabase();
+        String serverName = Imcms.getServerName();
+        String jdbcUrl = Imcms.getServerProperties().getProperty("JDBCUrl");
+        String databaseName = jdbcUrl.substring(jdbcUrl.lastIndexOf('/'), jdbcUrl.contains("?")
+                ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
 
-        Long errorId;
-        try {
-            errorId = (Long) database.execute(new InsertIntoTableDatabaseCommand("errors", new Object[][]{
-                    {"hash", hash},
-                    {"message", persistenceMessage},
-                    {"cause", persistenceCause},
-                    {"stack_trace", persistenceStackTrace}
-            }));
-        } catch (IntegrityConstraintViolationException e) {
-            errorId = Long.parseLong( (String)
-                    database.execute(
-                            new SqlQueryCommand(
-                                "SELECT errors.error_id FROM errors WHERE hash = ? ",
-                                new Object[]{ hash },
-                                Utility.SINGLE_STRING_HANDLER
-                            )
-                    )
-            );
-            LOGGER.info("Error with id " + errorId + " is already reported");
+        List<NameValuePair> postParameters = new LinkedList<NameValuePair>();
+
+        postParameters.add(new BasicNameValuePair("hash", hash.toString()));
+        postParameters.add(new BasicNameValuePair("message", message));
+        postParameters.add(new BasicNameValuePair("cause", cause));
+        postParameters.add(new BasicNameValuePair("stack-trace", stackTrace));
+        postParameters.add(new BasicNameValuePair("error-url", errorUrl));
+        postParameters.add(new BasicNameValuePair("server-name", serverName));
+        postParameters.add(new BasicNameValuePair("database-name", databaseName));
+        postParameters.add(new BasicNameValuePair("user-id", userId.toString()));
+
+        HttpPost httpPost = new HttpPost(Imcms.ERROR_LOGGER_URL);
+        httpPost.setEntity(new UrlEncodedFormEntity(postParameters));
+        HttpClient client = new DefaultHttpClient();
+        HttpResponse response = client.execute(httpPost);
+        HttpEntity entity = response.getEntity();
+
+        String[] parameters = EntityUtils.toString(entity).split(";", 2);
+
+        if (parameters[1].equals("new")) {
+            LOGGER.error("Internal error has occurred: {errorId =" + parameters[0] + "; " + " userId =" + userId + "};");
+        } else {
+            LOGGER.info("Error with id " + parameters[0] + " is already reported");
         }
 
-        String url = request.getHeader("referer");
-        database.execute(new SqlUpdateCommand( "INSERT INTO errors_users_crossref (error_id, user_id, url) VALUES(?,?,?) " +
-                                                "ON DUPLICATE KEY UPDATE times=times+1, update_date=now()",
-                                                new Object[]{errorId, userId, url} )
-        );
-
-        LOGGER.info("Internal error has occurred: {errorId =" + errorId + "; " + " userId =" + userId + "};");
-
-        request.setAttribute("error-id", errorId);
+        request.setAttribute("error-id", parameters[0]);
     }
 
     private Long generateHash(String persistenceMessage,
