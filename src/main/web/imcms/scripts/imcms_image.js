@@ -181,7 +181,7 @@ Imcms.Image.Editor.prototype = {
             setTimeout(function () {
                 this._imageCropper.initialize();
                 this._imageCropper.changeCropping(data.cropRegion.cropX1, data.cropRegion.cropY1, data.cropRegion.cropX2, data.cropRegion.cropY2);
-                this._imageCropper.changeDestinationRect(data.displayImageSize.width, data.displayImageSize.height);
+                this._imageCropper.changeDestinationRect(data.cropRegion.cropX2, data.cropRegion.cropY2);
             }.bind(this), 250);
         }
     },
@@ -280,11 +280,11 @@ Imcms.Image.Editor.prototype = {
             clonedData.source = jQuery.extend(true, {}, data);
             clonedData.cropRegion = {
                 cropX1: 0,
-                cropX2: clonedData.imageInfo.width / 4,
+                cropX2: clonedData.imageInfo.width,
                 cropY1: 0,
-                cropY2: clonedData.imageInfo.height / 4,
-                width: clonedData.imageInfo.width / 4,
-                height: clonedData.imageInfo.height / 4,
+                cropY2: clonedData.imageInfo.height,
+                width: clonedData.imageInfo.width,
+                height: clonedData.imageInfo.height,
                 valid: true
             };
             this._getSource(Imcms.Utils.merge(clonedData, this._source));
@@ -340,7 +340,7 @@ Imcms.Image.Editor.prototype = {
         $(this._builder[0]).fadeIn("fast").find(".imcms-content").css({height: $(window).height() - 95});
         this._isShowed = true;
 
-        /*if (this._isLoaded) {
+       /* if (this._isLoaded) {
          setTimeout(function () {
 
          this._imageCropper.initialize();
