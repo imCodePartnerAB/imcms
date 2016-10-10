@@ -372,7 +372,7 @@ Imcms.Image.ImageViewAdapter.prototype = {
     },
     update: function (src) {
         this._imageSource = src;
-        this._imageView.attr("src", Imcms.Linker._contextPath + src.urlPathRelativeToContextPath)
+        this._imageView.attr("src", src.urlPathRelativeToContextPath === "" ? "" : Imcms.Linker._contextPath + src.urlPathRelativeToContextPath)
     }
 };
 
@@ -699,6 +699,8 @@ Imcms.Image.ImageCropper.prototype = {
         return false;
     },
     update: function (filename) {
+        console.trace();
+        console.log("updateFileName", filename);
         this._imageShader.remove();
         this._imageCroppingFrame.remove();
         this._imageFragment.remove();
