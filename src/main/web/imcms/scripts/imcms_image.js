@@ -404,6 +404,22 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         this.buildView();
     },
     buildView: function () {
+        //Setting default values if image src is empty(but data still can exist in DB)
+        console.log("ImageSource at build ", this._imageSource);
+        if(this._imageSource.urlPathRelativeToContextPath === ""){
+            this._imageSource.realImageSize.width = "";
+            this._imageSource.realImageSize.height = "";
+            this._imageSource.width = "";
+            this._imageSource.height = "";
+            this._imageSource.cropRegion.cropX1 = -1;
+            this._imageSource.cropRegion.cropY1 = -1;
+            this._imageSource.cropRegion.cropX2 = -1;
+            this._imageSource.cropRegion.cropY2 = -1;
+            this._imageSource.alternateText = "";
+            this._imageSource.name = "";
+            this._imageSource.linkUrl = "";
+        }
+
         $(this._infoRef.getHTMLElement()).empty();
         this._infoRef
             .div()
