@@ -387,13 +387,13 @@ CKEDITOR.dialog.add("textHistory", function (e) {
                 .append(item.modifiedDate.format("HH:MM:ss") + " | " + item.modifiedBy)
                 .click(function () {
                     if (!buttonsShowed) {
-                        addTextHistoryButton("As HTML", function () {
+                        addTextHistoryButton("View Page", function () {
                             if (selectedItem.type !== "html") {
                                 $content.html($content.text());
                                 selectedItem.type = "html";
                             }
                         });
-                        addTextHistoryButton("As Text", function () {
+                        addTextHistoryButton("View Source", function () {
                             if (selectedItem.type === "html") {
                                 $content.text($content.html());
                                 selectedItem.type = "from-html";
@@ -422,22 +422,6 @@ CKEDITOR.dialog.add("textHistory", function (e) {
         title: 'Text History Dialog',
         width: 600,
         height: 400,
-        onOk: function () {
-            if (selectedItem) {
-                e.setData(""); // clear previous text
-                var contentType = $(e.element.$).data("contenttype");
-
-                var callFunc = (contentType === "html")
-                    ? "insertHtml"
-                    : "insertText";
-
-                e[callFunc](selectedItem.text);
-
-                if (selectedItem.type !== contentType) {
-                    e.execCommand("switchFormat");
-                }
-            }
-        },
         contents: [
             {
                 id: 'textHistory',
@@ -452,6 +436,33 @@ CKEDITOR.dialog.add("textHistory", function (e) {
                     }
                 ]
             }
+        ],
+        buttons: [
+            {
+                id: "text history OK button",
+                type: "button",
+                label: "Write to textfield",
+                title: "Write to textfield",
+                "class":"cke_dialog_ui_button_ok",
+                disabled: false,
+                onClick: function () {
+                    if (selectedItem) {
+                        e.setData(""); // clear previous text
+                        var contentType = $(e.element.$).data("contenttype");
+
+                        var callFunc = (contentType === "html")
+                            ? "insertHtml"
+                            : "insertText";
+
+                        e[callFunc](selectedItem.text);
+
+                        if (selectedItem.type !== contentType) {
+                            e.execCommand("switchFormat");
+                        }
+                    }
+                }
+            },
+            CKEDITOR.dialog.cancelButton
         ]
     };
 });
