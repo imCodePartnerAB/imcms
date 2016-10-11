@@ -67,7 +67,7 @@ Imcms.Text.Editor.prototype = {
                         });
                     })
                     .build()
-                    .attr("title", title.replace(/<(?:.|\n)*?>/gm, ''))
+                    .attr("title", title.replace(/<(?:.|\n)*?>/gim, ''))
                     .insertBefore(element);
 
             if (element.data("showlabel")) {
