@@ -67,12 +67,12 @@ Imcms.Text.Editor.prototype = {
                         });
                     })
                     .build()
-                    .attr("title", title)
+                    .attr("title", title.replace(/<(?:.|\n)*?>/gm, ''))
                     .insertBefore(element);
 
             if (element.data("showlabel")) {
                 $("<div>").addClass("text-editor-label")
-                    .text(element.data("label"))
+                    .html(element.data("label"))
                     .insertBefore(element);
             }
         });
