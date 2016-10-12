@@ -556,7 +556,7 @@ public class TagParser {
                 }
             }
 
-            String linkable = attributes.getProperty("linkable", "false");
+            String linkable = attributes.getProperty("linkable", "true");
 
             List<String> replaceTags = new ArrayList<String>(replace_tags.length + 8);
             CollectionUtils.addAll(replaceTags, replace_tags);
