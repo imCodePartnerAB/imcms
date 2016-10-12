@@ -77,7 +77,7 @@ LI { padding-bottom:5px; }
 			</ul>
 			</imcms:menu>
 			<imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoContent" pre='<hr/>' post='<hr/>'/>
-			<imcms:image no='3' label='Bild' pre='<br/><br/>' post='<br/>'/><br/>
+			<imcms:image no='3' label='Bild' linkable="false" pre='<br/><br/>' post='<br/>'/><br/>
 			<imcms:include no='1' label='Dynamisk inkludering 1'/>
 			</td>
 	
