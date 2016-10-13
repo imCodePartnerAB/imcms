@@ -2,9 +2,11 @@ package com.imcode.imcms.imagearchive;
 
 import imcode.util.io.FileUtility;
 import org.apache.commons.collections.BidiMap;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 
+@Component
 public class Config {
     private File storagePath;
     private File tmpPath;

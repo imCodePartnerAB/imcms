@@ -1,35 +1,13 @@
 package com.imcode.imcms.config;
 
-import com.imcode.imcms.imagearchive.Config;
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.CustomEditorConfigurer;
-import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
-
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-import java.beans.PropertyEditor;
-import java.io.File;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Created by zemluk on 11.10.16.
@@ -37,62 +15,43 @@ import java.util.Properties;
 @Configuration
 @EnableWebMvc
 
-//JPA annotations
-//TODO: Probably should be moved to another config
-@EnableJpaRepositories(basePackages = "com.imcode.imcms.mapping.jpa")
-@EnableTransactionManagement
-
-
-@ComponentScan({"com.imcode.imcms.mapping", "com.imcode.imcms.imagearchive", "com.imcode.imcms.api.linker", "imcode.util", "com.imcode.imcms.servlet.apis"})
+//@ComponentScan({"com.imcode.imcms.mapping", "com.imcode.imcms.imagearchive", "com.imcode.imcms.api.linker", "imcode.util", "com.imcode.imcms.servlet.apis", "com.imcode.imcms.config"})
 //@PropertySource("classpath:config.properties")
-
+//@Import({ ApplicationProperties.class})
 //TODO: Check properties for  system-properties-mode="NEVER" option
-@PropertySource(value = "/WEB-INF/conf/server.properties", ignoreResourceNotFound = true)
+//@PropertySource( name = "props", value = "classpath:/WEB-INF/conf/server.properties", ignoreResourceNotFound = true)
+//@PropertySource("/WEB-INF/conf/server.properties")
+//@PropertySource(value = "build.properties")
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
-    private Environment env;
+    public Environment env;
 
+
+/*
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer properties() {
+        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+        propertySourcesPlaceholderConfigurer.setLocation(new ClassPathResource("/WEB-INF/conf/server.properties"));
+        propertySourcesPlaceholderConfigurer.setIgnoreResourceNotFound(true);
+
+        return propertySourcesPlaceholderConfigurer;
+    }*/
+
+    /*@Bean
+    public static PropertySourcesPlaceholderConfigurer properties() {
+        PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
+        configurer.setIgnoreUnresolvablePlaceholders(true);
+        configurer.setIgnoreResourceNotFound(true);
+        return configurer;
+    }*/
+
+//    @Value("#{props['JdbcUrl']}")
+
+
+/*
 
     //    configContext.xml
-    @Bean
-    public CustomEditorConfigurer customEditorConfigurer() {
-        CustomEditorConfigurer customEditorConfigurer = new CustomEditorConfigurer();
-        Map<Class<?>, Class<? extends PropertyEditor>> customEditors = new ManagedMap<>();
-        customEditors.put(java.io.File.class, com.imcode.imcms.imagearchive.util.FileEditor.class);
-        customEditors.put(java.io.File[].class, com.imcode.imcms.imagearchive.util.FileArrayEditor.class);
-        customEditorConfigurer.setCustomEditors(customEditors);
-        return customEditorConfigurer;
-
-
-/*        Map<String, Class<?>> customEditors = new ManagedMap<String, Class<?>>();
-        customEditors.put("com.mongodb.MongoCredential[]", MongoCredentialPropertyEditor.class);
-
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(CustomEditorConfigurer.class);
-        builder.addPropertyValue("customEditors", customEditors);
-
-        return builder;*/
-    }
-
-    @Bean
-    public Config imageArchiveConfig() {
-        Config config = new Config();
-
-        config.setStoragePath(new File(env.getProperty("ImageArchiveStoragePath")));
-        config.setTmpPath(new File(env.getProperty("ImageArchiveTempPath")));
-        config.setImageMagickPath(new File(env.getProperty("ImageMagickPath")));
-        config.setImagesPath(new File(env.getProperty("ImageArchiveImagesPath")));
-        config.setLibrariesPath(new File(env.getProperty("ImageArchiveLibrariesPath")));
-        config.setOldLibraryPaths(new File[]{new File(env.getProperty("ImageArchiveOldLibraryPaths"))});
-        config.setUsersLibraryFolder(env.getProperty("ImageArchiveUsersLibraryFolder"));
-        config.setMaxImageUploadSize(Long.parseLong(env.getProperty("ImageArchiveMaxImageUploadSize")));
-        config.setMaxZipUploadSize(Long.parseLong(env.getProperty("ImageArchiveMaxZipUploadSize")));
-
-        //TODO: Look like there another bean required
-//        config.setLanguages();
-
-        return config;
-    }
 
     //beansContext.xml
     //it's empty
@@ -110,74 +69,82 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 //	<jpa:repositories base-package="com.imcode.imcms.mapping.jpa" entity-manager-factory-ref="myEmf"/>
 
 
+    //    TODO: Probably it's wrong implementation
     @Bean
-    public BasicDataSource basicDataSource() {
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(env.getProperty("JdbcDriver"));
-        dataSource.setUrl(env.getProperty("JdbcUrl"));
-        dataSource.setUsername(env.getProperty("User"));
-        dataSource.setPassword(env.getProperty("Password"));
-        dataSource.setTestOnBorrow(true);
-        dataSource.setValidationQuery("select 1");
-        dataSource.setDefaultAutoCommit(false);
-        dataSource.setMaxTotal(Integer.parseInt(env.getProperty("MaxConnectionCount")));
+    public EntityManagerFactory entityManagerFactory() {
 
-        return dataSource;
-    }
+//        String url =  PropertyManager.getPropertyFrom(propertiesFile, "ImageArchiveStoragePath");
 
-//    //    TODO: Probably it's wrong implementation
-//    @Bean
-//    public EntityManagerFactory entityManagerFactory() {
-////TODO: is all hibernate config should be placed here?
+
+//TODO: is all hibernate config should be placed here?
 //        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-//
-////TODO: Is that needed???
+
+//TODO: Is that needed???
 //        vendorAdapter.setGenerateDdl(true);
-//
-//        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 //        factory.setJpaVendorAdapter(vendorAdapter);
 //        factory.setPackagesToScan("com.imcode.imcms.mapping", "com.imcode.imcms.imagearchive", "com.imcode.imcms.mapping.jpa");
 //        factory.setDataSource(basicDataSource());
 //
-////TODO: Is that needed???
-//        factory.afterPropertiesSet();
-//
-//        return factory.getObject();
-//    }
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean factoryBean() {
-        //TODO: Check possible that must be located at properties
+
         Properties props = new Properties();
         props.put("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
 
-        LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
-        factoryBean.setDataSource(basicDataSource());
-        factoryBean.setPersistenceUnitName("com.imcode.imcms");
-        factoryBean.setPersistenceUnitManager(defaultPersistenceUnitManager());
+//        LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+//        factory.setDataSource(basicDataSource());
+        factory.setPersistenceUnitName("com.imcode.imcms");
+        factory.setPersistenceUnitManager(defaultPersistenceUnitManager());
 
         //TODO: is all hibernate config should be placed here?
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         //TODO: Is that needed???
         vendorAdapter.setGenerateDdl(true);
-        factoryBean.setJpaVendorAdapter(vendorAdapter);
-        factoryBean.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
-        factoryBean.setJpaProperties(props);
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
+        factory.setJpaProperties(props);
 
-        return factoryBean;
+
+//TODO: Is that needed???
+        factory.afterPropertiesSet();
+
+        return factory.getObject();
     }
+
+//    @Bean
+//    public LocalContainerEntityManagerFactoryBean factoryBean() {
+//        //TODO: Check possible that must be located at properties
+//        Properties props = new Properties();
+//        props.put("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
+//
+//        LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+//        factoryBean.setDataSource(basicDataSource());
+//        factoryBean.setPersistenceUnitName("com.imcode.imcms");
+//        factoryBean.setPersistenceUnitManager(defaultPersistenceUnitManager());
+//
+//        //TODO: is all hibernate config should be placed here?
+//        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+//        //TODO: Is that needed???
+//        vendorAdapter.setGenerateDdl(true);
+//        factoryBean.setJpaVendorAdapter(vendorAdapter);
+//        factoryBean.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
+//        factoryBean.setJpaProperties(props);
+//
+//        return factoryBean;
+//    }
 
 
     @Bean
     public DefaultPersistenceUnitManager defaultPersistenceUnitManager() {
         Map<String, DataSource> dataSources = new HashedMap();
-        dataSources.put("localDataSource", basicDataSource());
-        dataSources.put("remoteDataSource", basicDataSource());
+//        dataSources.put("localDataSource", basicDataSource());
+//        dataSources.put("remoteDataSource", basicDataSource());
 
         DefaultPersistenceUnitManager persistenceUnitManager = new DefaultPersistenceUnitManager();
         persistenceUnitManager.setPersistenceXmlLocations("classpath:META-INF/persistence.xml");
         persistenceUnitManager.setDataSources(dataSources);
-        persistenceUnitManager.setDefaultDataSource(basicDataSource());
+//        persistenceUnitManager.setDefaultDataSource(basicDataSource());
         return persistenceUnitManager;
     }
 
@@ -185,7 +152,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean
     public JpaTransactionManager jpaTransactionManager() {
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
-        jpaTransactionManager.setEntityManagerFactory((EntityManagerFactory) factoryBean());
+        jpaTransactionManager.setEntityManagerFactory(entityManagerFactory());
         return jpaTransactionManager;
     }
 
@@ -201,6 +168,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
 
     //web-servlet.xml
+*/
 
     @Bean
     public CommonsMultipartResolver multipartResolver() {
@@ -215,7 +183,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         urlBasedViewResolver.setViewClass(org.springframework.web.servlet.view.JstlView.class);
         urlBasedViewResolver.setPrefix("/WEB-INF/jsp/imcms/views/");
         urlBasedViewResolver.setSuffix(".jsp");
-
         return urlBasedViewResolver;
     }
 }

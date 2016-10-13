@@ -16,6 +16,23 @@
 		org.springframework.web.context.ContextLoaderListener.
 	-->
 
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>
+			org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+		</param-value>
+	</context-param>
+
+	<!-- Configuration locations must consist of one or more comma- or space-delimited
+        fully-qualified @Configuration classes. Fully-qualified packages may also be
+        specified for component-scanning -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			com.imcode.imcms.config.MainConfig
+		</param-value>
+	</context-param>
+
 	<listener>
 		<listener-class>com.imcode.imcms.servlet.ImcmsLog4jConfigListener</listener-class>
 	</listener>
@@ -91,9 +108,21 @@
 	</filter-mapping>
 
 	<servlet>
-		<servlet-name>web</servlet-name>
+		<servlet-name>spring-mvc-dispatcher</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<init-param>
+			<param-name>contextClass</param-name>
+			<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+		</init-param>
+		<!-- Again, config locations must consist of one or more comma- or space-delimited
+             and fully-qualified @Configuration classes -->
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+				com.imcode.imcms.config.MainConfig
+			</param-value>
+		</init-param>
 	</servlet>
 
 	<servlet>
@@ -345,7 +374,7 @@
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>web</servlet-name>
+		<servlet-name>spring-mvc-dispatcher</servlet-name>
 		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
 
