@@ -45,7 +45,11 @@ public class InternalError extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser(request);
 
-        sendError(exceptionFromRequest, request, user.getId());
+        try {
+            sendError(exceptionFromRequest, request, user.getId());
+        } catch (Exception e) {
+            request.setAttribute("error-id", -1);
+        }
 
         request.setAttribute("javax.servlet.error.exception" , null);
 
@@ -68,7 +72,7 @@ public class InternalError extends HttpServlet {
 
         String serverName = Imcms.getServerName();
         String jdbcUrl = Imcms.getServerProperties().getProperty("JdbcUrl");
-        String databaseName = jdbcUrl.substring(jdbcUrl.lastIndexOf('/'), jdbcUrl.contains("?")
+        String databaseName = jdbcUrl.substring(jdbcUrl.lastIndexOf('/') + 1, jdbcUrl.contains("?")
                 ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
 
         List<NameValuePair> postParameters = new LinkedList<NameValuePair>();
