@@ -29,7 +29,7 @@ public class Imcms {
     public static final String ISO_8859_1_ENCODING = "ISO-8859-1";
     public static final String UTF_8_ENCODING = "UTF-8";
     public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
-    public final static String ERROR_LOGGER_URL = "https://icm.imcode.com/ErrorLogger";
+    public final static String ERROR_LOGGER_URL = "https://errors.imcode.com/ErrorLogger";
 
     private final static Logger LOG = Logger.getLogger(Imcms.class.getName());
     private static ImcmsServices services;

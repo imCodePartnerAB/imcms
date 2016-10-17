@@ -9,7 +9,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.HttpClient;
@@ -68,7 +68,12 @@ public class InternalError extends HttpServlet {
                 ? throwable.getClass().getSimpleName() : ExceptionUtils.getMessage(throwable);
         String stackTrace = ExceptionUtils.getStackTrace(throwable);
         Long hash = generateHash(message, cause, stackTrace);
-        String errorUrl = request.getHeader("referer");
+
+        String headerReferer = request.getHeader("referer");
+        String headerUserAgent = request.getHeader("user-agent");
+        String headerAccept = request.getHeader("accept");
+        String headerAcceptEncoding = request.getHeader("accept-encoding");
+        String headerAcceptLanguage = request.getHeader("accept-language");
 
         String serverName = Imcms.getServerName();
         String jdbcUrl = Imcms.getServerProperties().getProperty("JdbcUrl");
@@ -81,14 +86,21 @@ public class InternalError extends HttpServlet {
         postParameters.add(new BasicNameValuePair("message", message));
         postParameters.add(new BasicNameValuePair("cause", cause));
         postParameters.add(new BasicNameValuePair("stack-trace", stackTrace));
-        postParameters.add(new BasicNameValuePair("error-url", errorUrl));
+
+        postParameters.add(new BasicNameValuePair("header-referer", headerReferer));
+        postParameters.add(new BasicNameValuePair("header-user-agent", headerUserAgent));
+        postParameters.add(new BasicNameValuePair("header-accept", headerAccept));
+        postParameters.add(new BasicNameValuePair("header-accept-encoding", headerAcceptEncoding));
+        postParameters.add(new BasicNameValuePair("header-accept-language", headerAcceptLanguage));
+
         postParameters.add(new BasicNameValuePair("server-name", serverName));
         postParameters.add(new BasicNameValuePair("database-name", databaseName));
+
         postParameters.add(new BasicNameValuePair("user-id", userId.toString()));
 
         HttpPost httpPost = new HttpPost(Imcms.ERROR_LOGGER_URL);
         httpPost.setEntity(new UrlEncodedFormEntity(postParameters));
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client =  HttpClientBuilder.create().build();
         HttpResponse response = client.execute(httpPost);
         HttpEntity entity = response.getEntity();
 
