@@ -29,6 +29,7 @@ public class ChangeImage extends HttpServlet {
 
     public static final String REQUEST_PARAMETER__IMAGE_INDEX = "img";
     public static final String REQUEST_PARAMETER__LABEL = "label";
+    public static final String REQUEST_PARAMETER__LINKABLE = "linkable";
     public static final String REQUEST_PARAMETER__WIDTH = "width";
     public static final String REQUEST_PARAMETER__HEIGHT = "height";
     public static final String REQUEST_PARAMETER__MAX_WIDTH = "max-width";
@@ -94,10 +95,13 @@ public class ChangeImage extends HttpServlet {
             }
 
         };
+
+        boolean linkable = Boolean.valueOf(request.getParameter(REQUEST_PARAMETER__LINKABLE));
+
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", String.valueOf(imageIndex), String.valueOf(document.getId()));
         ImageEditPage imageEditPage = new ImageEditPage(document, image, imageIndex, heading, 
         		StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, 
-        		returnCommand, true, forcedWidth, forcedHeight, maxWidth, maxHeight, returnURL);
+        		returnCommand, linkable, forcedWidth, forcedHeight, maxWidth, maxHeight, returnURL);
         imageEditPage.forward(request, response);
 
     }

@@ -31,4 +31,9 @@ public class ImageTag extends SimpleImcmsTag {
     public void setDocument(String documentName) {
         attributes.setProperty("document", documentName) ;
     }
+
+    public void setLinkable(String linkable) {
+        attributes.setProperty("linkable", linkable) ;
+    }
+
 }
