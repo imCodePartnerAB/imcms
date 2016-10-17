@@ -96,7 +96,7 @@ public class ChangeImage extends HttpServlet {
 
         };
 
-        boolean linkable = Boolean.valueOf(request.getParameter(REQUEST_PARAMETER__LINKABLE));
+        boolean linkable = !("false".equals(request.getParameter(REQUEST_PARAMETER__LINKABLE)));
 
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", String.valueOf(imageIndex), String.valueOf(document.getId()));
         ImageEditPage imageEditPage = new ImageEditPage(document, image, imageIndex, heading, 
