@@ -4,6 +4,7 @@ import com.imcode.imcms.imagearchive.Config;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.CustomEditorConfigurer;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,10 @@ public class AppConfig {
 
     @Autowired
     private Environment env;
+
+
+    @Value("${JdbcUrl}")
+    private String jdbcUrl;
 
     @Bean
     public CustomEditorConfigurer customEditorConfigurer() {

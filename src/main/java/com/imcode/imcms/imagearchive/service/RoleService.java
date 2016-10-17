@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.*;
 
 @Service
@@ -25,7 +26,8 @@ public class RoleService {
     @Autowired
     private Facade facade;
 
-    @Autowired
+    @PersistenceContext(unitName="com.imcode.imcms")
+//    @Autowired
     private EntityManager entityManager;
 
     private Session getCurrentSession() {

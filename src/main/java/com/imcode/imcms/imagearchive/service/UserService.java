@@ -11,13 +11,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.*;
 
 @Service
 @Transactional
 public class UserService {
-    
-    @Autowired
+
+    @PersistenceContext(unitName="com.imcode.imcms")
+//    @Autowired
     private EntityManager entityManager;
 
     public static List<Integer> getRoleIds(User user) {

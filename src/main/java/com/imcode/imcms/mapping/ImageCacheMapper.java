@@ -7,6 +7,7 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +28,12 @@ public class ImageCacheMapper {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
 
-	@Inject
+	@PersistenceContext(unitName="com.imcode.imcms")
+//	@Autowired
 	private EntityManager entityManager;
+
+
+
 
 	private Session getCurrentSession() {
 		return entityManager.unwrap(Session.class);

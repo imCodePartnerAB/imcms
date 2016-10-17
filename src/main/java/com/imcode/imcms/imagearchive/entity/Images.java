@@ -7,6 +7,131 @@ import java.util.List;
 
 @Entity
 @Table(name = "archive_images")
+
+@NamedQueries({
+        @NamedQuery(name = "updateImageData",
+                query = " UPDATE\n" +
+                        "          Images im \n" +
+                        "        SET\n" +
+                        "          im.imageNm = :imageNm, \n" +
+                        "          im.uploadedBy = :uploadedBy, \n" +
+                        "          im.licenseDt = :licenseDt, \n" +
+                        "          im.licenseEndDt = :licenseEndDt,\n" +
+                        "          im.status = :statusActive, \n" +
+                        "          im.updatedDt = current_timestamp(),\n" +
+                        "          im.altText = :altText\n" +
+                        "        WHERE\n" +
+                        "          im.id = :id"),
+        @NamedQuery(name = "updateFullImageData",
+                query = " UPDATE\n" +
+                        "          Images im\n" +
+                        "        SET\n" +
+                        "          im.imageNm = :imageNm, \n" +
+                        "          im.width = :width, \n" +
+                        "          im.height = :height, \n" +
+                        "          im.fileSize = :fileSize, \n" +
+                        "          im.format = :format, \n" +
+                        "          im.uploadedBy = :uploadedBy, \n" +
+                        "          im.licenseDt = :licenseDt, \n" +
+                        "          im.licenseEndDt = :licenseEndDt,\n" +
+                        "          im.status = :statusActive, \n" +
+                        "          im.updatedDt = current_timestamp() ,\n" +
+                        "          im.altText = :altText\n" +
+                        "        WHERE\n" +
+                        "          im.id = :id"),
+        @NamedQuery(name = "updateImageExif",
+                query = " UPDATE \n" +
+                        "          Exif e \n" +
+                        "        SET \n" +
+                        "          e.artist = :artist, \n" +
+                        "          e.description = :description, \n" +
+                        "          e.copyright = :copyright, \n" +
+                        "          e.updatedDt = current_timestamp() \n" +
+                        "        WHERE \n" +
+                        "              e.imageId = :imageId \n" +
+                        "          AND e.type = :changedType"),
+        @NamedQuery(name = "updateImageExifFull",
+        query = " UPDATE \n" +
+                "          Exif e \n" +
+                "        SET \n" +
+                "          e.artist = :artist, \n" +
+                "          e.description = :description, \n" +
+                "          e.copyright = :copyright, \n" +
+                "          e.xResolution = :xResolution,\n" +
+                "           e.yResolution = :yResolution,\n" +
+                "           e.manufacturer = :manufacturer,\n" +
+                "           e.model = :model,\n" +
+                "           e.compression = :compression,\n" +
+                "           e.exposure = :exposure,\n" +
+                "           e.exposureProgram = :exposureProgram,\n" +
+                "           e.fStop = :fStop,\n" +
+                "           e.flash = :flash,\n" +
+                "           e.focalLength = :focalLength,\n" +
+                "           e.colorSpace = :colorSpace,\n" +
+                "           e.resolutionUnit = :resolutionUnit,\n" +
+                "           e.pixelXDimension = :pixelXDimension,\n" +
+                "           e.pixelYDimension = :pixelYDimension,\n" +
+                "           e.dateOriginal = :dateOriginal,\n" +
+                "           e.dateDigitized = :dateDigitized,\n" +
+                "           e.ISO = :ISO,\n" +
+                "          e.updatedDt = current_timestamp()\n" +
+                "        WHERE \n" +
+                "              e.imageId = :imageId \n" +
+                "          AND e.type = :exifType"),
+        @NamedQuery(name = "availableImageCategoriesAdmin",
+        query = "SELECT \n" +
+                "          c.id AS id, \n" +
+                "          c.name AS name \n" +
+                "        FROM \n" +
+                "          Categories c \n" +
+                "        WHERE \n" +
+                "              c.type.name = 'Images'\n" +
+                "          AND NOT EXISTS (FROM \n" +
+                "                            ImageCategories ic \n" +
+                "                          WHERE \n" +
+                "                                ic.imageId = :imageId\n" +
+                "                            AND ic.categoryId = c.id)"),
+        @NamedQuery(name = "availableImageCategories",
+        query = " SELECT \n" +
+                "          c.id AS id, \n" +
+                "          c.name AS name \n" +
+                "        FROM \n" +
+                "          CategoryRoles cr \n" +
+                "        INNER JOIN \n" +
+                "          cr.category c \n" +
+                "        WHERE \n" +
+                "              cr.roleId IN (:roleIds) AND cr.canChange = 1 \n" +
+                "          AND NOT EXISTS (FROM\n" +
+                "                            ImageCategories ic \n" +
+                "                          WHERE\n" +
+                "                                ic.imageId = :imageId \n" +
+                "                            AND ic.categoryId = cr.categoryId) \n" +
+                "          AND c.type.name = 'Images'"),
+        @NamedQuery(name = "availableKeywords",
+        query = "SELECT \n" +
+                "          k.keywordNm \n" +
+                "        FROM \n" +
+                "          Keywords k \n" +
+                "        WHERE  \n" +
+                "              NOT EXISTS (FROM \n" +
+                "                            ImageKeywords ik \n" +
+                "                          WHERE \n" +
+                "                                ik.imageId = :imageId \n" +
+                "                            AND ik.keywordId = k.id) \n" +
+                "        ORDER BY \n" +
+                "          k.keywordNm"),
+        @NamedQuery(name = "keywordsUsedByImages",
+        query = " SELECT DISTINCT\n" +
+                "          k.id AS id, \n" +
+                "          k.keywordNm AS keywordNm\n" +
+                "        FROM\n" +
+                "          ImageKeywords ik\n" +
+                "        INNER JOIN\n" +
+                "          ik.keyword k\n" +
+                "        ORDER BY\n" +
+                "          k.keywordNm"),
+
+})
 public class Images implements Serializable {
     public static final short STATUS_UPLOADED = 0;
     public static final short STATUS_ACTIVE = 1;

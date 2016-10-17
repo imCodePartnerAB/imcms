@@ -7,13 +7,13 @@
     <query name="updateImageData">
         <![CDATA[
         UPDATE
-          Images im 
+          Images im
         SET
-          im.imageNm = :imageNm, 
-          im.uploadedBy = :uploadedBy, 
-          im.licenseDt = :licenseDt, 
+          im.imageNm = :imageNm,
+          im.uploadedBy = :uploadedBy,
+          im.licenseDt = :licenseDt,
           im.licenseEndDt = :licenseEndDt,
-          im.status = :statusActive, 
+          im.status = :statusActive,
           im.updatedDt = current_timestamp(),
           im.altText = :altText
         WHERE
@@ -25,15 +25,15 @@
         UPDATE
           Images im
         SET
-          im.imageNm = :imageNm, 
-          im.width = :width, 
-          im.height = :height, 
-          im.fileSize = :fileSize, 
-          im.format = :format, 
-          im.uploadedBy = :uploadedBy, 
-          im.licenseDt = :licenseDt, 
+          im.imageNm = :imageNm,
+          im.width = :width,
+          im.height = :height,
+          im.fileSize = :fileSize,
+          im.format = :format,
+          im.uploadedBy = :uploadedBy,
+          im.licenseDt = :licenseDt,
           im.licenseEndDt = :licenseEndDt,
-          im.status = :statusActive, 
+          im.status = :statusActive,
           im.updatedDt = current_timestamp() ,
           im.altText = :altText
         WHERE
@@ -42,26 +42,26 @@
     </query>
     <query name="updateImageExif">
         <![CDATA[
-        UPDATE 
-          Exif e 
-        SET 
-          e.artist = :artist, 
-          e.description = :description, 
-          e.copyright = :copyright, 
-          e.updatedDt = current_timestamp() 
-        WHERE 
-              e.imageId = :imageId 
+        UPDATE
+          Exif e
+        SET
+          e.artist = :artist,
+          e.description = :description,
+          e.copyright = :copyright,
+          e.updatedDt = current_timestamp()
+        WHERE
+              e.imageId = :imageId
           AND e.type = :changedType
         ]]>
     </query>
     <query name="updateImageExifFull">
         <![CDATA[
-        UPDATE 
-          Exif e 
-        SET 
-          e.artist = :artist, 
-          e.description = :description, 
-          e.copyright = :copyright, 
+        UPDATE
+          Exif e
+        SET
+          e.artist = :artist,
+          e.description = :description,
+          e.copyright = :copyright,
           e.xResolution = :xResolution,
            e.yResolution = :yResolution,
            e.manufacturer = :manufacturer,
@@ -80,66 +80,66 @@
            e.dateDigitized = :dateDigitized,
            e.ISO = :ISO,
           e.updatedDt = current_timestamp()
-        WHERE 
-              e.imageId = :imageId 
+        WHERE
+              e.imageId = :imageId
           AND e.type = :exifType
         ]]>
     </query>
     <query name="availableImageCategoriesAdmin">
         <![CDATA[
-        SELECT 
-          c.id AS id, 
-          c.name AS name 
-        FROM 
-          Categories c 
-        WHERE 
+        SELECT
+          c.id AS id,
+          c.name AS name
+        FROM
+          Categories c
+        WHERE
               c.type.name = 'Images'
-          AND NOT EXISTS (FROM 
-                            ImageCategories ic 
-                          WHERE 
+          AND NOT EXISTS (FROM
+                            ImageCategories ic
+                          WHERE
                                 ic.imageId = :imageId
                             AND ic.categoryId = c.id)
         ]]>
     </query>
     <query name="availableImageCategories">
         <![CDATA[
-        SELECT 
-          c.id AS id, 
-          c.name AS name 
-        FROM 
-          CategoryRoles cr 
-        INNER JOIN 
-          cr.category c 
-        WHERE 
-              cr.roleId IN (:roleIds) AND cr.canChange = 1 
+        SELECT
+          c.id AS id,
+          c.name AS name
+        FROM
+          CategoryRoles cr
+        INNER JOIN
+          cr.category c
+        WHERE
+              cr.roleId IN (:roleIds) AND cr.canChange = 1
           AND NOT EXISTS (FROM
-                            ImageCategories ic 
+                            ImageCategories ic
                           WHERE
-                                ic.imageId = :imageId 
-                            AND ic.categoryId = cr.categoryId) 
+                                ic.imageId = :imageId
+                            AND ic.categoryId = cr.categoryId)
           AND c.type.name = 'Images'
         ]]>
     </query>
     <query name="availableKeywords">
         <![CDATA[
-        SELECT 
-          k.keywordNm 
-        FROM 
-          Keywords k 
-        WHERE  
-              NOT EXISTS (FROM 
-                            ImageKeywords ik 
-                          WHERE 
-                                ik.imageId = :imageId 
-                            AND ik.keywordId = k.id) 
-        ORDER BY 
+        SELECT
+          k.keywordNm
+        FROM
+          Keywords k
+        WHERE
+              NOT EXISTS (FROM
+                            ImageKeywords ik
+                          WHERE
+                                ik.imageId = :imageId
+                            AND ik.keywordId = k.id)
+        ORDER BY
           k.keywordNm
         ]]>
     </query>
     <query name="keywordsUsedByImages">
         <![CDATA[
         SELECT DISTINCT
-          k.id AS id, 
+          k.id AS id,
           k.keywordNm AS keywordNm
         FROM
           ImageKeywords ik

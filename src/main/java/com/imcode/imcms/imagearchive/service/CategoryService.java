@@ -13,13 +13,15 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Service
 @Transactional
 public class CategoryService {
-    
-    @Autowired
+
+    @PersistenceContext(unitName="com.imcode.imcms")
+//    @Autowired
     private EntityManager entityManager;
     
     private Session getCurrentSession() {

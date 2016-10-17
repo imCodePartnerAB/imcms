@@ -27,6 +27,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
@@ -47,7 +48,8 @@ public class ImageService {
     @Autowired
     private PlatformTransactionManager txManager;
 
-    @Autowired
+    @PersistenceContext(unitName="com.imcode.imcms")
+//    @Autowired
     private EntityManager entityManager;
 
     private static void updateImageCategories(Session session, Images image, List<Integer> categoryIds) {

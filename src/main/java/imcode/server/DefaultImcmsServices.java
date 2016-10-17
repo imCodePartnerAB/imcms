@@ -38,6 +38,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.beans.PropertyDescriptor;
@@ -72,6 +73,7 @@ public class DefaultImcmsServices implements ImcmsServices {
 	private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper;
 	private DocumentMapper documentMapper;
 	private TemplateMapper templateMapper;
+	@Autowired
 	private ImageCacheMapper imageCacheMapper;
 	private KeyStore keyStore;
 	private KerberosLoginService kerberosLoginService;
