@@ -1,6 +1,8 @@
 package com.imcode.imcms.servlet;
 
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.Imcms;
@@ -50,7 +52,7 @@ public class InternalError extends HttpServlet {
         try {
             sendError(exceptionFromRequest, request, user.getId());
         } catch (Exception e) {
-            request.setAttribute("error-id", -1);
+            request.setAttribute("error-id", 0);
         }
 
         request.setAttribute("javax.servlet.error.exception" , null);
@@ -118,15 +120,18 @@ public class InternalError extends HttpServlet {
         HttpResponse response = client.execute(httpPost);
         HttpEntity entity = response.getEntity();
 
-        String[] parameters = EntityUtils.toString(entity).split(";", 2);
+        JsonParser parser = new JsonParser();
+        JsonObject jsonResponse = parser.parse(EntityUtils.toString(entity)).getAsJsonObject();
 
-        if (parameters[1].equals("new")) {
-            LOGGER.error("Internal error has occurred: {errorId =" + parameters[0] + "; " + " userId =" + userId + "};");
+        String state = jsonResponse.get("state").getAsString();
+        String errorId = jsonResponse.get("error_id").getAsString();
+        if (state.equals("new")) {
+            LOGGER.error("Internal error has occurred: {errorId =" + errorId + "; " + " userId =" + userId + "};");
         } else {
-            LOGGER.info("Error with id " + parameters[0] + " is already reported");
+            LOGGER.info("Error with id " + errorId + " is already reported");
         }
 
-        request.setAttribute("error-id", parameters[0]);
+        request.setAttribute("error-id", errorId);
     }
 
     private Long generateHash(String persistenceMessage,
