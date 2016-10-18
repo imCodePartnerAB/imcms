@@ -164,6 +164,11 @@ Imcms.Image.Editor.prototype = {
             .class("imcms-positive imcms-save-and-close")
             .on("click", $.proxy(this.save, this))
             .end()
+            .button()
+            .html("Remove image and close")
+            .class("imcms-neutral remove-image")
+            .on("click", $.proxy(this._onRemoveImage, this))
+            .end()
             .end()
             .end();
         $(this._builder[0]).appendTo("body").addClass("editor-form editor-image reset");
@@ -217,7 +222,6 @@ Imcms.Image.Editor.prototype = {
             infoRef: this._builder.ref("infoView"),
             onDisplaySizeChanged: this._onDisplaySizeChanged.bind(this),
             onChooseFile: $.proxy(this._onChooseFile, this),
-            onRemoveImage: $.proxy(this._onRemoveImage, this)
         });
         this._infoViewAdapter.update(data);
 
@@ -392,8 +396,6 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         infoRef: null,
         onChooseFile: function () {
         },
-        onRemoveImage: function () {
-        },
         onCropChanged: function () {
         },
         onDisplaySizeChanged: function () {
@@ -448,11 +450,6 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .on("click", this._options.onChooseFile)
             .label(this._imageSource.urlPathRelativeToContextPath || "")
             .end()
-            .end()
-            .button()
-            .html("Remove image")
-            .class("imcms-neutral choose-image")
-            .on("click", this._options.onRemoveImage)
             .end()
             .div()
             .class("field free-transformation-field")

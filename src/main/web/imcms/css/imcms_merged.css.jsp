@@ -838,6 +838,11 @@ editor theme
 	float: right;
 }
 
+.editor-form .imcms-footer .remove-image {
+	float: right;
+	margin: 0 10px 0 10px;
+}
+
 .editor-form .imcms-header .imcms-close-button:focus,
 .pop-up-form .imcms-header .imcms-close-button:focus {
 	border: none;
