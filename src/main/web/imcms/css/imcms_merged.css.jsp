@@ -95,10 +95,12 @@ String cp = request.getContextPath() ;
 	max-height: 400px;
 	width: 70%;
 	max-width: 70%;
+    white-space: normal;
 }
 
 .imcms-text-history > .imcms-content * {
 	text-align: center;
+    white-space: normal;
 }
 
 <%--BASE--%>
