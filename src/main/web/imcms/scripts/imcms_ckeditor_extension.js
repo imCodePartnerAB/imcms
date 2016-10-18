@@ -62,6 +62,7 @@ CKEDITOR.plugins.add("documentSaver", {
             e = switchToolbarCommandFunction(e);
             var callback = Imcms.Events.getCallback("TextEditorRedirect");
             CKEDITOR.fire("confirmChangesEvent", {callback: callback}, e);
+            e.resetDirty();
         };
         var confirmCommandWithEvent = CKEDITOR.newCommandWithExecution(confirmWithEvent);
         editor.addCommand("confirmChanges", confirmCommandWithEvent);
