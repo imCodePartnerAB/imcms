@@ -100,6 +100,7 @@ String cp = request.getContextPath() ;
 
 .imcms-text-history > .imcms-content * {
 	text-align: center;
+    white-space: normal;
 }
 
 <%--BASE--%>
