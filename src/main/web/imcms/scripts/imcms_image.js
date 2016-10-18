@@ -422,6 +422,11 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             this._imageSource.linkUrl = "";
         }
 
+        if(this._imageSource.imageInfo){
+            this._imageSource.realImageSize.width = this._imageSource.imageInfo.width;
+            this._imageSource.realImageSize.height = this._imageSource.imageInfo.height;
+        }
+
         $(this._infoRef.getHTMLElement()).empty();
         this._infoRef
             .div()
