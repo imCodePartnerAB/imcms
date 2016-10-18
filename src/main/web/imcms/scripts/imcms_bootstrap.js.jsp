@@ -13,6 +13,8 @@
         Imcms.isEditMode = <%= request.getParameterMap().containsKey("flags")
 		 && Integer.valueOf(request.getParameter("flags")) > 0 %>;
 
+        Imcms.isVersioningAllowed = <%= Imcms.isVersioningAllowed() %>
+
         Imcms.document = {
             id: <%=id%>,
             meta: <%=metaId%>,
