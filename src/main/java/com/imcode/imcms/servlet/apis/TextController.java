@@ -63,8 +63,9 @@ public class TextController {
                                  @RequestParam("no") int textNo,
                                  @RequestParam("locale") String locale,
                                  @RequestParam(value = "loopentryref", required = false) String loopEntryRef) {
+
         TextDocumentContentLoader contentLoader = Imcms.getServices().getManagedBean(TextDocumentContentLoader.class);
-        DocRef docRef = DocRef.of(imcmsServices.getDocumentMapper().getDocument(docId).getVersionRef(), locale);
+        DocRef docRef = DocRef.of(imcmsServices.getDocumentMapper().getWorkingDocument(docId).getVersionRef(), locale);
         LoopEntryRef loopEntryRefOpt = null;
         if (!StringUtils.isEmpty(loopEntryRef)) {
             String[] items = loopEntryRef.split("_", 2);
