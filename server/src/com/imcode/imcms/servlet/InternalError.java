@@ -1,6 +1,8 @@
 package com.imcode.imcms.servlet;
 
 
+import com.imcode.db.Database;
+import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -60,17 +62,19 @@ public class InternalError extends HttpServlet {
     }
 
     private void sendError(Throwable throwable, HttpServletRequest request, Integer userId) throws IOException {
+        Database database = Imcms.getServices().getDatabase();
+
         Throwable causeThrowable = throwable.getCause();
         String cause = causeThrowable == null
                 ? throwable.getClass().getName() : ExceptionUtils.getRootCauseMessage(throwable);
         String messageString = throwable.getMessage();
         String message = messageString == null
-                ? throwable.getClass().getSimpleName() : ExceptionUtils.getMessage(throwable);
+                ? throwable.getClass().getSimpleName() : messageString;
         String stackTrace = ExceptionUtils.getStackTrace(throwable);
         Long hash = generateHash(message, cause, stackTrace);
 
-        String headerReferer = request.getHeader("referer");
-        String headerUserAgent = request.getHeader("user-agent");
+        String errorUrl = request.getHeader("referer");
+        String userAgent = request.getHeader("user-agent");
         String headerAccept = request.getHeader("accept");
         String headerAcceptEncoding = request.getHeader("accept-encoding");
         String headerAcceptLanguage = request.getHeader("accept-language");
@@ -79,6 +83,14 @@ public class InternalError extends HttpServlet {
         String jdbcUrl = Imcms.getServerProperties().getProperty("JdbcUrl");
         String databaseName = jdbcUrl.substring(jdbcUrl.lastIndexOf('/') + 1, jdbcUrl.contains("?")
                 ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
+        String imcmsVersion = Version.getImcmsVersion(getServletContext());
+        String databaseVersion = (String) database.execute(
+                new SqlQueryCommand(
+                        "SELECT CONCAT('major=', major, '; ', 'minor=', minor) FROM database_version",
+                        null,
+                        Utility.SINGLE_STRING_HANDLER
+                )
+        );
 
         List<NameValuePair> postParameters = new LinkedList<NameValuePair>();
 
@@ -87,14 +99,16 @@ public class InternalError extends HttpServlet {
         postParameters.add(new BasicNameValuePair("cause", cause));
         postParameters.add(new BasicNameValuePair("stack-trace", stackTrace));
 
-        postParameters.add(new BasicNameValuePair("header-referer", headerReferer));
-        postParameters.add(new BasicNameValuePair("header-user-agent", headerUserAgent));
+        postParameters.add(new BasicNameValuePair("error-url", errorUrl));
+        postParameters.add(new BasicNameValuePair("user-agent", userAgent));
         postParameters.add(new BasicNameValuePair("header-accept", headerAccept));
         postParameters.add(new BasicNameValuePair("header-accept-encoding", headerAcceptEncoding));
         postParameters.add(new BasicNameValuePair("header-accept-language", headerAcceptLanguage));
 
         postParameters.add(new BasicNameValuePair("server-name", serverName));
         postParameters.add(new BasicNameValuePair("database-name", databaseName));
+        postParameters.add(new BasicNameValuePair("imcms-version", imcmsVersion));
+        postParameters.add(new BasicNameValuePair("database-version", databaseVersion));
 
         postParameters.add(new BasicNameValuePair("user-id", userId.toString()));
 

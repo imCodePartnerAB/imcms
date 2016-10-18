@@ -6,6 +6,7 @@ import com.imcode.db.DatabaseException;
 import imcode.server.Imcms;
 import org.apache.commons.io.IOUtils;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +23,7 @@ public class Version extends HttpServlet {
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
-        String imcmsVersion = getImcmsVersion();
+        String imcmsVersion = getImcmsVersion(getServletContext());
         String serverInfo = getServletContext().getServerInfo();
         String databaseProductNameAndVersion = getDatabaseProductNameAndVersion();
         String javaVersion = getJavaVersion();
@@ -35,13 +36,13 @@ public class Version extends HttpServlet {
         out.println(databaseProductNameAndVersion);
     }
 
-    public String getJavaVersion() {
+    public static String getJavaVersion() {
         return System.getProperty("java.vm.vendor")+" "+System.getProperty("java.vm.name")+" "+System.getProperty("java.vm.version");
     }
 
-    public String getImcmsVersion() {
+    public static String getImcmsVersion(ServletContext servletContext) {
         try {
-            Reader in = new InputStreamReader(getServletContext().getResourceAsStream(VERSION_FILE));
+            Reader in = new InputStreamReader(servletContext.getResourceAsStream(VERSION_FILE));
             try {
                 return "imCMS "+IOUtils.toString(in).trim();
             } finally {
@@ -52,7 +53,7 @@ public class Version extends HttpServlet {
         }
     }
 
-    public String getDatabaseProductNameAndVersion() {
+    public static String getDatabaseProductNameAndVersion() {
         return (String) Imcms.getServices().getDatabase().execute(new DatabaseCommand() {
             public Object executeOn(DatabaseConnection connection) throws DatabaseException {
                 try {

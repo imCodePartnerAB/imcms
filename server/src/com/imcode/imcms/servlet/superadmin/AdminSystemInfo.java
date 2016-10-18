@@ -56,10 +56,10 @@ public class AdminSystemInfo extends HttpServlet {
         String serverMasterEmail = sysData.getServerMasterAddress();
 	    
 	      
-        String imcmsVersion = new Version().getImcmsVersion();
+        String imcmsVersion = Version.getImcmsVersion(getServletContext());
         String serverInfo = getServletContext().getServerInfo();
-        String databaseProductNameAndVersion = new Version().getDatabaseProductNameAndVersion();
-        String javaVersion = new Version().getJavaVersion();
+        String databaseProductNameAndVersion = Version.getDatabaseProductNameAndVersion();
+        String javaVersion = Version.getJavaVersion();
         String imCmsData = "Version:  " + imcmsVersion +
                            "\nServer:   " + serverInfo +
                            "\nDatabase: " + databaseProductNameAndVersion +
