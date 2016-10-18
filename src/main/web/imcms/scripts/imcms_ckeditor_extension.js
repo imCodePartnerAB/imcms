@@ -126,7 +126,7 @@ CKEDITOR.plugins.add("documentSaver", {
 });
 CKEDITOR.dialog.add("documentSaver", function (e) {
     return {
-        title: 'Save Dialog',
+        title: 'Save changes',
         width: 200,
         height: 25,
         onOk: function () {
@@ -150,7 +150,13 @@ CKEDITOR.dialog.add("documentSaver", function (e) {
                 elements: [
                     {
                         type: 'html',
-                        html: '<div style="text-align:center; line-height:25px">Save document?</div>'
+                        onLoad: function (e) {
+                            var $dialog = $(e.sender.parts.dialog.$);
+                            $dialog.find(".cke_resizer.cke_resizer_ltr").hide(); // dialog resize triangle
+                            // in Safari close button goes to wrong side,
+                            $dialog.find(".cke_dialog_close_button").css("float", "right");
+                        },
+                        html: '<div style="text-align:center; line-height:25px">You have changed the text. Do you wish to save it?</div>'
                     }
                 ]
             }
