@@ -420,8 +420,9 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             this._imageSource.alternateText = "";
             this._imageSource.name = "";
             this._imageSource.linkUrl = "";
-            this._cropWidth = 0;
-            this._cropHeight = 0;
+            this._divWidth = 0;
+            this._divHeight = 0;
+            this._factor = 1;
         }
 
         if (this._imageSource.imageInfo) {
@@ -445,6 +446,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             var realWidth = -1;
             var realHeight = -1;
 
+
             if (!isNaN(objectHeight) && objectHeight >= minHeight) {
                 if (!isNaN(maxHeight) && objectHeight < maxHeight) {
                     realHeight = maxHeight
@@ -465,16 +467,41 @@ Imcms.Image.ImageInfoAdapter.prototype = {
                 realWidth = minWidth;
             }
 
+            this._factor = this._imageSource.realImageSize.width / realWidth;
+
             if (isNaN(realWidth)) {
-                this._cropWidth = this._imageSource.realImageSize.width;
+                console.log("RealWidth", realWidth);
+                // this._divWidth = this._imageSource.realImageSize.width;
+                this._divWidth = NaN;
+
+                // this._cropWidth = this._imageSource.realImageSize.width;
+                // this._imageSource.width = this._imageSource.realImageSize.width;
             } else {
-                this._cropWidth = realWidth;
+                this._divWidth = realWidth;
+                // this._divWidth = NaN;
+                // this._cropWidth = realWidth;
+                // this._imageSource.width = realWidth
             }
+            console.log("RH", realHeight);
 
             if (isNaN(realHeight)) {
-                this._cropHeight = this._imageSource.realImageSize.height;
+                console.log("RH", realHeight);
+                this._divHeight = NaN;
+
+                // this._divHeight = this._imageSource.realImageSize.height;
+
+                // if(factor){
+                //     this._divHeight= Math.round(this._divHeight/factor);
+                // }
+
+
+                // this._cropHeight = this._imageSource.realImageSize.height;
+                // this._imageSource.width = this._imageSource.realImageSize.height
             } else {
-                this._cropHeight = realHeight;
+                this._divHeight = realHeight;
+                // this._divHeight = NaN;
+                // this._cropHeight = realHeight;
+                // this._imageSource.realImageSize.height = realHeight
             }
         }
         this._infoRef
@@ -512,26 +539,51 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .on("change", this._onFreeTransformStateChanged.bind(this))
             .end()
             .end()
+
+            .div()
+            .class("field size-field")
+            .number()
+            // .on("change", this._onDisplaySizeChanged.bind(this))
+            .name("divWidth")
+            .placeholder("width")
+            .value(this._divWidth || "")
+            .label("Display size")
+            .attr("imageInfo", "")
+            .attr("max", this._divWidth)
+            .attr("disabled", true)
+            .end()
+            .number()
+            // .on("change", this._onDisplaySizeChanged.bind(this))
+            .name("divHeight")
+            .placeholder("height")
+            .value(this._divHeight || "")
+            .attr("imageInfo", "")
+            .attr("max", this._divHeight)
+            .attr("disabled", true)
+            .end()
+            .end()
+
             .div()
             .class("field size-field")
             .number()
             .on("change", this._onDisplaySizeChanged.bind(this))
             .name("displayWidth")
             .placeholder("width")
-            .value(this._cropWidth || "")
-            .label("Display size")
+            .value(this._imageSource.realImageSize.width || "")
+            .label("Crop size")
             .attr("imageInfo", "")
-            .attr("max", this._cropWidth)
+            // .attr("max", this._imageSource.realImageSize.width)
             .end()
             .number()
             .on("change", this._onDisplaySizeChanged.bind(this))
             .name("displayHeight")
             .placeholder("height")
-            .value(this._cropHeight || "")
+            .value(this._imageSource.realImageSize.height || "")
             .attr("imageInfo", "")
-            .attr("max", this._cropHeight)
+            // .attr("max", this._imageSource.realImageSize.height)
             .end()
             .end()
+
             .div()
             .class("field cropping-field")
             .text()
@@ -631,7 +683,11 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         $infoRef.find("input[name=bottomCrop]").val(croppingOptions.cropY2);
         // if ($infoRef.find("input[name=freeTransform]").prop("checked")) {
         $infoRef.find("input[name=displayHeight]").val(croppingOptions.cropY2 - croppingOptions.cropY1);
-        $infoRef.find("input[name=displayWidth]").val(croppingOprtions.cropX2 - croppingOptions.cropX1);
+        console.log(this._divHeight);
+        (isNaN(this._divHeight))?
+            ((isNaN(this._divWidth))?$infoRef.find("input[name=divHeight]").val(croppingOptions.cropY2 - croppingOptions.cropY1):(croppingOptions.cropX2 - croppingOptions.cropX1)/this._factor):{};
+        $infoRef.find("input[name=displayWidth]").val(croppingOptions.cropX2 - croppingOptions.cropX1);
+        (isNaN(this._divWidth))?$infoRef.find("input[name=divWidth]").val(croppingOptions.cropX2 - croppingOptions.cropX1):{};
         // }
     },
     _onDisplaySizeChanged: function () {
