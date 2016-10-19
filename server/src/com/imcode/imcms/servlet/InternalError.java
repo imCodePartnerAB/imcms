@@ -83,10 +83,8 @@ public class InternalError extends HttpServlet {
         String headerAcceptEncoding = request.getHeader("accept-encoding");
         String headerAcceptLanguage = request.getHeader("accept-language");
 
-        String serverName = Imcms.getServerName();
-        String jdbcUrl = Imcms.getServerProperties().getProperty("JdbcUrl");
-        String databaseName = jdbcUrl.substring(jdbcUrl.lastIndexOf('/') + 1, jdbcUrl.contains("?")
-                ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
+        String serverName = StringUtils.defaultString(Imcms.getServerName(), DEFAULT_RESPONSE);
+        String databaseName = StringUtils.defaultString(Imcms.getServerProperties().getProperty("DBName"), DEFAULT_RESPONSE);
         String imcmsVersion = Version.getImcmsVersion(getServletContext());
         String databaseVersion = (String) database.execute(
                 new SqlQueryCommand(
