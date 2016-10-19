@@ -8,6 +8,7 @@ import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -37,6 +38,8 @@ import java.util.ResourceBundle;
 public class InternalError extends HttpServlet {
 
     private final static Logger LOGGER = Logger.getLogger(InternalError.class);
+
+    private final String DEFAULT_RESPONSE = "N/A";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -74,8 +77,7 @@ public class InternalError extends HttpServlet {
                 ? throwable.getClass().getSimpleName() : messageString;
         String stackTrace = ExceptionUtils.getStackTrace(throwable);
         Long hash = generateHash(message, cause, stackTrace);
-
-        String errorUrl = request.getHeader("referer");
+        String errorUrl = StringUtils.defaultString(request.getHeader("referer"), DEFAULT_RESPONSE);
         String userAgent = request.getHeader("user-agent");
         String headerAccept = request.getHeader("accept");
         String headerAcceptEncoding = request.getHeader("accept-encoding");
@@ -88,7 +90,7 @@ public class InternalError extends HttpServlet {
         String imcmsVersion = Version.getImcmsVersion(getServletContext());
         String databaseVersion = (String) database.execute(
                 new SqlQueryCommand(
-                        "SELECT CONCAT('major=', major, '; ', 'minor=', minor) FROM database_version",
+                        "SELECT CONCAT(major, '.', minor) FROM database_version",
                         null,
                         Utility.SINGLE_STRING_HANDLER
                 )
