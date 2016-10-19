@@ -154,6 +154,8 @@
         <filter token="documentationwebappurl" value="${documentation-host}"/>
         <filter token="documentationurl" value="${documentation-host}"/>
 
+        <filter token="server-name" value="${server-name}"/>
+
         <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
 
         <filter token="db-name" value="${db-name}"/>

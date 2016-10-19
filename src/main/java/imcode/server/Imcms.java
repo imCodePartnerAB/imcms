@@ -39,6 +39,8 @@ public class Imcms {
 	public static final String UTF_8_ENCODING = "UTF-8";
 	public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
 
+	public static final String ERROR_LOGGER_URL = "http://localhost:8080/icm/ErrorLogger";
+
 	/**
 	 * Default SQL scripts directory path relative to deployment path
 	 */
