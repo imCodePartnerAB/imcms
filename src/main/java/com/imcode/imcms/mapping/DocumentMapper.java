@@ -330,9 +330,9 @@ public class DocumentMapper implements DocumentGetter {
 	/**
 	 * Updates existing document.
 	 */
-	public void saveDocument(DocumentDomainObject doc, UserDomainObject user)
+	public int saveDocument(DocumentDomainObject doc, UserDomainObject user)
 			throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
-		saveDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
+		return saveDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
 	}
 
 	/**
@@ -340,7 +340,7 @@ public class DocumentMapper implements DocumentGetter {
 	 *
 	 * @since 6.0
 	 */
-	public void saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContents, UserDomainObject user)
+	public int saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContents, UserDomainObject user)
 			throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
 		DocumentDomainObject docClone = doc.clone();
@@ -351,6 +351,8 @@ public class DocumentMapper implements DocumentGetter {
 		} finally {
 			invalidateDocument(doc.getId());
 		}
+
+		return doc.getId();
 	}
 
 	/**
