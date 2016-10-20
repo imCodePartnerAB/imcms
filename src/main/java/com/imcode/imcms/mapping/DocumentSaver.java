@@ -182,7 +182,6 @@ public class DocumentSaver {
             ormDcc.setMenuImageURL(dcc.getMenuImageURL());
             ormDcc.setMenuText(dcc.getMenuText());
             ormDcc.setEnabled(dcc.getEnabled());
-            ormDcc.setVersionNo(dcc.getVersionNo());
             ormDcc.setVersionNo(doc.getVersionNo());
 
             if (ormDcc.getId() == null) {
@@ -309,6 +308,7 @@ public class DocumentSaver {
             jpaDcc.setMenuText(dcc.getMenuText());
             jpaDcc.setLanguage(jpaLanguage);
             jpaDcc.setEnabled(dcc.getEnabled());
+            jpaDcc.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
 
             commonContentRepository.save(jpaDcc);
         });
