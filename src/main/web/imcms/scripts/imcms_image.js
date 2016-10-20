@@ -435,6 +435,11 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         if (imgName) {
             var pageImgArea = $(this._options.currentElement).find("img");
 
+            // If located element is "cap" get style values from prev tag(added at admin mode)
+            if(pageImgArea.attr("cap")){
+                pageImgArea.prev();
+            }
+
             var minWidth = parseInt(pageImgArea.css("min-width"), 10);
             var minHeight = parseInt(pageImgArea.css("min-height"), 10);
             var maxWidth = parseInt(pageImgArea.css("max-width"), 10);
@@ -520,7 +525,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             // .on("change", this._onDisplaySizeChanged.bind(this))
             .name("divWidth")
             .placeholder("width")
-            .value(this._divWidth || "")
+            .value("")
             .label("Display size")
             .attr("imageInfo", "")
             .attr("max", this._divWidth)
@@ -530,7 +535,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             // .on("change", this._onDisplaySizeChanged.bind(this))
             .name("divHeight")
             .placeholder("height")
-            .value(this._divHeight || "")
+            .value("")
             .attr("imageInfo", "")
             .attr("max", this._divHeight)
             .attr("disabled", true)
