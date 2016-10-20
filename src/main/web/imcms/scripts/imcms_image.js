@@ -435,7 +435,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             var pageImgArea = $(this._options.currentElement).find("img");
 
             // If located element is "cap" get style values from prev tag(added at admin mode)
-            if(pageImgArea.attr("cap")){
+            if (pageImgArea.attr("cap")) {
                 pageImgArea.prev();
             }
 
@@ -477,7 +477,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             }
 
             if (isNaN(realHeight)) {
-                    this._divHeight = NaN;
+                this._divHeight = NaN;
             } else {
                 this._divHeight = realHeight;
             }
@@ -665,24 +665,29 @@ Imcms.Image.ImageInfoAdapter.prototype = {
 
         //Finding out zoom factor
         var zoomFactor = 1;
-        if(!isNaN(this._divWidth)){
+        if (!isNaN(this._divWidth)) {
             zoomFactor = (croppingOptions.cropX2 - croppingOptions.cropX1) / this._divWidth;
         } else {
-            if(!isNaN(this._divHeight)){
+            if (!isNaN(this._divHeight)) {
                 zoomFactor = (croppingOptions.cropY2 - croppingOptions.cropY1) / this._divHeight;
             }
         }
 
+        /* This only show display area and don't take effect on page
+         *  If there CSS rules wasn't found it will just show cropped values
+         *  If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
+         *  If selected area is smaller than available div then size will be reduced to fit image without zooming
+         */
         $infoRef.find("input[name=divHeight]").val(
             (isNaN(this._divHeight)) ? (
                 (isNaN(this._divWidth)) ? croppingOptions.cropY2 - croppingOptions.cropY1 : Math.round((croppingOptions.cropY2 - croppingOptions.cropY1) / zoomFactor)
-        ) : this._divHeight);
+            ) : ((croppingOptions.cropY2 - croppingOptions.cropY1) > this._divHeight ? this._divHeight : croppingOptions.cropY2 - croppingOptions.cropY1));
 
 
         $infoRef.find("input[name=divWidth]").val(
             (isNaN(this._divWidth)) ? (
                 (isNaN(this._divHeight)) ? croppingOptions.cropX2 - croppingOptions.cropX1 : Math.round((croppingOptions.cropX2 - croppingOptions.cropX1) / zoomFactor)
-            ) : this._divWidth);
+            ) : ((croppingOptions.cropX2 - croppingOptions.cropX1) > this._divWidth ? this._divWidth : croppingOptions.cropX2 - croppingOptions.cropX1));
 
     },
     _onDisplaySizeChanged: function () {
