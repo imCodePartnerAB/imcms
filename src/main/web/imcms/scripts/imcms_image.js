@@ -466,44 +466,16 @@ Imcms.Image.ImageInfoAdapter.prototype = {
                 realWidth = minWidth;
             }
 
-            this._factor = this._imageSource.realImageSize.width / realWidth;
-
             if (isNaN(realWidth)) {
-                // this._divWidth = this._imageSource.realImageSize.width;
                 this._divWidth = NaN;
-
-                // this._cropWidth = this._imageSource.realImageSize.width;
-                // this._imageSource.width = this._imageSource.realImageSize.width;
             } else {
                 this._divWidth = realWidth;
-                // this._divWidth = NaN;
-                // this._cropWidth = realWidth;
-                // this._imageSource.width = realWidth
             }
 
             if (isNaN(realHeight)) {
-
-                // if(!isNaN(this._divWidth)){
-                //     this._divHeight = Math.round(this._divWidth/this._factor);
-                //
-                // } else {
                     this._divHeight = NaN;
-                // }
-
-                // this._divHeight = this._imageSource.realImageSize.height;
-
-                // if(factor){
-                //     this._divHeight= Math.round(this._divHeight/factor);
-                // }
-
-
-                // this._cropHeight = this._imageSource.realImageSize.height;
-                // this._imageSource.width = this._imageSource.realImageSize.height
             } else {
                 this._divHeight = realHeight;
-                // this._divHeight = NaN;
-                // this._cropHeight = realHeight;
-                // this._imageSource.realImageSize.height = realHeight
             }
         }
         this._infoRef
@@ -685,18 +657,27 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         $infoRef.find("input[name=bottomCrop]").val(croppingOptions.cropY2);
         // if ($infoRef.find("input[name=freeTransform]").prop("checked")) {
         $infoRef.find("input[name=displayHeight]").val(croppingOptions.cropY2 - croppingOptions.cropY1);
-        this._factor = (croppingOptions.cropX2 - croppingOptions.cropX1) / this._divWidth;
+        $infoRef.find("input[name=displayWidth]").val(croppingOptions.cropX2 - croppingOptions.cropX1);
+
+        if(!isNaN(this._divWidth)){
+            this._factor = (croppingOptions.cropX2 - croppingOptions.cropX1) / this._divWidth;
+        } else {
+            if(!isNaN(this._divHeight)){
+                this._factor = (croppingOptions.cropY2 - croppingOptions.cropY1) / this._divHeight;
+            }
+        }
 
         $infoRef.find("input[name=divHeight]").val(
             (isNaN(this._divHeight)) ? (
                 (isNaN(this._divWidth)) ? croppingOptions.cropY2 - croppingOptions.cropY1 : Math.round((croppingOptions.cropY2 - croppingOptions.cropY1) / this._factor)
-        ) : {});
+        ) : this._divHeight);
 
 
-        $infoRef.find("input[name=displayWidth]").val(croppingOptions.cropX2 - croppingOptions.cropX1);
-        (isNaN(this._divWidth) && isNaN(this._divHeight))?$infoRef.find("input[name=divWidth]").val(croppingOptions.cropX2 - croppingOptions.cropX1):{};
-        // (isNaN(this._divWidth))?$infoRef.find("input[name=divWidth]").val(croppingOptions.cropX2 - croppingOptions.cropX1):{};
-        // }
+        $infoRef.find("input[name=divWidth]").val(
+            (isNaN(this._divWidth)) ? (
+                (isNaN(this._divHeight)) ? croppingOptions.cropX2 - croppingOptions.cropX1 : Math.round((croppingOptions.cropX2 - croppingOptions.cropX1) / this._factor)
+            ) : this._divWidth);
+
     },
     _onDisplaySizeChanged: function () {
         var $element = $(this._infoRef.getHTMLElement());
