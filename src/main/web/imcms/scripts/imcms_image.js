@@ -422,7 +422,6 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             this._imageSource.linkUrl = "";
             this._divWidth = 0;
             this._divHeight = 0;
-            this._factor = 1;
         }
 
         if (this._imageSource.imageInfo) {
@@ -664,23 +663,25 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         $infoRef.find("input[name=displayHeight]").val(croppingOptions.cropY2 - croppingOptions.cropY1);
         $infoRef.find("input[name=displayWidth]").val(croppingOptions.cropX2 - croppingOptions.cropX1);
 
+        //Finding out zoom factor
+        var zoomFactor = 1;
         if(!isNaN(this._divWidth)){
-            this._factor = (croppingOptions.cropX2 - croppingOptions.cropX1) / this._divWidth;
+            zoomFactor = (croppingOptions.cropX2 - croppingOptions.cropX1) / this._divWidth;
         } else {
             if(!isNaN(this._divHeight)){
-                this._factor = (croppingOptions.cropY2 - croppingOptions.cropY1) / this._divHeight;
+                zoomFactor = (croppingOptions.cropY2 - croppingOptions.cropY1) / this._divHeight;
             }
         }
 
         $infoRef.find("input[name=divHeight]").val(
             (isNaN(this._divHeight)) ? (
-                (isNaN(this._divWidth)) ? croppingOptions.cropY2 - croppingOptions.cropY1 : Math.round((croppingOptions.cropY2 - croppingOptions.cropY1) / this._factor)
+                (isNaN(this._divWidth)) ? croppingOptions.cropY2 - croppingOptions.cropY1 : Math.round((croppingOptions.cropY2 - croppingOptions.cropY1) / zoomFactor)
         ) : this._divHeight);
 
 
         $infoRef.find("input[name=divWidth]").val(
             (isNaN(this._divWidth)) ? (
-                (isNaN(this._divHeight)) ? croppingOptions.cropX2 - croppingOptions.cropX1 : Math.round((croppingOptions.cropX2 - croppingOptions.cropX1) / this._factor)
+                (isNaN(this._divHeight)) ? croppingOptions.cropX2 - croppingOptions.cropX1 : Math.round((croppingOptions.cropX2 - croppingOptions.cropX1) / zoomFactor)
             ) : this._divWidth);
 
     },
