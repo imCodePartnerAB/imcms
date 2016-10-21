@@ -423,57 +423,37 @@ public class DocumentController {
                 .collect(Collectors.toSet())
         );
 
-        // todo: too much similar code, rethink
-        {
-            Date publishedDate = getValidDateOrNull(docEntity.publishedDate, docEntity.publishedTime,
-                    docDomainObject.getPublicationStartDatetime());
-
-            Date archivedDate = getValidDateOrNull(docEntity.archivedDate, docEntity.archivedTime,
-                    docDomainObject.getArchivedDatetime());
-
-            Date publicationEndDate = getValidDateOrNull(docEntity.publicationEndDate, docEntity.publicationEndTime,
-                    docDomainObject.getPublicationEndDatetime());
-
-            if (!isValidDateTime(docEntity.publishedDate, docEntity.publishedTime)) {
-                docDomainObject.setPublicationStartDatetime(null);
-                docDomainObject.setPublisherId(null);
-
-            } else {
-                Optional.ofNullable(publishedDate)
-                        .ifPresent(newPublishedDate -> {
-                            docDomainObject.setPublicationStartDatetime(newPublishedDate);
-                            docDomainObject.setPublisherId(Imcms.getUser().getId());
-                        });
-            }
-
-            if (!isValidDateTime(docEntity.archivedDate, docEntity.archivedTime)) {
-                docDomainObject.setArchivedDatetime(null);
-                docDomainObject.setArchiverId(null);
-
-            } else {
-                Optional.ofNullable(archivedDate)
-                        .ifPresent(newArchivedDate -> {
-                            docDomainObject.setArchivedDatetime(newArchivedDate);
-                            docDomainObject.setArchiverId(Imcms.getUser().getId());
-                        });
-            }
-
-            if (!isValidDateTime(docEntity.publicationEndDate, docEntity.publicationEndTime)) {
-                docDomainObject.setPublicationEndDatetime(null);
-                docDomainObject.setDepublisherId(null);
-
-            } else {
-                Optional.ofNullable(publicationEndDate)
-                        .ifPresent(newPublicationEndDate -> {
-                            docDomainObject.setPublicationEndDatetime(newPublicationEndDate);
-                            docDomainObject.setDepublisherId(Imcms.getUser().getId());
-                        });
-            }
-        }
+        prepareDateTimeAndUser(docEntity, docDomainObject);
 
         // in case of new doc with specified publisher without publication start date/time
         Optional.ofNullable(docEntity.publisherId).ifPresent(docDomainObject::setPublisherId);
         Optional.ofNullable(docEntity.missingLangProp).ifPresent(docDomainObject::setDisabledLanguageShowMode);
+    }
+
+    private void prepareDateTimeAndUser(DocumentEntity docEntity, DocumentDomainObject docDomainObject) {
+        final int userId = Imcms.getUser().getId();
+
+        Date publishedDate = getValidDateOrNull(docEntity.publishedDate, docEntity.publishedTime,
+                docDomainObject.getPublicationStartDatetime());
+
+        if (docEntity.id == null && publishedDate == null && !Imcms.isVersioningAllowed()) {
+            publishedDate = new Date();
+        }
+
+        docDomainObject.setPublicationStartDatetime(publishedDate);
+        docDomainObject.setPublisherId((publishedDate == null) ? null : userId);
+
+        Date archivedDate = getValidDateOrNull(docEntity.archivedDate, docEntity.archivedTime,
+                docDomainObject.getArchivedDatetime()
+        );
+        docDomainObject.setArchivedDatetime(archivedDate);
+        docDomainObject.setArchiverId((archivedDate == null) ? null : userId);
+
+        Date publicationEndDate = getValidDateOrNull(docEntity.publicationEndDate, docEntity.publicationEndTime,
+                docDomainObject.getPublicationEndDatetime()
+        );
+        docDomainObject.setPublicationEndDatetime(publicationEndDate);
+        docDomainObject.setDepublisherId((publicationEndDate == null) ? null : userId);
     }
 
     private Date getValidDateOrNull(String date, String time, Date documentDatetime) {
