@@ -673,21 +673,45 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             }
         }
 
-        /* This only show display area and don't take effect on page
+        /* This only show display area and don't take effect on page(same for width an height)
          *  If there CSS rules wasn't found it will just show cropped values
          *  If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
          *  If selected area is smaller than available div then size will be reduced to fit image without zooming
          */
-        $infoRef.find("input[name=divHeight]").val(
-            (isNaN(this._divHeight)) ? (
-                (isNaN(this._divWidth)) ? croppingOptions.cropY2 - croppingOptions.cropY1 : Math.round((croppingOptions.cropY2 - croppingOptions.cropY1) / zoomFactor)
-            ) : ((croppingOptions.cropY2 - croppingOptions.cropY1) > this._divHeight ? this._divHeight : croppingOptions.cropY2 - croppingOptions.cropY1));
+
+        var divHeight = 0, divWidth = 0;
+
+        if (isNaN(this._divHeight)) {
+            if (isNaN(this._divWidth)) {
+                divHeight = croppingOptions.cropY2 - croppingOptions.cropY1;
+            } else {
+                divHeight = Math.round((croppingOptions.cropY2 - croppingOptions.cropY1) / zoomFactor);
+            }
+        } else {
+            if ((croppingOptions.cropY2 - croppingOptions.cropY1) > this._divHeight) {
+                divHeight = this._divHeight;
+            } else {
+                divHeight = croppingOptions.cropY2 - croppingOptions.cropY1;
+            }
+        }
+        $infoRef.find("input[name=divHeight]").val(divHeight);
 
 
-        $infoRef.find("input[name=divWidth]").val(
-            (isNaN(this._divWidth)) ? (
-                (isNaN(this._divHeight)) ? croppingOptions.cropX2 - croppingOptions.cropX1 : Math.round((croppingOptions.cropX2 - croppingOptions.cropX1) / zoomFactor)
-            ) : ((croppingOptions.cropX2 - croppingOptions.cropX1) > this._divWidth ? this._divWidth : croppingOptions.cropX2 - croppingOptions.cropX1));
+        if (isNaN(this._divWidth)) {
+            if (isNaN(this._divHeight)) {
+                divWidth = croppingOptions.cropX2 - croppingOptions.cropX1;
+            } else {
+                divWidth = Math.round((croppingOptions.cropX2 - croppingOptions.cropX1) / zoomFactor);
+            }
+        } else {
+            if ((croppingOptions.cropX2 - croppingOptions.cropX1) > this._divWidth) {
+                divWidth = this._divWidth;
+            } else {
+                divWidth = croppingOptions.cropX2 - croppingOptions.cropX1;
+            }
+        }
+        $infoRef.find("input[name=divWidth]").val(divWidth);
+
 
     },
     _onDisplaySizeChanged: function () {
