@@ -344,6 +344,11 @@
 		<servlet-class>com.imcode.imcms.servlet.RegisterUserServlet</servlet-class>
 	</servlet>
 
+	<servlet>
+		<servlet-name>com.imcode.imcms.servlet.InternalError</servlet-name>
+		<servlet-class>com.imcode.imcms.servlet.InternalError</servlet-class>
+	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>web</servlet-name>
 		<url-pattern>/api/*</url-pattern>
@@ -594,9 +599,15 @@
 		<servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
 		<url-pattern>/servlet/AdminPanelServlet</url-pattern>
 	</servlet-mapping>
+
 	<servlet-mapping>
 		<servlet-name>com.imcode.imcms.servlet.RegisterUser</servlet-name>
 		<url-pattern>/servlet/RegisterUser</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>com.imcode.imcms.servlet.InternalError</servlet-name>
+		<url-pattern>/servlet/InternalError</url-pattern>
 	</servlet-mapping>
 
 	<session-config>
@@ -696,14 +707,15 @@
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 
-	<error-page>
-		<exception-type>java.lang.Throwable</exception-type>
-		<location>/imcms/internalerrorpage.jsp</location>
-	</error-page>
 
 	<error-page>
 		<exception-type>com.imcode.imcms.api.DocumentLanguageDisabledException</exception-type>
 		<location>/imcms/404.jsp</location>
+	</error-page>
+
+	<error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+		<location>/servlet/InternalError</location>
 	</error-page>
 
 	<error-page>
@@ -718,6 +730,6 @@
 
 	<error-page>
 		<error-code>500</error-code>
-		<location>/imcms/internalerrorpage.jsp</location>
+		<location>/imcms/500.jsp</location>
 	</error-page>
 </web-app>

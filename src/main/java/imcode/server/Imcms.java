@@ -39,6 +39,8 @@ public class Imcms {
 	public static final String UTF_8_ENCODING = "UTF-8";
 	public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
 
+	public static final String ERROR_LOGGER_URL = "https://errors.imcode.com/ErrorLogger";
+
 	/**
 	 * Default SQL scripts directory path relative to deployment path
 	 */
@@ -82,7 +84,14 @@ public class Imcms {
 	@SuppressWarnings("unused")
 	private static volatile String solrHome = DEFAULT_SQLR_HOME;
 
-	private Imcms() {
+    private static final String DOCUMENT_VERSIONING_PROPERTY = "document.versioning";
+
+    /**
+     * Flag variable that shows is document versioning feature are turned on in server properties
+     */
+    private static boolean isVersioningAllowed;
+
+    private Imcms() {
 	}
 
 	/**
@@ -140,7 +149,11 @@ public class Imcms {
 	}
 
 	private static ImcmsServices createServices() throws Exception {
-		Properties serverprops = getServerProperties();
+		Properties serverProperties = getServerProperties();
+
+        final String versioningProperty = serverProperties.getProperty(DOCUMENT_VERSIONING_PROPERTY, "true");
+        isVersioningAllowed = Boolean.parseBoolean(versioningProperty);
+
 		logger.debug("Creating main DataSource.");
 		Database database = new DataSourceDatabase(getApiDataSource());
 		LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
@@ -148,7 +161,7 @@ public class Imcms {
 		final CachingFileLoader fileLoader = new CachingFileLoader();
 		DefaultImcmsServices services = new DefaultImcmsServices(
 				database,
-				serverprops,
+				serverProperties,
 				localizedMessageProvider,
 				fileLoader,
 				new DefaultProcedureExecutor(database, fileLoader),
@@ -348,7 +361,14 @@ public class Imcms {
         return ContentManagementSystem.fromRequest(request);
     }
 
-	public static class StartupException extends RuntimeException {
+    /**
+     * Returns is document versioning feature are turned on in server properties or not
+     */
+    public static boolean isVersioningAllowed() {
+        return isVersioningAllowed;
+    }
+
+    public static class StartupException extends RuntimeException {
 		public StartupException(String message, Exception e) {
 			super(message, e);
 		}

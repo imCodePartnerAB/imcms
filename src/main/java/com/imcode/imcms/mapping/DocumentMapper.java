@@ -688,7 +688,9 @@ public class DocumentMapper implements DocumentGetter {
 	 * @since 6.0
 	 */
 	public <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language) {
-		return documentLoaderCachingProxy.getDefaultDoc(docId, language.getCode());
+        return (Imcms.isVersioningAllowed())
+                ? documentLoaderCachingProxy.getDefaultDoc(docId, language.getCode())
+                : documentLoaderCachingProxy.getWorkingDoc(docId, language.getCode());
 	}
 
 	/**
@@ -698,7 +700,9 @@ public class DocumentMapper implements DocumentGetter {
 	 * @since 6.0
 	 */
 	public <T extends DocumentDomainObject> T getDefaultDocument(int docId, String languageCode) {
-		return documentLoaderCachingProxy.getDefaultDoc(docId, languageCode);
+		return (Imcms.isVersioningAllowed())
+                ? documentLoaderCachingProxy.getDefaultDoc(docId, languageCode)
+                : documentLoaderCachingProxy.getWorkingDoc(docId, languageCode);
 	}
 
 	/**
@@ -710,6 +714,10 @@ public class DocumentMapper implements DocumentGetter {
 	 * @since 6.0
 	 */
 	public <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef) {
+        if (!Imcms.isVersioningAllowed()) {
+            // force version changing to working
+            docRef = DocRef.of(docRef.getId(), DocumentVersion.WORKING_VERSION_NO, docRef.getLanguageCode());
+        }
 		return documentLoaderCachingProxy.getCustomDoc(docRef);
 	}
 

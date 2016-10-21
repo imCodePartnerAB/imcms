@@ -555,7 +555,7 @@ Imcms.Document.Viewer.prototype = {
             .end()
             .button()
             .id("save-and-publish-button")
-            .class("imcms-negative" + (this.shouldSaveVersionBeHidden() ? " hidden" : ""))
+            .class("imcms-negative versioning" + (this.shouldSaveVersionBeHidden() ? " hidden" : ""))
             .html("Save and publish this version")
             .on("click", this.publish.bind(this))
             .end()
@@ -582,6 +582,10 @@ Imcms.Document.Viewer.prototype = {
 
         if (this._options.data.id) {
             this.buildDates();
+        }
+
+        if (!Imcms.isVersioningAllowed) {
+            $(".versioning").hide();
         }
     },
     buildStandard: function () {
@@ -765,7 +769,7 @@ Imcms.Document.Viewer.prototype = {
             .end()
 
             .div()
-            .class("field")
+            .class("field versioning")
             .html("Current version: ")
             .text()
             .id("published-doc-version")
@@ -786,7 +790,7 @@ Imcms.Document.Viewer.prototype = {
 
             .div()
             .id("offline-version-changed-message")
-            .class("field" + (this.shouldSaveVersionBeHidden() ? " hidden" : ""))
+            .class("field versioning" + (this.shouldSaveVersionBeHidden() ? " hidden" : ""))
             .div()
             .class("field")
             .html("This offline version has changes.")
