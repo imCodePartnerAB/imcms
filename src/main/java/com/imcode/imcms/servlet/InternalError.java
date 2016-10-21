@@ -57,7 +57,11 @@ public class InternalError extends HttpServlet {
 
         Map<String, String> headersInfo = parse(request);
 
-        return Request.Post(Imcms.ERROR_LOGGER_URL)
+        String errorLoggerUrl = ofNullable(serverProperties.getProperty("ErrorLoggerUrl"))
+                                    .map(url -> !url.isEmpty() ? url : Imcms.ERROR_LOGGER_URL)
+                                    .orElse(Imcms.ERROR_LOGGER_URL);
+
+        return Request.Post(errorLoggerUrl)
                 .bodyForm(
                     Form.form()
 
