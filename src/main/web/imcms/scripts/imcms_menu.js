@@ -464,6 +464,7 @@ Imcms.Menu.Editor.prototype = {
 	buildExtra: function () {
 		this._frame = new Imcms.FrameBuilder()
 			.title("Menu Editor")
+			.tooltip($(this._target).data().no)
 			.click($.proxy(this.open, this))
 			.build()
 			.prependTo(this._target);
