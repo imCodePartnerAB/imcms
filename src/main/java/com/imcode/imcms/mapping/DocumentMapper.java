@@ -1052,6 +1052,10 @@ public class DocumentMapper implements DocumentGetter {
             final DocumentMapper mapper = Imcms.getServices().getDocumentMapper();
             final DocumentVersion newVersion = mapper.makeDocumentVersion(document.getId(), user);
             mapper.changeDocumentDefaultVersion(document.getId(), newVersion.getNo(), user);
+
+            document.setPublicationStartDatetime(new Date());
+            document.setPublisher(user);
+            Imcms.getServices().getDocumentMapper().saveDocument(document, user);
         }
     }
 
