@@ -242,5 +242,7 @@
 
         <filter token="index-disabled-file-mimes" value="${index-disabled-file-mimes}"/>
         <filter token="index-disabled-file-extensions" value="${index-disabled-file-extensions}"/>
+
+        <filter token="error-logger-url" value="${error-logger-url}"/>
     </target>
 </project>

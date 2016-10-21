@@ -14,13 +14,23 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +38,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -66,7 +78,7 @@ public class InternalError extends HttpServlet {
         request.getRequestDispatcher("/imcms/500.jsp").forward(request, response);
     }
 
-    private void sendError(Throwable throwable, HttpServletRequest request, Integer userId) throws IOException {
+    private void sendError(Throwable throwable, HttpServletRequest request, Integer userId) throws Exception {
         Database database = Imcms.getServices().getDatabase();
 
         Throwable causeThrowable = throwable.getCause();
@@ -94,29 +106,38 @@ public class InternalError extends HttpServlet {
                 )
         );
 
-        List<NameValuePair> postParameters = new LinkedList<NameValuePair>();
+        String errorLoggerUrl = Imcms.getServerProperties().getProperty("ErrorLoggerUrl");
+        if (errorLoggerUrl == null || errorLoggerUrl.isEmpty()) {
+            errorLoggerUrl = Imcms.ERROR_LOGGER_URL;
+        }
 
-        postParameters.add(new BasicNameValuePair("hash", hash.toString()));
-        postParameters.add(new BasicNameValuePair("message", message));
-        postParameters.add(new BasicNameValuePair("cause", cause));
-        postParameters.add(new BasicNameValuePair("stack-trace", stackTrace));
+        List<NameValuePair> params = Form.form()
 
-        postParameters.add(new BasicNameValuePair("error-url", errorUrl));
-        postParameters.add(new BasicNameValuePair("user-agent", userAgent));
-        postParameters.add(new BasicNameValuePair("header-accept", headerAccept));
-        postParameters.add(new BasicNameValuePair("header-accept-encoding", headerAcceptEncoding));
-        postParameters.add(new BasicNameValuePair("header-accept-language", headerAcceptLanguage));
+                        .add("hash", hash.toString())
+                        .add("message", message)
+                        .add("cause", cause)
+                        .add("stack-trace", stackTrace)
 
-        postParameters.add(new BasicNameValuePair("server-name", serverName));
-        postParameters.add(new BasicNameValuePair("database-name", databaseName));
-        postParameters.add(new BasicNameValuePair("imcms-version", imcmsVersion));
-        postParameters.add(new BasicNameValuePair("database-version", databaseVersion));
+                        .add("error-url", errorUrl)
+                        .add("user-agent", userAgent)
+                        .add("header-accept", headerAccept)
+                        .add("header-accept-encoding", headerAcceptEncoding)
+                        .add("header-accept-language", headerAcceptLanguage)
 
-        postParameters.add(new BasicNameValuePair("user-id", userId.toString()));
+                        .add("server-name", serverName)
+                        .add("database-name", databaseName)
+                        .add("imcms-version", imcmsVersion)
+                        .add("database-version", databaseVersion)
 
-        HttpPost httpPost = new HttpPost(Imcms.ERROR_LOGGER_URL);
-        httpPost.setEntity(new UrlEncodedFormEntity(postParameters));
-        HttpClient client =  HttpClientBuilder.create().build();
+                        .add("user-id", userId.toString())
+
+                        .build();
+
+        HttpPost httpPost = new HttpPost(errorLoggerUrl);
+        httpPost.setEntity(new UrlEncodedFormEntity(params));
+
+        HttpClient client = createHttpClient();
+
         HttpResponse response = client.execute(httpPost);
         HttpEntity entity = response.getEntity();
 
@@ -141,6 +162,57 @@ public class InternalError extends HttpServlet {
         hashCode += persistenceCause.hashCode();
         hashCode += persistenceStackTrace.hashCode();
         return hashCode;
+    }
+
+    private HttpClient createHttpClient() throws Exception {
+
+        HttpClientBuilder builder = HttpClientBuilder.create();
+
+        SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+            public boolean isTrusted(X509Certificate[] x509Certificates, String str) throws CertificateException {
+                return true;
+            }
+        }).build();
+        builder.setSslcontext(sslContext);
+
+        HostnameVerifier hostnameVerifier = SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+
+        SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                .register("https", sslSocketFactory)
+                .build();
+
+        PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+        builder.setConnectionManager(connMgr);
+
+        return builder.build();
+
+    }
+
+    private static class Form {
+
+        private static List<NameValuePair> params;
+        private static Form form;
+
+        private Form() {
+        }
+
+        public static Form form() {
+            params = new LinkedList<NameValuePair>();
+            form = new Form();
+            return form;
+        }
+
+        public Form add(String name, String value) {
+            params.add(new BasicNameValuePair(name, value));
+            return form;
+        }
+
+        public List<NameValuePair> build() {
+            return params;
+        }
+
     }
 
 }
