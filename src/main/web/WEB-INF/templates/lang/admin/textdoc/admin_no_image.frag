@@ -1,1 +1,1 @@
-<img src="$contextPath/imcms/$language/images/admin/ico_image.gif" border="0"></a>
+<img cap="" src="$contextPath/imcms/$language/images/admin/ico_image.gif" border="0"></a>

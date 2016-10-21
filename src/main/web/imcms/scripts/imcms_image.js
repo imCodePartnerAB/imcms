@@ -420,8 +420,8 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             this._imageSource.alternateText = "";
             this._imageSource.name = "";
             this._imageSource.linkUrl = "";
-            this._cropWidth = 0;
-            this._cropHeight = 0;
+            this._divWidth = 0;
+            this._divHeight = 0;
         }
 
         if (this._imageSource.imageInfo) {
@@ -433,6 +433,11 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         var imgName = this._imageSource.generatedUrlPathRelativeToContextPath;
         if (imgName) {
             var pageImgArea = $(this._options.currentElement).find("img");
+
+            // If located element is "cap" get style values from prev tag(added at admin mode)
+            if (pageImgArea.attr("cap")) {
+                pageImgArea.prev();
+            }
 
             var minWidth = parseInt(pageImgArea.css("min-width"), 10);
             var minHeight = parseInt(pageImgArea.css("min-height"), 10);
@@ -466,15 +471,15 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             }
 
             if (isNaN(realWidth)) {
-                this._cropWidth = this._imageSource.realImageSize.width;
+                this._divWidth = NaN;
             } else {
-                this._cropWidth = realWidth;
+                this._divWidth = realWidth;
             }
 
             if (isNaN(realHeight)) {
-                this._cropHeight = this._imageSource.realImageSize.height;
+                this._divHeight = NaN;
             } else {
-                this._cropHeight = realHeight;
+                this._divHeight = realHeight;
             }
         }
         this._infoRef
@@ -512,26 +517,47 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .on("change", this._onFreeTransformStateChanged.bind(this))
             .end()
             .end()
+
+            .div()
+            .class("field size-field")
+            .number()
+            .name("divWidth")
+            .placeholder("width")
+            .value("")
+            .label("Display size")
+            .attr("imageInfo", "")
+            .attr("max", this._divWidth)
+            .attr("disabled", true)
+            .end()
+            .number()
+            .name("divHeight")
+            .placeholder("height")
+            .value("")
+            .attr("imageInfo", "")
+            .attr("max", this._divHeight)
+            .attr("disabled", true)
+            .end()
+            .end()
+
             .div()
             .class("field size-field")
             .number()
             .on("change", this._onDisplaySizeChanged.bind(this))
             .name("displayWidth")
             .placeholder("width")
-            .value(this._cropWidth || "")
-            .label("Display size")
+            .value(this._imageSource.realImageSize.width || "")
+            .label("Crop size")
             .attr("imageInfo", "")
-            .attr("max", this._cropWidth)
             .end()
             .number()
             .on("change", this._onDisplaySizeChanged.bind(this))
             .name("displayHeight")
             .placeholder("height")
-            .value(this._cropHeight || "")
+            .value(this._imageSource.realImageSize.height || "")
             .attr("imageInfo", "")
-            .attr("max", this._cropHeight)
             .end()
             .end()
+
             .div()
             .class("field cropping-field")
             .text()
@@ -625,14 +651,79 @@ Imcms.Image.ImageInfoAdapter.prototype = {
     },
     updateCropping: function (croppingOptions) {
         var $infoRef = $(this._infoRef.getHTMLElement());
+
+        var cropWidth = croppingOptions.cropX2 - croppingOptions.cropX1;
+        var cropHeight = croppingOptions.cropY2 - croppingOptions.cropY1;
+
         $infoRef.find("input[name=leftCrop]").val(croppingOptions.cropX1);
         $infoRef.find("input[name=topCrop]").val(croppingOptions.cropY1);
         $infoRef.find("input[name=rightCrop]").val(croppingOptions.cropX2);
         $infoRef.find("input[name=bottomCrop]").val(croppingOptions.cropY2);
         // if ($infoRef.find("input[name=freeTransform]").prop("checked")) {
-        $infoRef.find("input[name=displayHeight]").val(croppingOptions.cropY2 - croppingOptions.cropY1);
-        $infoRef.find("input[name=displayWidth]").val(croppingOprtions.cropX2 - croppingOptions.cropX1);
-        // }
+        $infoRef.find("input[name=displayHeight]").val(cropHeight);
+        $infoRef.find("input[name=displayWidth]").val(cropWidth);
+
+        //Finding out zoom factor
+        var zoomFactor = 1;
+        if (!isNaN(this._divWidth)) {
+            zoomFactor = (cropWidth) / this._divWidth;
+        } else {
+            if (!isNaN(this._divHeight)) {
+                zoomFactor = (cropHeight) / this._divHeight;
+            }
+        }
+
+        // This only show display area and don't take effect on page(same for width an height)
+        var divHeight = 0, divWidth = 0;
+
+        if (isNaN(this._divHeight)) {
+            if (isNaN(this._divWidth)) {
+                //If there CSS rules wasn't found it will just show cropped values
+                divHeight = cropHeight;
+            } else {
+                if (zoomFactor >= 1) {
+                    // If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
+                    divHeight = Math.round((cropHeight) / zoomFactor);
+                } else {
+                    // If selected area is smaller than available div then size(factor < 1) will be reduced to fit image without zooming
+                    divHeight = cropHeight;
+                }
+            }
+        } else {
+            //If one of css limitations exists
+            if ((cropHeight) > this._divHeight) {
+                divHeight = this._divHeight;
+            } else {
+                divHeight = cropHeight;
+            }
+        }
+        $infoRef.find("input[name=divHeight]").val(divHeight);
+
+
+        if (isNaN(this._divWidth)) {
+            if (isNaN(this._divHeight)) {
+                //If there CSS rules wasn't found it will just show cropped values
+                divWidth = cropWidth;
+            } else {
+                if (zoomFactor >= 1) {
+                    // If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
+                    divWidth = Math.round((cropWidth) / zoomFactor);
+                } else {
+                    // If selected area is smaller than available div then size(factor < 1) will be reduced to fit image without zooming
+                    divWidth = cropWidth;
+                }
+            }
+        } else {
+            //If one of css limitations exists
+            if ((cropWidth) > this._divWidth) {
+                divWidth = this._divWidth;
+
+            } else {
+                divWidth = cropWidth;
+            }
+        }
+        $infoRef.find("input[name=divWidth]").val(divWidth);
+
     },
     _onDisplaySizeChanged: function () {
         var $element = $(this._infoRef.getHTMLElement());
