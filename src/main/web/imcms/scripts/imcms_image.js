@@ -521,7 +521,6 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .div()
             .class("field size-field")
             .number()
-            // .on("change", this._onDisplaySizeChanged.bind(this))
             .name("divWidth")
             .placeholder("width")
             .value("")
@@ -531,7 +530,6 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .attr("disabled", true)
             .end()
             .number()
-            // .on("change", this._onDisplaySizeChanged.bind(this))
             .name("divHeight")
             .placeholder("height")
             .value("")
@@ -550,7 +548,6 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .value(this._imageSource.realImageSize.width || "")
             .label("Crop size")
             .attr("imageInfo", "")
-            // .attr("max", this._imageSource.realImageSize.width)
             .end()
             .number()
             .on("change", this._onDisplaySizeChanged.bind(this))
@@ -558,7 +555,6 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .placeholder("height")
             .value(this._imageSource.realImageSize.height || "")
             .attr("imageInfo", "")
-            // .attr("max", this._imageSource.realImageSize.height)
             .end()
             .end()
 
@@ -677,9 +673,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             }
         }
 
-        /* This only show display area and don't take effect on page(same for width an height)
-         */
-
+        // This only show display area and don't take effect on page(same for width an height)
         var divHeight = 0, divWidth = 0;
 
         if (isNaN(this._divHeight)) {
@@ -729,7 +723,6 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             }
         }
         $infoRef.find("input[name=divWidth]").val(divWidth);
-
 
     },
     _onDisplaySizeChanged: function () {
