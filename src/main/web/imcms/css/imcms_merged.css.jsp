@@ -1873,6 +1873,11 @@ ul.jqtree-tree ul.jqtree_common {
 	animation-delay: -0.16s;
 }
 
+.text-editor-label {
+	font-size: 10pt;
+	color: red;
+}
+
 <%--PROCESS--%>
 
 
