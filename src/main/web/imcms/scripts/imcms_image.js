@@ -685,7 +685,11 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             if (isNaN(this._divWidth)) {
                 divHeight = croppingOptions.cropY2 - croppingOptions.cropY1;
             } else {
-                divHeight = Math.round((croppingOptions.cropY2 - croppingOptions.cropY1) / zoomFactor);
+                if (zoomFactor >= 1) {
+                    divHeight = Math.round((croppingOptions.cropY2 - croppingOptions.cropY1) / zoomFactor);
+                } else {
+                    divHeight = croppingOptions.cropY2 - croppingOptions.cropY1;
+                }
             }
         } else {
             if ((croppingOptions.cropY2 - croppingOptions.cropY1) > this._divHeight) {
@@ -701,11 +705,16 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             if (isNaN(this._divHeight)) {
                 divWidth = croppingOptions.cropX2 - croppingOptions.cropX1;
             } else {
-                divWidth = Math.round((croppingOptions.cropX2 - croppingOptions.cropX1) / zoomFactor);
+                if (zoomFactor >= 1) {
+                    divWidth = Math.round((croppingOptions.cropX2 - croppingOptions.cropX1) / zoomFactor);
+                } else {
+                    divWidth = croppingOptions.cropX2 - croppingOptions.cropX1;
+                }
             }
         } else {
             if ((croppingOptions.cropX2 - croppingOptions.cropX1) > this._divWidth) {
                 divWidth = this._divWidth;
+
             } else {
                 divWidth = croppingOptions.cropX2 - croppingOptions.cropX1;
             }
