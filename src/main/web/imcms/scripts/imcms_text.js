@@ -57,7 +57,13 @@ Imcms.Text.Editor.prototype = {
 
             $("<div>").insertAfter(element).append(element).css({overflow: "hidden"});
 
-            var title = element.data("no") + " | " + element.data("label"),
+            var loopTitle = "";
+            if (element.data("loopentryref")) {
+                loopTitle = (element.data("loopentryref")).split("_");
+                loopTitle = "L" + loopTitle[0] + "-E" + loopTitle[1] + "-T";
+            }
+
+            var title = loopTitle + element.data("no") + " | " + element.data("label"),
                 currentFrame = textFrame.click(function (e) {
                         currentFrame.hide();
                         element.focus();
