@@ -5,19 +5,33 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import imcode.server.Imcms;
 import imcode.util.Utility;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.http.client.fluent.Form;
-import org.apache.http.client.fluent.Request;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.*;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.apache.http.ssl.SSLContextBuilder;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.stream.Stream;
+
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.defaultString;
@@ -61,33 +75,35 @@ public class InternalError extends HttpServlet {
                                     .map(url -> !url.isEmpty() ? url : Imcms.ERROR_LOGGER_URL)
                                     .orElse(Imcms.ERROR_LOGGER_URL);
 
-        return Request.Post(errorLoggerUrl)
-                .bodyForm(
-                    Form.form()
+        HttpClient httpClient = createHttpClient();
 
-                        .add("hash", exceptionInfo.get("hash"))
-                        .add("message", exceptionInfo.get("message"))
-                        .add("cause", exceptionInfo.get("cause"))
-                        .add("stack-trace", exceptionInfo.get("stackTrace"))
+        List<NameValuePair> params = Form.form()
 
-                        .add("error-url", defaultString(headersInfo.get("errorUrl"), DEFAULT_RESPONSE))
-                        .add("user-agent", headersInfo.get("userAgent"))
-                        .add("header-accept", headersInfo.get("headerAccept"))
-                        .add("header-accept-encoding", headersInfo.get("headerAcceptEncoding"))
-                        .add("header-accept-language", headersInfo.get("headerAcceptLanguage"))
+                .add("hash", exceptionInfo.get("hash"))
+                .add("message", exceptionInfo.get("message"))
+                .add("cause", exceptionInfo.get("cause"))
+                .add("stack-trace", exceptionInfo.get("stackTrace"))
 
-                        .add("server-name", defaultString(serverProperties.getProperty("ServerName"), DEFAULT_RESPONSE))
-                        .add("database-name", defaultString(serverProperties.getProperty("DBName"), DEFAULT_RESPONSE))
-                        .add("imcms-version", Version.getImcmsVersion(getServletContext()))
-                        .add("database-version", defaultString(Version.getRequiredDbVersion(), DEFAULT_RESPONSE))
+                .add("error-url", defaultString(headersInfo.get("errorUrl"), DEFAULT_RESPONSE))
+                .add("user-agent", headersInfo.get("userAgent"))
+                .add("header-accept", headersInfo.get("headerAccept"))
+                .add("header-accept-encoding", headersInfo.get("headerAcceptEncoding"))
+                .add("header-accept-language", headersInfo.get("headerAcceptLanguage"))
 
-                        .add("user-id", userId)
+                .add("server-name", defaultString(serverProperties.getProperty("ServerName"), DEFAULT_RESPONSE))
+                .add("database-name", defaultString(serverProperties.getProperty("DBName"), DEFAULT_RESPONSE))
+                .add("imcms-version", Version.getImcmsVersion(getServletContext()))
+                .add("database-version", defaultString(Version.getRequiredDbVersion(), DEFAULT_RESPONSE))
 
-                        .build()
-                )
-                .execute()
-                .returnContent()
-                .asString();
+                .add("user-id", userId)
+
+                .build();
+
+        HttpPost post = new HttpPost(errorLoggerUrl);
+
+        post.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
+
+        return EntityUtils.toString(httpClient.execute(post).getEntity());
     }
 
     private Map<String, String> parse(Throwable exception) {
@@ -136,6 +152,53 @@ public class InternalError extends HttpServlet {
             LOGGER.info("Error with id " + errorId + " is already reported");
         }
         return errorId;
+    }
+
+    private HttpClient createHttpClient() throws Exception {
+
+        HttpClientBuilder builder = HttpClientBuilder.create();
+
+        SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (x509Certificates, str) -> true).build();
+        builder.setSslcontext(sslContext);
+
+        HostnameVerifier hostnameVerifier = SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+
+        SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                .register("https", sslSocketFactory)
+                .build();
+
+        PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+        builder.setConnectionManager(connMgr);
+
+        return builder.build();
+
+    }
+
+    private static class Form {
+
+        private static Form form;
+        private static List<NameValuePair> params;
+
+        private Form() {
+        }
+
+        public static Form form() {
+            params = new LinkedList<>();
+            form = new Form();
+            return form;
+        }
+
+        public Form add(String name, String vlaue) {
+            params.add(new BasicNameValuePair(name, vlaue));
+            return form;
+        }
+
+        public List<NameValuePair> build() {
+            return params;
+        }
+
     }
 
 }
