@@ -330,9 +330,9 @@ public class DocumentMapper implements DocumentGetter {
 	/**
 	 * Updates existing document.
 	 */
-	public void saveDocument(DocumentDomainObject doc, UserDomainObject user)
+	public int saveDocument(DocumentDomainObject doc, UserDomainObject user)
 			throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
-		saveDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
+		return saveDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
 	}
 
 	/**
@@ -340,7 +340,7 @@ public class DocumentMapper implements DocumentGetter {
 	 *
 	 * @since 6.0
 	 */
-	public void saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContents, UserDomainObject user)
+	public int saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContents, UserDomainObject user)
 			throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
 		DocumentDomainObject docClone = doc.clone();
@@ -351,6 +351,8 @@ public class DocumentMapper implements DocumentGetter {
 		} finally {
 			invalidateDocument(doc.getId());
 		}
+
+		return doc.getId();
 	}
 
 	/**
@@ -688,7 +690,9 @@ public class DocumentMapper implements DocumentGetter {
 	 * @since 6.0
 	 */
 	public <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language) {
-		return documentLoaderCachingProxy.getDefaultDoc(docId, language.getCode());
+        return (Imcms.isVersioningAllowed())
+                ? documentLoaderCachingProxy.getDefaultDoc(docId, language.getCode())
+                : documentLoaderCachingProxy.getWorkingDoc(docId, language.getCode());
 	}
 
 	/**
@@ -698,7 +702,9 @@ public class DocumentMapper implements DocumentGetter {
 	 * @since 6.0
 	 */
 	public <T extends DocumentDomainObject> T getDefaultDocument(int docId, String languageCode) {
-		return documentLoaderCachingProxy.getDefaultDoc(docId, languageCode);
+		return (Imcms.isVersioningAllowed())
+                ? documentLoaderCachingProxy.getDefaultDoc(docId, languageCode)
+                : documentLoaderCachingProxy.getWorkingDoc(docId, languageCode);
 	}
 
 	/**
@@ -710,6 +716,10 @@ public class DocumentMapper implements DocumentGetter {
 	 * @since 6.0
 	 */
 	public <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef) {
+        if (!Imcms.isVersioningAllowed()) {
+            // force version changing to working
+            docRef = DocRef.of(docRef.getId(), DocumentVersion.WORKING_VERSION_NO, docRef.getLanguageCode());
+        }
 		return documentLoaderCachingProxy.getCustomDoc(docRef);
 	}
 

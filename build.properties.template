@@ -7,6 +7,8 @@
 # authenticated (and automatically logged in) by an IP address.
 deny-multiple-user-login = false
 
+server-name = http://localhost:8080
+
 # Database parameters
 
 db-host = localhost
@@ -185,3 +187,6 @@ index-disabled-file-mimes =
 # Comma separated list of filename extensions
 # Since 4.2.4
 index-disabled-file-extensions =
+
+# Error logger url.
+error-logger-url =
