@@ -580,7 +580,13 @@ public class TagParser {
 			replaceTags.add("#loop_ref#");
 			replaceTags.add(loopEntryRef != null ? loopEntryRef.toUriQueryString() : "");
 
-			imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
+//			If tag empty creating hidden tag to store all attributes seted at template
+			if ("".equals(imageTag)) {
+				imageTag = ImcmsImageUtils.getEmptyImageHtmlTag(image, httpServletRequest, attributes, true) +
+						service.getAdminTemplate(admin_template_file, user, replaceTags);
+			} else {
+				imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
+			}
 		}
 
 		return imageTag;

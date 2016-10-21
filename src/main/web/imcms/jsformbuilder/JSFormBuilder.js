@@ -621,7 +621,7 @@ JSFormBuilder.Mixins.ContainerAdapter = {
         return this._begin("input").type("submit");
     },
     number: function () {
-        return this._begin("input").type("submit");
+        return this._begin("input").type("number");
     },
     range: function () {
         return this._begin("input").type("submit");

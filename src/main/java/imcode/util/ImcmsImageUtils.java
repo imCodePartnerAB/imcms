@@ -55,48 +55,61 @@ public class ImcmsImageUtils {
         return getImageHtmlTag(image, request, attributes, absoluteUrl, false);
     }
 
+    public static String getEmptyImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes, boolean absoluteUrl) {
+        return getImageHtmlTag(image, request, attributes, absoluteUrl, false, true);
+    }
+
     public static String getImagePreviewHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
         return getImageHtmlTag(image, request, attributes, false, true);
     }
 
     private static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes,
                                           boolean absoluteUrl, boolean forPreview) {
+        return getImageHtmlTag(image, request, attributes, absoluteUrl, forPreview, false);
+    }
+
+    private static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes,
+                                          boolean absoluteUrl, boolean forPreview, boolean isEmpty) {
 
         StringBuffer imageTagBuffer = new StringBuffer(96);
-        if (image.getSize() > 0) {
+        if (image.getSize() > 0 || isEmpty) {
 
-            if (StringUtils.isNotBlank(image.getLinkUrl())) {
-                imageTagBuffer.append("<a href=\"").append(StringEscapeUtils.escapeHtml4(image.getLinkUrl())).append("\"");
-                if (!"".equals(image.getTarget())) {
-                    imageTagBuffer.append(" target=\"").append(StringEscapeUtils.escapeHtml4(image.getTarget())).append("\"");
+            String urlEscapedImageUrl = "";
+            if (!isEmpty) {
+                if (StringUtils.isNotBlank(image.getLinkUrl())) {
+                    imageTagBuffer.append("<a href=\"").append(StringEscapeUtils.escapeHtml4(image.getLinkUrl())).append("\"");
+                    if (!"".equals(image.getTarget())) {
+                        imageTagBuffer.append(" target=\"").append(StringEscapeUtils.escapeHtml4(image.getTarget())).append("\"");
+                    }
+                    imageTagBuffer.append('>');
                 }
-                imageTagBuffer.append('>');
+
+                if (forPreview) {
+                    urlEscapedImageUrl = getImagePreviewUrl(image, request.getContextPath());
+                } else {
+                    urlEscapedImageUrl = getImageUrl(image, request.getContextPath());
+                }
+
+                if (absoluteUrl) {
+                    StringBuffer requestURL = request.getRequestURL();
+                    urlEscapedImageUrl = requestURL.substring(0, StringUtils.ordinalIndexOf(requestURL.toString(), "/", 3)) + urlEscapedImageUrl;
+                }
             }
 
-            String urlEscapedImageUrl;
-            if (forPreview) {
-                urlEscapedImageUrl = getImagePreviewUrl(image, request.getContextPath());
-            } else {
-                urlEscapedImageUrl = getImageUrl(image, request.getContextPath());
-            }
+            imageTagBuffer.append("<img ");
+            if (!isEmpty) {
+                imageTagBuffer.append("src=\"").append(StringEscapeUtils.escapeHtml4(urlEscapedImageUrl)).append("\"");
+                imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml4(image.getAlternateText())).append("\"");
+                imageTagBuffer.append(" title=\"").append(StringEscapeUtils.escapeHtml4(image.getAlternateText())).append("\"");
 
-            if (absoluteUrl) {
-                StringBuffer requestURL = request.getRequestURL();
-                urlEscapedImageUrl = requestURL.substring(0, StringUtils.ordinalIndexOf(requestURL.toString(), "/", 3)) + urlEscapedImageUrl;
-            }
-
-            imageTagBuffer.append("<img src=\"").append(StringEscapeUtils.escapeHtml4(urlEscapedImageUrl)).append("\"");
-
-            imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml4(image.getAlternateText())).append("\"");
-            imageTagBuffer.append(" title=\"").append(StringEscapeUtils.escapeHtml4(image.getAlternateText())).append("\"");
-
-            String id = image.getName();
-            String idAttribute = attributes.getProperty("id");
-            if (StringUtils.isNotBlank(idAttribute)) {
-                id = idAttribute;
-            }
-            if (StringUtils.isNotBlank(id)) {
-                imageTagBuffer.append(" id=\"").append(StringEscapeUtils.escapeHtml4(id)).append("\"");
+                String id = image.getName();
+                String idAttribute = attributes.getProperty("id");
+                if (StringUtils.isNotBlank(idAttribute)) {
+                    id = idAttribute;
+                }
+                if (StringUtils.isNotBlank(id)) {
+                    imageTagBuffer.append(" id=\"").append(StringEscapeUtils.escapeHtml4(id)).append("\"");
+                }
             }
 
             String classAttribute = attributes.getProperty("class");
@@ -133,10 +146,12 @@ public class ImcmsImageUtils {
             }
 
             imageTagBuffer.append(" style=\"").append(StringEscapeUtils.escapeHtml4(styleBuffer.toString())).append("\"");
-
             imageTagBuffer.append(" />");
-            if (StringUtils.isNotBlank(image.getLinkUrl())) {
-                imageTagBuffer.append("</a>");
+
+            if (!isEmpty) {
+                if (StringUtils.isNotBlank(image.getLinkUrl())) {
+                    imageTagBuffer.append("</a>");
+                }
             }
         }
         return imageTagBuffer.toString();
