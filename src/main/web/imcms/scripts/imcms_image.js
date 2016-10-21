@@ -192,7 +192,8 @@ Imcms.Image.Editor.prototype = {
     },
     buildExtra: function () {
         this._frame = new Imcms.FrameBuilder()
-            .title("Image Editor")
+            .title("Image Editor123")
+            .tooltip((this._loopId) ? "L" + this._loopId + "-E" + this._entryId + "-N" + this._id : this._id)
             .click($.proxy(this.open, this))
             .build()
             .prependTo(this._element);

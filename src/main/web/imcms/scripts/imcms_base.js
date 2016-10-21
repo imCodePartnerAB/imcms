@@ -15,8 +15,8 @@ Imcms.Bootstrapper.prototype = {
         if (editmode) {
             $("body").css({paddingLeft: 150, width: $(window).width() - 150});
         } else {
-            if ($("body").css('paddingLeft').length > 0){
-                   $("body").removeAttr('style');
+            if ($("body").css('paddingLeft').length > 0) {
+                $("body").removeAttr('style');
             }
         }
 
@@ -53,8 +53,13 @@ Imcms.FrameBuilder.prototype = {
     _click: function () {
     },
     _title: "",
+    _tooltip: "",
     title: function () {
         this._title = arguments[0];
+        return this;
+    },
+    tooltip: function () {
+        this._tooltip = arguments[0];
         return this;
     },
     click: function () {
@@ -129,6 +134,6 @@ Imcms.FrameBuilder.prototype = {
         return headerPh;
     },
     _createTitle: function () {
-        return $("<div>").addClass("imcms-title").html(this._title);
+        return $("<div>").addClass("imcms-title").html(this._title).attr("title", this._tooltip);
     }
 };
