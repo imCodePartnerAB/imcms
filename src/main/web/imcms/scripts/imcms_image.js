@@ -655,47 +655,52 @@ Imcms.Image.ImageInfoAdapter.prototype = {
     },
     updateCropping: function (croppingOptions) {
         var $infoRef = $(this._infoRef.getHTMLElement());
+
+        var cropWidth = croppingOptions.cropX2 - croppingOptions.cropX1;
+        var cropHeight = croppingOptions.cropY2 - croppingOptions.cropY1;
+
         $infoRef.find("input[name=leftCrop]").val(croppingOptions.cropX1);
         $infoRef.find("input[name=topCrop]").val(croppingOptions.cropY1);
         $infoRef.find("input[name=rightCrop]").val(croppingOptions.cropX2);
         $infoRef.find("input[name=bottomCrop]").val(croppingOptions.cropY2);
         // if ($infoRef.find("input[name=freeTransform]").prop("checked")) {
-        $infoRef.find("input[name=displayHeight]").val(croppingOptions.cropY2 - croppingOptions.cropY1);
-        $infoRef.find("input[name=displayWidth]").val(croppingOptions.cropX2 - croppingOptions.cropX1);
+        $infoRef.find("input[name=displayHeight]").val(cropHeight);
+        $infoRef.find("input[name=displayWidth]").val(cropWidth);
 
         //Finding out zoom factor
         var zoomFactor = 1;
         if (!isNaN(this._divWidth)) {
-            zoomFactor = (croppingOptions.cropX2 - croppingOptions.cropX1) / this._divWidth;
+            zoomFactor = (cropWidth) / this._divWidth;
         } else {
             if (!isNaN(this._divHeight)) {
-                zoomFactor = (croppingOptions.cropY2 - croppingOptions.cropY1) / this._divHeight;
+                zoomFactor = (cropHeight) / this._divHeight;
             }
         }
 
         /* This only show display area and don't take effect on page(same for width an height)
-         *  If there CSS rules wasn't found it will just show cropped values
-         *  If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
-         *  If selected area is smaller than available div then size will be reduced to fit image without zooming
          */
 
         var divHeight = 0, divWidth = 0;
 
         if (isNaN(this._divHeight)) {
             if (isNaN(this._divWidth)) {
-                divHeight = croppingOptions.cropY2 - croppingOptions.cropY1;
+                //If there CSS rules wasn't found it will just show cropped values
+                divHeight = cropHeight;
             } else {
                 if (zoomFactor >= 1) {
-                    divHeight = Math.round((croppingOptions.cropY2 - croppingOptions.cropY1) / zoomFactor);
+                    // If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
+                    divHeight = Math.round((cropHeight) / zoomFactor);
                 } else {
-                    divHeight = croppingOptions.cropY2 - croppingOptions.cropY1;
+                    // If selected area is smaller than available div then size(factor < 1) will be reduced to fit image without zooming
+                    divHeight = cropHeight;
                 }
             }
         } else {
-            if ((croppingOptions.cropY2 - croppingOptions.cropY1) > this._divHeight) {
+            //If one of css limitations exists
+            if ((cropHeight) > this._divHeight) {
                 divHeight = this._divHeight;
             } else {
-                divHeight = croppingOptions.cropY2 - croppingOptions.cropY1;
+                divHeight = cropHeight;
             }
         }
         $infoRef.find("input[name=divHeight]").val(divHeight);
@@ -703,20 +708,24 @@ Imcms.Image.ImageInfoAdapter.prototype = {
 
         if (isNaN(this._divWidth)) {
             if (isNaN(this._divHeight)) {
-                divWidth = croppingOptions.cropX2 - croppingOptions.cropX1;
+                //If there CSS rules wasn't found it will just show cropped values
+                divWidth = cropWidth;
             } else {
                 if (zoomFactor >= 1) {
-                    divWidth = Math.round((croppingOptions.cropX2 - croppingOptions.cropX1) / zoomFactor);
+                    // If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
+                    divWidth = Math.round((cropWidth) / zoomFactor);
                 } else {
-                    divWidth = croppingOptions.cropX2 - croppingOptions.cropX1;
+                    // If selected area is smaller than available div then size(factor < 1) will be reduced to fit image without zooming
+                    divWidth = cropWidth;
                 }
             }
         } else {
-            if ((croppingOptions.cropX2 - croppingOptions.cropX1) > this._divWidth) {
+            //If one of css limitations exists
+            if ((cropWidth) > this._divWidth) {
                 divWidth = this._divWidth;
 
             } else {
-                divWidth = croppingOptions.cropX2 - croppingOptions.cropX1;
+                divWidth = cropWidth;
             }
         }
         $infoRef.find("input[name=divWidth]").val(divWidth);
