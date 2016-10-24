@@ -7,6 +7,7 @@ import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.HttpEntity;
@@ -147,6 +148,13 @@ public class InternalError extends HttpServlet {
         }
 
         request.setAttribute("error-id", errorId);
+
+        request.setAttribute("message", escapeHtmlForVelocity(message));
+        request.setAttribute("cause", escapeHtmlForVelocity(cause));
+        request.setAttribute("stack-trace", escapeHtmlForVelocity(stackTrace));
+
+        request.setAttribute("error-url", errorUrl);
+
     }
 
     private Long generateHash(String persistenceMessage,
@@ -182,6 +190,10 @@ public class InternalError extends HttpServlet {
 
         return builder.build();
 
+    }
+
+    private String escapeHtmlForVelocity(String str) {
+        return StringEscapeUtils.escapeHtml(str).replaceAll("\\(", "[").replaceAll("\\)", "]");
     }
 
     private static class Form {
