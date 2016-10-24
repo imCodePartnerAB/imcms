@@ -134,8 +134,10 @@ Imcms.FrameBuilder.prototype = {
         return headerPh;
     },
     _createTitle: function () {
-        return this._tooltip !== "" ?
-            $("<div>").addClass("imcms-title").html(this._title).attr("title", this._tooltip)
-            : $("<div>").addClass("imcms-title").html(this._title);
+        var $title = $("<div>").addClass("imcms-title").html(this._title);
+
+        return (this._tooltip !== "")
+            ? $title.attr("title", this._tooltip)
+            : $title;
     }
 };
