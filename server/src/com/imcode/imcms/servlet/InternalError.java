@@ -149,11 +149,11 @@ public class InternalError extends HttpServlet {
 
         request.setAttribute("error-id", errorId);
 
-        request.setAttribute("message", escapeHtmlForVelocity(message));
-        request.setAttribute("cause", escapeHtmlForVelocity(cause));
-        request.setAttribute("stack-trace", escapeHtmlForVelocity(stackTrace));
+        request.setAttribute("message", StringEscapeUtils.escapeHtml(message));
+        request.setAttribute("cause", StringEscapeUtils.escapeHtml(cause));
+        request.setAttribute("stack-trace", StringEscapeUtils.escapeHtml(stackTrace));
 
-        request.setAttribute("error-url", StringUtils.defaultString(errorUrl, DEFAULT_RESPONSE));
+        request.setAttribute("error-url", StringUtils.defaultString(errorUrl, "unknown"));
 
     }
 
@@ -190,10 +190,6 @@ public class InternalError extends HttpServlet {
 
         return builder.build();
 
-    }
-
-    private String escapeHtmlForVelocity(String str) {
-        return StringEscapeUtils.escapeHtml(str).replaceAll("\\(", "[").replaceAll("\\)", "]");
     }
 
     private static class Form {

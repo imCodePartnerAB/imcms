@@ -7,6 +7,16 @@
     <title><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/1"/></title>
     <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+        #[[
+        $( document ).ready(function() {
+            $("#hide-show-btn").click(function () {
+                var $detailDiv = $('#detail-info');
+                $detailDiv.is(':visible') ? $detailDiv.hide() : $detailDiv.show();
+            });
+        });
+        ]]#
+    </script>
 </head>
 <body bgcolor="#FFFFFF">
 #gui_outer_start()
@@ -43,21 +53,23 @@
         </td>
     </tr>
 </table>
+#[[
 <h2><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/6"/><%= request.getAttribute("error-id") %></h2>
-<button class="imcmsFormBtn" onclick="$('#detail-info').is(':visible') ? $('#detail-info').hide() : $('#detail-info').show();" >
+<button id="hide-show-btn" class="imcmsFormBtn">
     <fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/10"/>
 </button>
 <div id="detail-info" style="display: none;">
     <br/>
-    <strong>Error url:</strong>
+    <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/11"/></strong>
     <pre><%= request.getAttribute("error-url") %></pre>
-    <strong>Message:</strong>
+    <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/12"/></strong>
     <pre><%= request.getAttribute("message") %></pre>
-    <strong>Cause:</strong>
+    <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/13"/></strong>
     <pre><%= request.getAttribute("cause") %></pre>
-    <strong>Stack trace:</strong>
+    <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/14"/></strong>
     <pre><%= request.getAttribute("stack-trace") %></pre>
 </div>
+]]#
 #gui_bottom()
 #gui_outer_end()
 </body>
