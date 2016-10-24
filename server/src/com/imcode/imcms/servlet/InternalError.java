@@ -153,7 +153,7 @@ public class InternalError extends HttpServlet {
         request.setAttribute("cause", escapeHtmlForVelocity(cause));
         request.setAttribute("stack-trace", escapeHtmlForVelocity(stackTrace));
 
-        request.setAttribute("error-url", errorUrl);
+        request.setAttribute("error-url", StringUtils.defaultString(errorUrl, DEFAULT_RESPONSE));
 
     }
 
