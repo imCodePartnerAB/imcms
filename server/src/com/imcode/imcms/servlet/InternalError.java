@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet;
 
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.imcode.db.Database;
@@ -55,11 +54,6 @@ public class InternalError extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Throwable exceptionFromRequest = (Throwable) request.getAttribute("javax.servlet.error.exception");
 
         UserDomainObject user = Utility.getLoggedOnUser(request);
@@ -192,21 +186,18 @@ public class InternalError extends HttpServlet {
 
     private static class Form {
 
-        private static List<NameValuePair> params;
-        private static Form form;
+        private List<NameValuePair> params = new LinkedList<NameValuePair>();
 
         private Form() {
         }
 
         public static Form form() {
-            params = new LinkedList<NameValuePair>();
-            form = new Form();
-            return form;
+            return new Form();
         }
 
         public Form add(String name, String value) {
             params.add(new BasicNameValuePair(name, value));
-            return form;
+            return this;
         }
 
         public List<NameValuePair> build() {
