@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import imcode.server.Imcms;
 import imcode.util.Utility;
@@ -32,7 +31,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Stream;
 
-
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
@@ -46,7 +44,6 @@ public class InternalError extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         String attributeName = "javax.servlet.error.exception";
         Object exception = request.getAttribute(attributeName);
         request.setAttribute(attributeName, null);
@@ -178,21 +175,18 @@ public class InternalError extends HttpServlet {
 
     private static class Form {
 
-        private static Form form;
-        private static List<NameValuePair> params;
+        private List<NameValuePair> params = new LinkedList<>();
 
         private Form() {
         }
 
         public static Form form() {
-            params = new LinkedList<>();
-            form = new Form();
-            return form;
+            return new Form();
         }
 
-        public Form add(String name, String vlaue) {
-            params.add(new BasicNameValuePair(name, vlaue));
-            return form;
+        public Form add(String name, String value) {
+            params.add(new BasicNameValuePair(name, value));
+            return this;
         }
 
         public List<NameValuePair> build() {
