@@ -88,7 +88,9 @@ Imcms.Text.Editor.prototype = {
         var data = $(editor.element.$).data();
 
         if (data.content === undefined) { // to prevent strange confirmation that fires more and more times after saving
-            data.meta = Imcms.document.meta;
+            if (!data.meta) {
+                data.meta = Imcms.document.meta;
+            }
 
             var isHtmlContent = (data.contenttype === "html");
             var callFunc = (isHtmlContent)

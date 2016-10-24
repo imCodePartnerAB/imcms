@@ -25,7 +25,11 @@ public class TextTag extends SimpleImcmsTag {
                 ? documentRequest.getDocument()
                 : Imcms.getServices().getDocumentMapper().getVersionedDocument(documentProp, pageContext.getRequest());
 
-        boolean hasEditTexts = ((TextDocumentPermissionSetDomainObject) documentRequest.getUser().getPermissionSetFor(doc)).getEditTexts();
+        TextDocumentDomainObject textDoc = (TextDocumentDomainObject) doc;
+        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)
+                documentRequest.getUser().getPermissionSetFor(textDoc);
+
+        boolean hasEditTexts = permissionSet.getEditTexts();
 
         if (TagParser.isEditable(attributes, hasEditTexts)) {
             String locale = documentRequest.getDocument().getLanguage().getCode();
@@ -36,7 +40,6 @@ public class TextTag extends SimpleImcmsTag {
                 contentType = "text";
 
             } else {
-                TextDocumentDomainObject textDoc = (TextDocumentDomainObject) doc;
                 TextDomainObject textDO = (loopTag == null)
                         ? textDoc.getText(textNo)
                         : textDoc.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, textNo));
@@ -63,7 +66,7 @@ public class TextTag extends SimpleImcmsTag {
             editor = null;
         }
 
-        result = tagParser.tagText(attributes, loopEntryRef);
+        result = tagParser.tagText(attributes, loopEntryRef, textDoc);
 
         return result;
     }

@@ -422,63 +422,123 @@ public class TagParser {
 		return names;
 	}
 
+    /**
+     * Handle a <?imcms:text ...?> tag
+     *
+     * @param attributes The attributes of the text tag
+     *                   attributes:
+     *                   - no  Text number in document
+     *                   - document  Document to get text from ( id or alias )
+     *                   - label Label to show in write mode
+     *                   - mode  ( "read" | "write" )
+     *                   - filter
+     *                   - formats
+     *                   - rows
+     */
 	public String tagText(Properties attributes) {
-		return tagText(attributes, null);
+		return tagText(attributes, null, document);
 	}
 
-	/**
-	 * Handle a <?imcms:text ...?> tag
-	 *
-	 * @param attributes The attributes of the text tag
-	 *                   attributes:
-	 *                   - no  Text number in document
-	 *                   - document  Document to get text from ( id or alias )
-	 *                   - label Label to show in write mode
-	 *                   - mode  ( "read" | "write" )
-	 *                   - filter
-	 *                   - formats
-	 *                   - rows
-	 */
-	public String tagText(Properties attributes, LoopEntryRef loopEntryRef) {
-		TextDocumentDomainObject textDocumentToUse = document;
-
-		if (shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse == null) {
-			return "";
-		}
-
-		// Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
-		String noStr = attributes.getProperty("no");
-		int no;
-		TextDomainObject text;
-		if (null == noStr) {
-			no = implicitTextNumber++;
-			text = loopEntryRef == null
-					? textDocumentToUse.getText(no)
-					: textDocumentToUse.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), no));
-		} else {
-			noStr = noStr.trim();
-			no = Integer.parseInt(noStr);
-			text = loopEntryRef == null
-					? textDocumentToUse.getText(no)
-					: textDocumentToUse.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), no));
-
-			implicitTextNumber = no + 1;
-		}
-
-		String result = "";
-		if (text != null) {
-			result = text.toHtmlString();
-			if (text.getType() == TextDomainObject.TEXT_TYPE_HTML) {
-				result = replaceTags(result, true);
-			}
-		}
-
-		result = StringUtils.isEmpty(Jsoup.parse(result).text()) ? attributes.getProperty("placeholder") : result;
-
-		result = StringUtils.isEmpty(result) ? "" : result;
-
-		return result;
+    /**
+     * Handle a <?imcms:text ...?> tag
+     *
+     * @param attributes The attributes of the text tag
+     *                   attributes:
+     *                   - no  Text number in document
+     *                   - document  Document to get text from ( id or alias )
+     *                   - label Label to show in write mode
+     *                   - mode  ( "read" | "write" )
+     *                   - filter
+     *                   - formats
+     *                   - rows
+     * @param loopEntryRef reference of Loop's entry if text is in loop
+     * @return text tag
+     */
+    public String tagText(Properties attributes, LoopEntryRef loopEntryRef) {
+		return tagText(attributes, loopEntryRef, document);
 	}
+
+    /**
+     *
+     * @param attributes The attributes of the text tag
+     *                   attributes:
+     *                   - no  Text number in document
+     *                   - document  Document to get text from ( id or alias )
+     *                   - label Label to show in write mode
+     *                   - mode  ( "read" | "write" )
+     *                   - filter
+     *                   - formats
+     *                   - rows
+     * @param textDocumentToUse The document from which text should be taken,
+     *                          in case if it is not current doc
+     * @return text tag
+     */
+	public String tagText(Properties attributes, TextDocumentDomainObject textDocumentToUse) {
+        return tagText(attributes, null, textDocumentToUse);
+    }
+
+    /**
+     *
+     * @param attributes The attributes of the text tag
+     *                   attributes:
+     *                   - no  Text number in document
+     *                   - document  Document to get text from ( id or alias )
+     *                   - label Label to show in write mode
+     *                   - mode  ( "read" | "write" )
+     *                   - filter
+     *                   - formats
+     *                   - rows
+     * @param textDocumentToUse The document from which text should be taken,
+     *                          in case if it is not current doc
+     * @param loopEntryRef reference of Loop's entry if text is in loop
+     * @return text tag
+     */
+    public String tagText(Properties attributes, LoopEntryRef loopEntryRef,
+                          TextDocumentDomainObject textDocumentToUse) {
+        if (shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse == null) {
+            return "";
+        }
+
+        // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
+        String noStr = attributes.getProperty("no");
+        int no;
+        TextDomainObject text;
+        if (null == noStr) {
+            no = implicitTextNumber++;
+            text = getText(no, loopEntryRef, textDocumentToUse);
+
+        } else {
+            noStr = noStr.trim();
+            no = Integer.parseInt(noStr);
+            text = getText(no, loopEntryRef, textDocumentToUse);
+            implicitTextNumber = no + 1;
+        }
+
+        String result = "";
+        if (text != null) {
+            result = text.toHtmlString();
+            if (text.getType() == TextDomainObject.TEXT_TYPE_HTML) {
+                result = replaceTags(result, true);
+            }
+        }
+
+        result = StringUtils.isEmpty(Jsoup.parse(result).text()) ? attributes.getProperty("placeholder") : result;
+        result = StringUtils.isEmpty(result) ? "" : result;
+
+        return result;
+    }
+
+    private TextDomainObject getText(int no, LoopEntryRef loopEntryRef, TextDocumentDomainObject textDocumentToUse) {
+        if (loopEntryRef == null) {
+            return textDocumentToUse.getText(no);
+
+        } else {
+            TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.
+                    LoopItemRef.of(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo(), no);
+
+            return textDocumentToUse.getText(loopItemRef);
+        }
+    }
 
 	/**
 	 * Handle a <?imcms:image...?> tag
