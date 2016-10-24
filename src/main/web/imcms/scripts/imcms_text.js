@@ -106,8 +106,7 @@ Imcms.Text.Editor.prototype = {
             }
 
             this._api.update(data, event.data.callback || Imcms.BackgroundWorker.createTask({
-                    showProcessWindow: true,
-                    refreshPage: true
+                    showProcessWindow: true
                 })
             );
         }
