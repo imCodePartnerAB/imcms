@@ -90,6 +90,12 @@ public class InternalError extends HttpServlet {
         String headerAcceptEncoding = request.getHeader("accept-encoding");
         String headerAcceptLanguage = request.getHeader("accept-language");
 
+        request.setAttribute("message", StringEscapeUtils.escapeHtml(message));
+        request.setAttribute("cause", StringEscapeUtils.escapeHtml(cause));
+        request.setAttribute("stack-trace", StringEscapeUtils.escapeHtml(stackTrace));
+
+        request.setAttribute("error-url", StringUtils.defaultString(errorUrl, "unknown"));
+
         String serverName = StringUtils.defaultString(Imcms.getServerName(), DEFAULT_RESPONSE);
         String databaseName = StringUtils.defaultString(Imcms.getServerProperties().getProperty("DBName"), DEFAULT_RESPONSE);
         String imcmsVersion = Version.getImcmsVersion(getServletContext());
@@ -148,12 +154,6 @@ public class InternalError extends HttpServlet {
         }
 
         request.setAttribute("error-id", errorId);
-
-        request.setAttribute("message", StringEscapeUtils.escapeHtml(message));
-        request.setAttribute("cause", StringEscapeUtils.escapeHtml(cause));
-        request.setAttribute("stack-trace", StringEscapeUtils.escapeHtml(stackTrace));
-
-        request.setAttribute("error-url", StringUtils.defaultString(errorUrl, "unknown"));
 
     }
 
