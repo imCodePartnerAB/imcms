@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import imcode.server.Imcms;
 import imcode.util.Utility;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -32,6 +33,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
 public class InternalError extends HttpServlet {
@@ -68,6 +70,8 @@ public class InternalError extends HttpServlet {
 
         Map<String, String> headersInfo = parse(request);
 
+        setInfo(request, exceptionInfo, headersInfo);
+
         String errorLoggerUrl = ofNullable(serverProperties.getProperty("ErrorLoggerUrl"))
                                     .map(url -> !url.isEmpty() ? url : Imcms.ERROR_LOGGER_URL)
                                     .orElse(Imcms.ERROR_LOGGER_URL);
@@ -101,6 +105,13 @@ public class InternalError extends HttpServlet {
         post.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
 
         return EntityUtils.toString(httpClient.execute(post).getEntity());
+    }
+
+    private void setInfo(HttpServletRequest request, Map<String, String> exceptionInfo, Map<String, String> headersInfo) {
+        request.setAttribute("message", escapeHtml(exceptionInfo.get("message")));
+        request.setAttribute("cause", escapeHtml(exceptionInfo.get("cause")));
+        request.setAttribute("stackTrace", escapeHtml(exceptionInfo.get("stackTrace")));
+        request.setAttribute("errorUrl", defaultString(headersInfo.get("errorUrl"), "unknown"));
     }
 
     private Map<String, String> parse(Throwable exception) {
