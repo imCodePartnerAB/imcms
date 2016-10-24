@@ -184,5 +184,9 @@ superadmin-login-password-reset-allowed =
 # Since 4.2.4
 index-disabled-file-mimes =
 
+# Comma separated list of mime types
+# Since 4.2.4
+-index-disabled-file-extensions =
+
 # Error logger url.
 error-logger-url =
