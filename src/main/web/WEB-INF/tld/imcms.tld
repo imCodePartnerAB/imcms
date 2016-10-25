@@ -78,11 +78,18 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+            <description>
+                Can be set to "read" to prevent content changing or "write" mode
+            </description>
 			<name>mode</name>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>formats</name>
+            <description>
+                Can be set to "text" to mark that it should be represented
+                as plain text without HTML editing plugins, or to "html"
+            </description>
+            <name>formats</name>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
