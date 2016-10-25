@@ -1641,9 +1641,11 @@ Imcms.Document.Viewer.prototype = {
             .val(dateTimeMadeBy.date + " " + dateTimeMadeBy.time);
     },
     loadCategories: function (categories) {
-        $.each(categories, this.addCategoryType.bind(this));
-        if (this._options.data)
+            $.each(categories, this.addCategoryType.bind(this));
+        if (this._options.data) {
             this.deserialize(this._options.data);
+            delete this._options.data.categories;
+        }
     },
     addCategoryType: function (categoryType, options) {
         this._builder.ref("categories-page")
@@ -1919,12 +1921,11 @@ Imcms.Document.Viewer.prototype = {
                     $source
                         .find("select[name='" + categoryType + "']")
                         .find("option[value='" + selectedCategory + "']")
-                        .attr("selected", "");
+                        .attr("selected", "selected");
                 });
 
                 $($source.find("select[name='" + categoryType + "']")).multiselect();
             });
-            delete data.categories;
         }
 
         if (data.permissions && this._options.type === 2) {
