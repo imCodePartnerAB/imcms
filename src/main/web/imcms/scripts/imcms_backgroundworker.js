@@ -101,6 +101,10 @@ Imcms.BackgroundWorker = {
         return foundElements.length ? foundElements[0] : undefined;
     },
 
+    _shouldRefreshPage: function (element) {
+        return element.refreshPage;
+    },
+
     /**
      *
      * @param ticket
@@ -131,9 +135,8 @@ Imcms.BackgroundWorker = {
             if (redirectOption) {
                 location.href = redirectOption.redirectURL;
 
-            } else if ($this.completedTasksOptions.some(function (element) {
-                    return element.refreshPage;
-                })) {
+            } else if ($this.completedTasksOptions.some($this._shouldRefreshPage)) {
+                $this.completedTasksOptions = [];
                 $this.reloadPage()
             }
 

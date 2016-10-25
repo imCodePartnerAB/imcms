@@ -84,33 +84,38 @@ Imcms.Text.Editor.prototype = {
         });
     },
     _onConfirm: function (event) {
-        var editor = event.editor;
-        var data = $(editor.element.$).data();
+        var editor = event.editor,
+            data = $(editor.element.$).data(),
+            isHtmlContent = (data.contenttype === "html"),
+            callFunc = (isHtmlContent) ? "html" : "text",
+            content = $(editor.element.$)[callFunc]();
 
-        if (data.content === undefined) { // to prevent strange confirmation that fires more and more times after saving
+        // save only when content is changed or mode is switched
+        if ((data.content !== content) || CKEDITOR.switchFormat) {
+            data.content = content;
             if (!data.meta) {
                 data.meta = Imcms.document.meta;
             }
 
-            var isHtmlContent = (data.contenttype === "html");
-            var callFunc = (isHtmlContent)
-                ? "html"
-                : "text";
-
-            data.content = $(editor.element.$)[callFunc]();
+            var shouldRefreshPage = false;
 
             if (CKEDITOR.switchFormat) {
                 data.contenttype = (isHtmlContent)
                     ? "from-html"
                     : "html";
 
+                shouldRefreshPage = true;
                 CKEDITOR.switchFormat = false;
             }
 
             this._api.update(data, event.data.callback || Imcms.BackgroundWorker.createTask({
-                    showProcessWindow: true
+                    showProcessWindow: true,
+                    refreshPage: shouldRefreshPage
                 })
             );
+
+        } else if (event.data && event.data.callback && (typeof event.data.callback === "function")) {
+            event.data.callback()
         }
     },
     _onCreated: function (event) {
