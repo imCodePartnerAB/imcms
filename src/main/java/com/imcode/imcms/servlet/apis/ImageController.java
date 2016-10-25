@@ -175,7 +175,11 @@ public class ImageController {
                 : null;
 
         if (StringUtils.isNotBlank(imageDomainObject.getGeneratedFilename())) {
-            imageDomainObject.getGeneratedFile().delete();
+            if (Imcms.isVersioningAllowed()) {
+                // todo : rewrite process when versions are turned on to delete old image only if it not used in other versions
+            } else {
+                imageDomainObject.getGeneratedFile().delete();
+            }
         }
 
         imageDomainObject.generateFilename();
