@@ -433,8 +433,7 @@ public class DocumentController {
     private void prepareDateTimeAndUser(DocumentEntity docEntity, DocumentDomainObject docDomainObject) {
         final int userId = Imcms.getUser().getId();
 
-        Date publishedDate = getValidDateOrNull(docEntity.publishedDate, docEntity.publishedTime,
-                docDomainObject.getPublicationStartDatetime());
+        Date publishedDate = getValidDateOrNull(docEntity.publishedDate, docEntity.publishedTime);
 
         if (docEntity.id == null && publishedDate == null && !Imcms.isVersioningAllowed()) {
             publishedDate = new Date();
@@ -443,34 +442,21 @@ public class DocumentController {
         docDomainObject.setPublicationStartDatetime(publishedDate);
         docDomainObject.setPublisherId((publishedDate == null) ? null : userId);
 
-        Date archivedDate = getValidDateOrNull(docEntity.archivedDate, docEntity.archivedTime,
-                docDomainObject.getArchivedDatetime()
-        );
+        Date archivedDate = getValidDateOrNull(docEntity.archivedDate, docEntity.archivedTime);
         docDomainObject.setArchivedDatetime(archivedDate);
         docDomainObject.setArchiverId((archivedDate == null) ? null : userId);
 
-        Date publicationEndDate = getValidDateOrNull(docEntity.publicationEndDate, docEntity.publicationEndTime,
-                docDomainObject.getPublicationEndDatetime()
-        );
+        Date publicationEndDate = getValidDateOrNull(docEntity.publicationEndDate, docEntity.publicationEndTime);
         docDomainObject.setPublicationEndDatetime(publicationEndDate);
         docDomainObject.setDepublisherId((publicationEndDate == null) ? null : userId);
     }
 
-    private Date getValidDateOrNull(String date, String time, Date documentDatetime) {
+    private Date getValidDateOrNull(String date, String time) {
         if (isValidDateTime(date, time)) {
             try {
                 String newDateStr = date + " " + time;
-                Date newDate = DATETIME_DOC_FORMAT.parse(newDateStr);
-                Date oldDate = null;
+                return DATETIME_DOC_FORMAT.parse(newDateStr);
 
-                if (documentDatetime != null) {
-                    String oldDateStr = DATETIME_DOC_FORMAT.format(documentDatetime);
-                    oldDate = DATETIME_DOC_FORMAT.parse(oldDateStr);
-                }
-
-                if (!newDate.equals(oldDate)) {
-                    return newDate;
-                }
             } catch (ParseException ignore) {
             }
         }
@@ -478,10 +464,13 @@ public class DocumentController {
     }
 
     private boolean isValidDateTime(String publishedDate, String publishedTime) {
-        return StringUtils.isNotBlank(publishedDate)
+        return (StringUtils.isNotBlank(publishedDate)
                 && !publishedDate.equals("--")
+                && (publishedDate.length() >= 8 && publishedDate.length() <= 10)
                 && StringUtils.isNotBlank(publishedTime)
-                && !publishedTime.equals("--");
+                && !publishedTime.equals("--")
+                && (publishedTime.length() >= 3 && publishedTime.length() <= 5)
+        );
     }
 
     /**
