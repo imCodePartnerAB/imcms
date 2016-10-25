@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static imcode.util.DateConstants.DATETIME_DOC_FORMAT;
+import static imcode.util.DateConstants.*;
 
 /**
  * Realise API for working with  {@link DocumentDomainObject}
@@ -43,7 +43,7 @@ import static imcode.util.DateConstants.DATETIME_DOC_FORMAT;
 @RequestMapping("/document")
 public class DocumentController {
 
-	private static final String[] DATE_TYPES = {
+    private static final String[] DATE_TYPES = {
 			"created",
 			"modified",
 			"archived",
@@ -466,10 +466,10 @@ public class DocumentController {
     private boolean isValidDateTime(String publishedDate, String publishedTime) {
         return (StringUtils.isNotBlank(publishedDate)
                 && !publishedDate.equals("--")
-                && (publishedDate.length() >= 8 && publishedDate.length() <= 10)
+                && (publishedDate.length() >= DATE_MIN_LENGTH && publishedDate.length() <= DATE_MAX_LENGTH)
                 && StringUtils.isNotBlank(publishedTime)
                 && !publishedTime.equals("--")
-                && (publishedTime.length() >= 3 && publishedTime.length() <= 5)
+                && (publishedTime.length() >= TIME_MIN_LENGTH && publishedTime.length() <= TIME_MAX_LENGTH)
         );
     }
 
