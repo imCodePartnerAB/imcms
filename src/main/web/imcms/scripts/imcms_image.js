@@ -180,6 +180,7 @@ Imcms.Image.Editor.prototype = {
         }
         this._imageCropper = new Imcms.Image.ImageCropper({
             container: this._builder.ref("imageView").getHTMLElement(),
+            freeTransformed: (this._imageViewAdapter._imageSource.imageInfo.width / this._imageViewAdapter._imageSource.imageInfo.height) !== (data.cropRegion.cropY2 - data.cropRegion.cropY1) / (data.cropRegion.cropY2 - data.cropRegion.cropY1) ? true : false,
             onCropChanged: this._onCropRegionChanged.bind(this)
         });
         if (this._isShowed) {
@@ -750,6 +751,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
 
 Imcms.Image.ImageCropper = function (options) {
     this._target = options.container;
+    this._isFreeTransformed = options.freeTransformed;
     this._img = $(this._target).find("img")[0];
     this._onCropChanged = options.onCropChanged || this._onCropChanged;
 };
@@ -991,7 +993,11 @@ Imcms.Image.ImageCropper.prototype = {
         }
 
         else if (this.isResizing) {
-            this.processResizing(e);
+            if (!this._isFreeTransformed) {
+                this.processResizing(e);
+            } else {
+                this._isFreeTransformed = false;
+            }
             this._onCropChanged(this.collect());
         }
     },
