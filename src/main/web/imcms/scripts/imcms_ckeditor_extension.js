@@ -42,20 +42,32 @@ CKEDITOR.plugins.add("documentSaver", {
 
         editor.on('blur', editor.blurHandler);
 
-        var confirmNoEvent = function (e, callback) {
-            if (!callback) {
-                e = switchToolbarCommandFunction(e);
-            }
-            CKEDITOR.fire("confirmChangesEvent", {callback: callback}, e);
+        function saveData(e, noCallback) {
             editor.documentSnapshot = e.getData();
             e.resetDirty();
-            if (!callback) {
+            if (noCallback) {
                 e.removeListener('blur', e.blurHandler);
                 e.focusManager.unlock();
                 e.element.$.blur();
                 e.focusManager.blur();
                 e.on("focus", e.focusHandler);
             }
+        }
+
+        var confirmBeforeSwitch = function (e, callback) {
+            if (!callback) {
+                e = switchToolbarCommandFunction(e);
+            }
+            CKEDITOR.fireOnce("confirmChangesEvent", {callback: callback}, e);
+            saveData(e, !callback);
+        };
+
+        var confirmNoEvent = function (e, callback) {
+            if (!callback) {
+                e = switchToolbarCommandFunction(e);
+            }
+            CKEDITOR.fire("confirmChangesEvent", {callback: callback}, e);
+            saveData(e, !callback);
         };
 
         var confirmWithEvent = function (e) {
@@ -74,6 +86,9 @@ CKEDITOR.plugins.add("documentSaver", {
 
         var confirmCommandNoEvent = CKEDITOR.newCommandWithExecution(confirmNoEvent);
         editor.addCommand("confirmChangesWithoutEvent", confirmCommandNoEvent);
+
+        var confirmCommandBeforeSwitch = CKEDITOR.newCommandWithExecution(confirmBeforeSwitch);
+        editor.addCommand("confirmChangesBeforeSwitch", confirmCommandBeforeSwitch);
 
         var cancelCommandFunction = function (e) {
             var newEditor = switchToolbarCommandFunction(e),

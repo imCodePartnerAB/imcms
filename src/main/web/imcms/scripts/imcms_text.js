@@ -150,7 +150,7 @@ Imcms.Text.Editor.prototype = {
         // commands definition
         editor.addCommand("switchFormat", CKEDITOR.newCommandWithExecution(function (editor) {
             CKEDITOR.switchFormat = true;
-            editor.execCommand("confirmChangesWithoutEvent");
+            editor.execCommand("confirmChangesBeforeSwitch");
         }));
 
         // Remove unnecessary plugins to make the editor simpler.
