@@ -74,7 +74,7 @@ Imcms.Admin.Panel = {
 							window.pageInfoCounter = 0;
 							Imcms.Editors.Document.update(viewer.serialize(), Imcms.BackgroundWorker.createTask({
 								showProcessWindow: true,
-								refreshPage: true
+                                reloadWholePage: true
 							}));
 						},
 						onCancel: function () {
