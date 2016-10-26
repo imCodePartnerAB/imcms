@@ -1043,38 +1043,82 @@ Imcms.Image.ImageCropper.prototype = {
         var xOffset = e.pageX - this.x;
         var yOffset = e.pageY - this.y;
         var width, height, factor;
+        var state = $(this._img).parent().parent().find("input[name=freeTransform]").prop("checked");
+        if (e.target || state) {
 
-        if (!this.destinationWidth && !this.destinationHeight) {
-            width = this.imageCroppingFrameWidth + xOffset;
+            if (!this.destinationWidth && !this.destinationHeight) {
+                width = this.imageCroppingFrameWidth + xOffset;
 
-            if (imageCroppingFrame.position().left + width > image.width() - 1) {
-                width = image.width() - imageCroppingFrame.position().left - 1;
+                if (imageCroppingFrame.position().left + width > image.width() - 1) {
+                    width = image.width() - imageCroppingFrame.position().left - 1;
+                }
+
+                height = this.imageCroppingFrameHeight + yOffset;
+
+                if (imageCroppingFrame.position().top + height > image.height() - 1) {
+                    height = image.height() - imageCroppingFrame.position().top - 1;
+                }
             }
 
-            height = this.imageCroppingFrameHeight + yOffset;
+            else {
+                var offset = (xOffset + yOffset) / 2;
+                width = this.imageCroppingFrameWidth + offset;
 
-            if (imageCroppingFrame.position().top + height > image.height() - 1) {
-                height = image.height() - imageCroppingFrame.position().top - 1;
+                if (imageCroppingFrame.position().left + width > image.width() - 1) {
+                    width = image.width() - imageCroppingFrame.position().left - 1;
+                }
+
+                factor = this.destinationWidth / width;
+                height = this.destinationHeight / factor;
+
+                if (imageCroppingFrame.position().top + height > image.height() - 1) {
+                    factor = height / (image.height() - imageCroppingFrame.position().top - 1);
+
+                    width = width / factor;
+                    height = image.height() - imageCroppingFrame.position().top - 1;
+                }
             }
-        }
-
-        else {
-            var offset = (xOffset + yOffset) / 2;
-            width = this.imageCroppingFrameWidth + offset;
-
-            if (imageCroppingFrame.position().left + width > image.width() - 1) {
-                width = image.width() - imageCroppingFrame.position().left - 1;
-            }
-
-            factor = this.destinationWidth / width;
+        } else {
+            var factor = image[0].naturalWidth / image.width();
+            width = this.destinationWidth / factor;
             height = this.destinationHeight / factor;
 
-            if (imageCroppingFrame.position().top + height > image.height() - 1) {
-                factor = height / (image.height() - imageCroppingFrame.position().top - 1);
+           // TODO make crop area size check working
+           /* if (imageCroppingFrame.position().left + width >= image.width() ||
+                imageCroppingFrame.position().top + width >= image.height()) {
 
-                width = width / factor;
-                height = image.height() - imageCroppingFrame.position().top - 1;
-            }
+                var width1 = width * factor;
+                var height1 = width * factor;
+
+                var x = (imageCroppingFrame.position().left + width1);
+                var y = (imageCroppingFrame.position().top + height1);
+
+                if (x < -1) {
+                    x = -1;
+                }
+
+                if (x > image.width() - 1) {
+                    x = image.width() - width - 1;
+                }
+
+                if (y < -1) {
+                    y = -1;
+                }
+
+                if (y > image.height() - 1) {
+                    y = image.height() - height - 1;
+                }
+
+
+                imageCroppingFrame.css({left: x, top: y});
+                image.css({left: x - 1, top: y - 1});
+                grip.css(
+                    {
+                        left: imageCroppingFrame.position().left + width - 4,
+                        top: imageCroppingFrame.position().top + height - 4
+                    }
+                );
+            }*/
         }
 
         imageCroppingFrame.css({width: width, height: height});
