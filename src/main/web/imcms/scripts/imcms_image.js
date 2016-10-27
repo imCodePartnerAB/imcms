@@ -1083,42 +1083,36 @@ Imcms.Image.ImageCropper.prototype = {
             width = this.destinationWidth / factor;
             height = this.destinationHeight / factor;
 
-           // TODO make crop area size check working
-           /* if (imageCroppingFrame.position().left + width >= image.width() ||
+            if (imageCroppingFrame.position().left + width >= image.width() ||
                 imageCroppingFrame.position().top + width >= image.height()) {
 
-                var width1 = width * factor;
-                var height1 = width * factor;
-
-                var x = (imageCroppingFrame.position().left + width1);
-                var y = (imageCroppingFrame.position().top + height1);
+                var image2 = imageCroppingFrame.find("img");
+                var x = (imageCroppingFrame.position().left + width);
+                var y = (imageCroppingFrame.position().top + height);
 
                 if (x < -1) {
                     x = -1;
                 }
 
-                if (x > image.width() - 1) {
-                    x = image.width() - width - 1;
+                if (x > image2.width() - 1) {
+                    x = image2.width() - width - 1;
+                } else {
+                    x -= width;
                 }
 
                 if (y < -1) {
                     y = -1;
                 }
 
-                if (y > image.height() - 1) {
-                    y = image.height() - height - 1;
+                if (y > image2.height() - 1) {
+                    y = image2.height() - height - 1;
+                } else {
+                    y -= height;
                 }
 
-
                 imageCroppingFrame.css({left: x, top: y});
-                image.css({left: x - 1, top: y - 1});
-                grip.css(
-                    {
-                        left: imageCroppingFrame.position().left + width - 4,
-                        top: imageCroppingFrame.position().top + height - 4
-                    }
-                );
-            }*/
+                image2.css({left: x * -1 - 1, top: y * -1 - 1});
+            }
         }
 
         imageCroppingFrame.css({width: width, height: height});
