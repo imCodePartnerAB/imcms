@@ -1,3 +1,31 @@
+/**
+ * Cool extension that provide possibility to call $(element).attr()
+ * to get an object with all element's attributes with values
+ */
+(function(old) {
+    $.fn.attr = function() {
+        if(arguments.length === 0) {
+            if(this.length === 0) {
+                return null;
+            }
+
+            var obj = {};
+            $.each(this[0].attributes, function() {
+                if(this.specified) {
+                    obj[this.name] = this.value;
+                }
+            });
+            return obj;
+        }
+
+        return old.apply(this, arguments);
+    };
+})($.fn.attr);
+
+
+/**
+ * Ensure that this addon still used
+ */
 (function ($) {
     var dataKey = "data-multiselect";
 
