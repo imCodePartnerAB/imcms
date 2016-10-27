@@ -1,17 +1,17 @@
-/**
- * Cool extension that provide possibility to call $(element).attr()
- * to get an object with all element's attributes with values
- */
-(function(old) {
-    $.fn.attr = function() {
-        if(arguments.length === 0) {
-            if(this.length === 0) {
+(function (old) {
+    /**
+     * Cool extension that provide possibility to call $(element).attr()
+     * to get an object with all element's attributes with values
+     */
+    $.fn.attr = function () {
+        if (arguments.length === 0) {
+            if (this.length === 0) {
                 return null;
             }
 
             var obj = {};
-            $.each(this[0].attributes, function() {
-                if(this.specified) {
+            $.each(this[0].attributes, function () {
+                if (this.specified) {
                     obj[this.name] = this.value;
                 }
             });
@@ -22,6 +22,70 @@
     };
 })($.fn.attr);
 
+(function () {
+    /**
+     * Transform element into String
+     * @returns {string|null} transformed DOM object as string like
+     * "#id.class1.class2[attr1=value1,attr2=value2]"
+     */
+    $.fn.stringSelector = function () {
+        if (this.length === 0) {
+            return null;
+        }
+
+        var attributes = this.attr();
+
+        if (attributes.id) {
+            return "#" + attributes.id;
+
+        } else {
+            var elementAsString = "";
+
+            if (attributes.class) {
+                elementAsString += "." + attributes.class.split(" ").join(".");
+                delete attributes.class;
+            }
+
+            delete attributes.style;
+
+            var otherAttributes = Object.keys(attributes)
+                .map(function (key) {
+                    return "[" + key + "='" + attributes[key] + "']";
+                });
+
+            if (otherAttributes.length) {
+                elementAsString += otherAttributes.join("");
+            }
+
+            return (elementAsString)
+                ? elementAsString
+                : this.selector;
+        }
+    };
+}(jQuery));
+
+(function ($) {
+    /**
+     * Reloads currently selected element
+     * @returns {null} if no element selected
+     */
+    $.fn.reload = function () {
+        if (this.length === 0) {
+            return null;
+        }
+
+        var elementAsStr = this.stringSelector(),
+            reloadString = location.href + " " + elementAsStr + ">*",
+            $reloadMe = $(elementAsStr);
+
+        if ((arguments.length === 1) && (typeof arguments[0] === "function")) {
+            $reloadMe.load(reloadString, arguments[0]);
+
+        } else {
+            $reloadMe.load(reloadString);
+        }
+    };
+}(jQuery));
 
 /**
  * Ensure that this addon still used
