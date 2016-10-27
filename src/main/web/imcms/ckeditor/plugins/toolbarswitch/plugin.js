@@ -83,20 +83,26 @@ CKEDITOR.plugins.add('toolbarswitch', {
         var lang = editor.lang;
         var commandFunction = {
             exec: function (editor) {
-                if (editor.config.maxToolbar) {
+                var previousValue;
+                if (editor.checkDirty()) {
+                    previousValue = editor._.previousValue;
+                }
+                var switchToSmall = editor.config.maxToolbar;
+                if (switchToSmall) {
                     // For switching to the small toolbar first minimize
                     editor.commands.maximize.exec();
-                    switchMe(editor, function (e) {
-                        var newEditor = e.editor;
-                        newEditor.fire('triggerResize');
-                    });
-                } else {
-                    switchMe(editor, function (e) {
-                        var newEditor = e.editor;
-                        newEditor.commands.maximize.exec();
-                        newEditor.fire('triggerResize');
-                    });
                 }
+                switchMe(editor, function (event) {
+                    var newEditor = event.editor;
+                    if (!switchToSmall) {
+                        newEditor.commands.maximize.exec();
+                    }
+                    newEditor.fire('triggerResize');
+
+                    if (previousValue) {
+                        newEditor._.previousValue = previousValue;
+                    }
+                });
             }
         };
 
