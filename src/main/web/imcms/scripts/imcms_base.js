@@ -1,4 +1,23 @@
-Imcms.Editors = {};
+Imcms.Editors = {
+    /**
+     * Will rebuild editors of specified element.
+     * If any child should have editor, it will built.
+     * Do not forget to bind context of what to buildExtra
+     *
+     * @param $target target element to rebuild
+     */
+    rebuildEditorsIn: function ($target) {
+        this.buildExtra();
+
+        $target.find($(".editor-image")).each(
+            Imcms.Editors.Image.initEditor.bind(Imcms.Editors.Image)
+        );
+
+        $target.find("[contenteditable='true']").each(
+            Imcms.Editors.Text.addEditor.bind(Imcms.Editors.Text)
+        );
+    }
+};
 Imcms.Editors.Text = {};
 Imcms.Editors.Menu = {};
 Imcms.Utils = {};

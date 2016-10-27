@@ -175,17 +175,7 @@ Imcms.Loop.Editor.prototype = {
                 showProcessWindow: true,
                 reloadContent: {
                     element: $element,
-                    callback: function () {
-                        this.buildExtra();
-
-                        $element.find($(".editor-image")).each(
-                            Imcms.Editors.Image.initEditor.bind(Imcms.Editors.Image)
-                        );
-
-                        $element.find("[contenteditable='true']").each(
-                            Imcms.Editors.Text.addEditor.bind(Imcms.Editors.Text)
-                        );
-                    }.bind(this)
+                    callback: Imcms.Editors.rebuildEditorsIn.bind(this, $element)
                 }
             })
         );
