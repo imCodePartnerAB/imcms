@@ -224,7 +224,7 @@ Imcms.Image.Editor.prototype = {
             infoRef: this._builder.ref("infoView"),
             onDisplaySizeChanged: this._onDisplaySizeChanged.bind(this),
             onChooseFile: $.proxy(this._onChooseFile, this),
-            currentElement: this._element,
+            currentElement: this._element
         });
         this._infoViewAdapter.update(data);
 
@@ -268,19 +268,30 @@ Imcms.Image.Editor.prototype = {
         });
         $(this._builder[0]).fadeOut("fast");
     },
-
+    _onSaveReloadTask: function (showProcessWindow) {
+        var $element = $(this._element);
+        return {
+            showProcessWindow: showProcessWindow,
+            reloadContent: {
+                element: $element,
+                callback: function () {
+                    new Imcms.Image.Editor($element[0], Imcms.Editors.Image);
+                }
+            }
+        }
+    },
     _onRemoveImage: function () {
         var data = $(this._element).data();
         if (data.loop && data.entry) {
             this._loader.removeLoopItem(data.no, data.loop, data.entry, data.meta, this._language,
-                Imcms.BackgroundWorker.createTask({refreshPage: true}));
+                Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true)));
         }
         else {
             this._loader.remove(data.no, data.meta, this._language,
-                Imcms.BackgroundWorker.createTask({refreshPage: true}));
+                Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true)));
         }
+        this.close();
     },
-
     _onFileChosen: function (data) {
         if (data) {
             var clonedData = jQuery.extend(true, {}, data);
@@ -306,29 +317,25 @@ Imcms.Image.Editor.prototype = {
     },
     save: function () {
         var collectedData = this._infoViewAdapter.collect();
+
         if (this._loopId && this._entryId) {
             this._loader.saveLoopItem(this._id,
                 this._meta,
                 this._infoViewAdapter.isSharedMode(),
-                this._loopId, this._entryId,
+                this._loopId,
+                this._entryId,
                 this._language,
                 collectedData,
-                Imcms.BackgroundWorker.createTask({
-                    showProcessWindow: true,
-                    refreshPage: true
-                })
+                Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true))
             );
-        }
-        else {
+
+        } else {
             this._loader.save(this._id,
                 this._meta,
                 this._infoViewAdapter.isSharedMode(),
                 this._language,
                 collectedData,
-                Imcms.BackgroundWorker.createTask({
-                    showProcessWindow: true,
-                    refreshPage: true
-                })
+                Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true))
             );
         }
         this.close();

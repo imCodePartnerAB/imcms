@@ -1,7 +1,7 @@
 /**
  * Created by Shadowgun on 04.06.2015.
  *
- * Edited by Serhii Maksymchuk on 07.09.2016
+ * Upgraded by Serhii Maksymchuk in 2016
  */
 Imcms.BackgroundWorker = {
     registeredTasks: [],
@@ -13,10 +13,35 @@ Imcms.BackgroundWorker = {
      * Options for every task, all are optional
      */
     Options: {
+        /**
+         * Set true if you want to reload whole page
+         */
         reloadWholePage: false,
+        /**
+         * Set true if you want to reload only <body> content.
+         * $(document).ready() will not run again
+         */
         refreshPage: false,
+        /**
+         * Process window with grey background and gif while loading
+         */
         showProcessWindow: false,
-        redirectURL: ""
+        /**
+         * If you want to redirect somewhere, just add URL
+         */
+        redirectURL: "",
+        /**
+         * If you do not want to reload whole page or <body>, you can specify
+         * element to be reloaded and callback if needs
+         */
+        reloadContent: {
+            /**
+             * jQuery selected element
+             */
+            element: $(document),
+            callback: function () {
+            }
+        }
     },
 
     /**
@@ -137,8 +162,18 @@ Imcms.BackgroundWorker = {
                     return option.redirectURL; // find first option with redirecting, other will be ignored!
                 });
 
+            var reloadElementOptions = $this.completedTasksOptions
+                .filter(function (option) {
+                    return option.reloadContent;
+                });
+
             if (redirectOption) {
                 location.href = redirectOption.redirectURL;
+
+            } else if (reloadElementOptions.length) {
+                reloadElementOptions.forEach(function (option) {
+                    option.reloadContent.element.reload(option.reloadContent.callback);
+                });
 
             } else if ($this.completedTasksOptions.some($this._shouldReloadWholePage)) {
                 $this.reloadWholePage();
@@ -210,13 +245,15 @@ Imcms.BackgroundWorker = {
     closeProcessWindow: function () {
         var $this = Imcms.BackgroundWorker;
 
-        setTimeout(function () {
-            $this.processWindow.fadeOut(1200, function () {
-                $("body").css({overflow: "auto"});
-                $this.processWindow.remove();
-                delete $this.processWindow;
-            });
-        }, 300);
+        if ($this.processWindow) {
+            setTimeout(function () {
+                $this.processWindow.fadeOut(1200, function () {
+                    $("body").css({overflow: "auto"});
+                    $this.processWindow.remove();
+                    delete $this.processWindow;
+                });
+            }, 300);
+        }
     },
 
     /**
