@@ -179,10 +179,10 @@ Imcms.BackgroundWorker = {
                 $this.reloadWholePage();
 
             } else if ($this.completedTasksOptions.some($this._shouldRefreshPage)) {
-                $this.completedTasksOptions = [];
                 $this.reloadPage()
             }
 
+            $this.completedTasksOptions = [];
             $this.closeProcessWindow();
         }
     },

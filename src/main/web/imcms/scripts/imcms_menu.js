@@ -532,14 +532,21 @@ Imcms.Menu.Editor.prototype = {
         Imcms.Events.fire("imcmsEditorClose");
         $(this._builder[0]).hide();
 
+        var $target = $(this._target);
         var response = Imcms.Utils.margeObjectsProperties(
             {data: JSON.stringify(this._treeAdapter.collect())},
-            $(this._target).data());
+            $target.data());
 
-        this._loader.updateMenu(response, Imcms.BackgroundWorker.createTask({
-            showProcessWindow: true,
-            refreshPage: true
-        }));
+        this._loader.updateMenu(
+            response,
+            Imcms.BackgroundWorker.createTask({
+                showProcessWindow: true,
+                reloadContent: {
+                    element: $target,
+                    callback: Imcms.Editors.rebuildEditorsIn.bind(this, $target)
+                }
+            })
+        );
     },
     close: function () {
         Imcms.Events.fire("imcmsEditorClose");
