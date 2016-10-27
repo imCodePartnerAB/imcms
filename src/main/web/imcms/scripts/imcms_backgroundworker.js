@@ -13,6 +13,7 @@ Imcms.BackgroundWorker = {
      * Options for every task, all are optional
      */
     Options: {
+        reloadWholePage: false,
         refreshPage: false,
         showProcessWindow: false,
         redirectURL: ""
@@ -105,6 +106,10 @@ Imcms.BackgroundWorker = {
         return element.refreshPage;
     },
 
+    _shouldReloadWholePage: function (element) {
+        return element.reloadWholePage;
+    },
+
     /**
      *
      * @param ticket
@@ -135,6 +140,9 @@ Imcms.BackgroundWorker = {
             if (redirectOption) {
                 location.href = redirectOption.redirectURL;
 
+            } else if ($this.completedTasksOptions.some($this._shouldReloadWholePage)) {
+                $this.reloadWholePage();
+
             } else if ($this.completedTasksOptions.some($this._shouldRefreshPage)) {
                 $this.completedTasksOptions = [];
                 $this.reloadPage()
@@ -160,6 +168,13 @@ Imcms.BackgroundWorker = {
             url: url,
             success: Imcms.BackgroundWorker.refreshPageContent
         });
+    },
+
+    /**
+     * Reloads whole page, not only <body> as {@link reloadPage}
+     */
+    reloadWholePage: function () {
+        location.reload();
     },
 
     /**
