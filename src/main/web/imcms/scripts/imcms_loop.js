@@ -45,7 +45,7 @@ Imcms.Loop.Loader.prototype = {
 	_api: new Imcms.Loop.API(),
 	_editorList: [],
 	init: function () {
-		jQuery(".editor-loop").each(function (pos, element) {
+		$(".editor-loop").each(function (pos, element) {
 			this._editorList[pos] = new Imcms.Loop.Editor(element, this);
 		}.bind(this));
 	},
@@ -167,10 +167,27 @@ Imcms.Loop.Editor.prototype = {
 		return this;
 	},
 	save: function () {
-		this._loader.update(
+        var $element = $(this._target);
+
+        this._loader.update(
 			this._loopListAdapter.collect(),
-			$(this._target).data().no,
-			Imcms.BackgroundWorker.createTask({refreshPage: true})
+			$element.data().no,
+			Imcms.BackgroundWorker.createTask({
+                showProcessWindow: true,
+                reloadContent: {
+                    element: $element,
+                    callback: function () {
+                        this.buildExtra();
+
+                        $element.find($(".editor-image")).each(
+                            Imcms.Editors.Image.initEditor.bind(Imcms.Editors.Image)
+                        );
+
+                        $element.find("[contenteditable='true']").each(
+                            Imcms.Editors.Text.addEditor.bind(Imcms.Editors.Text)
+                        );
+                    }.bind(this)
+            }})
 		);
 		this.close();
 	},
@@ -220,12 +237,3 @@ Imcms.Loop.ListAdapter.prototype = {
 		return this._data;
 	}
 };
-
-
-
-
-
-
-
-
-
