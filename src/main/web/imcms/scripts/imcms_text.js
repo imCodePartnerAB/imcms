@@ -42,46 +42,51 @@ Imcms.Text.Editor = function () {
 
 Imcms.Text.Editor.prototype = {
     _api: new Imcms.Text.API(),
+    _textFrame: {},
     init: function () {
-        var textFrame = new Imcms.FrameBuilder().title("Text Editor");
+        this._textFrame = new Imcms.FrameBuilder().title("Text Editor");
 
         CKEDITOR.on('instanceCreated', this._onCreated.bind(this));
         CKEDITOR.on("confirmChangesEvent", this._onConfirm.bind(this));
         CKEDITOR.on("validateText", this._onValidateText.bind(this));
         CKEDITOR.on("getTextHistory", this._onGetTextHistory.bind(this));
 
-        $("[contenteditable='true']").each(function (position, element) {
-            element = $(element);
-            CKEDITOR.inline(element[0]);
-            element.parents("a").attr("onclick", "return false;");
+        $("[contenteditable='true']").each(this.addEditor.bind(this));
+    },
+    addEditor: function (position, element) {
+        element = $(element);
+        CKEDITOR.inline(element[0]);
+        element.parents("a").attr("onclick", "return false;");
 
-            $("<div>").insertAfter(element).append(element).css({overflow: "hidden"});
+        $("<div>").insertAfter(element)
+            .append(element)
+            .css({overflow: "hidden"});
 
-            var loopTitle = "";
-            if (element.data("loopentryref")) {
-                loopTitle = (element.data("loopentryref")).split("_");
-                loopTitle = "L" + loopTitle[0] + "-E" + loopTitle[1] + "-T";
-            }
+        var loopTitle = "";
+        if (element.data("loopentryref")) {
+            loopTitle = (element.data("loopentryref")).split("_");
+            loopTitle = "L" + loopTitle[0] + "-E" + loopTitle[1] + "-T";
+        }
 
-            var title = loopTitle + element.data("no") + " | " + element.data("label"),
-                currentFrame = textFrame.click(function (e) {
-                        currentFrame.hide();
-                        element.focus();
-                        element.trigger(e);
-                        element.blur(function () {
-                            currentFrame.show();
-                        });
-                    })
-                    .build()
-                    .attr("title", title.replace(/<(?:.|\n)*?>/gim, ''))
-                    .insertBefore(element);
+        var title = loopTitle + element.data("no") + " | " + element.data("label"),
+            currentFrame = this._textFrame
+                .click(function (e) {
+                    currentFrame.hide();
+                    element.focus();
+                    element.trigger(e);
+                    element.blur(function () {
+                        currentFrame.show();
+                    });
+                })
+                .build()
+                .attr("title", title.replace(/<(?:.|\n)*?>/gim, ''))
+                .insertBefore(element);
 
-            if (element.data("showlabel")) {
-                $("<div>").addClass("text-editor-label")
-                    .html(element.data("label"))
-                    .insertBefore(element);
-            }
-        });
+        if (element.data("showlabel")) {
+            $("<div>").addClass("text-editor-label")
+                .html(element.data("label"))
+                .insertBefore(element);
+        }
     },
     _onConfirm: function (event) {
         var editor = event.editor,
