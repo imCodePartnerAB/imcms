@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.Normalizer;
 import java.util.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ImageDomainObject implements Serializable, Cloneable {
@@ -386,6 +387,8 @@ public class ImageDomainObject implements Serializable, Cloneable {
         if (filename.length() > maxlength) {
             filename = filename.substring(0, maxlength);
         }
+
+        filename = Normalizer.normalize(filename, Normalizer.Form.NFC);
 
         String[][] specialCharacterReplacements = {
                 {"\u00e5", "a"},// å
