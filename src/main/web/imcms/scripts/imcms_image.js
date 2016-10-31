@@ -644,8 +644,9 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         var $infoRef = $(this._infoRef.getHTMLElement());
         this._imageSource.realImageSize.width = $infoRef.find("input[name=width]").val();
         this._imageSource.realImageSize.height = $infoRef.find("input[name=height]").val();
-        this._imageSource.width = $infoRef.find("input[name=displayWidth]").val();
-        this._imageSource.height = $infoRef.find("input[name=displayHeight]").val();
+        //Sending display width and height to zoom out to max possible display size to avoid big images
+        this._imageSource.width = $infoRef.find("input[name=divWidth]").val();
+        this._imageSource.height = $infoRef.find("input[name=divHeight]").val();
         this._imageSource.cropRegion.cropX1 = $infoRef.find("input[name=leftCrop]").val();
         this._imageSource.cropRegion.cropY1 = $infoRef.find("input[name=topCrop]").val();
         this._imageSource.cropRegion.cropX2 = $infoRef.find("input[name=rightCrop]").val();
