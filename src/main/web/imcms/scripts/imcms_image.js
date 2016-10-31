@@ -178,9 +178,11 @@ Imcms.Image.Editor.prototype = {
         if (this._imageCropper instanceof Imcms.Image.ImageCropper) {
             this._imageCropper.close();
         }
+        var isFreeTransformed = (this._imageViewAdapter._imageSource.imageInfo.width / this._imageViewAdapter._imageSource.imageInfo.height)
+            !== ((data.cropRegion.cropX2 - data.cropRegion.cropX1) / (data.cropRegion.cropY2 - data.cropRegion.cropY1));
         this._imageCropper = new Imcms.Image.ImageCropper({
             container: this._builder.ref("imageView").getHTMLElement(),
-            freeTransformed: (this._imageViewAdapter._imageSource.imageInfo.width / this._imageViewAdapter._imageSource.imageInfo.height) !== (data.cropRegion.cropY2 - data.cropRegion.cropY1) / (data.cropRegion.cropY2 - data.cropRegion.cropY1) ? true : false,
+            freeTransformed: isFreeTransformed,
             onCropChanged: this._onCropRegionChanged.bind(this)
         });
         if (this._isShowed) {

@@ -384,9 +384,6 @@ public class Imcms {
      */
     public static void regenerateImages() {
         List<Image> allImages = Utility.getFacade().getImageService().getAllGeneratedImages();
-
-        for (Image img : allImages) {
-            ImcmsImageUtils.generateImage(ImcmsImageUtils.toDomainObject(img), false);
-        }
+        allImages.forEach((img) -> ImcmsImageUtils.generateImage(ImcmsImageUtils.toDomainObject(img),false));
     }
 }
