@@ -1,5 +1,7 @@
 package imcode.util;
 
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.ImageCropRegion;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -12,6 +14,7 @@ import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.NullImageSource;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -502,5 +505,64 @@ public class ImcmsImageUtils {
         }
 
         return "W/\"" + DigestUtils.md5Hex(builder.toString()) + "\"";
+    }
+
+    public static ImageDomainObject toDomainObject(Image image) {
+        if (image == null) return null;
+
+        ImageDomainObject imageDO = new ImageDomainObject();
+
+        imageDO.setAlign(image.getAlign());
+        imageDO.setAlternateText(image.getAlternateText());
+        imageDO.setArchiveImageId(image.getArchiveImageId());
+        imageDO.setBorder(image.getBorder());
+
+        ImageCropRegion cropRegion = image.getCropRegion();
+        ImageDomainObject.CropRegion cropRegionDO = new ImageDomainObject.CropRegion(
+                cropRegion.getCropX1(), cropRegion.getCropY1(), cropRegion.getCropX2(), cropRegion.getCropY2()
+        );
+        imageDO.setCropRegion(cropRegionDO);
+        imageDO.setGeneratedFilename(image.getGeneratedFilename());
+        imageDO.setHeight(image.getHeight());
+        imageDO.setHorizontalSpace(image.getHorizontalSpace());
+        imageDO.setLinkUrl(image.getLinkUrl());
+        imageDO.setLowResolutionUrl(image.getLowResolutionUrl());
+        imageDO.setName(image.getName());
+        imageDO.setResize(Resize.getByOrdinal(image.getResize()));
+        imageDO.setTarget(image.getTarget());
+        imageDO.setVerticalSpace(image.getVerticalSpace());
+        imageDO.setWidth(image.getWidth());
+
+        return initImageSource(image, imageDO);
+    }
+
+    private static ImageDomainObject initImageSource(Image jpaImage, ImageDomainObject imageDO) {
+        String url = jpaImage.getUrl();
+        Integer type = jpaImage.getType();
+
+        Objects.requireNonNull(url);
+        Objects.requireNonNull(type);
+
+        imageDO.setSource(createImageSource(imageDO, url.trim(), type));
+
+        return imageDO;
+    }
+
+    private static ImageSource createImageSource(ImageDomainObject image, String url, int type) {
+        switch (type) {
+            case ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT:
+                throw new IllegalStateException(
+                        String.format("Illegal image source type - IMAGE_TYPE_ID__FILE_DOCUMENT. Image: %s", image)
+                );
+
+            case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH:
+                return new ImagesPathRelativePathImageSource(url);
+
+            case ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE:
+                return new ImageArchiveImageSource(url);
+
+            default:
+                return new NullImageSource();
+        }
     }
 }
