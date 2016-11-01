@@ -160,8 +160,6 @@ Imcms.BackgroundWorker = {
         $this.registeredTasks.remove(task);
         $this.completedTasksOptions.push(tskOpt);
 
-        // var callbackOptions = function(){};
-
         if (!$this.registeredTasks.length) {
             var redirectOption = $this.completedTasksOptions
                 .find(function (option) {
