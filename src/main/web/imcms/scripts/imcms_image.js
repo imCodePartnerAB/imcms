@@ -1154,3 +1154,140 @@ Imcms.Image.ImageCropper.prototype = {
         return false;
     }
 };
+
+Imcms.Image.ImageInTextEditor = function (textEditor) {
+    this._window = new Imcms.Image.ImageInTextEditor.Window(textEditor);
+};
+Imcms.Image.ImageInTextEditor.prototype = {
+    _textEditor: {},
+    _window: {},
+    onFreeImageIndexReceived: function (imageNo) {
+        this._window.generateImageTag(imageNo);
+        setTimeout(this._window.openWindow.bind(this._window), 250);
+    },
+    onBrowserOpen: function () {
+        $.ajax({
+            url: Imcms.Linker.getContextPath() + "/api/content/image/emptyNo/" + Imcms.document.meta + "/LOWER",
+            success: this.onFreeImageIndexReceived.bind(this)
+        });
+    }
+};
+
+Imcms.Image.ImageInTextEditor.Window = function (textEditor) {
+    this._textEditor = textEditor;
+    this.init();
+};
+Imcms.Image.ImageInTextEditor.Window.prototype = {
+    _imageEditor: {},
+    _element: {},
+    _id: {},
+    _meta: {},
+    _builder: {},
+    _primarySource: {},
+    _source: {},
+    _imageViewAdapter: {},
+    _frame: {},
+    _loader: {},
+    _infoViewAdapter: {},
+    _imageCropper: {},
+    _isShowed: false,
+    _isLoaded: false,
+    _language: '',
+    _imageNo: 0,
+    initSource: function () {
+        // reassigned in init()
+    },
+    buildView: function () {
+        // reassigned in init()
+    },
+    open: function () {
+        // reassigned in init()
+    },
+    close: function () {
+        // reassigned in init()
+    },
+    mixinFromImageEditor: function (functionName) {
+        this[functionName] = this._imageEditor[functionName].bind(this);
+    },
+    init: function () {
+        this._loader = Imcms.Editors.Image;
+        this._imageEditor = Imcms.Image.Editor.prototype;
+
+        // rebinding methods to not duplicate code
+        [
+            "initSource",
+            "buildView",
+            "buildCropper",
+            "buildExtra",
+            "_getSource",
+            "buildImageView",
+            "onImageLoaded",
+            "buildInfoView",
+            "addLanguageSwitches",
+            "addLanguageSwitch",
+            "_onLanguageChanged",
+            "_onDisplaySizeChanged",
+            "_onChooseFile",
+            "_onSaveReloadTask",
+            "_onFileChosen",
+            "_onCropRegionChanged",
+            "open",
+            "close"
+        ].forEach(this.mixinFromImageEditor.bind(this));
+    },
+    openWindow: function () {
+        this.open();
+        this._textEditor.focusManager.blur();
+        this._textEditor.element.$.blur();
+    },
+    generateImageTag: function (imageNo) {
+        this._imageNo = imageNo;
+        var editorRequiredHTML = $("<div>")
+            .addClass("editor-base editor-image")
+            .attr("data-no", imageNo)
+            .attr("data-meta", Imcms.document.meta);
+
+        $("<img>").attr("cap", "")
+            .attr("src", Imcms.Linker.getContextPath() + "/imcms/eng/images/admin/ico_image.gif")
+            .appendTo(editorRequiredHTML);
+
+        $("<body>").append(editorRequiredHTML);
+        this._element = editorRequiredHTML[0];
+
+        var data = $(this._element).data();
+        this._id = data.no;
+        this._meta = data.meta;
+        this._language = Imcms.language.code;
+
+        this.buildView();
+
+        this._loader.getById(this._id, this._meta, this._language, this._imageEditor.initSource.bind(this));
+    },
+    save: function () {
+        var collectedData = this._infoViewAdapter.collect();
+
+        this._loader.save(this._id,
+            this._meta,
+            this._infoViewAdapter.isSharedMode(),
+            this._language,
+            collectedData,
+            this._onSaveChangesCallback.bind(this)
+        );
+        this.close();
+    },
+    _onSaveChangesCallback: function () {
+        this._textEditor.focusManager.blur();
+        this._textEditor.element.$.blur();
+        this._loader.getById(this._imageNo, this._meta, this._language, this._onGetImageAfterSavingCallback.bind(this));
+    },
+    _onGetImageAfterSavingCallback: function (image) {
+        var imageSource = Imcms.Linker.getContextPath() + image.generatedUrlPathRelativeToContextPath;
+        this._textEditor.insertHtml('<img class="captionedImage" src="' + imageSource + '" alt="" />', 'unfiltered_html');
+    },
+    _onRemoveImage: function () {
+        // todo: finish removing
+        // var data = $(this._element).data();
+        // this._loader.remove(data.no, data.meta, this._language, this._textEditor.//remove);
+        this.close();
+    }
+};
