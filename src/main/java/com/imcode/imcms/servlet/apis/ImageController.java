@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.apis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.imagearchive.util.Utils;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.mapping.TextDocumentContentSaver;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.util.Map;
@@ -245,6 +247,59 @@ public class ImageController {
         return true;
     }
 
+    /**
+     * Returns empty upper or lower image index.
+     * For example, if we have images in document under indexes -3, -1, 1, 2, 10,
+     * calling this method for lower indexes we will get -2, for upper it will be 3.
+     *
+     * @param docId     interested document id
+     * @param direction String parameter "UPPER" or "LOWER"
+     */
+    @RequestMapping("/emptyNo/{docId}/{upperOrLower}")
+    public void getFreeImageNo(@PathVariable("docId") int docId,
+                               @PathVariable("upperOrLower") Direction direction,
+                               HttpServletResponse response) {
+
+        final TextDocumentDomainObject document = Imcms.getServices()
+                .getDocumentMapper()
+                .getWorkingDocument(docId);
+
+        Integer result = null;
+
+        if (document != null) {
+
+            switch (direction) {
+                case LOWER: {
+                    result = -1;
+
+                    while ((result > Integer.MIN_VALUE) && (isIndexOccupied(document, result))) {
+                        result--;
+                    }
+                    break;
+                }
+
+                case UPPER: {
+                    result = 1;
+
+                    while ((result < Integer.MAX_VALUE) && (isIndexOccupied(document, result))) {
+                        result++;
+                    }
+                    break;
+                }
+            }
+        }
+
+        if ((result != null) && (result.equals(Integer.MAX_VALUE) || result.equals(Integer.MIN_VALUE))) {
+            result = null;
+        }
+
+        Utils.writeJSON(result, response);
+    }
+
+    private boolean isIndexOccupied(TextDocumentDomainObject document, Integer result) {
+        return (document.getImage(result).getGeneratedFilename() != null);
+    }
+
     private <T extends DocumentDomainObject> T getDocWithLanguageAndVersion(int docId,
                                                                             String langCode,
                                                                             ServletRequest request) {
@@ -257,5 +312,9 @@ public class ImageController {
         return (containsLang)
                 ? services.getDocumentMapper().getVersionedDocument(docId, langCode, request)
                 : services.getDocumentMapper().getVersionedDocument(docId, request);
+    }
+
+    private enum Direction {
+        UPPER, LOWER
     }
 }
