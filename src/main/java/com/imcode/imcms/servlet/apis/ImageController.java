@@ -141,7 +141,7 @@ public class ImageController {
         return (ImageSource) urls[0];
     }
 
-    @RequestMapping(value = "/{docId}-{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{docId}/{id}", method = RequestMethod.GET)
     public ImageDomainObject getImage(@PathVariable("id") Integer id,
                                       @PathVariable("docId") Integer docId,
                                       @RequestParam(value = "loopId", required = false) Integer loopId,
@@ -156,7 +156,7 @@ public class ImageController {
                 : textDocument.getImage(id);
     }
 
-    @RequestMapping(value = "/**/{docId}-{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/**/{docId}/{id}", method = RequestMethod.POST)
     public boolean updateImage(
             @PathVariable("id") Integer id,
             @PathVariable("docId") Integer docId,
@@ -214,7 +214,7 @@ public class ImageController {
         return true;
     }
 
-    @RequestMapping(value = "/{docId}-{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{docId}/{id}", method = RequestMethod.DELETE)
     public boolean deleteImage(@PathVariable("id") Integer id,
                                @PathVariable("docId") Integer docId,
                                @RequestParam(value = "loopId", required = false) Integer loopId,

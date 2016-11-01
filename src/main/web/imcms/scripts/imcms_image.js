@@ -52,11 +52,11 @@ Imcms.Image.Loader.prototype = {
         this._editorsList[position] = new Imcms.Image.Editor(element, this);
     },
     getById: function (id, meta, langCode, callback) {
-        this._api.read({object: ((meta || Imcms.document.meta) + "-" + id + "?langCode=" + langCode)},
+        this._api.read({object: ((meta || Imcms.document.meta) + "/" + id + "?langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::getById : ", callback));
     },
     getByLoopItemRef: function (id, loopId, entryId, meta, langCode, callback) {
-        this._api.read({object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
+        this._api.read({object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::getByLoopItemRef : ", callback));
     },
     getByPath: function (path, callback) {
@@ -70,22 +70,22 @@ Imcms.Image.Loader.prototype = {
         this._api.update({
             sharedMode: isShared,
             imageDomainObject: JSON.stringify(data),
-            object: ((meta || Imcms.document.meta) + "-" + id + "?langCode=" + langCode)
+            object: ((meta || Imcms.document.meta) + "/" + id + "?langCode=" + langCode)
         }, Imcms.Logger.log.bind(this, "Image::save : ", callback));
     },
     saveLoopItem: function (id, meta, isShared, loopId, entryId, langCode, data, callback) {
         this._api.update({
             sharedMode: isShared,
             imageDomainObject: JSON.stringify(data),
-            object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)
+            object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)
         }, Imcms.Logger.log.bind(this, "Image::saveLoopItem : ", callback));
     },
     remove: function (id, meta, langCode, callback) {
-        this._api.delete({object: ((meta || Imcms.document.meta) + "-" + id + "?langCode=" + langCode)},
+        this._api.delete({object: ((meta || Imcms.document.meta) + "/" + id + "?langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::remove : ", callback));
     },
     removeLoopItem: function (id, loopId, entryId, meta, langCode, callback) {
-        this._api.delete({object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
+        this._api.delete({object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::removeLoopItem : ", callback));
     }
 };
