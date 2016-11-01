@@ -252,7 +252,10 @@ CKEDITOR.plugins.add("fileBrowser", {
             editor.element.$.focus();
         };
 
-        var openBrowserCommandDefinition = CKEDITOR.newCommandWithExecution(onChooseFile);
+        var imageInTextEditor = new Imcms.Image.ImageInTextEditor(editor),
+            openBrowserCommandDefinition = CKEDITOR.newCommandWithExecution(
+                imageInTextEditor.onBrowserOpen.bind(imageInTextEditor)
+            );
         editor.addCommand("openBrowser", openBrowserCommandDefinition);
 
         editor.ui.addButton('openBrowser', {
