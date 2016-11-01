@@ -1242,22 +1242,18 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
     },
     generateImageTag: function (imageNo) {
         this._imageNo = imageNo;
-        var editorRequiredHTML = $("<div>")
+        this._id = imageNo;
+        this._meta = Imcms.document.meta;
+        this._language = Imcms.language.code;
+
+        this._element = $("<div>")
             .addClass("editor-base editor-image")
-            .attr("data-no", imageNo)
-            .attr("data-meta", Imcms.document.meta);
+            .attr("data-no", this._id)
+            .attr("data-meta", this._meta);
 
         $("<img>").attr("cap", "")
             .attr("src", Imcms.Linker.getContextPath() + "/imcms/eng/images/admin/ico_image.gif")
-            .appendTo(editorRequiredHTML);
-
-        $("<body>").append(editorRequiredHTML);
-        this._element = editorRequiredHTML[0];
-
-        var data = $(this._element).data();
-        this._id = data.no;
-        this._meta = data.meta;
-        this._language = Imcms.language.code;
+            .appendTo(this._element);
 
         this.buildView();
 
