@@ -1277,8 +1277,10 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
         this._loader.getById(this._imageNo, this._meta, this._language, this._onGetImageAfterSavingCallback.bind(this));
     },
     _onGetImageAfterSavingCallback: function (image) {
-        var imageSource = Imcms.Linker.getContextPath() + image.generatedUrlPathRelativeToContextPath;
-        this._textEditor.insertHtml('<img class="captionedImage" src="' + imageSource + '" alt="" />', 'unfiltered_html');
+        var imageSource = Imcms.Linker.getContextPath() + image.generatedUrlPathRelativeToContextPath,
+            element = '<img class="InternalImageInTextEditor" data-no="' + this._id + '" data-meta="' + this._meta + '"'
+            + ' src="' + imageSource + '"/>';
+        this._textEditor.insertHtml(element, 'unfiltered_html');
     },
     _onRemoveImage: function () {
         // todo: finish removing
