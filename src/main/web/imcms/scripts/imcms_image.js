@@ -1,5 +1,6 @@
 /**
  * Created by Shadowgun on 26.03.2015.
+ * Updated by Serhii and 3emluk in 2016
  */
 Imcms.Image = {};
 Imcms.Image.API = function () {
@@ -419,18 +420,24 @@ Imcms.Image.ImageInfoAdapter.prototype = {
     },
     buildView: function () {
         //Setting default values if image src is empty(but data still can exist in DB)
-        if (this._imageSource.urlPathRelativeToContextPath === "") {
-            this._imageSource.realImageSize.width = "";
-            this._imageSource.realImageSize.height = "";
-            this._imageSource.width = "";
-            this._imageSource.height = "";
-            this._imageSource.cropRegion.cropX1 = -1;
-            this._imageSource.cropRegion.cropY1 = -1;
-            this._imageSource.cropRegion.cropX2 = -1;
-            this._imageSource.cropRegion.cropY2 = -1;
-            this._imageSource.alternateText = "";
-            this._imageSource.name = "";
-            this._imageSource.linkUrl = "";
+        if (!this._imageSource.urlPathRelativeToContextPath) {
+            this._imageSource = {
+                realImageSize: {
+                    width: "",
+                    height: ""
+                },
+                cropRegion: {
+                    cropX1: -1,
+                    cropY1: -1,
+                    cropX2: -1,
+                    cropY2: -1
+                },
+                width: "",
+                height: "",
+                alternateText: "",
+                name: "",
+                linkUrl: ""
+            };
             this._divWidth = 0;
             this._divHeight = 0;
         }
