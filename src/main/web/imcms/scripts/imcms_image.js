@@ -1162,14 +1162,21 @@ Imcms.Image.ImageInTextEditor.prototype = {
     _textEditor: {},
     _window: {},
     onFreeImageIndexReceived: function (imageNo) {
-        this._window.generateImageTag(imageNo);
-        setTimeout(this._window.openWindow.bind(this._window), 250);
+        this._window.initViewForEmptyImage(imageNo);
+        this.openWindow();
     },
     onBrowserOpen: function () {
         $.ajax({
             url: Imcms.Linker.getContextPath() + "/api/content/image/emptyNo/" + Imcms.document.meta + "/LOWER",
             success: this.onFreeImageIndexReceived.bind(this)
         });
+    },
+    onExistingImageEdit: function (imageObj) {
+        this._window.initViewForExistingImage(imageObj.no);
+        this.openWindow();
+    },
+    openWindow: function () {
+        setTimeout(this._window.openWindow.bind(this._window), 300);
     }
 };
 
@@ -1193,7 +1200,6 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
     _isShowed: false,
     _isLoaded: false,
     _language: '',
-    _imageNo: 0,
     initSource: function () {
         // reassigned in init()
     },
@@ -1240,8 +1246,25 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
         this._textEditor.focusManager.blur();
         this._textEditor.element.$.blur();
     },
-    generateImageTag: function (imageNo) {
-        this._imageNo = imageNo;
+    initViewForEmptyImage: function (imageNo) {
+        this.generateEmptyImageTag(imageNo);
+        this.initView();
+    },
+    initViewForExistingImage: function (imageNo, src) {
+        this.generateImageTag(imageNo, src);
+        this.initView();
+    },
+    initView: function () {
+        this.buildView();
+        this.getCurrentImageWithCallback(this._imageEditor.initSource.bind(this));
+    },
+    getCurrentImageWithCallback: function (callback) {
+        this._loader.getById(this._id, this._meta, this._language, callback);
+    },
+    generateEmptyImageTag: function (imageNo) {
+        this.generateImageTag(imageNo, Imcms.Linker.getContextPath() + "/imcms/eng/images/admin/ico_image.gif");
+    },
+    generateImageTag: function (imageNo, src) {
         this._id = imageNo;
         this._meta = Imcms.document.meta;
         this._language = Imcms.language.code;
@@ -1252,12 +1275,8 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
             .attr("data-meta", this._meta);
 
         $("<img>").attr("cap", "")
-            .attr("src", Imcms.Linker.getContextPath() + "/imcms/eng/images/admin/ico_image.gif")
+            .attr("src", src)
             .appendTo(this._element);
-
-        this.buildView();
-
-        this._loader.getById(this._id, this._meta, this._language, this._imageEditor.initSource.bind(this));
     },
     save: function () {
         var collectedData = this._infoViewAdapter.collect();
@@ -1274,7 +1293,7 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
     _onSaveChangesCallback: function () {
         this._textEditor.focusManager.blur();
         this._textEditor.element.$.blur();
-        this._loader.getById(this._imageNo, this._meta, this._language, this._onGetImageAfterSavingCallback.bind(this));
+        this.getCurrentImageWithCallback(this._onGetImageAfterSavingCallback.bind(this));
     },
     _onGetImageAfterSavingCallback: function (image) {
         var imageSource = Imcms.Linker.getContextPath() + image.generatedUrlPathRelativeToContextPath,

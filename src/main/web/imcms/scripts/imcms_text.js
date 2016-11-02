@@ -89,20 +89,23 @@ Imcms.Text.Editor.prototype = {
         }
     },
     _onInstanceReady: function (event) {
-        var editor = event.editor;
+        var editor = event.editor,
+            selectedImageData = {};
 
         editor.addCommand('editInternalImageCmd', {
             exec: function (editor) {
-                // execution here
+                var imageInTextEditor = new Imcms.Image.ImageInTextEditor(editor);
+                imageInTextEditor.onExistingImageEdit(selectedImageData);
             }
         });
-        var editInternalImageCmd = {
-            label: editor.lang.image.menu,
-            command: 'editInternalImageCmd',
-            group: 'image'
-        };
         editor.contextMenu.addListener(function (element, selection) {
             if (element.hasClass("internalImageInTextEditor")) {
+                var $selection = $(selection._.cache.selectedElement.$);
+
+                selectedImageData = {
+                    no: $selection.attr("data-no"),
+                    src: $selection.attr("src")
+                };
                 // skipping CKEditor's "image" context menu item that is items[3]
                 editor.contextMenu.items = editor.contextMenu.items.slice(0, 3);
                 return {
