@@ -1,13 +1,12 @@
 /**
+ * Text Editor
+ *
  * Created by Shadowgun on 13.02.2015.
- */
-/**
- Text Editor
+ * Upgraded by Serhii Maksymchuk in 2016
  */
 Imcms.Text = {};
 
 Imcms.Text.API = function () {
-
 };
 Imcms.Text.API.prototype = {
     get: function (request, callback) {
@@ -105,7 +104,7 @@ Imcms.Text.Editor.prototype = {
         editor.contextMenu.addListener(function (element, selection) {
             if (element.hasClass("internalImageInTextEditor")) {
                 // skipping CKEditor's "image" context menu item that is items[3]
-                editor.contextMenu.items = editor.contextMenu.items.slice(0,3);
+                editor.contextMenu.items = editor.contextMenu.items.slice(0, 3);
                 return {
                     editInternalImageCmd: CKEDITOR.TRISTATE_OFF
                 };
