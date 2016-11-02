@@ -228,6 +228,31 @@ public class DBConfig {
         return basicDataSource;
     }
 
+//    Wasn't in previous config
+    @Bean
+    public BasicDataSource dataSourceWithAutoCommit() {
+        // org.apache.commons.dbcp.BasicDataSource
+        BasicDataSource basicDataSource = new BasicDataSource();
+
+
+        basicDataSource.setDriverClassName(env.getProperty("JdbcDriver"));
+        basicDataSource.setUrl(env.getProperty("JdbcUrl"));
+        basicDataSource.setUsername(env.getProperty("User"));
+        basicDataSource.setPassword(env.getProperty("Password"));
+        basicDataSource.setTestOnBorrow(true);
+        basicDataSource.setValidationQuery("select 1");
+        basicDataSource.setDefaultAutoCommit(false);
+        basicDataSource.setMaxTotal(20);
+        basicDataSource.setMaxTotal(Integer.parseInt(env.getProperty("MaxConnectionCount")));
+        basicDataSource.setDefaultAutoCommit(true);
+
+//        basicDataSource.setDriverClassName("com.mysql.jdbc.Driver");
+//        basicDataSource.setUrl("jdbc:mysql://localhost:3306/spring");
+//        basicDataSource.setUsername("root");
+//        basicDataSource.setPassword("IHave1Dream!");
+        return basicDataSource;
+    }
+
 /*
 
     @Bean
