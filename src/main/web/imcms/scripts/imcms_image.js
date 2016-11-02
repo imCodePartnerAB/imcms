@@ -1172,7 +1172,7 @@ Imcms.Image.ImageInTextEditor.prototype = {
         });
     },
     onExistingImageEdit: function (imageObj) {
-        this._window.initViewForExistingImage(imageObj.no, imageObj.src);
+        this._window.initViewForExistingImage(imageObj);
         this.openWindow();
     },
     openWindow: function () {
@@ -1186,6 +1186,7 @@ Imcms.Image.ImageInTextEditor.Window = function (textEditor) {
 };
 Imcms.Image.ImageInTextEditor.Window.prototype = {
     _imageEditor: {},
+    _realElement: {},
     _element: {},
     _id: {},
     _meta: {},
@@ -1250,8 +1251,9 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
         this.generateEmptyImageTag(imageNo);
         this.initView();
     },
-    initViewForExistingImage: function (imageNo, src) {
-        this.generateImageTag(imageNo, src);
+    initViewForExistingImage: function (image) {
+        this._realElement = image.selectedElement;
+        this.generateImageTag(image.no, image.src);
         this.initView();
     },
     initView: function () {
