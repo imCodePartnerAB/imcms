@@ -100,11 +100,13 @@ Imcms.Text.Editor.prototype = {
         });
         editor.contextMenu.addListener(function (element, selection) {
             if (element.hasClass("internalImageInTextEditor")) {
-                var $selection = $(selection._.cache.selectedElement.$);
+                var selectedElement = selection._.cache.selectedElement.$,
+                    $selection = $(selectedElement);
 
                 selectedImageData = {
                     no: $selection.attr("data-no"),
-                    src: $selection.attr("src")
+                    src: $selection.attr("src"),
+                    selectedElement: selectedElement
                 };
                 // skipping CKEditor's "image" context menu item that is items[3]
                 editor.contextMenu.items = editor.contextMenu.items.slice(0, 3);
