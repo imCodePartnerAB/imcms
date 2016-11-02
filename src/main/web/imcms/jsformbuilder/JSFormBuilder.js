@@ -164,7 +164,7 @@ JSFormBuilder.Mixins.AttributeBase = {
         this._element.required = true;
         return this;
     },
-    class: function () {
+    setClass: function () {
         if (arguments.length === 0) return this._element.className;
         this._element.className = arguments[0];
         return this;
