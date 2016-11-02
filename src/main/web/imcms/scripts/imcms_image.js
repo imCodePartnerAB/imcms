@@ -1302,9 +1302,6 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
         this._textEditor.insertHtml(element, 'unfiltered_html');
     },
     _onRemoveImage: function () {
-        // todo: finish removing
-        // var data = $(this._element).data();
-        // this._loader.remove(data.no, data.meta, this._language, this._textEditor.//remove);
-        this.close();
+        this._loader.remove(this._id, this._meta, this._language, this.close.bind(this));
     }
 };
