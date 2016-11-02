@@ -46,6 +46,7 @@ Imcms.Text.Editor.prototype = {
     init: function () {
         this._textFrame = new Imcms.FrameBuilder().title("Text Editor");
 
+        CKEDITOR.on('instanceReady', this._onInstanceReady.bind(this));
         CKEDITOR.on('instanceCreated', this._onCreated.bind(this));
         CKEDITOR.on("confirmChangesEvent", this._onConfirm.bind(this));
         CKEDITOR.on("validateText", this._onValidateText.bind(this));
@@ -87,6 +88,37 @@ Imcms.Text.Editor.prototype = {
                 .html(element.data("label"))
                 .insertBefore(element);
         }
+    },
+    _onInstanceReady: function (event) {
+        var editor = event.editor;
+
+        editor.addCommand('editInternalImageCmd', {
+            exec: function (editor) {
+                // execution here
+            }
+        });
+        var editInternalImageCmd = {
+            label: editor.lang.image.menu,
+            command: 'editInternalImageCmd',
+            group: 'image'
+        };
+        editor.contextMenu.addListener(function (element, selection) {
+            if (element.hasClass("internalImageInTextEditor")) {
+                // skipping CKEditor's "image" context menu item that is items[3]
+                editor.contextMenu.items = editor.contextMenu.items.slice(0,3);
+                return {
+                    editInternalImageCmd: CKEDITOR.TRISTATE_OFF
+                };
+            }
+        });
+        editor.addMenuItems({
+            editInternalImageCmd: {
+                label: 'Edit Image',
+                command: 'editInternalImageCmd',
+                group: 'image',
+                order: 2
+            }
+        });
     },
     _onConfirm: function (event) {
         var editor = event.editor,
