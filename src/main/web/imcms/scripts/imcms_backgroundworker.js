@@ -254,16 +254,14 @@ Imcms.BackgroundWorker = {
     closeProcessWindow: function () {
         var $this = Imcms.BackgroundWorker;
         if ($this.processWindow) {
-            setTimeout(function () {
-                $this.processWindow.fadeOut(1200, function () {
-                    $this.callbackFunctions.forEach(function (callback) {
-                        callback();
-                    });
-                    $("body").css({overflow: "auto"});
-                    $this.processWindow.remove();
-                    delete $this.processWindow;
+            $this.processWindow.fadeOut(1500, function () {
+                $this.callbackFunctions.forEach(function (callback) {
+                    callback();
                 });
-            }, 300);
+                $("body").css({overflow: "auto"});
+                $this.processWindow.remove();
+                delete $this.processWindow;
+            });
         }
     },
 
