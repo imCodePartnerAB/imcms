@@ -217,5 +217,10 @@
     "args": [
       "metaId"
     ]
+  },
+  {
+    "name": "edit.image.in.text.editor.icon",
+    "url": "/imcms/ckeditor/plugins/imcms_image/toolBarButton.png",
+    "args": []
   }
 ]
