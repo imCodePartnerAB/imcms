@@ -68,13 +68,17 @@ public class InternalError extends HttpServlet {
 
         Map<String, String> exceptionInfo = parse(exception);
 
-        Map<String, String> headersInfo = parse(request);
+        Map<String, String> requestInfo = parse(request);
 
-        setInfo(request, exceptionInfo, headersInfo);
+        setInfo(request, exceptionInfo, requestInfo);
 
         String errorLoggerUrl = ofNullable(serverProperties.getProperty("ErrorLoggerUrl"))
                                     .map(url -> !url.isEmpty() ? url : Imcms.ERROR_LOGGER_URL)
                                     .orElse(Imcms.ERROR_LOGGER_URL);
+
+        String jdbcUrl = serverProperties.getProperty("JdbcUrl");
+        String dbName = jdbcUrl.substring(jdbcUrl.lastIndexOf("/"),
+                jdbcUrl.contains("?") ?  jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
 
         HttpClient httpClient = createHttpClient();
 
@@ -85,14 +89,15 @@ public class InternalError extends HttpServlet {
                 .add("cause", exceptionInfo.get("cause"))
                 .add("stack-trace", exceptionInfo.get("stackTrace"))
 
-                .add("error-url", defaultString(headersInfo.get("errorUrl"), DEFAULT_RESPONSE))
-                .add("user-agent", headersInfo.get("userAgent"))
-                .add("header-accept", headersInfo.get("headerAccept"))
-                .add("header-accept-encoding", headersInfo.get("headerAcceptEncoding"))
-                .add("header-accept-language", headersInfo.get("headerAcceptLanguage"))
+                .add("error-url", defaultString(requestInfo.get("errorUrl"), DEFAULT_RESPONSE))
+                .add("user-agent", requestInfo.get("userAgent"))
+                .add("header-accept", requestInfo.get("headerAccept"))
+                .add("header-accept-encoding", requestInfo.get("headerAcceptEncoding"))
+                .add("header-accept-language", requestInfo.get("headerAcceptLanguage"))
+                .add("server-name", requestInfo.get("serverName"))
 
-                .add("server-name", defaultString(serverProperties.getProperty("ServerName"), DEFAULT_RESPONSE))
-                .add("database-name", defaultString(serverProperties.getProperty("DBName"), DEFAULT_RESPONSE))
+                .add("database-name", dbName)
+
                 .add("imcms-version", Version.getImcmsVersion(getServletContext()))
                 .add("database-version", defaultString(Version.getRequiredDbVersion(), DEFAULT_RESPONSE))
 
@@ -139,15 +144,16 @@ public class InternalError extends HttpServlet {
     }
 
     private Map<String, String> parse(HttpServletRequest request) {
-        Map<String, String> headersInfo = new HashMap<>();
+        Map<String, String> requestInfo = new HashMap<>();
 
-        headersInfo.put("errorUrl", request.getHeader("referer"));
-        headersInfo.put("userAgent", request.getHeader("user-agent"));
-        headersInfo.put("headerAccept", request.getHeader("accept"));
-        headersInfo.put("headerAcceptEncoding", request.getHeader("accept-encoding"));
-        headersInfo.put("headerAcceptLanguage", request.getHeader("accept-language"));
+        requestInfo.put("errorUrl", request.getHeader("referer"));
+        requestInfo.put("userAgent", request.getHeader("user-agent"));
+        requestInfo.put("headerAccept", request.getHeader("accept"));
+        requestInfo.put("headerAcceptEncoding", request.getHeader("accept-encoding"));
+        requestInfo.put("headerAcceptLanguage", request.getHeader("accept-language"));
+        requestInfo.put("serverName", request.getServerName());
 
-        return headersInfo;
+        return requestInfo;
     }
 
     private String logError(String response, String userId) throws IOException {
