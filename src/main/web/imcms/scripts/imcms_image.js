@@ -1172,7 +1172,7 @@ Imcms.Image.ImageInTextEditor.prototype = {
         });
     },
     onExistingImageEdit: function (imageObj) {
-        this._window.initViewForExistingImage(imageObj.no);
+        this._window.initViewForExistingImage(imageObj.no, imageObj.src);
         this.openWindow();
     },
     openWindow: function () {
