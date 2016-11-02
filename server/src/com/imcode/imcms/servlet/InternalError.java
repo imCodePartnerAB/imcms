@@ -96,8 +96,10 @@ public class InternalError extends HttpServlet {
 
         request.setAttribute("error-url", StringUtils.defaultString(errorUrl, "unknown"));
 
-        String serverName = StringUtils.defaultString(Imcms.getServerName(), DEFAULT_RESPONSE);
-        String databaseName = StringUtils.defaultString(Imcms.getServerProperties().getProperty("DBName"), DEFAULT_RESPONSE);
+        String serverName = request.getServerName();
+        String jdbcUrl = Imcms.getServerProperties().getProperty("JdbcUrl");
+        String dbName = jdbcUrl.substring(jdbcUrl.lastIndexOf("/"),
+                jdbcUrl.contains("?") ?  jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
         String imcmsVersion = Version.getImcmsVersion(getServletContext());
         String databaseVersion = (String) database.execute(
                 new SqlQueryCommand(
@@ -126,7 +128,7 @@ public class InternalError extends HttpServlet {
                         .add("header-accept-language", headerAcceptLanguage)
 
                         .add("server-name", serverName)
-                        .add("database-name", databaseName)
+                        .add("database-name", dbName)
                         .add("imcms-version", imcmsVersion)
                         .add("database-version", databaseVersion)
 
