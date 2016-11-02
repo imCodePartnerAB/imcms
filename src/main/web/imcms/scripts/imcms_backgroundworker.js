@@ -186,10 +186,14 @@ Imcms.BackgroundWorker = {
                 $this.reloadPage()
             }
 
-            this.callbackFunctions.push(($this.completedTasksOptions
+            var callbackOpt = $this.completedTasksOptions
                 .find(function (option) {
                     return option.callbackFunc;
-                })).callbackFunc);
+                });
+
+            if (callbackOpt) {
+                this.callbackFunctions.push((callbackOpt).callbackFunc);
+            }
 
             $this.completedTasksOptions = [];
             $this.closeProcessWindow();
