@@ -1283,13 +1283,16 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
     save: function () {
         var collectedData = this._infoViewAdapter.collect();
 
-        this._loader.save(this._id,
-            this._meta,
-            this._infoViewAdapter.isSharedMode(),
-            this._language,
-            collectedData,
-            this._onSaveChangesCallback.bind(this)
-        );
+        if (collectedData.name) {
+            this._loader.save(this._id,
+                this._meta,
+                this._infoViewAdapter.isSharedMode(),
+                this._language,
+                collectedData,
+                this._onSaveChangesCallback.bind(this)
+            );
+        }
+
         this.close();
     },
     _onSaveChangesCallback: function () {
