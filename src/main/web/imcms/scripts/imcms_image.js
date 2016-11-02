@@ -1278,7 +1278,7 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
     },
     _onGetImageAfterSavingCallback: function (image) {
         var imageSource = Imcms.Linker.getContextPath() + image.generatedUrlPathRelativeToContextPath,
-            element = '<img class="InternalImageInTextEditor" data-no="' + this._id + '" data-meta="' + this._meta + '"'
+            element = '<img class="internalImageInTextEditor" data-no="' + this._id + '" data-meta="' + this._meta + '"'
             + ' src="' + imageSource + '"/>';
         this._textEditor.insertHtml(element, 'unfiltered_html');
     },
