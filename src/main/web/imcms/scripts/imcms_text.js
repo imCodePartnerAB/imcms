@@ -120,6 +120,7 @@ Imcms.Text.Editor.prototype = {
                 label: 'Edit Image',
                 command: 'editInternalImageCmd',
                 group: 'image',
+                icon: Imcms.Linker.getContextPath() + "/imcms/ckeditor/plugins/imcms_image/toolBarButton.png",
                 order: 2
             }
         });
