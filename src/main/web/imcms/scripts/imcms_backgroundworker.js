@@ -187,9 +187,9 @@ Imcms.BackgroundWorker = {
             }
 
             this.callbackFunction = ($this.completedTasksOptions
-                .filter(function (option) {
+                .find(function (option) {
                     return option.callbackFunc;
-                })[0]).callbackFunc;
+                })).callbackFunc;
 
             $this.completedTasksOptions = [];
             $this.closeProcessWindow();
