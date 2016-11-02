@@ -1210,9 +1210,6 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
     open: function () {
         // reassigned in init()
     },
-    close: function () {
-        // reassigned in init()
-    },
     mixinFromImageEditor: function (functionName) {
         this[functionName] = this._imageEditor[functionName].bind(this);
     },
@@ -1238,8 +1235,7 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
             "_onSaveReloadTask",
             "_onFileChosen",
             "_onCropRegionChanged",
-            "open",
-            "close"
+            "open"
         ].forEach(this.mixinFromImageEditor.bind(this));
     },
     openWindow: function () {
@@ -1295,6 +1291,10 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
 
         this.close();
     },
+    close: function () {
+        this._imageEditor.close.call(this);
+        $(this._textEditor.element.$).focus();
+    },
     _onSaveChangesCallback: function () {
         this._textEditor.focusManager.blur();
         this._textEditor.element.$.blur();
@@ -1307,6 +1307,7 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
         this._textEditor.insertHtml(element, 'unfiltered_html');
     },
     _onRemoveImage: function () {
+        $(this._realElement).remove();
         this._loader.remove(this._id, this._meta, this._language, this.close.bind(this));
     }
 };
