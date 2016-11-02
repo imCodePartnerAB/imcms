@@ -46,7 +46,7 @@ Imcms.BackgroundWorker = {
         callbackFunc: function () {}
     },
 
-    callbackFunction : function(){},
+    callbackFunctions: [],
 
 /**
      * Creates process window with gif logo while BackgroundWorker works
@@ -186,10 +186,10 @@ Imcms.BackgroundWorker = {
                 $this.reloadPage()
             }
 
-            this.callbackFunction = ($this.completedTasksOptions
+            this.callbackFunctions.push(($this.completedTasksOptions
                 .find(function (option) {
                     return option.callbackFunc;
-                })).callbackFunc;
+                })).callbackFunc);
 
             $this.completedTasksOptions = [];
             $this.closeProcessWindow();
@@ -253,11 +253,12 @@ Imcms.BackgroundWorker = {
      */
     closeProcessWindow: function () {
         var $this = Imcms.BackgroundWorker;
-        var $$this = this;
         if ($this.processWindow) {
             setTimeout(function () {
                 $this.processWindow.fadeOut(1200, function () {
-                    $$this.callbackFunction();
+                    $this.callbackFunctions.forEach(function (callback) {
+                        callback();
+                    });
                     $("body").css({overflow: "auto"});
                     $this.processWindow.remove();
                     delete $this.processWindow;
