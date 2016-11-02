@@ -41,10 +41,14 @@ Imcms.BackgroundWorker = {
             element: $(document),
             callback: function () {
             }
-        }
+        },
+
+        callbackFunc: function () {}
     },
 
-    /**
+    callbackFunctions: [],
+
+/**
      * Creates process window with gif logo while BackgroundWorker works
      */
     createProcessWindow: function () {
@@ -182,6 +186,11 @@ Imcms.BackgroundWorker = {
                 $this.reloadPage()
             }
 
+            this.callbackFunctions.push(($this.completedTasksOptions
+                .find(function (option) {
+                    return option.callbackFunc;
+                })).callbackFunc);
+
             $this.completedTasksOptions = [];
             $this.closeProcessWindow();
         }
@@ -244,15 +253,15 @@ Imcms.BackgroundWorker = {
      */
     closeProcessWindow: function () {
         var $this = Imcms.BackgroundWorker;
-
         if ($this.processWindow) {
-            setTimeout(function () {
-                $this.processWindow.fadeOut(1200, function () {
-                    $("body").css({overflow: "auto"});
-                    $this.processWindow.remove();
-                    delete $this.processWindow;
+            $this.processWindow.fadeOut(1500, function () {
+                $this.callbackFunctions.forEach(function (callback) {
+                    callback();
                 });
-            }, 300);
+                $("body").css({overflow: "auto"});
+                $this.processWindow.remove();
+                delete $this.processWindow;
+            });
         }
     },
 
