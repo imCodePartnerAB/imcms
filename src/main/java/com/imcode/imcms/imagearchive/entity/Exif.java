@@ -8,6 +8,29 @@ import java.util.Date;
 
 @Entity
 @Table(name = "archive_exif")
+@NamedQueries({
+        @NamedQuery(name = "artistsByRoleIds",
+                query = "SELECT DISTINCT lower(e.artist) AS artist " +
+                        "FROM CategoryRoles cr, ImageCategories ic, Images im, Exif e " +
+                        "WHERE cr.roleId IN (:roleIds) AND ic.categoryId = cr.categoryId " +
+                        "AND (ic.imageId = im.id OR im.usersId = :userId) AND e.imageId = im.id " +
+                        "AND e.type = :changedType AND cr.category.type.name = 'Images' " +
+                        "AND lower(e.artist) <> '' " +
+                        "ORDER BY lower(e.artist) "),
+
+        @NamedQuery(name = "updateImageExifFull",
+                query = "UPDATE Exif e " +
+                        "SET e.artist = :artist, e.description = :description, e.copyright = :copyright, " +
+                        "e.xResolution = :xResolution, e.yResolution = :yResolution, " +
+                        "e.manufacturer = :manufacturer, e.model = :model, e.compression = :compression, " +
+                        "e.exposure = :exposure,e.exposureProgram = :exposureProgram, e.fStop = :fStop, " +
+                        "e.flash = :flash, e.focalLength = :focalLength, e.colorSpace = :colorSpace, " +
+                        "e.resolutionUnit = :resolutionUnit, e.pixelXDimension = :pixelXDimension, " +
+                        "e.pixelYDimension = :pixelYDimension, e.dateOriginal = :dateOriginal, " +
+                        "e.dateDigitized = :dateDigitized, e.ISO = :ISO, e.updatedDt = current_timestamp() " +
+                        "WHERE e.imageId = :imageId AND e.type = :exifType")
+})
+
 @IdClass(ExifPK.class)
 public class Exif implements Serializable {
     public static final short TYPE_ORIGINAL = 0;

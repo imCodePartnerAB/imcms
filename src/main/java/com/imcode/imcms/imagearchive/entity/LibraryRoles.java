@@ -6,6 +6,21 @@ import java.util.Date;
 
 @Entity
 @Table(name = "archive_library_roles")
+@NamedQueries({
+        @NamedQuery(name = "libraryRoles",
+                query = "SELECT lr.roleId AS roleId, lr.permissions AS permissions, lr.canUse AS canUse, lr.canChange AS canChange, r.roleName AS roleName " +
+                        "FROM LibraryRoles lr " +
+                        "INNER JOIN lr.role r " +
+                        "WHERE lr.libraryId = :libraryId " +
+                        "ORDER BY r.roleName"),
+
+        @NamedQuery(name = "deleteLibraryRoles",
+                query = "DELETE LibraryRoles lr " +
+                        "WHERE lr.libraryId IN (SELECT lib.id FROM Libraries lib WHERE lib.libraryType = :type)"),
+
+        @NamedQuery(name = "deleteLibraries",
+                query = "DELETE Libraries lib WHERE lib.libraryType = :type")
+})
 @IdClass(LibraryRolesPK.class)
 public class LibraryRoles implements Serializable {
     public static final int PERMISSION_USE = 0;

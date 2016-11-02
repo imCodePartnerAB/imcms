@@ -5,6 +5,13 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "categories")
+@NamedQueries({
+        @NamedQuery(name = "availableImageCategoriesAdmin",
+                query = "SELECT c.id AS id, c.name AS name " +
+                        "FROM Categories c " +
+                        "WHERE c.type.name = 'Images' AND NOT EXISTS " +
+                        "(FROM ImageCategories ic WHERE ic.imageId = :imageId AND ic.categoryId = c.id)")
+})
 public class Categories implements Serializable {
     private static final long serialVersionUID = 7533187253952781894L;
 

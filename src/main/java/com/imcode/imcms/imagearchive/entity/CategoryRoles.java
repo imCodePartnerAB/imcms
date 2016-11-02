@@ -6,6 +6,15 @@ import java.util.Date;
 
 @Entity
 @Table(name = "archive_category_roles")
+@NamedQueries({
+        @NamedQuery(name = "availableImageCategories",
+                query = "SELECT c.id AS id, c.name AS name " +
+                        "FROM CategoryRoles cr INNER JOIN cr.category c " +
+                        "WHERE cr.roleId IN (:roleIds) AND cr.canChange = 1 AND NOT EXISTS " +
+                        "(FROM ImageCategories ic " +
+                        "WHERE ic.imageId = :imageId AND ic.categoryId = cr.categoryId) " +
+                        "AND c.type.name = 'Images'")
+})
 @IdClass(CategoryRolesPK.class)
 public class CategoryRoles implements Serializable {
     private static final long serialVersionUID = 3157190579405342495L;

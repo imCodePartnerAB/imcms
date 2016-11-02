@@ -7,6 +7,10 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "imcms_languages")
+@NamedQueries({
+        @NamedQuery(name = "Language.findByCode",
+                query = "SELECT l FROM Language l WHERE l.code = ?1")
+})
 public class Language implements Serializable, Cloneable {
 
     @Id

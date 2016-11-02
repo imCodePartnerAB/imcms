@@ -15,49 +15,25 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @Entity(name = "ImageCache")
 @Table(name = "imcms_text_doc_images_cache")
+@NamedQueries({
+        @NamedQuery(name = "ImageCache.deleteAllById",
+                query = "DELETE FROM ImageCache ic WHERE ic.id IN (:ids)"),
 
-/*
-@NamedQueries({@NamedQuery(name = "ImageCache.deleteAllById",
-        query = "DELETE FROM ImageCache ic WHERE ic.id IN (:ids)"),
         @NamedQuery(name = "ImageCache.deleteById",
-                query = "        DELETE FROM\n" +
-                        "            ImageCache ic\n" +
-                        "        WHERE\n" +
-                        "            ic.id = :id"),
+                query = "DELETE FROM ImageCache ic WHERE ic.id = :id"),
+
         @NamedQuery(name = "ImageCache.fileSizeTotal",
-                query = " SELECT\n" +
-                        "            sum(ic.fileSize)\n" +
-                        "        FROM\n" +
-                        "            ImageCache ic"),
+                query = "SELECT sum(ic.fileSize) FROM ImageCache ic"),
+
         @NamedQuery(name = "ImageCache.countEntries",
-                query = "SELECT\n" +
-                        "            count(ic.id)\n" +
-                        "        FROM\n" +
-                        "            ImageCache ic"),
+                query = "SELECT count(ic.id) FROM ImageCache ic"),
+
         @NamedQuery(name = "ImageCache.idsByFrequency",
-                query = "SELECT\n" +
-                        "            ic.id\n" +
-                        "        FROM\n" +
-                        "            ImageCache ic\n" +
-                        "        ORDER BY\n" +
-                        "            ic.frequency ASC"),
+                query = "SELECT ic.id FROM ImageCache ic ORDER BY ic.frequency ASC"),
+
         @NamedQuery(name = "ImageCache.incFrequency",
-                query = "UPDATE\n" +
-                        "            ImageCache ic\n" +
-                        "        SET\n" +
-                        "            ic.frequency = ic.frequency + 1\n" +
-                        "        WHERE\n" +
-                        "\t\t\tic.id = :id AND\n" +
-                        "            ic.frequency < :maxFreq"),
-        @NamedQuery(name = "Image.allImages",
-                query = " SELECT DISTINCT\n" +
-                        "            i\n" +
-                        "        FROM\n" +
-                        "            Image i")
-
+                query = "UPDATE ImageCache ic SET ic.frequency = ic.frequency + 1 WHERE ic.id = :id AND ic.frequency < :maxFreq"),
 })
-*/
-
 
 public class ImageCacheDomainObject implements Serializable {
     private static final long serialVersionUID = -2547384841538448930L;

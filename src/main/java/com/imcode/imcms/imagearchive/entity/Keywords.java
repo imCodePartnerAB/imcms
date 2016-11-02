@@ -6,6 +6,14 @@ import java.util.Date;
 
 @Entity
 @Table(name = "archive_keywords")
+@NamedQueries({
+        @NamedQuery(name = "availableKeywords",
+                query = "SELECT k.keywordNm " +
+                        "FROM Keywords k " +
+                        "WHERE NOT EXISTS " +
+                        "(FROM ImageKeywords ik WHERE ik.imageId = :imageId AND ik.keywordId = k.id) " +
+                        "ORDER BY k.keywordNm")
+})
 public class Keywords implements Serializable {
     private static final long serialVersionUID = -5618267783578349726L;
 
