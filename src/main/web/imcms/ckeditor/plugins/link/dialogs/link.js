@@ -164,6 +164,13 @@
                                         }
                                         data.imcms.docId = this.getValue();
                                     }
+                                },
+                                {
+                                    type: 'text',
+                                    id: 'resultImcmsLink',
+                                    setup: function () {
+                                        $("#" + this.domId).find("input").prop("readonly", "readonly");
+                                    }
                                 }
                             ],
                             setup: function () {
