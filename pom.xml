@@ -1048,6 +1048,12 @@
 					<sourceDirectory>${project.basedir}/src/main/web</sourceDirectory>
 					<outputDirectory>${build.webapp.dir}/</outputDirectory>
 
+					<excludes>
+						<!--excluding already minified files-->
+						<exclude>**/*.min.js</exclude>
+						<exclude>**/*.min.css</exclude>
+					</excludes>
+
 					<!--<aggregations>-->
 						<!--<aggregation>-->
 							<!--&lt;!&ndash; insert new line after each concatenation-->
