@@ -76,6 +76,7 @@ CKEDITOR.plugins.add("documentSaver", {
                                 var range = inst.createRange();
                                 range.moveToElementEditEnd(range.root);
                                 inst.getSelection().selectRanges([range]);
+                                break;
                             }
                         }
                     }
