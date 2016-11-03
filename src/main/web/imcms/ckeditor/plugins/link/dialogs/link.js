@@ -170,14 +170,8 @@
                                 if (!this.getDialog().getContentElement('info', 'linkType'))
                                     this.getElement().show();
                             }
-                        },
-                            {
-                                type: 'button',
-                                id: 'browse',
-                                hidden: 'true',
-                                filebrowser: 'info:imcms',
-                                label: commonLang.browseServer
-                            }]
+                        }
+                        ]
                     },
                     {
                         type: 'vbox',
