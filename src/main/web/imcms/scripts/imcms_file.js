@@ -32,7 +32,7 @@ Imcms.File.API.prototype = {
 			}), request);
 	},
 	delete: function (request, response) {
-		Imcms.Logger.log("File.API::delete :",
+		Imcms.Logger.log("File.API::remove :",
 			$.ajax.bind($, {
 				url: Imcms.Linker.get("files", request.folder, request.file),
 				type: "DELETE",

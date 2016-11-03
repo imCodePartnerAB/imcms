@@ -30,7 +30,7 @@ Imcms.Document.API.prototype = {
             success: response
         })
     },
-    delete: function (request, response) {
+    remove: function (request, response) {
         $.ajax({
             url: Imcms.Linker.get("document.delete", request),
             type: "DELETE",
@@ -107,15 +107,15 @@ Imcms.Document.Loader.prototype = {
         this._api.read({id: id, isPrototype: true}, callback);
     },
     deleteDocument: function (data) {
-        this._api.delete(data, function () {
+        this._api.remove(data, function () {
         });
     },
     archiveDocument: function (data) {
-        this._api.delete(data + "?action=archive", function () {
+        this._api.remove(data + "?action=archive", function () {
         });
     },
     unarchiveDocument: function (data) {
-        this._api.delete(data + "?action=unarchive", function () {
+        this._api.remove(data + "?action=unarchive", function () {
         });
     },
     datesList: function (id, callback) {

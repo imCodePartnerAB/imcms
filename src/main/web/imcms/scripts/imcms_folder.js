@@ -35,7 +35,7 @@ Imcms.Folder.API.prototype = {
             }), request);
     },
     delete: function (request, response) {
-        Imcms.Logger.log("Folder.API::delete :",
+        Imcms.Logger.log("Folder.API::remove :",
             $.ajax.bind($, {
                 url: Imcms.Linker.get("folders", request.folderBase, request.folderName),
                 type: "DELETE",

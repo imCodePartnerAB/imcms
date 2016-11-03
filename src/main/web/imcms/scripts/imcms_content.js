@@ -361,7 +361,7 @@ Imcms.Content.TreeAdapter.prototype = {
 		}
 		return data;
 	},
-	delete: function (node) {
+	remove: function (node) {
 		this._tree.tree('removeNode', node);
 	},
 	add: function (node) {

@@ -22,8 +22,8 @@ Imcms.Image.API.prototype = {
                 success: response
             }), request);
     },
-    delete: function (request, response) {
-        Imcms.Logger.log("Image.API::delete :",
+    remove: function (request, response) {
+        Imcms.Logger.log("Image.API::remove :",
             $.ajax.bind($, {
                 url: Imcms.Linker.get("content.image", request.object) + this._parseURL(),
                 type: "DELETE",
@@ -80,11 +80,11 @@ Imcms.Image.Loader.prototype = {
         }, Imcms.Logger.log.bind(this, "Image::saveLoopItem : ", callback));
     },
     remove: function (id, meta, langCode, callback) {
-        this._api.delete({object: ((meta || Imcms.document.meta) + "-" + id + "?langCode=" + langCode)},
+        this._api.remove({object: ((meta || Imcms.document.meta) + "-" + id + "?langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::remove : ", callback));
     },
     removeLoopItem: function (id, loopId, entryId, meta, langCode, callback) {
-        this._api.delete({object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
+        this._api.remove({object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::removeLoopItem : ", callback));
     }
 };

@@ -41,9 +41,9 @@
         } else {
             var elementAsString = "";
 
-            if (attributes.class) {
-                elementAsString += "." + attributes.class.split(" ").join(".");
-                delete attributes.class;
+            if (attributes["class"]) {
+                elementAsString += "." + attributes["class"].split(" ").join(".");
+                delete attributes["class"];
             }
 
             delete attributes.style;
