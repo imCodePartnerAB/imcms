@@ -63,7 +63,7 @@ CKEDITOR.plugins.add("documentSaver", {
                         var loopref = $(e.element.$).attr("data-loopentryref");
                         var no = $(e.element.$).attr("data-no");
                         var meta = $(e.element.$).attr("data-meta");
-                        var el = $("div" + (loopref ? " [data-loopentryref=" + loopref + "]" : "") + "[data-no=" + no + "][data-meta=" + meta + "]");
+                        var el = $("div[data-loopentryref=" + (loopref ? loopref : "''") + "][data-no=" + no + "][data-meta=" + meta + "]");
 
                         //Getting current ckeditor instance
                         var inst;
@@ -71,13 +71,13 @@ CKEDITOR.plugins.add("documentSaver", {
                             var editor = CKEDITOR.instances[key];
                             if (el[0] === $(editor.element.$)[0]) {
                                 inst = editor;
+                                //Moving cursor and focusing it
+                                inst.focus();
+                                var range = inst.createRange();
+                                range.moveToElementEditEnd(range.root);
+                                inst.getSelection().selectRanges([range]);
                             }
                         }
-                        //Moving cursor and focusing it
-                        inst.focus();
-                        var range = inst.createRange();
-                        range.moveToElementEditEnd(range.root);
-                        inst.getSelection().selectRanges([range]);
                     }
                 })();
             };
