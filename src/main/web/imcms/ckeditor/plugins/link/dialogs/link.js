@@ -154,7 +154,6 @@
 
                                         documentSearchDialog.result(function (data) {
                                             that.setValue(data.id);
-                                            documentSearchDialog.dispose();
                                         });
                                         documentSearchDialog._dialog.parent().css("z-index", "99999999");
                                         documentSearchDialog.open();
