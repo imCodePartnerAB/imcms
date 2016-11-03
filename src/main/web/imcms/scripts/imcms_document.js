@@ -817,7 +817,7 @@ Imcms.Document.Viewer.prototype = {
         }
 
         // means that default (public) version in never than working (offline) version
-        return (versions.default.modifiedDt >= versions.working.modifiedDt);
+        return (versions["default"].modifiedDt >= versions["working"].modifiedDt);
     },
     setDateTimeNow: function (kindOfDate) {
         var currentDate = new Date(),
@@ -1884,7 +1884,7 @@ Imcms.Document.Viewer.prototype = {
         });
 
         if (data.versions && !data.versions.isBuilded) {
-            var defaultVersion = data.versions.default,
+            var defaultVersion = data.versions["default"],
                 workingVersion = data.versions.working,
                 formattedDate = new Date(defaultVersion.createdDt).format("yyyy-mm-dd HH:MM:ss");
 
