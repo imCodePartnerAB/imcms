@@ -228,7 +228,6 @@ Imcms.Text.Editor.prototype = {
 
         editor.config.toolbar_minTextToolbar = [
             switchFormatToHtmlPlugin,
-            linkPlugins,
             textPlugins,
             plainTextPlugins
         ]; // Custom minimized toolbar config for tag without attribute "formats" but was changed to "Text"
@@ -260,7 +259,6 @@ Imcms.Text.Editor.prototype = {
 
         editor.config.toolbar_maxTextToolbar = [
             switchFormatToHtmlPlugin,
-            linkPlugins,
             advancedActionsPlugins,
             plainTextPlugins
         ]; // Custom maximized toolbar config for tag without attribute "formats" but was changed to "HTML"
