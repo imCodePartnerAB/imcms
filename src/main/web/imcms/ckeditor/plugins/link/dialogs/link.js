@@ -175,8 +175,14 @@
                                 {
                                     type: 'text',
                                     id: 'resultImcmsLink',
-                                    setup: function () {
-                                        $("#" + this.domId).find("input").prop("readonly", "readonly");
+                                    setup: function (data) {
+                                        $("#" + this.domId)
+                                            .find("input")
+                                            .prop("readonly", "readonly");
+
+                                        if (data.url && data.url.url) {
+                                            this.setValue(data.url.url);
+                                        }
                                     }
                                 }
                             ],
