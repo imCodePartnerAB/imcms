@@ -1185,7 +1185,6 @@ Imcms.Image.ImageInTextEditor.Window = function (textEditor) {
     this.init();
 };
 Imcms.Image.ImageInTextEditor.Window.prototype = {
-    _imageEditor: {},
     _realElement: {},
     _element: {},
     _id: {},
@@ -1201,21 +1200,11 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
     _isShowed: false,
     _isLoaded: false,
     _language: '',
-    initSource: function () {
-        // reassigned in init()
-    },
-    buildView: function () {
-        // reassigned in init()
-    },
-    open: function () {
-        // reassigned in init()
-    },
     mixinFromImageEditor: function (functionName) {
-        this[functionName] = this._imageEditor[functionName].bind(this);
+        this[functionName] = Imcms.Image.Editor.prototype[functionName].bind(this);
     },
     init: function () {
         this._loader = Imcms.Editors.Image;
-        this._imageEditor = Imcms.Image.Editor.prototype;
 
         // rebinding methods to not duplicate code
         [
@@ -1254,7 +1243,7 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
     },
     initView: function () {
         this.buildView();
-        this.getCurrentImageWithCallback(this._imageEditor.initSource.bind(this));
+        this.getCurrentImageWithCallback(this.initSource.bind(this));
     },
     getCurrentImageWithCallback: function (callback) {
         this._loader.getById(this._id, this._meta, this._language, callback);
@@ -1292,7 +1281,7 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
         this.close();
     },
     close: function () {
-        this._imageEditor.close.call(this);
+        Imcms.Image.Editor.prototype.close.call(this);
         $(this._textEditor.element.$).focus();
     },
     _onSaveChangesCallback: function () {
