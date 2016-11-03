@@ -34,7 +34,7 @@ Imcms.Folder.API.prototype = {
                 success: response
             }), request);
     },
-    delete: function (request, response) {
+    remove: function (request, response) {
         Imcms.Logger.log("Folder.API::remove :",
             $.ajax.bind($, {
                 url: Imcms.Linker.get("folders", request.folderBase, request.folderName),
@@ -69,13 +69,13 @@ Imcms.Folder.Loader.prototype = {
         )
     },
     removeAll: function (folder, callback) {
-        this._api.delete(
+        this._api.remove(
             {folderBase: folder || "", folderName: "*"},
             Imcms.Logger.log.bind(this, "Folder::removeAll : ", callback)
         )
     },
     remove: function (folder, filename, callback) {
-        this._api.delete(
+        this._api.remove(
             {folderBase: folder || "", folderName: filename || "*"},
             Imcms.Logger.log.bind(this, "Folder::remove : ", callback)
         )
