@@ -229,7 +229,6 @@ Imcms.Text.Editor.prototype = {
         editor.config.toolbar_minTextToolbar = [
             switchFormatToHtmlPlugin,
             linkPlugins,
-            imagesPlugins,
             textPlugins,
             plainTextPlugins
         ]; // Custom minimized toolbar config for tag without attribute "formats" but was changed to "Text"
