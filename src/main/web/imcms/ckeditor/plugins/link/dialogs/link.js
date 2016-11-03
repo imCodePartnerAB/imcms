@@ -153,7 +153,14 @@
                                         });
 
                                         documentSearchDialog.result(function (data) {
-                                            that.setValue(data.alias || data.id);
+                                            var docId = (data.alias || data.id);
+                                            that.setValue(docId);
+
+                                            $("#" + that.domId)
+                                                .parent()
+                                                .next()
+                                                .find("input")
+                                                .val("/" + docId);
                                         });
                                         documentSearchDialog._dialog.parent().css("z-index", "99999999");
                                         documentSearchDialog.open();
