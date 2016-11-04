@@ -844,6 +844,11 @@
 			<id>central</id>
 			<url>http://repo1.maven.org/maven2/</url>
 		</pluginRepository>
+		<pluginRepository>
+			<name>oss.sonatype.org</name>
+			<id>oss.sonatype.org</id>
+			<url>http://oss.sonatype.org/content/groups/public</url>
+		</pluginRepository>
 	</pluginRepositories>
 
 	<build>
@@ -925,7 +930,6 @@
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>3.0.0</version>
 			</plugin>
-
 			<plugin>
 				<groupId>net.alchim31.maven</groupId>
 				<artifactId>scala-maven-plugin</artifactId>
@@ -1016,6 +1020,80 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>yuicompressor-maven-plugin</artifactId>
+				<version>1.5.1</version>
+				<executions>
+					<execution>
+						<!--<phase>deploy</phase>-->
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>compress</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<force>true</force>
+					<nosuffix>true</nosuffix>
+					<suffix>.min</suffix>
+					<jswarn>false</jswarn>
+					<sourceDirectory>${project.basedir}/src/main/web</sourceDirectory>
+					<outputDirectory>${build.webapp.dir}/</outputDirectory>
+
+					<excludes>
+						<!--excluding already minified files-->
+						<exclude>**/*.min.js</exclude>
+						<exclude>**/*.min.css</exclude>
+					</excludes>
+
+					<aggregations>
+						<aggregation>
+							<insertNewLine>true</insertNewLine>
+							<output>${build.webapp.dir}/application.js</output>
+							<inputDir>${build.webapp.dir}/</inputDir>
+							<includes>
+								<!--libs-->
+								<include>**/tree.jquery.js</include>
+								<include>**/prism/prism.js</include>
+								<include>**/jqtree/tree.jquery.js</include>
+								<include>**/jquery.i18n.properties.min.js</include>
+								<!--imcms files-->
+								<include>**/JSFormBuilder.js</include>
+								<include>**/imcms_adminpanel.js</include>
+								<include>**/imcms_logger.js</include>
+								<include>**/imcms_utils.js</include>
+								<include>**/imcms_addons.js</include>
+								<include>**/imcms_ckeditor_extension.js</include>
+								<include>**/imcms_events.js</include>
+								<include>**/imcms_loop.js</include>
+								<include>**/imcms_menu.js</include>
+								<include>**/imcms_text.js</include>
+								<include>**/imcms_language.js</include>
+								<include>**/imcms_template.js</include>
+								<include>**/imcms_template.js</include>
+								<include>**/imcms_category.js</include>
+								<include>**/imcms_user.js</include>
+								<include>**/imcms_document.js</include>
+								<include>**/imcms_role.js</include>
+								<include>**/imcms_permission.js</include>
+								<include>**/imcms_file.js</include>
+								<include>**/imcms_folder.js</include>
+								<include>**/imcms_content.js</include>
+								<include>**/imcms_image.js</include>
+								<include>**/imcms_backgroundworker.js></include>
+							</includes>
+							<excludes>
+								<!--excluding lang files from packaging-->
+								<exclude>**/ckeditor/lang/*.js</exclude>
+								<exclude>**/ckeditor/plugins/*/lang/*.js</exclude>
+								<exclude>**/ckeditor/plugins/*/*/lang/*.js</exclude>
+							</excludes>
+						</aggregation>
+					</aggregations>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -1176,6 +1254,11 @@
 					-->
 
 					<archiveClasses>true</archiveClasses>
+
+					<!--Required to avoid replacement of minified js and css files-->
+
+					<warSourceExcludes>*.js</warSourceExcludes>
+					<warSourceExcludes>*.css</warSourceExcludes>
 
 					<!-- Copy resources into WEB-INF/classes dir -->
 					<!--<webResources>-->
