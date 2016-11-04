@@ -19,11 +19,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/speakingurl/5.0.1/speakingurl.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/jstree.min.js"></script>
+
 <script type="text/javascript" src="${contextPath}/imcms/ckeditor/ckeditor.js"></script>
 <script type="text/javascript" src="${contextPath}/imcms/ckeditor/lang/sv.js"></script>
 <script type="text/javascript" src="${contextPath}/imcms/ckeditor/lang/en.js"></script>
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/jstree.min.js"></script>
 
 <link rel="stylesheet"
       href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css"/>

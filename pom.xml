@@ -1052,6 +1052,7 @@
 					<aggregations>
 						<aggregation>
 							<insertNewLine>true</insertNewLine>
+							<removeIncluded>true</removeIncluded>
 							<output>${build.webapp.dir}/application.js</output>
 							<inputDir>${build.webapp.dir}/</inputDir>
 							<includes>
