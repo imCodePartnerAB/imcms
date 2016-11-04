@@ -38,7 +38,6 @@
 		</init-param>
 	</filter>
 
-
 	<filter>
 		<display-name>Imcms Setup Filter</display-name>
 		<filter-name>ImcmsSetupFilter</filter-name>
@@ -65,6 +64,27 @@
 		<filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
 	</filter>
 
+    <filter>
+        <filter-name>ImcmsCacheSupervisor</filter-name>
+        <filter-class>com.imcode.imcms.filters.ImcmsCacheSupervisor</filter-class>
+        <init-param>
+            <param-name>suppressStackTrace</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cacheName</param-name>
+            <param-value>SimpleCachingHeadersCachingFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>noCacheMarkers</param-name>
+            <param-value>
+                /api/
+                working-preview=true
+                /AdminDoc
+            </param-value>
+        </init-param>
+    </filter>
+
 	<filter-mapping>
 		<filter-name>characterEncodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
@@ -74,6 +94,11 @@
 		<filter-name>ImcmsSetupFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+
+    <filter-mapping>
+        <filter-name>ImcmsCacheSupervisor</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 	<filter-mapping>
 		<filter-name>SuperAdminFilter</filter-name>
