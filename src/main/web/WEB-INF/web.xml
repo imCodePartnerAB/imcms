@@ -81,6 +81,8 @@
                 .jpg
 				.gif
                 .png
+                .css
+                .js
             </param-value>
         </init-param>
     </filter>
