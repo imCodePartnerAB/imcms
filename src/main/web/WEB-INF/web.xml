@@ -76,11 +76,11 @@
             <param-value>SimpleCachingHeadersCachingFilter</param-value>
         </init-param>
         <init-param>
-            <param-name>noCacheMarkers</param-name>
+            <param-name>cacheMarkers</param-name>
             <param-value>
-                /api/
-                working-preview=true
-                /AdminDoc
+                .jpg
+				.gif
+                .png
             </param-value>
         </init-param>
     </filter>
