@@ -193,7 +193,7 @@
                                 <aggregation>
                                     <insertNewLine>true</insertNewLine>
                                     <removeIncluded>true</removeIncluded>
-                                    <output>${build.webapp.dir}/application.js</output>
+                                    <output>${build.webapp.dir}/application.min.js</output>
                                     <inputDir>${build.webapp.dir}/</inputDir>
                                     <includes>
                                         <!--libs-->
@@ -1134,7 +1134,7 @@
                         <aggregation>
                             <insertNewLine>true</insertNewLine>
                             <removeIncluded>true</removeIncluded>
-                            <output>${build.webapp.dir}/application.js</output>
+                            <output>${build.webapp.dir}/application.min.js</output>
                             <inputDir>${build.webapp.dir}/</inputDir>
                             <includes>
                                 <!--libs-->
