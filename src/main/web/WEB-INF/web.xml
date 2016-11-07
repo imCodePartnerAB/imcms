@@ -83,6 +83,7 @@
                 .png
                 .css
                 .js
+                .properties
             </param-value>
         </init-param>
     </filter>
