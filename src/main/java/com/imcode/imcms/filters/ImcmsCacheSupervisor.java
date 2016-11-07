@@ -30,7 +30,7 @@ public class ImcmsCacheSupervisor extends SimpleCachingHeadersPageCachingFilter 
     @Override
     public void doFilter(HttpServletRequest request, HttpServletResponse response,
                          FilterChain chain) throws ServletException, IOException {
-
+        //todo: implement logic that not changed documents (check header "If-Modified-Since") will be cached too
         if (Utility.containsAny(request.getRequestURI(), cacheURLs)) {
             try {
                 super.doFilter(request, response, chain);
