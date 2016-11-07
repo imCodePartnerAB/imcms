@@ -77,6 +77,7 @@
         </init-param>
         <init-param>
             <param-name>cacheMarkers</param-name>
+            <!-- Note that markers will be searched in request URL using String#contains() method -->
             <param-value>
                 .jpg
 				.gif
