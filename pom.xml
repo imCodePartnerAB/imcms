@@ -206,6 +206,7 @@
                                         <include>**/imcms_adminpanel.js</include>
                                         <include>**/imcms_logger.js</include>
                                         <include>**/imcms_utils.js</include>
+                                        <include>**/imcms_backgroundworker.js</include>
                                         <include>**/imcms_addons.js</include>
                                         <include>**/imcms_ckeditor_extension.js</include>
                                         <include>**/imcms_events.js</include>
@@ -224,7 +225,6 @@
                                         <include>**/imcms_folder.js</include>
                                         <include>**/imcms_content.js</include>
                                         <include>**/imcms_image.js</include>
-                                        <include>**/imcms_backgroundworker.js</include>
                                     </includes>
                                     <excludes>
                                         <!--excluding lang files from packaging-->
@@ -284,6 +284,7 @@
                                         <include>**/imcms_adminpanel.js</include>
                                         <include>**/imcms_logger.js</include>
                                         <include>**/imcms_utils.js</include>
+                                        <include>**/imcms_backgroundworker.js</include>
                                         <include>**/imcms_addons.js</include>
                                         <include>**/imcms_ckeditor_extension.js</include>
                                         <include>**/imcms_events.js</include>
@@ -302,7 +303,6 @@
                                         <include>**/imcms_folder.js</include>
                                         <include>**/imcms_content.js</include>
                                         <include>**/imcms_image.js</include>
-                                        <include>**/imcms_backgroundworker.js</include>
                                     </includes>
                                     <excludes>
                                         <!--excluding lang files from packaging-->
@@ -1225,6 +1225,7 @@
                                 <include>**/imcms_adminpanel.js</include>
                                 <include>**/imcms_logger.js</include>
                                 <include>**/imcms_utils.js</include>
+                                <include>**/imcms_backgroundworker.js</include>
                                 <include>**/imcms_addons.js</include>
                                 <include>**/imcms_ckeditor_extension.js</include>
                                 <include>**/imcms_events.js</include>
@@ -1243,7 +1244,6 @@
                                 <include>**/imcms_folder.js</include>
                                 <include>**/imcms_content.js</include>
                                 <include>**/imcms_image.js</include>
-                                <include>**/imcms_backgroundworker.js</include>
                             </includes>
                             <excludes>
                                 <!--excluding lang files from packaging-->
