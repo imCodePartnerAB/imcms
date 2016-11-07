@@ -680,13 +680,13 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.8.1</version>
+            <version>2.8.1</version>
 		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.8.1</version>
-		</dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.8.1</version>
+        </dependency>
 
 		<!-- ============================ -->
 		<!-- Java EE API & Implementation -->
@@ -1029,7 +1029,6 @@
 				<executions>
 					<execution>
 						<!--<phase>deploy</phase>-->
-						<!--<phase>process-resources</phase>-->
 						<phase>prepare-package</phase>
 						<goals>
 							<goal>compress</goal>
@@ -1037,13 +1036,9 @@
 					</execution>
 				</executions>
 				<configuration>
-					<!--<disableOptimizations>true</disableOptimizations>-->
-					<!--<nomunge>true</nomunge>-->
-					<!--<preserveAllSemiColons>true</preserveAllSemiColons>-->
 					<force>true</force>
 					<nosuffix>true</nosuffix>
 					<suffix>.min</suffix>
-					<!--<encoding>UTF-8</encoding>-->
 					<jswarn>false</jswarn>
 					<sourceDirectory>${project.basedir}/src/main/web</sourceDirectory>
 					<outputDirectory>${build.webapp.dir}/</outputDirectory>
@@ -1054,25 +1049,53 @@
 						<exclude>**/*.min.css</exclude>
 					</excludes>
 
-					<!--<aggregations>-->
-						<!--<aggregation>-->
-							<!--&lt;!&ndash; insert new line after each concatenation-->
-                                <!--(default: false) &ndash;&gt;-->
-							<!--<insertNewLine>true</insertNewLine>-->
-							<!--&lt;!&ndash; Aggregated file will be in target/application.js &ndash;&gt;-->
-							<!--<output>${build.webapp.dir}/application.js</output>-->
-							<!--<inputDir>${build.webapp.dir}/yui-compressed</inputDir>-->
-
-							<!--&lt;!&ndash; files to include, path relative to output's-->
-                                <!--directory &ndash;&gt;-->
-							<!--&lt;!&ndash;<includes>&ndash;&gt;-->
-								<!--&lt;!&ndash;<include>yui-compressed/*</include>&ndash;&gt;-->
-							<!--&lt;!&ndash;</includes>&ndash;&gt;-->
-						<!--</aggregation>-->
-					<!--</aggregations>-->
+					<aggregations>
+						<aggregation>
+							<insertNewLine>true</insertNewLine>
+							<removeIncluded>true</removeIncluded>
+							<output>${build.webapp.dir}/application.js</output>
+							<inputDir>${build.webapp.dir}/</inputDir>
+							<includes>
+								<!--libs-->
+								<include>**/tree.jquery.js</include>
+								<include>**/prism/prism.js</include>
+								<include>**/jqtree/tree.jquery.js</include>
+								<include>**/jquery.i18n.properties.min.js</include>
+								<!--imcms files-->
+								<include>**/JSFormBuilder.js</include>
+								<include>**/imcms_adminpanel.js</include>
+								<include>**/imcms_logger.js</include>
+								<include>**/imcms_utils.js</include>
+								<include>**/imcms_addons.js</include>
+								<include>**/imcms_ckeditor_extension.js</include>
+								<include>**/imcms_events.js</include>
+								<include>**/imcms_loop.js</include>
+								<include>**/imcms_menu.js</include>
+								<include>**/imcms_text.js</include>
+								<include>**/imcms_language.js</include>
+								<include>**/imcms_template.js</include>
+								<include>**/imcms_template.js</include>
+								<include>**/imcms_category.js</include>
+								<include>**/imcms_user.js</include>
+								<include>**/imcms_document.js</include>
+								<include>**/imcms_role.js</include>
+								<include>**/imcms_permission.js</include>
+								<include>**/imcms_file.js</include>
+								<include>**/imcms_folder.js</include>
+								<include>**/imcms_content.js</include>
+								<include>**/imcms_image.js</include>
+								<include>**/imcms_backgroundworker.js></include>
+							</includes>
+							<excludes>
+								<!--excluding lang files from packaging-->
+								<exclude>**/ckeditor/lang/*.js</exclude>
+								<exclude>**/ckeditor/plugins/*/lang/*.js</exclude>
+								<exclude>**/ckeditor/plugins/*/*/lang/*.js</exclude>
+							</excludes>
+						</aggregation>
+					</aggregations>
 				</configuration>
 			</plugin>
-
 
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -1133,9 +1156,9 @@
 								</uptodate>
 
 								<!--<fail unless="build-properties-up-to-date">-->
-								<!--'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT-->
-								<!--for details.)-->
-								<!--Copy 'build.properties.template' content into 'build.properties' and edit it!-->
+									<!--'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT-->
+									<!--for details.)-->
+									<!--Copy 'build.properties.template' content into 'build.properties' and edit it!-->
 								<!--</fail>-->
 							</target>
 						</configuration>
@@ -1233,7 +1256,7 @@
 
 					<archiveClasses>true</archiveClasses>
 
-                    <!--Required to avoid replacement of minified js and css files-->
+					<!--Required to avoid replacement of minified js and css files-->
 
 					<warSourceExcludes>*.js</warSourceExcludes>
 					<warSourceExcludes>*.css</warSourceExcludes>
