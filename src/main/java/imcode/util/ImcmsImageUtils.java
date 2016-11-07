@@ -102,7 +102,7 @@ public class ImcmsImageUtils {
             imageTagBuffer.append("<img ");
             if (!isEmpty) {
                 imageTagBuffer.append("src=\"").append(StringEscapeUtils.escapeHtml4(urlEscapedImageUrl)).append("\"");
-                imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml4(image.getAlternateText())).append("\"");
+                imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml4(image.getAlternateText())).append(" \"");
                 imageTagBuffer.append(" title=\"").append(StringEscapeUtils.escapeHtml4(image.getAlternateText())).append("\"");
 
                 String id = image.getName();
