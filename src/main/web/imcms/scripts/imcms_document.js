@@ -2502,7 +2502,11 @@ Imcms.Document.DocumentSearchDialog.prototype = {
         return this;
     },
     _onApply: function () {
-        var resultData = {id: this._selectedRow.children[0].innerHTML, label: this._selectedRow.children[1].innerHTML};
+        var resultData = {
+            id: this._selectedRow.children[0].innerHTML,
+            label: this._selectedRow.children[1].innerHTML,
+            alias: this._selectedRow.children[3].innerHTML
+        };
         this._callback(resultData);
         this._dialog.dialog("close");
     },

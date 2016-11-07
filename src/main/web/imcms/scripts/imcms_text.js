@@ -1,13 +1,12 @@
 /**
+ * Text Editor
+ *
  * Created by Shadowgun on 13.02.2015.
- */
-/**
- Text Editor
+ * Upgraded by Serhii Maksymchuk in 2016
  */
 Imcms.Text = {};
 
 Imcms.Text.API = function () {
-
 };
 Imcms.Text.API.prototype = {
     get: function (request, callback) {
@@ -46,6 +45,7 @@ Imcms.Text.Editor.prototype = {
     init: function () {
         this._textFrame = new Imcms.FrameBuilder().title("Text Editor");
 
+        CKEDITOR.on('instanceReady', this._onInstanceReady.bind(this));
         CKEDITOR.on('instanceCreated', this._onCreated.bind(this));
         CKEDITOR.on("confirmChangesEvent", this._onConfirm.bind(this));
         CKEDITOR.on("validateText", this._onValidateText.bind(this));
@@ -87,6 +87,43 @@ Imcms.Text.Editor.prototype = {
                 .html(element.data("label"))
                 .insertBefore(element);
         }
+    },
+    _onInstanceReady: function (event) {
+        var editor = event.editor,
+            selectedImageData = {};
+
+        editor.addCommand('editInternalImageCmd', {
+            exec: function (editor) {
+                var imageInTextEditor = new Imcms.Image.ImageInTextEditor(editor);
+                imageInTextEditor.onExistingImageEdit(selectedImageData);
+            }
+        });
+        editor.contextMenu.addListener(function (element, selection) {
+            if (element.hasClass("internalImageInTextEditor")) {
+                var selectedElement = selection._.cache.selectedElement.$,
+                    $selection = $(selectedElement);
+
+                selectedImageData = {
+                    no: $selection.attr("data-no"),
+                    src: $selection.attr("src"),
+                    selectedElement: selectedElement
+                };
+                // skipping CKEditor's "image" context menu item that is items[3]
+                editor.contextMenu.items = editor.contextMenu.items.slice(0, 3);
+                return {
+                    editInternalImageCmd: CKEDITOR.TRISTATE_OFF
+                };
+            }
+        });
+        editor.addMenuItems({
+            editInternalImageCmd: {
+                label: 'Edit Image',
+                command: 'editInternalImageCmd',
+                group: 'image',
+                icon: Imcms.Linker.get("edit.image.in.text.editor.icon"),
+                order: 2
+            }
+        });
     },
     _onConfirm: function (event) {
         var editor = event.editor,
@@ -191,8 +228,6 @@ Imcms.Text.Editor.prototype = {
 
         editor.config.toolbar_minTextToolbar = [
             switchFormatToHtmlPlugin,
-            linkPlugins,
-            imagesPlugins,
             textPlugins,
             plainTextPlugins
         ]; // Custom minimized toolbar config for tag without attribute "formats" but was changed to "Text"
@@ -224,7 +259,6 @@ Imcms.Text.Editor.prototype = {
 
         editor.config.toolbar_maxTextToolbar = [
             switchFormatToHtmlPlugin,
-            linkPlugins,
             advancedActionsPlugins,
             plainTextPlugins
         ]; // Custom maximized toolbar config for tag without attribute "formats" but was changed to "HTML"

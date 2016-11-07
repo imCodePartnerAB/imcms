@@ -582,12 +582,7 @@
             // Compose the URL.
             switch (data.type) {
                 case 'imcms':
-                    var docId = data.imcms.docId,
-                        delimiterPosition = location.href.indexOf("/", location.protocol.length + 3);
-
-                    delimiterPosition = delimiterPosition > 0 ? delimiterPosition : location.href.length;
-
-                    set['data-cke-saved-href'] = location.href.substring(0, delimiterPosition) + "/" + docId;
+                    set['data-cke-saved-href'] = Imcms.Linker.getContextPath() + "/" + data.imcms.docId;
 
                     break;
                 case 'url':

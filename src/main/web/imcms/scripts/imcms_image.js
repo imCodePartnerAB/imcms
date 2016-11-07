@@ -1,5 +1,6 @@
 /**
  * Created by Shadowgun on 26.03.2015.
+ * Updated by Serhii and 3emluk in 2016
  */
 Imcms.Image = {};
 Imcms.Image.API = function () {
@@ -51,11 +52,11 @@ Imcms.Image.Loader.prototype = {
         this._editorsList[position] = new Imcms.Image.Editor(element, this);
     },
     getById: function (id, meta, langCode, callback) {
-        this._api.read({object: ((meta || Imcms.document.meta) + "-" + id + "?langCode=" + langCode)},
+        this._api.read({object: ((meta || Imcms.document.meta) + "/" + id + "?langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::getById : ", callback));
     },
     getByLoopItemRef: function (id, loopId, entryId, meta, langCode, callback) {
-        this._api.read({object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
+        this._api.read({object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::getByLoopItemRef : ", callback));
     },
     getByPath: function (path, callback) {
@@ -69,22 +70,22 @@ Imcms.Image.Loader.prototype = {
         this._api.update({
             sharedMode: isShared,
             imageDomainObject: JSON.stringify(data),
-            object: ((meta || Imcms.document.meta) + "-" + id + "?langCode=" + langCode)
+            object: ((meta || Imcms.document.meta) + "/" + id + "?langCode=" + langCode)
         }, Imcms.Logger.log.bind(this, "Image::save : ", callback));
     },
     saveLoopItem: function (id, meta, isShared, loopId, entryId, langCode, data, callback) {
         this._api.update({
             sharedMode: isShared,
             imageDomainObject: JSON.stringify(data),
-            object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)
+            object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)
         }, Imcms.Logger.log.bind(this, "Image::saveLoopItem : ", callback));
     },
     remove: function (id, meta, langCode, callback) {
-        this._api.remove({object: ((meta || Imcms.document.meta) + "-" + id + "?langCode=" + langCode)},
+        this._api.remove({object: ((meta || Imcms.document.meta) + "/" + id + "?langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::remove : ", callback));
     },
     removeLoopItem: function (id, loopId, entryId, meta, langCode, callback) {
-        this._api.remove({object: ((meta || Imcms.document.meta) + "-" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
+        this._api.remove({object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
             Imcms.Logger.log.bind(this, "Image::removeLoopItem : ", callback));
     }
 };
@@ -419,18 +420,24 @@ Imcms.Image.ImageInfoAdapter.prototype = {
     },
     buildView: function () {
         //Setting default values if image src is empty(but data still can exist in DB)
-        if (this._imageSource.urlPathRelativeToContextPath === "") {
-            this._imageSource.realImageSize.width = "";
-            this._imageSource.realImageSize.height = "";
-            this._imageSource.width = "";
-            this._imageSource.height = "";
-            this._imageSource.cropRegion.cropX1 = -1;
-            this._imageSource.cropRegion.cropY1 = -1;
-            this._imageSource.cropRegion.cropX2 = -1;
-            this._imageSource.cropRegion.cropY2 = -1;
-            this._imageSource.alternateText = "";
-            this._imageSource.name = "";
-            this._imageSource.linkUrl = "";
+        if (!this._imageSource.urlPathRelativeToContextPath) {
+            this._imageSource = {
+                realImageSize: {
+                    width: "",
+                    height: ""
+                },
+                cropRegion: {
+                    cropX1: -1,
+                    cropY1: -1,
+                    cropX2: -1,
+                    cropY2: -1
+                },
+                width: "",
+                height: "",
+                alternateText: "",
+                name: "",
+                linkUrl: ""
+            };
             this._divWidth = 0;
             this._divHeight = 0;
         }
@@ -1145,5 +1152,151 @@ Imcms.Image.ImageCropper.prototype = {
         this.x = null;
         this.y = null;
         return false;
+    }
+};
+
+Imcms.Image.ImageInTextEditor = function (textEditor) {
+    this._window = new Imcms.Image.ImageInTextEditor.Window(textEditor);
+};
+Imcms.Image.ImageInTextEditor.prototype = {
+    _textEditor: {},
+    _window: {},
+    onFreeImageIndexReceived: function (imageNo) {
+        this._window.initViewForEmptyImage(imageNo);
+        this.openWindow();
+    },
+    onBrowserOpen: function () {
+        $.ajax({
+            url: Imcms.Linker.getContextPath() + "/api/content/image/emptyNo/" + Imcms.document.meta + "/LOWER",
+            success: this.onFreeImageIndexReceived.bind(this)
+        });
+    },
+    onExistingImageEdit: function (imageObj) {
+        this._window.initViewForExistingImage(imageObj);
+        this.openWindow();
+    },
+    openWindow: function () {
+        setTimeout(this._window.openWindow.bind(this._window), 300);
+    }
+};
+
+Imcms.Image.ImageInTextEditor.Window = function (textEditor) {
+    this._textEditor = textEditor;
+    this.init();
+};
+Imcms.Image.ImageInTextEditor.Window.prototype = {
+    _realElement: {},
+    _element: {},
+    _id: {},
+    _meta: {},
+    _builder: {},
+    _primarySource: {},
+    _source: {},
+    _imageViewAdapter: {},
+    _frame: {},
+    _loader: {},
+    _infoViewAdapter: {},
+    _imageCropper: {},
+    _isShowed: false,
+    _isLoaded: false,
+    _language: '',
+    mixinFromImageEditor: function (functionName) {
+        this[functionName] = Imcms.Image.Editor.prototype[functionName].bind(this);
+    },
+    init: function () {
+        this._loader = Imcms.Editors.Image;
+
+        // rebinding methods to not duplicate code
+        [
+            "initSource",
+            "buildView",
+            "buildCropper",
+            "buildExtra",
+            "_getSource",
+            "buildImageView",
+            "onImageLoaded",
+            "buildInfoView",
+            "addLanguageSwitches",
+            "addLanguageSwitch",
+            "_onLanguageChanged",
+            "_onDisplaySizeChanged",
+            "_onChooseFile",
+            "_onSaveReloadTask",
+            "_onFileChosen",
+            "_onCropRegionChanged",
+            "open"
+        ].forEach(this.mixinFromImageEditor.bind(this));
+    },
+    openWindow: function () {
+        this.open();
+        this._textEditor.focusManager.blur();
+        this._textEditor.element.$.blur();
+    },
+    initViewForEmptyImage: function (imageNo) {
+        this.generateEmptyImageTag(imageNo);
+        this.initView();
+    },
+    initViewForExistingImage: function (image) {
+        this._realElement = image.selectedElement;
+        this.generateImageTag(image.no, image.src);
+        this.initView();
+    },
+    initView: function () {
+        this.buildView();
+        this.getCurrentImageWithCallback(this.initSource.bind(this));
+    },
+    getCurrentImageWithCallback: function (callback) {
+        this._loader.getById(this._id, this._meta, this._language, callback);
+    },
+    generateEmptyImageTag: function (imageNo) {
+        this.generateImageTag(imageNo, Imcms.Linker.getContextPath() + "/imcms/eng/images/admin/ico_image.gif");
+    },
+    generateImageTag: function (imageNo, src) {
+        this._id = imageNo;
+        this._meta = Imcms.document.meta;
+        this._language = Imcms.language.code;
+
+        this._element = $("<div>")
+            .addClass("editor-base editor-image")
+            .attr("data-no", this._id)
+            .attr("data-meta", this._meta);
+
+        $("<img>").attr("cap", "")
+            .attr("src", src)
+            .appendTo(this._element);
+    },
+    save: function () {
+        var collectedData = this._infoViewAdapter.collect();
+
+        if (collectedData.name) {
+            this._loader.save(this._id,
+                this._meta,
+                this._infoViewAdapter.isSharedMode(),
+                this._language,
+                collectedData,
+                this._onSaveChangesCallback.bind(this)
+            );
+        }
+
+        this.close();
+    },
+    close: function () {
+        Imcms.Image.Editor.prototype.close.call(this);
+        $(this._textEditor.element.$).focus();
+    },
+    _onSaveChangesCallback: function () {
+        this._textEditor.focusManager.blur();
+        this._textEditor.element.$.blur();
+        this.getCurrentImageWithCallback(this._onGetImageAfterSavingCallback.bind(this));
+    },
+    _onGetImageAfterSavingCallback: function (image) {
+        var imageSource = Imcms.Linker.getContextPath() + image.generatedUrlPathRelativeToContextPath,
+            element = '<img class="internalImageInTextEditor" data-no="' + this._id + '" data-meta="' + this._meta + '"'
+            + ' src="' + imageSource + '"/>';
+        this._textEditor.insertHtml(element, 'unfiltered_html');
+    },
+    _onRemoveImage: function () {
+        $(this._realElement).remove();
+        this._loader.remove(this._id, this._meta, this._language, this.close.bind(this));
     }
 };
