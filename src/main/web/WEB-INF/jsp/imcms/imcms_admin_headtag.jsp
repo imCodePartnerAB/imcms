@@ -39,4 +39,4 @@
 <script type="text/javascript"
         src="${contextPath}/imcms/scripts/imcms_bootstrap.js.jsp?meta_id=${document.id}&amp;language=${user.language.isoCode639_2}&amp;flags=${flags}"></script>
 
-<script type="text/javascript" src="${contextPath}/imcms/application.min.js"></script>
+<script type="text/javascript" src="${contextPath}/application.min.js"></script>
