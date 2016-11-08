@@ -163,7 +163,7 @@ Imcms.Image.Editor.prototype = {
             .button()
             .html("Save and close")
             .setClass("imcms-positive imcms-save-and-close")
-            .on("click", this.confirm.bind(this, "Are you sure", "message", (function () {
+            .on("click", this.confirm.bind(this, "You have not added an alt - text to the image", "Do you want to continue?", (function () {
                 //Getting input value
                 var altText = $(this._infoViewAdapter._infoRef.getHTMLElement()).find("input[name=alternateText]").val();
                 return altText === "" || altText === " ";
