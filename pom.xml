@@ -201,6 +201,18 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <excludes>
+                                <!-- do not minify in this profile for dev purposes -->
+                                <exclude>**/*.*</exclude>
+                            </excludes>
+
+                            <aggregations>
+                                <aggregation>
+                                    <removeIncluded>false</removeIncluded>
+                                </aggregation>
+                            </aggregations>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
