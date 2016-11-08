@@ -124,7 +124,7 @@ CKEDITOR.plugins.add("documentSaver", {
                 hideCommand = function (event) {
                     setTimeout(function () {
                         event.removeListener('instanceReady', hideCommand);
-                        event.setData(event.documentSnapshot);
+                        event.setData(event._.previousValue);
                         event.removeListener('blur', event.blurHandler);
                         event.focusManager.unlock();
                         event.element.$.blur();
