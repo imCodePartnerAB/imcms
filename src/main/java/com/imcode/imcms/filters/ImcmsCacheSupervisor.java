@@ -1,5 +1,7 @@
 package com.imcode.imcms.filters;
 
+import imcode.server.Imcms;
+import imcode.util.PropertyManager;
 import imcode.util.Utility;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilter;
@@ -7,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,36 +27,42 @@ import java.util.stream.Stream;
  */
 public class ImcmsCacheSupervisor extends SimpleCachingHeadersPageCachingFilter {
 
-    private List<String> nonCacheURLs = new ArrayList<>();
+    private List<String> cacheURLs = new ArrayList<>();
 
     @Override
     public void doFilter(HttpServletRequest request, HttpServletResponse response,
                          FilterChain chain) throws ServletException, IOException {
-
-        if (Utility.containsAny(request.getRequestURI(), nonCacheURLs)) {
-            chain.doFilter(request, response);
-
-        } else {
+        //todo: implement logic that not changed documents (check header "If-Modified-Since") will be cached too
+        if (Utility.containsAny(request.getRequestURI(), cacheURLs)) {
             try {
                 super.doFilter(request, response, chain);
             } catch (Exception e) {
                 throw new ServletException(e);
             }
+        } else {
+            chain.doFilter(request, response);
         }
     }
 
     @Override
     public void doInit(FilterConfig filterConfig) throws CacheException {
-        final String noCacheMarkersConfig = filterConfig.getInitParameter("noCacheMarkers");
+        final String cacheMarkersConfig = filterConfig.getInitParameter("cacheMarkers");
 
-        if (StringUtils.isNotBlank(noCacheMarkersConfig)) {
-            final String[] noCacheMarkers = noCacheMarkersConfig.split("\\n");
-            nonCacheURLs.addAll(Stream
-                    .of(noCacheMarkers)
+        if (StringUtils.isNotBlank(cacheMarkersConfig)) {
+            final String[] cacheMarkers = cacheMarkersConfig.split("\\n");
+            cacheURLs.addAll(Stream
+                    .of(cacheMarkers)
                     .map(String::trim)
                     .collect(Collectors.toList())
             );
         }
+
+        ServletContext servletContext = filterConfig.getServletContext();
+        Imcms.setRootPath(servletContext.getRealPath("/"));
+
+        String imageUrl = PropertyManager.getServerProperty("ImageUrl");
+        String generatedImagesPath = servletContext.getContextPath() + imageUrl + "generated";
+        cacheURLs.add(generatedImagesPath);
 
         super.doInit(filterConfig);
     }
