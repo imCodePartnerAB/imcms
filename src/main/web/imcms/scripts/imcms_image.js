@@ -163,7 +163,11 @@ Imcms.Image.Editor.prototype = {
             .button()
             .html("Save and close")
             .setClass("imcms-positive imcms-save-and-close")
-            .on("click", $.proxy(this.save, this))
+            .on("click", this.confirm.bind(this, "Are you sure", "message", (function () {
+                //Getting input value
+                var altText = $(this._infoViewAdapter._infoRef.getHTMLElement()).find("input[name=alternateText]").val();
+                return altText === "" || altText === " ";
+            }).bind(this), this.save.bind(this)))
             .end()
             .button()
             .html("Remove image and close")
@@ -318,9 +322,33 @@ Imcms.Image.Editor.prototype = {
     _onCropRegionChanged: function (region) {
         this._infoViewAdapter.updateCropping(region);
     },
+    confirm: function (title, message, condition, onSuccess) {
+        var opt = {
+            autoOpen: false,
+            modal: true,
+            width: 400,
+            height: 200,
+            title: title,
+            buttons: {
+                "Confirm": function () {
+                    onSuccess();
+                    $(this).dialog("close");
+                },
+                "Cancel": function () {
+                    $(this).dialog("close");
+                }
+            }
+        };
+
+        if (condition()) {
+            var dialog = $('<div><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>' + message + '</div>');
+            dialog.dialog(opt).dialog("open");
+        } else {
+            onSuccess();
+        }
+    },
     save: function () {
         var collectedData = this._infoViewAdapter.collect();
-
         if (this._loopId && this._entryId) {
             this._loader.saveLoopItem(this._id,
                 this._meta,
@@ -1292,7 +1320,7 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
     _onGetImageAfterSavingCallback: function (image) {
         var imageSource = Imcms.Linker.getContextPath() + image.generatedUrlPathRelativeToContextPath,
             element = '<img class="internalImageInTextEditor" data-no="' + this._id + '" data-meta="' + this._meta + '"'
-            + ' src="' + imageSource + '"/>';
+                + ' src="' + imageSource + '"/>';
         this._textEditor.insertHtml(element, 'unfiltered_html');
     },
     _onRemoveImage: function () {
