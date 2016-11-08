@@ -176,64 +176,9 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <force>true</force>
                             <nosuffix>true</nosuffix>
                             <suffix>.min</suffix>
                             <jswarn>false</jswarn>
-                            <sourceDirectory>${project.basedir}/src/main/web</sourceDirectory>
-                            <outputDirectory>${build.webapp.dir}/</outputDirectory>
-
-                            <excludes>
-                                <!--excluding already minified files-->
-                                <exclude>**/*.min.js</exclude>
-                                <exclude>**/*.min.css</exclude>
-                            </excludes>
-
-                            <aggregations>
-                                <aggregation>
-                                    <insertNewLine>true</insertNewLine>
-                                    <removeIncluded>true</removeIncluded>
-                                    <output>${build.webapp.dir}/application.min.js</output>
-                                    <inputDir>${build.webapp.dir}/</inputDir>
-                                    <includes>
-                                        <!--libs-->
-                                        <include>**/tree.jquery.js</include>
-                                        <include>**/prism/prism.js</include>
-                                        <include>**/jqtree/tree.jquery.js</include>
-                                        <include>**/jquery.i18n.properties.min.js</include>
-                                        <!--imcms files-->
-                                        <include>**/JSFormBuilder.js</include>
-                                        <include>**/imcms_adminpanel.js</include>
-                                        <include>**/imcms_logger.js</include>
-                                        <include>**/imcms_utils.js</include>
-                                        <include>**/imcms_backgroundworker.js</include>
-                                        <include>**/imcms_addons.js</include>
-                                        <include>**/imcms_ckeditor_extension.js</include>
-                                        <include>**/imcms_events.js</include>
-                                        <include>**/imcms_loop.js</include>
-                                        <include>**/imcms_menu.js</include>
-                                        <include>**/imcms_text.js</include>
-                                        <include>**/imcms_language.js</include>
-                                        <include>**/imcms_template.js</include>
-                                        <include>**/imcms_template.js</include>
-                                        <include>**/imcms_category.js</include>
-                                        <include>**/imcms_user.js</include>
-                                        <include>**/imcms_document.js</include>
-                                        <include>**/imcms_role.js</include>
-                                        <include>**/imcms_permission.js</include>
-                                        <include>**/imcms_file.js</include>
-                                        <include>**/imcms_folder.js</include>
-                                        <include>**/imcms_content.js</include>
-                                        <include>**/imcms_image.js</include>
-                                    </includes>
-                                    <excludes>
-                                        <!--excluding lang files from packaging-->
-                                        <exclude>**/ckeditor/lang/*.js</exclude>
-                                        <exclude>**/ckeditor/plugins/*/lang/*.js</exclude>
-                                        <exclude>**/ckeditor/plugins/*/*/lang/*.js</exclude>
-                                    </excludes>
-                                </aggregation>
-                            </aggregations>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -256,63 +201,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <force>true</force>
-                            <sourceDirectory>${project.basedir}/src/main/web</sourceDirectory>
-                            <outputDirectory>${build.webapp.dir}/</outputDirectory>
-
-                            <excludes>
-                                <!--excluding all files-->
-                                <exclude>**/*.js</exclude>
-                                <exclude>**/*.css</exclude>
-                            </excludes>
-
-                            <aggregations>
-                                <aggregation>
-                                    <insertNewLine>true</insertNewLine>
-                                    <removeIncluded>true</removeIncluded>
-                                    <output>${build.webapp.dir}/application.min.js</output>
-                                    <inputDir>${build.webapp.dir}/</inputDir>
-                                    <includes>
-                                        <!--libs-->
-                                        <include>**/tree.jquery.js</include>
-                                        <include>**/prism/prism.js</include>
-                                        <include>**/jqtree/tree.jquery.js</include>
-                                        <include>**/jquery.i18n.properties.min.js</include>
-                                        <!--imcms files-->
-                                        <include>**/JSFormBuilder.js</include>
-                                        <include>**/imcms_adminpanel.js</include>
-                                        <include>**/imcms_logger.js</include>
-                                        <include>**/imcms_utils.js</include>
-                                        <include>**/imcms_backgroundworker.js</include>
-                                        <include>**/imcms_addons.js</include>
-                                        <include>**/imcms_ckeditor_extension.js</include>
-                                        <include>**/imcms_events.js</include>
-                                        <include>**/imcms_loop.js</include>
-                                        <include>**/imcms_menu.js</include>
-                                        <include>**/imcms_text.js</include>
-                                        <include>**/imcms_language.js</include>
-                                        <include>**/imcms_template.js</include>
-                                        <include>**/imcms_template.js</include>
-                                        <include>**/imcms_category.js</include>
-                                        <include>**/imcms_user.js</include>
-                                        <include>**/imcms_document.js</include>
-                                        <include>**/imcms_role.js</include>
-                                        <include>**/imcms_permission.js</include>
-                                        <include>**/imcms_file.js</include>
-                                        <include>**/imcms_folder.js</include>
-                                        <include>**/imcms_content.js</include>
-                                        <include>**/imcms_image.js</include>
-                                    </includes>
-                                    <excludes>
-                                        <!--excluding lang files from packaging-->
-                                        <exclude>**/ckeditor/lang/*.js</exclude>
-                                        <exclude>**/ckeditor/plugins/*/lang/*.js</exclude>
-                                        <exclude>**/ckeditor/plugins/*/*/lang/*.js</exclude>
-                                    </excludes>
-                                </aggregation>
-                            </aggregations>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -1197,8 +1085,6 @@
                 <version>1.5.1</version>
                 <configuration>
                     <force>true</force>
-                    <nosuffix>true</nosuffix>
-                    <suffix>.min</suffix>
                     <sourceDirectory>${project.basedir}/src/main/web</sourceDirectory>
                     <outputDirectory>${build.webapp.dir}/</outputDirectory>
 
