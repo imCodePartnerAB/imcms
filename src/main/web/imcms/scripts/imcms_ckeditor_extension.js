@@ -55,33 +55,30 @@ CKEDITOR.plugins.add("documentSaver", {
         }
 
         function switchModeCallback(e) {
-            return function () {
-                Imcms.BackgroundWorker.createTask({
-                    showProcessWindow: true,
-                    refreshPage: true,
-                    callbackFunc: function () {
-                        var loopref = $(e.element.$).attr("data-loopentryref");
-                        var no = $(e.element.$).attr("data-no");
-                        var meta = $(e.element.$).attr("data-meta");
-                        var el = $("div[data-loopentryref=" + (loopref ? loopref : "''") + "][data-no=" + no + "][data-meta=" + meta + "]");
+            return Imcms.BackgroundWorker.createTask({
+                showProcessWindow: true,
+                refreshPage: true,
+                callbackFunc: function () {
+                    var loopref = $(e.element.$).attr("data-loopentryref");
+                    var no = $(e.element.$).attr("data-no");
+                    var meta = $(e.element.$).attr("data-meta");
+                    var element = $("div[data-loopentryref=" + (loopref ? loopref : "''") + "]" +
+                        "[data-no=" + no + "][data-meta=" + meta + "]");
 
-                        //Getting current ckeditor instance
-                        var inst;
-                        for (var key in CKEDITOR.instances) {
-                            var editor = CKEDITOR.instances[key];
-                            if (el[0] === $(editor.element.$)[0]) {
-                                inst = editor;
-                                //Moving cursor and focusing it
-                                inst.focus();
-                                var range = inst.createRange();
-                                range.moveToElementEditEnd(range.root);
-                                inst.getSelection().selectRanges([range]);
-                                break;
-                            }
+                    //Getting current ckeditor instance
+                    for (var key in CKEDITOR.instances) {
+                        var editor = CKEDITOR.instances[key];
+                        if (element[0] === $(editor.element.$)[0]) {
+                            //Moving cursor and focusing it
+                            editor.focus();
+                            var range = editor.createRange();
+                            range.moveToElementEditEnd(range.root);
+                            editor.getSelection().selectRanges([range]);
+                            break;
                         }
                     }
-                })();
-            };
+                }
+            });
         }
 
         var confirmBeforeSwitch = function (event) {
@@ -150,10 +147,9 @@ CKEDITOR.plugins.add("documentSaver", {
         });
 
         var saveCommandDefinition = CKEDITOR.newCommandWithExecution(function (event) {
-            var $button = $('.' + event.id).find('.cke_button__savedata_icon')
-                .css({
-                    backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_loader.gif" + ")"
-                });
+            var $button = $('.' + event.id).find('.cke_button__savedata_icon').css({
+                backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_loader.gif" + ")"
+            });
             confirmNoEvent(event, function () {
                 $button.css({
                     backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_save.png" + ")"
@@ -169,6 +165,7 @@ CKEDITOR.plugins.add("documentSaver", {
     }
 });
 CKEDITOR.dialog.add("documentSaver", function (event) {
+    var textChangedMessage = "You have changed the text. Do you wish to save it?";
     return {
         title: 'Save changes',
         width: 200,
@@ -200,7 +197,13 @@ CKEDITOR.dialog.add("documentSaver", function (event) {
                             // in Safari close button goes to wrong side,
                             $dialog.find(".cke_dialog_close_button").css("float", "right");
                         },
-                        html: '<div style="text-align:center; line-height:25px">You have changed the text. Do you wish to save it?</div>'
+                        html: $("<div>")
+                            .css({
+                                "text-align": "center",
+                                "line-height": "25px"
+                            })
+                            .text(textChangedMessage)[0]
+                            .outerHTML
                     }
                 ]
             }
@@ -255,23 +258,6 @@ CKEDITOR.plugins.add("switchFormatToText", {
 
 CKEDITOR.plugins.add("fileBrowser", {
     init: function (editor) {
-
-        var onChooseFile = function () {
-            Imcms.Editors.Content.showDialog({
-                onApply: $.proxy(onFileChosen, this),
-                onCancel: $.proxy(onFileChosen, this)
-            });
-            editor.focusManager.blur();
-            editor.element.$.blur();
-        };
-        var onFileChosen = function (data) {
-            if (data) {
-                editor.insertHtml('<img class="captionedImage" src="' + data.urlPathRelativeToContextPath + '" alt="" /><br>', 'unfiltered_html');
-            }
-            editor.focusManager.focus();
-            editor.element.$.focus();
-        };
-
         var imageInTextEditor = new Imcms.Image.ImageInTextEditor(editor),
             openBrowserCommandDefinition = CKEDITOR.newCommandWithExecution(
                 imageInTextEditor.onBrowserOpen.bind(imageInTextEditor)
@@ -289,15 +275,15 @@ CKEDITOR.plugins.add("fileBrowser", {
 CKEDITOR.plugins.add("w3cValidator", {
     init: function (editor) {
         var w3cValidateCommand = function (event) {
-            var $button = $('.' + event.id).find('.cke_button__w3cvalidate_icon')
-                .css({
-                    backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_loader.gif" + ")"
-                });
+            var $button = $('.' + event.id).find('.cke_button__w3cvalidate_icon').css({
+                backgroundImage: "url(" + CKEDITOR.basePath + "images/ic_loader.gif" + ")"
+            });
             //todo: Add message if content is invalid
             CKEDITOR.fire("validateText", {
                 callback: function (data) {
                     $button.css({
-                        backgroundImage: "url(" + CKEDITOR.basePath + (data.result ? "images/ic_valid.png" : "images/ic_invalid.png") + ")"
+                        backgroundImage: "url(" + CKEDITOR.basePath
+                        + (data.result ? "images/ic_valid.png" : "images/ic_invalid.png") + ")"
                     });
 
                     if (!data.result) {
@@ -327,9 +313,14 @@ CKEDITOR.dialog.add("w3cValidationResultDialog", function (event) {
 
     data.data.errors.forEach(function (item, pos) {
         var $container = $("<div>").addClass("imcms-w3c-error").appendTo($content),
-            $errorMessage = $("<div>").text(pos + 1 + ". " + item.message.charAt(0).toUpperCase() + item.message.slice(1)).appendTo($container),
+            $errorMessage = $("<div>")
+                .text(pos + 1 + ". " + item.message.charAt(0).toUpperCase()
+                    + item.message.slice(1))
+                .appendTo($container),
             $sourceContainer = $("<div>").appendTo($container),
-            $source = $("<code>").addClass("language-html").html(item.line + ": " + item.source.replace(/(<([^>]+)>)/ig, "")).appendTo($sourceContainer);
+            $source = $("<code>").addClass("language-html")
+                .html(item.line + ": " + item.source.replace(/(<([^>]+)>)/ig, ""))
+                .appendTo($sourceContainer);
 
         Prism.highlightElement($source[0]);
     });
@@ -338,18 +329,14 @@ CKEDITOR.dialog.add("w3cValidationResultDialog", function (event) {
         title: 'Validation Result Dialog',
         width: 600,
         minHeight: 250,
-        contents: [
-            {
-                id: 'w3cValidation',
-                label: 'Validation',
-                elements: [
-                    {
-                        type: 'html',
-                        html: $("<div>").append($wrapper).html()
-                    }
-                ]
-            }
-        ]
+        contents: [{
+            id: 'w3cValidation',
+            label: 'Validation',
+            elements: [{
+                type: 'html',
+                html: $("<div>").append($wrapper).html()
+            }]
+        }]
     };
 });
 
@@ -476,28 +463,24 @@ CKEDITOR.dialog.add("textHistory", function (event) {
         title: 'Text History Dialog',
         width: 600,
         height: 400,
-        contents: [
-            {
-                id: 'textHistory',
-                label: 'Text History',
-                elements: [
-                    {
-                        type: 'html',
-                        onLoad: function () {
-                            $("#" + this.domId).append($wrapper)
-                        },
-                        html: ""
-                    }
-                ]
-            }
-        ],
+        contents: [{
+            id: 'textHistory',
+            label: 'Text History',
+            elements: [{
+                type: 'html',
+                onLoad: function () {
+                    $("#" + this.domId).append($wrapper)
+                },
+                html: ""
+            }]
+        }],
         buttons: [
             {
                 id: "text history OK button",
                 type: "button",
                 label: "Write to textfield",
                 title: "Write to textfield",
-                "class":"cke_dialog_ui_button_ok",
+                "class": "cke_dialog_ui_button_ok",
                 disabled: false,
                 onClick: function () {
                     if (selectedItem) {
