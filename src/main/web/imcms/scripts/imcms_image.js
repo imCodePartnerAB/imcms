@@ -348,28 +348,41 @@ Imcms.Image.Editor.prototype = {
         }
     },
     save: function () {
-        var collectedData = this._infoViewAdapter.collect();
-        if (this._loopId && this._entryId) {
-            this._loader.saveLoopItem(this._id,
-                this._meta,
-                this._infoViewAdapter.isSharedMode(),
-                this._loopId,
-                this._entryId,
-                this._language,
-                collectedData,
-                Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true))
-            );
+        if(this._infoViewAdapter._isValid) {
+            var collectedData = this._infoViewAdapter.collect();
+            if (this._loopId && this._entryId) {
+                this._loader.saveLoopItem(this._id,
+                    this._meta,
+                    this._infoViewAdapter.isSharedMode(),
+                    this._loopId,
+                    this._entryId,
+                    this._language,
+                    collectedData,
+                    Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true))
+                );
 
+            } else {
+                this._loader.save(this._id,
+                    this._meta,
+                    this._infoViewAdapter.isSharedMode(),
+                    this._language,
+                    collectedData,
+                    Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true))
+                );
+            }
+            this.close();
         } else {
-            this._loader.save(this._id,
-                this._meta,
-                this._infoViewAdapter.isSharedMode(),
-                this._language,
-                collectedData,
-                Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true))
-            );
+            $('<div>Not valid values</div>').dialog({
+                title: "Error",
+                resizable: false,
+                modal: true,
+                buttons: {
+                    "Ok" : function () {
+                        $(this).dialog("close");
+                    }
+                }
+            }).parent().addClass("ui-state-error");
         }
-        this.close();
     },
     close: function () {
         this._source = this._primarySource;
@@ -433,6 +446,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         displayImageSize: {},
         cropRegion: {}
     },
+    _isValid: true,
     _options: {
         infoRef: null,
         currentElement: null,
@@ -566,20 +580,26 @@ Imcms.Image.ImageInfoAdapter.prototype = {
 
             .div()
             .setClass("field size-field")
-            .text()
+            .number()
             .name("divWidth")
             .placeholder("width")
             .value("")
             .label("Display size")
             .attr("imageInfo", "")
             .attr("disabled", true)
+            .attr("min", 0)
+            .attr("max", this._divWidth )
+            .on("change", this._validate.bind(this,"divWidth"))
             .end()
-            .text()
+            .number()
             .name("divHeight")
             .placeholder("height")
             .value("")
             .attr("imageInfo", "")
             .attr("disabled", true)
+            .attr("min", 0)
+            .attr("max", this._divHeight )
+            .on("change", this._validate.bind(this,"divHeight"))
             .end()
             .end()
 
@@ -790,10 +810,26 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         });
         $element.find("input[name=displayHeight]").prop("disabled", state);
         $element.find("input[name=displayWidth]").prop("disabled", state);
+        $element.find("input[name=divHeight]").prop("disabled", !state);
+        $element.find("input[name=divWidth]").prop("disabled", !state);
     },
     _onCropChanged: function () {
 
-    }
+    },
+    _validate: function (inputName) {
+        console.log("this", this);
+        var $infoRef = $(this._infoRef.getHTMLElement());
+        var element = $infoRef.find("input[name=" + inputName + "]");
+        if ($(element).next().hasClass('validation-error')) {
+            $(element).next().remove();
+        }
+        if (element[0].checkValidity()) {
+            this._isValid = true;
+        } else {
+            element.after($("<div class='validation-error'>" + element[0].validationMessage + "</div>"));
+            this._isValid = false;
+        }
+    },
 };
 
 Imcms.Image.ImageCropper = function (options) {
