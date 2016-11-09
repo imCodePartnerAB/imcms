@@ -18,7 +18,8 @@
     boolean previewMode = BooleanUtils.toBoolean(request.getParameter(ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW));
     pageContext.setAttribute("isPreviewMode", previewMode);
 
-    String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext()).replace("imCMS", "<span>imCMS</span>");
+    String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext())
+            .replace("imCMS", "<span>imCMS</span>");
     pageContext.setAttribute("imcmsVersion", imcmsVersion);
 
     pageContext.setAttribute("permEditTextDocumentTexts", ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS);
@@ -40,10 +41,16 @@
     final boolean hasNewerVersion = (workingVersionModifiedTime > defaultVersionModifiedTime);
     pageContext.setAttribute("hasNewerVersion", hasNewerVersion);
 
-    final boolean canEditDocInfo = user.getInternal().getPermissionSetFor(document.getInternal()).getEditDocumentInformation();
+    final boolean canEditDocInfo = user.getInternal()
+            .getPermissionSetFor(document.getInternal())
+            .getEditDocumentInformation();
     pageContext.setAttribute("canEditDocInfo", canEditDocInfo);
 
-    final String documentLifeCyclePhase = document.getInternal().getLifeCyclePhase().toString().substring(0, 1).toUpperCase();
+    final String documentLifeCyclePhase = document.getInternal()
+            .getLifeCyclePhase()
+            .toString()
+            .substring(0, 1)
+            .toUpperCase();
     pageContext.setAttribute("documentLifeCyclePhase", documentLifeCyclePhase);
 
     final boolean isVersioningAllowed = Imcms.isVersioningAllowed();
@@ -90,7 +97,8 @@
             </a>
         </section>
         <c:if test="${isVersioningAllowed}">
-            <section id="preview" data-mode="preview" class="admin-panel-content-section${isPreviewMode ? " active" : ""}">
+            <section id="preview" data-mode="preview"
+                     class="admin-panel-content-section${isPreviewMode ? " active" : ""}">
                 <a href="${contextPath}/${docAliasOrId}?${requestParamWorkingPreview}=true" target="_self">
                     <div class="admin-panel-button">
                         <div class="admin-panel-button-image"></div>
@@ -98,8 +106,10 @@
                     </div>
                 </a>
             </section>
-            <section id="publish" data-mode="publish" class="admin-panel-content-section${hasNewerVersion ? " has-version-changed" : ""}">
-                <a href="${contextPath}/servlet/AdminDoc?meta_id=${document.id}&flags=${dispatchFlagPublish}" target="_self">
+            <section id="publish" data-mode="publish"
+                     class="admin-panel-content-section${hasNewerVersion ? " has-version-changed" : ""}">
+                <a href="${contextPath}/servlet/AdminDoc?meta_id=${document.id}&flags=${dispatchFlagPublish}"
+                   target="_self">
                     <div class="admin-panel-button">
                         <div class="admin-panel-button-image">Publish offline version</div>
                     </div>
