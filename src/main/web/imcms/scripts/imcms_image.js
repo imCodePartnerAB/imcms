@@ -627,6 +627,14 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .end()
 
             .div()
+            .button()
+            .html("Reset display size")
+            .setClass("imcms-neutral reset")
+            .on("click", this._onDisplaySizeChanged.bind(this))
+            .end()
+            .end()
+
+            .div()
             .setClass("field cropping-field")
             .text()
             .name("leftCrop")

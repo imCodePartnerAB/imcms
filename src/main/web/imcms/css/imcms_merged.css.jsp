@@ -862,6 +862,10 @@ editor theme
 	margin: 10px 0px 10px 0px;
 }
 
+.editor-form .imcms-content .reset {
+	margin-top: 5px;
+}
+
 .document-viewer .imcms-footer:before {
 	content: "";
 	display: block;
