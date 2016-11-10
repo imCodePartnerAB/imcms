@@ -24,6 +24,9 @@
         unSubscribe: function (subscriber) {
             this.subscribers.remove(subscriber);
         },
+        hasSubscriber: function (subscriber) {
+            return ~(this.subscribers.indexOf(subscriber));
+        },
         callback: function () {
         }
     };
