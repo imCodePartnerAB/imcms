@@ -28,7 +28,7 @@
         }
     };
 
-    Imcms.Connector = {
+    Imcms.CallbackConnector = {
         createPublisher: function (publisherName) {
             publishers.push(new Publisher(publisherName));
         },
@@ -43,7 +43,7 @@
          * @param callback
          */
         setCallbackOrCall: function (publisherName, callback) {
-            var publisher = Imcms.Connector.getPublisher(publisherName);
+            var publisher = Imcms.CallbackConnector.getPublisher(publisherName);
             (publisher && publisher.subscribers.length)
                 ? publisher.callback = callback
                 : callback();
