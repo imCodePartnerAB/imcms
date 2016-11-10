@@ -858,11 +858,12 @@ Imcms.Image.ImageInfoAdapter.prototype = {
 
     _deformationCheck: function () {
         var $infoRef = $(this._infoRef.getHTMLElement());
-        if ($infoRef.find("input[name=divHeight]").next().hasClass('warning-message')) {
-            $infoRef.find("input[name=divHeight]").next().remove();
+        var divHeightEl = $infoRef.find("input[name=divHeight]");
+        if (divHeightEl.next().hasClass('warning-message')) {
+            divHeightEl.next().remove();
         }
-        if ((Math.round((($infoRef.find("input[name=displayWidth]").val() / $infoRef.find("input[name=displayHeight]").val())) * 10) / 10) !== (Math.round((($infoRef.find("input[name=divWidth]").val() / $infoRef.find("input[name=divHeight]").val())) * 10) / 10)) {
-            $infoRef.find("input[name=divHeight]").after($("<div class='warning-message'>This may cause visual distortion</div>"));
+        if ((Math.round((($infoRef.find("input[name=displayWidth]").val() / $infoRef.find("input[name=displayHeight]").val())) * 10) / 10) !== (Math.round((($infoRef.find("input[name=divWidth]").val() / divHeightEl.val())) * 10) / 10)) {
+            divHeightEl.after($("<div class='warning-message'>This may cause visual distortion</div>"));
         }
     }
 };
