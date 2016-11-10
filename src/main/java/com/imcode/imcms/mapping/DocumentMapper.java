@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.*;
@@ -884,7 +885,8 @@ public class DocumentMapper implements DocumentGetter {
      */
     public boolean isWorkingDocumentVersion(ServletRequest request) {
         return ("" + ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS).equals(request.getParameter("flags"))
-                || BooleanUtils.toBoolean(request.getParameter(ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW));
+                || BooleanUtils.toBoolean(request.getParameter(ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW))
+				|| ((HttpServletRequest) request).getRequestURI().contains("/edit?");
     }
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {

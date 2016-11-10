@@ -46,7 +46,7 @@ public class EditElementController {
             Utility.forwardToLogin(request, response);
         }
 
-        DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(metaId);
+        DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getWorkingDocument(metaId);
 
         if (null == document) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);

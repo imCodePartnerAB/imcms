@@ -92,12 +92,13 @@ Imcms.Text.Editor.prototype = {
         var editor = event.editor,
             selectedImageData = {};
 
-        editor.addCommand('editInternalImageCmd', {
-            exec: function (editor) {
-                var imageInTextEditor = new Imcms.Image.ImageInTextEditor(editor);
-                imageInTextEditor.onExistingImageEdit(selectedImageData);
+        editor.addCommand('editInternalImageCmd', CKEDITOR.newCommandWithExecution(
+            function (editor) {
+                new Imcms.Image
+                    .ImageInTextEditor(editor)
+                    .onExistingImageEdit(selectedImageData);
             }
-        });
+        ));
         editor.contextMenu.addListener(function (element, selection) {
             if (element.hasClass("internalImageInTextEditor")) {
                 var selectedElement = selection._.cache.selectedElement.$,
