@@ -1,5 +1,18 @@
 Imcms.Admin = {};
 Imcms.Admin.Panel = {
+    publisherName: "admin-panel-publisher",
+    redirectSafely: function (index, element) {
+        $(element).click(function (event) {
+                event.preventDefault();
+                var reference = $(this).attr("href");
+                Imcms.CallbackConnector.setCallbackOrCall(
+                    Imcms.Admin.Panel.publisherName,
+                    Imcms.BackgroundWorker.createTask({
+                        redirectURL: reference
+                    })
+                );
+        });
+    },
     init: function () {
         var draggable = false,
             entered = false,
@@ -9,6 +22,9 @@ Imcms.Admin.Panel = {
             $draggable = $(".admin-panel-draggable"),
             $doc = $(document),
             $adminPanel = $(".admin-panel");
+
+        Imcms.CallbackConnector.createPublisher(Imcms.Admin.Panel.publisherName);
+        $(".imcms-panel-safe-redirect").each(this.redirectSafely);
 
         $adminPanel.css({
             left: $.cookie("admin-panel-location-left", Number) || 0,
