@@ -856,6 +856,22 @@ editor theme
 	margin-right: 20px;
 }
 
+.editor-form .validation-error {
+	color: #D8000C;
+	background-color: #FFBABA;
+	margin: 10px 0px 10px 0px;
+}
+
+.editor-form .warning-message {
+	color: #d8a703;
+	background-color: #fff2ad;
+	margin: 10px 0px 10px 0px;
+}
+
+.editor-form .imcms-content .reset {
+	margin-top: 5px;
+}
+
 .document-viewer .imcms-footer:before {
 	content: "";
 	display: block;

@@ -348,28 +348,44 @@ Imcms.Image.Editor.prototype = {
         }
     },
     save: function () {
-        var collectedData = this._infoViewAdapter.collect();
-        if (this._loopId && this._entryId) {
-            this._loader.saveLoopItem(this._id,
-                this._meta,
-                this._infoViewAdapter.isSharedMode(),
-                this._loopId,
-                this._entryId,
-                this._language,
-                collectedData,
-                Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true))
-            );
+        this._infoViewAdapter._validate.bind(this, "divHeight");
+        this._infoViewAdapter._validate.bind(this, "divWidth");
 
+        if (this._infoViewAdapter._isValid) {
+            var collectedData = this._infoViewAdapter.collect();
+            if (this._loopId && this._entryId) {
+                this._loader.saveLoopItem(this._id,
+                    this._meta,
+                    this._infoViewAdapter.isSharedMode(),
+                    this._loopId,
+                    this._entryId,
+                    this._language,
+                    collectedData,
+                    Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true))
+                );
+
+            } else {
+                this._loader.save(this._id,
+                    this._meta,
+                    this._infoViewAdapter.isSharedMode(),
+                    this._language,
+                    collectedData,
+                    Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true))
+                );
+            }
+            this.close();
         } else {
-            this._loader.save(this._id,
-                this._meta,
-                this._infoViewAdapter.isSharedMode(),
-                this._language,
-                collectedData,
-                Imcms.BackgroundWorker.createTask(this._onSaveReloadTask(true))
-            );
+            $('<div>Not valid values</div>').dialog({
+                title: "Error",
+                resizable: false,
+                modal: true,
+                buttons: {
+                    "Ok": function () {
+                        $(this).dialog("close");
+                    }
+                }
+            }).parent().addClass("ui-state-error");
         }
-        this.close();
     },
     close: function () {
         this._source = this._primarySource;
@@ -433,6 +449,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         displayImageSize: {},
         cropRegion: {}
     },
+    _isValid: true,
     _options: {
         infoRef: null,
         currentElement: null,
@@ -527,6 +544,9 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             } else {
                 this._divHeight = realHeight;
             }
+
+            this._generatedWidth = pageImgArea.width();
+            this._generatedHeight = pageImgArea.height();
         }
         this._infoRef
             .div()
@@ -566,20 +586,28 @@ Imcms.Image.ImageInfoAdapter.prototype = {
 
             .div()
             .setClass("field size-field")
-            .text()
+            .number()
             .name("divWidth")
             .placeholder("width")
             .value("")
             .label("Display size")
             .attr("imageInfo", "")
             .attr("disabled", true)
+            .attr("min", 0)
+            .attr("max", this._divWidth)
+            .on("change", this._deformationCheck.bind(this))
+            .on("change", this._validate.bind(this, "divWidth"))
             .end()
-            .text()
+            .number()
             .name("divHeight")
             .placeholder("height")
             .value("")
             .attr("imageInfo", "")
             .attr("disabled", true)
+            .attr("min", 0)
+            .attr("max", this._divHeight)
+            .on("change", this._deformationCheck.bind(this))
+            .on("change", this._validate.bind(this, "divHeight"))
             .end()
             .end()
 
@@ -603,6 +631,14 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .attr("max", this._imageSource.realImageSize.height || "")
             .attr("min", 0)
             .attr("imageInfo", "")
+            .end()
+            .end()
+
+            .div()
+            .button()
+            .html("Reset display size")
+            .setClass("imcms-neutral reset")
+            .on("click", this._onDisplaySizeChanged.bind(this))
             .end()
             .end()
 
@@ -725,54 +761,63 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         // This only show display area and don't take effect on page(same for width an height)
         var divHeight = 0, divWidth = 0;
 
-        if (isNaN(this._divHeight)) {
-            if (isNaN(this._divWidth)) {
-                //If there CSS rules wasn't found it will just show cropped values
-                divHeight = cropHeight;
-            } else {
-                if (zoomFactor >= 1) {
-                    // If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
-                    divHeight = Math.round((cropHeight) / zoomFactor);
+        if (this._generatedHeight != null) {
+            $infoRef.find("input[name=divHeight]").val(this._generatedHeight);
+            this._generatedHeight = null;
+        } else {
+            if (isNaN(this._divHeight)) {
+                if (isNaN(this._divWidth)) {
+                    //If there CSS rules wasn't found it will just show cropped values
+                    divHeight = cropHeight;
                 } else {
-                    // If selected area is smaller than available div then size(factor < 1) will be reduced to fit image without zooming
+                    if (zoomFactor >= 1) {
+                        // If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
+                        divHeight = Math.round((cropHeight) / zoomFactor);
+                    } else {
+                        // If selected area is smaller than available div then size(factor < 1) will be reduced to fit image without zooming
+                        divHeight = cropHeight;
+                    }
+                }
+            } else {
+                //If one of css limitations exists
+                if ((cropHeight) > this._divHeight) {
+                    divHeight = this._divHeight;
+                } else {
                     divHeight = cropHeight;
                 }
             }
-        } else {
-            //If one of css limitations exists
-            if ((cropHeight) > this._divHeight) {
-                divHeight = this._divHeight;
-            } else {
-                divHeight = cropHeight;
-            }
+            $infoRef.find("input[name=divHeight]").val(divHeight);
         }
-        $infoRef.find("input[name=divHeight]").val(divHeight);
 
-
-        if (isNaN(this._divWidth)) {
-            if (isNaN(this._divHeight)) {
-                //If there CSS rules wasn't found it will just show cropped values
-                divWidth = cropWidth;
-            } else {
-                if (zoomFactor >= 1) {
-                    // If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
-                    divWidth = Math.round((cropWidth) / zoomFactor);
+        if (this._generatedWidth != null) {
+            $infoRef.find("input[name=divWidth]").val(this._generatedWidth);
+            this._generatedWidth = null;
+        } else {
+            if (isNaN(this._divWidth)) {
+                if (isNaN(this._divHeight)) {
+                    //If there CSS rules wasn't found it will just show cropped values
+                    divWidth = cropWidth;
                 } else {
-                    // If selected area is smaller than available div then size(factor < 1) will be reduced to fit image without zooming
+                    if (zoomFactor >= 1) {
+                        // If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
+                        divWidth = Math.round((cropWidth) / zoomFactor);
+                    } else {
+                        // If selected area is smaller than available div then size(factor < 1) will be reduced to fit image without zooming
+                        divWidth = cropWidth;
+                    }
+                }
+            } else {
+                //If one of css limitations exists
+                if ((cropWidth) > this._divWidth) {
+                    divWidth = this._divWidth;
+
+                } else {
                     divWidth = cropWidth;
                 }
             }
-        } else {
-            //If one of css limitations exists
-            if ((cropWidth) > this._divWidth) {
-                divWidth = this._divWidth;
-
-            } else {
-                divWidth = cropWidth;
-            }
+            $infoRef.find("input[name=divWidth]").val(divWidth);
         }
-        $infoRef.find("input[name=divWidth]").val(divWidth);
-
+        this._deformationCheck();
     },
     _onDisplaySizeChanged: function () {
         var $element = $(this._infoRef.getHTMLElement());
@@ -790,9 +835,36 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         });
         $element.find("input[name=displayHeight]").prop("disabled", state);
         $element.find("input[name=displayWidth]").prop("disabled", state);
+        $element.find("input[name=divHeight]").prop("disabled", !state);
+        $element.find("input[name=divWidth]").prop("disabled", !state);
     },
     _onCropChanged: function () {
 
+    },
+    _validate: function (inputName) {
+        console.log("this", this);
+        var $infoRef = $(this._infoRef.getHTMLElement());
+        var element = $infoRef.find("input[name=" + inputName + "]");
+        if ($(element).next().hasClass('validation-error')) {
+            $(element).next().remove();
+        }
+        if (element[0].checkValidity()) {
+            this._isValid = true;
+        } else {
+            element.after($("<div class='validation-error'>" + element[0].validationMessage + "</div>"));
+            this._isValid = false;
+        }
+    },
+
+    _deformationCheck: function () {
+        var $infoRef = $(this._infoRef.getHTMLElement());
+        var divHeightEl = $infoRef.find("input[name=divHeight]");
+        if (divHeightEl.next().hasClass('warning-message')) {
+            divHeightEl.next().remove();
+        }
+        if ((Math.round((($infoRef.find("input[name=displayWidth]").val() / $infoRef.find("input[name=displayHeight]").val())) * 10) / 10) !== (Math.round((($infoRef.find("input[name=divWidth]").val() / divHeightEl.val())) * 10) / 10)) {
+            divHeightEl.after($("<div class='warning-message'>This may cause visual distortion</div>"));
+        }
     }
 };
 
