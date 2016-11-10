@@ -862,6 +862,12 @@ editor theme
 	margin: 10px 0px 10px 0px;
 }
 
+.editor-form .warning-message {
+	color: #d8a703;
+	background-color: #fff2ad;
+	margin: 10px 0px 10px 0px;
+}
+
 .editor-form .imcms-content .reset {
 	margin-top: 5px;
 }

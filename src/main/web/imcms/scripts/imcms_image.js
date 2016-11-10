@@ -591,8 +591,9 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .attr("imageInfo", "")
             .attr("disabled", true)
             .attr("min", 0)
-            .attr("max", this._divWidth )
-            .on("change", this._validate.bind(this,"divWidth"))
+            .attr("max", this._divWidth)
+            .on("change", this._deformationCheck.bind(this))
+            .on("change", this._validate.bind(this, "divWidth"))
             .end()
             .number()
             .name("divHeight")
@@ -601,8 +602,9 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .attr("imageInfo", "")
             .attr("disabled", true)
             .attr("min", 0)
-            .attr("max", this._divHeight )
-            .on("change", this._validate.bind(this,"divHeight"))
+            .attr("max", this._divHeight)
+            .on("change", this._deformationCheck.bind(this))
+            .on("change", this._validate.bind(this, "divHeight"))
             .end()
             .end()
 
@@ -812,6 +814,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             }
             $infoRef.find("input[name=divWidth]").val(divWidth);
         }
+        this._deformationCheck();
     },
     _onDisplaySizeChanged: function () {
         var $element = $(this._infoRef.getHTMLElement());
@@ -849,6 +852,16 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             this._isValid = false;
         }
     },
+
+    _deformationCheck: function () {
+        var $infoRef = $(this._infoRef.getHTMLElement());
+        if ($infoRef.find("input[name=divHeight]").next().hasClass('warning-message')) {
+            $infoRef.find("input[name=divHeight]").next().remove();
+        }
+        if ((Math.round((($infoRef.find("input[name=displayWidth]").val() / $infoRef.find("input[name=displayHeight]").val())) * 10) / 10) !== (Math.round((($infoRef.find("input[name=divWidth]").val() / $infoRef.find("input[name=divHeight]").val())) * 10) / 10)) {
+            $infoRef.find("input[name=divHeight]").after($("<div class='warning-message'>This may cause visual distortion</div>"));
+        }
+    }
 };
 
 Imcms.Image.ImageCropper = function (options) {
