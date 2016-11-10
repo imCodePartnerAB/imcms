@@ -1306,26 +1306,15 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
     init: function () {
         this._loader = Imcms.Editors.Image;
 
+        var editorKeys = Object.keys(Imcms.Image.Editor.prototype)
+            .filter(function (key) {
+                return (typeof Imcms.Image.Editor.prototype[key] === 'function')
+            });
+        Object.keys(Imcms.Image.ImageInTextEditor.Window.prototype).forEach(function (key) {
+            editorKeys.remove(key);
+        });
         // rebinding methods to not duplicate code
-        [
-            "initSource",
-            "buildView",
-            "buildCropper",
-            "buildExtra",
-            "_getSource",
-            "buildImageView",
-            "onImageLoaded",
-            "buildInfoView",
-            "addLanguageSwitches",
-            "addLanguageSwitch",
-            "_onLanguageChanged",
-            "_onDisplaySizeChanged",
-            "_onChooseFile",
-            "_onSaveReloadTask",
-            "_onFileChosen",
-            "_onCropRegionChanged",
-            "open"
-        ].forEach(this.mixinFromImageEditor.bind(this));
+        editorKeys.forEach(this.mixinFromImageEditor.bind(this));
     },
     openWindow: function () {
         this.open();
