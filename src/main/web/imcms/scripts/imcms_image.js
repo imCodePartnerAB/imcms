@@ -348,6 +348,9 @@ Imcms.Image.Editor.prototype = {
         }
     },
     save: function () {
+        this._infoViewAdapter._validate.bind(this, "divHeight");
+        this._infoViewAdapter._validate.bind(this, "divWidth");
+
         if(this._infoViewAdapter._isValid) {
             var collectedData = this._infoViewAdapter.collect();
             if (this._loopId && this._entryId) {
