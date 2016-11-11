@@ -306,7 +306,9 @@ Imcms.Image.Editor.prototype = {
     },
 
     _onDisplaySizeChanged: function (size) {
-        this._imageCropper.changeDestinationRect(+size.width, +size.height);
+        if (this._imageCropper.changeDestinationRect) {
+            this._imageCropper.changeDestinationRect(+size.width, +size.height);
+        }
     },
     _onChooseFile: function () {
         Imcms.Editors.Content.showDialog({
