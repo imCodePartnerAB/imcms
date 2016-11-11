@@ -1120,6 +1120,7 @@
                                 <include>**/jquery.i18n.properties.min.js</include>
                                 <!--imcms files-->
                                 <include>**/JSFormBuilder.js</include>
+                                <include>**/imcms_connector.js</include>
                                 <include>**/imcms_adminpanel.js</include>
                                 <include>**/imcms_logger.js</include>
                                 <include>**/imcms_utils.js</include>
