@@ -163,11 +163,7 @@ Imcms.Image.Editor.prototype = {
             .button()
             .html("Save and close")
             .setClass("imcms-positive imcms-save-and-close")
-            .on("click", this.confirm.bind(this, "You have not added an alt - text to the image", "Do you want to continue?", (function () {
-                //Getting input value
-                var altText = $(this._infoViewAdapter._infoRef.getHTMLElement()).find("input[name=alternateText]").val();
-                return altText === "" || altText === " ";
-            }).bind(this), this.save.bind(this)))
+            .on("click", this.checkAndSave.bind(this))
             .end()
             .button()
             .html("Remove image and close")
@@ -178,6 +174,50 @@ Imcms.Image.Editor.prototype = {
             .end();
         $(this._builder[0]).appendTo("body").addClass("editor-form editor-image reset");
         return this;
+    },
+    checkAndSave: function () {
+        var imageInfoElement = this._infoViewAdapter._infoRef.getHTMLElement(),
+            title = "You have not added an alt - text to the image",
+            message = "Do you want to continue?",
+            isEmpty = !$(imageInfoElement)
+                .find("input[name=alternateText]")
+                .val()
+                .trim();
+
+        this.confirm(title, message, isEmpty, this.save.bind(this));
+    },
+    confirm: function (title, message, condition, onSuccess) {
+        var opt = {
+            autoOpen: false,
+            modal: true,
+            width: 400,
+            height: 200,
+            title: title,
+            buttons: {
+                "Confirm": function () {
+                    onSuccess();
+                    $(this).dialog("close");
+                },
+                "Cancel": function () {
+                    $(this).dialog("close");
+                }
+            }
+        };
+
+        if (condition) {
+            $("<div>").text(message)
+                .append($("<span>")
+                    .addClass("ui-icon ui-icon-alert")
+                    .css({
+                        "float": "left",
+                        "margin": "12px 12px 20px 0"
+                    })
+                )
+                .dialog(opt)
+                .dialog("open");
+        } else {
+            onSuccess();
+        }
     },
     buildCropper: function (data) {
         if (this._imageCropper instanceof Imcms.Image.ImageCropper) {
@@ -321,31 +361,6 @@ Imcms.Image.Editor.prototype = {
     },
     _onCropRegionChanged: function (region) {
         this._infoViewAdapter.updateCropping(region);
-    },
-    confirm: function (title, message, condition, onSuccess) {
-        var opt = {
-            autoOpen: false,
-            modal: true,
-            width: 400,
-            height: 200,
-            title: title,
-            buttons: {
-                "Confirm": function () {
-                    onSuccess();
-                    $(this).dialog("close");
-                },
-                "Cancel": function () {
-                    $(this).dialog("close");
-                }
-            }
-        };
-
-        if (condition()) {
-            var dialog = $('<div><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>' + message + '</div>');
-            dialog.dialog(opt).dialog("open");
-        } else {
-            onSuccess();
-        }
     },
     save: function () {
         this._infoViewAdapter._validate.bind(this, "divHeight");
@@ -851,7 +866,6 @@ Imcms.Image.ImageInfoAdapter.prototype = {
 
     },
     _validate: function (inputName) {
-        console.log("this", this);
         var $infoRef = $(this._infoRef.getHTMLElement());
         var element = $infoRef.find("input[name=" + inputName + "]");
         if ($(element).next().hasClass('validation-error')) {
