@@ -124,7 +124,8 @@ editor theme
 	z-index: 1002;
 }
 
-.editor-form.editor-image {
+.editor-form.editor-image,
+.editor-form.editor-content {
 	z-index: 9995;
 }
 
