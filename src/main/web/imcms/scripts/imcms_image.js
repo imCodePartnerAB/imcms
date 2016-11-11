@@ -744,8 +744,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         this._imageSource.linkUrl = $.trim($infoRef.find("input[name=linkUrl]").val());
 
         var urlExpression = /(^|\s)([\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi;
-        var matcher = urlExpression;
-        var match = this._imageSource.linkUrl.match(matcher);
+        var match = this._imageSource.linkUrl.match(urlExpression);
         if (match) {
             if (!(this._imageSource.linkUrl.startsWith("http://") || this._imageSource.linkUrl.startsWith("https://") || this._imageSource.linkUrl.startsWith("ftp://"))) {
                 this._imageSource.linkUrl = "http://" + this._imageSource.linkUrl;
