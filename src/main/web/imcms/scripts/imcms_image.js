@@ -842,7 +842,6 @@ Imcms.Image.ImageInfoAdapter.prototype = {
 
     },
     _validate: function (inputName) {
-        console.log("this", this);
         var $infoRef = $(this._infoRef.getHTMLElement());
         var element = $infoRef.find("input[name=" + inputName + "]");
         if ($(element).next().hasClass('validation-error')) {
