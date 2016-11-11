@@ -726,7 +726,16 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         this._imageSource.cropRegion.cropY2 = $infoRef.find("input[name=bottomCrop]").val();
         this._imageSource.alternateText = $infoRef.find("input[name=alternateText]").val();
         this._imageSource.name = $infoRef.find("input[name=imageName]").val();
-        this._imageSource.linkUrl = $infoRef.find("input[name=linkUrl]").val();
+        this._imageSource.linkUrl = $.trim($infoRef.find("input[name=linkUrl]").val());
+
+        var urlExpression = /(^|\s)([\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi;
+        var matcher = urlExpression;
+        var match = this._imageSource.linkUrl.match(matcher);
+        if (match) {
+            if (!(this._imageSource.linkUrl.startsWith("http://") || this._imageSource.linkUrl.startsWith("https://") || this._imageSource.linkUrl.startsWith("ftp://"))) {
+                this._imageSource.linkUrl = "http://" + this._imageSource.linkUrl;
+            }
+        }
         return this._imageSource;
     },
     isSharedMode: function () {
