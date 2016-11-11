@@ -1247,7 +1247,7 @@ ul.jqtree-tree ul.jqtree_common {
 }
 
 .ui-front {
-	z-index: 1005;
+	z-index: 9995;
 }
 
 .ui-dialog {

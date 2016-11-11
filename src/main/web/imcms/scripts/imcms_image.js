@@ -343,7 +343,6 @@ Imcms.Image.Editor.prototype = {
         if (condition()) {
             var dialog = $('<div><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>' + message + '</div>');
             dialog.dialog(opt).dialog("open");
-            $(".ui-dialog").css("z-index","9995");
         } else {
             onSuccess();
         }
