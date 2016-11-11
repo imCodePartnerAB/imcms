@@ -341,8 +341,16 @@ Imcms.Image.Editor.prototype = {
         };
 
         if (condition()) {
-            var dialog = $('<div><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>' + message + '</div>');
-            dialog.dialog(opt).dialog("open");
+            $("<div>").text(message)
+                .append($("<span>")
+                    .addClass("ui-icon ui-icon-alert")
+                    .css({
+                        "float": "left",
+                        "margin": "12px 12px 20px 0"
+                    })
+                )
+                .dialog(opt)
+                .dialog("open");
         } else {
             onSuccess();
         }
