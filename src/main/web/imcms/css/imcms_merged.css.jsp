@@ -124,6 +124,10 @@ editor theme
 	z-index: 1002;
 }
 
+.editor-form.editor-image {
+	z-index: 9995;
+}
+
 .editor-form, .editor-form *, .pop-up-form *, .pop-up-form {
 	font: normal 15px Arial;
 }
