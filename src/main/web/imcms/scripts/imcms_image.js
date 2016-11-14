@@ -712,8 +712,8 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             return Math.max(objectProportion, minProportion);
         }
 
-        this._divHeight = calculateRealProportion("height");
-        this._divWidth = calculateRealProportion("width");
+        this._divHeight = (calculateRealProportion("height") || NaN);
+        this._divWidth = (calculateRealProportion("width") || NaN);
 
         this._generatedWidth = pageImgArea.width();
         this._generatedHeight = pageImgArea.height();
