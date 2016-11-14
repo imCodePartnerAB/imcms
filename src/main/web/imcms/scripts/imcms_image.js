@@ -56,7 +56,10 @@ Imcms.Image.Loader.prototype = {
             Imcms.Logger.log.bind(this, "Image::getById : ", callback));
     },
     getByLoopItemRef: function (id, loopId, entryId, meta, langCode, callback) {
-        this._api.read({object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
+        this._api.read({
+                object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId
+                + "&entryId=" + entryId + "&langCode=" + langCode)
+            },
             Imcms.Logger.log.bind(this, "Image::getByLoopItemRef : ", callback));
     },
     getByPath: function (path, callback) {
@@ -77,7 +80,8 @@ Imcms.Image.Loader.prototype = {
         this._api.update({
             sharedMode: isShared,
             imageDomainObject: JSON.stringify(data),
-            object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)
+            object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId
+            + "&entryId=" + entryId + "&langCode=" + langCode)
         }, Imcms.Logger.log.bind(this, "Image::saveLoopItem : ", callback));
     },
     remove: function (id, meta, langCode, callback) {
@@ -85,7 +89,10 @@ Imcms.Image.Loader.prototype = {
             Imcms.Logger.log.bind(this, "Image::remove : ", callback));
     },
     removeLoopItem: function (id, loopId, entryId, meta, langCode, callback) {
-        this._api.remove({object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId + "&entryId=" + entryId + "&langCode=" + langCode)},
+        this._api.remove({
+                object: ((meta || Imcms.document.meta) + "/" + id + "?loopId=" + loopId
+                + "&entryId=" + entryId + "&langCode=" + langCode)
+            },
             Imcms.Logger.log.bind(this, "Image::removeLoopItem : ", callback));
     }
 };
@@ -122,7 +129,13 @@ Imcms.Image.Editor.prototype = {
         this._language = Imcms.language.code;
         this.buildView().buildExtra();
         if (data.loop && data.entry) {
-            this._loader.getByLoopItemRef(this._id, data.loop, data.entry, this._meta, this._language, this.initSource.bind(this));
+            this._loader.getByLoopItemRef(
+                this._id,
+                data.loop,
+                data.entry,
+                this._meta,
+                this._language,
+                this.initSource.bind(this));
         }
         else {
             this._loader.getById(this._id, this._meta, this._language, this.initSource.bind(this));
@@ -223,8 +236,14 @@ Imcms.Image.Editor.prototype = {
         if (this._imageCropper instanceof Imcms.Image.ImageCropper) {
             this._imageCropper.close();
         }
-        var isFreeTransformed = (this._imageViewAdapter._imageSource.imageInfo.width / this._imageViewAdapter._imageSource.imageInfo.height)
-            !== ((data.cropRegion.cropX2 - data.cropRegion.cropX1) / (data.cropRegion.cropY2 - data.cropRegion.cropY1));
+        var imageSourceWidth = this._imageViewAdapter._imageSource.imageInfo.width,
+            imageSourceHeight = this._imageViewAdapter._imageSource.imageInfo.height,
+            cropX2 = data.cropRegion.cropX2,
+            cropY1 = data.cropRegion.cropY1,
+            cropY2 = data.cropRegion.cropY2,
+            cropX1 = data.cropRegion.cropX1,
+            isFreeTransformed = (imageSourceWidth / imageSourceHeight) !== ((cropX2 - cropX1) / (cropY2 - cropY1));
+
         this._imageCropper = new Imcms.Image.ImageCropper({
             container: this._builder.ref("imageView").getHTMLElement(),
             freeTransformed: isFreeTransformed,
@@ -233,8 +252,8 @@ Imcms.Image.Editor.prototype = {
         if (this._isShowed) {
             setTimeout(function () {
                 this._imageCropper.initialize();
-                this._imageCropper.changeCropping(data.cropRegion.cropX1, data.cropRegion.cropY1, data.cropRegion.cropX2, data.cropRegion.cropY2);
-                this._imageCropper.changeDestinationRect(data.cropRegion.cropX2, data.cropRegion.cropY2);
+                this._imageCropper.changeCropping(cropX1, cropY1, cropX2, cropY2);
+                this._imageCropper.changeDestinationRect(cropX2, cropY2);
             }.bind(this), 250);
         }
     },
@@ -288,7 +307,7 @@ Imcms.Image.Editor.prototype = {
             languageContainer.append($("<img>").addClass("content-preview-image")
                 .addClass(this._language === code ? 'active' : '')
                 .attr("id", code + "Switch")
-                .attr("src", Imcms.Linker._contextPath + '/images/ic_' + language.toLowerCase() + '.png')
+                .attr("src", Imcms.Linker.getContextPath() + '/images/ic_' + language.toLowerCase() + '.png')
                 .data("imageInfo", '').on("click", this._onLanguageChanged.bind(this, code)))
         }
     },
@@ -298,7 +317,13 @@ Imcms.Image.Editor.prototype = {
         this._language = lang;
 
         if (data.loop && data.entry) {
-            this._loader.getByLoopItemRef(data.no, data.loop, data.entry, data.meta, this._language, this.initSource.bind(this));
+            this._loader.getByLoopItemRef(
+                data.no,
+                data.loop,
+                data.entry,
+                data.meta,
+                this._language,
+                this.initSource.bind(this));
         }
         else {
             this._loader.getById(data.no, data.meta, this._language, this.initSource.bind(this));
@@ -355,8 +380,8 @@ Imcms.Image.Editor.prototype = {
                 valid: true
             };
             this._getSource(Imcms.Utils.merge(clonedData, this._source));
-        }
-        else {
+
+        } else {
             this._getSource(this._source);
         }
         this.open();
@@ -365,9 +390,6 @@ Imcms.Image.Editor.prototype = {
         this._infoViewAdapter.updateCropping(region);
     },
     save: function () {
-        this._infoViewAdapter._validate.bind(this, "divHeight");
-        this._infoViewAdapter._validate.bind(this, "divWidth");
-
         if (this._infoViewAdapter._isValid) {
             var collectedData = this._infoViewAdapter.collect();
             if (this._loopId && this._entryId) {
@@ -417,15 +439,6 @@ Imcms.Image.Editor.prototype = {
         $(this._builder[0]).find("img").css({maxHeight: $(window).height() - 95});
         $(this._builder[0]).fadeIn("fast").find(".imcms-content").css({height: $(window).height() - 95});
         this._isShowed = true;
-
-        /* if (this._isLoaded) {
-         setTimeout(function () {
-
-         this._imageCropper.initialize();
-         this._imageCropper.changeCropping(this._source.cropRegion.cropX1, this._source.cropRegion.cropY1, this._source.cropRegion.cropX2, this._source.cropRegion.cropY2);
-         this._imageCropper.changeDestinationRect(this._source.displayImageSize.width, this._source.displayImageSize.height);
-         }.bind(this), 250);
-         }*/
     }
 };
 
@@ -450,7 +463,10 @@ Imcms.Image.ImageViewAdapter.prototype = {
     },
     update: function (src) {
         this._imageSource = src;
-        this._imageView.attr("src", src.urlPathRelativeToContextPath === "" ? "" : Imcms.Linker._contextPath + src.urlPathRelativeToContextPath)
+        this._imageView.attr("src", (src.urlPathRelativeToContextPath)
+            ? Imcms.Linker.getContextPath() + src.urlPathRelativeToContextPath
+            : ""
+        )
     }
 };
 
@@ -481,90 +497,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         this.buildView();
     },
     buildView: function () {
-        //Setting default values if image src is empty(but data still can exist in DB)
-        if (!this._imageSource.urlPathRelativeToContextPath) {
-            this._imageSource = {
-                realImageSize: {
-                    width: "",
-                    height: ""
-                },
-                cropRegion: {
-                    cropX1: -1,
-                    cropY1: -1,
-                    cropX2: -1,
-                    cropY2: -1
-                },
-                width: "",
-                height: "",
-                alternateText: "",
-                name: "",
-                linkUrl: ""
-            };
-            this._divWidth = 0;
-            this._divHeight = 0;
-        }
-
-        if (this._imageSource.imageInfo) {
-            this._imageSource.realImageSize.width = this._imageSource.imageInfo.width;
-            this._imageSource.realImageSize.height = this._imageSource.imageInfo.height;
-        }
-
-        $(this._infoRef.getHTMLElement()).empty();
-        var imgName = this._imageSource.generatedUrlPathRelativeToContextPath;
-        if (imgName) {
-            var pageImgArea = $(this._options.currentElement).find("img");
-
-            // If located element is "cap" get style values from prev tag(added at admin mode)
-            if (pageImgArea.attr("cap")) {
-                pageImgArea.prev();
-            }
-
-            var minWidth = parseInt(pageImgArea.css("min-width"), 10);
-            var minHeight = parseInt(pageImgArea.css("min-height"), 10);
-            var maxWidth = parseInt(pageImgArea.css("max-width"), 10);
-            var maxHeight = parseInt(pageImgArea.css("max-height"), 10);
-
-            var objectWidth = parseInt(pageImgArea.css("width"), 10);
-            var objectHeight = parseInt(pageImgArea.css("height"), 10);
-
-            var realWidth = -1;
-            var realHeight = -1;
-
-            if (!isNaN(objectHeight) && objectHeight >= minHeight) {
-                if (!isNaN(maxHeight) && objectHeight < maxHeight) {
-                    realHeight = maxHeight
-                } else {
-                    realHeight = maxHeight;
-                }
-            } else {
-                realHeight = minHeight;
-            }
-
-            if (!isNaN(objectWidth) && objectWidth >= minWidth) {
-                if (!isNaN(maxWidth) && objectWidth < maxWidth) {
-                    realWidth = maxWidth
-                } else {
-                    realWidth = maxWidth;
-                }
-            } else {
-                realWidth = minWidth;
-            }
-
-            if (isNaN(realWidth)) {
-                this._divWidth = NaN;
-            } else {
-                this._divWidth = realWidth;
-            }
-
-            if (isNaN(realHeight)) {
-                this._divHeight = NaN;
-            } else {
-                this._divHeight = realHeight;
-            }
-
-            this._generatedWidth = pageImgArea.width();
-            this._generatedHeight = pageImgArea.height();
-        }
+        this.calculateImageParameters();
         this._infoRef
             .div()
             .setClass("field size-field")
@@ -726,122 +659,167 @@ Imcms.Image.ImageInfoAdapter.prototype = {
             .reference("image-editor-language")
             .end();
     },
+    calculateImageParameters: function () {
+        //Setting default values if image src is empty(but data still can exist in DB)
+        var imageSource = this._imageSource;
+        if (!imageSource.urlPathRelativeToContextPath) {
+            this.resetImageSource();
+        }
+
+        if (imageSource.imageInfo) {
+            imageSource.realImageSize.width = imageSource.imageInfo.width;
+            imageSource.realImageSize.height = imageSource.imageInfo.height;
+        }
+
+        $(this._infoRef.getHTMLElement()).empty();
+        if (imageSource.generatedUrlPathRelativeToContextPath) {
+            this.calculateImageProportions();
+        }
+    },
+    resetImageSource: function () {
+        this._imageSource.realImageSize = {
+            width: "",
+            height: ""
+        };
+        this._imageSource.cropRegion = {
+            cropX1: -1,
+            cropY1: -1,
+            cropX2: -1,
+            cropY2: -1
+        };
+        this._imageSource.width = "";
+        this._imageSource.height = "";
+        this._imageSource.alternateText = "";
+        this._imageSource.name = "";
+        this._imageSource.linkUrl = "";
+
+        this._divWidth = 0;
+        this._divHeight = 0;
+    },
+    calculateImageProportions: function () {
+        var pageImgArea = $(this._options.currentElement).find("img");
+
+        function parseImgAreaCss(styleAttribute) {
+            return parseInt(pageImgArea.css(styleAttribute), 10);
+        }
+
+        function calculateRealProportion(proportionName) {
+            var objectProportion = parseImgAreaCss(proportionName),
+                minProportion = parseImgAreaCss("min-" + proportionName),
+                maxProportion = parseImgAreaCss("max-" + proportionName);
+
+            if (!isNaN(objectProportion) && (objectProportion >= minProportion)) {
+                return (!isNaN(maxProportion) && (objectProportion < maxProportion))
+                    ? objectProportion
+                    : maxProportion;
+            } else {
+                return minProportion;
+            }
+        }
+
+        this._divHeight = calculateRealProportion("height");
+        this._divWidth = calculateRealProportion("width");
+
+        this._generatedWidth = pageImgArea.width();
+        this._generatedHeight = pageImgArea.height();
+    },
     update: function (source) {
         this._imageSource = source;
         this.buildView();
     },
     collect: function () {
         var $infoRef = $(this._infoRef.getHTMLElement());
-        this._imageSource.realImageSize.width = $infoRef.find("input[name=width]").val();
-        this._imageSource.realImageSize.height = $infoRef.find("input[name=height]").val();
+
+        function readInfoRefValue(nameOfInput) {
+            return $infoRef.find("input[name=" + nameOfInput + "]").val();
+        }
+
+        this._imageSource.realImageSize = {
+            width: readInfoRefValue("width"),
+            height: readInfoRefValue("height")
+        };
+        this._imageSource.cropRegion = {
+            cropX1: readInfoRefValue("leftCrop"),
+            cropY1: readInfoRefValue("topCrop"),
+            cropX2: readInfoRefValue("rightCrop"),
+            cropY2: readInfoRefValue("bottomCrop")
+        };
         //Sending display width and height to zoom out to max possible display size to avoid big images
-        this._imageSource.width = $infoRef.find("input[name=divWidth]").val();
-        this._imageSource.height = $infoRef.find("input[name=divHeight]").val();
-        this._imageSource.cropRegion.cropX1 = $infoRef.find("input[name=leftCrop]").val();
-        this._imageSource.cropRegion.cropY1 = $infoRef.find("input[name=topCrop]").val();
-        this._imageSource.cropRegion.cropX2 = $infoRef.find("input[name=rightCrop]").val();
-        this._imageSource.cropRegion.cropY2 = $infoRef.find("input[name=bottomCrop]").val();
-        this._imageSource.alternateText = $infoRef.find("input[name=alternateText]").val();
-        this._imageSource.name = $infoRef.find("input[name=imageName]").val();
-        this._imageSource.linkUrl = $.trim($infoRef.find("input[name=linkUrl]").val());
+        this._imageSource.width = readInfoRefValue("divWidth");
+        this._imageSource.height = readInfoRefValue("divHeight");
+        this._imageSource.alternateText = readInfoRefValue("alternateText");
+        this._imageSource.name = readInfoRefValue("imageName");
+        this._imageSource.linkUrl = $.trim(readInfoRefValue("linkUrl"));
 
         var urlExpression = /(^|\s)([\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi;
-        var match = this._imageSource.linkUrl.match(urlExpression);
-        if (match) {
-            if (!(this._imageSource.linkUrl.startsWith("http://") || this._imageSource.linkUrl.startsWith("https://") || this._imageSource.linkUrl.startsWith("ftp://"))) {
-                this._imageSource.linkUrl = "http://" + this._imageSource.linkUrl;
+        var linkUrl = this._imageSource.linkUrl;
+
+        if (linkUrl.match(urlExpression)) {
+            if (!(linkUrl.startsWith("http://") || linkUrl.startsWith("https://") || linkUrl.startsWith("ftp://"))) {
+                this._imageSource.linkUrl = "http://" + linkUrl;
             }
         }
         return this._imageSource;
     },
     isSharedMode: function () {
-        var $infoRef = $(this._infoRef.getHTMLElement());
-
-        return $infoRef.find("input[name=sharedMode]").is(":checked");
+        return $(this._infoRef.getHTMLElement())
+            .find("input[name=sharedMode]")
+            .is(":checked");
     },
     updateCropping: function (croppingOptions) {
-        var $infoRef = $(this._infoRef.getHTMLElement());
+        var $infoRef = $(this._infoRef.getHTMLElement()),
+            cropWidth = croppingOptions.cropX2 - croppingOptions.cropX1,
+            cropHeight = croppingOptions.cropY2 - croppingOptions.cropY1;
 
-        var cropWidth = croppingOptions.cropX2 - croppingOptions.cropX1;
-        var cropHeight = croppingOptions.cropY2 - croppingOptions.cropY1;
+        function setInfoRefValue(nameOfInput, value) {
+            $infoRef.find("input[name=" + nameOfInput + "]").val(value);
+        }
 
-        $infoRef.find("input[name=leftCrop]").val(croppingOptions.cropX1);
-        $infoRef.find("input[name=topCrop]").val(croppingOptions.cropY1);
-        $infoRef.find("input[name=rightCrop]").val(croppingOptions.cropX2);
-        $infoRef.find("input[name=bottomCrop]").val(croppingOptions.cropY2);
-        // if ($infoRef.find("input[name=freeTransform]").prop("checked")) {
-        $infoRef.find("input[name=displayHeight]").val(cropHeight);
-        $infoRef.find("input[name=displayWidth]").val(cropWidth);
+        setInfoRefValue("leftCrop", croppingOptions.cropX1);
+        setInfoRefValue("topCrop", croppingOptions.cropY1);
+        setInfoRefValue("rightCrop", croppingOptions.cropX2);
+        setInfoRefValue("bottomCrop", croppingOptions.cropY2);
+        setInfoRefValue("displayHeight", cropHeight);
+        setInfoRefValue("displayWidth", cropWidth);
 
         //Finding out zoom factor
         var zoomFactor = 1;
-        if (!isNaN(this._divWidth)) {
+        var noDivWidth = isNaN(this._divWidth);
+        var noDivHeight = isNaN(this._divHeight);
+
+        if (!noDivWidth) {
             zoomFactor = (cropWidth) / this._divWidth;
-        } else {
-            if (!isNaN(this._divHeight)) {
-                zoomFactor = (cropHeight) / this._divHeight;
+        } else if (!noDivHeight) {
+            zoomFactor = (cropHeight) / this._divHeight;
+        }
+
+        function getDivProportion(divProp, hasNotAnotherProp, cropProp) {
+            if (isNaN(divProp)) {
+                if (hasNotAnotherProp) {
+                    return cropProp; //If there CSS rules wasn't found it will just show cropped values
+
+                } else {
+                    return (zoomFactor >= 1)
+                        ? Math.round((cropProp) / zoomFactor) // Zoomed out to fit size with saving proportions
+                        : cropProp; // Reduced to fit image without zooming
+                }
+            } else {
+                //If one of css limitations exists
+                return (cropProp > divProp)
+                    ? divProp
+                    : cropProp;
             }
         }
 
         // This only show display area and don't take effect on page(same for width an height)
-        var divHeight = 0, divWidth = 0;
+        var divHeight = (this._generatedHeight || getDivProportion(this._divHeight, noDivWidth, cropHeight));
+        setInfoRefValue("divHeight", divHeight);
+        this._generatedHeight = null;
 
-        if (this._generatedHeight != null) {
-            $infoRef.find("input[name=divHeight]").val(this._generatedHeight);
-            this._generatedHeight = null;
-        } else {
-            if (isNaN(this._divHeight)) {
-                if (isNaN(this._divWidth)) {
-                    //If there CSS rules wasn't found it will just show cropped values
-                    divHeight = cropHeight;
-                } else {
-                    if (zoomFactor >= 1) {
-                        // If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
-                        divHeight = Math.round((cropHeight) / zoomFactor);
-                    } else {
-                        // If selected area is smaller than available div then size(factor < 1) will be reduced to fit image without zooming
-                        divHeight = cropHeight;
-                    }
-                }
-            } else {
-                //If one of css limitations exists
-                if ((cropHeight) > this._divHeight) {
-                    divHeight = this._divHeight;
-                } else {
-                    divHeight = cropHeight;
-                }
-            }
-            $infoRef.find("input[name=divHeight]").val(divHeight);
-        }
+        var divWidth = (this._generatedWidth || getDivProportion(this._divWidth, noDivHeight, cropWidth));
+        setInfoRefValue("divWidth", divWidth);
+        this._generatedHeight = null;
 
-        if (this._generatedWidth != null) {
-            $infoRef.find("input[name=divWidth]").val(this._generatedWidth);
-            this._generatedWidth = null;
-        } else {
-            if (isNaN(this._divWidth)) {
-                if (isNaN(this._divHeight)) {
-                    //If there CSS rules wasn't found it will just show cropped values
-                    divWidth = cropWidth;
-                } else {
-                    if (zoomFactor >= 1) {
-                        // If selected area is bigger then allowed by css it will be zoomed out to fit size with saving proportions
-                        divWidth = Math.round((cropWidth) / zoomFactor);
-                    } else {
-                        // If selected area is smaller than available div then size(factor < 1) will be reduced to fit image without zooming
-                        divWidth = cropWidth;
-                    }
-                }
-            } else {
-                //If one of css limitations exists
-                if ((cropWidth) > this._divWidth) {
-                    divWidth = this._divWidth;
-
-                } else {
-                    divWidth = cropWidth;
-                }
-            }
-            $infoRef.find("input[name=divWidth]").val(divWidth);
-        }
         this._deformationCheck();
     },
     _onDisplaySizeChanged: function () {
@@ -853,15 +831,20 @@ Imcms.Image.ImageInfoAdapter.prototype = {
     },
     _onFreeTransformStateChanged: function () {
         var $element = $(this._infoRef.getHTMLElement()),
-            state = $element.find("input[name=freeTransform]").prop("checked");
+            isChecked = $element.find("input[name=freeTransform]").prop("checked");
         this._options.onDisplaySizeChanged({
-            height: state ? null : $element.find("input[name=displayHeight]").val(),
-            width: state ? null : $element.find("input[name=displayWidth]").val()
+            height: isChecked ? null : $element.find("input[name=displayHeight]").val(),
+            width: isChecked ? null : $element.find("input[name=displayWidth]").val()
         });
-        $element.find("input[name=displayHeight]").prop("disabled", state);
-        $element.find("input[name=displayWidth]").prop("disabled", state);
-        $element.find("input[name=divHeight]").prop("disabled", !state);
-        $element.find("input[name=divWidth]").prop("disabled", !state);
+
+        function setElementDisabledValue(name, value) {
+            $element.find("input[name=" + name + "]").prop("disabled", value);
+        }
+
+        setElementDisabledValue("displayHeight", isChecked);
+        setElementDisabledValue("displayWidth", isChecked);
+        setElementDisabledValue("divHeight", !isChecked);
+        setElementDisabledValue("divWidth", !isChecked);
     },
     _onCropChanged: function () {
 
@@ -886,7 +869,17 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         if (divHeightEl.next().hasClass('warning-message')) {
             divHeightEl.next().remove();
         }
-        if ((Math.round((($infoRef.find("input[name=displayWidth]").val() / $infoRef.find("input[name=displayHeight]").val())) * 10) / 10) !== (Math.round((($infoRef.find("input[name=divWidth]").val() / divHeightEl.val())) * 10) / 10)) {
+
+        function getInfoRefValue(nameOfInput) {
+            return $infoRef.find("input[name=" + nameOfInput + "]").val();
+        }
+
+        var displayProportions = (getInfoRefValue("displayWidth") / getInfoRefValue("displayHeight")),
+            divProportions = (getInfoRefValue("divWidth") / divHeightEl.val()),
+            roundedDisplayProportions = (Math.round(displayProportions * 10) / 10),
+            roundedDivProportions = (Math.round(divProportions * 10) / 10);
+
+        if (roundedDisplayProportions !== roundedDivProportions) {
             divHeightEl.after($("<div class='warning-message'>This may cause visual distortion</div>"));
         }
     }
@@ -903,7 +896,6 @@ Imcms.Image.ImageCropper.prototype = {
     _target: {},
     _imageShader: {},
     _onCropChanged: function () {
-
     },
     initialize: function () {
         $(this._target).addClass("image-cropper");
@@ -931,14 +923,20 @@ Imcms.Image.ImageCropper.prototype = {
         bottom /= factor;
         width /= factor;
         height /= factor;
-        imageCroppingFrame.css({left: left - 1, top: top - 1, width: width, height: height});
-        image.css({left: left * -1, top: top * -1});
-        grip.css(
-            {
-                left: right - 4,
-                top: bottom - 4
-            }
-        );
+        imageCroppingFrame.css({
+            left: left - 1,
+            top: top - 1,
+            width: width,
+            height: height
+        });
+        image.css({
+            left: left * -1,
+            top: top * -1
+        });
+        grip.css({
+            left: right - 4,
+            top: bottom - 4
+        });
     },
     changeDestinationRect: function (width, height) {
         var imageCroppingFrame = $(this._imageCroppingFrame);
@@ -960,8 +958,6 @@ Imcms.Image.ImageCropper.prototype = {
         this.destinationWidth = width;
         this.destinationHeight = height;
         this._callback = callback;
-        //mt.forms.beginModal();
-        // mt.forms.beginForm("imageUploaderForm", "/mt/general/imageuploaderform", "image-uploader-form");
         this._imageCroppingFrame.mouseenter(this.setMovingMode.bind(this));
         this._imageCroppingFrame.on("mouseleave", this.resetMovingMode.bind(this));
         this._grip.on("mouseenter", this.setResizingMode.bind(this));
@@ -1034,12 +1030,10 @@ Imcms.Image.ImageCropper.prototype = {
     createImageShader: function (image) {
         return $("<div>")
             .addClass("image-shader")
-            .css(
-                {
-                    width: image.width(),
-                    height: image.height()
-                }
-            );
+            .css({
+                width: image.width(),
+                height: image.height()
+            });
     },
 
     createImageCroppingFrame: function (image) {
@@ -1062,12 +1056,10 @@ Imcms.Image.ImageCropper.prototype = {
             height = image.height();
         }
 
-        imageCroppingFrame.css(
-            {
-                width: width,
-                height: height
-            }
-        );
+        imageCroppingFrame.css({
+            width: width,
+            height: height
+        });
 
         return imageCroppingFrame;
     },
@@ -1172,12 +1164,10 @@ Imcms.Image.ImageCropper.prototype = {
 
         imageCroppingFrame.css({left: x, top: y});
         image.css({left: x * -1 - 1, top: y * -1 - 1});
-        grip.css(
-            {
-                left: imageCroppingFrame.position().left + imageCroppingFrame.width() - 4,
-                top: imageCroppingFrame.position().top + imageCroppingFrame.height() - 4
-            }
-        );
+        grip.css({
+            left: imageCroppingFrame.position().left + imageCroppingFrame.width() - 4,
+            top: imageCroppingFrame.position().top + imageCroppingFrame.height() - 4
+        });
     },
     processResizing: function (e) {
         var imageCroppingFrame = $(this._imageCroppingFrame);
@@ -1222,7 +1212,7 @@ Imcms.Image.ImageCropper.prototype = {
                 }
             }
         } else {
-            var factor = image[0].naturalWidth / image.width();
+            factor = image[0].naturalWidth / image.width();
             width = this.destinationWidth / factor;
             height = this.destinationHeight / factor;
 
@@ -1259,12 +1249,10 @@ Imcms.Image.ImageCropper.prototype = {
         }
 
         imageCroppingFrame.css({width: width, height: height});
-        grip.css(
-            {
-                left: imageCroppingFrame.position().left + imageCroppingFrame.width() - 4,
-                top: imageCroppingFrame.position().top + imageCroppingFrame.height() - 4
-            }
-        );
+        grip.css({
+            left: imageCroppingFrame.position().left + imageCroppingFrame.width() - 4,
+            top: imageCroppingFrame.position().top + imageCroppingFrame.height() - 4
+        });
     },
     endMovingOrResizing: function () {
         if (!this.isCropping) {
@@ -1408,6 +1396,7 @@ Imcms.Image.ImageInTextEditor.Window.prototype = {
                 + ' src="' + imageSource + '"/>';
         this._textEditor.insertHtml(element, 'unfiltered_html');
     },
+    //it is used, IDE just don't understand
     _onRemoveImage: function () {
         $(this._realElement).remove();
         this._loader.remove(this._id, this._meta, this._language, this.close.bind(this));
