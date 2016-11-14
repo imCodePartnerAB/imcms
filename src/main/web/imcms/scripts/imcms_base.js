@@ -21,11 +21,6 @@ Imcms.Editors = {
 Imcms.Editors.Text = {};
 Imcms.Editors.Menu = {};
 Imcms.Utils = {};
-Imcms.document = {};
-
-/*
- Imcms bootstraper
- */
 
 Imcms.Bootstrapper = function () {
 };
