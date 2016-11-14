@@ -39,6 +39,7 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/imcms/css/imcms_demo.css.jsp"/>
     <c:choose>
         <c:when test="<%=Imcms.getUser().isDefaultUser()%>">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
             <link rel="stylesheet" type="text/css"
                   href="${pageContext.request.contextPath}/imcms/css/imcms_demo.css.jsp"/>
             <style type="text/css">

@@ -13,6 +13,7 @@
     <link href="${contextPath}/css/image_archive.css.jsp" rel="stylesheet" type="text/css" />
     ${css}
 
+    <script src="https://code.jquery.com/jquery-1.6.4.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.uploadify-v2.1.4/jquery.uploadify.v2.1.4.min.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.uploadify-v2.1.4/swfobject.js"></script>

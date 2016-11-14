@@ -16,7 +16,6 @@
 <head>
     <title>ImCMS single edit mode</title>
     <meta charset="utf-8"/>
-    <jsp:include page="/WEB-INF/templates/${user.language.isoCode639_2}/admin/textdoc/imcms_hard_jquery.html"/>
     <jsp:include page="/WEB-INF/jsp/imcms/imcms_admin_headtag.jsp">
         <jsp:param name="flags" value="${flags}"/>
     </jsp:include>
