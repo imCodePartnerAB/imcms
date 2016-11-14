@@ -15,7 +15,6 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js"></script>
-    <script src="${pageContext.request.contextPath}/imcms/scripts/imcms_linker.js"></script>
 </head>
 <body>
 <div class="container">
