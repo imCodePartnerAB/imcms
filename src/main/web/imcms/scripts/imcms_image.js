@@ -818,7 +818,7 @@ Imcms.Image.ImageInfoAdapter.prototype = {
 
         var divWidth = (this._generatedWidth || getDivProportion(this._divWidth, noDivHeight, cropWidth));
         setInfoRefValue("divWidth", divWidth);
-        this._generatedHeight = null;
+        this._generatedWidth = null;
 
         this._deformationCheck();
     },
