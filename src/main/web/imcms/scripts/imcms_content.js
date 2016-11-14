@@ -429,7 +429,7 @@ Imcms.Content.FileView.prototype = {
 	_buildItem: function (position, data) {
 		var $div = $("<div>")
 			.addClass("content-preview")
-			.append(this._createImage(Imcms.Linker._contextPath + data.urlPathRelativeToContextPath, data.imageInfo))
+			.append(this._createImage(Imcms.Linker.getContextPath() + data.urlPathRelativeToContextPath, data.imageInfo))
 			.append(this._createInfo(data.name));
 		//.css({width: currentImageSize, height: currentImageSize});
 

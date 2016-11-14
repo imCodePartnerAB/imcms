@@ -1115,24 +1115,26 @@
                             <includes>
                                 <!--libs-->
                                 <include>**/tree.jquery.js</include>
+                                <include>**/jquery.nearest.min.js</include>
                                 <include>**/prism/prism.js</include>
                                 <include>**/jqtree/tree.jquery.js</include>
                                 <include>**/jquery.i18n.properties.min.js</include>
                                 <!--imcms files-->
                                 <include>**/JSFormBuilder.js</include>
+                                <include>**/imcms_addons.js</include>
+                                <include>**/imcms_linker.js</include>
+                                <include>**/imcms_base.js</include>
                                 <include>**/imcms_connector.js</include>
                                 <include>**/imcms_adminpanel.js</include>
                                 <include>**/imcms_logger.js</include>
                                 <include>**/imcms_utils.js</include>
                                 <include>**/imcms_backgroundworker.js</include>
-                                <include>**/imcms_addons.js</include>
                                 <include>**/imcms_ckeditor_extension.js</include>
                                 <include>**/imcms_events.js</include>
                                 <include>**/imcms_loop.js</include>
                                 <include>**/imcms_menu.js</include>
                                 <include>**/imcms_text.js</include>
                                 <include>**/imcms_language.js</include>
-                                <include>**/imcms_template.js</include>
                                 <include>**/imcms_template.js</include>
                                 <include>**/imcms_category.js</include>
                                 <include>**/imcms_user.js</include>
@@ -1143,6 +1145,7 @@
                                 <include>**/imcms_folder.js</include>
                                 <include>**/imcms_content.js</include>
                                 <include>**/imcms_image.js</include>
+                                <include>**/imcms_start.js</include>
                             </includes>
                             <excludes>
                                 <!--excluding lang files from packaging-->
