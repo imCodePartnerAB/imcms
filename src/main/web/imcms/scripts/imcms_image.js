@@ -708,13 +708,8 @@ Imcms.Image.ImageInfoAdapter.prototype = {
                 minProportion = parseImgAreaCss("min-" + proportionName),
                 maxProportion = parseImgAreaCss("max-" + proportionName);
 
-            if (!isNaN(objectProportion) && (objectProportion >= minProportion)) {
-                return (!isNaN(maxProportion) && (objectProportion < maxProportion))
-                    ? objectProportion
-                    : maxProportion;
-            } else {
-                return minProportion;
-            }
+            objectProportion = Math.min(objectProportion, maxProportion);
+            return Math.max(objectProportion, minProportion);
         }
 
         this._divHeight = calculateRealProportion("height");
