@@ -64,12 +64,7 @@ Imcms.Loop.Loader.prototype = {
     },
     entriesList: function (data, callback) {
         this._api.read(Imcms.Utils.margeObjectsProperties(Imcms.document, data), function (response) {
-            if (response && response.result) {
-                callback(response.data)
-            }
-            else {
-                callback({});
-            }
+            callback((response && response.result) ? response.data : {});
         });
     },
     generateNo: function (loops) {
@@ -182,7 +177,11 @@ Imcms.Loop.Editor.prototype = {
         this.close();
     },
     open: function () {
-        $(this._builder[0]).fadeIn("fast").find(".imcms-content").css({height: $(window).height() - 95});
+        $(this._builder[0]).fadeIn("fast")
+            .find(".imcms-content")
+            .css({
+                height: $(window).height() - 95
+            });
     },
     close: function () {
         $(this._builder[0]).fadeOut("fast");
@@ -211,8 +210,7 @@ Imcms.Loop.ListAdapter.prototype = {
             .attr("type", "button")[0]
         );
         var row = this._container.row(position);
-        deleteButton
-            .click($.proxy(this.deleteLoop, this, data, row));
+        deleteButton.click($.proxy(this.deleteLoop, this, data, row));
     },
     deleteLoop: function (data, row) {
         $(row).remove();
