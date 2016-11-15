@@ -56,6 +56,7 @@
         },
         enableSorting: function () {
             var sortOptions = {
+                axis: "y",
                 placeholder: "loop-editor-content__loop-entry loop-editor-content__loop-entry_empty"
             };
             $(".loop-editor-content__list")
