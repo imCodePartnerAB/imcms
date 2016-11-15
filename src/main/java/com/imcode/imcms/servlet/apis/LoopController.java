@@ -6,6 +6,7 @@ import com.imcode.imcms.mapping.TextDocumentContentSaver;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocLoopContainer;
+import com.imcode.imcms.mapping.container.VersionRef;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -34,27 +35,35 @@ public class LoopController {
                              HttpServletRequest request) throws ServletException, IOException {
         Map<String, Object> result = new HashMap<>();
         try {
-            TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getVersionedDocument(metaId, request);
-            DocRef docRef = DocRef.of(document.getVersionRef(), document.getLanguage().getCode());
-            TextDocumentContentLoader textDocumentContentLoader = Imcms.getServices().getManagedBean(TextDocumentContentLoader.class);
-            TextDocumentContentSaver textDocumentContentSaver = Imcms.getServices().getManagedBean(TextDocumentContentSaver.class);
+            TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper()
+                    .getVersionedDocument(metaId, request);
+
+            TextDocumentContentLoader textDocumentContentLoader = Imcms.getServices()
+                    .getManagedBean(TextDocumentContentLoader.class);
+
             List<Map<String, Object>> entriesList = new ArrayList<>();
             Loop loop = textDocumentContentLoader.getLoop(document.getVersionRef(), loopId);
 
             if (loop == null) {
-                textDocumentContentSaver.updateContent(document, Imcms.getUser());
+                Imcms.getServices().getManagedBean(TextDocumentContentSaver.class)
+                        .updateContent(document, Imcms.getUser());
                 loop = textDocumentContentLoader.getLoop(document.getVersionRef(), loopId);
             }
+
+            DocRef docRef = DocRef.of(document.getVersionRef(), document.getLanguage().getCode());
 
             loop.getEntries().forEach((no, bool) -> {
                 Map<String, Object> entryData = new HashMap<>();
                 TextDomainObject textDomainObject = textDocumentContentLoader
                         .getFirstLoopEntryText(docRef, LoopEntryRef.of(loopId, no));
+
                 entryData.put("no", no);
-                String strippedText = textDomainObject != null
+
+                String strippedText = (textDomainObject != null)
                         ? textDomainObject.getText().replaceAll("<[^>]*>", "")
                         : "content is not defined";
-                entryData.put("text", strippedText.length() <= 150
+
+                entryData.put("text", (strippedText.length() <= 150)
                         ? strippedText
                         : String.format("%s…", strippedText.substring(0, 150))
                 );
@@ -78,12 +87,15 @@ public class LoopController {
 
         Map<String, Object> result = new HashMap<>();
         try {
-            TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getWorkingDocument(metaId);
-            TextDocumentContentSaver textDocumentContentSaver = Imcms.getServices().getManagedBean(TextDocumentContentSaver.class);
-            Map<Integer, Boolean> loopMap = indexes.stream()
-                    .collect(Collectors.toMap(loopNo -> loopNo, loopNo -> true));
+            VersionRef versionRef = Imcms.getServices()
+                    .getDocumentMapper()
+                    .getWorkingDocument(metaId)
+                    .getVersionRef();
 
-            textDocumentContentSaver.saveLoop(new TextDocLoopContainer(document.getVersionRef(), loopId, Loop.of(loopMap)));
+            Loop loop = Loop.of(indexes.stream().collect(Collectors.toMap(loopNo -> loopNo, loopNo -> true)));
+            TextDocLoopContainer container = new TextDocLoopContainer(versionRef, loopId, loop);
+
+            Imcms.getServices().getManagedBean(TextDocumentContentSaver.class).saveLoop(container);
             Imcms.getServices().getDocumentMapper().invalidateDocument(metaId);
             result.put("result", true);
         } catch (Exception e) {
