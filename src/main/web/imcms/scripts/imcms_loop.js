@@ -1,6 +1,6 @@
 (function (Imcms) {
     var path = Imcms.Linker.get("loop") + window.location.search,
-        simpleAPI = new Imcms.SimpleAPI(path),
+        simpleAPI = new Imcms.REST.API(path),
         API = {
             create: simpleAPI.post,
             read: simpleAPI.get,

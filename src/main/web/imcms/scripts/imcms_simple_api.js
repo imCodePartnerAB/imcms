@@ -1,5 +1,5 @@
 /**
- * Simple Imcms API Constructor to prevent creating similar code in many places.
+ * Simple Imcms REST API Constructor to prevent creating similar code in many places.
  * Automatically applies request and response.
  * Works only if url is constant for each instance.
  *
@@ -16,7 +16,8 @@
         });
     }
 
-    Imcms.SimpleAPI = function (path) {
+    Imcms.REST = {};
+    Imcms.REST.API = function (path) {
         this.post = ajax.bind({url: path, type: "POST"});
         this.get = ajax.bind({url: path, type: "GET"});
         this.put = ajax.bind({url: path, type: "PUT"});
