@@ -93,6 +93,7 @@ Imcms.Loop.Editor.prototype = {
     buildView: function () {
         this._builder = new JSFormBuilder("<DIV>")
             .form()
+            .setClass("loop-editor")
             .div()
             .setClass("imcms-header")
             .div()
@@ -112,21 +113,22 @@ Imcms.Loop.Editor.prototype = {
              .end()*/
             .end()
             .div()
-            .setClass("imcms-content")
-            .table()
+            .setClass("loop-editor-content")
+            .ul()
+            .setClass("loop-editor-content__list")
             .reference("entriesList")
             .end()
             .end()
             .div()
-            .setClass("imcms-footer")
+            .setClass("loop-editor-footer")
             .button()
             .reference("createNew")
-            .setClass("imcms-neutral create-new")
+            .setClass("loop-editor-footer__button loop-editor-footer__button_neutral")
             .html("Create new")
             .end()
             .button()
             .html("Save and close")
-            .setClass("imcms-positive imcms-save-and-close")
+            .setClass("loop-editor-footer__button loop-editor-footer__button_positive")
             .on("click", $.proxy(this.save, this))
             .end()
             .div()
@@ -144,8 +146,7 @@ Imcms.Loop.Editor.prototype = {
             this._loader.entriesList({loopId: $(this._target).data().no}, $.proxy(this.buildLoopsList, this));
             return this;
         }
-        this._loopListAdapter =
-            new Imcms.Loop.ListAdapter(
+        this._loopListAdapter = new Imcms.Loop.ListAdapter(
                 this._builder.ref("entriesList"),
                 data
             );
@@ -199,22 +200,48 @@ Imcms.Loop.ListAdapter.prototype = {
     _data: {},
     init: function () {
         this.buildList(this._data);
+        this.enableSorting();
     },
     buildList: function (data) {
         $.each(data, $.proxy(this.addLoopToList, this));
     },
     addLoopToList: function (position, data) {
-        var deleteButton = $("<button>");
-        this._container.row(data.no, data.text, deleteButton
-            .addClass("imcms-negative")
-            .attr("type", "button")[0]
-        );
-        var row = this._container.row(position);
-        deleteButton.click($.proxy(this.deleteLoop, this, data, row));
+        this._container
+            .li()
+            .id("loop_" + position)
+            .setClass("loop-editor-content__loop-entry loop-editor-content__loop-entry_sortable")
+
+            .div()
+            .setClass("loop-editor-content__number")
+            .html(data.no)
+            .end()
+
+            .div()
+            .setClass("loop-editor-content__content")
+            .html(data.text)
+            .end()
+
+            .div()
+            .setClass("loop-editor-content__actions")
+            .button()
+            .setClass("loop-editor-content__button loop-editor-content__button_negative")
+            .on("click", this.deleteLoop.bind(this, data, "#loop_" + position))
+            .end()
+            .end()
+
+            .end();
     },
     deleteLoop: function (data, row) {
         $(row).remove();
         this._data.remove(data);
+    },
+    enableSorting: function () {
+        var sortOptions = {
+            placeholder: "loop-editor-content__loop-entry loop-editor-content__loop-entry_empty"
+        };
+        $(".loop-editor-content__list")
+            .sortable(sortOptions)
+            .disableSelection();
     },
     addLoop: function () {
         var length = this._data.length;
