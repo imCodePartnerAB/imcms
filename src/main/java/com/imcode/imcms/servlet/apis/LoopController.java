@@ -81,7 +81,7 @@ public class LoopController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected Object doPost(@RequestParam("indexes[]") List<Integer> indexes,
+    protected Object doPost(@RequestParam(value = "indexes[]", required = false) List<Integer> indexes,
                             @RequestParam("loopId") Integer loopId,
                             @RequestParam("meta") Integer metaId) throws ServletException, IOException {
 
@@ -91,6 +91,10 @@ public class LoopController {
                     .getDocumentMapper()
                     .getWorkingDocument(metaId)
                     .getVersionRef();
+
+            if (indexes == null) {
+                indexes = new ArrayList<>();
+            }
 
             Loop loop = Loop.of(indexes.stream().collect(Collectors.toMap(loopNo -> loopNo, loopNo -> true)));
             TextDocLoopContainer container = new TextDocLoopContainer(versionRef, loopId, loop);
