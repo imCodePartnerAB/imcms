@@ -25,33 +25,32 @@
             $.each(data, $.proxy(this.addLoopToList, this));
         },
         addLoopToList: function (position, data) {
-            this._container
-                .li()
-                .id("loop_" + position)
-                .setClass("loop-editor-content__loop-entry loop-editor-content__loop-entry_sortable")
+            var deleteRowBtn = $("<button>")
+                    .attr("type", "button")
+                    .addClass("loop-editor-content__button")
+                    .addClass("loop-editor-content__button_negative"),
+                entryIndex = $("<div>")
+                    .addClass("loop-editor-content__number")
+                    .html(data.no),
+                entryContent = $("<div>")
+                    .addClass("loop-editor-content__content")
+                    .html(data.text),
+                entryActions = $("<div>")
+                    .addClass("loop-editor-content__actions")
+                    .append(deleteRowBtn),
+                entryRow = $("<li>")
+                    .attr("data-entry-no", data.no)
+                    .addClass("loop-editor-content__loop-entry")
+                    .addClass("loop-editor-content__loop-entry_sortable")
+                    .append(entryIndex)
+                    .append(entryContent)
+                    .append(entryActions)
+                    .appendTo(this._container.getHTMLElement());
 
-                .div()
-                .setClass("loop-editor-content__number")
-                .html(data.no)
-                .end()
-
-                .div()
-                .setClass("loop-editor-content__content")
-                .html(data.text)
-                .end()
-
-                .div()
-                .setClass("loop-editor-content__actions")
-                .button()
-                .setClass("loop-editor-content__button loop-editor-content__button_negative")
-                .on("click", this.deleteLoop.bind(this, data, "#loop_" + position))
-                .end()
-                .end()
-
-                .end();
+            deleteRowBtn.click(this.deleteLoop.bind(this, data, entryRow));
         },
-        deleteLoop: function (data, row) {
-            $(row).remove();
+        deleteLoop: function (data, $row) {
+            $row.remove();
             this._data.remove(data);
         },
         enableSorting: function () {
@@ -112,6 +111,7 @@
                 .div()
                 .setClass("loop-editor-content")
                 .ul()
+                .attr("data-loop-id", $(this._target).data().no)
                 .setClass("loop-editor-content__list")
                 .reference("entriesList")
                 .end()

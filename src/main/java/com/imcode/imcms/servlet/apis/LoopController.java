@@ -99,6 +99,23 @@ public class LoopController {
             Loop loop = Loop.of(indexes.stream().collect(Collectors.toMap(loopNo -> loopNo, loopNo -> true)));
             TextDocLoopContainer container = new TextDocLoopContainer(versionRef, loopId, loop);
 
+            TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getWorkingDocument(metaId);
+            for(TextDocumentDomainObject.LoopItemRef entry: document.getLoopImages().keySet()){
+                if(!loop.findEntryIndexByNo(entry.getEntryNo()).isPresent()){
+                    document.deleteImage(TextDocumentDomainObject.LoopItemRef.of(loopId, entry.getEntryNo(), entry.getItemNo()));
+                    System.out.println(entry.getLoopNo()+" "+entry.getEntryNo()+" "+entry.getItemNo());
+                }
+            }
+
+            for(TextDocumentDomainObject.LoopItemRef entry: document.getLoopTexts().keySet()){
+                if(!loop.findEntryIndexByNo(entry.getEntryNo()).isPresent()){
+                    document.setText(TextDocumentDomainObject.LoopItemRef.of(entry.getLoopNo(), entry.getEntryNo(), entry.getItemNo()), new TextDomainObject(""));
+                    System.out.println(entry.getLoopNo()+"__ "+entry.getEntryNo()+" "+entry.getItemNo());
+
+                }
+            }
+            Imcms.getServices().getDocumentMapper().saveDocument(document, Imcms.getUser());
+
             Imcms.getServices().getManagedBean(TextDocumentContentSaver.class).saveLoop(container);
             Imcms.getServices().getDocumentMapper().invalidateDocument(metaId);
             result.put("result", true);
