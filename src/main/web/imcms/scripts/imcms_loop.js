@@ -203,7 +203,7 @@
             API.update({
                 loopId: loopId,
                 meta: Imcms.document.meta,
-                noArr: JSON.stringify(this.generateNo(loops))
+                indexes: this.generateIndexes(loops)
             }, callback);
         },
         entriesList: function (data, callback) {
@@ -211,12 +211,10 @@
                 callback((response && response.result) ? response.data : {});
             });
         },
-        generateNo: function (loops) {
-            var res = [];
-            loops.forEach(function (loop) {
-                res.push(loop['no']);
-            });
-            return res;
+        generateIndexes: function (loops) {
+            return loops.map(function (loop) {
+                return loop.no
+            })
         }
     };
 })(Imcms);

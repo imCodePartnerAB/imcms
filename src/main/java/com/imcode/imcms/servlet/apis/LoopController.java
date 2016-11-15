@@ -72,21 +72,18 @@ public class LoopController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	protected Object doPost(@RequestParam("noArr") String noArr,
-							@RequestParam("loopId") Integer loopId,
+	protected Object doPost(@RequestParam("indexes[]") List<Integer> indexes,
+                            @RequestParam("loopId") Integer loopId,
 							@RequestParam("meta") Integer metaId) throws ServletException, IOException {
-		// I can't make this method take a List or an array of Map<String, Object>, also wrapper class not work too.
-		// So I wrote genEntries() parser.
-		Map<String, Object> result = new HashMap<>();
-		List<Integer> listNo = parseNo(noArr);
+
+        Map<String, Object> result = new HashMap<>();
 		try {
 			TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getWorkingDocument(metaId);
 			TextDocumentContentSaver textDocumentContentSaver = Imcms.getServices().getManagedBean(TextDocumentContentSaver.class);
-			Map<Integer, Boolean> loopMap = new HashMap<>();
+            Map<Integer, Boolean> loopMap = indexes.stream()
+                    .collect(Collectors.toMap(loopNo -> loopNo, loopNo -> true));
 
-			listNo.forEach(loopNo -> loopMap.put(loopNo, true));
-
-			textDocumentContentSaver.saveLoop(new TextDocLoopContainer(document.getVersionRef(), loopId, Loop.of(loopMap)));
+            textDocumentContentSaver.saveLoop(new TextDocLoopContainer(document.getVersionRef(), loopId, Loop.of(loopMap)));
 			Imcms.getServices().getDocumentMapper().invalidateDocument(metaId);
 			result.put("result", true);
 		} catch (Exception e) {
@@ -95,12 +92,5 @@ public class LoopController {
 		}
 
 		return result;
-	}
-
-	protected List<Integer> parseNo(String noArr) {
-		// from string "[1,2,3,4]" need to remove '[' and ']' symbols, then split by comma to get only numbers
-		return Stream.of(noArr.substring(1, noArr.length() - 1).split(","))
-				.map(Integer::valueOf)
-				.collect(Collectors.toList());
 	}
 }
