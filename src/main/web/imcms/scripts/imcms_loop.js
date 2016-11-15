@@ -1,38 +1,11 @@
 (function (Imcms) {
     var path = Imcms.Linker.get("loop") + window.location.search,
+        simpleAPI = new Imcms.SimpleAPI(path),
         API = {
-            create: function (request, response) {
-                $.ajax({
-                    url: path,
-                    type: "POST",
-                    data: request,
-                    success: response
-                })
-            },
-            read: function (request, response) {
-                $.ajax({
-                    url: path,
-                    type: "GET",
-                    data: request,
-                    success: response
-                });
-            },
-            create2: function (request, response) {
-                $.ajax({
-                    url: path,
-                    type: "PUT",
-                    data: request,
-                    success: response
-                })
-            },
-            update: function (request, response) {
-                $.ajax({
-                    url: path,
-                    type: "POST",
-                    data: request,
-                    success: response
-                })
-            }
+            create: simpleAPI.post,
+            read: simpleAPI.get,
+            create2: simpleAPI.put,
+            update: simpleAPI.post
         };
 
     var ListAdapter = function (container, data) {
