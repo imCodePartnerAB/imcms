@@ -20,6 +20,7 @@
         this.post = ajax.bind({url: path, type: "POST"});
         this.get = ajax.bind({url: path, type: "GET"});
         this.put = ajax.bind({url: path, type: "PUT"});
+        this.patch = ajax.bind({url: path, type: "PATCH"});
         this["delete"] = ajax.bind({url: path, type: "DELETE"})
     };
 })(Imcms);
