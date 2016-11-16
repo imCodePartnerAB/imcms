@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/loop")
@@ -101,13 +101,11 @@ public class LoopController {
 
             TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getWorkingDocument(metaId);
 
-            document.getLoopImages().keySet().stream().filter(entry -> (!loop.findEntryIndexByNo(entry.getEntryNo()).isPresent())).forEach(entry -> {
-                document.deleteImage(TextDocumentDomainObject.LoopItemRef.of(loopId, entry.getEntryNo(), entry.getItemNo()));
-            });
+            Predicate<TextDocumentDomainObject.LoopItemRef> loopItemRefPredicate = entry ->
+                    (!loop.findEntryIndexByNo(entry.getEntryNo()).isPresent() && loopId.equals(entry.getLoopNo()));
+            document.getLoopImages().keySet().stream().filter(loopItemRefPredicate).forEach(document::deleteImage);
 
-            document.getLoopTexts().keySet().stream().filter(entry -> (!loop.findEntryIndexByNo(entry.getEntryNo()).isPresent())).forEach(entry -> {
-                    document.setText(TextDocumentDomainObject.LoopItemRef.of(entry.getLoopNo(), entry.getEntryNo(), entry.getItemNo()), new TextDomainObject(""));
-            });
+            document.getLoopTexts().keySet().stream().filter(loopItemRefPredicate).forEach(entry -> document.setText(entry, new TextDomainObject("")));
 
             Imcms.getServices().getDocumentMapper().saveDocument(document, Imcms.getUser());
 
