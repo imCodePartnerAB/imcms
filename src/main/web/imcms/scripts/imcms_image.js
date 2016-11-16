@@ -214,6 +214,9 @@ Imcms.Image.Editor.prototype = {
                 "Cancel": function () {
                     $(this).dialog("close");
                 }
+            },
+            open: function () {
+                $(this).parent().find('button:nth-child(2)').focus();
             }
         };
 
