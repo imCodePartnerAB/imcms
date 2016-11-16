@@ -320,7 +320,7 @@ editor theme
 	display: none;
 	position: fixed;
 	width: 1000px;
-	z-index: 1009;
+	z-index: 9996;
 }
 
 .pop-up-form .imcms-title {
@@ -1473,7 +1473,7 @@ ul.jqtree-tree ul.jqtree_common {
 
 .editor-form.editor-document.window-mode{
 	display: block;
-	z-index: 1006;
+	z-index: 9996;
 	width: 70%;
 	left: 15%;
 }
