@@ -8,12 +8,12 @@
             update: simpleAPI.post
         };
 
-    var ListAdapter = function (container, data) {
+    var LoopListAdapter = function (container, data) {
         this._container = container;
         this._data = data;
         this.init();
     };
-    ListAdapter.prototype = {
+    LoopListAdapter.prototype = {
         _container: {},
         _ul: {},
         _data: {},
@@ -22,7 +22,7 @@
             this.enableSorting();
         },
         buildList: function (data) {
-            $.each(data, $.proxy(this.addLoopToList, this));
+            $.each(data, this.addLoopToList.bind(this));
         },
         addLoopToList: function (position, data) {
             var deleteRowBtn = $("<button>")
@@ -99,13 +99,13 @@
                 .button()
                 .reference("closeButton")
                 .setClass("imcms-close-button")
-                .on("click", $.proxy(this.close, this))
+                .on("click", this.close.bind(this))
                 .end()
                 /*
                  .button()
                  .html("Close without saving")
                  .setClass("imcms-neutral close-without-saving")
-                 .on("click", $.proxy(this.close, this))
+                 .on("click", this.close.bind(this))
                  .end()*/
                 .end()
                 .div()
@@ -126,7 +126,7 @@
                 .button()
                 .html("Save and close")
                 .setClass("loop-editor-footer__button loop-editor-footer__button_positive")
-                .on("click", $.proxy(this.save, this))
+                .on("click", this.save.bind(this))
                 .end()
                 .div()
                 .setClass("clear")
@@ -140,17 +140,17 @@
         },
         buildLoopsList: function (data) {
             if (!data) {
-                this._loader.entriesList({loopId: $(this._target).data().no}, $.proxy(this.buildLoopsList, this));
+                this._loader.entriesList({loopId: $(this._target).data().no}, this.buildLoopsList.bind(this));
                 return this;
             }
-            this._loopListAdapter = new ListAdapter(this._builder.ref("entriesList"), data);
-            this._builder.ref("createNew").on("click", $.proxy(this._loopListAdapter.addLoop, this._loopListAdapter));
+            this._loopListAdapter = new LoopListAdapter(this._builder.ref("entriesList"), data);
+            this._builder.ref("createNew").on("click", this._loopListAdapter.addLoop.bind(this._loopListAdapter));
             return this;
         },
         buildExtra: function () {
             this._frame = new Imcms.FrameBuilder()
                 .title("Loop Editor")
-                .click($.proxy(this.open, this))
+                .click(this.open.bind(this))
                 .build()
                 .prependTo(this._target);
             return this;
