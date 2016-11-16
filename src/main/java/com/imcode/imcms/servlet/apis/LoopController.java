@@ -12,6 +12,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/loop")
@@ -98,7 +98,10 @@ public class LoopController {
             DocumentMapper documentMapper = imcmsServices.getDocumentMapper();
             TextDocumentDomainObject document = documentMapper.getWorkingDocument(metaId);
 
-            Loop loop = Loop.of(indexes.stream().collect(Collectors.toMap(loopNo -> loopNo, loopNo -> true)));
+            Map<Integer, Boolean> entries = new ListOrderedMap<>();
+            indexes.forEach(integer -> entries.put(integer, true));
+
+            Loop loop = Loop.of(entries);
             Predicate<TextDocumentDomainObject.LoopItemRef> loopItemRefPredicate = entry ->
                     (loopId.equals(entry.getLoopNo()) && !loop.findEntryIndexByNo(entry.getEntryNo()).isPresent());
 
@@ -110,10 +113,13 @@ public class LoopController {
                     .filter(loopItemRefPredicate)
                     .forEach(entry -> document.setText(entry, new TextDomainObject()));
 
+            document.setLoop(loopId, loop);
+            documentMapper.saveDocument(document, Imcms.getUser());
+
             TextDocLoopContainer container = new TextDocLoopContainer(document.getVersionRef(), loopId, loop);
             imcmsServices.getManagedBean(TextDocumentContentSaver.class).saveLoop(container);
-            documentMapper.saveDocument(document, Imcms.getUser());
             documentMapper.invalidateDocument(metaId);
+
             result.put("result", true);
 
         } catch (Exception e) {
