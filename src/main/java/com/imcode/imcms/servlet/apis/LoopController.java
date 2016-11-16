@@ -103,15 +103,12 @@ public class LoopController {
             for(TextDocumentDomainObject.LoopItemRef entry: document.getLoopImages().keySet()){
                 if(!loop.findEntryIndexByNo(entry.getEntryNo()).isPresent()){
                     document.deleteImage(TextDocumentDomainObject.LoopItemRef.of(loopId, entry.getEntryNo(), entry.getItemNo()));
-                    System.out.println(entry.getLoopNo()+" "+entry.getEntryNo()+" "+entry.getItemNo());
                 }
             }
 
             for(TextDocumentDomainObject.LoopItemRef entry: document.getLoopTexts().keySet()){
                 if(!loop.findEntryIndexByNo(entry.getEntryNo()).isPresent()){
                     document.setText(TextDocumentDomainObject.LoopItemRef.of(entry.getLoopNo(), entry.getEntryNo(), entry.getItemNo()), new TextDomainObject(""));
-                    System.out.println(entry.getLoopNo()+"__ "+entry.getEntryNo()+" "+entry.getItemNo());
-
                 }
             }
             Imcms.getServices().getDocumentMapper().saveDocument(document, Imcms.getUser());
