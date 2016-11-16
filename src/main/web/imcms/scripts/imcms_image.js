@@ -214,6 +214,9 @@ Imcms.Image.Editor.prototype = {
                 "Cancel": function () {
                     $(this).dialog("close");
                 }
+            },
+            open: function () {
+                $(this).parent().find('button:nth-child(2)').focus();
             }
         };
 
@@ -752,6 +755,10 @@ Imcms.Image.ImageInfoAdapter.prototype = {
         if (linkUrl.match(urlExpression)) {
             if (!(linkUrl.startsWith("http://") || linkUrl.startsWith("https://") || linkUrl.startsWith("ftp://"))) {
                 this._imageSource.linkUrl = "http://" + linkUrl;
+            }
+        } else {
+            if (!linkUrl.startsWith("/")) {
+                this._imageSource.linkUrl = "/" + linkUrl;
             }
         }
         return this._imageSource;
