@@ -199,13 +199,6 @@
                 this._editorList[pos] = new Editor(element, this);
             }.bind(this));
         },
-        create: function (name) {
-            var that = this;
-            API.create({name: name}, function (data) {
-                if (!data.result) return;
-                that.redirect(data.id);
-            })
-        },
         update: function (loops, loopId, callback) {
             API.update({
                 loopId: loopId,
