@@ -67,8 +67,12 @@
             this._data.push({no: length ? this._data[length - 1].no + 1 : 1, text: ""});
             this.addLoopToList(length, this._data[length]);
         },
-        collect: function () {
-            return this._data;
+        collect: function (loopId) {
+            return $("[data-loop-id=" + loopId + "]")
+                .sortable("toArray", {attribute: 'data-entry-no'})
+                .map(function (entryNoStr) {
+                    return parseInt(entryNoStr);
+                });
         }
     };
 
@@ -156,11 +160,13 @@
             return this;
         },
         save: function () {
-            var $element = $(this._target);
+            var $element = $(this._target),
+                loopId = $element.data().no,
+                orderedEntryNo = this._loopListAdapter.collect(loopId);
 
             this._loader.update(
-                this._loopListAdapter.collect(),
-                $element.data().no,
+                orderedEntryNo,
+                loopId,
                 Imcms.BackgroundWorker.createTask({
                     showProcessWindow: true,
                     reloadContent: {
@@ -204,18 +210,13 @@
             API.update({
                 loopId: loopId,
                 meta: Imcms.document.meta,
-                indexes: this.generateIndexes(loops)
+                indexes: loops
             }, callback);
         },
         entriesList: function (data, callback) {
             API.read(Imcms.Utils.margeObjectsProperties(Imcms.document, data), function (response) {
                 callback((response && response.result) ? response.data : {});
             });
-        },
-        generateIndexes: function (loops) {
-            return loops.map(function (loop) {
-                return loop.no
-            })
         }
     };
 })(Imcms);
