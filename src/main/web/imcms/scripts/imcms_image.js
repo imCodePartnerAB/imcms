@@ -200,36 +200,38 @@ Imcms.Image.Editor.prototype = {
         this.confirm(title, message, isEmpty, this.save.bind(this));
     },
     confirm: function (title, message, condition, onSuccess) {
-        var opt = {
-            autoOpen: false,
-            modal: true,
-            width: 400,
-            height: 200,
-            title: title,
-            buttons: {
-                "Confirm": function () {
-                    onSuccess();
-                    $(this).dialog("close");
-                },
-                "Cancel": function () {
-                    $(this).dialog("close");
-                }
-            },
-            open: function () {
-                $(this).parent().find('button:nth-child(2)').focus();
-            }
-        };
-
         if (condition) {
+            var dialogOptions = {
+                    autoOpen: false,
+                    modal: true,
+                    width: 400,
+                    height: 200,
+                    title: title,
+                    buttons: {
+                        "Confirm": function () {
+                            onSuccess();
+                            $(this).dialog("close");
+                        },
+                        "Cancel": {
+                            click: function () {
+                                $(this).dialog("close");
+                            },
+                            text: "Cancel",
+                            'class': 'ui-dialog-confirm-cancel-button'
+                        }
+                    },
+                    open: function () {
+                        $(this).parent().find('.ui-dialog-confirm-cancel-button').focus();
+                    }
+                },
+                uiIconAlert = $("<span>").addClass("ui-icon ui-icon-alert").css({
+                    "float": "left",
+                    "margin": "12px 12px 20px 0"
+                });
+
             $("<div>").text(message)
-                .append($("<span>")
-                    .addClass("ui-icon ui-icon-alert")
-                    .css({
-                        "float": "left",
-                        "margin": "12px 12px 20px 0"
-                    })
-                )
-                .dialog(opt)
+                .append(uiIconAlert)
+                .dialog(dialogOptions)
                 .dialog("open");
         } else {
             onSuccess();
