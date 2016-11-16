@@ -12,6 +12,7 @@ import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import imcode.util.ImcmsImageUtils;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -330,11 +331,13 @@ public class TextDocumentContentLoader {
     }
 
     private Loop toApiObject(com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop jpaLoop) {
-        if (jpaLoop == null) return null;
+        if (jpaLoop == null) {
+            return null;
 
-        Map<Integer, Boolean> entries = jpaLoop.getEntries()
-                .stream().collect(toMap(entry -> entry.getNo(), entry -> entry.isEnabled()));
-
-        return Loop.of(entries, jpaLoop.getNextEntryNo());
+        } else {
+            Map<Integer, Boolean> entries = new ListOrderedMap<>();
+            jpaLoop.getEntries().forEach(entry -> entries.put(entry.getNo(), entry.isEnabled()));
+            return Loop.of(entries, jpaLoop.getNextEntryNo());
+        }
     }
 }
