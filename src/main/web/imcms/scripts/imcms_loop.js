@@ -23,9 +23,9 @@
             this.enableSorting();
         },
         buildList: function (data) {
-            $.each(data, this.addLoopToList.bind(this));
+            data.forEach(this.addLoopToList, this);
         },
-        addLoopToList: function (position, data) {
+        addLoopToList: function (data) {
             var deleteRowBtn = $("<button>")
                     .attr("type", "button")
                     .addClass("loop-editor-content__button")
@@ -72,13 +72,22 @@
             }, this)
         },
         addLoop: function () {
-            var length = this._data.length;
-            this._data.push({no: length ? this._data[length - 1].no + 1 : 1, text: ""});
-            this.addLoopToList(length, this._data[length]);
+            var maxEntryNo = Math.max.apply(null, this.collect()),
+                nextEntryNo = (maxEntryNo && isFinite(maxEntryNo))
+                    ? maxEntryNo + 1
+                    : 1,
+                newEntry = {
+                    no: nextEntryNo,
+                    text: ""
+                };
+            this._data.push(newEntry);
+            this.addLoopToList(newEntry);
         },
         collect: function () {
             return $("[data-loop-id=" + this._loopId + "]")
-                .sortable("toArray", {attribute: 'data-entry-no'})
+                .sortable("toArray", {
+                    attribute: 'data-entry-no'
+                })
                 .map(function (entryNoStr) {
                     return parseInt(entryNoStr);
                 });
