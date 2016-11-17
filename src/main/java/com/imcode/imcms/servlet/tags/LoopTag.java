@@ -17,7 +17,6 @@ import java.util.Properties;
 
 public class LoopTag extends BodyTagSupport implements IEditableTag {
 
-
     /**
      * Loop number in a TextDocument.
      */
@@ -86,6 +85,7 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
                 LoopEditor editor = createEditor().setNo(no);
                 bodyContentString = editor.wrap(bodyContentString);
             }
+
             bodyContentString = TagParser.addPreAndPost(attributes, bodyContentString);
 
             if (editMode) {
@@ -106,7 +106,6 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
         }
         return EVAL_PAGE;
     }
-
 
     public void setNo(int no) {
         this.no = no;
@@ -149,6 +148,3 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
         return new LoopEditor();
     }
 }
-
-
-
