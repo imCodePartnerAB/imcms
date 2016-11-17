@@ -188,8 +188,7 @@
             this.close();
         },
         open: function () {
-            this.buildLoopsList();
-            this.showEditorWindow();
+            this.buildLoopsList().showEditorWindow();
         },
         showEditorWindow: function () {
             $(this._builder[0]).fadeIn("fast")
