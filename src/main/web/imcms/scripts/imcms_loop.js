@@ -8,9 +8,10 @@
             update: simpleAPI.post
         };
 
-    var LoopListAdapter = function (container, data) {
+    var LoopListAdapter = function (container, data, loopId) {
         this._container = container;
         this._data = data;
+        this._loopId = loopId;
         this.init();
     };
     LoopListAdapter.prototype = {
@@ -56,11 +57,19 @@
         enableSorting: function () {
             var sortOptions = {
                 axis: "y",
-                placeholder: "loop-editor-content__loop-entry loop-editor-content__loop-entry_empty"
+                placeholder: "loop-editor-content__loop-entry loop-editor-content__loop-entry_empty",
+                update: this.updateData.bind(this)
             };
             $(".loop-editor-content__list")
                 .sortable(sortOptions)
                 .disableSelection();
+        },
+        updateData: function () {
+            this._data = this.collect(this._loopId).map(function (e) {
+                return this._data.find(function (entry) {
+                    return (entry.no === e)
+                })
+            }, this)
         },
         addLoop: function () {
             var length = this._data.length;
@@ -79,6 +88,7 @@
     var Editor = function (element, loader) {
         this._loader = loader;
         this._target = element;
+        this._loopId = $(element).data().no;
         this.init();
     };
     Editor.prototype = {
@@ -115,7 +125,7 @@
                 .div()
                 .setClass("loop-editor-content")
                 .ul()
-                .attr("data-loop-id", $(this._target).data().no)
+                .attr("data-loop-id", this._loopId)
                 .setClass("loop-editor-content__list")
                 .reference("entriesList")
                 .end()
@@ -144,10 +154,10 @@
         },
         buildLoopsList: function (data) {
             if (!data) {
-                this._loader.entriesList({loopId: $(this._target).data().no}, this.buildLoopsList.bind(this));
+                this._loader.entriesList({loopId: this._loopId}, this.buildLoopsList.bind(this));
                 return this;
             }
-            this._loopListAdapter = new LoopListAdapter(this._builder.ref("entriesList"), data);
+            this._loopListAdapter = new LoopListAdapter(this._builder.ref("entriesList"), data, this._loopId);
             this._builder.ref("createNew").on("click", this._loopListAdapter.addLoop.bind(this._loopListAdapter));
             return this;
         },
