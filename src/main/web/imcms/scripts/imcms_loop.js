@@ -133,7 +133,7 @@
                 .div()
                 .setClass("loop-editor-footer")
                 .button()
-                .reference("createNew")
+                .on("click", this.createNew.bind(this))
                 .setClass("loop-editor-footer__button loop-editor-footer__button_neutral")
                 .html("Create new")
                 .end()
@@ -158,7 +158,6 @@
                 return this;
             }
             this._loopListAdapter = new LoopListAdapter(this._builder.ref("entriesList"), data, this._loopId);
-            this._builder.ref("createNew").on("click", this._loopListAdapter.addLoop.bind(this._loopListAdapter));
             return this;
         },
         buildExtra: function () {
@@ -200,6 +199,9 @@
         close: function () {
             $(this._builder[0]).fadeOut("fast");
             $(".loop-editor-content__loop-entry").remove();
+        },
+        createNew: function () {
+            this._loopListAdapter.addLoop()
         }
     };
 
