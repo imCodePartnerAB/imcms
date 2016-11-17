@@ -80,7 +80,7 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
         try {
 
             String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
-            if (TagParser.isEditable(attributes, parserParameters.isMenuMode())) {
+            if (editMode) {
                 LoopEditor editor = createEditor().setNo(no);
                 bodyContentString = editor.wrap(bodyContentString);
             }
