@@ -9,7 +9,7 @@
         };
 
     var LoopListAdapter = function (container, data, loopId) {
-        this._container = container;
+        this._container = container.getHTMLElement();
         this._data = data;
         this._loopId = loopId;
         this.init();
@@ -46,7 +46,7 @@
                     .append(entryIndex)
                     .append(entryContent)
                     .append(entryActions)
-                    .appendTo(this._container.getHTMLElement());
+                    .appendTo(this._container);
 
             deleteRowBtn.click(this.deleteLoop.bind(this, data, entryRow));
         },
