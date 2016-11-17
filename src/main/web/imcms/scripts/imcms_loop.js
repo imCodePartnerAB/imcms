@@ -115,12 +115,6 @@
                 .setClass("imcms-close-button")
                 .on("click", this.close.bind(this))
                 .end()
-                /*
-                 .button()
-                 .html("Close without saving")
-                 .setClass("imcms-neutral close-without-saving")
-                 .on("click", this.close.bind(this))
-                 .end()*/
                 .end()
                 .div()
                 .setClass("loop-editor-content")
