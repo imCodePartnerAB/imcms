@@ -78,8 +78,10 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
     @Override
     public int doEndTag() throws JspException {
         try {
+            String bodyContentString = ((null != getBodyContent()) && (loop.getEntries().size() != 0))
+                    ? getBodyContent().getString()
+                    : "";
 
-            String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
             if (editMode) {
                 LoopEditor editor = createEditor().setNo(no);
                 bodyContentString = editor.wrap(bodyContentString);
