@@ -88,7 +88,7 @@
         _frame: {},
         _loopListAdapter: {},
         init: function () {
-            return this.buildView().buildLoopsList().buildExtra();
+            return this.buildView().buildExtra();
         },
         buildView: function () {
             this._builder = new JSFormBuilder("<DIV>")
@@ -178,6 +178,10 @@
             this.close();
         },
         open: function () {
+            this.buildLoopsList();
+            this.showEditorWindow();
+        },
+        showEditorWindow: function () {
             $(this._builder[0]).fadeIn("fast")
                 .find(".imcms-content")
                 .css({
@@ -186,6 +190,7 @@
         },
         close: function () {
             $(this._builder[0]).fadeOut("fast");
+            $(".loop-editor-content__loop-entry").remove();
         }
     };
 
