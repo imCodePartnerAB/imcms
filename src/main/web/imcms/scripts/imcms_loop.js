@@ -65,7 +65,7 @@
                 .disableSelection();
         },
         updateData: function () {
-            this._data = this.collect(this._loopId).map(function (e) {
+            this._data = this.collect().map(function (e) {
                 return this._data.find(function (entry) {
                     return (entry.no === e)
                 })
@@ -76,8 +76,8 @@
             this._data.push({no: length ? this._data[length - 1].no + 1 : 1, text: ""});
             this.addLoopToList(length, this._data[length]);
         },
-        collect: function (loopId) {
-            return $("[data-loop-id=" + loopId + "]")
+        collect: function () {
+            return $("[data-loop-id=" + this._loopId + "]")
                 .sortable("toArray", {attribute: 'data-entry-no'})
                 .map(function (entryNoStr) {
                     return parseInt(entryNoStr);
@@ -172,7 +172,7 @@
         save: function () {
             var $element = $(this._target),
                 loopId = $element.data().no,
-                orderedEntryNo = this._loopListAdapter.collect(loopId);
+                orderedEntryNo = this._loopListAdapter.collect();
 
             this._loader.update(
                 orderedEntryNo,
