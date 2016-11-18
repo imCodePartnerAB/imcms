@@ -70,14 +70,15 @@
                 .disableSelection();
         },
         updateData: function () {
-            this._data = this.collect().map(function (e) {
-                return this._data.find(function (entry) {
-                    return (entry.no === e)
-                })
-            }, this)
+            this._data = this.collectOrderedEntryIndexes().map(this.findEntryByNo, this)
+        },
+        findEntryByNo: function (entryNo) {
+            return this._data.find(function (entry) {
+                return (entry.no === entryNo)
+            });
         },
         addLoop: function () {
-            var maxEntryNo = Math.max.apply(null, this.collect()),
+            var maxEntryNo = Math.max.apply(null, this.collectOrderedEntryIndexes()),
                 nextEntryNo = (maxEntryNo && isFinite(maxEntryNo))
                     ? maxEntryNo + 1
                     : 1,
@@ -88,7 +89,7 @@
             this._data.push(newEntry);
             this.addLoopToList(newEntry);
         },
-        collect: function () {
+        collectOrderedEntryIndexes: function () {
             return $("[data-loop-id=" + this._loopId + "]")
                 .sortable("toArray", {
                     attribute: 'data-entry-no'
@@ -179,7 +180,7 @@
         save: function () {
             var $element = $(this._target),
                 loopId = $element.data().no,
-                orderedEntryNo = this._loopListAdapter.collect();
+                orderedEntryNo = this._loopListAdapter.collectOrderedEntryIndexes();
 
             this._loader.update(
                 orderedEntryNo,
