@@ -1009,6 +1009,7 @@ editor theme
 
 .loop-viewer .loop-editor-content .loop-editor-content__list .loop-editor-content__loop-entry .loop-editor-content__actions {
     float: right;
+    width: 60px;
 }
 
 .loop-viewer .loop-editor-content .loop-editor-content__list .loop-editor-content__loop-entry:hover {
@@ -1029,6 +1030,14 @@ editor theme
     height: 40px;
     width: 100%;
     background: rgba(156, 156, 156, 0.41);
+}
+
+.loop-editor-content__list .loop-editor-content__loop-entry .loop-editor-content__actions .loop-editor-content__checkbox {
+    height: 20px;
+    width: 20px;
+    float: left;
+    line-height: 20px;
+    margin-right: 20px;
 }
 
 .loop-editor {

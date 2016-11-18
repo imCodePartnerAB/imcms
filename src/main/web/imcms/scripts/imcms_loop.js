@@ -30,6 +30,10 @@
                     .attr("type", "button")
                     .addClass("loop-editor-content__button")
                     .addClass("loop-editor-content__button_negative"),
+                isEnabledCheckbox = $("<input>")
+                    .attr("type", "checkbox")
+                    .attr("name", "isEnabled")
+                    .addClass("loop-editor-content__checkbox"),
                 entryIndex = $("<div>")
                     .addClass("loop-editor-content__number")
                     .html(data.no),
@@ -38,6 +42,7 @@
                     .html(data.text),
                 entryActions = $("<div>")
                     .addClass("loop-editor-content__actions")
+                    .append(isEnabledCheckbox)
                     .append(deleteRowBtn),
                 entryRow = $("<li>")
                     .attr("data-entry-no", data.no)
