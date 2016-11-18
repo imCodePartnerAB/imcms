@@ -97,8 +97,19 @@
                     attribute: 'data-entry-no'
                 })
                 .map(function (entryNoStr) {
-                    return parseInt(entryNoStr);
+                    return parseInt(entryNoStr, 10);
                 });
+        },
+        collect: function () {
+            return this._data.map(this.checkIsEnabled, this);
+        },
+        checkIsEnabled: function (entry) {
+            entry.isEnabled = $(this._container)
+                .find("li[data-entry-no=" + entry.no + "]")
+                .find(".loop-editor-content__checkbox")
+                .is(":checked");
+
+            return entry;
         }
     };
 
