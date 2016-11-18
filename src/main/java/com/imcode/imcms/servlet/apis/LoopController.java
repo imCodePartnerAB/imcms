@@ -55,12 +55,14 @@ public class LoopController {
 
             DocRef docRef = DocRef.of(versionRef, document.getLanguage().getCode());
 
-            loop.getEntries().forEach((no, bool) -> {
+            loop.getEntries().forEach((no, isEnabled) -> {
                 Map<String, Object> entryData = new HashMap<>();
-                TextDomainObject textDomainObject = textDocumentContentLoader
-                        .getFirstLoopEntryText(docRef, LoopEntryRef.of(loopId, no));
 
                 entryData.put("no", no);
+                entryData.put("isEnabled", isEnabled);
+
+                TextDomainObject textDomainObject = textDocumentContentLoader
+                        .getFirstLoopEntryText(docRef, LoopEntryRef.of(loopId, no));
 
                 String strippedText = (textDomainObject != null)
                         ? textDomainObject.getText().replaceAll("<[^>]*>", "")
