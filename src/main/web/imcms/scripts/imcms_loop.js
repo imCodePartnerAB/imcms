@@ -33,6 +33,7 @@
                 isEnabledCheckbox = $("<input>")
                     .attr("type", "checkbox")
                     .attr("name", "isEnabled")
+                    .prop("checked", data.isEnabled)
                     .addClass("loop-editor-content__checkbox"),
                 entryIndex = $("<div>")
                     .addClass("loop-editor-content__number")
@@ -84,6 +85,7 @@
                     : 1,
                 newEntry = {
                     no: nextEntryNo,
+                    isEnabled: true,
                     text: ""
                 };
             this._data.push(newEntry);
