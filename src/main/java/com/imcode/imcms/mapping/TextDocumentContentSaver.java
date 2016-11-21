@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
@@ -64,9 +63,6 @@ public class TextDocumentContentSaver {
 
     /**
      * Saves new document content.
-     *
-     * @param doc
-     * @param userDomainObject
      */
     public void createContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
         DocRef docRef = doc.getRef();
@@ -107,9 +103,6 @@ public class TextDocumentContentSaver {
 
     /**
      * Updates existing document content.
-     *
-     * @param doc
-     * @param userDomainObject
      */
     public void updateContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
         DocRef docRef = doc.getRef();
@@ -144,7 +137,7 @@ public class TextDocumentContentSaver {
             loop.setVersion(version);
             loop.setNo(loopNo);
             loop.setEntries(items);
-            loop.setNextEntryNo(items.stream().mapToInt(i -> i.getNo()).max().orElse(1) + 1);
+            loop.setNextEntryNo(items.stream().mapToInt(Loop.Entry::getNo).max().orElse(1) + 1);
 
             loopRepository.save(loop);
         });
@@ -161,9 +154,6 @@ public class TextDocumentContentSaver {
 
     /**
      * Saves existing document image.
-     *
-     * @param container
-     * @param userDomainObject
      */
     public void saveImage(TextDocImageContainer container, UserDomainObject userDomainObject) {
         User user = userRepository.getOne(userDomainObject.getId());
@@ -377,8 +367,8 @@ public class TextDocumentContentSaver {
                 if (neighbor != null)
                     neighbor.setNextEntryNo(loopNo);*/
                 //loopRepository.save(loop);
-            } else {
-               /* Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
+            /*} else {
+                Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
                 loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
                 neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
                 if (neighbor != null)
@@ -387,7 +377,7 @@ public class TextDocumentContentSaver {
             }
         }
         loop.setNextEntryNo(loop.getEntries().stream()
-                .mapToInt(i -> i.getNo()).max().orElse(1) + 1);
+                .mapToInt(Loop.Entry::getNo).max().orElse(1) + 1);
         loopRepository.save(loop);
     }
 
@@ -425,7 +415,6 @@ public class TextDocumentContentSaver {
         ImageCropRegion cropRegion = cropRegionDO.isValid()
                 ? new ImageCropRegion(cropRegionDO.getCropX1(), cropRegionDO.getCropY1(), cropRegionDO.getCropX2(), cropRegionDO.getCropY2())
                 : new ImageCropRegion(-1, -1, -1, -1);
-
 
         Image image = new Image();
 
@@ -471,9 +460,7 @@ public class TextDocumentContentSaver {
         List<Loop.Entry> entries = new LinkedList<>();
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
-        loopDO.getEntries().forEach((entryNo, enabled) -> {
-            entries.add(new Loop.Entry(entryNo, enabled));
-        });
+        loopDO.getEntries().forEach((entryNo, enabled) -> entries.add(new Loop.Entry(entryNo, enabled)));
 
         return Value.with(
                 new Loop(),
