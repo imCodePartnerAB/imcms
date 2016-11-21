@@ -65,13 +65,17 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
 
     @Override
     public int doAfterBody() throws JspException {
-        if (loopIterator.hasNext()) {
+        while (loopIterator.hasNext()) {
             currentEntry = loopIterator.next();
-            return EVAL_BODY_AGAIN;
-        } else {
-            currentEntry = null;
-            return SKIP_BODY;
+
+            // check is current entry enabled
+            if (currentEntry.getValue()) {
+                return EVAL_BODY_AGAIN;
+            }
         }
+
+        currentEntry = null;
+        return SKIP_BODY;
     }
 
     @Override
