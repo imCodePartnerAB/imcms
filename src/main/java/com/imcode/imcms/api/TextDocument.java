@@ -362,20 +362,20 @@ public class TextDocument extends Document {
 	}
 
     public static class LoopItem {
-        LoopEntryRef loopEntryNo;
+        LoopEntryRef loopEntryRef;
         DocumentDomainObject doc;
 
         public LoopItem(Map.Entry<Integer, Boolean> entry, int no, DocumentDomainObject doc) {
-            this.loopEntryNo = new LoopEntryRef(no, entry.getKey());
+            this.loopEntryRef = new LoopEntryRef(no, entry.getKey());
             this.doc = doc;
         }
 
         public String toString() {
-            return "D" + this.doc.getId() + "-L" + this.loopEntryNo.getLoopNo() + "-E" + this.loopEntryNo.getEntryNo();
+            return "D" + this.doc.getId() + "-L" + this.loopEntryRef.getLoopNo() + "-E" + this.loopEntryRef.getEntryNo();
         }
 
-        public LoopEntryRef getLoopEntryNo() {
-            return loopEntryNo;
+        public LoopEntryRef getLoopEntryRef() {
+            return loopEntryRef;
         }
 
         public DocumentDomainObject getDoc() {
