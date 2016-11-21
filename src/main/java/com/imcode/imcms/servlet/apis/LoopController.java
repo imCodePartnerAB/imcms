@@ -83,8 +83,8 @@ public class LoopController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected Object doPost(@RequestParam(value = "indexes[]") List<Integer> indexes,
-                            @RequestParam(value = "isEnabledFlags[]") List<Boolean> isEnabledFlags,
+    protected Object doPost(@RequestParam(value = "indexes[]", required = false) List<Integer> indexes,
+                            @RequestParam(value = "isEnabledFlags[]", required = false) List<Boolean> isEnabledFlags,
                             @RequestParam("loopId") Integer loopId,
                             @RequestParam("meta") Integer metaId) throws ServletException, IOException {
 
