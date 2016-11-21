@@ -98,43 +98,44 @@ public class LoopController {
         if (indexes.size() != isEnabledFlags.size()) {
             result.put("message", "Different sizes of collections");
             result.put("result", false);
-            return result;
-        }
-        try {
-            ImcmsServices imcmsServices = Imcms.getServices();
-            DocumentMapper documentMapper = imcmsServices.getDocumentMapper();
-            TextDocumentDomainObject document = documentMapper.getWorkingDocument(metaId);
 
-            Map<Integer, Boolean> entries = new ListOrderedMap<>();
+        } else {
+            try {
+                ImcmsServices imcmsServices = Imcms.getServices();
+                DocumentMapper documentMapper = imcmsServices.getDocumentMapper();
+                TextDocumentDomainObject document = documentMapper.getWorkingDocument(metaId);
 
-            for (int i = 0; i < indexes.size(); i++) {
-                entries.put(indexes.get(i), isEnabledFlags.get(i));
+                Map<Integer, Boolean> entries = new ListOrderedMap<>();
+
+                for (int i = 0; i < indexes.size(); i++) {
+                    entries.put(indexes.get(i), isEnabledFlags.get(i));
+                }
+
+                Loop loop = Loop.of(entries);
+                Predicate<TextDocumentDomainObject.LoopItemRef> loopItemRefPredicate = entry ->
+                        (loopId.equals(entry.getLoopNo()) && !loop.findEntryIndexByNo(entry.getEntryNo()).isPresent());
+
+                document.getLoopImages().keySet().stream()
+                        .filter(loopItemRefPredicate)
+                        .forEach(document::deleteImage);
+
+                document.getLoopTexts().keySet().stream()
+                        .filter(loopItemRefPredicate)
+                        .forEach(entry -> document.setText(entry, new TextDomainObject()));
+
+                document.setLoop(loopId, loop);
+                documentMapper.saveDocument(document, Imcms.getUser());
+
+                TextDocLoopContainer container = new TextDocLoopContainer(document.getVersionRef(), loopId, loop);
+                imcmsServices.getManagedBean(TextDocumentContentSaver.class).saveLoop(container);
+                documentMapper.invalidateDocument(metaId);
+
+                result.put("result", true);
+
+            } catch (Exception e) {
+                result.put("message", e);
+                result.put("result", false);
             }
-
-            Loop loop = Loop.of(entries);
-            Predicate<TextDocumentDomainObject.LoopItemRef> loopItemRefPredicate = entry ->
-                    (loopId.equals(entry.getLoopNo()) && !loop.findEntryIndexByNo(entry.getEntryNo()).isPresent());
-
-            document.getLoopImages().keySet().stream()
-                    .filter(loopItemRefPredicate)
-                    .forEach(document::deleteImage);
-
-            document.getLoopTexts().keySet().stream()
-                    .filter(loopItemRefPredicate)
-                    .forEach(entry -> document.setText(entry, new TextDomainObject()));
-
-            document.setLoop(loopId, loop);
-            documentMapper.saveDocument(document, Imcms.getUser());
-
-            TextDocLoopContainer container = new TextDocLoopContainer(document.getVersionRef(), loopId, loop);
-            imcmsServices.getManagedBean(TextDocumentContentSaver.class).saveLoop(container);
-            documentMapper.invalidateDocument(metaId);
-
-            result.put("result", true);
-
-        } catch (Exception e) {
-            result.put("message", e);
-            result.put("result", false);
         }
 
         return result;
