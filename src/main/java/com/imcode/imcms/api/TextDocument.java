@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.DocumentGetter;
+import com.imcode.imcms.mapping.container.LoopEntryRef;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
@@ -359,6 +360,28 @@ public class TextDocument extends Document {
 			}
 		}
 	}
+
+    public static class LoopItem {
+        LoopEntryRef loopEntryNo;
+        DocumentDomainObject doc;
+
+        public LoopItem(Map.Entry<Integer, Boolean> entry, int no, DocumentDomainObject doc) {
+            this.loopEntryNo = new LoopEntryRef(no, entry.getKey());
+            this.doc = doc;
+        }
+
+        public String toString() {
+            return "D" + this.doc.getId() + "-L" + this.loopEntryNo.getLoopNo() + "-E" + this.loopEntryNo.getEntryNo();
+        }
+
+        public LoopEntryRef getLoopEntryNo() {
+            return loopEntryNo;
+        }
+
+        public DocumentDomainObject getDoc() {
+            return doc;
+        }
+    }
 
 	public static class MenuItem {
 		MenuItemDomainObject internalMenuItem;
