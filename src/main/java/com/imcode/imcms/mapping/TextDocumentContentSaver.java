@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
@@ -136,10 +136,10 @@ public class TextDocumentContentSaver {
 
     private void createLoops(TextDocumentDomainObject textDocument, Version version) {
         textDocument.getLoops().forEach((loopNo, loopDO) -> {
-            com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
-            List<com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry> items = new LinkedList<>();
+            Loop loop = new Loop();
+            List<Loop.Entry> items = new LinkedList<>();
 
-            loopDO.getEntries().forEach((entryNo, enabled) -> items.add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo, enabled)));
+            loopDO.getEntries().forEach((entryNo, enabled) -> items.add(new Loop.Entry(entryNo, enabled)));
 
             loop.setVersion(version);
             loop.setNo(loopNo);
@@ -153,7 +153,7 @@ public class TextDocumentContentSaver {
     public void saveLoop(TextDocLoopContainer container) {
         Version version = versionRepository.findByDocIdAndNo(container.getDocId(), container.getVersionNo());
         Integer id = loopRepository.findIdByVersionAndNo(version, container.getLoopNo());
-        com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop = toJpaObject(container);
+        Loop loop = toJpaObject(container);
         loop.setId(id);
 
         loopRepository.save(loop);
@@ -352,33 +352,33 @@ public class TextDocumentContentSaver {
     private void createLoopEntryIfNotExists(Version version, LoopEntryRef entryRef) {
         if (entryRef == null) return;
 
-        com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop loop = loopRepository.findByVersionAndNo(
+        Loop loop = loopRepository.findByVersionAndNo(
                 version, entryRef.getLoopNo());
         int entryNo = entryRef.getEntryNo();
         int loopNo = entryRef.getLoopNo();
 
         if (loop == null) {
-            loop = new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop();
-            //com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
+            loop = new Loop();
+            //Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
             //loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
             loop.setVersion(version);
             loop.setNo(loopNo);
-            loop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo));
+            loop.getEntries().add(new Loop.Entry(entryNo));
             /*neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
             if (neighbor != null)
                 neighbor.setNextEntryNo(loopNo);*/
             //loopRepository.save(loop);
         } else {
             if (!loop.containsEntry(entryRef.getEntryNo())) {
-                /*com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);*/
-                loop.getEntries().add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo));
+                /*Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);*/
+                loop.getEntries().add(new Loop.Entry(entryNo));
                 /*loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
                 neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
                 if (neighbor != null)
                     neighbor.setNextEntryNo(loopNo);*/
                 //loopRepository.save(loop);
             } else {
-               /* com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
+               /* Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
                 loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
                 neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
                 if (neighbor != null)
@@ -463,20 +463,20 @@ public class TextDocumentContentSaver {
                 : new LoopEntryRef(source.getLoopNo(), source.getEntryNo());
     }
 
-    private com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop toJpaObject(TextDocLoopContainer container) {
+    private Loop toJpaObject(TextDocLoopContainer container) {
         return toJpaObject(container.getVersionRef(), container.getLoopNo(), container.getLoop());
     }
 
-    private com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop toJpaObject(VersionRef versionRef, int loopNo, Loop loopDO) {
-        List<com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry> entries = new LinkedList<>();
+    private Loop toJpaObject(VersionRef versionRef, int loopNo, com.imcode.imcms.api.Loop loopDO) {
+        List<Loop.Entry> entries = new LinkedList<>();
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
         loopDO.getEntries().forEach((entryNo, enabled) -> {
-            entries.add(new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry(entryNo, enabled));
+            entries.add(new Loop.Entry(entryNo, enabled));
         });
 
         return Value.with(
-                new com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop(),
+                new Loop(),
                 l -> {
                     l.setEntries(entries);
                     l.setNo(loopNo);
