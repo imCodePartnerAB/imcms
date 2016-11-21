@@ -13,10 +13,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import org.apache.commons.collections4.map.ListOrderedMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -86,14 +83,22 @@ public class LoopController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected Object doPost(@RequestParam(value = "indexes[]", required = false) List<Integer> indexes,
+    protected Object doPost(@RequestParam(value = "indexes[]") List<Integer> indexes,
+                            @RequestParam(value = "isEnabledFlags[]") List<Boolean> isEnabledFlags,
                             @RequestParam("loopId") Integer loopId,
                             @RequestParam("meta") Integer metaId) throws ServletException, IOException {
 
         Map<String, Object> result = new HashMap<>();
 
-        if (indexes == null) {
+        if (indexes == null || isEnabledFlags == null) {
             indexes = new ArrayList<>();
+            isEnabledFlags = new ArrayList<>();
+        }
+
+        if (indexes.size() != isEnabledFlags.size()) {
+            result.put("message", "Different sizes of collections");
+            result.put("result", false);
+            return result;
         }
         try {
             ImcmsServices imcmsServices = Imcms.getServices();
@@ -101,7 +106,10 @@ public class LoopController {
             TextDocumentDomainObject document = documentMapper.getWorkingDocument(metaId);
 
             Map<Integer, Boolean> entries = new ListOrderedMap<>();
-            indexes.forEach(integer -> entries.put(integer, true));
+
+            for (int i = 0; i < indexes.size(); i++) {
+                entries.put(indexes.get(i), isEnabledFlags.get(i));
+            }
 
             Loop loop = Loop.of(entries);
             Predicate<TextDocumentDomainObject.LoopItemRef> loopItemRefPredicate = entry ->

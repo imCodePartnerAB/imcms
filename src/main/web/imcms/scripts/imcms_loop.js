@@ -193,10 +193,13 @@
         save: function () {
             var $element = $(this._target),
                 loopId = $element.data().no,
-                orderedEntryNo = this._loopListAdapter.collectOrderedEntryIndexes();
+                orderedEntries = this._loopListAdapter.collect(),
+                orderedIndexes = this._getOrderedIndexes(orderedEntries),
+                orderedIsEnabledFlags = this._getOrderedIsEnabledFlags(orderedEntries);
 
             this._loader.update(
-                orderedEntryNo,
+                orderedIndexes,
+                orderedIsEnabledFlags,
                 loopId,
                 Imcms.BackgroundWorker.createTask({
                     showProcessWindow: true,
@@ -207,6 +210,16 @@
                 })
             );
             this.close();
+        },
+        _getOrderedIndexes: function (orderedEntries) {
+            return orderedEntries.map(function (entry) {
+                return entry.no
+            })
+        },
+        _getOrderedIsEnabledFlags: function (orderedEntries) {
+            return orderedEntries.map(function (entry) {
+                return entry.isEnabled
+            })
         },
         open: function () {
             this.buildLoopsList().showEditorWindow();
@@ -237,11 +250,12 @@
                 this._editorList[pos] = new Editor(element, this);
             }.bind(this));
         },
-        update: function (loops, loopId, callback) {
+        update: function (indexes, isEnabledFlags, loopId, callback) {
             API.update({
                 loopId: loopId,
                 meta: Imcms.document.meta,
-                indexes: loops
+                indexes: indexes,
+                isEnabledFlags: isEnabledFlags
             }, callback);
         },
         entriesList: function (data, callback) {
