@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.servlet.tags.Editor.LoopEditor;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -71,6 +72,7 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
 
             // check is current entry enabled
             if (currentEntry.getValue()) {
+                pageContext.setAttribute("loopitem", new TextDocument.LoopItem(currentEntry, no, document));
                 return EVAL_BODY_AGAIN;
             }
         }

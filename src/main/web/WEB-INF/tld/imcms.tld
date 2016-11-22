@@ -30,6 +30,12 @@
 			<name>post</name>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+
+		<variable>
+			<name-given>loopitem</name-given>
+			<variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>
+			<scope>NESTED</scope>
+		</variable>
 	</tag>
 
 
