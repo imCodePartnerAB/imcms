@@ -937,7 +937,7 @@ public class DocumentMapper implements DocumentGetter {
 	@SuppressWarnings("unused")
 	public <T extends DocumentDomainObject> T getCustomDocumentInDefaultLanguage(DocRef docRef) {
 		return getCustomDocument(
-				DocRef.buillder(docRef)
+				DocRef.builder(docRef)
 						.languageCode(imcmsServices.getDocumentLanguages().getDefault().getCode())
 						.build()
 		);

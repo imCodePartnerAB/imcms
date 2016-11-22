@@ -113,7 +113,7 @@ public class DocumentSaver {
     public void saveImage(TextDocImageContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
         textDocumentContentSaver.saveImage(container, user);
-        docRepository.touch(container.getVersionRef(), user);
+        docRepository.touch(container.getDocVersionRef(), user);
     }
 
     @Transactional
