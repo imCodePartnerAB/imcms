@@ -405,6 +405,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void setLoops(Map<Integer, Loop> loops) {
         this.loops = new ConcurrentHashMap<>(loops);
+        updateLoopsContent();
     }
 
     public Loop getLoop(int no) {
@@ -420,8 +421,20 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */
     public Loop setLoop(int no, Loop loop) {
         loops.put(no, loop);
+        updateLoopContent(no, loop);
 
         return loop;
+    }
+
+    public void updateLoopsContent() {
+        loops.forEach(this::updateLoopContent);
+    }
+
+    private void updateLoopContent(Integer loopNo, Loop loop) {
+        Set<Integer> entriesNo = loop.getEntries().keySet();
+        loopTexts.keySet().stream()
+                .filter(loopItemRef -> (loopItemRef.getLoopNo() == loopNo) && (!entriesNo.contains(loopItemRef.getEntryNo())))
+                .forEach(loopItemRef -> loopTexts.remove(loopItemRef));
     }
 
     public Map<LoopItemRef, TextDomainObject> getLoopTexts() {
