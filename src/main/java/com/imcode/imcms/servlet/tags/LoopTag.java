@@ -9,6 +9,7 @@ import imcode.server.parser.TagParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
 import java.util.Iterator;
@@ -78,12 +79,23 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
         return SKIP_BODY;
     }
 
+    private String getCurrentBodyContent() {
+        BodyContent bodyContent = getBodyContent();
+        Map<Integer, Boolean> loopEntries = loop.getEntries();
+
+        boolean hasBodyContent = (null != bodyContent);
+        boolean hasEntries = (!loopEntries.isEmpty());
+        boolean hasEnabledEntries = (hasEntries && loopEntries.values().stream().anyMatch(Boolean::booleanValue));
+
+        return (hasBodyContent && hasEnabledEntries)
+                ? bodyContent.getString()
+                : "";
+    }
+
     @Override
     public int doEndTag() throws JspException {
         try {
-            String bodyContentString = ((null != getBodyContent()) && (loop.getEntries().size() != 0))
-                    ? getBodyContent().getString()
-                    : "";
+            String bodyContentString = getCurrentBodyContent();
 
             if (editMode) {
                 LoopEditor editor = createEditor().setNo(no);
