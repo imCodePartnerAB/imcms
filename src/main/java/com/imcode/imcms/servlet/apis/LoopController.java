@@ -104,6 +104,7 @@ public class LoopController {
                 ImcmsServices imcmsServices = Imcms.getServices();
                 DocumentMapper documentMapper = imcmsServices.getDocumentMapper();
                 TextDocumentDomainObject document = documentMapper.getWorkingDocument(metaId);
+                TextDocumentContentSaver contentSaver = imcmsServices.getManagedBean(TextDocumentContentSaver.class);
 
                 Map<Integer, Boolean> entries = new ListOrderedMap<>();
 
@@ -121,13 +122,13 @@ public class LoopController {
 
                 document.getLoopTexts().keySet().stream()
                         .filter(loopItemRefPredicate)
-                        .forEach(entry -> document.setText(entry, new TextDomainObject()));
+                        .forEach(entry -> contentSaver.deleteText(document, entry));
 
                 document.setLoop(loopId, loop);
                 documentMapper.saveDocument(document, Imcms.getUser());
 
                 TextDocLoopContainer container = new TextDocLoopContainer(document.getVersionRef(), loopId, loop);
-                imcmsServices.getManagedBean(TextDocumentContentSaver.class).saveLoop(container);
+                contentSaver.saveLoop(container);
                 documentMapper.invalidateDocument(metaId);
 
                 result.put("result", true);
