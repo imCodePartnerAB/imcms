@@ -7,18 +7,17 @@ import java.util.Objects;
 /**
  * Uniquely identifies menu in a text document.
  */
-public class TextDocMenuContainer {
+public class TextDocMenuContainer extends TextDocVersionedContainer {
 
     public static TextDocMenuContainer of(VersionRef versionRef, int menuNo, MenuDomainObject menu) {
         return new TextDocMenuContainer(versionRef, menuNo, menu);
     }
 
-    private final VersionRef versionRef;
     private final int menuNo;
     private final MenuDomainObject menu;
 
     public TextDocMenuContainer(VersionRef versionRef, int menuNo, MenuDomainObject menu) {
-        this.versionRef = Objects.requireNonNull(versionRef);
+        super(versionRef);
         this.menu = Objects.requireNonNull(menu);
         this.menuNo = menuNo;
     }
@@ -30,17 +29,4 @@ public class TextDocMenuContainer {
     public MenuDomainObject getMenu() {
         return menu;
     }
-
-    public VersionRef getVersionRef() {
-        return versionRef;
-    }
-
-    public int getDocId() {
-        return versionRef.getDocId();
-    }
-
-    public int getVersionNo() {
-        return versionRef.getNo();
-    }
 }
-
