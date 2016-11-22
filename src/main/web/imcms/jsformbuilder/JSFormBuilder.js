@@ -196,7 +196,12 @@ JSFormBuilder.Mixins.FunctionBase = {
         arguments[0] = arguments[0].toLowerCase();
         var unwrapped = arguments[1];
         var wrapped = function () {
-            unwrapped.apply(that, arguments);
+            try {
+                unwrapped.apply(that, arguments);
+            } catch (e) {
+                Imcms.BackgroundWorker.closeProcessWindow();
+                console.error(e);
+            }
         };
         if (this._element.addEventListener) {
             this._element.addEventListener(arguments[0], wrapped, false);
