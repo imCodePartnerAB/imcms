@@ -473,6 +473,46 @@ public class TextDocumentContentSaver {
         );
     }
 
+    public void deleteText(TextDocumentDomainObject document, TextDocumentDomainObject.LoopItemRef entry) {
+        final DocRef docRef = document.getRef();
+        final Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        final Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        final int loopNo = entry.getLoopNo();
+        final int docId = document.getId();
+        final LoopEntryRef loopEntryRef = new LoopEntryRef(loopNo, entry.getEntryNo());
+
+        Text text = textRepository.findByVersionAndLanguageAndNoAndDocumentIdAndLoopEntryRef(
+                version,
+                language,
+                loopNo,
+                docId,
+                loopEntryRef
+        );
+
+        textRepository.delete(text);
+        textRepository.flush();
+
+        document.updateLoopsContent();
+    }
+
+    public void deleteText(TextDocumentDomainObject document, TextDocTextContainer container) {
+        final DocRef docRef = document.getRef();
+        final Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+        final Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        final int textNo = toJpaObject(container).getNo();
+        final int docId = document.getId();
+
+        Text text = textRepository.findByVersionAndLanguageAndNoAndDocumentIdWhereLoopEntryRefIsNull(
+                version,
+                language,
+                textNo,
+                docId
+        );
+
+        textRepository.delete(text);
+        textRepository.flush();
+    }
+
     private enum SaveMode {
         CREATE, UPDATE
     }
