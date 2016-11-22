@@ -983,7 +983,7 @@ editor theme
 <%--WINDOW--%>
 
 <%--LOOP--%>
-.loop-viewer .loop-editor-content .loop-editor-content__list {
+.loop-editor-content__list {
 	border-left: none;
 	border-right: none;
 	width: 100%;
@@ -991,48 +991,48 @@ editor theme
 	background-color: #fff;
 }
 
-.loop-viewer .loop-editor-content .loop-editor-content__list .loop-editor-content__loop-entry {
+.loop-editor-content__loop-entry {
     height: 20px;
     border-bottom: 1px solid #f0f0ff;
     padding: 10px 20px;
     vertical-align: middle;
 }
 
-.loop-viewer .loop-editor-content .loop-editor-content__list .loop-editor-content__loop-entry .loop-editor-content__number {
+.loop-editor-content__number {
     width: 5%;
     float: left;
 }
 
-.loop-viewer .loop-editor-content .loop-editor-content__list .loop-editor-content__loop-entry .loop-editor-content__content {
+.loop-editor-content__content {
     float: left;
 }
 
-.loop-viewer .loop-editor-content .loop-editor-content__list .loop-editor-content__loop-entry .loop-editor-content__actions {
+.loop-editor-content__actions {
     float: right;
     width: 60px;
 }
 
-.loop-viewer .loop-editor-content .loop-editor-content__list .loop-editor-content__loop-entry:hover {
+.loop-editor-content__loop-entry:hover {
 	background: #ffff64;
 	color: black;
 }
 
-.loop-viewer .loop-editor-content .loop-editor-content__list .loop-editor-content__loop-entry .loop-editor-content__actions .loop-editor-content__button {
+.loop-editor-content__button {
 	font-size: 13px;
 	line-height: 25px;
 }
 
-.loop-viewer .loop-editor-content .loop-editor-content__list .loop-editor-content__loop-entry:hover .loop-editor-content__actions .loop-editor-content__button {
+.loop-editor-content__loop-entry:hover .loop-editor-content__actions .loop-editor-content__button {
 	display: block;
 }
 
-.loop-editor-content__list .loop-editor-content__loop-entry.loop-editor-content__loop-entry_empty {
+.loop-editor-content__loop-entry_empty {
     height: 40px;
     width: 100%;
     background: rgba(156, 156, 156, 0.41);
 }
 
-.loop-editor-content__list .loop-editor-content__loop-entry .loop-editor-content__actions .loop-editor-content__checkbox {
+.loop-editor-content__checkbox {
     height: 20px;
     width: 20px;
     float: left;
@@ -1054,7 +1054,7 @@ editor theme
     padding: 10px;
     background: #f0f0f0;
 }
-.loop-editor .loop-editor-footer .loop-editor-footer__button {
+.loop-editor-footer__button {
     border: none;
     height: 30px;
     display: inline-block;
@@ -1064,14 +1064,14 @@ editor theme
     padding: 0 20px;
     margin: 0 20px;
 }
-.loop-editor .loop-editor-footer .loop-editor-footer__button_neutral {
+.loop-editor-footer__button_neutral {
     background: #323232;
 }
-.loop-editor .loop-editor-footer .loop-editor-footer__button_positive {
+.loop-editor-footer__button_positive {
     background: #649b00;
     float: right;
 }
-.loop-editor .loop-editor-content .loop-editor-content__button_negative {
+.loop-editor-content__button_negative {
     font-size: 13px;
     line-height: 25px;
     background: #dc0000 url("<%= cp %>/images/remove.png") no-repeat center;
@@ -1083,7 +1083,7 @@ editor theme
     color: #fff;
     cursor: pointer;
 }
-.editor-form.loop-viewer .loop-editor-content .loop-editor-content__list {
+.loop-editor-content__list {
     list-style-type: none;
     margin: 0;
     padding: 0;
