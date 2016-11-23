@@ -27,16 +27,19 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 	private volatile MenuItemDomainObject menuItem;
 	private volatile String label;
 	private volatile String template;
+    private boolean editMode;
+    private HttpServletRequest request;
 
 	public int doStartTag() throws JspException {
-		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-		ParserParameters parserParameters = ParserParameters.fromRequest(request);
+        request = (HttpServletRequest) pageContext.getRequest();
+        ParserParameters parserParameters = ParserParameters.fromRequest(request);
 
         TextDocumentDomainObject document = (docId >= 1001)
                 ? Imcms.getServices().getDocumentMapper().getVersionedDocument(docId, request)
-                : (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
+                : parserParameters.getDocumentRequest().getDocument();
 
 		menuItemsCollection = document.getMenu(no).getMenuItemsVisibleToUserAsTree();
+        editMode = TagParser.isEditable(attributes, parserParameters.isMenuMode());
 
         return (menuItemsCollection.size() > 0)
                 ? EVAL_BODY_BUFFERED
@@ -45,13 +48,18 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 
 	public boolean nextMenuItem(MenuItemDomainObject menuItem) {
 		if (menuItem != null) {
-            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             DocumentDomainObject document = DocumentDomainObject.asDefaultUser(menuItem.getDocument());
-            DocumentReference docIdentity = documentMapper.getDocumentReference(document);
+            DocumentReference docIdentity = Imcms.getServices()
+                    .getDocumentMapper()
+                    .getDocumentReference(document);
+
             menuItem.setDocumentReference(docIdentity);
 
 			this.menuItem = menuItem;
-			pageContext.setAttribute("menuitem", new TextDocument.MenuItem(menuItem, document, Imcms.fromRequest(pageContext.getRequest())));
+            TextDocument.MenuItem item = new TextDocument.MenuItem(
+                    menuItem, document, Imcms.fromRequest(request)
+            );
+            pageContext.setAttribute("menuitem", item);
 			return true;
 		} else {
 			invalidateMenuItem();
@@ -59,24 +67,28 @@ public class MenuTag extends BodyTagSupport implements IEditableTag {
 		}
 	}
 
-	public int doAfterBody() throws JspException {
-		if (menuItemsCollection.size() > 0) {
-			return EVAL_BODY_AGAIN;
-		} else {
-			return SKIP_BODY;
-		}
-	}
+    public int doAfterBody() throws JspException {
+        return (menuItemsCollection.size() > 0)
+                ? EVAL_BODY_AGAIN
+                : SKIP_BODY;
+    }
 
 	public int doEndTag() throws JspException {
 		try {
-			String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
-			bodyContent = null;
-			HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-			ParserParameters parserParameters = ParserParameters.fromRequest(request);
-			if (TagParser.isEditable(attributes, parserParameters.isMenuMode()))
-				bodyContentString = createEditor().setNo(no).setDocumentId(docId).wrap(bodyContentString);
+			String bodyContentString = (null != getBodyContent())
+                    ? getBodyContent().getString()
+                    : "";
+            bodyContent = null;
+
+            if (editMode) {
+			    bodyContentString = createEditor().setNo(no)
+                        .setDocumentId(docId)
+                        .wrap(bodyContentString);
+            }
+
 			bodyContentString = TagParser.addPreAndPost(attributes, bodyContentString);
 			pageContext.getOut().write(bodyContentString);
+
 		} catch (IOException | RuntimeException e) {
 			throw new JspException(e);
 		}
