@@ -363,9 +363,9 @@ public class TextDocument extends Document {
 
     public static class LoopItem {
         LoopEntryRef loopEntryRef;
-        DocumentDomainObject doc;
+        TextDocumentDomainObject doc;
 
-        public LoopItem(Map.Entry<Integer, Boolean> entry, int no, DocumentDomainObject doc) {
+        public LoopItem(Map.Entry<Integer, Boolean> entry, int no, TextDocumentDomainObject doc) {
             this.loopEntryRef = new LoopEntryRef(no, entry.getKey());
             this.doc = doc;
         }
@@ -378,7 +378,7 @@ public class TextDocument extends Document {
             return loopEntryRef;
         }
 
-        public DocumentDomainObject getDoc() {
+        public TextDocumentDomainObject getDoc() {
             return doc;
         }
     }
