@@ -204,7 +204,8 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
     private void logIndexingProgress(int documentsCompleted, int numberOfDocuments, long elapsedTime) {
         int indexPercentageCompleted = (int) (documentsCompleted * (100F / numberOfDocuments));
-        long estimatedTime = numberOfDocuments * elapsedTime / documentsCompleted;
+        int documentsCompletedFixed = (documentsCompleted == 0) ? 1 : documentsCompleted;
+        long estimatedTime = numberOfDocuments * elapsedTime / documentsCompletedFixed;
         long estimatedTimeLeft = estimatedTime - elapsedTime;
         Date eta = new Date(System.currentTimeMillis() + estimatedTimeLeft);
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
