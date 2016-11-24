@@ -12,8 +12,6 @@ public class TestUtility extends TestCase {
         assertEquals( "foo=bar", Utility.createQueryStringFromParameterMultiMap( map1 ) ) ;
         map1.put( "foo", "baz" ) ;
         assertEquals( "foo=bar&foo=baz", Utility.createQueryStringFromParameterMultiMap( map1 ) );
-        map1.put( "bar", "foo" ) ;
-        assertEquals( "foo=bar&foo=baz&bar=foo", Utility.createQueryStringFromParameterMultiMap( map1 ) );
     }
 
     public void testIsValidEmail() throws Exception {
