@@ -18,7 +18,8 @@
     boolean previewMode = BooleanUtils.toBoolean(request.getParameter(ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW));
     pageContext.setAttribute("isPreviewMode", previewMode);
 
-    String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext()).replace("imCMS", "<span>imCMS</span>");
+    String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext())
+            .replace("imCMS", "<span>imCMS</span>");
     pageContext.setAttribute("imcmsVersion", imcmsVersion);
 
     pageContext.setAttribute("permEditTextDocumentTexts", ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS);
@@ -40,11 +41,20 @@
     final boolean hasNewerVersion = (workingVersionModifiedTime > defaultVersionModifiedTime);
     pageContext.setAttribute("hasNewerVersion", hasNewerVersion);
 
-    final boolean canEditDocInfo = user.getInternal().getPermissionSetFor(document.getInternal()).getEditDocumentInformation();
+    final boolean canEditDocInfo = user.getInternal()
+            .getPermissionSetFor(document.getInternal())
+            .getEditDocumentInformation();
     pageContext.setAttribute("canEditDocInfo", canEditDocInfo);
 
-    final String documentLifeCyclePhase = document.getInternal().getLifeCyclePhase().toString().substring(0, 1).toUpperCase();
+    final String documentLifeCyclePhase = document.getInternal()
+            .getLifeCyclePhase()
+            .toString()
+            .substring(0, 1)
+            .toUpperCase();
     pageContext.setAttribute("documentLifeCyclePhase", documentLifeCyclePhase);
+
+    final boolean isVersioningAllowed = Imcms.isVersioningAllowed();
+    pageContext.setAttribute("isVersioningAllowed", isVersioningAllowed);
 %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 <c:set var="currentLangCode" value="${user.internal.docGetterCallback.language.code}"/>
@@ -59,18 +69,19 @@
             </div>
             <div class="admin-panel-language">
                 <a href="${contextPath}/servlet/GetDoc?meta_id=${document.id}&lang=en"
-                   title="English/English (default current)" class="${currentLangCode eq 'en' ? 'active' : ''}">
+                   title="English/English (default current)"
+                   class="imcms-panel-safe-redirect${currentLangCode eq 'en' ? ' active' : ''}">
                     <img src="${contextPath}/images/ic_english.png" alt="" style="border:0;">
                 </a>
                 <a href="${contextPath}/servlet/GetDoc?meta_id=${document.id}&lang=sv" title="Swedish/Svenska"
-                   class="${currentLangCode eq 'sv' ? 'active' : ''}">
+                   class="imcms-panel-safe-redirect${currentLangCode eq 'sv' ? ' active' : ''}">
                     <img src="${contextPath}/images/ic_swedish.png" alt="" style="border:0;">
                 </a>
             </div>
         </section>
         <section id="read" data-mode="readonly"
                  class="admin-panel-content-section${isEditMode or isPreviewMode ? "" : " active"}">
-            <a href="${contextPath}/${docAliasOrId}" target="_self">
+            <a href="${contextPath}/${docAliasOrId}" class="imcms-panel-safe-redirect" target="_self">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image"></div>
                     <span class="admin-panel-button-description">Public</span>
@@ -79,28 +90,34 @@
         </section>
         <section id="edit" data-mode="edit" class="admin-panel-content-section${isEditMode ? " active" : ""}">
             <a href="${contextPath}/servlet/AdminDoc?meta_id=${document.id}&flags=${permEditTextDocumentTexts}"
-               target="_self">
+               class="imcms-panel-safe-redirect" target="_self">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image"></div>
                     <span class="admin-panel-button-description">Edit</span>
                 </div>
             </a>
         </section>
-        <section id="preview" data-mode="preview" class="admin-panel-content-section${isPreviewMode ? " active" : ""}">
-            <a href="${contextPath}/${docAliasOrId}?${requestParamWorkingPreview}=true" target="_self">
-                <div class="admin-panel-button">
-                    <div class="admin-panel-button-image"></div>
-                    <span class="admin-panel-button-description">Preview</span>
-                </div>
-            </a>
-        </section>
-        <section id="publish" data-mode="publish" class="admin-panel-content-section${hasNewerVersion ? " has-version-changed" : ""}">
-            <a href="${contextPath}/servlet/AdminDoc?meta_id=${document.id}&flags=${dispatchFlagPublish}" target="_self">
-                <div class="admin-panel-button">
-                    <div class="admin-panel-button-image">Publish offline version</div>
-                </div>
-            </a>
-        </section>
+        <c:if test="${isVersioningAllowed}">
+            <section id="preview" data-mode="preview"
+                     class="admin-panel-content-section${isPreviewMode ? " active" : ""}">
+                <a href="${contextPath}/${docAliasOrId}?${requestParamWorkingPreview}=true"
+                   class="imcms-panel-safe-redirect" target="_self">
+                    <div class="admin-panel-button">
+                        <div class="admin-panel-button-image"></div>
+                        <span class="admin-panel-button-description">Preview</span>
+                    </div>
+                </a>
+            </section>
+            <section id="publish" data-mode="publish"
+                     class="admin-panel-content-section${hasNewerVersion ? " has-version-changed" : ""}">
+                <a href="${contextPath}/servlet/AdminDoc?meta_id=${document.id}&flags=${dispatchFlagPublish}"
+                   class="imcms-panel-safe-redirect" target="_self">
+                    <div class="admin-panel-button">
+                        <div class="admin-panel-button-image">Publish offline version</div>
+                    </div>
+                </a>
+            </section>
+        </c:if>
         <div class="admin-panel-content-separator"></div>
         <section id="info" data-mode="info"
                  class="admin-panel-content-section${canEditDocInfo ? "" : " admin-panel-content-section-disabled"}">
@@ -133,7 +150,7 @@
         </section>
         <div class="admin-panel-content-separator"></div>
         <section id="admin" data-mode="admin" class="admin-panel-content-section">
-            <a href="${contextPath}/servlet/AdminManager" target="_self">
+            <a href="${contextPath}/servlet/AdminManager" class="imcms-panel-safe-redirect" target="_self">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image"></div>
                     <span class="admin-panel-button-description">Admin</span>
@@ -142,7 +159,7 @@
         </section>
         <div class="admin-panel-content-separator"></div>
         <section id="logout" data-mode="logout" class="admin-panel-content-section">
-            <a href="${contextPath}/servlet/LogOut" target="_self">
+            <a href="${contextPath}/servlet/LogOut" class="imcms-panel-safe-redirect" target="_self">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image"></div>
                     <span class="admin-panel-button-description">Logout</span>

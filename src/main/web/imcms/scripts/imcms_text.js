@@ -1,13 +1,12 @@
 /**
+ * Text Editor
+ *
  * Created by Shadowgun on 13.02.2015.
- */
-/**
- Text Editor
+ * Upgraded by Serhii Maksymchuk in 2016
  */
 Imcms.Text = {};
 
 Imcms.Text.API = function () {
-
 };
 Imcms.Text.API.prototype = {
     get: function (request, callback) {
@@ -42,68 +41,124 @@ Imcms.Text.Editor = function () {
 
 Imcms.Text.Editor.prototype = {
     _api: new Imcms.Text.API(),
+    _textFrame: {},
     init: function () {
-        var textFrame = new Imcms.FrameBuilder().title("Text Editor");
+        this._textFrame = new Imcms.FrameBuilder().title("Text Editor");
 
+        CKEDITOR.on('instanceReady', this._onInstanceReady.bind(this));
         CKEDITOR.on('instanceCreated', this._onCreated.bind(this));
         CKEDITOR.on("confirmChangesEvent", this._onConfirm.bind(this));
         CKEDITOR.on("validateText", this._onValidateText.bind(this));
         CKEDITOR.on("getTextHistory", this._onGetTextHistory.bind(this));
 
-        $("[contenteditable='true']").each(function (position, element) {
-            element = $(element);
-            CKEDITOR.inline(element[0]);
-            element.parents("a").attr("onclick", "return false;");
+        $("[contenteditable='true']").each(this.addEditor.bind(this));
+    },
+    addEditor: function (position, element) {
+        element = $(element);
+        CKEDITOR.inline(element[0]);
+        element.parents("a").attr("onclick", "return false;");
 
-            $("<div>").insertAfter(element).append(element).css({overflow: "hidden"});
+        $("<div>").insertAfter(element)
+            .append(element)
+            .css({overflow: "hidden"});
 
-            var title = element.data("no") + " | " + element.data("label"),
-                currentFrame = textFrame.click(function (e) {
-                        currentFrame.hide();
-                        element.focus();
-                        element.trigger(e);
-                        element.blur(function () {
-                            currentFrame.show();
-                        });
-                    })
-                    .build()
-                    .attr("title", title.replace(/<(?:.|\n)*?>/gim, ''))
-                    .insertBefore(element);
+        var loopTitle = "";
+        if (element.data("loopentryref")) {
+            loopTitle = (element.data("loopentryref")).split("_");
+            loopTitle = "L" + loopTitle[0] + "-E" + loopTitle[1] + "-T";
+        }
 
-            if (element.data("showlabel")) {
-                $("<div>").addClass("text-editor-label")
-                    .html(element.data("label"))
-                    .insertBefore(element);
+        var title = loopTitle + element.data("no") + " | " + element.data("label"),
+            currentFrame = this._textFrame
+                .click(function (e) {
+                    currentFrame.hide();
+                    element.focus();
+                    element.trigger(e);
+                    element.blur(function () {
+                        currentFrame.show();
+                    });
+                })
+                .build()
+                .attr("title", title.replace(/<(?:.|\n)*?>/gim, ''))
+                .insertBefore(element);
+
+        if (element.data("showlabel")) {
+            $("<div>").addClass("text-editor-label")
+                .html(element.data("label"))
+                .insertBefore(element);
+        }
+    },
+    _onInstanceReady: function (event) {
+        var editor = event.editor,
+            selectedImageData = {};
+
+        editor.addCommand('editInternalImageCmd', CKEDITOR.newCommandWithExecution(
+            function (editor) {
+                new Imcms.Image
+                    .ImageInTextEditor(editor)
+                    .onExistingImageEdit(selectedImageData);
+            }
+        ));
+        editor.contextMenu.addListener(function (element, selection) {
+            if (element.hasClass("internalImageInTextEditor")) {
+                var selectedElement = selection._.cache.selectedElement.$,
+                    $selection = $(selectedElement);
+
+                selectedImageData = {
+                    no: $selection.attr("data-no"),
+                    src: $selection.attr("src"),
+                    selectedElement: selectedElement
+                };
+                // skipping CKEditor's "image" context menu item that is items[3]
+                editor.contextMenu.items = editor.contextMenu.items.slice(0, 3);
+                return {
+                    editInternalImageCmd: CKEDITOR.TRISTATE_OFF
+                };
+            }
+        });
+        editor.addMenuItems({
+            editInternalImageCmd: {
+                label: 'Edit Image',
+                command: 'editInternalImageCmd',
+                group: 'image',
+                icon: Imcms.Linker.get("edit.image.in.text.editor.icon"),
+                order: 2
             }
         });
     },
     _onConfirm: function (event) {
-        var editor = event.editor;
-        var data = $(editor.element.$).data();
+        var editor = event.editor,
+            data = $(editor.element.$).data(),
+            isHtmlContent = (data.contenttype === "html"),
+            callFunc = (isHtmlContent) ? "html" : "text",
+            content = $(editor.element.$)[callFunc]();
 
-        if (data.content === undefined) { // to prevent strange confirmation that fires more and more times after saving
-            data.meta = Imcms.document.meta;
+        // save only when content is changed or mode is switched
+        if ((data.content !== content) || CKEDITOR.switchFormat) {
+            data.content = content;
+            if (!data.meta) {
+                data.meta = Imcms.document.meta;
+            }
 
-            var isHtmlContent = (data.contenttype === "html");
-            var callFunc = (isHtmlContent)
-                ? "html"
-                : "text";
-
-            data.content = $(editor.element.$)[callFunc]();
+            var shouldRefreshPage = false;
 
             if (CKEDITOR.switchFormat) {
                 data.contenttype = (isHtmlContent)
                     ? "from-html"
                     : "html";
 
+                shouldRefreshPage = true;
                 CKEDITOR.switchFormat = false;
             }
 
             this._api.update(data, event.data.callback || Imcms.BackgroundWorker.createTask({
                     showProcessWindow: true,
-                    refreshPage: true
+                    refreshPage: shouldRefreshPage
                 })
             );
+
+        } else if (event.data && event.data.callback && (typeof event.data.callback === "function")) {
+            event.data.callback()
         }
     },
     _onCreated: function (event) {
@@ -138,7 +193,7 @@ Imcms.Text.Editor.prototype = {
         // commands definition
         editor.addCommand("switchFormat", CKEDITOR.newCommandWithExecution(function (editor) {
             CKEDITOR.switchFormat = true;
-            editor.execCommand("confirmChangesWithoutEvent");
+            editor.execCommand("confirmChangesBeforeSwitch");
         }));
 
         // Remove unnecessary plugins to make the editor simpler.
@@ -174,8 +229,6 @@ Imcms.Text.Editor.prototype = {
 
         editor.config.toolbar_minTextToolbar = [
             switchFormatToHtmlPlugin,
-            linkPlugins,
-            imagesPlugins,
             textPlugins,
             plainTextPlugins
         ]; // Custom minimized toolbar config for tag without attribute "formats" but was changed to "Text"
@@ -207,7 +260,6 @@ Imcms.Text.Editor.prototype = {
 
         editor.config.toolbar_maxTextToolbar = [
             switchFormatToHtmlPlugin,
-            linkPlugins,
             advancedActionsPlugins,
             plainTextPlugins
         ]; // Custom maximized toolbar config for tag without attribute "formats" but was changed to "HTML"

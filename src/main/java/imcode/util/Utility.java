@@ -83,6 +83,16 @@ public class Utility {
 		Utility.facade = facade;
 	}
 
+    /**
+     * Method checks is interested string contains any element of collection.
+     * @param amIContainsAny - string to be checked on containing
+     * @param elementsToCheck - collection of elements for check
+     * @return true iff string contains any element of collection
+     */
+	public static boolean containsAny(final String amIContainsAny, Collection<String> elementsToCheck) {
+        return elementsToCheck.stream().anyMatch(amIContainsAny::contains);
+    }
+
 	/**
 	 * Transforms a long containing an ip into a String.
 	 */

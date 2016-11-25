@@ -1,12 +1,26 @@
-Imcms.Editors = {};
+Imcms.Editors = {
+    /**
+     * Will rebuild editors of specified element.
+     * If any child should have editor, it will built.
+     * Do not forget to bind context of what to buildExtra
+     *
+     * @param $target target element to rebuild
+     */
+    rebuildEditorsIn: function ($target) {
+        this.buildExtra();
+
+        $target.find($(".editor-image")).each(
+            Imcms.Editors.Image.initEditor.bind(Imcms.Editors.Image)
+        );
+
+        $target.find("[contenteditable='true']").each(
+            Imcms.Editors.Text.addEditor.bind(Imcms.Editors.Text)
+        );
+    }
+};
 Imcms.Editors.Text = {};
 Imcms.Editors.Menu = {};
 Imcms.Utils = {};
-Imcms.document = {};
-
-/*
- Imcms bootstraper
- */
 
 Imcms.Bootstrapper = function () {
 };
@@ -15,8 +29,8 @@ Imcms.Bootstrapper.prototype = {
         if (editmode) {
             $("body").css({paddingLeft: 150, width: $(window).width() - 150});
         } else {
-            if ($("body").css('paddingLeft').length > 0){
-                   $("body").removeAttr('style');
+            if ($("body").css('paddingLeft').length > 0) {
+                $("body").removeAttr('style');
             }
         }
 
@@ -34,7 +48,7 @@ Imcms.Bootstrapper.prototype = {
         Imcms.Editors.Category = new Imcms.Category.Loader();
         Imcms.Editors.User = new Imcms.User.Loader();
         Imcms.Editors.Document = new Imcms.Document.Loader();
-        Imcms.Editors.Loop = new Imcms.Loop.Loader();
+        Imcms.Editors.Loop = new Imcms.Loop();
         Imcms.Editors.Menu = new Imcms.Menu.Loader();
         Imcms.Editors.Text = new Imcms.Text.Editor();
         Imcms.Editors.File = new Imcms.File.Loader();
@@ -53,8 +67,13 @@ Imcms.FrameBuilder.prototype = {
     _click: function () {
     },
     _title: "",
+    _tooltip: "",
     title: function () {
         this._title = arguments[0];
+        return this;
+    },
+    tooltip: function () {
+        this._tooltip = arguments[0];
         return this;
     },
     click: function () {
@@ -129,6 +148,10 @@ Imcms.FrameBuilder.prototype = {
         return headerPh;
     },
     _createTitle: function () {
-        return $("<div>").addClass("imcms-title").html(this._title);
+        var $title = $("<div>").addClass("imcms-title").html(this._title);
+
+        return (this._tooltip !== "")
+            ? $title.attr("title", this._tooltip)
+            : $title;
     }
 };

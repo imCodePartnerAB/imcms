@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * Uniquely identifies an text document image.
  */
-public class TextDocImageContainer {
+public class TextDocImageContainer extends TextDocObjectContainer {
 
     public static TextDocImageContainer of(DocRef docRef, int imageNo, ImageDomainObject image) {
         return new TextDocImageContainer(docRef, null, imageNo, image);
@@ -17,52 +17,18 @@ public class TextDocImageContainer {
         return new TextDocImageContainer(docRef, loopEntryRef, imageNo, image);
     }
 
-    private final DocRef docRef;
-    private final int imageNo;
-    private final LoopEntryRef loopEntryRef;
     private final ImageDomainObject image;
 
     public TextDocImageContainer(DocRef docRef, LoopEntryRef loopEntryRef, int imageNo, ImageDomainObject image) {
-        this.docRef = Objects.requireNonNull(docRef);
+        super(docRef, loopEntryRef, imageNo);
         this.image = Objects.requireNonNull(image);
-        this.loopEntryRef = loopEntryRef;
-        this.imageNo = imageNo;
     }
 
     public int getImageNo() {
-        return imageNo;
+        return getDomainObjectNo();
     }
 
     public ImageDomainObject getImage() {
         return image;
     }
-
-    public boolean isLoopEntryItem() {
-        return loopEntryRef != null;
-    }
-
-    public DocRef getDocRef() {
-        return docRef;
-    }
-
-    public LoopEntryRef getLoopEntryRef() {
-        return loopEntryRef;
-    }
-
-    public VersionRef getVersionRef() {
-        return docRef.getVersionRef();
-    }
-
-    public int getDocId() {
-        return docRef.getId();
-    }
-
-    public int getVersionNo() {
-        return docRef.getVersionNo();
-    }
-
-    public String getLanguageCode() {
-        return docRef.getLanguageCode();
-    }
 }
-

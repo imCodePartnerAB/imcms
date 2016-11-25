@@ -12,7 +12,11 @@
 		<name>loop</name>
 		<tag-class>com.imcode.imcms.servlet.tags.LoopTag</tag-class>
 		<body-content>JSP</body-content>
-
+        <variable>
+            <name-given>loopitem</name-given>
+            <variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>
+            <scope>NESTED</scope>
+        </variable>
 		<attribute>
 			<name>no</name>
 			<required>true</required>
@@ -32,6 +36,27 @@
 		</attribute>
 	</tag>
 
+    <tag>
+        <name>loopentry</name>
+        <tag-class>com.imcode.imcms.servlet.tags.LoopEntryTag</tag-class>
+        <body-content>JSP</body-content>
+        <variable>
+            <name-given>loopitem</name-given>
+            <variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>
+            <scope>NESTED</scope>
+        </variable>
+    </tag>
+
+    <tag>
+        <name>loopitem</name>
+        <tag-class>com.imcode.imcms.servlet.tags.LoopItemTag</tag-class>
+        <body-content>JSP</body-content>
+        <variable>
+            <name-given>loopitem</name-given>
+            <variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>
+            <scope>NESTED</scope>
+        </variable>
+    </tag>
 
 	<tag>
 		<name>contextpath</name>
@@ -78,11 +103,18 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+            <description>
+                Can be set to "read" to prevent content changing or "write" mode
+            </description>
 			<name>mode</name>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>formats</name>
+            <description>
+                Can be set to "text" to mark that it should be represented
+                as plain text without HTML editing plugins, or to "html"
+            </description>
+            <name>formats</name>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>

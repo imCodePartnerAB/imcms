@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static imcode.util.DateConstants.DATETIME_DOC_FORMAT;
+import static imcode.util.DateConstants.*;
 
 /**
  * Realise API for working with  {@link DocumentDomainObject}
@@ -43,7 +43,7 @@ import static imcode.util.DateConstants.DATETIME_DOC_FORMAT;
 @RequestMapping("/document")
 public class DocumentController {
 
-	private static final String[] DATE_TYPES = {
+    private static final String[] DATE_TYPES = {
 			"created",
 			"modified",
 			"archived",
@@ -423,74 +423,40 @@ public class DocumentController {
                 .collect(Collectors.toSet())
         );
 
-        // todo: too much similar code, rethink
-        {
-            Date publishedDate = getValidDateOrNull(docEntity.publishedDate, docEntity.publishedTime,
-                    docDomainObject.getPublicationStartDatetime());
-
-            Date archivedDate = getValidDateOrNull(docEntity.archivedDate, docEntity.archivedTime,
-                    docDomainObject.getArchivedDatetime());
-
-            Date publicationEndDate = getValidDateOrNull(docEntity.publicationEndDate, docEntity.publicationEndTime,
-                    docDomainObject.getPublicationEndDatetime());
-
-            if (!isValidDateTime(docEntity.publishedDate, docEntity.publishedTime)) {
-                docDomainObject.setPublicationStartDatetime(null);
-                docDomainObject.setPublisherId(null);
-
-            } else {
-                Optional.ofNullable(publishedDate)
-                        .ifPresent(newPublishedDate -> {
-                            docDomainObject.setPublicationStartDatetime(newPublishedDate);
-                            docDomainObject.setPublisherId(Imcms.getUser().getId());
-                        });
-            }
-
-            if (!isValidDateTime(docEntity.archivedDate, docEntity.archivedTime)) {
-                docDomainObject.setArchivedDatetime(null);
-                docDomainObject.setArchiverId(null);
-
-            } else {
-                Optional.ofNullable(archivedDate)
-                        .ifPresent(newArchivedDate -> {
-                            docDomainObject.setArchivedDatetime(newArchivedDate);
-                            docDomainObject.setArchiverId(Imcms.getUser().getId());
-                        });
-            }
-
-            if (!isValidDateTime(docEntity.publicationEndDate, docEntity.publicationEndTime)) {
-                docDomainObject.setPublicationEndDatetime(null);
-                docDomainObject.setDepublisherId(null);
-
-            } else {
-                Optional.ofNullable(publicationEndDate)
-                        .ifPresent(newPublicationEndDate -> {
-                            docDomainObject.setPublicationEndDatetime(newPublicationEndDate);
-                            docDomainObject.setDepublisherId(Imcms.getUser().getId());
-                        });
-            }
-        }
+        prepareDateTimeAndUser(docEntity, docDomainObject);
 
         // in case of new doc with specified publisher without publication start date/time
         Optional.ofNullable(docEntity.publisherId).ifPresent(docDomainObject::setPublisherId);
         Optional.ofNullable(docEntity.missingLangProp).ifPresent(docDomainObject::setDisabledLanguageShowMode);
     }
 
-    private Date getValidDateOrNull(String date, String time, Date documentDatetime) {
+    private void prepareDateTimeAndUser(DocumentEntity docEntity, DocumentDomainObject docDomainObject) {
+        final int userId = Imcms.getUser().getId();
+
+        Date publishedDate = getValidDateOrNull(docEntity.publishedDate, docEntity.publishedTime);
+
+        if (docEntity.id == null && publishedDate == null && !Imcms.isVersioningAllowed()) {
+            publishedDate = new Date();
+        }
+
+        docDomainObject.setPublicationStartDatetime(publishedDate);
+        docDomainObject.setPublisherId((publishedDate == null) ? null : userId);
+
+        Date archivedDate = getValidDateOrNull(docEntity.archivedDate, docEntity.archivedTime);
+        docDomainObject.setArchivedDatetime(archivedDate);
+        docDomainObject.setArchiverId((archivedDate == null) ? null : userId);
+
+        Date publicationEndDate = getValidDateOrNull(docEntity.publicationEndDate, docEntity.publicationEndTime);
+        docDomainObject.setPublicationEndDatetime(publicationEndDate);
+        docDomainObject.setDepublisherId((publicationEndDate == null) ? null : userId);
+    }
+
+    private Date getValidDateOrNull(String date, String time) {
         if (isValidDateTime(date, time)) {
             try {
                 String newDateStr = date + " " + time;
-                Date newDate = DATETIME_DOC_FORMAT.parse(newDateStr);
-                Date oldDate = null;
+                return DATETIME_DOC_FORMAT.parse(newDateStr);
 
-                if (documentDatetime != null) {
-                    String oldDateStr = DATETIME_DOC_FORMAT.format(documentDatetime);
-                    oldDate = DATETIME_DOC_FORMAT.parse(oldDateStr);
-                }
-
-                if (!newDate.equals(oldDate)) {
-                    return newDate;
-                }
             } catch (ParseException ignore) {
             }
         }
@@ -498,10 +464,13 @@ public class DocumentController {
     }
 
     private boolean isValidDateTime(String publishedDate, String publishedTime) {
-        return StringUtils.isNotBlank(publishedDate)
+        return (StringUtils.isNotBlank(publishedDate)
                 && !publishedDate.equals("--")
+                && (publishedDate.length() >= DATE_MIN_LENGTH && publishedDate.length() <= DATE_MAX_LENGTH)
                 && StringUtils.isNotBlank(publishedTime)
-                && !publishedTime.equals("--");
+                && !publishedTime.equals("--")
+                && (publishedTime.length() >= TIME_MIN_LENGTH && publishedTime.length() <= TIME_MAX_LENGTH)
+        );
     }
 
     /**

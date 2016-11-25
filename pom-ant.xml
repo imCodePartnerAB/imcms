@@ -154,6 +154,8 @@
         <filter token="documentationwebappurl" value="${documentation-host}"/>
         <filter token="documentationurl" value="${documentation-host}"/>
 
+        <filter token="server-name" value="${server-name}"/>
+
         <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
 
         <filter token="db-name" value="${db-name}"/>
@@ -232,6 +234,8 @@
 
         <filter token="index-disabled-file-mimes" value="${index-disabled-file-mimes}"/>
         <filter token="index-disabled-file-extensions" value="${index-disabled-file-extensions}"/>
+
+        <filter token="error-logger-url" value="${error-logger-url}"/>
     </target>
 
 </project>

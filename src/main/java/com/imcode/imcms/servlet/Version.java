@@ -36,6 +36,15 @@ public class Version extends HttpServlet {
         }
     }
 
+    public static String getRequiredDbVersion() {
+        try {
+            return Schema.fromInputStream(Thread.currentThread().getContextClassLoader().getResourceAsStream(DB_SCHEMA_FILE)).getVersion().toString();
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
         String imcmsVersion = getImcmsVersion();
@@ -63,15 +72,6 @@ public class Version extends HttpServlet {
             }
         } catch (Exception npe) {
             return "imCMS";
-        }
-    }
-
-    private String getRequiredDbVersion() {
-        try {
-            return Schema.fromInputStream(Thread.currentThread().getContextClassLoader().getResourceAsStream(DB_SCHEMA_FILE)).getVersion().toString();
-        } catch (Exception e) {
-            System.out.println(e);
-            return null;
         }
     }
 

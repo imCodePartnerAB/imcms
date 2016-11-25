@@ -153,8 +153,14 @@
                                         });
 
                                         documentSearchDialog.result(function (data) {
-                                            that.setValue(data.id);
-                                            documentSearchDialog.dispose();
+                                            var docId = (data.alias || data.id);
+                                            that.setValue(docId);
+
+                                            $("#" + that.domId)
+                                                .parent()
+                                                .next()
+                                                .find("input")
+                                                .val("/" + docId);
                                         });
                                         documentSearchDialog._dialog.parent().css("z-index", "99999999");
                                         documentSearchDialog.open();
@@ -165,20 +171,27 @@
                                         }
                                         data.imcms.docId = this.getValue();
                                     }
+                                },
+                                {
+                                    type: 'text',
+                                    id: 'resultImcmsLink',
+                                    setup: function (data) {
+                                        $("#" + this.domId)
+                                            .find("input")
+                                            .prop("readonly", "readonly");
+
+                                        if (data.url && data.url.url) {
+                                            this.setValue(data.url.url);
+                                        }
+                                    }
                                 }
                             ],
                             setup: function () {
                                 if (!this.getDialog().getContentElement('info', 'linkType'))
                                     this.getElement().show();
                             }
-                        },
-                            {
-                                type: 'button',
-                                id: 'browse',
-                                hidden: 'true',
-                                filebrowser: 'info:imcms',
-                                label: commonLang.browseServer
-                            }]
+                        }
+                        ]
                     },
                     {
                         type: 'vbox',

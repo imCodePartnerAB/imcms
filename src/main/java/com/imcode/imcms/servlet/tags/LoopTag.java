@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.servlet.tags.Editor.LoopEditor;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -9,6 +10,7 @@ import imcode.server.parser.TagParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
 import java.util.Iterator;
@@ -16,7 +18,6 @@ import java.util.Map;
 import java.util.Properties;
 
 public class LoopTag extends BodyTagSupport implements IEditableTag {
-
 
     /**
      * Loop number in a TextDocument.
@@ -49,7 +50,7 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
 
         request = (HttpServletRequest) pageContext.getRequest();
         parserParameters = ParserParameters.fromRequest(request);
-        document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
+        document = parserParameters.getDocumentRequest().getDocument();
         editMode = TagParser.isEditable(attributes, parserParameters.isContentLoopMode());
 
         loop = document.getLoop(no);
@@ -66,24 +67,43 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
 
     @Override
     public int doAfterBody() throws JspException {
-        if (loopIterator.hasNext()) {
+        while (loopIterator.hasNext()) {
             currentEntry = loopIterator.next();
-            return EVAL_BODY_AGAIN;
-        } else {
-            currentEntry = null;
-            return SKIP_BODY;
+
+            // check is current entry enabled
+            if (currentEntry.getValue()) {
+                pageContext.setAttribute("loopitem", new TextDocument.LoopItem(currentEntry, no, document));
+                return EVAL_BODY_AGAIN;
+            }
         }
+
+        currentEntry = null;
+        return SKIP_BODY;
+    }
+
+    private String getCurrentBodyContent() {
+        BodyContent bodyContent = getBodyContent();
+        Map<Integer, Boolean> loopEntries = loop.getEntries();
+
+        boolean hasBodyContent = (null != bodyContent);
+        boolean hasEntries = (!loopEntries.isEmpty());
+        boolean hasEnabledEntries = (hasEntries && loopEntries.values().stream().anyMatch(Boolean::booleanValue));
+
+        return (hasBodyContent && hasEnabledEntries)
+                ? bodyContent.getString()
+                : "";
     }
 
     @Override
     public int doEndTag() throws JspException {
         try {
+            String bodyContentString = getCurrentBodyContent();
 
-            String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
-            if (TagParser.isEditable(attributes, parserParameters.isMenuMode())) {
+            if (editMode) {
                 LoopEditor editor = createEditor().setNo(no);
                 bodyContentString = editor.wrap(bodyContentString);
             }
+
             bodyContentString = TagParser.addPreAndPost(attributes, bodyContentString);
 
             if (editMode) {
@@ -104,7 +124,6 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
         }
         return EVAL_PAGE;
     }
-
 
     public void setNo(int no) {
         this.no = no;
@@ -146,7 +165,9 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
     public LoopEditor createEditor() {
         return new LoopEditor();
     }
+
+    public void invalidateCurrentEntry() {
+        currentEntry = null;
+        pageContext.removeAttribute("loopitem");
+    }
 }
-
-
-

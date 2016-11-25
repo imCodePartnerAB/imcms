@@ -55,6 +55,30 @@
 		</init-param>
 	</filter>
 
+    <filter>
+        <filter-name>ImcmsCacheSupervisor</filter-name>
+        <filter-class>com.imcode.imcms.filters.ImcmsCacheSupervisor</filter-class>
+        <init-param>
+            <param-name>suppressStackTrace</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cacheName</param-name>
+            <param-value>SimpleCachingHeadersCachingFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cacheMarkers</param-name>
+            <!-- Note that markers will be searched in request URL using String#contains() method -->
+            <param-value>
+                .jpg
+                .gif
+                .png
+                .css
+                .js
+                .properties
+            </param-value>
+        </init-param>
+    </filter>
 
 	<filter>
 		<display-name>Imcms Setup Filter</display-name>
@@ -86,6 +110,11 @@
 		<filter-name>characterEncodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+
+    <filter-mapping>
+        <filter-name>ImcmsCacheSupervisor</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 	<filter-mapping>
 		<filter-name>ImcmsSetupFilter</filter-name>
@@ -373,6 +402,11 @@
 		<servlet-class>com.imcode.imcms.servlet.RegisterUserServlet</servlet-class>
 	</servlet>
 
+	<servlet>
+		<servlet-name>com.imcode.imcms.servlet.InternalError</servlet-name>
+		<servlet-class>com.imcode.imcms.servlet.InternalError</servlet-class>
+	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>spring-mvc-dispatcher</servlet-name>
 		<url-pattern>/api/*</url-pattern>
@@ -623,9 +657,15 @@
 		<servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
 		<url-pattern>/servlet/AdminPanelServlet</url-pattern>
 	</servlet-mapping>
+
 	<servlet-mapping>
 		<servlet-name>com.imcode.imcms.servlet.RegisterUser</servlet-name>
 		<url-pattern>/servlet/RegisterUser</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>com.imcode.imcms.servlet.InternalError</servlet-name>
+		<url-pattern>/servlet/InternalError</url-pattern>
 	</servlet-mapping>
 
 	<session-config>
@@ -725,14 +765,15 @@
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 
-	<error-page>
-		<exception-type>java.lang.Throwable</exception-type>
-		<location>/imcms/internalerrorpage.jsp</location>
-	</error-page>
 
 	<error-page>
 		<exception-type>com.imcode.imcms.api.DocumentLanguageDisabledException</exception-type>
 		<location>/imcms/404.jsp</location>
+	</error-page>
+
+	<error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+		<location>/servlet/InternalError</location>
 	</error-page>
 
 	<error-page>
@@ -747,6 +788,6 @@
 
 	<error-page>
 		<error-code>500</error-code>
-		<location>/imcms/internalerrorpage.jsp</location>
+		<location>/imcms/500.jsp</location>
 	</error-page>
 </web-app>

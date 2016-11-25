@@ -64,7 +64,7 @@ Imcms.Menu.TreeAdapter.prototype = {
 			$("<button>")
 				.addClass("imcms-negative")
 				.attr("type", "button")
-				.click($.proxy(this.delete, this, node))
+				.click($.proxy(this.remove, this, node))
 		);
 	},
 	onMoveNode: function (event) {
@@ -219,7 +219,7 @@ Imcms.Menu.TreeAdapter.prototype = {
 
 		this._tree.tree('loadData', result);
 	},
-	delete: function (node) {
+	remove: function (node) {
 		this._tree.tree('removeNode', node);
 	},
 	add: function (node) {
@@ -348,26 +348,26 @@ Imcms.Menu.Editor.prototype = {
 			.on("drop", this._onDrop.bind(this))
 			.div()
 			.on("drop", this._onDrop.bind(this))
-			.class("imcms-header")
+			.setClass("imcms-header")
 			.div()
 			.on("drop", this._onDrop.bind(this))
 			.html("Menu Editor " + $(this._target).data().meta + "-" + $(this._target).data().no)
-			.class("imcms-title")
+			.setClass("imcms-title")
 			.end()
 			/*.button()
 			 .on("click", $.proxy(this.close, this))
 			 .html("Close without saving")
-			 .class("imcms-neutral close-without-saving")
+			 .setClass("imcms-neutral close-without-saving")
 			 .reference("closeButton")
 			 .end()*/
 			.button()
 			.reference("closeButton")
-			.class("imcms-close-button")
+			.setClass("imcms-close-button")
 			.on("click", $.proxy(this.close, this))
 			.end()
 			.end()
 			.div()
-			.class("imcms-content")
+			.setClass("imcms-content")
 			.on("drop", this._onDrop.bind(this))
 			.div()
 			.on("drop", this._onDrop.bind(this))
@@ -375,27 +375,27 @@ Imcms.Menu.Editor.prototype = {
 			.end()
 			.end()
 			.div()
-			.class("imcms-footer")
+			.setClass("imcms-footer")
 			.reference("footer")
 			.button()
 			.html($.i18n.prop('menu.search'))
-			.class("imcms-positive add")
+			.setClass("imcms-positive add")
 			.on("click", $.proxy(this._openDocumentEditor, this))
 			.end()
 			.button()
 			.html($.i18n.prop('menu.new'))
-			.class("imcms-neutral create-new")
+			.setClass("imcms-neutral create-new")
 			.on("click", $.proxy(this._openDocumentViewer, this))
 			.end()
 			.div()
-			.class("imcms-menu-sort-cases")
+			.setClass("imcms-menu-sort-cases")
 			.radio()
 			.name("menu-sort-case")
 			.value(Imcms.Menu.TreeAdapter.Sorting.NAME)
 			.end()
 			.button()
 			.html($.i18n.prop('menu.sortAlphabet'))
-			.class("imcms-neutral create-new")
+			.setClass("imcms-neutral create-new")
 			.on("click", $.proxy(this._sortItems, this))
 			.end()
 			.radio()
@@ -404,28 +404,28 @@ Imcms.Menu.Editor.prototype = {
 			.end()
 			.button()
 			.html($.i18n.prop('menu.sortId'))
-			.class("imcms-neutral create-new")
+			.setClass("imcms-neutral create-new")
 			.on("click", $.proxy(this._sortItems, this))
 			.end()
 			.end()
             .button()
-            .class("imcms-positive hidden pluralCopyArchMenuButton")
+            .setClass("imcms-positive hidden pluralCopyArchMenuButton")
             .html("Copy")
             .on("click", this.copyChecked.bind(this))
             .end()
             .button()
-            .class("imcms-positive hidden pluralCopyArchMenuButton")
+            .setClass("imcms-positive hidden pluralCopyArchMenuButton")
             .html("Archive")
             .on("click", this.archiveChecked.bind(this))
             .end()
 			.button()
 			.on("click", $.proxy(this.saveAndClose, this))
 			.html("Save and close")
-			.class("imcms-positive imcms-save-and-close")
+			.setClass("imcms-positive imcms-save-and-close")
 			.reference("saveButton")
 			.end()
 			.div()
-			.class("clear")
+			.setClass("clear")
 			.end()
 			.end()
 			.end();
@@ -464,6 +464,7 @@ Imcms.Menu.Editor.prototype = {
 	buildExtra: function () {
 		this._frame = new Imcms.FrameBuilder()
 			.title("Menu Editor")
+			.tooltip($(this._target).data().no)
 			.click($.proxy(this.open, this))
 			.build()
 			.prependTo(this._target);
@@ -531,14 +532,21 @@ Imcms.Menu.Editor.prototype = {
         Imcms.Events.fire("imcmsEditorClose");
         $(this._builder[0]).hide();
 
+        var $target = $(this._target);
         var response = Imcms.Utils.margeObjectsProperties(
             {data: JSON.stringify(this._treeAdapter.collect())},
-            $(this._target).data());
+            $target.data());
 
-        this._loader.updateMenu(response, Imcms.BackgroundWorker.createTask({
-            showProcessWindow: true,
-            refreshPage: true
-        }));
+        this._loader.updateMenu(
+            response,
+            Imcms.BackgroundWorker.createTask({
+                showProcessWindow: true,
+                reloadContent: {
+                    element: $target,
+                    callback: Imcms.Editors.rebuildEditorsIn.bind(this, $target)
+                }
+            })
+        );
     },
     close: function () {
         Imcms.Events.fire("imcmsEditorClose");
@@ -628,8 +636,8 @@ Imcms.Menu.Loader.prototype = {
 	updateMenu: function () {
 		this._api.update.apply(this._api, arguments);
 	},
-	/* delete: function () {
-	 this._api.delete.apply(this._api, arguments);
+	/* remove: function () {
+	 this._api.remove.apply(this._api, arguments);
 	 },*/
 	getDocument: function (id, callback) {
 		Imcms.Editors.Document.getDocument(id, callback);
@@ -646,7 +654,7 @@ Imcms.Menu.API = function () {
 };
 
 Imcms.Menu.API.prototype = {
-	delete: function (request, response) {
+	remove: function (request, response) {
 		$.ajax({
 			url: Imcms.Linker.get("menu", request.meta, request.no),
 			type: "DELETE",

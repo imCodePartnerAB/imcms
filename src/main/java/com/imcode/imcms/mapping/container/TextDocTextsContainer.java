@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Uniquely identifies texts sharing the same version and the slot in a document.
  */
-public class TextDocTextsContainer {
+public class TextDocTextsContainer extends TextDocObjectVersionedContainer {
 
     public static TextDocTextsContainer of(VersionRef versionRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
         return new TextDocTextsContainer(versionRef, null, textNo, texts);
@@ -19,43 +19,18 @@ public class TextDocTextsContainer {
         return new TextDocTextsContainer(versionRef, loopEntryRef, textNo, texts);
     }
 
-    private final VersionRef versionRef;
-    private final int textNo;
-    private final LoopEntryRef loopEntryRef;
     private final Map<DocumentLanguage, TextDomainObject> texts;
 
     public TextDocTextsContainer(VersionRef versionRef, LoopEntryRef loopEntryRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
-        this.versionRef = Objects.requireNonNull(versionRef);
+        super(loopEntryRef, textNo, versionRef);
         this.texts = Objects.requireNonNull(texts);
-        this.loopEntryRef = loopEntryRef;
-        this.textNo = textNo;
     }
 
     public int getTextNo() {
-        return textNo;
-    }
-
-    public VersionRef getVersionRef() {
-        return versionRef;
-    }
-
-    public boolean isLoopEntryItem() {
-        return loopEntryRef != null;
-    }
-
-    public LoopEntryRef getLoopEntryRef() {
-        return loopEntryRef;
-    }
-    public int getDocId() {
-        return versionRef.getDocId();
-    }
-
-    public int getVersionNo() {
-        return versionRef.getNo();
+        return getDomainObjectNo();
     }
 
     public Map<DocumentLanguage, TextDomainObject> getTexts() {
         return texts;
     }
 }
-

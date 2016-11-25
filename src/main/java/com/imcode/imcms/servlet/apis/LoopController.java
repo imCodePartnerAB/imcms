@@ -1,18 +1,19 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.TextDocumentContentLoader;
 import com.imcode.imcms.mapping.TextDocumentContentSaver;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocLoopContainer;
+import com.imcode.imcms.mapping.container.VersionRef;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.commons.collections4.map.ListOrderedMap;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,86 +22,123 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.function.Predicate;
 
 @RestController
 @RequestMapping("/loop")
 public class LoopController {
 
-	@RequestMapping
-	protected Object getLoop(@RequestParam("meta") Integer metaId,
-							 @RequestParam("loopId") Integer loopId,
+    @RequestMapping
+    protected Object getLoop(@RequestParam("meta") Integer metaId,
+                             @RequestParam("loopId") Integer loopId,
                              HttpServletRequest request) throws ServletException, IOException {
-		Map<String, Object> result = new HashMap<>();
-		try {
-            TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getVersionedDocument(metaId, request);
-			DocRef docRef = DocRef.of(document.getVersionRef(), document.getLanguage().getCode());
-			TextDocumentContentLoader textDocumentContentLoader = Imcms.getServices().getManagedBean(TextDocumentContentLoader.class);
-			TextDocumentContentSaver textDocumentContentSaver = Imcms.getServices().getManagedBean(TextDocumentContentSaver.class);
-			List<Map<String, Object>> entriesList = new ArrayList<>();
-			Loop loop = textDocumentContentLoader.getLoop(document.getVersionRef(), loopId);
+        Map<String, Object> result = new HashMap<>();
+        try {
+            TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper()
+                    .getVersionedDocument(metaId, request);
 
-			if (loop == null) {
-				textDocumentContentSaver.updateContent(document, Imcms.getUser());
-				loop = textDocumentContentLoader.getLoop(document.getVersionRef(), loopId);
-			}
+            TextDocumentContentLoader textDocumentContentLoader = Imcms.getServices()
+                    .getManagedBean(TextDocumentContentLoader.class);
 
-			loop.getEntries().forEach((no, bool) -> {
-				Map<String, Object> entryData = new HashMap<>();
-				TextDomainObject textDomainObject = textDocumentContentLoader
-						.getFirstLoopEntryText(docRef, LoopEntryRef.of(loopId, no));
-				entryData.put("no", no);
-				String strippedText = textDomainObject != null
-						? textDomainObject.getText().replaceAll("<[^>]*>", "")
-						: "content is not defined";
-				entryData.put("text", strippedText.length() <= 150
-						? strippedText
-						: String.format("%s…", strippedText.substring(0, 150))
-				);
-				entriesList.add(entryData);
-			});
+            List<Map<String, Object>> entriesList = new ArrayList<>();
+            VersionRef versionRef = document.getVersionRef();
+            Loop loop = textDocumentContentLoader.getLoop(versionRef, loopId);
 
-			result.put("data", entriesList);
-			result.put("result", true);
-		} catch (Exception e) {
-			result.put("message", e);
-			result.put("result", false);
-		}
+            if (loop == null) {
+                Imcms.getServices().getManagedBean(TextDocumentContentSaver.class)
+                        .updateContent(document, Imcms.getUser());
+                loop = textDocumentContentLoader.getLoop(versionRef, loopId);
+            }
 
-		return result;
-	}
+            DocRef docRef = DocRef.of(versionRef, document.getLanguage().getCode());
 
-	@RequestMapping(method = RequestMethod.POST)
-	protected Object doPost(@RequestParam("noArr") String noArr,
-							@RequestParam("loopId") Integer loopId,
-							@RequestParam("meta") Integer metaId) throws ServletException, IOException {
-		// I can't make this method take a List or an array of Map<String, Object>, also wrapper class not work too.
-		// So I wrote genEntries() parser.
-		Map<String, Object> result = new HashMap<>();
-		List<Integer> listNo = parseNo(noArr);
-		try {
-			TextDocumentDomainObject document = Imcms.getServices().getDocumentMapper().getWorkingDocument(metaId);
-			TextDocumentContentSaver textDocumentContentSaver = Imcms.getServices().getManagedBean(TextDocumentContentSaver.class);
-			Map<Integer, Boolean> loopMap = new HashMap<>();
+            loop.getEntries().forEach((no, isEnabled) -> {
+                Map<String, Object> entryData = new HashMap<>();
 
-			listNo.forEach(loopNo -> loopMap.put(loopNo, true));
+                entryData.put("no", no);
+                entryData.put("isEnabled", isEnabled);
 
-			textDocumentContentSaver.saveLoop(new TextDocLoopContainer(document.getVersionRef(), loopId, Loop.of(loopMap)));
-			Imcms.getServices().getDocumentMapper().invalidateDocument(metaId);
-			result.put("result", true);
-		} catch (Exception e) {
-			result.put("message", e);
-			result.put("result", false);
-		}
+                TextDomainObject textDomainObject = textDocumentContentLoader
+                        .getFirstLoopEntryText(docRef, LoopEntryRef.of(loopId, no));
 
-		return result;
-	}
+                String strippedText = (textDomainObject != null)
+                        ? textDomainObject.getText().replaceAll("<[^>]*>", "")
+                        : "content is not defined";
 
-	protected List<Integer> parseNo(String noArr) {
-		// from string "[1,2,3,4]" need to remove '[' and ']' symbols, then split by comma to get only numbers
-		return Stream.of(noArr.substring(1, noArr.length() - 1).split(","))
-				.map(Integer::valueOf)
-				.collect(Collectors.toList());
-	}
+                entryData.put("text", (strippedText.length() <= 150)
+                        ? strippedText
+                        : String.format("%s…", strippedText.substring(0, 150))
+                );
+                entriesList.add(entryData);
+            });
+
+            result.put("data", entriesList);
+            result.put("result", true);
+        } catch (Exception e) {
+            result.put("message", e);
+            result.put("result", false);
+        }
+
+        return result;
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    protected Object doPost(@RequestParam(value = "indexes[]", required = false) List<Integer> indexes,
+                            @RequestParam(value = "isEnabledFlags[]", required = false) List<Boolean> isEnabledFlags,
+                            @RequestParam("loopId") Integer loopId,
+                            @RequestParam("meta") Integer metaId) throws ServletException, IOException {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (indexes == null || isEnabledFlags == null) {
+            indexes = new ArrayList<>();
+            isEnabledFlags = new ArrayList<>();
+        }
+
+        if (indexes.size() != isEnabledFlags.size()) {
+            result.put("message", "Different sizes of collections");
+            result.put("result", false);
+
+        } else {
+            try {
+                ImcmsServices imcmsServices = Imcms.getServices();
+                DocumentMapper documentMapper = imcmsServices.getDocumentMapper();
+                TextDocumentDomainObject document = documentMapper.getWorkingDocument(metaId);
+                TextDocumentContentSaver contentSaver = imcmsServices.getManagedBean(TextDocumentContentSaver.class);
+
+                Map<Integer, Boolean> entries = new ListOrderedMap<>();
+
+                for (int i = 0; i < indexes.size(); i++) {
+                    entries.put(indexes.get(i), isEnabledFlags.get(i));
+                }
+
+                Loop loop = Loop.of(entries);
+                Predicate<TextDocumentDomainObject.LoopItemRef> loopItemRefPredicate = entry ->
+                        (loopId.equals(entry.getLoopNo()) && !loop.findEntryIndexByNo(entry.getEntryNo()).isPresent());
+
+                document.getLoopImages().keySet().stream()
+                        .filter(loopItemRefPredicate)
+                        .forEach(document::deleteImage);
+
+                document.getLoopTexts().keySet().stream()
+                        .filter(loopItemRefPredicate)
+                        .forEach(entry -> contentSaver.deleteText(document, entry));
+
+                document.setLoop(loopId, loop);
+                documentMapper.saveDocument(document, Imcms.getUser());
+
+                TextDocLoopContainer container = new TextDocLoopContainer(document.getVersionRef(), loopId, loop);
+                contentSaver.saveLoop(container);
+                documentMapper.invalidateDocument(metaId);
+
+                result.put("result", true);
+
+            } catch (Exception e) {
+                result.put("message", e);
+                result.put("result", false);
+            }
+        }
+
+        return result;
+    }
 }

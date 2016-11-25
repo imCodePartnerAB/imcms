@@ -29,9 +29,9 @@ public class DocumentRequest implements Cloneable {
      * @param httpServletRequest request
      * @param httpServletResponse response
      */
-    public DocumentRequest(DocumentDomainObject document,
-                           HttpServletRequest httpServletRequest,
-                           HttpServletResponse httpServletResponse) {
+    public <T extends DocumentDomainObject> DocumentRequest(T document,
+                                                            HttpServletRequest httpServletRequest,
+                                                            HttpServletResponse httpServletResponse) {
         this.serverObject = Imcms.getServices();
         this.user = Imcms.getUser();
         this.document = document;
@@ -40,9 +40,12 @@ public class DocumentRequest implements Cloneable {
         this.httpServletResponse = httpServletResponse;
     }
 
-    public DocumentRequest(ImcmsServices serverObject, UserDomainObject user, DocumentDomainObject document,
-                           DocumentDomainObject referrer, HttpServletRequest httpServletRequest,
-                           HttpServletResponse httpServletResponse) {
+    public <T extends DocumentDomainObject> DocumentRequest(ImcmsServices serverObject,
+                                                            UserDomainObject user,
+                                                            T document,
+                                                            T referrer,
+                                                            HttpServletRequest httpServletRequest,
+                                                            HttpServletResponse httpServletResponse) {
         this.serverObject = serverObject;
         this.user = user;
         this.document = document;
@@ -71,19 +74,21 @@ public class DocumentRequest implements Cloneable {
         return this.user;
     }
 
-    public DocumentDomainObject getDocument() {
-        return document;
+    @SuppressWarnings("unchecked")
+    public <T extends DocumentDomainObject> T getDocument() {
+        return (T) document;
     }
 
-    public DocumentDomainObject getReferrer() {
-        return referrer;
+    @SuppressWarnings("unchecked")
+    public <T extends DocumentDomainObject> T getReferrer() {
+        return (T) referrer;
     }
 
-    public void setDocument(DocumentDomainObject document) {
+    public <T extends DocumentDomainObject> void setDocument(T document) {
         this.document = document;
     }
 
-    public void setReferrer(DocumentDomainObject referrer) {
+    public <T extends DocumentDomainObject> void setReferrer(T referrer) {
         this.referrer = referrer;
     }
 
@@ -92,11 +97,15 @@ public class DocumentRequest implements Cloneable {
     }
 
     public String[] getEmphasize() {
-        return null != emphasize ? (String[]) emphasize.clone() : null;
+        return (null != emphasize)
+                ? emphasize.clone()
+                : null;
     }
 
     public void setEmphasize(String[] emphasize) {
-        this.emphasize = null != emphasize ? (String[]) emphasize.clone() : null;
+        this.emphasize = (null != emphasize)
+                ? emphasize.clone()
+                : null;
     }
 
     public HttpServletResponse getHttpServletResponse() {

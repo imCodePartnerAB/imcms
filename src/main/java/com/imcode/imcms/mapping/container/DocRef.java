@@ -2,13 +2,13 @@ package com.imcode.imcms.mapping.container;
 
 import java.util.Objects;
 
-public final class DocRef {
+public final class DocRef implements LanguageContainer {
 
-    public static Builder buillder() {
+    public static Builder builder() {
         return new Builder();
     }
 
-    public static Builder buillder(DocRef docRef) {
+    public static Builder builder(DocRef docRef) {
         return new Builder(docRef);
     }
 

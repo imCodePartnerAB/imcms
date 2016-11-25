@@ -136,5 +136,13 @@ public class ImcmsConstants {
 		throw new AssertionError();
 	}
 
+    /**
+     * Request param to preview working document version
+     */
 	public static final String REQUEST_PARAM__WORKING_PREVIEW = "working-preview";
+
+    /**
+     * Single element editor view name, file is %name%.jsp
+     */
+	public static final String SINGLE_EDITOR_VIEW = "editElement";
 }

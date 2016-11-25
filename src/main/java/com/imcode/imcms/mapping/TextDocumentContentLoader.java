@@ -11,7 +11,8 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
-import imcode.util.image.Resize;
+import imcode.util.ImcmsImageUtils;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -159,6 +160,7 @@ public class TextDocumentContentLoader {
 
         return textHistoryRepository.findAllByVersionAndLanguageAndNo(version, language, textNo);
     }
+
     /**
      * Return text history based on special document {@link Version}, {@link Language},{@link LoopEntryRef} and text id
      *
@@ -204,7 +206,7 @@ public class TextDocumentContentLoader {
         Language language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)
-                .stream().collect(toMap(Image::getNo, this::toDomainObject));
+                .stream().collect(toMap(Image::getNo, ImcmsImageUtils::toDomainObject));
 
     }
 
@@ -218,7 +220,7 @@ public class TextDocumentContentLoader {
                     image.getLoopEntryRef().getLoopNo(), image.getLoopEntryRef().getEntryNo(), image.getNo()
             );
 
-            result.put(loopItemRef, toDomainObject(image));
+            result.put(loopItemRef, ImcmsImageUtils.toDomainObject(image));
         }
 
         return result;
@@ -235,7 +237,7 @@ public class TextDocumentContentLoader {
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
 
         for (Image image : imageRepository.findByVersionAndNoWhereLoopEntryRefIsNull(version, imageNo)) {
-            result.put(languageMapper.toApiObject(image.getLanguage()), toDomainObject(image));
+            result.put(languageMapper.toApiObject(image.getLanguage()), ImcmsImageUtils.toDomainObject(image));
         }
 
         return result;
@@ -247,7 +249,7 @@ public class TextDocumentContentLoader {
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         for (Image image : imageRepository.findByVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
-            result.put(languageMapper.toApiObject(image.getLanguage()), toDomainObject(image));
+            result.put(languageMapper.toApiObject(image.getLanguage()), ImcmsImageUtils.toDomainObject(image));
         }
 
         return result;
@@ -263,7 +265,7 @@ public class TextDocumentContentLoader {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         Language language = languageRepository.findByCode(docRef.getLanguageCode());
 
-        return toDomainObject(
+        return ImcmsImageUtils.toDomainObject(
                 imageRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, imageNo)
         );
     }
@@ -273,7 +275,7 @@ public class TextDocumentContentLoader {
         Language language = languageRepository.findByCode(docRef.getLanguageCode());
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-        return toDomainObject(
+        return ImcmsImageUtils.toDomainObject(
                 imageRepository.findByVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
         );
     }
@@ -328,74 +330,14 @@ public class TextDocumentContentLoader {
         return menuDO;
     }
 
-
-    private ImageDomainObject toDomainObject(Image image) {
-        if (image == null) return null;
-
-        ImageDomainObject imageDO = new ImageDomainObject();
-
-        imageDO.setAlign(image.getAlign());
-        imageDO.setAlternateText(image.getAlternateText());
-        imageDO.setArchiveImageId(image.getArchiveImageId());
-        imageDO.setBorder(image.getBorder());
-
-        ImageCropRegion cropRegion = image.getCropRegion();
-        ImageDomainObject.CropRegion cropRegionDO = new ImageDomainObject.CropRegion(
-                cropRegion.getCropX1(), cropRegion.getCropY1(), cropRegion.getCropX2(), cropRegion.getCropY2()
-        );
-        imageDO.setCropRegion(cropRegionDO);
-        imageDO.setGeneratedFilename(image.getGeneratedFilename());
-        imageDO.setHeight(image.getHeight());
-        imageDO.setHorizontalSpace(image.getHorizontalSpace());
-        imageDO.setLinkUrl(image.getLinkUrl());
-        imageDO.setLowResolutionUrl(image.getLowResolutionUrl());
-        imageDO.setName(image.getName());
-        imageDO.setResize(Resize.getByOrdinal(image.getResize()));
-        imageDO.setTarget(image.getTarget());
-        imageDO.setVerticalSpace(image.getVerticalSpace());
-        imageDO.setWidth(image.getWidth());
-
-        return initImageSource(image, imageDO);
-    }
-
-
-    private ImageDomainObject initImageSource(Image jpaImage, ImageDomainObject imageDO) {
-        String url = jpaImage.getUrl();
-        Integer type = jpaImage.getType();
-
-        Objects.requireNonNull(url);
-        Objects.requireNonNull(type);
-
-        imageDO.setSource(createImageSource(imageDO, url.trim(), type));
-
-        return imageDO;
-    }
-
-    private ImageSource createImageSource(ImageDomainObject image, String url, int type) {
-        switch (type) {
-            case ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT:
-                throw new IllegalStateException(
-                        String.format("Illegal image source type - IMAGE_TYPE_ID__FILE_DOCUMENT. Image: %s", image)
-                );
-
-            case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH:
-                return new ImagesPathRelativePathImageSource(url);
-
-            case ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE:
-                return new ImageArchiveImageSource(url);
-
-            default:
-                return new NullImageSource();
-        }
-    }
-
-
     private Loop toApiObject(com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop jpaLoop) {
-        if (jpaLoop == null) return null;
+        if (jpaLoop == null) {
+            return null;
 
-        Map<Integer, Boolean> entries = jpaLoop.getEntries()
-                .stream().collect(toMap(entry -> entry.getNo(), entry -> entry.isEnabled()));
-
-        return Loop.of(entries, jpaLoop.getNextEntryNo());
+        } else {
+            Map<Integer, Boolean> entries = new ListOrderedMap<>();
+            jpaLoop.getEntries().forEach(entry -> entries.put(entry.getNo(), entry.isEnabled()));
+            return Loop.of(entries, jpaLoop.getNextEntryNo());
+        }
     }
 }

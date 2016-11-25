@@ -1,7 +1,7 @@
 /**
  * Created by Shadowgun on 04.06.2015.
  *
- * Edited by Serhii Maksymchuk on 07.09.2016
+ * Upgraded by Serhii Maksymchuk in 2016
  */
 Imcms.BackgroundWorker = {
     registeredTasks: [],
@@ -13,12 +13,42 @@ Imcms.BackgroundWorker = {
      * Options for every task, all are optional
      */
     Options: {
+        /**
+         * Set true if you want to reload whole page
+         */
+        reloadWholePage: false,
+        /**
+         * Set true if you want to reload only <body> content.
+         * $(document).ready() will not run again
+         */
         refreshPage: false,
+        /**
+         * Process window with grey background and gif while loading
+         */
         showProcessWindow: false,
-        redirectURL: ""
+        /**
+         * If you want to redirect somewhere, just add URL
+         */
+        redirectURL: "",
+        /**
+         * If you do not want to reload whole page or <body>, you can specify
+         * element to be reloaded and callback if needs
+         */
+        reloadContent: {
+            /**
+             * jQuery selected element
+             */
+            element: $(document),
+            callback: function () {
+            }
+        },
+
+        callbackFunc: function () {}
     },
 
-    /**
+    callbackFunctions: [],
+
+/**
      * Creates process window with gif logo while BackgroundWorker works
      */
     createProcessWindow: function () {
@@ -101,6 +131,14 @@ Imcms.BackgroundWorker = {
         return foundElements.length ? foundElements[0] : undefined;
     },
 
+    _shouldRefreshPage: function (element) {
+        return element.refreshPage;
+    },
+
+    _shouldReloadWholePage: function (element) {
+        return element.reloadWholePage;
+    },
+
     /**
      *
      * @param ticket
@@ -128,15 +166,36 @@ Imcms.BackgroundWorker = {
                     return option.redirectURL; // find first option with redirecting, other will be ignored!
                 });
 
+            var reloadElementOptions = $this.completedTasksOptions
+                .filter(function (option) {
+                    return option.reloadContent;
+                });
+
             if (redirectOption) {
                 location.href = redirectOption.redirectURL;
 
-            } else if ($this.completedTasksOptions.some(function (element) {
-                    return element.refreshPage;
-                })) {
+            } else if (reloadElementOptions.length) {
+                reloadElementOptions.forEach(function (option) {
+                    option.reloadContent.element.reload(option.reloadContent.callback);
+                });
+
+            } else if ($this.completedTasksOptions.some($this._shouldReloadWholePage)) {
+                $this.reloadWholePage();
+
+            } else if ($this.completedTasksOptions.some($this._shouldRefreshPage)) {
                 $this.reloadPage()
             }
 
+            var callbackOpt = $this.completedTasksOptions
+                .find(function (option) {
+                    return option.callbackFunc;
+                });
+
+            if (callbackOpt) {
+                this.callbackFunctions.push((callbackOpt).callbackFunc);
+            }
+
+            $this.completedTasksOptions = [];
             $this.closeProcessWindow();
         }
     },
@@ -157,6 +216,13 @@ Imcms.BackgroundWorker = {
             url: url,
             success: Imcms.BackgroundWorker.refreshPageContent
         });
+    },
+
+    /**
+     * Reloads whole page, not only <body> as {@link reloadPage}
+     */
+    reloadWholePage: function () {
+        location.reload();
     },
 
     /**
@@ -191,14 +257,16 @@ Imcms.BackgroundWorker = {
      */
     closeProcessWindow: function () {
         var $this = Imcms.BackgroundWorker;
-
-        setTimeout(function () {
-            $this.processWindow.fadeOut(1200, function () {
+        if ($this.processWindow) {
+            $this.processWindow.fadeOut(1500, function () {
+                $this.callbackFunctions.forEach(function (callback) {
+                    callback();
+                });
                 $("body").css({overflow: "auto"});
                 $this.processWindow.remove();
                 delete $this.processWindow;
             });
-        }, 300);
+        }
     },
 
     /**

@@ -76,51 +76,51 @@ Imcms.Content.Editor.prototype = {
 		this._builder = JSFormBuilder("<div>")
 			.form()
 			.div()
-			.class("imcms-header")
+			.setClass("imcms-header")
 			.div()
 			.html("Content Manager")
-			.class("imcms-title")
+			.setClass("imcms-title")
 			.end()
 			.button()
 			.reference("closeButton")
-			.class("imcms-close-button")
+			.setClass("imcms-close-button")
 			.on("click", this.cancel.bind(this))
 			.end()
 			/*
 			 .button()
 			 .html("Close without saving")
-			 .class("imcms-neutral close-without-saving")
+			 .setClass("imcms-neutral close-without-saving")
 			 .on("click", this.cancel.bind(this))
 			 .end()*/
 			.end()
 			.div()
-			.class("imcms-content")
+			.setClass("imcms-content")
 			.div()
 			.reference("folders")
-			.class("folders")
+			.setClass("folders")
 			.end()
 			.div()
-			.class("files-wrapper")
+			.setClass("files-wrapper")
 			.reference("files-wrapper")
 			.div()
-			.class("dropzone")
+			.setClass("dropzone")
 			.end()
 			.div()
 			.reference("files")
-			.class("files")
+			.setClass("files")
 			.end()
 			.end()
 			.end()
 			.div()
-			.class("imcms-footer")
+			.setClass("imcms-footer")
 			.div()
-			.class("browse-image")
+			.setClass("browse-image")
 			.file()
             .name("image-upload")
             .on("change", this._onFileChosen.bind(this))
 			.end()
 			.file()
-			.class("hidden")
+			.setClass("hidden")
 			.on("change", function () {
 				this._fileUploader.uploadFormFile($(this._builder[0]).find("input[type=file].hidden")[0].files[0]);
 			}.bind(this))
@@ -128,7 +128,7 @@ Imcms.Content.Editor.prototype = {
 			.end()
 			.button()
 			.html("Apply")
-			.class("imcms-positive imcms-save-and-close")
+			.setClass("imcms-positive imcms-save-and-close")
 			.on("click", this.save.bind(this))
 			.end()
 			.end()
@@ -361,7 +361,7 @@ Imcms.Content.TreeAdapter.prototype = {
 		}
 		return data;
 	},
-	delete: function (node) {
+	remove: function (node) {
 		this._tree.tree('removeNode', node);
 	},
 	add: function (node) {
@@ -429,7 +429,7 @@ Imcms.Content.FileView.prototype = {
 	_buildItem: function (position, data) {
 		var $div = $("<div>")
 			.addClass("content-preview")
-			.append(this._createImage(Imcms.Linker._contextPath + data.urlPathRelativeToContextPath, data.imageInfo))
+			.append(this._createImage(Imcms.Linker.getContextPath() + data.urlPathRelativeToContextPath, data.imageInfo))
 			.append(this._createInfo(data.name));
 		//.css({width: currentImageSize, height: currentImageSize});
 

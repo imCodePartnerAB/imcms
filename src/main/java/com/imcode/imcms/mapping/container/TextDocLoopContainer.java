@@ -8,18 +8,17 @@ import java.util.Objects;
 /**
  * Uniquely identifies loop in a text document.
  */
-public class TextDocLoopContainer {
+public class TextDocLoopContainer extends TextDocVersionedContainer {
 
     public static TextDocLoopContainer of(VersionRef versionRef, int loopNo, Loop loop) {
         return new TextDocLoopContainer(versionRef, loopNo, loop);
     }
 
-    private final VersionRef versionRef;
     private final int loopNo;
     private final Loop loop;
 
     public TextDocLoopContainer(VersionRef versionRef, int loopNo, Loop loop) {
-        this.versionRef = Objects.requireNonNull(versionRef);
+        super(versionRef);
         this.loop = Objects.requireNonNull(loop);
         this.loopNo = loopNo;
     }
@@ -31,17 +30,4 @@ public class TextDocLoopContainer {
     public Loop getLoop() {
         return loop;
     }
-
-    public VersionRef getVersionRef() {
-        return versionRef;
-    }
-
-    public int getDocId() {
-        return versionRef.getDocId();
-    }
-
-    public int getVersionNo() {
-        return versionRef.getNo();
-    }
 }
-

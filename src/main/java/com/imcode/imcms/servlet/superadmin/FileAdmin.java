@@ -358,7 +358,7 @@ public class FileAdmin extends HttpServlet {
     private void outputFileAdmin(HttpServletResponse res, UserDomainObject user, File dir1, File dir2)
             throws IOException {
         Utility.setDefaultHtmlContentType(res);
-        res.getOutputStream().print(parseFileAdmin(user, dir1, dir2));
+        res.getWriter().print(parseFileAdmin(user, dir1, dir2));
     }
 
     static File findUniqueFilename(File file) {
@@ -404,8 +404,7 @@ public class FileAdmin extends HttpServlet {
         vec.add("#dir2#");
         vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
         Utility.setDefaultHtmlContentType(res);
-        ServletOutputStream out = res.getOutputStream();
-        out.print(imcref.getAdminTemplate(template, user, vec));
+        res.getWriter().print(imcref.getAdminTemplate(template, user, vec));
     }
 
     private void outputFileExistedAndTheOriginalWasRenamedNotice(File dir1, File dir2, String newFilename,
@@ -419,8 +418,7 @@ public class FileAdmin extends HttpServlet {
         vec.add("#filename#");
         vec.add(newFilename);
         Utility.setDefaultHtmlContentType(res);
-        ServletOutputStream out = res.getOutputStream();
-        out.print(imcref.getAdminTemplate("FileAdminFileExisted.html", user, vec));
+        res.getWriter().print(imcref.getAdminTemplate("FileAdminFileExisted.html", user, vec));
     }
 
     private void outputBlankFileError(File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
@@ -431,8 +429,7 @@ public class FileAdmin extends HttpServlet {
         vec.add("#dir2#");
         vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
         Utility.setDefaultHtmlContentType(res);
-        ServletOutputStream out = res.getOutputStream();
-        out.print(imcref.getAdminTemplate("FileAdminFileBlank.html", user, vec));
+        res.getWriter().print(imcref.getAdminTemplate("FileAdminFileBlank.html", user, vec));
     }
 
     private void outputDeleteWarning(File[] filelist, File dir1, File dir2, File sourceDir, HttpServletResponse res,
@@ -457,8 +454,7 @@ public class FileAdmin extends HttpServlet {
         vec.add("#dir2#");
         vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
         Utility.setDefaultHtmlContentType(res);
-        ServletOutputStream out = res.getOutputStream();
-        out.print(imcref.getAdminTemplate("FileAdminDeleteWarning.html", user, vec));
+        res.getWriter().print(imcref.getAdminTemplate("FileAdminDeleteWarning.html", user, vec));
     }
 
     private void outputBlankFilenameError(File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
@@ -469,8 +465,7 @@ public class FileAdmin extends HttpServlet {
         vec.add("#dir2#");
         vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
         Utility.setDefaultHtmlContentType(res);
-        ServletOutputStream out = res.getOutputStream();
-        out.print(imcref.getAdminTemplate("FileAdminNameBlank.html", user, vec));
+        res.getWriter().print(imcref.getAdminTemplate("FileAdminNameBlank.html", user, vec));
     }
 
     private interface FromSourceFileToDestinationFileCommand {

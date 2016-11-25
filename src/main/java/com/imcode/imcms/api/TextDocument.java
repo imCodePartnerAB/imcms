@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.DocumentGetter;
+import com.imcode.imcms.mapping.container.LoopEntryRef;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
@@ -208,7 +209,110 @@ public class TextDocument extends Document {
 		getInternal().setLoop(no, loop);
 	}
 
-	public static class TextField {
+    /**
+     * Get text field from loop
+     * @param loopNo loop index in document
+     * @param entryNo number of loop entry
+     * @param textNo text index in loop
+     * @return text field of document or empty text field if not exist
+     */
+    public TextField getLoopTextField(int loopNo, int entryNo, int textNo) {
+        return getLoopTextField(TextDocumentDomainObject.LoopItemRef
+                .of(loopNo, entryNo, textNo)
+        );
+    }
+
+    /**
+     * Get text field from loop
+     * @param loopItemRef loop item reference of text in loop
+     * @return text field of document or empty text field if not exist
+     */
+    public TextField getLoopTextField(TextDocumentDomainObject.LoopItemRef loopItemRef) {
+        TextDocumentDomainObject internalDoc = getInternal();
+        TextDomainObject text = internalDoc.getText(loopItemRef);
+
+        if (null == text) {
+            text = new TextDomainObject("");
+            internalDoc.setText(loopItemRef, text);
+        }
+
+        return new TextField(text);
+    }
+
+    /**
+     * Set text field to loop
+     * @param loopNo loop index in document
+     * @param entryNo number of loop entry
+     * @param textNo text index in loop
+     * @param text text field that should be saved
+     */
+    public void setLoopTextField(int loopNo, int entryNo, int textNo, TextField text) {
+        setLoopTextField(TextDocumentDomainObject.LoopItemRef.of(loopNo, entryNo, textNo), text);
+    }
+
+    /**
+     * Set text field to loop
+     * @param loopItemRef loop item reference of text in loop
+     * @param text text field that should be saved
+     */
+    public void setLoopTextField(TextDocumentDomainObject.LoopItemRef loopItemRef, TextField text) {
+        TextDomainObject internalText = (text == null)
+                ? new TextDomainObject("")
+                : new TextDomainObject(text.getText(), text.getFormat().getType());
+
+        getInternal().setText(loopItemRef, internalText);
+    }
+
+    /**
+     * Get image from loop
+     * @param loopNo loop index in document
+     * @param entryNo number of loop entry
+     * @param imageNo image index in loop
+     * @return image of document or empty image if not exist
+     */
+    public Image getLoopImage(int loopNo, int entryNo, int imageNo) {
+        return getLoopImage(TextDocumentDomainObject.LoopItemRef
+                .of(loopNo, entryNo, imageNo)
+        );
+    }
+
+    /**
+     * Get image from loop
+     * @param loopItemRef loop item reference of image in loop
+     * @return image of document or empty image if not exist
+     */
+    public Image getLoopImage(TextDocumentDomainObject.LoopItemRef loopItemRef) {
+        TextDocumentDomainObject internalDoc = getInternal();
+        ImageDomainObject image = internalDoc.getImage(loopItemRef);
+
+        return new Image(image);
+    }
+
+    /**
+     * Set image to loop
+     * @param loopNo loop index in document
+     * @param entryNo number of loop entry
+     * @param imageNo image index in loop
+     * @param image image that should be saved
+     */
+    public void setLoopImage(int loopNo, int entryNo, int imageNo, Image image) {
+        setLoopImage(TextDocumentDomainObject.LoopItemRef.of(loopNo, entryNo, imageNo), image);
+    }
+
+    /**
+     * Set image to loop
+     * @param loopItemRef loop item reference of image in loop
+     * @param image image that should be saved
+     */
+    public void setLoopImage(TextDocumentDomainObject.LoopItemRef loopItemRef, Image image) {
+        ImageDomainObject internalImage = (image == null)
+                ? new ImageDomainObject()
+                : image.getInternal();
+
+        getInternal().setImage(loopItemRef, internalImage);
+    }
+
+    public static class TextField {
 		private final TextDomainObject imcmsText;
 
 		private TextField(TextDomainObject imcmsText) {
@@ -256,6 +360,28 @@ public class TextDocument extends Document {
 			}
 		}
 	}
+
+    public static class LoopItem {
+        LoopEntryRef loopEntryRef;
+        TextDocumentDomainObject doc;
+
+        public LoopItem(Map.Entry<Integer, Boolean> entry, int no, TextDocumentDomainObject doc) {
+            this.loopEntryRef = new LoopEntryRef(no, entry.getKey());
+            this.doc = doc;
+        }
+
+        public String toString() {
+            return "D" + this.doc.getId() + "-L" + this.loopEntryRef.getLoopNo() + "-E" + this.loopEntryRef.getEntryNo();
+        }
+
+        public LoopEntryRef getLoopEntryRef() {
+            return loopEntryRef;
+        }
+
+        public TextDocumentDomainObject getDoc() {
+            return doc;
+        }
+    }
 
 	public static class MenuItem {
 		MenuItemDomainObject internalMenuItem;

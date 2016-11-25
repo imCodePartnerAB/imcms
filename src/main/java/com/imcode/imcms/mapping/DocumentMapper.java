@@ -12,7 +12,6 @@ import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
@@ -30,10 +29,15 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.*;
 import java.util.stream.Stream;
+
+import static imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS;
+import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
+import static imcode.server.ImcmsConstants.SINGLE_EDITOR_VIEW;
 
 /**
  * Spring is used to instantiate but not to initialize the instance.
@@ -330,9 +334,9 @@ public class DocumentMapper implements DocumentGetter {
 	/**
 	 * Updates existing document.
 	 */
-	public void saveDocument(DocumentDomainObject doc, UserDomainObject user)
+	public int saveDocument(DocumentDomainObject doc, UserDomainObject user)
 			throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
-		saveDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
+		return saveDocument(doc, Collections.singletonMap(doc.getLanguage(), doc.getCommonContent()), user);
 	}
 
 	/**
@@ -340,7 +344,7 @@ public class DocumentMapper implements DocumentGetter {
 	 *
 	 * @since 6.0
 	 */
-	public void saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContents, UserDomainObject user)
+	public int saveDocument(DocumentDomainObject doc, Map<DocumentLanguage, DocumentCommonContent> commonContents, UserDomainObject user)
 			throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
 		DocumentDomainObject docClone = doc.clone();
@@ -351,6 +355,8 @@ public class DocumentMapper implements DocumentGetter {
 		} finally {
 			invalidateDocument(doc.getId());
 		}
+
+		return doc.getId();
 	}
 
 	/**
@@ -688,7 +694,9 @@ public class DocumentMapper implements DocumentGetter {
 	 * @since 6.0
 	 */
 	public <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language) {
-		return documentLoaderCachingProxy.getDefaultDoc(docId, language.getCode());
+        return (Imcms.isVersioningAllowed())
+                ? documentLoaderCachingProxy.getDefaultDoc(docId, language.getCode())
+                : documentLoaderCachingProxy.getWorkingDoc(docId, language.getCode());
 	}
 
 	/**
@@ -698,7 +706,9 @@ public class DocumentMapper implements DocumentGetter {
 	 * @since 6.0
 	 */
 	public <T extends DocumentDomainObject> T getDefaultDocument(int docId, String languageCode) {
-		return documentLoaderCachingProxy.getDefaultDoc(docId, languageCode);
+		return (Imcms.isVersioningAllowed())
+                ? documentLoaderCachingProxy.getDefaultDoc(docId, languageCode)
+                : documentLoaderCachingProxy.getWorkingDoc(docId, languageCode);
 	}
 
 	/**
@@ -710,6 +720,10 @@ public class DocumentMapper implements DocumentGetter {
 	 * @since 6.0
 	 */
 	public <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef) {
+        if (!Imcms.isVersioningAllowed()) {
+            // force version changing to working
+            docRef = DocRef.of(docRef.getId(), DocumentVersion.WORKING_VERSION_NO, docRef.getLanguageCode());
+        }
 		return documentLoaderCachingProxy.getCustomDoc(docRef);
 	}
 
@@ -873,8 +887,9 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public boolean isWorkingDocumentVersion(ServletRequest request) {
-        return ("" + ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS).equals(request.getParameter("flags"))
-                || BooleanUtils.toBoolean(request.getParameter(ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW));
+        return ("" + PERM_EDIT_TEXT_DOCUMENT_TEXTS).equals(request.getParameter("flags"))
+                || BooleanUtils.toBoolean(request.getParameter(REQUEST_PARAM__WORKING_PREVIEW))
+				|| ((HttpServletRequest) request).getRequestURI().contains(SINGLE_EDITOR_VIEW);
     }
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {
@@ -922,7 +937,7 @@ public class DocumentMapper implements DocumentGetter {
 	@SuppressWarnings("unused")
 	public <T extends DocumentDomainObject> T getCustomDocumentInDefaultLanguage(DocRef docRef) {
 		return getCustomDocument(
-				DocRef.buillder(docRef)
+				DocRef.builder(docRef)
 						.languageCode(imcmsServices.getDocumentLanguages().getDefault().getCode())
 						.build()
 		);

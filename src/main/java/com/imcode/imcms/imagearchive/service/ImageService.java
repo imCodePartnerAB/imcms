@@ -9,6 +9,7 @@ import com.imcode.imcms.imagearchive.util.Utils;
 import com.imcode.imcms.imagearchive.util.exif.ExifData;
 import com.imcode.imcms.imagearchive.util.exif.ExifUtils;
 import com.imcode.imcms.imagearchive.util.exif.Flash;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image;
 import imcode.server.user.RoleDomainObject;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
@@ -692,6 +693,13 @@ public class ImageService {
 
         List<Images> images = query.list();
 
+        return images;
+    }
+
+    public List<Image> getAllGeneratedImages() {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("FROM Image im WHERE im.generatedFilename != null AND im.generatedFilename != '' ORDER BY im.id DESC");
+        List<Image> images = query.list();
         return images;
     }
 

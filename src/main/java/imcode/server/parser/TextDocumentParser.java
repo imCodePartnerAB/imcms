@@ -36,7 +36,6 @@ public class TextDocumentParser {
 	private static Pattern htmlTagPattern;
 	private static Pattern htmlTagHtmlPattern;
 	private static Pattern headEndTagPattern;
-	private static Pattern scriptTagPattern;
 
 	static {
 		Perl5Compiler patComp = new Perl5Compiler();
@@ -46,7 +45,6 @@ public class TextDocumentParser {
 			htmlTagPattern = patComp.compile("<[^>]+?>", Perl5Compiler.READ_ONLY_MASK);
 			htmlTagHtmlPattern = patComp.compile("<[hH][tT][mM][lL]\\b", Perl5Compiler.READ_ONLY_MASK); //for imcmsMessage
 			headEndTagPattern = patComp.compile("<\\/[hH][eE][aA][dD]\\b", Perl5Compiler.READ_ONLY_MASK); //for imcmsAdminHeadTag
-			scriptTagPattern = patComp.compile("<[sS][cC][rR][iI][pP][tT]\\b", Perl5Compiler.READ_ONLY_MASK); //for jQuery hard version script
 			hashtagPattern = patComp.compile("#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK);
 		} catch (MalformedPatternException ignored) {
 			// I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
@@ -152,7 +150,6 @@ public class TextDocumentParser {
 			Perl5Matcher patMat = new Perl5Matcher();
 
 			final String imcmsMessage = service.getAdminTemplate("textdoc/imcms_message.html", user, null);
-			final String hardJquery = service.getAdminTemplate("textdoc/imcms_hard_jquery.html", user, null);
 			List<String> imcmsAdminHeadTagTags = new ArrayList<>();
 			imcmsAdminHeadTagTags.add("#getMetaId#");
 			imcmsAdminHeadTagTags.add("" + document.getId());
@@ -169,10 +166,6 @@ public class TextDocumentParser {
 					contents = Util.substitute(patMat, htmlTagHtmlPattern,
 							(stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
 									-> stringBuffer.append(imcmsMessage).append(matchResult.group(0)),
-							contents);
-					contents = Util.substitute(patMat, scriptTagPattern,
-							(stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
-									-> stringBuffer.append(hardJquery).append(matchResult.group(0)),
 							contents);
 					if (hasAdminPanel) {
 						contents = Util.substitute(patMat, headEndTagPattern,
@@ -203,10 +196,6 @@ public class TextDocumentParser {
 						(stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
 								-> stringBuffer.append(imcmsMessage).append(matchResult.group(0)),
 						emphasizedAndTagsReplaced);
-				cont = Util.substitute(patMat, scriptTagPattern,
-						(stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
-								-> stringBuffer.append(hardJquery).append(matchResult.group(0)),
-						cont);
 				if (hasAdminPanel) {
 					cont = Util.substitute(patMat, headEndTagPattern,
 							(stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)

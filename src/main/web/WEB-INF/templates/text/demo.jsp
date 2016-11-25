@@ -12,9 +12,9 @@
     <title>${document.headline} - Powered by imCMS from imCode Partner AB</title>
     <meta charset="utf-8"/>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/imcms/css/template/demo.css"/>
-    <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
-    <script src="${pageContext.request.contextPath}/js/js.cookie.js"></script>
-    <script src="${pageContext.request.contextPath}/imcms/scripts/imcms_linker.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js"></script>
 </head>
 <body>
 <div class="container">

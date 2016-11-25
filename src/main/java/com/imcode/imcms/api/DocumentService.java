@@ -7,6 +7,7 @@ import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 
@@ -96,16 +97,20 @@ public class DocumentService {
 		return wrapDocumentDomainObject(getDocumentMapper().createDocumentOfTypeFromParent(doctype, parent.getInternal(), contentManagementSystem.getCurrentUser().getInternal()), contentManagementSystem);
 	}
 
-	/**
-	 * Saves the changes to a modified document. Note that this method is synchronized.
-	 */
-	public synchronized void saveChanges(Document document) throws NoPermissionException, SaveException {
+    /**
+     * Saves the changes to a modified document. Note that this method is synchronized.
+     * @param document - document that going to be saved
+     * @return saved document's id
+     */
+    public synchronized int saveChanges(Document document) throws SaveException {
 		try {
-			if (0 == document.getId()) {
-				getDocumentMapper().saveNewDocument(document.getInternal(), contentManagementSystem.getCurrentUser().getInternal());
-			} else {
-				getDocumentMapper().saveDocument(document.getInternal(), contentManagementSystem.getCurrentUser().getInternal());
-			}
+            DocumentDomainObject internalDoc = document.getInternal();
+            UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
+
+            return (0 == document.getId())
+				? getDocumentMapper().saveNewDocument(internalDoc, user).getId()
+                : getDocumentMapper().saveDocument(internalDoc, user);
+
 		} catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
 			throw new MaxCategoriesOfTypeExceededException(e);
 		} catch (AliasAlreadyExistsInternalException e) {

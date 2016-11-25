@@ -164,7 +164,7 @@ JSFormBuilder.Mixins.AttributeBase = {
         this._element.required = true;
         return this;
     },
-    class: function () {
+    setClass: function () {
         if (arguments.length === 0) return this._element.className;
         this._element.className = arguments[0];
         return this;
@@ -196,7 +196,12 @@ JSFormBuilder.Mixins.FunctionBase = {
         arguments[0] = arguments[0].toLowerCase();
         var unwrapped = arguments[1];
         var wrapped = function () {
-            unwrapped.apply(that, arguments);
+            try {
+                unwrapped.apply(that, arguments);
+            } catch (e) {
+                Imcms.BackgroundWorker.closeProcessWindow();
+                console.error(e);
+            }
         };
         if (this._element.addEventListener) {
             this._element.addEventListener(arguments[0], wrapped, false);
@@ -621,7 +626,7 @@ JSFormBuilder.Mixins.ContainerAdapter = {
         return this._begin("input").type("submit");
     },
     number: function () {
-        return this._begin("input").type("submit");
+        return this._begin("input").type("number");
     },
     range: function () {
         return this._begin("input").type("submit");

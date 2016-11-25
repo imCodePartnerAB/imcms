@@ -4,11 +4,11 @@ import java.util.Objects;
 
 public final class VersionRef {
 
-    public static Builder buillder() {
+    public static Builder builder() {
         return new Builder();
     }
 
-    public static Builder buillder(VersionRef versionRef) {
+    public static Builder builder(VersionRef versionRef) {
         return new Builder(versionRef);
     }
 
