@@ -1,0 +1,20 @@
+<!--
+Can not be replaced with @Configuration since XML configuration always takes precedence over annotation configuration.
+-->
+<beans default-lazy-init="true"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+
+
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+  <!--
+      System properties are disables since server.properties contains names overlapping with system names (e.g. User)
+  -->
+  <context:property-placeholder location="classpath:server.properties" system-properties-mode="NEVER"/>
+
+  <import resource="file:${com.imcode.imcms.test.basedir}/src/main/web/WEB-INF/applicationContext.xml"/>
+</beans>
