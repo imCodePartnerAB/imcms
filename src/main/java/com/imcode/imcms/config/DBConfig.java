@@ -1,30 +1,21 @@
 package com.imcode.imcms.config;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.Environment;
-import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Created by zemluk on 13.10.16.
@@ -32,7 +23,9 @@ import java.util.Properties;
 @Configuration
 @EnableJpaRepositories(basePackages = "com.imcode.imcms.mapping.jpa")
 @EnableTransactionManagement
+//@Import({ApplicationConfig.class})
 //@ImportResource("classpath:hibernate.cfg.xml")
+
 public class DBConfig {
 
     @Autowired
@@ -184,24 +177,19 @@ public class DBConfig {
         config.setMaxZipUploadSize(Long.parseLong(env.getProperty("ImageArchiveMaxZipUploadSize")));
 
 
-        config.setStoragePath(new File(""));
-        config.setTmpPath(new File(""));
-        config.setImageMagickPath(new File(""));
-        config.setImagesPath(new File(""));
-        config.setLibrariesPath(new File(""));
-        config.setOldLibraryPaths(new File[]{new File("")});
-        config.setUsersLibraryFolder("");
-        config.setMaxImageUploadSize(20);
-        config.setMaxZipUploadSize(20);
+//        config.setStoragePath(new File(""));
+//        config.setTmpPath(new File(""));
+//        config.setImageMagickPath(new File(""));
+//        config.setImagesPath(new File(""));
+//        config.setLibrariesPath(new File(""));
+//        config.setOldLibraryPaths(new File[]{new File("")});
+//        config.setUsersLibraryFolder("");
+//        config.setMaxImageUploadSize(20);
+//        config.setMaxZipUploadSize(20);
 
         config.setLanguages(languages);
         return config;
-    }*//*
-
-
-
-*/
-
+    }*/
 
 
     @Bean
@@ -228,7 +216,7 @@ public class DBConfig {
         return basicDataSource;
     }
 
-//    Wasn't in previous config
+    //    Wasn't in previous config
     @Bean
     public BasicDataSource dataSourceWithAutoCommit() {
         // org.apache.commons.dbcp.BasicDataSource
