@@ -63,7 +63,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
                 createDatabaseAndSetVersion(database, wantedDdl);
                 return;
             }
-            databaseVersion = new DatabaseVersion(0,0);
+            databaseVersion = new DatabaseVersion(0,0, 0);
         }
         upgradeDatabase(databaseVersion, database);
     }
@@ -79,7 +79,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
                     public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
                         SingleConnectionDatabase database = new SingleConnectionDatabase(connection);
                         versionUpgradePair.getUpgrade().upgrade(database);
-                        setDatabaseVersion(database, upgradeVersion);
+                        ScriptBasedUpgrade.setDatabaseVersion(database, upgradeVersion);
                         return null;
                     }
                 });
@@ -103,23 +103,10 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
         });
     }
 
-    private void setDatabaseVersion(Database database, DatabaseVersion upgradeVersion) {
-        Integer rowsUpdated = (Integer) database.execute(new SqlUpdateCommand("UPDATE database_version SET major = ?, minor = ?",
-                                                                              new Object[] {
-                                                                                      upgradeVersion.getMajorVersion(),
-                                                                                      upgradeVersion.getMinorVersion() }));
-        if (0 == rowsUpdated) {
-            database.execute(new InsertIntoTableDatabaseCommand("database_version", new Object[][] {
-                    { "major", upgradeVersion.getMajorVersion() },
-                    { "minor", upgradeVersion.getMinorVersion() },
-            })) ;
-        }
-    }
-
     private void createDatabaseAndSetVersion(Database database, org.apache.ddlutils.model.Database wantedDdl) {
         imcmsDatabaseCreator.createDatabase(database, wantedDdl);
         DatabaseVersion lastDatabaseVersion = getLastDatabaseVersion();
-        setDatabaseVersion(database, lastDatabaseVersion);
+        ScriptBasedUpgrade.setDatabaseVersion(database, lastDatabaseVersion);
 
         runScriptBasedUpgrade(lastDatabaseVersion, database);
     }
@@ -129,11 +116,17 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
     }
 
     private DatabaseVersion getDatabaseVersion(Database database) {
-        SqlQueryCommand sqlQueryCommand = new SqlQueryCommand("SELECT major, minor FROM database_version", new Object[0], new SingleObjectHandler(new RowTransformer() {
+        SqlQueryCommand sqlQueryCommand = new SqlQueryCommand("SELECT * FROM database_version", new Object[0], new SingleObjectHandler(new RowTransformer() {
             public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
                 int major = resultSet.getInt("major");
                 int minor = resultSet.getInt("minor");
-                return new DatabaseVersion(major, minor);
+                int client = 0;
+                try {
+                    client = resultSet.getInt("client");
+                } catch (SQLException ignore) {
+                    // ignore because in this case we have old DB version where no any "client" column, should be 0
+                }
+                return new DatabaseVersion(major, minor, client);
             }
 
             public Class getClassOfCreatedObjects() {

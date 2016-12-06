@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import imcode.server.Imcms;
 
@@ -79,11 +78,10 @@ public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
                 final XPathFunction dbVersionCompare = new XPathFunction() {
                     @Override
                     public Integer evaluate(List args) throws XPathFunctionException {
-                        String[] l = ((String)args.get(0)).split("\\.");
-                        String[] r = ((String)args.get(1)).split("\\.");
+                        String[] left = ((String)args.get(0)).split("\\.");
+                        String[] right = ((String)args.get(1)).split("\\.");
 
-                        return new DatabaseVersion(Integer.parseInt(l[0]), Integer.parseInt(l[1])).compareTo(
-                               new DatabaseVersion(Integer.parseInt(r[0]), Integer.parseInt(r[1])));
+                        return new DatabaseVersion(left).compareTo(new DatabaseVersion(right));
                     }
                 };
 
@@ -125,10 +123,8 @@ public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
                         if (scriptElement != null) {
                             Element diffElement = (Element)scriptElement.getParentNode().getParentNode();
                             String version = diffElement.getAttribute("version");
-                            StringTokenizer st = new StringTokenizer(version, ".");
-                            DatabaseVersion dv = new DatabaseVersion(
-                                    Integer.parseInt(st.nextToken()),
-                                    Integer.parseInt(st.nextToken()));
+                            String[] st = version.split("\\.");
+                            DatabaseVersion dv = new DatabaseVersion(st);
                             setDatabaseVersion(database, dv);
 
                             currentVersion = dv;
@@ -151,17 +147,19 @@ public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
         }
     }
 
-
-
-    private void setDatabaseVersion(com.imcode.db.Database database, DatabaseVersion newVersion) {
-        Integer rowsUpdated = (Integer) database.execute(new SqlUpdateCommand("UPDATE database_version SET major = ?, minor = ?",
-                                                                              new Object[] {
-                                                                                      newVersion.getMajorVersion(),
-                                                                                      newVersion.getMinorVersion() }));
+    public static void setDatabaseVersion(com.imcode.db.Database database, DatabaseVersion newVersion) {
+        Integer rowsUpdated = (Integer) database.execute(new SqlUpdateCommand(
+                "UPDATE database_version SET major = ?, minor = ?, client = ?",
+                new Object[] {
+                        newVersion.getMajorVersion(),
+                        newVersion.getMinorVersion(),
+                        newVersion.getClientVersion()
+                }));
         if (0 == rowsUpdated) {
             database.execute(new InsertIntoTableDatabaseCommand("database_version", new Object[][] {
                     { "major", newVersion.getMajorVersion() },
                     { "minor", newVersion.getMinorVersion() },
+                    { "client", newVersion.getClientVersion() }
             })) ;
         }
     }

@@ -103,7 +103,7 @@ public class InternalError extends HttpServlet {
         String imcmsVersion = Version.getImcmsVersion(getServletContext());
         String databaseVersion = (String) database.execute(
                 new SqlQueryCommand(
-                        "SELECT CONCAT(major, '.', minor) FROM database_version",
+                        "SELECT CONCAT(major, '.', minor, '.', client) FROM database_version",
                         null,
                         Utility.SINGLE_STRING_HANDLER
                 )
