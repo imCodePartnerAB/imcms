@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.MissingPasswordException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
@@ -85,8 +86,14 @@ public class ImcmsSetupFilter implements Filter {
             }
         }
 		try {
-			chain.doFilter( request, response );
+            chain.doFilter(request, response);
+
+        } catch (MissingPasswordException e) {
+            log.error("Null password received. User redirected to missingPassword.jsp", e);
+            throw new MissingPasswordException(e);
+
 		} catch (Exception e) {
+            // try to go to the same URL once more with some fixes
 			ServletRequest newRequest = new HttpServletRequestWrapper(request) {
 				@Override
 				public String getParameter(String name) {
@@ -114,8 +121,11 @@ public class ImcmsSetupFilter implements Filter {
                 chain.doFilter(newRequest, response);
             } catch (IllegalStateException ignore) {
             } catch (Exception e1) {
-                log.error(e);
-                log.error(e1);
+                log.error(e1.getMessage(), e1);
+
+                if (!e.toString().equals(e1.toString())) {
+                    log.error(e1.getMessage(), e);
+                }
                 ((HttpServletResponse)response).sendRedirect(request.getContextPath() + "/servlet/StartDoc");
             }
         }

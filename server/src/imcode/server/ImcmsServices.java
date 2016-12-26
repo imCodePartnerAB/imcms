@@ -10,6 +10,7 @@ import imcode.server.document.TemplateMapper;
 import imcode.server.kerberos.KerberosLoginService;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.MissingPasswordException;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
@@ -27,7 +28,7 @@ import java.util.Date;
 public interface ImcmsServices {
 
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
-    UserDomainObject verifyUser(String login, String password);
+    UserDomainObject verifyUser(String login, String password) throws MissingPasswordException;
     
     // Verify a Intranet user based on a Kerberos client principal name.
     UserDomainObject verifyUser(String clientPrincipalName);

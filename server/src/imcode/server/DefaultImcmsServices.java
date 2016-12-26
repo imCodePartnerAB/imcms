@@ -432,10 +432,14 @@ final public class DefaultImcmsServices implements ImcmsServices {
 		return localizedMessageProvider;
 	}
 
-	public UserDomainObject verifyUser(String login, String password) {
+	public UserDomainObject verifyUser(String login, String password) throws MissingPasswordException {
 		NDC.push("verifyUser");
 		try {
 			UserDomainObject result = null;
+
+            if (password == null) {
+                throw new MissingPasswordException();
+            }
 
 			boolean userAuthenticates = externalizedImcmsAuthAndMapper.authenticate(login, password);
 			UserDomainObject user = externalizedImcmsAuthAndMapper.getUser(login);
