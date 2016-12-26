@@ -731,6 +731,11 @@
     </welcome-file-list>
 
     <error-page>
+        <exception-type>imcode.server.user.MissingPasswordException</exception-type>
+        <location>/imcms/missingPassword.jsp</location>
+    </error-page>
+
+    <error-page>
         <exception-type>java.lang.Throwable</exception-type>
         <location>/servlet/InternalError</location>
     </error-page>
