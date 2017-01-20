@@ -67,8 +67,7 @@ public abstract class ContentManagementSystem {
      * @param userName user's login name
      * @param password user's password
     **/
-    public static ContentManagementSystem getContentManagementSystem( String userName, String password )
-            throws MissingPasswordException {
+    public static ContentManagementSystem getContentManagementSystem( String userName, String password ) {
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = imcref.verifyUser( userName, password );
         return DefaultContentManagementSystem.create( imcref, user, Imcms.getApiDataSource());
@@ -85,7 +84,7 @@ public abstract class ContentManagementSystem {
      * @return The new ContentManagementSystem, or null if the login failed.
      */
     public static ContentManagementSystem login(HttpServletRequest request, HttpServletResponse response,
-                                                String username, String password) throws MissingPasswordException {
+                                                String username, String password) {
         ImcmsServices services = Imcms.getServices();
         UserDomainObject user = services.verifyUser(username, password);
 

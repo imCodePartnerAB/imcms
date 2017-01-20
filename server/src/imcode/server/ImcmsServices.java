@@ -28,7 +28,7 @@ import java.util.Date;
 public interface ImcmsServices {
 
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
-    UserDomainObject verifyUser(String login, String password) throws MissingPasswordException;
+    UserDomainObject verifyUser(String login, String password);
     
     // Verify a Intranet user based on a Kerberos client principal name.
     UserDomainObject verifyUser(String clientPrincipalName);

@@ -432,7 +432,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 		return localizedMessageProvider;
 	}
 
-	public UserDomainObject verifyUser(String login, String password) throws MissingPasswordException {
+	public UserDomainObject verifyUser(String login, String password) {
 		NDC.push("verifyUser");
 		try {
 			UserDomainObject result = null;
