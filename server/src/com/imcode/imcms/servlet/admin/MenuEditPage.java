@@ -60,6 +60,7 @@ public class MenuEditPage extends OkCancelPage {
 
     protected void dispatchOther(HttpServletRequest request,
                                  HttpServletResponse response) throws IOException, ServletException {
+
         if ( null != request.getParameter(CREATE) ) {
             int documentTypeId = Integer.parseInt(request.getParameter(DOCUMENT_TYPE_ID));
             if ( 0 == documentTypeId ) {
@@ -73,14 +74,13 @@ public class MenuEditPage extends OkCancelPage {
                     }, servletContext);
                     try {
                         documentCreator.createDocumentAndDispatchToCreatePageFlow(documentTypeId, textDocument, request, response);
-                        return;
                     } catch ( NoPermissionToCreateDocumentException e ) {
                         throw new UnhandledException(e);
                     }
             }
+        } else {
+            forward(request, response);
         }
-
-        forward(request, response);
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
