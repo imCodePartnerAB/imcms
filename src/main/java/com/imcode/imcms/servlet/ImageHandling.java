@@ -51,6 +51,8 @@ public class ImageHandling extends HttpServlet {
 
     private static final List<String> ALLOWED_PATHS = new ArrayList<String>();
 
+    public static final int IMAGE_MAX_DIMENSION = 4096;
+
 
     static {
         File rootFile = Imcms.getPath();
@@ -86,6 +88,11 @@ public class ImageHandling extends HttpServlet {
 
         int width = NumberUtils.toInt(request.getParameter("width"));
         int height = NumberUtils.toInt(request.getParameter("height"));
+
+        // cutting dimensions to prevent generating too big images
+        width = Math.min(IMAGE_MAX_DIMENSION, width);
+        height = Math.min(IMAGE_MAX_DIMENSION, height);
+
         width = Math.max(width, 0);
         height = Math.max(height, 0);
 
