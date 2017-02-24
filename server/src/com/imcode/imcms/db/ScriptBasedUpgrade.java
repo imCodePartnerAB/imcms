@@ -148,19 +148,46 @@ public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
     }
 
     public static void setDatabaseVersion(com.imcode.db.Database database, DatabaseVersion newVersion) {
-        Integer rowsUpdated = (Integer) database.execute(new SqlUpdateCommand(
-                "UPDATE database_version SET major = ?, minor = ?, client = ?",
-                new Object[] {
-                        newVersion.getMajorVersion(),
-                        newVersion.getMinorVersion(),
-                        newVersion.getClientVersion()
-                }));
+        final int majorVersion = newVersion.getMajorVersion();
+        final int minorVersion = newVersion.getMinorVersion();
+
+        Integer rowsUpdated;
+        Object[][] insertParameters;
+
+        try {
+            final int clientVersion = newVersion.getClientVersion();
+
+            rowsUpdated = (Integer) database.execute(new SqlUpdateCommand(
+                    "UPDATE database_version SET major = ?, minor = ?, client = ?",
+                    new Object[]{
+                            majorVersion,
+                            minorVersion,
+                            clientVersion
+                    }));
+
+            insertParameters = new Object[][]{
+                    {"major", majorVersion},
+                    {"minor", minorVersion},
+                    {"client", clientVersion}
+            };
+
+        } catch (DatabaseException e) {
+            // in case if we have old DB schema with two columns in version table
+            rowsUpdated = (Integer) database.execute(new SqlUpdateCommand(
+                    "UPDATE database_version SET major = ?, minor = ?",
+                    new Object[]{
+                            majorVersion,
+                            minorVersion
+                    }));
+
+            insertParameters = new Object[][]{
+                    {"major", majorVersion},
+                    {"minor", minorVersion}
+            };
+        }
+
         if (0 == rowsUpdated) {
-            database.execute(new InsertIntoTableDatabaseCommand("database_version", new Object[][] {
-                    { "major", newVersion.getMajorVersion() },
-                    { "minor", newVersion.getMinorVersion() },
-                    { "client", newVersion.getClientVersion() }
-            })) ;
+            database.execute(new InsertIntoTableDatabaseCommand("database_version", insertParameters)) ;
         }
     }
 }
