@@ -27,7 +27,7 @@ public class TextDocument extends Document {
      */
     public final static int TYPE_ID = DocumentTypeDomainObject.TEXT_ID;
 
-    TextDocument( TextDocumentDomainObject textDocument,
+    public TextDocument( TextDocumentDomainObject textDocument,
                   ContentManagementSystem contentManagementSystem ) {
         super(textDocument, contentManagementSystem);
     }
@@ -141,7 +141,14 @@ public class TextDocument extends Document {
         return new TextField(imcmsText);
     }
 
-    private TextDocumentDomainObject getInternalTextDocument() {
+    /**
+     * Returns internal {@code TextDocumentDomainObject} that is encapsulated
+     * by {@code Document} class.
+     * Method has {@code public} access since 4.2.21
+     *
+     * @return internal {@code TextDocumentDomainObject}
+     */
+    public TextDocumentDomainObject getInternalTextDocument() {
         return (TextDocumentDomainObject)getInternal();
     }
 
