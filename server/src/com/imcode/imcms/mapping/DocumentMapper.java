@@ -361,7 +361,7 @@ public class DocumentMapper implements DocumentGetter {
 
     public int[] getAllDocumentIdsForIndexing() {
         String[] params = new String[0];
-        String[] documentIdStrings = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT meta_id FROM meta ORDER BY date_modified DESC, doc_type ASC", params, Utility.STRING_ARRAY_HANDLER));
+        String[] documentIdStrings = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT meta_id FROM meta ORDER BY doc_type ASC, date_modified DESC", params, Utility.STRING_ARRAY_HANDLER));
         int[] documentIds = new int[documentIdStrings.length];
         for (int i = 0; i < documentIdStrings.length; i++) {
             documentIds[i] = Integer.parseInt(documentIdStrings[i]);
