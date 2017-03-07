@@ -45,7 +45,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
                 log.info("Checking for directory lock.");
                 directory = FSDirectory.getDirectory(indexDirectory, false);
                 if (!IndexReader.isLocked(directory)) {
-                    log.info("Directory is not not locked.");
+                    log.info("Directory is not locked.");
                 } else {
                     log.info("Directory is locked. Attempting to unlock");
                     IndexReader.unlock(directory);
