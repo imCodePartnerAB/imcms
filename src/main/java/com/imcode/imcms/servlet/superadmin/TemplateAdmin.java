@@ -208,11 +208,12 @@ public class TemplateAdmin extends HttpServlet {
 	}
 
 	private static List<String> langTag(String lang) {
-		return new ArrayList<String>() {{
-			add("#language#");
-			add(lang);
-		}};
-	}
+        final List<String> languageTag = new ArrayList<>();
+        languageTag.add("#language#");
+        languageTag.add(lang);
+
+        return languageTag;
+    }
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
