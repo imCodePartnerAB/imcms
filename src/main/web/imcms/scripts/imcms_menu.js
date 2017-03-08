@@ -38,7 +38,8 @@ Imcms.Menu.TreeAdapter.prototype = {
 		$("<span>").text(node.status).appendTo(treeElement);
 
         if (node.status == "A") { // means archived document
-            treeElement.addClass("archived");
+            // treeElement.addClass("archived"); // UPDATE: also means approved document!!1!
+            // todo: rewrite status sending principle, first letters is stupid idea!
         }
 
         $("<span>").addClass("column-right")
