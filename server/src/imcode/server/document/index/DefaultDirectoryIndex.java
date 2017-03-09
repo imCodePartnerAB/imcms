@@ -30,7 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.AbstractList;
 
-class DefaultDirectoryIndex implements DirectoryIndex {
+public class DefaultDirectoryIndex implements DirectoryIndex {
 
     private static final Logger log = Logger.getLogger(DefaultDirectoryIndex.class.getName());
     private static final int INDEXING_LOG_PERIOD__MILLISECONDS = DateUtils.MILLIS_IN_MINUTE;
