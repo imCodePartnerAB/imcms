@@ -32,9 +32,9 @@ import java.util.AbstractList;
 
 class DefaultDirectoryIndex implements DirectoryIndex {
 
-    private static final File indexDirectory = new File(Imcms.getPath(), "WEB-INF/index");
     private static final Logger log = Logger.getLogger(DefaultDirectoryIndex.class.getName());
     private static final int INDEXING_LOG_PERIOD__MILLISECONDS = DateUtils.MILLIS_IN_MINUTE;
+    private static final File indexDirectory = Imcms.getIndexDirectory();
     private static final ReindexingDocumentIdsGetter DEFAULT_GETTER = new ReindexingDocumentIdsGetter() {
         final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 

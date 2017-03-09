@@ -36,6 +36,7 @@ public class Imcms {
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;
     private static File path;
+    private static File indexDirectory;
 
     private Imcms() {
     }
@@ -248,6 +249,14 @@ public class Imcms {
         String language = props.getProperty("DefaultLanguage");
 
         return (!StringUtils.isBlank(language)) ? language : "eng";
+    }
+
+    public static File getIndexDirectory() {
+        if (indexDirectory == null) {
+            indexDirectory = new File(getPath(), "WEB-INF/index");
+        }
+
+        return indexDirectory;
     }
 
     public static class StartupException extends RuntimeException {

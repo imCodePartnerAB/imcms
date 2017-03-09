@@ -256,7 +256,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 	}
 
 	private void initDocumentMapper() {
-		File indexDirectory = new File(getRealContextPath(), "WEB-INF/index");
+		File indexDirectory = Imcms.getIndexDirectory();
 		documentMapper = new DocumentMapper(this, this.getDatabase());
 		documentMapper.setDocumentIndex(new LoggingDocumentIndex(database, new PhaseQueryFixingDocumentIndex(new RebuildingDirectoryIndex(indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes(), new IndexDocumentFactory(getCategoryMapper())))));
 	}
