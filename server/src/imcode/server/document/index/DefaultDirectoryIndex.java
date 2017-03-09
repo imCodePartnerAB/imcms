@@ -21,8 +21,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +32,19 @@ import java.util.AbstractList;
 
 class DefaultDirectoryIndex implements DirectoryIndex {
 
-    private final static Logger log = Logger.getLogger(DefaultDirectoryIndex.class.getName());
-    private final static int INDEXING_LOG_PERIOD__MILLISECONDS = DateUtils.MILLIS_IN_MINUTE;
+    private static final File indexDirectory = new File(Imcms.getPath(), "WEB-INF/index");
+    private static final Logger log = Logger.getLogger(DefaultDirectoryIndex.class.getName());
+    private static final int INDEXING_LOG_PERIOD__MILLISECONDS = DateUtils.MILLIS_IN_MINUTE;
+    private static final ReindexingDocumentIdsGetter DEFAULT_GETTER = new ReindexingDocumentIdsGetter() {
+        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+
+        @Override
+        public int[] getDocumentIds() {
+            return documentMapper.getAllDocumentIdsForIndexing();
+        }
+    };
+
+    private static ReindexingDocumentIdsGetter reindexingDocumentIdsGetter;
 
     private final File directory;
     private final IndexDocumentFactory indexDocumentFactory;
@@ -45,6 +54,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow or memoryconsuming queries?
         BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
+        setReindexingDocumentIdsGetter(DEFAULT_GETTER);
     }
 
     DefaultDirectoryIndex(File directory, IndexDocumentFactory indexDocumentFactory) {
@@ -83,10 +93,14 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
     public void rebuild() {
         try {
-            indexAllDocuments();
+            indexDocuments();
         } catch (IOException e) {
             throw new IndexException(e);
         }
+    }
+
+    public static void setReindexingDocumentIdsGetter(ReindexingDocumentIdsGetter documentsGetter) {
+        reindexingDocumentIdsGetter = documentsGetter;
     }
 
     private SearchResult<DocumentDomainObject> getDocumentListForHits(final Hits hits, final UserDomainObject searchingUser,
@@ -160,23 +174,34 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         return new IndexWriter(directory, new AnalyzerImpl(), createIndex);
     }
 
-    private void indexAllDocuments() throws IOException {
-        IndexWriter indexWriter = createIndexWriter(true);
-        try {
-            indexAllDocumentsToIndexWriter(indexWriter);
-        } finally {
-            indexWriter.close();
-        }
-    }
-
     private void addDocumentToIndex(DocumentDomainObject document, IndexWriter indexWriter) throws IOException {
         Document indexDocument = indexDocumentFactory.createIndexDocument(document);
         indexWriter.addDocument(indexDocument);
     }
 
     private void indexAllDocumentsToIndexWriter(IndexWriter indexWriter) throws IOException {
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        int[] documentIds = documentMapper.getAllDocumentIdsForIndexing();
+        final int[] documentIds = Imcms.getServices().getDocumentMapper().getAllDocumentIdsForIndexing();
+        indexDocuments(documentIds, indexWriter);
+    }
+
+    private void indexDocuments() throws IOException {
+        IndexWriter indexWriter = createIndexWriter(true);
+        try {
+            final File[] files = indexDirectory.listFiles();
+            if ((reindexingDocumentIdsGetter == null) || (files == null) || (files.length == 0)) {
+                indexAllDocumentsToIndexWriter(indexWriter);
+
+            } else {
+                final int[] documentIds = reindexingDocumentIdsGetter.getDocumentIds();
+                indexDocuments(documentIds, indexWriter);
+            }
+        } finally {
+            indexWriter.close();
+        }
+    }
+
+    private void indexDocuments(int[] documentIds, IndexWriter indexWriter) throws IOException {
+        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         logIndexingStarting(documentIds.length);
         IntervalSchedule indexingLogSchedule = new IntervalSchedule(INDEXING_LOG_PERIOD__MILLISECONDS);
@@ -215,7 +240,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     private void logIndexingCompleted(int numberOfDocuments, StopWatch indexingStopWatch) {
         long time = indexingStopWatch.getTime();
         String humanReadableTime = HumanReadable.getHumanReadableTimeSpan(time);
-        long timePerDocument = time / numberOfDocuments;
+        long timePerDocument = time / (numberOfDocuments + 1); // to prevent division by zero
         log.info("Indexed " + numberOfDocuments + " documents in " + humanReadableTime + ". " + timePerDocument + "ms per document.");
     }
 
@@ -234,7 +259,10 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     public void delete() {
         try {
             log.info("Deleting index directory " + directory);
-            FileUtils.forceDelete(directory);
+
+            if (directory.exists()) {
+                FileUtils.forceDelete(directory);
+            }
         } catch (IOException e) {
             throw new IndexException(e);
         }
