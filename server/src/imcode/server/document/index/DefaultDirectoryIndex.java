@@ -1,18 +1,18 @@
 package imcode.server.document.index;
 
 import com.imcode.imcms.api.SearchResult;
-import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentGetter;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.util.HumanReadable;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IntervalSchedule;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -26,25 +26,16 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.AbstractList;
 import java.util.Date;
 import java.util.List;
-import java.util.AbstractList;
 
 public class DefaultDirectoryIndex implements DirectoryIndex {
 
     private static final Logger log = Logger.getLogger(DefaultDirectoryIndex.class.getName());
     private static final int INDEXING_LOG_PERIOD__MILLISECONDS = DateUtils.MILLIS_IN_MINUTE;
-    private static final File indexDirectory = Imcms.getIndexDirectory();
-    private static final ReindexingDocumentIdsGetter DEFAULT_GETTER = new ReindexingDocumentIdsGetter() {
-        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
-        @Override
-        public int[] getDocumentIds() {
-            return documentMapper.getAllDocumentIdsForIndexing();
-        }
-    };
-
-    private static ReindexingDocumentIdsGetter reindexingDocumentIdsGetter;
+    private static ReindexingDocumentIdsGetter reindexingDocumentIdsGetter = new DefaultReindexingDocumentIdsGetter();
 
     private final File directory;
     private final IndexDocumentFactory indexDocumentFactory;
@@ -54,7 +45,6 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow or memoryconsuming queries?
         BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
-        setReindexingDocumentIdsGetter(DEFAULT_GETTER);
     }
 
     DefaultDirectoryIndex(File directory, IndexDocumentFactory indexDocumentFactory) {
@@ -99,8 +89,14 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    public static void setReindexingDocumentIdsGetter(ReindexingDocumentIdsGetter documentsGetter) {
-        reindexingDocumentIdsGetter = documentsGetter;
+    /**
+     * Set custom realization of reindexing document ids getter instead default
+     *
+     * @param documentIdsGetter - custom document ids getter
+     */
+    @SuppressWarnings("unused")
+    public static void setReindexingDocumentIdsGetter(ReindexingDocumentIdsGetter documentIdsGetter) {
+        reindexingDocumentIdsGetter = documentIdsGetter;
     }
 
     private SearchResult<DocumentDomainObject> getDocumentListForHits(final Hits hits, final UserDomainObject searchingUser,
@@ -179,22 +175,12 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         indexWriter.addDocument(indexDocument);
     }
 
-    private void indexAllDocumentsToIndexWriter(IndexWriter indexWriter) throws IOException {
-        final int[] documentIds = Imcms.getServices().getDocumentMapper().getAllDocumentIdsForIndexing();
-        indexDocuments(documentIds, indexWriter);
-    }
-
     private void indexDocuments() throws IOException {
         IndexWriter indexWriter = createIndexWriter(true);
         try {
-            final File[] files = indexDirectory.listFiles();
-            if ((reindexingDocumentIdsGetter == null) || (files == null) || (files.length == 0)) {
-                indexAllDocumentsToIndexWriter(indexWriter);
+            final int[] documentIds = reindexingDocumentIdsGetter.getDocumentIds();
+            indexDocuments(documentIds, indexWriter);
 
-            } else {
-                final int[] documentIds = reindexingDocumentIdsGetter.getDocumentIds();
-                indexDocuments(documentIds, indexWriter);
-            }
         } finally {
             indexWriter.close();
         }
