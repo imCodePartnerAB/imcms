@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import imcode.util.net.SMTP;
 
 import javax.activation.DataSource;
+import java.util.Map;
 
 /**
  * Represents an email sent using {@link MailService}
@@ -107,4 +108,24 @@ public class Mail {
 	public void setReplyToAddresses(String[] replyToAddresses) {
 		internal.setReplyToAddresses(replyToAddresses);
 	}
+
+    /**
+     * Simply adds email header with specified name and value
+     *
+     * @param name header name
+     * @param value header value
+     */
+    public void addHeader(String name, String value) {
+        internal.addHeader(name, value);
+    }
+
+    /**
+     * Set email headers and values as kay-value map.
+     * Note that this methods will replace all previous headers that was set.
+     *
+     * @param headers header name and header value pairs map
+     */
+    public void setHeaders(Map<String, String> headers) {
+        internal.setHeaders(headers);
+    }
 }

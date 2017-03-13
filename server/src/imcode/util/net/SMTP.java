@@ -18,6 +18,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * class SMTP - Provides methods for sending mail.
@@ -181,6 +182,14 @@ public class SMTP {
 				throw new UnhandledException(e);
 			}
 		}
+
+        public void addHeader(String name, String value) {
+		    mail.addHeader(name, value);
+        }
+
+        public void setHeaders(Map<String, String> headers) {
+		    mail.setHeaders(headers);
+        }
 
 		private HtmlEmail getMail() {
 			return mail;
