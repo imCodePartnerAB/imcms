@@ -3,8 +3,8 @@ package imcode.util.net;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.util.Utility;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.mail.Email;
@@ -18,6 +18,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -43,10 +44,7 @@ public class SMTP {
         this.port = port;
     }
 
-    public void sendMail(Mail mail)
-            throws IOException {
-        Email email = mail.getMail();
-
+    public void sendMail(Mail email) throws IOException {
         try {
             setEncryption(email);
 
@@ -92,14 +90,13 @@ public class SMTP {
         return StringUtils.trimToNull(Imcms.getServerProperties().getProperty(key));
     }
 
-    public static class Mail {
+    public static class Mail extends HtmlEmail {
 
-        private HtmlEmail mail = new HtmlEmail();
         private String textBody;
 
         public Mail(String fromAddress) {
             try {
-                mail.setFrom(fromAddress);
+                setFrom(fromAddress);
             } catch (EmailException e) {
                 LocalizedMessage errorMessage = new LocalizedMessage("error/missing_email_fromAdress");
                 throw new UnhandledException(errorMessage.toLocalizedString("eng"), e);
@@ -113,10 +110,9 @@ public class SMTP {
             setBody(body);
         }
 
-        @SuppressWarnings("unchecked")
         public void setBccAddresses(String[] bccAddresses) {
             try {
-                mail.setBcc(CollectionUtils.collect(Arrays.asList(bccAddresses), new StringToInternetAddressTransformer()));
+                setBcc(transformToInternetAddress(bccAddresses));
             } catch (EmailException e) {
                 throw new UnhandledException(e);
             }
@@ -125,7 +121,7 @@ public class SMTP {
         public void setBody(String body) {
             try {
                 textBody = body;
-                mail.setTextMsg(body);
+                setTextMsg(body);
             } catch (EmailException e) {
                 throw new UnhandledException(e);
             }
@@ -133,7 +129,7 @@ public class SMTP {
 
         public void setHtmlBody(String htmlBody) {
             try {
-                mail.setHtmlMsg(htmlBody);
+                setHtmlMsg(htmlBody);
                 if (null == textBody) {
                     setBody(htmlBody.replaceAll("<[^>]*>", ""));
                 }
@@ -142,32 +138,25 @@ public class SMTP {
             }
         }
 
-        @SuppressWarnings("unchecked")
         public void setCcAddresses(String[] ccAddresses) {
             try {
-                mail.setCc(CollectionUtils.collect(Arrays.asList(ccAddresses), new StringToInternetAddressTransformer()));
+                setCc(transformToInternetAddress(ccAddresses));
             } catch (EmailException e) {
                 throw new UnhandledException(e);
             }
         }
 
-        public void setSubject(String subject) {
-            mail.setSubject(subject);
-        }
-
-        @SuppressWarnings("unchecked")
         public void setToAddresses(String[] toAddresses) {
             try {
-                mail.setTo(CollectionUtils.collect(Arrays.asList(toAddresses), new StringToInternetAddressTransformer()));
+                setTo(transformToInternetAddress(toAddresses));
             } catch (EmailException e) {
                 throw new UnhandledException(e);
             }
         }
 
-        @SuppressWarnings("unchecked")
         public void setReplyToAddresses(String[] replyToAddresses) {
             try {
-                mail.setReplyTo(CollectionUtils.collect(Arrays.asList(replyToAddresses), new StringToInternetAddressTransformer()));
+                setReplyTo(transformToInternetAddress(replyToAddresses));
             } catch (EmailException e) {
                 throw new UnhandledException(e);
             }
@@ -176,34 +165,28 @@ public class SMTP {
         public void setAttachments(DataSource[] attachments) {
             try {
                 for (DataSource attachment : attachments) {
-                    mail.attach(attachment, attachment.getName(), "");
+                    attach(attachment, attachment.getName(), "");
                 }
             } catch (EmailException e) {
                 throw new UnhandledException(e);
             }
         }
 
-        public void addHeader(String name, String value) {
-            mail.addHeader(name, value);
+        public Map<String, String> getHeaders() {
+            return headers;
         }
 
-        public void setHeaders(Map<String, String> headers) {
-            mail.setHeaders(headers);
-        }
+        private Collection<InternetAddress> transformToInternetAddress(String[] stringArray) {
+            return CollectionUtils.collect(Arrays.asList(stringArray), new Transformer<String, InternetAddress>() {
 
-        private HtmlEmail getMail() {
-            return mail;
-        }
-
-        private static class StringToInternetAddressTransformer implements Transformer {
-
-            public Object transform(Object input) {
-                try {
-                    return new InternetAddress((String) input, false);
-                } catch (AddressException e) {
-                    throw new UnhandledException(e);
+                public InternetAddress transform(String input) {
+                    try {
+                        return new InternetAddress(input, false);
+                    } catch (AddressException e) {
+                        throw new UnhandledException(e);
+                    }
                 }
-            }
+            });
         }
     }
 }

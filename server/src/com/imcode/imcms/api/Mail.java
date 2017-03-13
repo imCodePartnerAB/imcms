@@ -120,6 +120,15 @@ public class Mail {
     }
 
     /**
+     * Get headers map as header name and header value pairs.
+     *
+     * @return header name and header value pairs map
+     */
+    public Map<String, String> getHeaders() {
+        return internal.getHeaders();
+    }
+
+    /**
      * Set email headers and values as kay-value map.
      * Note that this methods will replace all previous headers that was set.
      *
