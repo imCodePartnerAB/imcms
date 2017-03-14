@@ -542,10 +542,8 @@ Imcms.Menu.Editor.prototype = {
             response,
             Imcms.BackgroundWorker.createTask({
                 showProcessWindow: true,
-                reloadContent: {
-                    element: $target,
-                    callback: Imcms.Editors.rebuildEditorsIn.bind(this, $target)
-                }
+                reloadElement: $target,
+                callback: Imcms.Editors.rebuildEditorsIn.bind(this, $target)
             })
         );
     },

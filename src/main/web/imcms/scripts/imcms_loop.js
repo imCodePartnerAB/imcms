@@ -203,10 +203,8 @@
                 loopId,
                 Imcms.BackgroundWorker.createTask({
                     showProcessWindow: true,
-                    reloadContent: {
-                        element: $element,
-                        callback: Imcms.Editors.rebuildEditorsIn.bind(this, $element)
-                    }
+                    reloadElement: $element,
+                    callback: Imcms.Editors.rebuildEditorsIn.bind(this, $element)
                 })
             );
             this.close();

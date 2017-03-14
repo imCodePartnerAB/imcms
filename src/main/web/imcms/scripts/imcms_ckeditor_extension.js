@@ -82,7 +82,7 @@ CKEDITOR.plugins.add("documentSaver", {
             return Imcms.BackgroundWorker.createTask({
                 showProcessWindow: true,
                 refreshPage: true,
-                callbackFunc: function () {
+                callback: function () {
                     var loopref = $(e.element.$).attr("data-loopentryref");
                     var no = $(e.element.$).attr("data-no");
                     var meta = $(e.element.$).attr("data-meta");

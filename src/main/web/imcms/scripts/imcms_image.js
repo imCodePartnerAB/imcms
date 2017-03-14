@@ -351,11 +351,9 @@ Imcms.Image.Editor.prototype = {
         var $element = $(this._element);
         return {
             showProcessWindow: showProcessWindow,
-            reloadContent: {
-                element: $element,
-                callback: function () {
-                    new Imcms.Image.Editor($element[0], Imcms.Editors.Image);
-                }
+            reloadElement: $element,
+            callback: function () {
+                new Imcms.Image.Editor($element[0], Imcms.Editors.Image);
             }
         }
     },

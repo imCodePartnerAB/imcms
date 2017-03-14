@@ -32,23 +32,20 @@ Imcms.BackgroundWorker = {
         redirectURL: "",
         /**
          * If you do not want to reload whole page or <body>, you can specify
-         * element to be reloaded and callback if needs
+         * jQuery selected element to be reloaded
          */
-        reloadContent: {
-            /**
-             * jQuery selected element
-             */
-            element: $(document),
-            callback: function () {
-            }
-        },
+        reloadElement: $(document),
 
-        callbackFunc: function () {}
+        /**
+         * Callback function
+         */
+        callback: function () {
+        }
     },
 
     callbackFunctions: [],
 
-/**
+    /**
      * Creates process window with gif logo while BackgroundWorker works
      */
     createProcessWindow: function () {
@@ -168,7 +165,7 @@ Imcms.BackgroundWorker = {
 
             var reloadElementOptions = $this.completedTasksOptions
                 .filter(function (option) {
-                    return option.reloadContent;
+                    return option.reloadElement;
                 });
 
             if (redirectOption) {
@@ -176,7 +173,7 @@ Imcms.BackgroundWorker = {
 
             } else if (reloadElementOptions.length) {
                 reloadElementOptions.forEach(function (option) {
-                    option.reloadContent.element.reload(option.reloadContent.callback);
+                    option.reloadElement.element.reload(option.callback);
                 });
 
             } else if ($this.completedTasksOptions.some($this._shouldReloadWholePage)) {
@@ -186,13 +183,12 @@ Imcms.BackgroundWorker = {
                 $this.reloadPage()
             }
 
-            var callbackOpt = $this.completedTasksOptions
-                .find(function (option) {
-                    return option.callbackFunc;
-                });
+            var callbackOpt = $this.completedTasksOptions.find(function (option) {
+                return option.callback;
+            });
 
             if (callbackOpt) {
-                this.callbackFunctions.push((callbackOpt).callbackFunc);
+                this.callbackFunctions.push(callbackOpt.callback);
             }
 
             $this.completedTasksOptions = [];
