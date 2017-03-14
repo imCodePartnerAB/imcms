@@ -1641,7 +1641,7 @@ Imcms.Document.Viewer.prototype = {
             .val(dateTimeMadeBy.date + " " + dateTimeMadeBy.time);
     },
     loadCategories: function (categories) {
-            $.each(categories, this.addCategoryType.bind(this));
+        $.each(categories, this.addCategoryType.bind(this));
         if (this._options.data) {
             this.deserialize(this._options.data);
             delete this._options.data.categories;

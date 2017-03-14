@@ -3,14 +3,14 @@ Imcms.Admin.Panel = {
     publisherName: "admin-panel-publisher",
     redirectSafely: function (index, element) {
         $(element).click(function (event) {
-                event.preventDefault();
-                var reference = $(this).attr("href");
-                Imcms.CallbackConnector.setCallbackOrCall(
-                    Imcms.Admin.Panel.publisherName,
-                    Imcms.BackgroundWorker.createTask({
-                        redirectURL: reference
-                    })
-                );
+            event.preventDefault();
+            var reference = $(this).attr("href");
+            Imcms.CallbackConnector.setCallbackOrCall(
+                Imcms.Admin.Panel.publisherName,
+                Imcms.BackgroundWorker.createTask({
+                    redirectURL: reference
+                })
+            );
         });
     },
     init: function () {
