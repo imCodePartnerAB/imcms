@@ -1129,7 +1129,7 @@
                                 <include>**/JSFormBuilder.js</include>
                                 <include>**/imcms_addons.js</include>
                                 <include>**/imcms_linker.js</include>
-                                <include>**/imcms_simple_api.js</include>
+                                <include>**/imcms_rest_api.js</include>
                                 <include>**/imcms_editors.js</include>
                                 <include>**/imcms_bootstrap.js</include>
                                 <include>**/imcms_frame_builder.js</include>
