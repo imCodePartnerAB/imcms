@@ -1,10 +1,3 @@
-/**
- * Connector module with possibility to set callback for publisher that
- * can be accessed by all subscribers.
- *
- * Created by Serhii Maksymchuk from Ubrainians for imCode
- * 09.11.16
- */
 (function (Imcms) {
     var publishers = [];
 
@@ -31,7 +24,14 @@
         }
     };
 
-    Imcms.CallbackConnector = {
+    /**
+     * Connector module with possibility to set callback for publisher that
+     * can be accessed by all subscribers.
+     *
+     * Created by Serhii Maksymchuk from Ubrainians for imCode
+     * 09.11.16
+     */
+    return Imcms.CallbackConnector = {
         createPublisher: function (publisherName) {
             publishers.push(new Publisher(publisherName));
         },
@@ -47,6 +47,7 @@
          */
         setCallbackOrCall: function (publisherName, callback) {
             var publisher = Imcms.CallbackConnector.getPublisher(publisherName);
+
             (publisher && publisher.subscribers.length)
                 ? publisher.callback = callback
                 : callback();

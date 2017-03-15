@@ -1,13 +1,3 @@
-/**
- * Created by Serhii from Ubrainians for Imcode
- * on 28.07.16.
- *
- * Service for correct and convenient working with links.
- * Provides context path from <base> tag.
- * Works with links from links.json file.
- *
- * @author Serhii
- */
 (function (Imcms) {
     if (typeof Cookies !== "function") {
         throw new Error("Required 'js.cookie' library was not found!!1!");
@@ -18,9 +8,6 @@
         linksCookiesKey = "links.json",
         contextPath = $("base").attr("href"); // tag 'base' should be on every page and should hold context path
 
-    /**
-     * Gets links from server.
-     */
     function getLinksFromServer() {
         var linksPath = contextPath + "/api/links"; // should be the only link in app
 
@@ -34,9 +21,6 @@
         });
     }
 
-    /**
-     * Writes links json to cookies
-     */
     function setLinksToCookies() {
         Cookies.set(linksCookiesKey, links, {
             expires: 1
@@ -44,29 +28,25 @@
     }
 
     /**
-     * Divides links with args (that needs builder) and simple URL
+     * Divides all links on links with args and simple URL
      */
     function divideLinks() {
         links.filter(function (link) {
             return !link.args.length;
+
         }).forEach(function (simpleLink) {
             links.remove(simpleLink);
             simpleURLs[simpleLink.name] = simpleLink.url;
-        }.bind(this))
+
+        }.bind(this));
     }
 
-    /**
-     * Make all steps to load links from server
-     */
     function loadLinks() {
         getLinksFromServer();
         setLinksToCookies();
         divideLinks();
     }
 
-    /**
-     * Gets links from cookies or from server if cookie is empty and then write cookie with 1 day expiration
-     */
     function getLinks() {
         var linksFromCookies = Cookies.getJSON(linksCookiesKey);
 
@@ -80,21 +60,47 @@
     }
 
     /**
-     * Get simple URL or from link with builder
+     * Get link with reloading if needs
+     * @param name - link's name
+     * @param args - arguments for link
+     * @returns {Object|string}
+     */
+    function getOrLoadLink(name, args) {
+        var link = getLink(name, args);
+
+        if (!link) {
+            loadLinks();
+            link = getLink(name, args);
+        }
+
+        return link;
+    }
+
+    /**
+     * Get link by name and build arguments (optional)
      * @returns {string} requested URL
      */
-    function getURL(args) {
-        if (args.length == 1) {
-            return getSimpleUrl(args[0]);
+    function getURL(name, args) {
+        args = prepareArgs(args);
+
+        var link = getOrLoadLink(name, args);
+
+        if (!link || (args.length && !link.url)) {
+            var errorMessage = "Can not found link with name '" + name + "'";
+            errorMessage += (args.length) ? " and arguments [" + args + "]" : "";
+
+            throw new Error(errorMessage);
+        }
+
+        if (args.length) {
+            args.forEach(function (arg, index) {
+                link.url = link.url.replace("{" + (index + 1) + "}", arg);
+            });
+
+            return link.url;
+
         } else {
-            var urlArgs = prepareArgs(args);
-
-            if (!urlArgs.length) {
-                return getSimpleUrl(args[0]);
-
-            } else {
-                return getLinkUrl(args[0], urlArgs);
-            }
+            return link;
         }
     }
 
@@ -104,57 +110,24 @@
      * @returns {string} requested URL
      */
     function getSimpleUrl(name) {
-        var link = simpleURLs[name];
-
-        if (!link) {
-            loadLinks();
-            link = simpleURLs[name];
-        }
-
-        if (!link) {
-            throw new Error("Can not found link with name '" + name + "'");
-        }
-
-        return link;
+        return simpleURLs[name];
     }
 
     /**
-     * Returns link's url by it's name and arguments.
-     * @param {string} name - the name of url, from links.json file.
-     * @param {string[]} [args] - arguments for url in correct order
-     * @returns {string} built link's url
-     */
-    function getLinkUrl(name, args) {
-        var link = getLink(name, args);
-
-        if (!link) {
-            loadLinks();
-            link = getLink(name, args);
-        }
-
-        if (!link || !link.url) {
-            throw new Error("Can not found link with name '" + name + "' and arguments [" + args + "]");
-        }
-
-        var result = link.url;
-
-        args.forEach(function (arg, index) {
-            result = result.replace("{" + (index + 1) + "}", arg);
-        });
-
-        return result;
-    }
-
-    /**
-     * Takes link object
+     * Returns link by name and args (optional)
      * @param {string} name - link's name
      * @param {string[]} [args] - link's arguments
-     * @returns {object} result link or undefined if not found
+     * @returns {object|string} result link or undefined if not found
      */
     function getLink(name, args) {
-        return links.find(function (link) {
-            return (link.name == name && link.args.length == args.length);
-        });
+        if (!args || !args.length) {
+            return getSimpleUrl(name);
+
+        } else {
+            return links.find(function (link) {
+                return ((link.name == name) && (link.args.length == args.length));
+            });
+        }
     }
 
     /**
@@ -164,18 +137,31 @@
      * @returns {Array} array of only url arguments
      */
     function prepareArgs(args) {
-        return Array.prototype.slice
-            .call(args, 1) // 0 argument is link's name, 1.. is args to url so we start from 1
-            .flatMap(function (arg) { // [[1],2] -> [1,2]
-                return arg;
-            })
-            .filter(function (arg) {
-                return (typeof arg !== 'undefined' && arg !== null);
-            });
+        if (!args.length) {
+            return [];
+
+        } else {
+            return args.flatMap(function (arg) { // [[1],2] -> [1,2]
+                    return arg;
+                })
+                .filter(function (arg) {
+                    return ((typeof arg !== 'undefined') && (arg !== null));
+                });
+        }
     }
 
     getLinks();
 
+    /**
+     * Created by Serhii from Ubrainians for Imcode
+     * on 28.07.16.
+     *
+     * Service for correct and convenient working with links.
+     * Provides context path from <base> tag.
+     * Works with links from links.json file.
+     *
+     * @author Serhii
+     */
     return Imcms.Linker = {
 
         /**
@@ -202,11 +188,11 @@
         /**
          * Use it to get some link with context path.
          * @param {string} name - the name of url, from links.json file.
-         * @param {...string} [argsURL] - arguments for url in correct order
+         * @param {...string} [urlArgs] - arguments for url in correct order
          * @returns {string} built link
          */
-        get: function (name, argsURL) {
-            return contextPath + getURL(arguments);
+        get: function (name, urlArgs) {
+            return contextPath + getURL(name, Array.prototype.slice.call(arguments, 1));
         },
 
         /**
@@ -216,7 +202,7 @@
          * @returns {string} built link
          */
         getRelative: function (name, argsURL) {
-            return getURL(arguments);
+            return getURL(name, Array.prototype.slice.call(arguments, 1));
         }
     };
 })(Imcms);
