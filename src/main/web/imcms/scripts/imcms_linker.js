@@ -9,10 +9,14 @@
  * @author Serhii
  */
 (function (Imcms) {
-    var links = [];
-    var simpleURLs = {};
-    var linksCookiesKey = "links.json";
-    var contextPath = $("base").attr("href"); // tag 'base' should be on every page and should hold context path
+    if (typeof Cookies !== "function") {
+        throw new Error("Required 'js.cookie' library was not found!!1!");
+    }
+
+    var links = [],
+        simpleURLs = {},
+        linksCookiesKey = "links.json",
+        contextPath = $("base").attr("href"); // tag 'base' should be on every page and should hold context path
 
     /**
      * Gets links from server.
@@ -23,7 +27,7 @@
         $.ajax({
             url: linksPath,
             type: "GET",
-            async: false,
+            async: false, // exactly false because other modules should use Linker when links are loaded!
             success: function (response) {
                 links = response;
             }
@@ -172,7 +176,7 @@
 
     getLinks();
 
-    Imcms.Linker = {
+    return Imcms.Linker = {
 
         /**
          * @returns {string} context path
