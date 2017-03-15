@@ -85,7 +85,7 @@
 
         var link = getOrLoadLink(name, args);
 
-        if (!link || (args.length && !link.url)) {
+        if (!link) {
             var errorMessage = "Can not found link with name '" + name + "'";
             errorMessage += (args.length) ? " and arguments [" + args + "]" : "";
 
@@ -94,14 +94,11 @@
 
         if (args.length) {
             args.forEach(function (arg, index) {
-                link.url = link.url.replace("{" + (index + 1) + "}", arg);
+                link = link.replace("{" + (index + 1) + "}", arg);
             });
-
-            return link.url;
-
-        } else {
-            return link;
         }
+
+        return link;
     }
 
     /**
@@ -124,9 +121,11 @@
             return getSimpleUrl(name);
 
         } else {
-            return links.find(function (link) {
+            var link = links.find(function (link) {
                 return ((link.name == name) && (link.args.length == args.length));
             });
+
+            return (!link || (typeof link.url === "undefined")) ? "" : link.url;
         }
     }
 
