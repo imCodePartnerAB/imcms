@@ -26,10 +26,11 @@
             data.forEach(this.addLoopToList, this);
         },
         addLoopToList: function (data) {
-            var deleteRowBtn = $("<button>")
-                .attr("type", "button")
-                .addClass("loop-editor-content__button")
-                .addClass("loop-editor-content__button_negative"),
+            var
+                deleteRowBtn = $("<button>")
+                    .attr("type", "button")
+                    .addClass("loop-editor-content__button")
+                    .addClass("loop-editor-content__button_negative"),
                 isEnabledCheckbox = $("<input>")
                     .attr("type", "checkbox")
                     .attr("name", "isEnabled")
@@ -262,4 +263,6 @@
             });
         }
     };
+
+    return Imcms;
 })(Imcms);
