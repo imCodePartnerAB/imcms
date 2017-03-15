@@ -1,14 +1,18 @@
-/**
- * Created by Shadowgun on 24.03.2015.
- */
-Imcms.Logger = {
+(function (Imcms) {
     /**
-     * @param {*} message
-     * @param {...*} callback
+     * Created by Shadowgun on 24.03.2015.
      */
-    log: function (message, callback) {
-        console.info(message, Array.prototype.slice.call(arguments, 1));
-        if (callback)
-            callback.apply(this, Array.prototype.slice.call(arguments, 2));
-    }
-};
+    return Imcms.Logger = {
+        /**
+         * @param {*} message
+         * @param {...*} callback
+         */
+        log: function (message, callback) {
+            console.info(message, Array.prototype.slice.call(arguments, 1));
+
+            if (callback) {
+                callback.apply(this, Array.prototype.slice.call(arguments, 2));
+            }
+        }
+    };
+})(Imcms);
