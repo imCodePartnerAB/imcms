@@ -181,7 +181,7 @@ Imcms.BackgroundWorker = {
 
             } else if (reloadElementOptions.length) {
                 reloadElementOptions.forEach(function (option) {
-                    option.reloadElement.element.reload(option.callback);
+                    option.reloadElement.reload(option.callback);
                 });
 
             } else if ($this.completedTasksOptions.some($this._shouldReloadWholePage)) {
