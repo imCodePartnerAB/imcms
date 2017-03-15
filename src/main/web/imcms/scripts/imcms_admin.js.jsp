@@ -71,12 +71,7 @@
     }
 
     function onSelectChange(str) {
-        if ((str.indexOf("(Hidden)") >= 0)) {
-            document.getElementsByName("hidden")[0].checked = true;
-        }
-        else {
-            document.getElementsByName("hidden")[0].checked = false;
-        }
+        document.getElementsByName("hidden")[0].checked = (str.indexOf("(Hidden)") >= 0);
     }
 
         /* *******************************************************************************************
