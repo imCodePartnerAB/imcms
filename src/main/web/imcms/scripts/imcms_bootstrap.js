@@ -20,7 +20,6 @@ Imcms.Editors = {
 };
 Imcms.Editors.Text = {};
 Imcms.Editors.Menu = {};
-Imcms.Utils = {};
 
 Imcms.Bootstrapper = function () {
 };

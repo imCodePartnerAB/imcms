@@ -257,7 +257,7 @@
             }, callback);
         },
         entriesList: function (data, callback) {
-            API.read(Imcms.Utils.margeObjectsProperties(Imcms.document, data), function (response) {
+            API.read(Imcms.Utils.mergeObjectsProperties(Imcms.document, data), function (response) {
                 callback((response && response.result) ? response.data : {});
             });
         }

@@ -530,7 +530,7 @@ Imcms.Menu.Editor.prototype = {
         $(this._builder[0]).hide();
 
         var $target = $(this._target);
-        var response = Imcms.Utils.margeObjectsProperties(
+        var response = Imcms.Utils.mergeObjectsProperties(
             {data: JSON.stringify(this._treeAdapter.collect())},
             $target.data());
 
