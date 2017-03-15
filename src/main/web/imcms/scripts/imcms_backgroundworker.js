@@ -76,7 +76,15 @@ Imcms.BackgroundWorker = {
             ticket, task;
 
         task = function () {
-            $this.onComplete(ticket, opt);
+            try {
+                $this.onComplete(ticket, opt);
+
+            } catch (e) {
+                console.error(e);
+
+            } finally {
+                $this.closeProcessWindow();
+            }
         };
 
         ticket = $this.registerTask(task);
