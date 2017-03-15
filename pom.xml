@@ -1130,7 +1130,7 @@
                                 <include>**/imcms_addons.js</include>
                                 <include>**/imcms_linker.js</include>
                                 <include>**/imcms_simple_api.js</include>
-                                <include>**/imcms_base.js</include>
+                                <include>**/imcms_bootstrap.js</include>
                                 <include>**/imcms_connector.js</include>
                                 <include>**/imcms_adminpanel.js</include>
                                 <include>**/imcms_logger.js</include>
