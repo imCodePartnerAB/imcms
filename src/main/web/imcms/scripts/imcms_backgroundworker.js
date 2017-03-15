@@ -14,7 +14,7 @@
         /**
          * Options for every task, all are optional
          */
-        Options: {
+        options: {
             /**
              * Set true if you want to reload whole page
              */
@@ -70,7 +70,7 @@
 
         /**
          * Create Background work and show process window while work undone
-         * @param opt - see {@link Imcms.BackgroundWorker.Options}
+         * @param opt - see {@link Imcms.BackgroundWorker.options}
          * @return {Function|*}
          */
         createTask: function (opt) {
