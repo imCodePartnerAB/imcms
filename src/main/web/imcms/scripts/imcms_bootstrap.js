@@ -26,11 +26,12 @@ Imcms.Bootstrapper = function () {
 };
 Imcms.Bootstrapper.prototype = {
     bootstrap: function (editmode) {
+        var $body = $("body");
         if (editmode) {
-            $("body").css({paddingLeft: 150, width: $(window).width() - 150});
+            $body.css({paddingLeft: 150, width: $(window).width() - 150});
         } else {
-            if ($("body").css('paddingLeft').length > 0) {
-                $("body").removeAttr('style');
+            if ($body.css('paddingLeft').length > 0) {
+                $body.removeAttr('style');
             }
         }
 
