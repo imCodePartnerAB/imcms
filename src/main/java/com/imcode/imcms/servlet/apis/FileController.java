@@ -93,7 +93,7 @@ public class FileController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = {"/**/{filename}.{extension}"})
-    public boolean create(HttpServletRequest request, @PathVariable("extension") String extension,
+    public Object create(HttpServletRequest request, @PathVariable("extension") String extension,
                           @PathVariable("filename") String filename)
             throws IOException {
         MultipartFile multipartFile = null;
@@ -114,7 +114,8 @@ public class FileController {
         }
 
         FileUtils.copyInputStreamToFile(multipartFile != null ? multipartFile.getInputStream() : request.getInputStream(), createdFile);
-        return true;
+        return null;
+        // TODO: 17.03.17 replace null with some more information object. "null" replaced "true" value which caused error
     }
 
     @RequestMapping(method = RequestMethod.PATCH, value = {"/**/{filename}.{extension}"})
