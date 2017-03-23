@@ -17,7 +17,7 @@
             api = new Imcms.REST.API(usersUrl);
         },
         read: function (data, callback) {
-            api.read(data, callback);
+            api.get(data, callback);
         }
     };
 

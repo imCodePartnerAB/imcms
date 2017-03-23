@@ -16,7 +16,7 @@
             api = new Imcms.REST.API(roleUrl);
         },
         read: function (callback) {
-            api.read({}, callback);
+            api.get({}, callback);
         }
     };
 
