@@ -1,31 +1,24 @@
 /**
  * Created by Shadowgun on 23.04.2015.
+ *
+ * Refactored by Serhii Maksymchuk, 2017
  */
-Imcms.Category = {};
-Imcms.Category.Loader = function () {
-    this.init();
-};
-Imcms.Category.Loader.prototype = {
-    _api: {},
-    init: function () {
-        this._api = new Imcms.Category.API();
-    },
-    read: function (callback) {
-        this._api.read({}, callback);
-    }
-};
+(function (Imcms) {
+    var categoryUrl = Imcms.Linker.get("category"),
+        api = {};
 
-Imcms.Category.API = function () {
+    Imcms.Category = {};
+    Imcms.Category.Loader = function () {
+        this.init();
+    };
+    Imcms.Category.Loader.prototype = {
+        init: function () {
+            api = new Imcms.REST.API(categoryUrl);
+        },
+        read: function (callback) {
+            api.get({}, callback);
+        }
+    };
 
-};
-Imcms.Category.API.prototype = {
-    path: Imcms.Linker.get("category"),
-    read: function (request, response) {
-        $.ajax({
-            url: this.path,
-            type: "GET",
-            data: request,
-            success: response
-        });
-    }
-};
+    return Imcms;
+})(Imcms);

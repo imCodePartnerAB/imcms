@@ -13,7 +13,7 @@
     };
     Imcms.Language.Loader.prototype = {
         init: function () {
-            api = new Imcms.REST.API();
+            api = new Imcms.REST.API(languageUrl);
         },
         read: function (callback) {
             api.get({}, callback);
