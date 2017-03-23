@@ -2,6 +2,8 @@
  * Imcms Utils
  *
  * Created by Shadowgun on 12.02.2015.
+ *
+ * Refactored by Serhii Maksymchuk in 2017
  */
 (function (Imcms) {
     return Imcms.Utils = {
