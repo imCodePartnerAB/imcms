@@ -1,30 +1,24 @@
 /**
  * Created by Shadowgun on 24.02.2015.
+ *
+ * Refactored by Serhii Maksymchuk, 2017
  */
-Imcms.Language = {};
-Imcms.Language.Loader = function () {
-    this.init();
-};
-Imcms.Language.Loader.prototype = {
-    _api: {},
-    init: function () {
-        this._api = new Imcms.Language.API();
-    },
-    read: function (callback) {
-        this._api.read({}, callback);
-    }
-};
+(function (Imcms) {
+    var languageUrl = Imcms.Linker.get("language"),
+        api = {};
 
-Imcms.Language.API = function () {
+    Imcms.Language = {};
+    Imcms.Language.Loader = function () {
+        this.init();
+    };
+    Imcms.Language.Loader.prototype = {
+        init: function () {
+            api = new Imcms.REST.API();
+        },
+        read: function (callback) {
+            api.get({}, callback);
+        }
+    };
 
-};
-Imcms.Language.API.prototype = {
-    read: function (request, response) {
-        $.ajax({
-            url: Imcms.Linker.get("language"),
-            type: "GET",
-            data: request,
-            success: response
-        });
-    }
-};
+    return Imcms;
+})(Imcms);
