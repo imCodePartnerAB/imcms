@@ -1,32 +1,25 @@
 /**
  * Created by Serhii from Ubrainians for ImCode
  * on 23.04.2015.
+ *
+ * Refactored in 2017
  */
-Imcms.User = {};
-Imcms.User.Loader = function () {
-    this.init();
-};
-Imcms.User.Loader.prototype = {
-    _api: {},
-    init: function () {
-        this._api = new Imcms.User.API();
-    },
-    read: function (data, callback) {
-        this._api.read(data, callback);
-    }
-};
+(function (Imcms) {
+    var usersUrl = Imcms.Linker.get("users"),
+        api = {};
 
-Imcms.User.API = function () {
-};
+    Imcms.User = {};
+    Imcms.User.Loader = function () {
+        this.init();
+    };
+    Imcms.User.Loader.prototype = {
+        init: function () {
+            api = new Imcms.REST.API(usersUrl);
+        },
+        read: function (data, callback) {
+            api.read(data, callback);
+        }
+    };
 
-Imcms.User.API.prototype = {
-    path: Imcms.Linker.get("users"),
-    read: function (request, response) {
-        $.ajax({
-            url: this.path,
-            type: "GET",
-            data: request,
-            success: response
-        });
-    }
-};
+    return Imcms;
+})(Imcms);
