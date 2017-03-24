@@ -1,12 +1,8 @@
 /**
  * Created by Shadowgun on 24.03.2015.
  */
-/**
- * Created by Shadowgun on 24.03.2015.
- */
 Imcms.Folder = {};
 Imcms.Folder.API = function () {
-
 };
 Imcms.Folder.API.prototype = {
     create: function (request, response) {
@@ -46,7 +42,6 @@ Imcms.Folder.API.prototype = {
 };
 
 Imcms.Folder.Loader = function () {
-
 };
 Imcms.Folder.Loader.prototype = {
     _api: new Imcms.Folder.API(),
