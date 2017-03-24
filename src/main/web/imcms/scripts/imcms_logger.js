@@ -1,6 +1,8 @@
 (function (Imcms) {
     /**
      * Created by Shadowgun on 24.03.2015.
+     *
+     * Refactored by Serhii Maksymchuk in 2017
      */
     return Imcms.Logger = {
         /**
