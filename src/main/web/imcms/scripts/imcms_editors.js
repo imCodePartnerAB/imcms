@@ -44,7 +44,7 @@
         rebuildEditorsIn: function ($target) {
             this.buildExtra();
 
-            $target.find($(".editor-image")).each(
+            $target.find(".editor-image").each(
                 Imcms.Editors.Image.initEditor.bind(Imcms.Editors.Image)
             );
 
