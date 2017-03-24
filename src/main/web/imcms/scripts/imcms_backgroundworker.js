@@ -178,6 +178,11 @@
                         return option.reloadElement;
                     });
 
+                $this.completedTasksOptions = $this.completedTasksOptions
+                    .filter(function (option) {
+                        return !option.reloadElement;
+                    });
+
                 if (redirectOption) {
                     location.href = redirectOption.redirectURL;
 
@@ -265,9 +270,9 @@
             var $this = Imcms.BackgroundWorker;
             if ($this.processWindow) {
                 $this.processWindow.fadeOut(1500, function () {
-                    $this.callbackFunctions.forEach(function (callback) {
-                        callback();
-                    });
+                    while ($this.callbackFunctions.length) {
+                        $this.callbackFunctions.shift()();
+                    }
                     $("body").css({overflow: "auto"});
                     $this.processWindow.remove();
                     delete $this.processWindow;
