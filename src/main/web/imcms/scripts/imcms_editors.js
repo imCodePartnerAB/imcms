@@ -18,12 +18,13 @@
          * Initialize all editors
          */
         init: function () {
-            this.Language = new Imcms.Language.Loader();
-            this.Template = new Imcms.Template.Loader();
-            this.Role = new Imcms.Role.Loader();
-            this.Permission = new Imcms.Permission.Loader();
-            this.Category = new Imcms.Category.Loader();
-            this.User = new Imcms.User.Loader();
+            this.Language = Imcms.ApiFactory.createAPI("language");
+            this.Template = Imcms.ApiFactory.createAPI("template");
+            this.Role = Imcms.ApiFactory.createAPI("role");
+            this.Permission = Imcms.ApiFactory.createAPI("permission");
+            this.Category = Imcms.ApiFactory.createAPI("category");
+            this.User = Imcms.ApiFactory.createAPI("users");
+
             this.Document = new Imcms.Document.Loader();
             this.Loop = new Imcms.Loop();
             this.Menu = new Imcms.Menu.Loader();

@@ -138,10 +138,10 @@ Imcms.Document.Loader.prototype = {
         Imcms.Editors.Category.read(callback);
     },
     usersList: function (callback) {
-        Imcms.Editors.User.read({}, callback);
+        Imcms.Editors.User.read(callback, {});
     },
     currentUser: function (callback) {
-        Imcms.Editors.User.read({current: true}, callback);
+        Imcms.Editors.User.read(callback, {current: true});
     },
     redirect: function (id) {
         location.href = "/imcms/docadmin?meta_id=" + id;
