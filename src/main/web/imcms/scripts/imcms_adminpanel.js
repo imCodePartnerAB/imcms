@@ -6,12 +6,9 @@
                 $(element).click(function (event) {
                     event.preventDefault();
                     var reference = $(this).attr("href");
-                    Imcms.CallbackConnector.setCallbackOrCall(
-                        Imcms.Admin.Panel.publisherName,
-                        Imcms.BackgroundWorker.createTask({
-                            redirectURL: reference
-                        })
-                    );
+                    Imcms.BackgroundWorker.createTask({
+                        redirectURL: reference
+                    })();
                 });
             },
             init: function () {
@@ -67,8 +64,8 @@
                             x = e.pageX - cornerPointDistanceX,
                             y = e.pageY - cornerPointDistanceY;
 
-                        x = x < 0 ? 0 : (x + panelWidth + 10 >= windowWidth) ? windowWidth - panelWidth - 10 : x;
-                        y = y < 0 ? 0 : y;
+                        x = (x < 0) ? 0 : (x + panelWidth + 10 >= windowWidth) ? windowWidth - panelWidth - 10 : x;
+                        y = (y < 0) ? 0 : y;
                         $adminPanel.css({
                             left: x,
                             top: y
