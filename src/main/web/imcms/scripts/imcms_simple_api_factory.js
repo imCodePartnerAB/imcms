@@ -1,5 +1,5 @@
 /**
- * Builder for siple APIs
+ * Builder for simple APIs
  *
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 23.03.17
@@ -8,18 +8,13 @@
     return Imcms.ApiFactory = {
         createAPI: function (apiLinkName) {
             var apiUrl = Imcms.Linker.get(apiLinkName),
-                api = {},
-                Module = function () {
-                    api = new Imcms.REST.API(apiUrl);
-                };
+                api = new Imcms.REST.API(apiUrl);
 
-            Module.prototype = {
+            return {
                 read: function (callback, data) {
                     api.get((data || {}), callback);
                 }
             };
-
-            return new Module();
         }
     }
 })(Imcms);
