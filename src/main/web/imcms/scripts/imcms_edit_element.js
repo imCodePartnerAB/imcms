@@ -26,7 +26,7 @@
                 CKEDITOR.on('instanceReady', function (event) {
                     var editor = event.editor;
 
-                    if (editor.config.toolbar.indexOf("max") != 0) {
+                    if (editor.config.toolbar.indexOf("max") !== 0) {
                         editor.execCommand('toolbarswitch');
                     }
                 });

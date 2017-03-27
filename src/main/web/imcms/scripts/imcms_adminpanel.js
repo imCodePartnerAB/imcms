@@ -6,9 +6,12 @@
                 $(element).click(function (event) {
                     event.preventDefault();
                     var reference = $(this).attr("href");
-                    Imcms.BackgroundWorker.createTask({
-                        redirectURL: reference
-                    })();
+                    Imcms.CallbackConnector.setCallbackOrCall(
+                        Imcms.Admin.Panel.publisherName,
+                        Imcms.BackgroundWorker.createTask({
+                            redirectURL: reference
+                        })
+                    );
                 });
             },
             init: function () {

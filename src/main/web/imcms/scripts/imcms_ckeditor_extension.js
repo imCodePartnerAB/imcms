@@ -53,12 +53,12 @@ CKEDITOR.plugins.add("documentSaver", {
         };
         var switchToolbarCommandFunction = function (editor) {
             var element = editor.element;
-            if (editor.elementMode == 1) {
+            if (editor.elementMode === 1) {
                 editor.execCommand("toolbarswitch");
             }
             for (var key in CKEDITOR.instances) {
                 var newEditor = CKEDITOR.instances[key];
-                if (element == newEditor.element) {
+                if (element === newEditor.element) {
                     return newEditor;
                 }
             }
@@ -143,7 +143,7 @@ CKEDITOR.plugins.add("documentSaver", {
                         event.on("focus", event.focusHandler);
                     }, 1);
                 };
-            if (newEditor != editor) {
+            if (newEditor !== editor) {
                 newEditor.on('instanceReady', hideCommand.bind(null, newEditor));
 
             } else {
@@ -235,7 +235,7 @@ CKEDITOR.dialog.add("documentSaver", function (event) {
 CKEDITOR.defineToolbar = function (editor) {
     var prefix;
 
-    if (editor.elementMode == 1) { // full-screen editor mode
+    if (editor.elementMode === 1) { // full-screen editor mode
         editor.config.maxToolbar = true;
         prefix = "max";
 
@@ -406,13 +406,13 @@ CKEDITOR.dialog.add("textHistory", function (event) {
         data = $(event.element.$).data("textHistoryData")
             .map(function (textHistoryData) {
                 textHistoryData.modifiedDate = new Date(textHistoryData.modifiedDate);
-                textHistoryData.type = (textHistoryData.type == "HTML")
+                textHistoryData.type = (textHistoryData.type === "HTML")
                     ? "html"
                     : "from-html";
                 return textHistoryData;
             })
             .sort(function (a, b) {
-                return (a.modifiedDate > b.modifiedDate ? -1 : (a.modifiedDate == b.modifiedDate ? 0 : 1));
+                return (a.modifiedDate > b.modifiedDate ? -1 : (a.modifiedDate === b.modifiedDate ? 0 : 1));
             }),
 
         groupedData = {},

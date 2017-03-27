@@ -43,7 +43,7 @@
          */
         getCallback: function (name) {
             var event = Imcms.Events.events.find(function (event) {
-                return event.name == name;
+                return (event.name === name);
             });
 
             if (event && event.callback) {
