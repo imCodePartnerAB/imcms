@@ -45,6 +45,24 @@ Available list of tag attributes:
 | post               | String       | Text or html tag that would be added after text  |
 |                    |              | tag                                              |
 +--------------------+--------------+--------------------------------------------------+
+| mode               | String       | Possible values:                                 |
+|                    |              | `read` - means that text won't be editable       |
+|                    |              | `write` - editable text, just as without `mode`  |
+|                    |              | attribute                                        |
++--------------------+--------------+--------------------------------------------------+
+| formats            | String       | If set, format switch won't be able.             |
+|                    |              | Possible values:                                 |
+|                    |              | `text` - formatting panel will have only simple  |
+|                    |              | text editor options, content won't be represented|
+|                    |              | as HTML                                          |
+|                    |              | `html` - formatting panel will have HTML editor  |
+|                    |              | options, content will be represented as HTML     |
++--------------------+--------------+--------------------------------------------------+
+| label              | String       | Text label that is connected to current text tag |
++--------------------+--------------+--------------------------------------------------+
+| showlabel          | String       | Set `true` if you want to see text label near    |
+|                    |              | text tag content in admin edit mode              |
++--------------------+--------------+--------------------------------------------------+
 
 Example:
 """"""""
@@ -59,7 +77,8 @@ Example:
         <meta charset="utf-8"/>
     </head>
     <body>
-        <imcms:text no="1" document="1001" pre="<div>" post="</div>" placeholder="<i>this text is empty</i>"/>
+        <imcms:text no="1" document="1001" pre="<div>" post="</div>" placeholder="<i>this text is empty</i>"
+                    label="Test text tag" showlabel="true" formats="html"/>
     </body>
     </html>
 
