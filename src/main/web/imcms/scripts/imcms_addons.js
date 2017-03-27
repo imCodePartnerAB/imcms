@@ -1,4 +1,17 @@
 /**
+ * Function used to bind arguments with {code null} context
+ * @returns {Function} function where arguments are already set
+ */
+Function.prototype.bindArgs = function () {
+    var self = this,
+        args = arguments;
+
+    return function () {
+        self.apply(null, args);
+    }
+};
+
+/**
  * Flatmap function, as in Java Stream API
  * @param {function} lambda - lambda to be used for each element
  * @returns {Array} - resulted array

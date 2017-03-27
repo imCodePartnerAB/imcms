@@ -1,11 +1,31 @@
 (function (Imcms) {
-    function ajax(request, response) {
+    function ajax(data, callback) {
         $.ajax({
             url: this.url,
             type: this.type,
-            data: request,
-            success: response
+            data: data,
+            success: callback
         });
+    }
+
+    function post(path) {
+        return ajax.bind({url: path, type: "POST"});
+    }
+
+    function get(path) {
+        return ajax.bind({url: path, type: "GET"});
+    }
+
+    function put(path) {
+        return ajax.bind({url: path, type: "PUT"});
+    }
+
+    function patch(path) {
+        return ajax.bind({url: path, type: "PATCH"});
+    }
+
+    function remove(path) {
+        return ajax.bind({url: path, type: "DELETE"});
     }
 
     /**
@@ -18,11 +38,26 @@
      */
     return Imcms.REST = {
         API: function (path) {
-            this.post = ajax.bind({url: path, type: "POST"});
-            this.get = ajax.bind({url: path, type: "GET"});
-            this.put = ajax.bind({url: path, type: "PUT"});
-            this.patch = ajax.bind({url: path, type: "PATCH"});
-            this["delete"] = ajax.bind({url: path, type: "DELETE"})
+            this.post = post(path);
+            this.get = get(path);
+            this.put = put(path);
+            this.patch = patch(path);
+            this["delete"] = remove(path)
+        },
+        post: function (path, data, callback) {
+            post(path)(data, callback);
+        },
+        get: function (path, data, callback) {
+            get(path)(data, callback);
+        },
+        put: function (path, data, callback) {
+            put(path)(data, callback);
+        },
+        patch: function (path, data, callback) {
+            patch(path)(data, callback);
+        },
+        "delete": function (path, data, callback) {
+            remove(path)(data, callback);
         }
     };
 })(Imcms);
