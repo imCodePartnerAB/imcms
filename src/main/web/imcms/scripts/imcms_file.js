@@ -1,12 +1,16 @@
 (function (Imcms) {
+    function getApiPath(request) {
+        return Imcms.Linker.get("files", request.folder, request.file);
+    }
     Imcms.File = {};
     Imcms.File.API = function () {
     };
     Imcms.File.API.prototype = {
         create: function (request, response) {
+            var path = getApiPath(request);
             Imcms.Logger.log("File.API::create :",
-                $.ajax({
-                    url: Imcms.Linker.get("files", request.folder, request.filename),
+                $.ajax.bind($, {
+                    url: path,
                     contentType: false,
                     processData: false,
                     type: "POST",
@@ -15,26 +19,29 @@
                 }), request);
         },
         read: function (request, response) {
+            var path = getApiPath(request);
             Imcms.Logger.log("File.API::read :",
                 $.ajax.bind($, {
-                    url: Imcms.Linker.get("files", request.folder, request.file),
+                    url: path,
                     type: "GET",
                     success: response
                 }), request);
         },
         update: function (request, response) {
+            var path = getApiPath(request);
             Imcms.Logger.log("File.API::update :",
                 $.ajax.bind($, {
-                    url: Imcms.Linker.get("files", request.folder, request.file),
+                    url: path,
                     type: "PATCH",
                     data: request,
                     success: response
                 }), request);
         },
         remove: function (request, response) {
+            var path = getApiPath(request);
             Imcms.Logger.log("File.API::remove :",
                 $.ajax.bind($, {
-                    url: Imcms.Linker.get("files", request.folder, request.file),
+                    url: path,
                     type: "DELETE",
                     success: response
                 }), request);
@@ -98,7 +105,7 @@
             data.append("file", file);
 
             this._api.create(
-                {folder: folder || "", filename: file.name, data: data},
+                {folder: folder || "", file: file.name, data: data},
                 Imcms.Logger.log.bind(this, "File::addPictureFile : ", callback)
             )
         }
