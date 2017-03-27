@@ -19,8 +19,12 @@ For configure ``loop`` tag in template just look at the code below.
 
 .. code-block:: jsp
 
-    <imcms:loop no="1" pre="<div>" post="</div>">
-        ...HTML or JPS tags here...
+    <imcms:loop no="1" pre="<div>" post="</div>" label="Loop tag example">
+        <imcms:loopentry>
+            <imcms:loopitem>
+                ...some content that will be repeated
+            </imcms:loopitem>
+        </imcms:loopentry>
     </imcms:loop>
 
 
@@ -47,6 +51,7 @@ Example:
 .. code-block:: jsp
 
     <%@taglib prefix="imcms" uri="imcms" %>
+    <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -55,8 +60,20 @@ Example:
         <meta charset="utf-8"/>
     </head>
     <body>
-        <imcms:loop no="1" pre="<div>" post="</div>">
-            Hello world with loop content
+        <imcms:loop no="1" pre="<div>" post="</div>" label="Loop tag example">
+            <ul><imcms:loopentry>
+                <li><imcms:loopitem>
+                    <c:set var="loopEntryRef" value="${loopitem.loopEntryRef}"/>
+                    <c:out value="Entry no: ${loopEntryRef.entryNo}"/>
+                    <c:out value="Loop no: ${loopEntryRef.loopNo}"/>
+                    <div class="figure">
+                        <imcms:image no="3" document="${document.id}" style="max-width:100px;"/>
+                        <div class="description">
+                            <imcms:text no="3" document="${document.id}"/>
+                        </div>
+                    </div>
+                </imcms:loopitem></li>
+            </imcms:loopentry></ul>
         </imcms:loop>
     </body>
     </html>
