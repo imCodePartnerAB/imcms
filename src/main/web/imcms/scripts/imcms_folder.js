@@ -39,9 +39,9 @@
         }
     };
 
-    Imcms.Folder.Loader = function () {
+    Imcms.Folder = function () {
     };
-    Imcms.Folder.Loader.prototype = {
+    Imcms.Folder.prototype = {
         getAll: function (folder, callback) {
             api.read(
                 {folder: folder || ""},

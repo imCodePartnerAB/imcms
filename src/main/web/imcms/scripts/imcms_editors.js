@@ -25,7 +25,7 @@
             this.Category = Imcms.ApiFactory.createAPI("category");
             this.User = Imcms.ApiFactory.createAPI("users");
 
-            this.Folder = new Imcms.Folder.Loader();
+            this.Folder = new Imcms.Folder();
 
             this.Document = new Imcms.Document.Loader();
             this.Loop = new Imcms.Loop();
