@@ -74,31 +74,33 @@
                         $.cookie("admin-panel-location-top", y, {expires: 9999999, path: '/'});
                     }
                 });
-                window.pageInfoCounter = 0;
+            },
+            pageInfoCounter: false,
+            // don't trust your IDE, function is used!
+            pageInfo: function () {
+                var pageInfoCounter = this.pageInfoCounter;
 
-                window.pageInfo = (function () {
-                    if (pageInfoCounter == 0) {
-                        pageInfoCounter++;
-                        Imcms.Editors.Document.getDocument(Imcms.document.meta, function (data) {
-                            var viewer = new Imcms.Document.Viewer({
-                                data: data,
-                                type: Imcms.document.type,
-                                loader: Imcms.Editors.Document,
-                                target: $("body")[0],
-                                onApply: function () {
-                                    window.pageInfoCounter = 0;
-                                    Imcms.Editors.Document.update(viewer.serialize(), Imcms.BackgroundWorker.createTask({
-                                        showProcessWindow: true,
-                                        reloadWholePage: true
-                                    }));
-                                },
-                                onCancel: function () {
-                                    window.pageInfoCounter = 0;
-                                }
-                            });
+                if (this.pageInfoCounter === false) {
+                    this.pageInfoCounter = true;
+                    Imcms.Editors.Document.getDocument(Imcms.document.meta, function (data) {
+                        var viewer = new Imcms.Document.Viewer({
+                            data: data,
+                            type: Imcms.document.type,
+                            loader: Imcms.Editors.Document,
+                            target: $("body")[0],
+                            onApply: function () {
+                                pageInfoCounter = false;
+                                Imcms.Editors.Document.update(viewer.serialize(), Imcms.BackgroundWorker.createTask({
+                                    showProcessWindow: true,
+                                    reloadWholePage: true
+                                }));
+                            },
+                            onCancel: function () {
+                                pageInfoCounter = false;
+                            }
                         });
-                    }
-                });
+                    });
+                }
             },
             docs: function () {
                 Imcms.Editors.Document.show();
