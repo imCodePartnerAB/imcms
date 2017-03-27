@@ -46,21 +46,21 @@ Available list of tag attributes:
 |                    |              | tag                                              |
 +--------------------+--------------+--------------------------------------------------+
 | mode               | String       | Possible values:                                 |
-|                    |              | `read` - means that text won't be editable       |
-|                    |              | `write` - editable text, just as without `mode`  |
-|                    |              | attribute                                        |
+|                    |              | ``read`` - means that text won't be editable     |
+|                    |              | ``write`` - editable text, just as without       |
+|                    |              | ``mode`` attribute                               |
 +--------------------+--------------+--------------------------------------------------+
 | formats            | String       | If set, format switch won't be able.             |
 |                    |              | Possible values:                                 |
-|                    |              | `text` - formatting panel will have only simple  |
+|                    |              | ``text`` - formatting panel will have only simple|
 |                    |              | text editor options, content won't be represented|
 |                    |              | as HTML                                          |
-|                    |              | `html` - formatting panel will have HTML editor  |
+|                    |              | ``html`` - formatting panel will have HTML editor|
 |                    |              | options, content will be represented as HTML     |
 +--------------------+--------------+--------------------------------------------------+
 | label              | String       | Text label that is connected to current text tag |
 +--------------------+--------------+--------------------------------------------------+
-| showlabel          | String       | Set `true` if you want to see text label near    |
+| showlabel          | String       | Set ``true`` if you want to see text label near  |
 |                    |              | text tag content in admin edit mode              |
 +--------------------+--------------+--------------------------------------------------+
 
