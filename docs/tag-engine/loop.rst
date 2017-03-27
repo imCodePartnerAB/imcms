@@ -39,6 +39,8 @@ Available list of tag attributes:
 | post               | String       | Text or html tag that would be added after loop  |
 |                    |              | tag                                              |
 +--------------------+--------------+--------------------------------------------------+
+| label              | String       | Label that is used to describe loop tag          |
++--------------------+--------------+--------------------------------------------------+
 
 Example:
 """"""""
