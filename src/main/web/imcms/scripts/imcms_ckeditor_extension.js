@@ -247,7 +247,7 @@ CKEDITOR.defineToolbar = function (editor) {
     if (editor.element.data("contenttype") === "text") {
         return prefix + "PlainText";
 
-    } else if (editor.element.data("contenttype") === "from-html") {
+    } else if (editor.element.data("contenttype") === "source-from-html") {
         return prefix + "TextToolbar";
 
     } else {
@@ -408,7 +408,7 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                 textHistoryData.modifiedDate = new Date(textHistoryData.modifiedDate);
                 textHistoryData.type = (textHistoryData.type === "HTML")
                     ? "html"
-                    : "from-html";
+                    : "source-from-html";
                 return textHistoryData;
             })
             .sort(function (a, b) {
@@ -458,7 +458,7 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                         addTextHistoryButton("View Source", function () {
                             if (selectedItem.type === "html") {
                                 $content.text($content.html());
-                                selectedItem.type = "from-html";
+                                selectedItem.type = "source-from-html";
                             }
                         });
                         buttonsShowed = true;

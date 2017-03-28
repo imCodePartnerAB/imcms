@@ -144,7 +144,7 @@ Imcms.Text.Editor.prototype = {
 
             if (CKEDITOR.switchFormat) {
                 data.contenttype = (isHtmlContent)
-                    ? "from-html"
+                    ? "source-from-html"
                     : "html";
 
                 shouldRefreshPage = true;

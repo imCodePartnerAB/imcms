@@ -46,7 +46,7 @@ public class TextTag extends SimpleImcmsTag {
 
                 if (textDO != null) {
                     contentType = textDO.getType() == TextDomainObject.TEXT_TYPE_PLAIN
-                            ? "from-html"
+                            ? "source-from-html"
                             : "html";
                 }
             }

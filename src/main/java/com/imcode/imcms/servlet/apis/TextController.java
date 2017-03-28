@@ -130,7 +130,7 @@ public class TextController {
 
         try {
             int contentTypeInt = Optional.ofNullable(contentType)
-                    .map(type -> type.contains("text") || type.contains("from-html")
+                    .map(type -> type.contains("text") || type.contains("source-from-html")
                             ? TextDomainObject.TEXT_TYPE_PLAIN
                             : TextDomainObject.TEXT_TYPE_HTML)
                     .orElse(TextDomainObject.TEXT_TYPE_HTML);
