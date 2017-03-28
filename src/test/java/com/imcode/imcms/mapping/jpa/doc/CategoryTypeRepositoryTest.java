@@ -1,24 +1,21 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
-import com.imcode.imcms.mapping.jpa.JpaConfiguration;
-import com.imcode.imcms.mapping.jpa.doc.CategoryTypeRepository;
-import com.imcode.imcms.mapping.jpa.doc.CategoryType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import javax.inject.Inject;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {JpaConfiguration.class})
+@ContextConfiguration(classes = {com.imcode.imcms.config.MainConfig.class})
 @Transactional
 public class CategoryTypeRepositoryTest {
 
@@ -35,8 +32,8 @@ public class CategoryTypeRepositoryTest {
 
     public List<CategoryType> recreateTypes() {
         return Arrays.asList(
-            repository.saveAndFlush(new CategoryType("DocCategoryTypeOne", 0, false, false)),
-            repository.saveAndFlush(new CategoryType("DocCategoryTypeTwo", 0, false, false))
+                repository.saveAndFlush(new CategoryType("DocCategoryTypeOne", 0, false, false)),
+                repository.saveAndFlush(new CategoryType("DocCategoryTypeTwo", 0, false, false))
         );
     }
 

@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {JpaConfiguration.class})
+@ContextConfiguration(classes = {com.imcode.imcms.config.MainConfig.class})
 @Transactional
 public class UserRepositoryTest {
 

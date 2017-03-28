@@ -1,26 +1,27 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
-import com.imcode.imcms.mapping.jpa.JpaConfiguration;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {JpaConfiguration.class})
+@ContextConfiguration(classes = {com.imcode.imcms.config.MainConfig.class})
 @Transactional
 public class VersionRepositoryTest {
 
@@ -65,12 +66,12 @@ public class VersionRepositoryTest {
 
 
         return Arrays.asList(
-            versionRepository.saveAndFlush(new Version(docId, 0, user, now, user, now)),
-            versionRepository.saveAndFlush(new Version(docId, 1, user, now, user, now)),
-            versionRepository.saveAndFlush(new Version(docId, 2, user, now, user, now)),
-            versionRepository.saveAndFlush(new Version(docId, 3, user, now, user, now)),
-            versionRepository.saveAndFlush(new Version(docId, 4, user, now, user, now)),
-            versionRepository.saveAndFlush(new Version(docId, 5, user, now, user, now))
+                versionRepository.saveAndFlush(new Version(docId, 0, user, now, user, now)),
+                versionRepository.saveAndFlush(new Version(docId, 1, user, now, user, now)),
+                versionRepository.saveAndFlush(new Version(docId, 2, user, now, user, now)),
+                versionRepository.saveAndFlush(new Version(docId, 3, user, now, user, now)),
+                versionRepository.saveAndFlush(new Version(docId, 4, user, now, user, now)),
+                versionRepository.saveAndFlush(new Version(docId, 5, user, now, user, now))
         );
     }
 

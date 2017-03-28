@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping.jpa.doc.content;
 
-import com.imcode.imcms.mapping.jpa.JpaConfiguration;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import org.junit.Test;
@@ -17,7 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {JpaConfiguration.class})
+@ContextConfiguration(classes = {com.imcode.imcms.config.MainConfig.class})
 @Transactional
 public class CommonContentRepositoryTest {
 
@@ -35,13 +34,13 @@ public class CommonContentRepositoryTest {
         Language se = languageRepository.saveAndFlush(new Language("se", "Swedish", "Svenska"));
 
         return Arrays.asList(
-            commonContentRepository.saveAndFlush(
-                    new CommonContent(1001, en, "headline_en", "menuText_en", "menuImageUrl_en")
-            ),
+                commonContentRepository.saveAndFlush(
+                        new CommonContent(1001, en, "headline_en", "menuText_en", "menuImageUrl_en")
+                ),
 
-            commonContentRepository.saveAndFlush(
-                    new CommonContent(1001, se, "headline_se", "menuText_se", "menuImageUrl_se")
-            )
+                commonContentRepository.saveAndFlush(
+                        new CommonContent(1001, se, "headline_se", "menuText_se", "menuImageUrl_se")
+                )
 
         );
     }

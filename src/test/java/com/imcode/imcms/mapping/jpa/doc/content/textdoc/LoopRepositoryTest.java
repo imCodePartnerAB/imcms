@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
 import com.imcode.imcms.mapping.container.VersionRef;
-import com.imcode.imcms.mapping.jpa.JpaConfiguration;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
@@ -10,20 +9,21 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {JpaConfiguration.class})
+@ContextConfiguration(classes = {com.imcode.imcms.config.MainConfig.class})
 @Transactional
 public class LoopRepositoryTest {
 
@@ -59,39 +59,39 @@ public class LoopRepositoryTest {
 
         return Arrays.asList(
                 loopRepository.saveAndFlush(
-                    new Loop(
-                            version,
-                            1,
-                            2,
-                            Arrays.asList(
-                                new Loop.Entry(1)
-                            )
-                    )
+                        new Loop(
+                                version,
+                                1,
+                                2,
+                                Arrays.asList(
+                                        new Loop.Entry(1)
+                                )
+                        )
                 ),
 
                 loopRepository.saveAndFlush(
-                    new Loop(
-                            version,
-                            2,
-                            3,
-                            Arrays.asList(
-                                    new Loop.Entry(1),
-                                    new Loop.Entry(2)
-                            )
-                    )
+                        new Loop(
+                                version,
+                                2,
+                                3,
+                                Arrays.asList(
+                                        new Loop.Entry(1),
+                                        new Loop.Entry(2)
+                                )
+                        )
                 ),
 
                 loopRepository.saveAndFlush(
-                    new Loop(
-                            version,
-                            3,
-                            4,
-                            Arrays.asList(
-                                    new Loop.Entry(1),
-                                    new Loop.Entry(2),
-                                    new Loop.Entry(3)
-                            )
-                    )
+                        new Loop(
+                                version,
+                                3,
+                                4,
+                                Arrays.asList(
+                                        new Loop.Entry(1),
+                                        new Loop.Entry(2),
+                                        new Loop.Entry(3)
+                                )
+                        )
                 )
         );
     }
