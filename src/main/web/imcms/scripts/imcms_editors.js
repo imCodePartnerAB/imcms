@@ -26,12 +26,12 @@
             this.User = Imcms.ApiFactory.createAPI("users");
 
             this.Folder = new Imcms.Folder();
+            this.File = new Imcms.File();
 
             this.Document = new Imcms.Document.Loader();
             this.Loop = new Imcms.Loop();
             this.Menu = new Imcms.Menu.Loader();
             this.Text = new Imcms.Text.Editor();
-            this.File = new Imcms.File.Loader();
             this.Content = new Imcms.Content.Loader();
             this.Image = new Imcms.Image.Loader();
         },

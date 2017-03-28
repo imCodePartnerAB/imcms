@@ -1,11 +1,26 @@
 (function (Imcms) {
+    function restApiCall(restFunc, isEmptyData) {
+        return function (request, response) {
+            Imcms.Logger.log(
+                "File.API::" + restFunc.name + " :",
+                restFunc.bindArgs(getApiPath(request), (isEmptyData ? {} : request), response),
+                request
+            );
+        };
+    }
+
     function getApiPath(request) {
         return Imcms.Linker.get("files", request.folder, request.file);
     }
-    Imcms.File = {};
-    Imcms.File.API = function () {
-    };
-    Imcms.File.API.prototype = {
+
+    function createRequestData(folder, file, additionalOptions) {
+        return Imcms.Utils.mergeObjectsProperties(additionalOptions, {
+            folder: (folder || ""),
+            file: (file || "*.*")
+        });
+    }
+
+    var api = {
         create: function (request, response) {
             var path = getApiPath(request);
             Imcms.Logger.log("File.API::create :",
@@ -18,96 +33,44 @@
                     success: response
                 }), request);
         },
-        read: function (request, response) {
-            var path = getApiPath(request);
-            Imcms.Logger.log("File.API::read :",
-                $.ajax.bind($, {
-                    url: path,
-                    type: "GET",
-                    success: response
-                }), request);
-        },
-        update: function (request, response) {
-            var path = getApiPath(request);
-            Imcms.Logger.log("File.API::update :",
-                $.ajax.bind($, {
-                    url: path,
-                    type: "PATCH",
-                    data: request,
-                    success: response
-                }), request);
-        },
-        remove: function (request, response) {
-            var path = getApiPath(request);
-            Imcms.Logger.log("File.API::remove :",
-                $.ajax.bind($, {
-                    url: path,
-                    type: "DELETE",
-                    success: response
-                }), request);
-        }
+        read: restApiCall(Imcms.REST.get, false),
+        update: restApiCall(Imcms.REST.patch, true),
+        remove: restApiCall(Imcms.REST.delete, false)
     };
 
-    Imcms.File.Loader = function () {
+    Imcms.File = function () {
     };
-    Imcms.File.Loader.prototype = {
-        _api: new Imcms.File.API(),
+    Imcms.File.prototype = {
         getAllPictures: function (folder, callback) {
-            this._api.read(
-                {folder: folder || "", file: "*.jpg"},
-                Imcms.Logger.log.bind(this, "File::getAllPictures : ", callback)
-            );
-            this._api.read(
-                {folder: folder || "", file: "*.jpeg"},
-                Imcms.Logger.log.bind(this, "File::getAllPictures : ", callback)
-            );
-            this._api.read(
-                {folder: folder || "", file: "*.png"},
-                Imcms.Logger.log.bind(this, "File::getAllPictures : ", callback)
-            );
-            this._api.read(
-                {folder: folder || "", file: "*.gif"},
-                Imcms.Logger.log.bind(this, "File::getAllPictures : ", callback)
-            )
+            [
+                "*.jpg",
+                "*.jpeg",
+                "*.png",
+                "*.gif"
+
+            ].forEach(function (file) {
+                api.read(createRequestData(folder, file), callback);
+            });
         },
         getAll: function (folder, callback) {
-            this._api.read(
-                {folder: folder || "", file: "*.*"},
-                Imcms.Logger.log.bind(this, "File::getAll : ", callback)
-            )
+            api.read(createRequestData(folder), callback);
         },
         get: function (folder, filename, callback) {
-            this._api.read(
-                {folder: folder || "", file: filename || "*.*"},
-                Imcms.Logger.log.bind(this, "File::get : ", callback)
-            )
+            api.read(createRequestData(folder, filename), callback);
         },
         move: function (folder, filename, folderTo, callback) {
-            this._api.update(
-                {folder: folder || "", file: filename || "*.*", to: folderTo || ""},
-                Imcms.Logger.log.bind(this, "File::move : ", callback)
-            )
+            api.update(createRequestData(folder, filename, {to: (folderTo || "")}), callback);
         },
         removeAll: function (folder, callback) {
-            this._api.remove(
-                {folder: folder || "", file: "*.*"},
-                Imcms.Logger.log.bind(this, "File::removeAll : ", callback)
-            )
+            api.remove(createRequestData(folder), callback);
         },
         remove: function (folder, filename, callback) {
-            this._api.remove(
-                {folder: folder || "", file: filename || "*.*"},
-                Imcms.Logger.log.bind(this, "File::remove : ", callback)
-            )
+            api.remove(createRequestData(folder), callback);
         },
         addPictureFile: function (file, folder, callback) {
             var data = new FormData();
             data.append("file", file);
-
-            this._api.create(
-                {folder: folder || "", file: file.name, data: data},
-                Imcms.Logger.log.bind(this, "File::addPictureFile : ", callback)
-            )
+            api.create(createRequestData(folder, file.name, {data: data}), callback);
         }
     };
 
