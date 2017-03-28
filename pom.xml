@@ -472,6 +472,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.fasterxml</groupId>
+            <artifactId>classmate</artifactId>
+            <version>1.3.3</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.imcode.db</groupId>
             <artifactId>imcode-db</artifactId>
             <version>0.3</version>
@@ -1123,8 +1129,11 @@
                                 <include>**/JSFormBuilder.js</include>
                                 <include>**/imcms_addons.js</include>
                                 <include>**/imcms_linker.js</include>
-                                <include>**/imcms_simple_api.js</include>
-                                <include>**/imcms_base.js</include>
+                                <include>**/imcms_rest_api.js</include>
+                                <include>**/imcms_simple_api_factory.js</include>
+                                <include>**/imcms_editors.js</include>
+                                <include>**/imcms_bootstrap.js</include>
+                                <include>**/imcms_frame_builder.js</include>
                                 <include>**/imcms_connector.js</include>
                                 <include>**/imcms_adminpanel.js</include>
                                 <include>**/imcms_logger.js</include>
@@ -1135,13 +1144,7 @@
                                 <include>**/imcms_loop.js</include>
                                 <include>**/imcms_menu.js</include>
                                 <include>**/imcms_text.js</include>
-                                <include>**/imcms_language.js</include>
-                                <include>**/imcms_template.js</include>
-                                <include>**/imcms_category.js</include>
-                                <include>**/imcms_user.js</include>
                                 <include>**/imcms_document.js</include>
-                                <include>**/imcms_role.js</include>
-                                <include>**/imcms_permission.js</include>
                                 <include>**/imcms_file.js</include>
                                 <include>**/imcms_folder.js</include>
                                 <include>**/imcms_content.js</include>

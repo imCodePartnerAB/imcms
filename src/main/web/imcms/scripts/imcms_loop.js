@@ -26,7 +26,8 @@
             data.forEach(this.addLoopToList, this);
         },
         addLoopToList: function (data) {
-            var deleteRowBtn = $("<button>")
+            var
+                deleteRowBtn = $("<button>")
                     .attr("type", "button")
                     .addClass("loop-editor-content__button")
                     .addClass("loop-editor-content__button_negative"),
@@ -203,10 +204,8 @@
                 loopId,
                 Imcms.BackgroundWorker.createTask({
                     showProcessWindow: true,
-                    reloadContent: {
-                        element: $element,
-                        callback: Imcms.Editors.rebuildEditorsIn.bind(this, $element)
-                    }
+                    reloadElement: $element,
+                    callback: Imcms.Editors.rebuildEditorsIn.bind(this, $element)
                 })
             );
             this.close();
@@ -259,9 +258,11 @@
             }, callback);
         },
         entriesList: function (data, callback) {
-            API.read(Imcms.Utils.margeObjectsProperties(Imcms.document, data), function (response) {
+            API.read(Imcms.Utils.mergeObjectsProperties(Imcms.document, data), function (response) {
                 callback((response && response.result) ? response.data : {});
             });
         }
     };
+
+    return Imcms;
 })(Imcms);

@@ -121,7 +121,7 @@
         <div class="admin-panel-content-separator"></div>
         <section id="info" data-mode="info"
                  class="admin-panel-content-section${canEditDocInfo ? "" : " admin-panel-content-section-disabled"}">
-            <a href="#" target="_self" onclick="${canEditDocInfo ? "pageInfo();" : ""}return false;">
+            <a href="#" target="_self" onclick="${canEditDocInfo ? "Imcms.Admin.Panel.pageInfo();" : ""}return false;">
                 <div class="admin-panel-button">
                     <div class="admin-panel-button-image"></div>
                     <span class="admin-panel-button-description">Page info</span>

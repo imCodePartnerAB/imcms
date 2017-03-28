@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,10 +36,13 @@ public class UserController {
                 : cms.getUserService().getAllUsers();
 
         return Stream.of(allUsers)
-                .map(user -> new HashMap<String, Object>() {{
-                    put("loginName", user.getLoginName());
-                    put("id", user.getId());
-                }})
+                .map(user -> {
+                    final Map<String, Object> userData = new HashMap<>();
+                    userData.put("loginName", user.getLoginName());
+                    userData.put("id", user.getId());
+
+                    return userData;
+                })
                 .collect(Collectors.toList());
     }
 }
