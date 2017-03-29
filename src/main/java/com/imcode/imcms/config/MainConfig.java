@@ -9,6 +9,7 @@ import org.springframework.core.env.Environment;
  * Created by zemluk on 13.10.16.
  */
 @Configuration
+//TODO: Check properties for  system-properties-mode="NEVER" option
 @PropertySources({@PropertySource(value = "/WEB-INF/conf/server.properties", ignoreResourceNotFound = true)})
 @Import({DBConfig.class, WebConfig.class, ApplicationConfig.class})
 @ComponentScan({"com.imcode.imcms.mapping", "com.imcode.imcms.imagearchive", "com.imcode.imcms.api.linker", "imcode.util", "com.imcode.imcms.servlet.apis"})
