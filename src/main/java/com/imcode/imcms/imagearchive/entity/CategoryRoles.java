@@ -13,7 +13,16 @@ import java.util.Date;
                         "WHERE cr.roleId IN (:roleIds) AND cr.canChange = 1 AND NOT EXISTS " +
                         "(FROM ImageCategories ic " +
                         "WHERE ic.imageId = :imageId AND ic.categoryId = cr.categoryId) " +
-                        "AND c.type.name = 'Images'")
+                        "AND c.type.name = 'Images'"),
+
+        @NamedQuery(name = "artistsByRoleIds",
+                query = "SELECT DISTINCT lower(e.artist) AS artist " +
+                        "FROM CategoryRoles cr, ImageCategories ic, Images im, Exif e " +
+                        "WHERE cr.roleId IN (:roleIds) AND ic.categoryId = cr.categoryId " +
+                        "AND (ic.imageId = im.id OR im.usersId = :userId) AND e.imageId = im.id " +
+                        "AND e.type = :changedType AND cr.category.type.name = 'Images' " +
+                        "AND lower(e.artist) <> '' " +
+                        "ORDER BY lower(e.artist) ")
 })
 @IdClass(CategoryRolesPK.class)
 public class CategoryRoles implements Serializable {

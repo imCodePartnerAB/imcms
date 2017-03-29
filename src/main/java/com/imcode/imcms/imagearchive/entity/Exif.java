@@ -9,14 +9,10 @@ import java.util.Date;
 @Entity
 @Table(name = "archive_exif")
 @NamedQueries({
-        @NamedQuery(name = "artistsByRoleIds",
-                query = "SELECT DISTINCT lower(e.artist) AS artist " +
-                        "FROM CategoryRoles cr, ImageCategories ic, Images im, Exif e " +
-                        "WHERE cr.roleId IN (:roleIds) AND ic.categoryId = cr.categoryId " +
-                        "AND (ic.imageId = im.id OR im.usersId = :userId) AND e.imageId = im.id " +
-                        "AND e.type = :changedType AND cr.category.type.name = 'Images' " +
-                        "AND lower(e.artist) <> '' " +
-                        "ORDER BY lower(e.artist) "),
+        @NamedQuery(name = "updateImageExif",
+                query = "UPDATE Exif e " +
+                        "SET e.artist = :artist, e.description = :description, e.copyright = :copyright, e.updatedDt = current_timestamp() " +
+                        "WHERE e.imageId = :imageId AND e.type = :changedType"),
 
         @NamedQuery(name = "updateImageExifFull",
                 query = "UPDATE Exif e " +

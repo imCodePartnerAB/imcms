@@ -21,12 +21,7 @@ import java.util.List;
                         "im.format = :format, im.uploadedBy = :uploadedBy, im.licenseDt = :licenseDt, " +
                         "im.licenseEndDt = :licenseEndDt, im.status = :statusActive, im.updatedDt = current_timestamp(), " +
                         "im.altText = :altText " +
-                        "WHERE im.id = :id"),
-
-        @NamedQuery(name = "updateImageExif",
-                query = "UPDATE Exif e " +
-                        "SET e.artist = :artist, e.description = :description, e.copyright = :copyright, e.updatedDt = current_timestamp() " +
-                        "WHERE e.imageId = :imageId AND e.type = :changedType"),
+                        "WHERE im.id = :id")
 })
 public class Images implements Serializable {
     public static final short STATUS_UPLOADED = 0;
