@@ -9,6 +9,7 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
+import com.sun.istack.internal.Nullable;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import imcode.util.ImcmsImageUtils;
@@ -203,7 +204,11 @@ public class TextDocumentContentLoader {
      * @see LoopEntryRef
      * @see imcode.server.document.DocumentDomainObject
      */
-    public Collection<TextHistory> getTextHistory(DocRef docRef, LoopEntryRef loopEntryRef, int textNo) {
+    public Collection<TextHistory> getTextHistory(DocRef docRef, @Nullable LoopEntryRef loopEntryRef, int textNo) {
+        if (loopEntryRef == null) {
+            return getTextHistory(docRef, textNo);
+        }
+
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         Language language = languageRepository.findByCode(docRef.getLanguageCode());
 
