@@ -6,11 +6,10 @@ import java.util.Date;
 
 @Entity
 @Table(name = "archive_image_keywords")
-@NamedQueries({
-        @NamedQuery(name = "keywordsUsedByImages",
-                query = "SELECT DISTINCT k.id AS id, k.keywordNm AS keywordNm FROM ImageKeywords ik " +
-                        "INNER JOIN ik.keyword k ORDER BY k.keywordNm")
-})
+@NamedQuery(name = "keywordsUsedByImages",
+        query = "SELECT DISTINCT k.id AS id, k.keywordNm AS keywordNm FROM ImageKeywords ik " +
+                "INNER JOIN ik.keyword k ORDER BY k.keywordNm")
+
 @IdClass(ImageKeywordsPK.class)
 public class ImageKeywords implements Serializable {
     private static final long serialVersionUID = 3659080044661718290L;
