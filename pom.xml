@@ -832,7 +832,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.8.3</version>
+            <version>1.10.2</version>
         </dependency>
 
         <!--W3C validators api-->
