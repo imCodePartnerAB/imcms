@@ -66,6 +66,7 @@ public class ApplicationConfig {
 //        config.setMaxImageUploadSize(Long.parseLong(env.getProperty("ImageArchiveMaxImageUploadSize")));
 //        config.setMaxZipUploadSize(Long.parseLong(env.getProperty("ImageArchiveMaxZipUploadSize")));
 
+        //TODO: Fix env is null here...
         config.setStoragePath(new File(""));
         config.setTmpPath(new File(""));
         config.setImageMagickPath(new File(""));
