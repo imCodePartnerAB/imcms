@@ -8,6 +8,7 @@ import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextHistory;
+import com.imcode.imcms.servlet.tags.TextTag;
 import com.jcabi.w3c.Defect;
 import com.jcabi.w3c.ValidationResponse;
 import com.jcabi.w3c.ValidatorBuilder;
@@ -85,7 +86,7 @@ public class TextController {
             public String modifiedBy = it.getModifiedBy().getFirstName();
             public long modifiedDate = it.getModifiedDt().getTime();
             public String text = it.getText();
-            public String type = it.getType().name();
+            public String type = it.getType().name().toLowerCase();
         }).collect(Collectors.toList());
     }
 
@@ -130,7 +131,7 @@ public class TextController {
 
         try {
             int contentTypeInt = Optional.ofNullable(contentType)
-                    .map(type -> type.contains("text") || type.contains("source-from-html")
+                    .map(type -> type.contains(TextTag.TEXT) || type.contains(TextTag.SOURCE_FROM_HTML)
                             ? TextDomainObject.TEXT_TYPE_PLAIN
                             : TextDomainObject.TEXT_TYPE_HTML)
                     .orElse(TextDomainObject.TEXT_TYPE_HTML);

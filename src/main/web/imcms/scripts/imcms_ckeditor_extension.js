@@ -1,6 +1,12 @@
 /*
  CKEditor Addons
  */
+CKEDITOR.contentType = {
+    SOURCE_FROM_HTML: "source-from-html",
+    TEXT: "text",
+    HTML: "html"
+};
+
 CKEDITOR.define("confirmChanges", {});
 CKEDITOR.define("validateText", {});
 CKEDITOR.define("getTextHistory", {});
@@ -244,10 +250,10 @@ CKEDITOR.defineToolbar = function (editor) {
         prefix = "min";
     }
 
-    if (editor.element.data("contenttype") === "text") {
+    if (editor.element.data("contenttype") === CKEDITOR.contentType.TEXT) {
         return prefix + "PlainText";
 
-    } else if (editor.element.data("contenttype") === "source-from-html") {
+    } else if (editor.element.data("contenttype") === CKEDITOR.contentType.SOURCE_FROM_HTML) {
         return prefix + "TextToolbar";
 
     } else {
@@ -406,13 +412,15 @@ CKEDITOR.dialog.add("textHistory", function (event) {
         data = $(event.element.$).data("textHistoryData")
             .map(function (textHistoryData) {
                 textHistoryData.modifiedDate = new Date(textHistoryData.modifiedDate);
-                textHistoryData.type = (textHistoryData.type === "HTML")
-                    ? "html"
-                    : "source-from-html";
+
+                if (textHistoryData.type !== CKEDITOR.contentType.HTML) {
+                    textHistoryData.type = CKEDITOR.contentType.SOURCE_FROM_HTML;
+                }
+
                 return textHistoryData;
             })
             .sort(function (a, b) {
-                return (a.modifiedDate > b.modifiedDate ? -1 : (a.modifiedDate === b.modifiedDate ? 0 : 1));
+                return ((a.modifiedDate > b.modifiedDate) ? -1 : ((a.modifiedDate === b.modifiedDate) ? 0 : 1));
             }),
 
         groupedData = {},
@@ -450,15 +458,15 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                 .click(function () {
                     if (!buttonsShowed) {
                         addTextHistoryButton("View Page", function () {
-                            if (selectedItem.type !== "html") {
+                            if (selectedItem.type !== CKEDITOR.contentType.HTML) {
                                 $content.html($content.text());
-                                selectedItem.type = "html";
+                                selectedItem.type = CKEDITOR.contentType.HTML;
                             }
                         });
                         addTextHistoryButton("View Source", function () {
-                            if (selectedItem.type === "html") {
+                            if (selectedItem.type === CKEDITOR.contentType.HTML) {
                                 $content.text($content.html());
-                                selectedItem.type = "source-from-html";
+                                selectedItem.type = CKEDITOR.contentType.SOURCE_FROM_HTML;
                             }
                         });
                         buttonsShowed = true;
@@ -468,9 +476,9 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                         $selected.removeClass("selected");
                     }
 
-                    var callFunc = (item.type === "html")
-                        ? "html"
-                        : "text";
+                    var callFunc = (item.type === CKEDITOR.contentType.HTML)
+                        ? CKEDITOR.contentType.HTML
+                        : CKEDITOR.contentType.TEXT;
 
                     $content[callFunc](item.text);
                     $selected = $(this).addClass("selected");
@@ -508,7 +516,7 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                         event.setData(""); // clear previous text
                         var contentType = $(event.element.$).data("contenttype");
 
-                        var callFunc = (contentType === "html")
+                        var callFunc = (contentType === CKEDITOR.contentType.HTML)
                             ? "insertHtml"
                             : "insertText";
 

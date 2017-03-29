@@ -129,8 +129,8 @@ Imcms.Text.Editor.prototype = {
     _onConfirm: function (event) {
         var editor = event.editor,
             data = $(editor.element.$).data(),
-            isHtmlContent = (data.contenttype === "html"),
-            callFunc = (isHtmlContent) ? "html" : "text",
+            isHtmlContent = (data.contenttype === CKEDITOR.contentType.HTML),
+            callFunc = (isHtmlContent) ? CKEDITOR.contentType.HTML : CKEDITOR.contentType.TEXT,
             content = $(editor.element.$)[callFunc]();
 
         // save only when content is changed or mode is switched
@@ -144,8 +144,8 @@ Imcms.Text.Editor.prototype = {
 
             if (CKEDITOR.switchFormat) {
                 data.contenttype = (isHtmlContent)
-                    ? "source-from-html"
-                    : "html";
+                    ? CKEDITOR.contentType.SOURCE_FROM_HTML
+                    : CKEDITOR.contentType.HTML;
 
                 shouldRefreshPage = true;
                 CKEDITOR.switchFormat = false;
@@ -200,7 +200,7 @@ Imcms.Text.Editor.prototype = {
         editor.config.removePlugins = 'colorbutton,find,forms,newpage,removeformat,specialchar,stylescombo,templates';
         var customExtraPlugins = ",switchFormatToHTML,switchFormatToText,documentSaver,fileBrowser,link,textHistory,w3cValidator,maximize,toolbarswitch";
 
-        if (editor.config.extraPlugins.indexOf(customExtraPlugins) == -1) {
+        if (editor.config.extraPlugins.indexOf(customExtraPlugins) === -1) {
             editor.config.extraPlugins = editor.config.extraPlugins + customExtraPlugins;
         }
 
