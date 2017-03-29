@@ -12,14 +12,17 @@ import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import imcode.util.ImcmsImageUtils;
+import imcode.util.PropertyManager;
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.io.File;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
@@ -27,6 +30,8 @@ import static java.util.stream.Collectors.toMap;
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
 public class TextDocumentContentLoader {
+
+    private final Set<String> htmlTagsWhitelist = new HashSet<>();
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -63,6 +68,30 @@ public class TextDocumentContentLoader {
 
     @Inject
     private DocumentLanguageMapper languageMapper;
+
+    @PostConstruct
+    public void init() {
+        final String classPath = this.getClass()
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .getPath();
+
+        final File imcmsRoot = new File(classPath).getParentFile().getParentFile();
+        PropertyManager.setRoot(imcmsRoot);
+
+        htmlTagsWhitelist.addAll(Arrays.asList(
+                PropertyManager.getServerProperty("text.editor.html.tags.whitelist").split(";")
+        ));
+    }
+
+    public void addHtmlTagsToWhiteList(Collection<String> newWhiteListTags) {
+        htmlTagsWhitelist.addAll(newWhiteListTags);
+    }
+
+    public Set<String> getHtmlTagsWhitelist() {
+        return htmlTagsWhitelist;
+    }
 
     public TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
         TemplateNames jpaTemplateNames = templateNamesRepository.findOne(docId);
