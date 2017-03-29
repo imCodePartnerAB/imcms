@@ -33,7 +33,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Created by Shadowgun on 23.12.2014.
+ * Created by Shadowgun
+ * on 23.12.2014.
  */
 /*
  todo: Since {@link RequestMapping} can get in request path parameters like "/{id}/{someparam1}/{someparam2}" it would be better to REPLACE  {@link RequestParam} with {@link PathParam}
