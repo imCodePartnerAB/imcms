@@ -14,8 +14,6 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
  */
 @Configuration
 @EnableWebMvc
-
-//TODO: Check properties for  system-properties-mode="NEVER" option
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
