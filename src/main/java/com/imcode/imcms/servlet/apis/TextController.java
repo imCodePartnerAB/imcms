@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,24 +63,16 @@ public class TextController {
      * @see TextDocumentContentLoader#getTextHistory(DocRef, LoopEntryRef, int)
      */
     @RequestMapping
-    public Object getTextHistory(@RequestParam("meta") int docId,
-                                 @RequestParam("no") int textNo,
-                                 @RequestParam("locale") String locale,
-                                 @RequestParam(value = "loopentryref", required = false) String loopEntryRefStr) {
-
-        final VersionRef versionRef = imcmsServices.getDocumentMapper()
-                .getWorkingDocument(docId)
-                .getVersionRef();
-
-        final DocRef docRef = DocRef.of(versionRef, locale);
-        final TextDocumentContentLoader contentLoader = Imcms.getServices()
-                .getManagedBean(TextDocumentContentLoader.class);
+    public List<TextHistoryWebEntity> getTextHistory(@RequestParam("meta") int docId,
+                                                     @RequestParam("no") int textNo,
+                                                     @RequestParam("locale") String locale,
+                                                     @RequestParam(value = "loopentryref", required = false) String loopEntryRefStr) {
 
         final com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRefOpt;
         LoopEntryRef loopEntryRef = null;
 
         if (!StringUtils.isEmpty(loopEntryRefStr)) {
-            String[] items = loopEntryRefStr.split("_", 2);
+            final String[] items = loopEntryRefStr.split("_", 2);
 
             if (items.length > 1) {
                 loopEntryRefOpt = com.imcode.imcms.mapping.container.LoopEntryRef.of(
@@ -95,9 +87,14 @@ public class TextController {
             }
         }
 
-        Collection<TextHistory> textHistories = contentLoader.getTextHistory(docRef, loopEntryRef, textNo);
+        final VersionRef versionRef = imcmsServices.getDocumentMapper()
+                .getWorkingDocument(docId)
+                .getVersionRef();
 
-        return textHistories.stream()
+        return Imcms.getServices()
+                .getManagedBean(TextDocumentContentLoader.class)
+                .getTextHistory(DocRef.of(versionRef, locale), loopEntryRef, textNo)
+                .stream()
                 .map(TextHistoryWebEntity::new)
                 .collect(Collectors.toList());
     }
@@ -131,11 +128,10 @@ public class TextController {
             return;
         }
 
-        final VersionRef versionRef = VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO);
         com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRefOpt = null;
 
         if (!StringUtils.isEmpty(loopEntryRef)) {
-            String[] items = loopEntryRef.split("_", 2);
+            final String[] items = loopEntryRef.split("_", 2);
 
             if (items.length > 1)
                 loopEntryRefOpt = com.imcode.imcms.mapping.container.LoopEntryRef.of(
@@ -145,7 +141,7 @@ public class TextController {
         }
 
         try {
-            int contentTypeInt = Optional.ofNullable(contentType)
+            final int contentTypeInt = Optional.ofNullable(contentType)
                     .map(type -> (type.contains(TextTag.TEXT) || type.contains(TextTag.SOURCE_FROM_HTML))
                             ? TextDomainObject.TEXT_TYPE_PLAIN
                             : TextDomainObject.TEXT_TYPE_HTML)
@@ -156,6 +152,7 @@ public class TextController {
                     contentTypeInt
             );
 
+            final VersionRef versionRef = VersionRef.of(docId, DocumentVersion.WORKING_VERSION_NO);
             final TextDocTextContainer container = TextDocTextContainer.of(
                     DocRef.of(versionRef, locale),
                     loopEntryRefOpt,
@@ -182,7 +179,7 @@ public class TextController {
      * @see Defect
      */
     @RequestMapping(method = RequestMethod.POST, value = "/validate")
-    public Object validateText(@RequestParam("content") String content) throws IOException {
+    public TextValidationResultWebEntity validateText(@RequestParam("content") String content) throws IOException {
         final String contentWrapper = "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
                 "<head><title>Test</title></head><body>%s</body></html>";
         content = String.format(contentWrapper, content);
@@ -197,7 +194,7 @@ public class TextController {
     private class TextValidationResultWebEntity {
         public boolean result;
         public String message;
-        public Object data;
+        public ValidationData data;
 
         TextValidationResultWebEntity(ValidationResponse response) {
             this.result = response.valid();
@@ -206,29 +203,29 @@ public class TextController {
         }
 
         private class ValidationData {
-            public Set<Object> errors;
-            public Set<Object> warnings;
+            public Set<DefectWebEntity> errors;
+            public Set<DefectWebEntity> warnings;
 
             ValidationData(ValidationResponse response) {
                 this.errors = response.errors().stream().map(DefectWebEntity::new).collect(Collectors.toSet());
                 this.warnings = response.warnings().stream().map(DefectWebEntity::new).collect(Collectors.toSet());
             }
-        }
-    }
 
-    private class DefectWebEntity {
-        public String message;
-        public String source;
-        public String explanation;
-        public int column;
-        public int line;
+            private class DefectWebEntity {
+                public String message;
+                public String source;
+                public String explanation;
+                public int column;
+                public int line;
 
-        DefectWebEntity(Defect defect) {
-            this.message = defect.message();
-            this.source = defect.source().replace("&#60;/body&#62;&#60;/html&#62;", "");
-            this.explanation = defect.explanation();
-            this.column = defect.column();
-            this.line = defect.line();
+                DefectWebEntity(Defect defect) {
+                    this.message = defect.message();
+                    this.source = defect.source().replace("&#60;/body&#62;&#60;/html&#62;", "");
+                    this.explanation = defect.explanation();
+                    this.column = defect.column();
+                    this.line = defect.line();
+                }
+            }
         }
     }
 
