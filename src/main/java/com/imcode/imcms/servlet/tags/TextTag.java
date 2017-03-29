@@ -15,6 +15,7 @@ public class TextTag extends SimpleImcmsTag {
     public static final String SOURCE_FROM_HTML = "source-from-html";
     public static final String TEXT = "text";
     public static final String HTML = "html";
+    public static final String UNSAFE_HTML = "unsafe-html";
 
     protected String getContent(TagParser tagParser) {
         String result;
@@ -48,7 +49,7 @@ public class TextTag extends SimpleImcmsTag {
                         : textDoc.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, textNo));
 
                 if (textDO != null) {
-                    contentType = textDO.getType() == TextDomainObject.TEXT_TYPE_PLAIN
+                    contentType = (textDO.getType() == TextDomainObject.TEXT_TYPE_PLAIN)
                             ? SOURCE_FROM_HTML
                             : HTML;
                 }

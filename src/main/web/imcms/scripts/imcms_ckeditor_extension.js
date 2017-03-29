@@ -4,7 +4,8 @@
 CKEDITOR.contentType = {
     SOURCE_FROM_HTML: "source-from-html",
     TEXT: "text",
-    HTML: "html"
+    HTML: "html",
+    UNSAFE_HTML: "unsafe-html"
 };
 
 CKEDITOR.define("confirmChanges", {});
