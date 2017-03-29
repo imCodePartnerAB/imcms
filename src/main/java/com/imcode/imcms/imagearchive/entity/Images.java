@@ -27,54 +27,6 @@ import java.util.List;
                 query = "UPDATE Exif e " +
                         "SET e.artist = :artist, e.description = :description, e.copyright = :copyright, e.updatedDt = current_timestamp() " +
                         "WHERE e.imageId = :imageId AND e.type = :changedType"),
-
-        @NamedQuery(name = "updateImageExifFull",
-                query = "UPDATE Exif e " +
-                        "SET e.artist = :artist, e.description = :description,e.copyright = :copyright, e.xResolution = :xResolution, " +
-                        "e.yResolution = :yResolution, e.manufacturer = :manufacturer, e.model = :model, e.compression = :compression, " +
-                        "e.exposure = :exposure, e.exposureProgram = :exposureProgram, e.fStop = :fStop, e.flash = :flash, " +
-                        "e.focalLength = :focalLength, e.colorSpace = :colorSpace, e.resolutionUnit = :resolutionUnit, " +
-                        "e.pixelXDimension = :pixelXDimension, e.pixelYDimension = :pixelYDimension, e.dateOriginal = :dateOriginal, " +
-                        "e.dateDigitized = :dateDigitized, e.ISO = :ISO, e.updatedDt = current_timestamp() " +
-                        "WHERE e.imageId = :imageId AND e.type = :exifType"),
-
-        @NamedQuery(name = "availableImageCategoriesAdmin",
-                query = "SELECT c.id AS id, c.name AS name " +
-                        "FROM Categories c " +
-                        "WHERE c.type.name = 'Images' AND NOT EXISTS " +
-                        "(FROM ImageCategories ic WHERE ic.imageId = :imageId AND ic.categoryId = c.id)"),
-
-        @NamedQuery(name = "availableImageCategories",
-                query = "SELECT c.id AS id, c.name AS name " +
-                        "FROM CategoryRoles cr " +
-                        "INNER JOIN cr.category c " +
-                        "WHERE cr.roleId IN (:roleIds) AND cr.canChange = 1 AND NOT EXISTS " +
-                        "(FROM ImageCategories ic WHERE ic.imageId = :imageId AND ic.categoryId = cr.categoryId) AND c.type.name = 'Images'"),
-
-        @NamedQuery(name = "availableKeywords",
-                query = "SELECT k.keywordNm " +
-                        "FROM Keywords k " +
-                        "WHERE NOT EXISTS " +
-                        "(FROM ImageKeywords ik WHERE ik.imageId = :imageId AND ik.keywordId = k.id) ORDER BY k.keywordNm"),
-
-        @NamedQuery(name = "keywordsUsedByImages",
-                query = " SELECT DISTINCT k.id AS id, k.keywordNm AS keywordNm FROM ImageKeywords ik INNER JOIN ik.keyword k ORDER BY k.keywordNm"),
-
-        //ImageArchive
-        @NamedQuery(name = "updateImageData",
-                query = " UPDATE Images im " +
-                        "SET im.imageNm = :imageNm, im.uploadedBy = :uploadedBy, im.licenseDt = :licenseDt, " +
-                        "im.licenseEndDt = :licenseEndDt, im.status = :statusActive, im.updatedDt = current_timestamp(), " +
-                        "im.altText = :altText " +
-                        "WHERE im.id = :id"),
-
-        @NamedQuery(name = "updateFullImageData",
-                query = " UPDATE Images im " +
-                        "SET im.imageNm = :imageNm, im.width = :width, im.height = :height, im.fileSize = :fileSize, " +
-                        "im.format = :format, im.uploadedBy = :uploadedBy, im.licenseDt = :licenseDt, " +
-                        "im.licenseEndDt = :licenseEndDt, im.status = :statusActive, im.updatedDt = current_timestamp(), " +
-                        "im.altText = :altText " +
-                        "WHERE im.id = :id")
 })
 public class Images implements Serializable {
     public static final short STATUS_UPLOADED = 0;
