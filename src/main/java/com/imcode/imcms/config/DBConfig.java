@@ -84,6 +84,10 @@ public class DBConfig {
     private Map<String, ?> hibernateJpaProperties() {
         HashMap<String, String> properties = new HashMap<>();
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
+        properties.put("hibernate.format_sql", "true");
+        properties.put("hibernate.use_sql_comments", "true");
+        properties.put("hibernate.show_sql", "false");
+
         //TODO: Some additional properties for hibernate
 //        properties.put("hibernate.hbm2ddl.auto", "create");
 //        properties.put("hibernate.show_sql", "false");
