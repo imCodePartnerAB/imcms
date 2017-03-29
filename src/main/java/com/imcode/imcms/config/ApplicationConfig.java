@@ -22,11 +22,32 @@ import java.util.Map;
  */
 
 @Configuration
-@PropertySources({@PropertySource(value = "/WEB-INF/conf/server.properties", ignoreResourceNotFound = true)})
 public class ApplicationConfig {
 
     @Autowired
     private Environment env;// = new StandardServletEnvironment();
+
+    @Autowired
+    @Bean
+    public Config imageArchiveConfig(Environment env2) {
+        BidiMap languages = new DualHashBidiMap();
+        languages.put("eng", "en");
+        languages.put("swe", "sv");
+
+        Config config = new Config();
+
+        config.setStoragePath(new File(env2.getProperty("ImageArchiveStoragePath")));
+        config.setTmpPath(new File(env2.getProperty("ImageArchiveTempPath")));
+        config.setImageMagickPath(new File(env2.getProperty("ImageMagickPath")));
+        config.setImagesPath(new File(env2.getProperty("ImageArchiveImagesPath")));
+        config.setLibrariesPath(new File(env2.getProperty("ImageArchiveLibrariesPath")));
+        config.setOldLibraryPaths(new File[]{new File(env2.getProperty("ImageArchiveOldLibraryPaths"))});
+        config.setUsersLibraryFolder(env2.getProperty("ImageArchiveUsersLibraryFolder"));
+        config.setMaxImageUploadSize(Long.parseLong(env2.getProperty("ImageArchiveMaxImageUploadSize")));
+        config.setMaxZipUploadSize(Long.parseLong(env2.getProperty("ImageArchiveMaxZipUploadSize")));
+        config.setLanguages(languages);
+        return config;
+    }
 
     @Bean
     public CustomEditorConfigurer customEditorConfigurer() {
@@ -48,38 +69,6 @@ public class ApplicationConfig {
         return source;
     }
 
-    @Bean
-    public Config imageArchiveConfig() {
-        BidiMap languages = new DualHashBidiMap();
-        languages.put("eng", "en");
-        languages.put("swe", "sv");
-
-        Config config = new Config();
-
-//        config.setStoragePath(new File(env.getProperty("ImageArchiveStoragePath")));
-//        config.setTmpPath(new File(env.getProperty("ImageArchiveTempPath")));
-//        config.setImageMagickPath(new File(env.getProperty("ImageMagickPath")));
-//        config.setImagesPath(new File(env.getProperty("ImageArchiveImagesPath")));
-//        config.setLibrariesPath(new File(env.getProperty("ImageArchiveLibrariesPath")));
-//        config.setOldLibraryPaths(new File[]{new File(env.getProperty("ImageArchiveOldLibraryPaths"))});
-//        config.setUsersLibraryFolder(env.getProperty("ImageArchiveUsersLibraryFolder"));
-//        config.setMaxImageUploadSize(Long.parseLong(env.getProperty("ImageArchiveMaxImageUploadSize")));
-//        config.setMaxZipUploadSize(Long.parseLong(env.getProperty("ImageArchiveMaxZipUploadSize")));
-
-        //TODO: Fix env is null here...
-        config.setStoragePath(new File(""));
-        config.setTmpPath(new File(""));
-        config.setImageMagickPath(new File(""));
-        config.setImagesPath(new File(""));
-        config.setLibrariesPath(new File(""));
-        config.setOldLibraryPaths(new File[]{new File("")});
-        config.setUsersLibraryFolder("");
-        config.setMaxImageUploadSize(20);
-        config.setMaxZipUploadSize(20);
-
-        config.setLanguages(languages);
-        return config;
-    }
 
 
 }
