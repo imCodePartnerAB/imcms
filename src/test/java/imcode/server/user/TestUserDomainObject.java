@@ -32,21 +32,21 @@ public class TestUserDomainObject extends TestCase {
         assertTrue(ArrayUtils.contains(user.getRoleIds(), RoleId.USERS));
     }
 
-    public void testCanAddDocumentToAnyMenu() {
-        TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
-        assertFalse(user.canAddDocumentToAnyMenu(textDocument));
-        RoleId readRole = new RoleId(3);
-        textDocument.setDocumentPermissionSetTypeForRoleId(readRole, DocumentPermissionSetTypeDomainObject.READ);
-        user.addRoleId(readRole);
-        assertFalse(user.canAddDocumentToAnyMenu(textDocument));
-        textDocument.setLinkableByOtherUsers(true);
-        assertTrue(user.canAddDocumentToAnyMenu(textDocument));
-        textDocument.setLinkableByOtherUsers(false);
-        assertFalse(user.canAddDocumentToAnyMenu(textDocument));
-        RoleId editRole = new RoleId(4);
-        textDocument.setDocumentPermissionSetTypeForRoleId(editRole, DocumentPermissionSetTypeDomainObject.FULL);
-        user.addRoleId(editRole);
-        assertTrue(user.canAddDocumentToAnyMenu(textDocument));
-    }
+//    public void testCanAddDocumentToAnyMenu() {
+//        TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
+//        assertFalse(user.canAddDocumentToAnyMenu(textDocument));
+//        RoleId readRole = new RoleId(3);
+//        textDocument.setDocumentPermissionSetTypeForRoleId(readRole, DocumentPermissionSetTypeDomainObject.READ);
+//        user.addRoleId(readRole);
+//        assertFalse(user.canAddDocumentToAnyMenu(textDocument));
+//        textDocument.setLinkableByOtherUsers(true);
+//        assertTrue(user.canAddDocumentToAnyMenu(textDocument));
+//        textDocument.setLinkableByOtherUsers(false);
+//        assertFalse(user.canAddDocumentToAnyMenu(textDocument));
+//        RoleId editRole = new RoleId(4);
+//        textDocument.setDocumentPermissionSetTypeForRoleId(editRole, DocumentPermissionSetTypeDomainObject.FULL);
+//        user.addRoleId(editRole);
+//        assertTrue(user.canAddDocumentToAnyMenu(textDocument));
+//    }
 
 }

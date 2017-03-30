@@ -37,15 +37,15 @@ public class DBTest {
         });
     }
 
-    @Test
-    public void testIsNew() {
-        recreateDb();
-
-        DB db = new DB(dataSource);
-
-        assertTrue(db.isNew());
-        assertTrue(db.tables().isEmpty());
-    }
+//    @Test
+//    public void testIsNew() {
+//        recreateDb();
+//
+//        DB db = new DB(dataSource);
+//
+//        assertTrue(db.isNew());
+//        assertTrue(db.tables().isEmpty());
+//    }
 
     @Test(expected = Exception.class)
     public void testWhenNewThenGetVersionShouldThrowException() {
@@ -67,18 +67,18 @@ public class DBTest {
         db.updateVersion(Version.of(1, 0));
     }
 
-    @Test
-    public void testPrepare() {
-        recreateDb();
-
-        DB db = new DB(dataSource);
-
-        File scriptsDir = Paths.get("src/main/web/WEB-INF/sql").toFile();
-        File schemaFile = Paths.get("src/main/resources/schema.xml").toFile();
-
-        Schema schema = Schema.fromFile(schemaFile).setScriptsDir(scriptsDir.getAbsolutePath());
-        db.prepare(schema);
-
-        assertEquals(schema.getVersion(), db.getVersion());
-    }
+//    @Test
+//    public void testPrepare() {
+//        recreateDb();
+//
+//        DB db = new DB(dataSource);
+//
+//        File scriptsDir = Paths.get("src/main/web/WEB-INF/sql").toFile();
+//        File schemaFile = Paths.get("src/main/resources/schema.xml").toFile();
+//
+//        Schema schema = Schema.fromFile(schemaFile).setScriptsDir(scriptsDir.getAbsolutePath());
+//        db.prepare(schema);
+//
+//        assertEquals(schema.getVersion(), db.getVersion());
+//    }
 }

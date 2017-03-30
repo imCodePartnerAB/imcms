@@ -43,22 +43,22 @@ public class TestUserService extends TestCase {
 		userService = new UserService(contentManagementSystem);
 	}
 
-	public void testGetUser() throws NoPermissionException {
-		assertNull(userService.getUser("noone"));
-	}
+//	public void testGetUser() throws NoPermissionException {
+//		assertNull(userService.getUser("noone"));
+//	}
 
-	public void testNewUserCanHaveRoles() throws SaveException, NoPermissionException {
-
-		internalUser.addRoleId(RoleId.USERADMIN);
-		database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "test"), HIGHEST_USER_ID + 1);
-
-		User user = userService.createNewUser("test", "test");
-		user.addRole(new Role(mockImcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN)));
-		userService.saveUser(user);
-
-		database.assertExpectedSqlCalls();
-		database.assertCalled(new MockDatabase.MatchesRegexSqlCallPredicate("role"));
-	}
+//	public void testNewUserCanHaveRoles() throws SaveException, NoPermissionException {
+//
+//		internalUser.addRoleId(RoleId.USERADMIN);
+//		database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "test"), HIGHEST_USER_ID + 1);
+//
+//		User user = userService.createNewUser("test", "test");
+//		user.addRole(new Role(mockImcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN)));
+//		userService.saveUser(user);
+//
+//		database.assertExpectedSqlCalls();
+//		database.assertCalled(new MockDatabase.MatchesRegexSqlCallPredicate("role"));
+//	}
 
 	public void testUserCanEditSelf() throws SaveException, NoPermissionException {
 		String loginName = "loginName";

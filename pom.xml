@@ -1284,24 +1284,11 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/Test*.java</exclude>
-                        <exclude>**/*TestCase.java</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
-                <configuration>
-                    <argLine>-Xms512m -Xmx1024m</argLine>
-                    <includes>
-                        <include>**/*Spec.java</include>
-                        <include>**/*Suite.java</include>
-                    </includes>
-                </configuration>
             </plugin>
 
             <plugin>
