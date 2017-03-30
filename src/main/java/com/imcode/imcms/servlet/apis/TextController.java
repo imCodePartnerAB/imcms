@@ -1,6 +1,8 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.document.text.AllowedTagsCheckingResult;
+import com.imcode.imcms.document.text.TextContentFilter;
 import com.imcode.imcms.mapping.TextDocumentContentLoader;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
@@ -19,6 +21,9 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -45,6 +51,9 @@ public class TextController {
     private static final Logger log = Logger.getLogger(TextController.class);
 
     private ImcmsServices imcmsServices;
+
+    @Autowired
+    private TextContentFilter textContentFilter;
 
     @PostConstruct
     public void init() {
@@ -110,12 +119,12 @@ public class TextController {
      * @see VersionRef
      */
     @RequestMapping(method = RequestMethod.POST)
-    public void saveText(@RequestParam("content") String content,
-                         @RequestParam("locale") String locale,
-                         @RequestParam("meta") int docId,
-                         @RequestParam("no") int textNo,
-                         @RequestParam(value = "loopentryref", required = false) String loopEntryRef,
-                         @RequestParam(value = "contenttype", required = false) String contentType) {
+    public TextSavingResult saveText(@RequestParam("content") String content,
+                                     @RequestParam("locale") String locale,
+                                     @RequestParam("meta") int docId,
+                                     @RequestParam("no") int textNo,
+                                     @RequestParam(value = "loopentryref", required = false) String loopEntryRef,
+                                     @RequestParam(value = "contenttype", required = false) String contentType) {
 
         final UserDomainObject user = Imcms.getUser();
         final TextDocumentDomainObject doc = imcmsServices.getDocumentMapper().getWorkingDocument(docId);
@@ -125,7 +134,7 @@ public class TextController {
         // fixme: v4.
         if (!permissionSet.getEditTexts()) {
             //AdminDoc.adminDoc(documentId, user, request, res, getServletContext)
-            return;
+            return null;
         }
 
         com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRefOpt = null;
@@ -138,6 +147,12 @@ public class TextController {
                         Integer.parseInt(items[0]),
                         Integer.parseInt(items[1])
                 );
+        }
+
+        AllowedTagsCheckingResult checkingResult = textContentFilter.checkBadTags(content);
+
+        if (checkingResult.isFail()) {
+            return new FailTextSavingResult(checkingResult);
         }
 
         try {
@@ -164,7 +179,10 @@ public class TextController {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Error while saving text", e);
+            return null;
         }
+
+        return new SuccessTextSavingResult();
     }
 
     /**
@@ -240,6 +258,28 @@ public class TextController {
             this.modifiedDate = textHistory.getModifiedDt().getTime();
             this.text = textHistory.getText();
             this.type = textHistory.getType().name().toLowerCase();
+        }
+    }
+
+    private class TextSavingResult {
+        public boolean success;
+        public Set<String> notAllowedTags;
+
+        protected TextSavingResult(boolean success, Set<String> notAllowedTags) {
+            this.success = success;
+            this.notAllowedTags = notAllowedTags;
+        }
+    }
+
+    private class FailTextSavingResult extends TextSavingResult {
+        FailTextSavingResult(AllowedTagsCheckingResult checkingResult) {
+            super(false, checkingResult.getBadTags());
+        }
+    }
+
+    private class SuccessTextSavingResult extends TextSavingResult {
+        SuccessTextSavingResult() {
+            super(true, Collections.emptySet());
         }
     }
 }

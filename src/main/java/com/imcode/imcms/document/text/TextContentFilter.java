@@ -2,13 +2,16 @@ package com.imcode.imcms.document.text;
 
 import imcode.util.PropertyManager;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Node;
 import org.jsoup.safety.Whitelist;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Serhii Maksymchuk from Ubrainians for imCode
@@ -17,6 +20,7 @@ import java.util.Set;
 @Component
 public class TextContentFilter {
     private final Whitelist htmlTagsWhitelist = Whitelist.none();
+    private final Set<String> allowedTags = new HashSet<>();
 
     @PostConstruct
     public void init() {
@@ -29,29 +33,33 @@ public class TextContentFilter {
         final File imcmsRoot = new File(classPath).getParentFile().getParentFile();
         PropertyManager.setRoot(imcmsRoot);
 
-        htmlTagsWhitelist.addTags(
-                PropertyManager.getServerProperty("text.editor.html.tags.whitelist").split(";")
-        );
+        final String[] whiteListTags = PropertyManager.getServerProperty("text.editor.html.tags.whitelist")
+                .split(";");
+        htmlTagsWhitelist.addTags(whiteListTags);
+        allowedTags.addAll(Arrays.asList(whiteListTags));
     }
 
     public TextContentFilter addHtmlTagsToWhiteList(String[] newWhiteListTags) {
         htmlTagsWhitelist.addTags(newWhiteListTags);
+        allowedTags.addAll(Arrays.asList(newWhiteListTags));
         return this;
     }
 
+    public String cleanText(String cleanMe) {
+        return Jsoup.clean(cleanMe, htmlTagsWhitelist);
+    }
+
     public AllowedTagsCheckingResult checkBadTags(String checkMe) {
-        checkMe = checkMe.replaceAll(" ", "");
-        final String cleanText = Jsoup.clean(checkMe, htmlTagsWhitelist).replaceAll("[\\n ]", "");
-        boolean success;
-        Set<String> badTags = new HashSet<>();
 
-        if (cleanText.length() == checkMe.length()) {
-            success = true;
+        final Set<String> badTags = Jsoup.parse(checkMe)
+                .body()
+                .childNodes()
+                .stream()
+                .map(Node::nodeName)
+                .filter(tag -> !tag.contains("#") && !allowedTags.contains(tag))
+                .collect(Collectors.toSet());
 
-        } else {
-            success = false;
-
-        }
+        boolean success = badTags.isEmpty();
 
         return new AllowedTagsCheckingResult(success, badTags);
     }
