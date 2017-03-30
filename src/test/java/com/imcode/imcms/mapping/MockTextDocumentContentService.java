@@ -1,10 +1,8 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.document.text.AllowedTagsCheckingResult;
+import com.imcode.imcms.document.text.TextContentFilter;
 import junit.framework.TestCase;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by Serhii Maksymchuk from Ubrainians for imCode
@@ -12,22 +10,28 @@ import java.util.Set;
  */
 public class MockTextDocumentContentService extends TestCase {
 
-    private TextDocumentContentLoader contentLoader;
+    private TextContentFilter textContentFilter;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        contentLoader = new TextDocumentContentLoader();
+        textContentFilter = new TextContentFilter();
     }
 
     public void testHtmlTagsWhiteList() {
-        final Set<String> allowedTags = new HashSet<>();
-        allowedTags.add("div");
-        allowedTags.add("span");
-        allowedTags.add("p");
+        final String[] allowedTags = {
+                "div",
+                "span",
+                "p",
+        };
 
-        contentLoader.addHtmlTagsToWhiteList(allowedTags);
-        final Set<String> htmlTagsWhitelist = contentLoader.getHtmlTagsWhitelist();
-        assertTrue(CollectionUtils.isEqualCollection(allowedTags, htmlTagsWhitelist));
+        AllowedTagsCheckingResult checkingResult = textContentFilter.addHtmlTagsToWhiteList(allowedTags)
+                .checkBadTags("<test-tag>this is a not allowed tag test</test-tag>");
+
+        assertTrue(checkingResult.isFail());
+
+        checkingResult = textContentFilter.checkBadTags("<div>this is allowed tag test</div>");
+
+        assertTrue(checkingResult.isSuccess());
     }
 }

@@ -32,8 +32,6 @@ import static java.util.stream.Collectors.toMap;
 @Transactional(propagation = Propagation.SUPPORTS)
 public class TextDocumentContentLoader {
 
-    private final Set<String> htmlTagsWhitelist = new HashSet<>();
-
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -69,30 +67,6 @@ public class TextDocumentContentLoader {
 
     @Inject
     private DocumentLanguageMapper languageMapper;
-
-    @PostConstruct
-    public void init() {
-        final String classPath = this.getClass()
-                .getProtectionDomain()
-                .getCodeSource()
-                .getLocation()
-                .getPath();
-
-        final File imcmsRoot = new File(classPath).getParentFile().getParentFile();
-        PropertyManager.setRoot(imcmsRoot);
-
-        htmlTagsWhitelist.addAll(Arrays.asList(
-                PropertyManager.getServerProperty("text.editor.html.tags.whitelist").split(";")
-        ));
-    }
-
-    public void addHtmlTagsToWhiteList(Collection<String> newWhiteListTags) {
-        htmlTagsWhitelist.addAll(newWhiteListTags);
-    }
-
-    public Set<String> getHtmlTagsWhitelist() {
-        return htmlTagsWhitelist;
-    }
 
     public TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
         TemplateNames jpaTemplateNames = templateNamesRepository.findOne(docId);
