@@ -50,13 +50,12 @@ public class TextContentFilter {
     }
 
     public AllowedTagsCheckingResult checkBadTags(String checkMe) {
-
         final Set<String> badTags = Jsoup.parse(checkMe)
                 .body()
                 .childNodes()
                 .stream()
                 .map(Node::nodeName)
-                .filter(tag -> !tag.contains("#") && !allowedTags.contains(tag))
+                .filter(tag -> !tag.contains("#") && !allowedTags.contains(tag)) // simple text becomes with "#" mark
                 .collect(Collectors.toSet());
 
         boolean success = badTags.isEmpty();

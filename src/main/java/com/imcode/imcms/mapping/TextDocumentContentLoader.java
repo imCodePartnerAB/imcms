@@ -9,21 +9,17 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
-import com.sun.istack.internal.Nullable;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import imcode.util.ImcmsImageUtils;
-import imcode.util.PropertyManager;
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.io.File;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
@@ -178,7 +174,7 @@ public class TextDocumentContentLoader {
      * @see LoopEntryRef
      * @see imcode.server.document.DocumentDomainObject
      */
-    public Collection<TextHistory> getTextHistory(DocRef docRef, @Nullable LoopEntryRef loopEntryRef, int textNo) {
+    public Collection<TextHistory> getTextHistory(DocRef docRef, LoopEntryRef loopEntryRef, int textNo) {
         if (loopEntryRef == null) {
             return getTextHistory(docRef, textNo);
         }
