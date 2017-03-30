@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import java.beans.PropertyEditor;
 import java.io.File;
@@ -66,11 +65,6 @@ public class ApplicationConfig {
         source.setFallbackToSystemLocale(false);
         source.setUseCodeAsDefaultMessage(true);
         return source;
-    }
-
-    @Bean
-    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
-        return new MappingJackson2HttpMessageConverter();
     }
 
 }
