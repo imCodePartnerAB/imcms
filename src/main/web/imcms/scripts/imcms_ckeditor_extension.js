@@ -120,10 +120,31 @@ CKEDITOR.plugins.add("documentSaver", {
         };
 
         var confirmWithEvent = function (event) {
+            var afterConfirmCallback = Imcms.Events.getCallback("TextEditorRedirect"),
+                confirmChangesEventData = {
+                    callback: function (confirmChangesResponse, editor) {
+                        if (!confirmChangesResponse || confirmChangesResponse.success) {
+                            if (afterConfirmCallback) {
+                                afterConfirmCallback.call();
+                            }
+                        } else if (confirmChangesResponse.notAllowedTags
+                            && confirmChangesResponse.notAllowedTags.length)
+                        {
+                            //todo: replace with normal message instead of ugly alert window
+                            alert("Founded not allowed HTML tag: " + confirmChangesResponse.notAllowedTags);
+                            setTimeout(function () {
+                                $(editor.element.$).parent().find(".editor-frame").click();
+                            }, 300);
+
+                        } else {
+                            alert("ERROR!!!1");
+                            console.log(confirmChangesResponse);
+                        }
+                    }
+                };
             event = switchToolbarCommandFunction(event);
-            var callback = Imcms.Events.getCallback("TextEditorRedirect");
-            CKEDITOR.fire("confirmChangesEvent", {callback: callback}, event);
-            saveData(event, !callback);
+            CKEDITOR.fire("confirmChangesEvent", confirmChangesEventData, event);
+            saveData(event, !afterConfirmCallback);
         };
         var confirmCommandWithEvent = CKEDITOR.newCommandWithExecution(confirmWithEvent);
         editor.addCommand("confirmChanges", confirmCommandWithEvent);
