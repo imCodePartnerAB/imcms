@@ -4,6 +4,10 @@ apply plugin: 'idea'
 apply plugin: 'war'
 apply plugin: 'scala'
 
+//Tomcat plugin
+//https://github.com/bmuschko/gradle-tomcat-plugin
+apply plugin: 'com.bmuschko.tomcat-base'
+
 group = 'com.imcode.imcms'
 version = '6.0.0-alpha108-SNAPSHOT'
 
@@ -35,6 +39,15 @@ sourceSets {
     }
 }
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-tomcat-plugin:2.2.5'
+    }
+}
 
 repositories {
     mavenCentral()
@@ -157,7 +170,49 @@ dependencies {
         exclude(module: 'scala-actors')
         exclude(module: 'scala-reflect')
     }
+
+    //Tomcat 6
+//        def tomcatVersion = '6.0.51'
+//        tomcat "org.apache.tomcat:catalina:${tomcatVersion}",
+//                "org.apache.tomcat:coyote:${tomcatVersion}",
+//                "org.apache.tomcat:jasper:${tomcatVersion}"
+
+
+    //Tomcat7
+    def tomcatVersion = '7.0.57'
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+
+//    Tomcat 8
+//        def tomcatVersion = '8.5.12'
+//        tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+//                "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+//                "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+
 }
+
+//Tomcat plugin settings
+tomcat {
+    httpPort = 8080
+    enableSSL = true
+/*    contextPath = 'sample-app'
+
+    users {
+        user {
+            username = 'user1'
+            password = '123456'
+            roles = ['developers', 'admin']
+        }
+
+        user {
+            username = 'user2'
+            password = 'abcdef'
+            roles = ['manager']
+        }
+    }*/
+}
+
 
 //uploadArchives {
 //    repositories {
