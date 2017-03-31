@@ -27,7 +27,7 @@
         create: restApiCall(Imcms.REST.post, true),
         read: restApiCall(Imcms.REST.get, true),
         update: restApiCall(Imcms.REST.patch, false),
-        remove: restApiCall(Imcms.REST.delete, true)
+        remove: restApiCall(Imcms.REST["delete"], true)
     };
 
     Imcms.Folder = function () {

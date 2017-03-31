@@ -35,7 +35,7 @@
         },
         read: restApiCall(Imcms.REST.get, false),
         update: restApiCall(Imcms.REST.patch, true),
-        remove: restApiCall(Imcms.REST.delete, false)
+        remove: restApiCall(Imcms.REST["delete"], false)
     };
 
     Imcms.File = function () {
