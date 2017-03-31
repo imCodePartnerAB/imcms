@@ -9,11 +9,9 @@ Imcms.Text = {};
 Imcms.Text.API = function () {
 };
 Imcms.Text.API.prototype = {
-    textApiPath: Imcms.Linker.get("text"),
-    textValidateApiPath: Imcms.Linker.get("text.validate"),
     get: function (request, callback) {
         $.ajax({
-            url: this.textApiPath,
+            url: Imcms.Linker.get("text"),
             type: "GET",
             data: request,
             success: callback
@@ -21,7 +19,7 @@ Imcms.Text.API.prototype = {
     },
     update: function (request, callback) {
         $.ajax({
-            url: this.textApiPath,
+            url: Imcms.Linker.get("text"),
             type: "POST",
             data: request,
             success: callback
@@ -29,7 +27,7 @@ Imcms.Text.API.prototype = {
     },
     validate: function (request, callback) {
         $.ajax({
-            url: this.textValidateApiPath,
+            url: Imcms.Linker.get("text.validate"),
             type: "POST",
             data: request,
             success: callback
@@ -150,19 +148,14 @@ Imcms.Text.Editor.prototype = {
                     : CKEDITOR.contentType.HTML;
 
                 shouldRefreshPage = true;
-                // CKEDITOR.switchFormat = false;
+                CKEDITOR.switchFormat = false;
             }
 
-            var callback = function (response) {
-                (event.data.callback || Imcms.BackgroundWorker.createTask({
+            this._api.update(data, event.data.callback || Imcms.BackgroundWorker.createTask({
                     showProcessWindow: true,
                     refreshPage: shouldRefreshPage
-                })).call(null, response, editor);
-
-                CKEDITOR.switchFormat = false;
-            };
-
-            this._api.update(data, callback);
+                })
+            );
 
         } else if (event.data && event.data.callback && (typeof event.data.callback === "function")) {
             event.data.callback()

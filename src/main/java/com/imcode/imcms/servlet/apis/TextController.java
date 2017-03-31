@@ -21,8 +21,6 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -119,12 +117,12 @@ public class TextController {
      * @see VersionRef
      */
     @RequestMapping(method = RequestMethod.POST)
-    public TextSavingResult saveText(@RequestParam("content") String content,
-                                     @RequestParam("locale") String locale,
-                                     @RequestParam("meta") int docId,
-                                     @RequestParam("no") int textNo,
-                                     @RequestParam(value = "loopentryref", required = false) String loopEntryRef,
-                                     @RequestParam(value = "contenttype", required = false) String contentType) {
+    public void saveText(@RequestParam("content") String content,
+                         @RequestParam("locale") String locale,
+                         @RequestParam("meta") int docId,
+                         @RequestParam("no") int textNo,
+                         @RequestParam(value = "loopentryref", required = false) String loopEntryRef,
+                         @RequestParam(value = "contenttype", required = false) String contentType) {
 
         final UserDomainObject user = Imcms.getUser();
         final TextDocumentDomainObject doc = imcmsServices.getDocumentMapper().getWorkingDocument(docId);
@@ -134,7 +132,7 @@ public class TextController {
         // fixme: v4.
         if (!permissionSet.getEditTexts()) {
             //AdminDoc.adminDoc(documentId, user, request, res, getServletContext)
-            return null;
+            return;
         }
 
         com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRefOpt = null;
@@ -149,11 +147,7 @@ public class TextController {
                 );
         }
 
-        AllowedTagsCheckingResult checkingResult = textContentFilter.checkBadTags(content);
-
-        if (checkingResult.isFail()) {
-            return new FailTextSavingResult(checkingResult);
-        }
+        content = textContentFilter.cleanText(content);
 
         try {
             final int contentTypeInt = Optional.ofNullable(contentType)
@@ -179,10 +173,7 @@ public class TextController {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Error while saving text", e);
-            return null;
         }
-
-        return new SuccessTextSavingResult();
     }
 
     /**
