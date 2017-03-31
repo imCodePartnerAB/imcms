@@ -6,7 +6,22 @@ CKEDITOR.contentType = {
     CLEAN_SOURCE_FROM_HTML: "clean-source-from-html",
     TEXT: "text",
     HTML: "html",
-    CLEAN_HTML: "cleanhtml"
+    CLEAN_HTML: "cleanhtml",
+    isClean: function (checkMeForClean) {
+        return !!(~("" + checkMeForClean).toLowerCase().indexOf("clean"));
+    },
+    getHtml: function (checkMeForClean) {
+        return this.isClean(checkMeForClean) ? this.CLEAN_HTML : this.HTML;
+    },
+    getSource: function (checkMeForClean) {
+        return this.isClean(checkMeForClean) ? this.CLEAN_SOURCE_FROM_HTML : this.SOURCE_FROM_HTML;
+    },
+    isAnyHtml: function (checkMe) {
+        return ((checkMe === this.HTML) || (checkMe === this.CLEAN_HTML))
+    },
+    getHtmlOrText: function (isHtml) {
+        return (isHtml) ? this.HTML : this.TEXT;
+    }
 };
 
 CKEDITOR.define("confirmChanges", {});
@@ -258,7 +273,7 @@ CKEDITOR.defineToolbar = function (editor) {
         return prefix + "PlainText";
 
     } else if (contentType === CKEDITOR.contentType.SOURCE_FROM_HTML
-                || contentType === CKEDITOR.contentType.CLEAN_SOURCE_FROM_HTML)
+        || contentType === CKEDITOR.contentType.CLEAN_SOURCE_FROM_HTML)
     {
         return prefix + "TextToolbar";
 
@@ -419,10 +434,8 @@ CKEDITOR.dialog.add("textHistory", function (event) {
             .map(function (textHistoryData) {
                 textHistoryData.modifiedDate = new Date(textHistoryData.modifiedDate);
 
-                if (textHistoryData.type !== CKEDITOR.contentType.HTML
-                    || textHistoryData.type !== CKEDITOR.contentType.CLEAN_HTML)
-                {
-                    textHistoryData.type = CKEDITOR.contentType.SOURCE_FROM_HTML;
+                if (!CKEDITOR.contentType.isAnyHtml(textHistoryData.type)) {
+                    textHistoryData.type = CKEDITOR.contentType.getSource(textHistoryData.type);
                 }
 
                 return textHistoryData;
@@ -466,23 +479,15 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                 .click(function () {
                     if (!buttonsShowed) {
                         addTextHistoryButton("View Page", function () {
-                            if ((selectedItem.type !== CKEDITOR.contentType.HTML)
-                                || (selectedItem.type !== CKEDITOR.contentType.CLEAN_HTML))
-                            {
+                            if (!CKEDITOR.contentType.isAnyHtml(selectedItem.type)) {
                                 $content.html($content.text());
-                                selectedItem.type = !!(~selectedItem.type.toLowerCase().indexOf("clean"))
-                                    ? CKEDITOR.contentType.CLEAN_HTML
-                                    : CKEDITOR.contentType.HTML;
+                                selectedItem.type = CKEDITOR.contentType.getHtml(selectedItem.type);
                             }
                         });
                         addTextHistoryButton("View Source", function () {
-                            if ((selectedItem.type === CKEDITOR.contentType.HTML)
-                                || (selectedItem.type === CKEDITOR.contentType.CLEAN_HTML))
-                            {
+                            if (CKEDITOR.contentType.isAnyHtml(selectedItem.type)) {
                                 $content.text($content.html());
-                                selectedItem.type = !!(~selectedItem.type.toLowerCase().indexOf("clean"))
-                                    ? CKEDITOR.contentType.CLEAN_SOURCE_FROM_HTML
-                                    : CKEDITOR.contentType.SOURCE_FROM_HTML;
+                                selectedItem.type = CKEDITOR.contentType.getSource(selectedItem.type);
                             }
                         });
                         buttonsShowed = true;
@@ -492,10 +497,9 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                         $selected.removeClass("selected");
                     }
 
-                    var callFunc = ((item.type === CKEDITOR.contentType.HTML)
-                        || (item.type === CKEDITOR.contentType.CLEAN_HTML))
-                        ? CKEDITOR.contentType.HTML
-                        : CKEDITOR.contentType.TEXT;
+                    var callFunc = CKEDITOR.contentType.getHtmlOrText(
+                        CKEDITOR.contentType.isAnyHtml(item.type)
+                    );
 
                     $content[callFunc](item.text);
                     $selected = $(this).addClass("selected");
@@ -533,8 +537,7 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                         event.setData(""); // clear previous text
                         var contentType = $(event.element.$).data("contenttype");
 
-                        var callFunc = ((contentType === CKEDITOR.contentType.HTML)
-                            || (contentType === CKEDITOR.contentType.CLEAN_HTML))
+                        var callFunc = (CKEDITOR.contentType.isAnyHtml(contentType))
                             ? "insertHtml"
                             : "insertText";
 
