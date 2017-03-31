@@ -2,6 +2,7 @@ package com.imcode.imcms.document.text;
 
 import imcode.util.PropertyManager;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.springframework.stereotype.Component;
@@ -40,6 +41,7 @@ public class TextContentFilter {
     }
 
     public String cleanText(String cleanMe) {
+        cleanMe = StringUtils.trimToEmpty(cleanMe);
         return StringEscapeUtils.unescapeXml(Jsoup.clean(cleanMe, htmlTagsWhitelist))
                 .replaceAll(">\\n ", ">")
                 .replaceAll("\\n<", "<");
