@@ -151,11 +151,19 @@ Imcms.Text.Editor.prototype = {
                 CKEDITOR.switchFormat = false;
             }
 
-            this._api.update(data, event.data.callback || Imcms.BackgroundWorker.createTask({
+            var onTextUpdated = function (savedContent) {
+                editor.resetDirty();
+                $(editor.element.$).html($("<p>"))
+                    .children()[callFunc](savedContent.replace(/&nbsp;/g, " "));
+                editor.resetDirty();
+
+                (event.data.callback || Imcms.BackgroundWorker.createTask({
                     showProcessWindow: true,
                     refreshPage: shouldRefreshPage
-                })
-            );
+                })).call();
+            };
+
+            this._api.update(data, onTextUpdated);
 
         } else if (event.data && event.data.callback && (typeof event.data.callback === "function")) {
             event.data.callback()

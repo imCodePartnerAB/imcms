@@ -117,7 +117,7 @@ public class TextController {
      * @see VersionRef
      */
     @RequestMapping(method = RequestMethod.POST)
-    public void saveText(@RequestParam("content") String content,
+    public String saveText(@RequestParam("content") String content,
                          @RequestParam("locale") String locale,
                          @RequestParam("meta") int docId,
                          @RequestParam("no") int textNo,
@@ -132,7 +132,7 @@ public class TextController {
         // fixme: v4.
         if (!permissionSet.getEditTexts()) {
             //AdminDoc.adminDoc(documentId, user, request, res, getServletContext)
-            return;
+            return "";
         }
 
         com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRefOpt = null;
@@ -174,6 +174,8 @@ public class TextController {
             e.printStackTrace();
             log.error("Error while saving text", e);
         }
+
+        return content;
     }
 
     /**
