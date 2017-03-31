@@ -159,14 +159,6 @@ dependencies {
     }
 }
 
-test {
-//    exclude ['**/Test*.java', '**/*TestCase.java']
-//    exclude '**/Test*.java'
-
-    include '**/*Spec.java', '**/*Suite.java'
-//    exclude '**/*TestCase.java'
-}
-
 //uploadArchives {
 //    repositories {
 //        mavenDeployer {
