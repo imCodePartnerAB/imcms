@@ -9,9 +9,11 @@ Imcms.Text = {};
 Imcms.Text.API = function () {
 };
 Imcms.Text.API.prototype = {
+    textApiPath: Imcms.Linker.get("text"),
+    textValidateApiPath: Imcms.Linker.get("text.validate"),
     get: function (request, callback) {
         $.ajax({
-            url: Imcms.Linker.get("text"),
+            url: this.textApiPath,
             type: "GET",
             data: request,
             success: callback
@@ -19,7 +21,7 @@ Imcms.Text.API.prototype = {
     },
     update: function (request, callback) {
         $.ajax({
-            url: Imcms.Linker.get("text"),
+            url: this.textApiPath,
             type: "POST",
             data: request,
             success: callback
@@ -27,7 +29,7 @@ Imcms.Text.API.prototype = {
     },
     validate: function (request, callback) {
         $.ajax({
-            url: Imcms.Linker.get("text.validate"),
+            url: this.textValidateApiPath,
             type: "POST",
             data: request,
             success: callback
@@ -129,8 +131,8 @@ Imcms.Text.Editor.prototype = {
     _onConfirm: function (event) {
         var editor = event.editor,
             data = $(editor.element.$).data(),
-            isHtmlContent = (data.contenttype === "html"),
-            callFunc = (isHtmlContent) ? "html" : "text",
+            isHtmlContent = (data.contenttype === CKEDITOR.contentType.HTML),
+            callFunc = (isHtmlContent) ? CKEDITOR.contentType.HTML : CKEDITOR.contentType.TEXT,
             content = $(editor.element.$)[callFunc]();
 
         // save only when content is changed or mode is switched
@@ -144,18 +146,23 @@ Imcms.Text.Editor.prototype = {
 
             if (CKEDITOR.switchFormat) {
                 data.contenttype = (isHtmlContent)
-                    ? "from-html"
-                    : "html";
+                    ? CKEDITOR.contentType.SOURCE_FROM_HTML
+                    : CKEDITOR.contentType.HTML;
 
                 shouldRefreshPage = true;
-                CKEDITOR.switchFormat = false;
+                // CKEDITOR.switchFormat = false;
             }
 
-            this._api.update(data, event.data.callback || Imcms.BackgroundWorker.createTask({
+            var callback = function (response) {
+                (event.data.callback || Imcms.BackgroundWorker.createTask({
                     showProcessWindow: true,
                     refreshPage: shouldRefreshPage
-                })
-            );
+                })).call(null, response, editor);
+
+                CKEDITOR.switchFormat = false;
+            };
+
+            this._api.update(data, callback);
 
         } else if (event.data && event.data.callback && (typeof event.data.callback === "function")) {
             event.data.callback()
@@ -200,7 +207,7 @@ Imcms.Text.Editor.prototype = {
         editor.config.removePlugins = 'colorbutton,find,forms,newpage,removeformat,specialchar,stylescombo,templates';
         var customExtraPlugins = ",switchFormatToHTML,switchFormatToText,documentSaver,fileBrowser,link,textHistory,w3cValidator,maximize,toolbarswitch";
 
-        if (editor.config.extraPlugins.indexOf(customExtraPlugins) == -1) {
+        if (editor.config.extraPlugins.indexOf(customExtraPlugins) === -1) {
             editor.config.extraPlugins = editor.config.extraPlugins + customExtraPlugins;
         }
 

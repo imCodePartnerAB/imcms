@@ -12,6 +12,10 @@ import imcode.server.parser.TagParser;
 import org.apache.commons.lang3.StringUtils;
 
 public class TextTag extends SimpleImcmsTag {
+    public static final String SOURCE_FROM_HTML = "source-from-html";
+    public static final String TEXT = "text";
+    public static final String HTML = "html";
+    public static final String UNSAFE_HTML = "unsafe-html";
 
     protected String getContent(TagParser tagParser) {
         String result;
@@ -34,10 +38,10 @@ public class TextTag extends SimpleImcmsTag {
         if (TagParser.isEditable(attributes, hasEditTexts)) {
             String locale = documentRequest.getDocument().getLanguage().getCode();
             int textNo = Integer.parseInt(attributes.getProperty("no"));
-            String contentType = "html";
+            String contentType = HTML;
 
-            if (attributes.getProperty("formats", "").contains("text")) {
-                contentType = "text";
+            if (attributes.getProperty("formats", "").contains(TEXT)) {
+                contentType = TEXT;
 
             } else {
                 TextDomainObject textDO = (loopTag == null)
@@ -45,9 +49,9 @@ public class TextTag extends SimpleImcmsTag {
                         : textDoc.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, textNo));
 
                 if (textDO != null) {
-                    contentType = textDO.getType() == TextDomainObject.TEXT_TYPE_PLAIN
-                            ? "from-html"
-                            : "html";
+                    contentType = (textDO.getType() == TextDomainObject.TEXT_TYPE_PLAIN)
+                            ? SOURCE_FROM_HTML
+                            : HTML;
                 }
             }
 

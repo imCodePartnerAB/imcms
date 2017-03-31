@@ -14,7 +14,7 @@ import java.util.Properties;
 
 /**
  * Intended to load and cache properties from *.properties files. Be sure that
- * {@link PropertyManager#setRoot} are called before server's configurations was read.
+ * {@link PropertyManager#setRoot(String)} are called before server's configurations was read.
  */
 public class PropertyManager {
 
@@ -22,6 +22,8 @@ public class PropertyManager {
 	 * Default server properties file path.
 	 */
 	private static final String SERVER_PROPERTIES_FILE = "WEB-INF/conf/server.properties";
+
+	private static final String DEFAULT_PROPERTY_VALUE = "";
 
 	private static final String ERR_MESSAGE = "ImCMS not initialized yet, root path not set. Wait for ImCMS do it "
 			+ "automatically or set it manually. Use this to read properties ONLY when setRoot() was called before.";
@@ -98,13 +100,26 @@ public class PropertyManager {
 	}
 
 	/**
-	 * Gets the value of property from server properties file.
+	 * Gets the value of property from server properties file or returns empty
+     * string if there is no such property
 	 *
-	 * @param property The property which needs to be read from .
-	 * @return {@code String} value of asked property.
+	 * @param property The property which needs to be read from server properties file
+	 * @return {@code String} value of asked property or empty string
 	 */
 	public static String getServerProperty(String property) {
-		return getServerProperties().getProperty(property);
+		return getServerProperty(property, DEFAULT_PROPERTY_VALUE);
+	}
+
+	/**
+	 * Gets the value of property from server properties file or returns
+     * default value if there is no such server property.
+	 *
+     * @param property The property which needs to be read from server properties file
+     * @param defaultValue default value that will be returned if there is no such server property
+	 * @return {@code String} value of asked property or default value
+	 */
+	public static String getServerProperty(String property, String defaultValue) {
+		return getServerProperties().getProperty(property, defaultValue);
 	}
 
 	/**

@@ -47,24 +47,24 @@ public class TestDocument extends TestCase {
         assertFalse(documentDO.isSearchDisabled());
     }
 
-    public void testKeywords() {
-        TextDocumentDomainObject documentDO = new TextDocumentDomainObject();
-        TextDocument document = new TextDocument(documentDO, null);
-        Set keywords = new HashSet();
-        keywords.add("foo");
-        //documentDO.setKeywords(keywords);
-        assertTrue(document.getKeywords().contains("foo"));
-    }
+//    public void testKeywords() {
+//        TextDocumentDomainObject documentDO = new TextDocumentDomainObject();
+//        TextDocument document = new TextDocument(documentDO, null);
+//        Set keywords = new HashSet();
+//        keywords.add("foo");
+//        //documentDO.setKeywords(keywords);
+//        assertTrue(document.getKeywords().contains("foo"));
+//    }
 
-    public void testLinkableByOtherUsers() {
-        TextDocumentDomainObject documentDO = new TextDocumentDomainObject();
-        TextDocument document = new TextDocument(documentDO, null);
-        assertFalse(document.isLinkableByOtherUsers());
-        documentDO.setLinkableByOtherUsers(true);
-        assertTrue(document.isLinkableByOtherUsers());
-        document.setLinkableByOtherUsers(false);
-        assertFalse(documentDO.isLinkableByOtherUsers());
-    }
+//    public void testLinkableByOtherUsers() {
+//        TextDocumentDomainObject documentDO = new TextDocumentDomainObject();
+//        TextDocument document = new TextDocument(documentDO, null);
+//        assertFalse(document.isLinkableByOtherUsers());
+//        documentDO.setLinkableByOtherUsers(true);
+//        assertTrue(document.isLinkableByOtherUsers());
+//        document.setLinkableByOtherUsers(false);
+//        assertFalse(documentDO.isLinkableByOtherUsers());
+//    }
 
     private static class RoleIdEqualsPredicate implements Predicate {
         private final RoleId roleId;

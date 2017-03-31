@@ -1,6 +1,13 @@
 /*
  CKEditor Addons
  */
+CKEDITOR.contentType = {
+    SOURCE_FROM_HTML: "source-from-html",
+    TEXT: "text",
+    HTML: "html",
+    UNSAFE_HTML: "unsafe-html"
+};
+
 CKEDITOR.define("confirmChanges", {});
 CKEDITOR.define("validateText", {});
 CKEDITOR.define("getTextHistory", {});
@@ -113,10 +120,31 @@ CKEDITOR.plugins.add("documentSaver", {
         };
 
         var confirmWithEvent = function (event) {
+            var afterConfirmCallback = Imcms.Events.getCallback("TextEditorRedirect"),
+                confirmChangesEventData = {
+                    callback: function (confirmChangesResponse, editor) {
+                        if (!confirmChangesResponse || confirmChangesResponse.success) {
+                            if (afterConfirmCallback) {
+                                afterConfirmCallback.call();
+                            }
+                        } else if (confirmChangesResponse.notAllowedTags
+                            && confirmChangesResponse.notAllowedTags.length)
+                        {
+                            //todo: replace with normal message instead of ugly alert window
+                            alert("Founded not allowed HTML tag: " + confirmChangesResponse.notAllowedTags);
+                            setTimeout(function () {
+                                $(editor.element.$).parent().find(".editor-frame").click();
+                            }, 300);
+
+                        } else {
+                            alert("ERROR!!!1");
+                            console.log(confirmChangesResponse);
+                        }
+                    }
+                };
             event = switchToolbarCommandFunction(event);
-            var callback = Imcms.Events.getCallback("TextEditorRedirect");
-            CKEDITOR.fire("confirmChangesEvent", {callback: callback}, event);
-            saveData(event, !callback);
+            CKEDITOR.fire("confirmChangesEvent", confirmChangesEventData, event);
+            saveData(event, !afterConfirmCallback);
         };
         var confirmCommandWithEvent = CKEDITOR.newCommandWithExecution(confirmWithEvent);
         editor.addCommand("confirmChanges", confirmCommandWithEvent);
@@ -244,10 +272,10 @@ CKEDITOR.defineToolbar = function (editor) {
         prefix = "min";
     }
 
-    if (editor.element.data("contenttype") === "text") {
+    if (editor.element.data("contenttype") === CKEDITOR.contentType.TEXT) {
         return prefix + "PlainText";
 
-    } else if (editor.element.data("contenttype") === "from-html") {
+    } else if (editor.element.data("contenttype") === CKEDITOR.contentType.SOURCE_FROM_HTML) {
         return prefix + "TextToolbar";
 
     } else {
@@ -406,13 +434,15 @@ CKEDITOR.dialog.add("textHistory", function (event) {
         data = $(event.element.$).data("textHistoryData")
             .map(function (textHistoryData) {
                 textHistoryData.modifiedDate = new Date(textHistoryData.modifiedDate);
-                textHistoryData.type = (textHistoryData.type === "HTML")
-                    ? "html"
-                    : "from-html";
+
+                if (textHistoryData.type !== CKEDITOR.contentType.HTML) {
+                    textHistoryData.type = CKEDITOR.contentType.SOURCE_FROM_HTML;
+                }
+
                 return textHistoryData;
             })
             .sort(function (a, b) {
-                return (a.modifiedDate > b.modifiedDate ? -1 : (a.modifiedDate === b.modifiedDate ? 0 : 1));
+                return ((a.modifiedDate > b.modifiedDate) ? -1 : ((a.modifiedDate === b.modifiedDate) ? 0 : 1));
             }),
 
         groupedData = {},
@@ -450,15 +480,15 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                 .click(function () {
                     if (!buttonsShowed) {
                         addTextHistoryButton("View Page", function () {
-                            if (selectedItem.type !== "html") {
+                            if (selectedItem.type !== CKEDITOR.contentType.HTML) {
                                 $content.html($content.text());
-                                selectedItem.type = "html";
+                                selectedItem.type = CKEDITOR.contentType.HTML;
                             }
                         });
                         addTextHistoryButton("View Source", function () {
-                            if (selectedItem.type === "html") {
+                            if (selectedItem.type === CKEDITOR.contentType.HTML) {
                                 $content.text($content.html());
-                                selectedItem.type = "from-html";
+                                selectedItem.type = CKEDITOR.contentType.SOURCE_FROM_HTML;
                             }
                         });
                         buttonsShowed = true;
@@ -468,9 +498,9 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                         $selected.removeClass("selected");
                     }
 
-                    var callFunc = (item.type === "html")
-                        ? "html"
-                        : "text";
+                    var callFunc = (item.type === CKEDITOR.contentType.HTML)
+                        ? CKEDITOR.contentType.HTML
+                        : CKEDITOR.contentType.TEXT;
 
                     $content[callFunc](item.text);
                     $selected = $(this).addClass("selected");
@@ -508,7 +538,7 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                         event.setData(""); // clear previous text
                         var contentType = $(event.element.$).data("contenttype");
 
-                        var callFunc = (contentType === "html")
+                        var callFunc = (contentType === CKEDITOR.contentType.HTML)
                             ? "insertHtml"
                             : "insertText";
 
