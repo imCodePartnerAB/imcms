@@ -3,9 +3,10 @@
  */
 CKEDITOR.contentType = {
     SOURCE_FROM_HTML: "source-from-html",
+    CLEAN_SOURCE_FROM_HTML: "clean-source-from-html",
     TEXT: "text",
     HTML: "html",
-    UNSAFE_HTML: "unsafe-html"
+    CLEAN_HTML: "cleanhtml"
 };
 
 CKEDITOR.define("confirmChanges", {});
@@ -251,10 +252,14 @@ CKEDITOR.defineToolbar = function (editor) {
         prefix = "min";
     }
 
-    if (editor.element.data("contenttype") === CKEDITOR.contentType.TEXT) {
+    var contentType = editor.element.data("contenttype");
+
+    if (contentType === CKEDITOR.contentType.TEXT) {
         return prefix + "PlainText";
 
-    } else if (editor.element.data("contenttype") === CKEDITOR.contentType.SOURCE_FROM_HTML) {
+    } else if (contentType === CKEDITOR.contentType.SOURCE_FROM_HTML
+                || contentType === CKEDITOR.contentType.CLEAN_SOURCE_FROM_HTML)
+    {
         return prefix + "TextToolbar";
 
     } else {
@@ -414,7 +419,9 @@ CKEDITOR.dialog.add("textHistory", function (event) {
             .map(function (textHistoryData) {
                 textHistoryData.modifiedDate = new Date(textHistoryData.modifiedDate);
 
-                if (textHistoryData.type !== CKEDITOR.contentType.HTML) {
+                if (textHistoryData.type !== CKEDITOR.contentType.HTML
+                    || textHistoryData.type !== CKEDITOR.contentType.CLEAN_HTML)
+                {
                     textHistoryData.type = CKEDITOR.contentType.SOURCE_FROM_HTML;
                 }
 
@@ -459,15 +466,23 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                 .click(function () {
                     if (!buttonsShowed) {
                         addTextHistoryButton("View Page", function () {
-                            if (selectedItem.type !== CKEDITOR.contentType.HTML) {
+                            if ((selectedItem.type !== CKEDITOR.contentType.HTML)
+                                || (selectedItem.type !== CKEDITOR.contentType.CLEAN_HTML))
+                            {
                                 $content.html($content.text());
-                                selectedItem.type = CKEDITOR.contentType.HTML;
+                                selectedItem.type = !!(~selectedItem.type.toLowerCase().indexOf("clean"))
+                                    ? CKEDITOR.contentType.CLEAN_HTML
+                                    : CKEDITOR.contentType.HTML;
                             }
                         });
                         addTextHistoryButton("View Source", function () {
-                            if (selectedItem.type === CKEDITOR.contentType.HTML) {
+                            if ((selectedItem.type === CKEDITOR.contentType.HTML)
+                                || (selectedItem.type === CKEDITOR.contentType.CLEAN_HTML))
+                            {
                                 $content.text($content.html());
-                                selectedItem.type = CKEDITOR.contentType.SOURCE_FROM_HTML;
+                                selectedItem.type = !!(~selectedItem.type.toLowerCase().indexOf("clean"))
+                                    ? CKEDITOR.contentType.CLEAN_SOURCE_FROM_HTML
+                                    : CKEDITOR.contentType.SOURCE_FROM_HTML;
                             }
                         });
                         buttonsShowed = true;
@@ -477,7 +492,8 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                         $selected.removeClass("selected");
                     }
 
-                    var callFunc = (item.type === CKEDITOR.contentType.HTML)
+                    var callFunc = ((item.type === CKEDITOR.contentType.HTML)
+                        || (item.type === CKEDITOR.contentType.CLEAN_HTML))
                         ? CKEDITOR.contentType.HTML
                         : CKEDITOR.contentType.TEXT;
 
@@ -517,7 +533,8 @@ CKEDITOR.dialog.add("textHistory", function (event) {
                         event.setData(""); // clear previous text
                         var contentType = $(event.element.$).data("contenttype");
 
-                        var callFunc = (contentType === CKEDITOR.contentType.HTML)
+                        var callFunc = ((contentType === CKEDITOR.contentType.HTML)
+                            || (contentType === CKEDITOR.contentType.CLEAN_HTML))
                             ? "insertHtml"
                             : "insertText";
 

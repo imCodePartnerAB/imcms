@@ -129,7 +129,9 @@ Imcms.Text.Editor.prototype = {
     _onConfirm: function (event) {
         var editor = event.editor,
             data = $(editor.element.$).data(),
-            isHtmlContent = (data.contenttype === CKEDITOR.contentType.HTML),
+            isHtmlContent = (
+                (data.contenttype === CKEDITOR.contentType.HTML) || (data.contenttype === CKEDITOR.contentType.CLEAN_HTML)
+            ),
             callFunc = (isHtmlContent) ? CKEDITOR.contentType.HTML : CKEDITOR.contentType.TEXT,
             content = $(editor.element.$)[callFunc]();
 
@@ -143,9 +145,11 @@ Imcms.Text.Editor.prototype = {
             var shouldRefreshPage = false;
 
             if (CKEDITOR.switchFormat) {
+                var isCleanContent = !!(~data.contenttype.toLowerCase().indexOf("clean"));
+
                 data.contenttype = (isHtmlContent)
-                    ? CKEDITOR.contentType.SOURCE_FROM_HTML
-                    : CKEDITOR.contentType.HTML;
+                    ? ((isCleanContent) ? CKEDITOR.contentType.CLEAN_SOURCE_FROM_HTML : CKEDITOR.contentType.SOURCE_FROM_HTML)
+                    : ((isCleanContent) ? CKEDITOR.contentType.CLEAN_HTML : CKEDITOR.contentType.HTML);
 
                 shouldRefreshPage = true;
                 CKEDITOR.switchFormat = false;

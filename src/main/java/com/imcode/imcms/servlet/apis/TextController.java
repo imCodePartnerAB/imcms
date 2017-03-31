@@ -147,7 +147,9 @@ public class TextController {
                 );
         }
 
-        content = textContentFilter.cleanText(content);
+        if ((contentType != null) && (contentType.toLowerCase().contains("clean"))) {
+            content = textContentFilter.cleanText(content);
+        }
 
         try {
             final int contentTypeInt = Optional.ofNullable(contentType)
