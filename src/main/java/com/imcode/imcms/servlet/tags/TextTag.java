@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class TextTag extends SimpleImcmsTag {
     public static final String SOURCE_FROM_HTML = "source-from-html";
+    public static final String CLEAN_SOURCE_FROM_HTML = "clean-source-from-html";
     public static final String TEXT = "text";
     public static final String HTML = "html";
     public static final String CLEAN_HTML = "cleanhtml";
@@ -72,7 +73,7 @@ public class TextTag extends SimpleImcmsTag {
                     : textDoc.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, textNo));
 
             if ((textDO != null) && (textDO.getType() == TextDomainObject.TEXT_TYPE_PLAIN)) {
-                contentType = SOURCE_FROM_HTML;
+                contentType = (formats.contains("clean")) ? CLEAN_SOURCE_FROM_HTML : SOURCE_FROM_HTML;
 
             } else if (formats.contains("clean")) {
                 contentType = CLEAN_HTML;
