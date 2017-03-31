@@ -1,17 +1,22 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'idea'
+
 apply plugin: 'war'
+
 apply plugin: 'scala'
 
 //Tomcat plugin
 //https://github.com/bmuschko/gradle-tomcat-plugin
-apply plugin: 'com.bmuschko.tomcat-base'
+//apply plugin: 'com.bmuschko.tomcat-base'
 
 group = 'com.imcode.imcms'
 version = '6.0.0-alpha108-SNAPSHOT'
 
 description = """imCMS"""
+
+//project.webAppDirName = 'web'
+
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -29,6 +34,7 @@ sourceSets {
     main {
         scala {
             srcDirs = ['src/main/scala', 'src/main/java']
+            srcDirs = ['src/main/scala', 'src/main/java', 'src/*']
         }
         java {
             srcDirs = []
@@ -37,22 +43,23 @@ sourceSets {
     test {
         scala {
             srcDirs = ['src/test/scala', 'src/test/java']
+//            srcDirs = ['src/test/*']
         }
         java {
             srcDirs = []
         }
     }
 }
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.bmuschko:gradle-tomcat-plugin:2.2.5'
-    }
-}
+//
+//buildscript {
+//    repositories {
+//        jcenter()
+//    }
+//
+//    dependencies {
+//        classpath 'com.bmuschko:gradle-tomcat-plugin:2.2.5'
+//    }
+//}
 
 repositories {
     mavenCentral()
@@ -182,12 +189,11 @@ dependencies {
 //                "org.apache.tomcat:coyote:${tomcatVersion}",
 //                "org.apache.tomcat:jasper:${tomcatVersion}"
 
-
     //Tomcat7
-    def tomcatVersion = '7.0.57'
-    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
-            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
-            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+//    def tomcatVersion = '7.0.57'
+//    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+//            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+//            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 
 //    Tomcat 8
 //        def tomcatVersion = '8.5.12'
@@ -197,27 +203,41 @@ dependencies {
 
 }
 
-//Tomcat plugin settings
-tomcat {
-    httpPort = 8080
-    enableSSL = true
-/*    contextPath = 'sample-app'
-
-    users {
-        user {
-            username = 'user1'
-            password = '123456'
-            roles = ['developers', 'admin']
-        }
-
-        user {
-            username = 'user2'
-            password = 'abcdef'
-            roles = ['manager']
-        }
-    }*/
+task explodedWar(type: Copy) {
+    into "${buildDir}/exploded/${war.archiveName}"
+    with war
 }
 
+
+war {
+    from 'src/main/web'
+//    webAppDirName = 'src/main/web'
+//    webInf { from 'src/main/web/WEB-INF' }
+//    classpath fileTree('additionalLibs') // adds a file-set to the WEB-INF/lib dir.
+////    classpath configurations.moreLibs // adds a configuration to the WEB-INF/lib dir.
+//    webXml = file('src/main/web/WEB-INF/web.xml') // copies a file to WEB-INF/web.xml
+}
+
+//Tomcat plugin settings
+//tomcat {
+//    httpPort = 8080
+//    enableSSL = true
+///*    contextPath = 'sample-app'
+//
+//    users {
+//        user {
+//            username = 'user1'
+//            password = '123456'
+//            roles = ['developers', 'admin']
+//        }
+//
+//        user {
+//            username = 'user2'
+//            password = 'abcdef'
+//            roles = ['manager']
+//        }
+//    }*/
+//}
 
 //uploadArchives {
 //    repositories {
