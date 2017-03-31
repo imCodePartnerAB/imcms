@@ -9,7 +9,9 @@ import com.imcode.imcms.db.BooleanFromRowFactory;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
+import com.imcode.imcms.document.text.TextContentFilter;
 import com.imcode.imcms.imagearchive.service.Facade;
+import com.imcode.imcms.imagearchive.service.TextService;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -74,14 +76,20 @@ public class Utility {
 	private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
     private static Facade facade;
+    private static TextService textService;
 
 	private Utility() {
 	}
 
 	@Autowired
-	public void init(Facade facade){
+	public void init(Facade facade, TextService textService){
 		Utility.facade = facade;
+		Utility.textService = textService;
 	}
+
+	public static TextContentFilter getTextContentFilter() {
+        return textService.getTextContentFilter();
+    }
 
     /**
      * Method checks is interested string contains any element of collection.

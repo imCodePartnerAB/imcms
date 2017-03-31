@@ -5,6 +5,7 @@ import com.imcode.imcms.mapping.container.LoopEntryRef;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
@@ -121,6 +122,11 @@ public class TextDocument extends Document {
 	}
 
 	public void setHtmlTextField(int textFieldIndexInDocument, String newText) {
+		setTextField(textFieldIndexInDocument, newText, TextField.Format.HTML);
+	}
+
+	public void setCleanHtmlTextField(int textFieldIndexInDocument, String newText) {
+        newText = Utility.getTextContentFilter().cleanText(newText);
 		setTextField(textFieldIndexInDocument, newText, TextField.Format.HTML);
 	}
 
