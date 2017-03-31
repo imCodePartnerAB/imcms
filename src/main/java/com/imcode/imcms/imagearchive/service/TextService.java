@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Service for work with text
- *
+ * <p>
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 31.03.17.
  */

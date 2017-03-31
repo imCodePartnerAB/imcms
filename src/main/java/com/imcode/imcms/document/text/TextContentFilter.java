@@ -11,6 +11,8 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 
 /**
+ * Text content filter, based on Jsoup's tags whitelist and cleaning text feature.
+ *
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 29.03.17.
  */

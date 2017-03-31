@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Should became a good facade. Implement access to services here.
- *
+ * <p>
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 31.03.17.
  */
