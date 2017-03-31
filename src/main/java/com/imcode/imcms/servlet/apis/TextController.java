@@ -1,7 +1,6 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.document.text.AllowedTagsCheckingResult;
 import com.imcode.imcms.document.text.TextContentFilter;
 import com.imcode.imcms.mapping.TextDocumentContentLoader;
 import com.imcode.imcms.mapping.container.DocRef;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -118,11 +116,11 @@ public class TextController {
      */
     @RequestMapping(method = RequestMethod.POST)
     public String saveText(@RequestParam("content") String content,
-                         @RequestParam("locale") String locale,
-                         @RequestParam("meta") int docId,
-                         @RequestParam("no") int textNo,
-                         @RequestParam(value = "loopentryref", required = false) String loopEntryRef,
-                         @RequestParam(value = "contenttype", required = false) String contentType) {
+                           @RequestParam("locale") String locale,
+                           @RequestParam("meta") int docId,
+                           @RequestParam("no") int textNo,
+                           @RequestParam(value = "loopentryref", required = false) String loopEntryRef,
+                           @RequestParam(value = "contenttype", required = false) String contentType) {
 
         final UserDomainObject user = Imcms.getUser();
         final TextDocumentDomainObject doc = imcmsServices.getDocumentMapper().getWorkingDocument(docId);
@@ -253,28 +251,6 @@ public class TextController {
             this.modifiedDate = textHistory.getModifiedDt().getTime();
             this.text = textHistory.getText();
             this.type = textHistory.getType().name().toLowerCase();
-        }
-    }
-
-    private class TextSavingResult {
-        public boolean success;
-        public Set<String> notAllowedTags;
-
-        protected TextSavingResult(boolean success, Set<String> notAllowedTags) {
-            this.success = success;
-            this.notAllowedTags = notAllowedTags;
-        }
-    }
-
-    private class FailTextSavingResult extends TextSavingResult {
-        FailTextSavingResult(AllowedTagsCheckingResult checkingResult) {
-            super(false, checkingResult.getBadTags());
-        }
-    }
-
-    private class SuccessTextSavingResult extends TextSavingResult {
-        SuccessTextSavingResult() {
-            super(true, Collections.emptySet());
         }
     }
 }
