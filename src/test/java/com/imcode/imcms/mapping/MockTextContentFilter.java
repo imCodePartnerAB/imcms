@@ -30,16 +30,6 @@ public class MockTextContentFilter {
     }
 
     @Test
-    public void testBadTagsChecking() {
-        testEmptyText();
-        testTextWithoutTags();
-        testTextWithSpecialSymbolButNotTag();
-        testAllowedTag();
-        testBadTag();
-        testBadTags();
-    }
-
-    @Test
     public void testBadTags() {
         final String textWithBadTags = "<" + badTagsArr[0] + " class=\"some-class\">alalal</" + badTagsArr[0] + ">"
                 + "test text"
@@ -52,6 +42,14 @@ public class MockTextContentFilter {
                 + "test text";
 
         final String textAfterCleanup = textContentFilter.cleanText(textWithBadTags);
+        assertEquals(expectedCleanedText, textAfterCleanup);
+    }
+
+    @Test
+    public void testBadScriptTag() {
+        final String textWithBadTag = "<script>this is a not allowed tag test</script>";
+        final String expectedCleanedText = "";
+        final String textAfterCleanup = textContentFilter.cleanText(textWithBadTag);
         assertEquals(expectedCleanedText, textAfterCleanup);
     }
 
