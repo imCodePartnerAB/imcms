@@ -30,13 +30,15 @@
 
     /**
      * Simple Imcms REST API Constructor to prevent creating similar code in many places.
-     * Automatically applies request and response.
-     * Works only if url is constant for each instance.
      *
      * Created by Serhii Maksymchuk from Ubrainians for imCode
      * 15.11.16
      */
     return Imcms.REST = {
+        /**
+         * Automatically applies request and response for REST methods.
+         * Works only if url is constant for each instance.
+         */
         API: function (path) {
             this.post = post(path);
             this.get = get(path);
