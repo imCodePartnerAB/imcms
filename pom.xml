@@ -1103,11 +1103,12 @@
                 <version>1.5.1</version>
                 <configuration>
                     <force>true</force>
-                    <sourceDirectory>${project.basedir}/src/main/web</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/src/main/webapp</sourceDirectory>
                     <outputDirectory>${build.webapp.dir}/</outputDirectory>
 
                     <excludes>
                         <!--excluding already minified files-->
+                        <!--<exclude>**/**</exclude>-->
                         <exclude>**/*.min.js</exclude>
                         <exclude>**/*.min.css</exclude>
                     </excludes>

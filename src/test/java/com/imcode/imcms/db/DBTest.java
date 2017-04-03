@@ -73,7 +73,7 @@ public class DBTest {
 //
 //        DB db = new DB(dataSource);
 //
-//        File scriptsDir = Paths.get("src/main/web/WEB-INF/sql").toFile();
+//        File scriptsDir = Paths.get("src/main/webapp/WEB-INF/sql").toFile();
 //        File schemaFile = Paths.get("src/main/resources/schema.xml").toFile();
 //
 //        Schema schema = Schema.fromFile(schemaFile).setScriptsDir(scriptsDir.getAbsolutePath());

@@ -189,7 +189,7 @@ public class AdminManager extends HttpServlet {
 			case PARAMETER_VALUE__SHOW_CREATE: {
 //				AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
 //				newDocumentsAdminManagerPage.setTabName(PARAMETER_VALUE__SHOW_CREATE);
-//				newDocumentsAdminManagerPage.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0"));
+//				newDocumentsAdminManagerPage.setHeading(new LocalizedMessage("webapp/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0"));
 //				adminManagerPage = newDocumentsAdminManagerPage;
 //
 //				break;
@@ -201,7 +201,7 @@ public class AdminManager extends HttpServlet {
 				newDocumentsSubreport.setMaxDocumentCount(10);
 				AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
 				newDocumentsAdminManagerPage.setTabName(PARAMETER_VALUE__SHOW_RECENT);
-				newDocumentsAdminManagerPage.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1"));
+				newDocumentsAdminManagerPage.setHeading(new LocalizedMessage("webapp/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1"));
 				newDocumentsAdminManagerPage.addSubreport(newDocumentsSubreport);
 				modifiedDocumentsSubreport.setMaxDocumentCount(10);
 				newDocumentsAdminManagerPage.addSubreport(modifiedDocumentsSubreport);
@@ -213,7 +213,7 @@ public class AdminManager extends HttpServlet {
 
 				AdminManagerPage reminderAdminManagerPage = new AdminManagerPage();
 				reminderAdminManagerPage.setTabName(PARAMETER_VALUE__SHOW_REMINDERS);
-				reminderAdminManagerPage.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2"));
+				reminderAdminManagerPage.setHeading(new LocalizedMessage("webapp/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2"));
 				documentsArchivedWithinOneWeekSubreport.setMaxDocumentCount(10);
 				reminderAdminManagerPage.addSubreport(documentsArchivedWithinOneWeekSubreport);
 				documentsUnpublishedWithinOneWeekSubreport.setMaxDocumentCount(10);
@@ -227,7 +227,7 @@ public class AdminManager extends HttpServlet {
 
 				AdminManagerPage summaryAdminManagerPage = new AdminManagerPage();
 				summaryAdminManagerPage.setTabName(PARAMETER_VALUE__SHOW_SUMMARY);
-				summaryAdminManagerPage.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/3"));
+				summaryAdminManagerPage.setHeading(new LocalizedMessage("webapp/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/3"));
 				summaryAdminManagerPage.addSubreport(newDocumentsSubreport);
 				summaryAdminManagerPage.addSubreport(modifiedDocumentsSubreport);
 				summaryAdminManagerPage.addSubreport(documentsArchivedWithinOneWeekSubreport);
@@ -288,7 +288,7 @@ public class AdminManager extends HttpServlet {
 		AdminManagerSubreport modifiedDocumentsSubreport = new AdminManagerSubreport();
 		modifiedDocumentsSubreport.setName("modified");
 		modifiedDocumentsSubreport.setDocuments(modifiedDocuments);
-		modifiedDocumentsSubreport.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5"));
+		modifiedDocumentsSubreport.setHeading(new LocalizedMessage("webapp/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5"));
 		String dateSearchQueryString = createDateSearchQueryString(SearchDocumentsPage.DATE_TYPE__MODIFIED, oneWeekAgo, null, null);
 		modifiedDocumentsSubreport.setSearchQueryString(dateSearchQueryString);
 		return modifiedDocumentsSubreport;
@@ -308,7 +308,7 @@ public class AdminManager extends HttpServlet {
 		AdminManagerSubreport newDocumentsSubreport = new AdminManagerSubreport();
 		newDocumentsSubreport.setName("new");
 		newDocumentsSubreport.setDocuments(newDocuments);
-		newDocumentsSubreport.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1"));
+		newDocumentsSubreport.setHeading(new LocalizedMessage("webapp/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1"));
 		String dateSearchQueryString = createDateSearchQueryString(SearchDocumentsPage.DATE_TYPE__CREATED, oneWeekAgo, null, null);
 		newDocumentsSubreport.setSearchQueryString(dateSearchQueryString);
 		return newDocumentsSubreport;
@@ -332,7 +332,7 @@ public class AdminManager extends HttpServlet {
 		AdminManagerSubreport documentsUnchangedForSixMonthsSubreport = new AdminManagerSubreport();
 		documentsUnchangedForSixMonthsSubreport.setName("unchangedForSixMonths");
 		documentsUnchangedForSixMonthsSubreport.setDocuments(documentsUnchangedForSixMonths);
-		documentsUnchangedForSixMonthsSubreport.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4"));
+		documentsUnchangedForSixMonthsSubreport.setHeading(new LocalizedMessage("webapp/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4"));
 		documentsUnchangedForSixMonthsSubreport.setSortorder("MODR");
 		String dateSearchQueryString = createDateSearchQueryString(SearchDocumentsPage.DATE_TYPE__MODIFIED, null, sixMonthsAgo, phases);
 		documentsUnchangedForSixMonthsSubreport.setSearchQueryString(dateSearchQueryString);
@@ -359,7 +359,7 @@ public class AdminManager extends HttpServlet {
 		AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = new AdminManagerSubreport();
 		documentsArchivedWithinOneWeekSubreport.setName("archivedWithinOneWeek");
 		documentsArchivedWithinOneWeekSubreport.setDocuments(documentsArchivedWithinOneWeek);
-		documentsArchivedWithinOneWeekSubreport.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2"));
+		documentsArchivedWithinOneWeekSubreport.setHeading(new LocalizedMessage("webapp/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2"));
 		documentsArchivedWithinOneWeekSubreport.setSortorder("ARCR");
 		String dateSearchQueryString = createDateSearchQueryString(SearchDocumentsPage.DATE_TYPE__ARCHIVED, lastMidnight, oneWeekAhead, phases);
 		documentsArchivedWithinOneWeekSubreport.setSearchQueryString(dateSearchQueryString);
@@ -387,7 +387,7 @@ public class AdminManager extends HttpServlet {
 		AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = new AdminManagerSubreport();
 		documentsUnpublishedWithinOneWeekSubreport.setName("unpublishedWithinOneWeek");
 		documentsUnpublishedWithinOneWeekSubreport.setDocuments(documentsUnpublishedWithinOneWeek);
-		documentsUnpublishedWithinOneWeekSubreport.setHeading(new LocalizedMessage("web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3"));
+		documentsUnpublishedWithinOneWeekSubreport.setHeading(new LocalizedMessage("webapp/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3"));
 		documentsUnpublishedWithinOneWeekSubreport.setSortorder("PUBER");
 		String dateSearchQueryString = createDateSearchQueryString(SearchDocumentsPage.DATE_TYPE__PUBLICATION_END, lastMidnight, oneWeekAhead, phases);
 		documentsUnpublishedWithinOneWeekSubreport.setSearchQueryString(dateSearchQueryString);

@@ -50,7 +50,7 @@
 //  object imcms {
 //    def init(start: Boolean = false, prepareDbOnStart: Boolean = false) {
 //
-//      Imcms.setSQLScriptsPath(path("src/main/web/WEB-INF/sql"))
+//      Imcms.setSQLScriptsPath(path("src/main/webapp/WEB-INF/sql"))
 //      System.setProperty("com.imcode.imcms.test.basedir", basedir)
 //      // Can not be replaced with @Configuration since XML configuration always takes precedence over annotation configuration.
 //      Imcms.setApplicationContext(new FileSystemXmlApplicationContext("file:" + path("src/test/resources/applicationContext.xml")))
@@ -88,7 +88,7 @@
 //    def prepare(recreateBeforePrepare: Boolean = false) {
 //      if (recreateBeforePrepare) recreate()
 //
-//      val scriptsDir = test.path("src/main/web/WEB-INF/sql")
+//      val scriptsDir = test.path("src/main/webapp/WEB-INF/sql")
 //      val schema = Schema.fromFile(test.file("src/main/resources/schema.xml")).setScriptsDir(scriptsDir)
 //
 //      new DB(createDataSource()).prepare(schema)
@@ -127,7 +127,7 @@
 //  object solr {
 //    val home: String = test.path("target/test-classes/WEB-INF/solr")
 //    val homeDir: File = new File(home)
-//    val homeTemplateDir: File = test.dir("src/main/web/WEB-INF/solr").ensuring(_.isDirectory, "SOLr home template exists.")
+//    val homeTemplateDir: File = test.dir("src/main/webapp/WEB-INF/solr").ensuring(_.isDirectory, "SOLr home template exists.")
 //
 //    def deleteCoreDataDir() {
 //      new File(home, "core/data") |> {
