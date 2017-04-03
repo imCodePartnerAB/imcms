@@ -45,23 +45,32 @@ Available list of tag attributes:
 | post               | String       | Text or html tag that would be added after text  |
 |                    |              | tag                                              |
 +--------------------+--------------+--------------------------------------------------+
-| mode               | String       | Possible values:                                 |
+|                    |              | Possible values:                                 |
 |                    |              | ``read`` - means that text won't be editable     |
-|                    |              | ``write`` - editable text, just as without       |
+| mode               | String       | ``write`` - editable text, just as without       |
 |                    |              | ``mode`` attribute                               |
+|                    |              |                                                  |
 +--------------------+--------------+--------------------------------------------------+
-| formats            | String       | If set, format switch won't be able.             |
+|                    |              | If set, format switch won't be able.             |
 |                    |              | Possible values:                                 |
 |                    |              | ``text`` - formatting panel will have only simple|
 |                    |              | text editor options, content won't be represented|
 |                    |              | as HTML                                          |
 |                    |              | ``html`` - formatting panel will have HTML editor|
-|                    |              | options, content will be represented as HTML     |
+| formats            | String       | options, content will be represented as HTML     |
+|                    |              | ``cleanhtml`` - formatting panel will have HTML  |
+|                    |              | editor options, content will be represented as   |
+|                    |              | HTML and all tags will be checked according to   |
+|                    |              | tags whitelist - system property                 |
+|                    |              | ``text.editor.html.tags.whitelist``, where tags  |
+|                    |              | are separated by semicolon. Not allowed tags will|
+|                    |              | be removed from content.                         |
 +--------------------+--------------+--------------------------------------------------+
 | label              | String       | Text label that is connected to current text tag |
 +--------------------+--------------+--------------------------------------------------+
-| showlabel          | String       | Set ``true`` if you want to see text label near  |
-|                    |              | text tag content in admin edit mode              |
+|                    |              | Set ``true`` if you want to see text label near  |
+| showlabel          | String       | text tag content in admin edit mode              |
+|                    |              |                                                  |
 +--------------------+--------------+--------------------------------------------------+
 
 Example:
