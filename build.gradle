@@ -15,7 +15,13 @@ version = '6.0.0-alpha108-SNAPSHOT'
 
 description = """imCMS"""
 
-//project.webAppDirName = 'web'
+ant.importBuild 'pom-ant.xml'
+//<property name="version" value="${project.version}"/>
+//<property name="build.webapp.dir" value="${build.webapp.dir}"/>
+ant.property(name: 'version', location: project.version)
+ant.property(name: 'build.webapp.dir', location: project.webAppDirName)
+
+project.webAppDirName = 'src/main/web'
 
 
 sourceCompatibility = 1.8
@@ -50,6 +56,32 @@ sourceSets {
         }
     }
 }
+
+
+//task runAnt {
+//    doLast {
+//        ant.taskdef(name: 'pmd',
+//                classname: 'net.sourceforge.pmd.ant.PMDTask',
+//                classpath: configurations.pmd.asPath)
+//        ant.pmd(shortFilenames: 'true',
+//                failonruleviolation: 'true',
+//                rulesetfiles: file('pmd-rules.xml').toURI().toString()) {
+//            formatter(type: 'text', toConsole: 'true')
+//            fileset(dir: 'src')
+//        }
+////        ant.run(resource: 'checkstyletask.properties') {
+////            classpath {
+////                fileset(dir: 'libs', includes: '*.jar')
+////            }
+////        }
+////        ant.checkstyle(config: 'checkstyle.xml') {
+////            fileset(dir: 'src')
+////        }
+//    }
+//}
+
+
+
 //
 //buildscript {
 //    repositories {
@@ -209,14 +241,25 @@ task explodedWar(type: Copy) {
 }
 
 
-war {
-    from 'src/main/web'
-//    webAppDirName = 'src/main/web'
-//    webInf { from 'src/main/web/WEB-INF' }
-//    classpath fileTree('additionalLibs') // adds a file-set to the WEB-INF/lib dir.
-////    classpath configurations.moreLibs // adds a configuration to the WEB-INF/lib dir.
-//    webXml = file('src/main/web/WEB-INF/web.xml') // copies a file to WEB-INF/web.xml
-}
+//Attempt to migrate pom-ant.xml
+//ant.copy(todir: '/copy/to/dir', encoding: 'UTF-8', outputEncoding: 'Windows-31J') {
+//    fileset(dir: '/copy/from/dir')
+//}
+
+
+
+
+
+
+
+//war {
+//    from 'src/main/web'
+////    webAppDirName = 'src/main/web'
+////    webInf { from 'src/main/web/WEB-INF' }
+////    classpath fileTree('additionalLibs') // adds a file-set to the WEB-INF/lib dir.
+//////    classpath configurations.moreLibs // adds a configuration to the WEB-INF/lib dir.
+////    webXml = file('src/main/web/WEB-INF/web.xml') // copies a file to WEB-INF/web.xml
+//}
 
 //Tomcat plugin settings
 //tomcat {
