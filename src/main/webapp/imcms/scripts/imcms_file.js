@@ -67,12 +67,12 @@
         remove: function (folder, filename, callback) {
             api.remove(createRequestData(folder), callback);
         },
-        addPictureFile: function (file, folder, callback) {
+        addFile: function (file, folder, callback) {
             var data = new FormData();
             data.append("file", file);
             api.create(createRequestData(folder, file.name, {data: data}), callback);
         }
     };
 
-    return Imcms;
+    return Imcms.File;
 })(Imcms);
