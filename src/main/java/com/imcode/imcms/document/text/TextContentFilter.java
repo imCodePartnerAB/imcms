@@ -18,7 +18,8 @@ import java.io.File;
  */
 @Component
 public class TextContentFilter {
-    private final Whitelist htmlTagsWhitelist = Whitelist.none();
+    private final Whitelist htmlTagsWhitelist = Whitelist.none()
+            .addAttributes("img", "class",  "data-no", "data-meta", "data-cke-saved-src", "src");
 
     @PostConstruct
     public void init() {

@@ -72,8 +72,7 @@
 
             editor.addCommand('editInternalImageCmd', CKEDITOR.newCommandWithExecution(
                 function (editor) {
-                    new Imcms.Image
-                        .ImageInTextEditor(editor)
+                    (new Imcms.Image.ImageInTextEditor(editor))
                         .onExistingImageEdit(selectedImageData);
                 }
             ));
