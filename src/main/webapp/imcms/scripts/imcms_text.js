@@ -183,35 +183,41 @@
             }));
 
             // Remove unnecessary plugins to make the editor simpler.
-            editor.config.removePlugins = 'colorbutton,find,forms,newpage,removeformat,specialchar,stylescombo,templates';
-            var customExtraPlugins = ",switchFormatToHTML,switchFormatToText,documentSaver,fileBrowser,link,textHistory,w3cValidator,maximize,toolbarswitch";
+            editor.config.removePlugins = 'colorbutton,find,forms,newpage,removeformat,specialchar,'
+                + 'stylescombo,templates';
+            var customExtraPlugins = ",switchFormatToHTML,switchFormatToText,documentSaver,fileBrowser,link,"
+                + "textHistory,w3cValidator,maximize,toolbarswitch";
 
             if (editor.config.extraPlugins.indexOf(customExtraPlugins) === -1) {
                 editor.config.extraPlugins = editor.config.extraPlugins + customExtraPlugins;
             }
 
-            var fontPlugins = ['Bold', 'Italic', 'Underline', 'Strike'];
-            var textParagraphPlugins = ['NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Outdent', 'Indent'];
-            var linkPlugins = ['Link', 'Unlink', 'Anchor'];
-            var imagesPlugins = ['Image', 'openBrowser'];
-            var textPlugins = ['TextColor', 'BGColor'];
-            var imcmsCustomPlugins = ['w3cValidate', 'textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel'];
-            var switchFormatToTextPlugin = ['switchFormatToText'];
-            var switchFormatToHtmlPlugin = ['switchFormatToHTML'];
-            var plainTextPlugins = ['textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel'];
-            var imageUtilsAndOtherDefaultPlugins = ['Image', 'openBrowser', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'];
-            var advancedFontPlugins = ['Styles', 'Format', 'Font', 'FontSize'];
-            var sourcePlugin = ['Source'];
-            var textEditingPlugins = ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'];
-            var advancedActionsPlugins = ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'];
+            var fontPlugins = ['Bold', 'Italic', 'Underline', 'Strike'],
+                textParagraphPlugins = [
+                    'NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
+                    'Outdent', 'Indent'
+                ],
+                linkPlugins = ['Link', 'Unlink', 'Anchor'],
+                imagesPlugins = ['Image', 'openBrowser'],
+                textPlugins = ['TextColor', 'BGColor'],
+                imcmsCustomPlugins = ['w3cValidate', 'textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel'],
+                switchFormatToTextPlugin = ['switchFormatToText'],
+                switchFormatToHtmlPlugin = ['switchFormatToHTML'],
+                plainTextPlugins = ['textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel'],
+                imageUtilsAndOtherDefaultPlugins = [
+                    'Image', 'openBrowser', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak',
+                    'Iframe'
+                ],
+                advancedFontPlugins = ['Styles', 'Format', 'Font', 'FontSize'],
+                sourcePlugin = ['Source'],
+                textEditingPlugins = ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Scayt'],
+                advancedActionsPlugins = ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll', 'RemoveFormat'];
 
-            editor.config.toolbar_minPlainText = [
-                plainTextPlugins
-            ]; // Custom minimized toolbar config for tag with attribute "formats"="text"
+            editor.config.toolbar_minPlainText = [plainTextPlugins];
+            // Custom minimized toolbar config for tag with attribute "formats"="text"
 
-            editor.config.toolbar_maxPlainText = [
-                plainTextPlugins
-            ]; // Custom maximized toolbar config for tag with attribute "formats"="text"
+            editor.config.toolbar_maxPlainText = [plainTextPlugins];
+            // Custom maximized toolbar config for tag with attribute "formats"="text"
 
             editor.config.toolbar_minTextToolbar = [
                 switchFormatToHtmlPlugin,
