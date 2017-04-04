@@ -61,44 +61,33 @@
             }
             switch (info.position) {
                 case "inside":
+                    featurePosition = 1;
                     featureParent = nodeTo;
-                    console.info("Parent node:");
-                    console.info(nodeTo);
-                    for (i = 0, count = featureParent.children.length; i < count; i++) {
-                        featureParent.children[i].position++;
-                        console.info(featureParent.children[i]);
-                    }
-                    current.position = 1;
+                    i = 0;
                     break;
                 case "before":
                     featurePosition = nodeTo.position - 1;
                     featureParent = nodeTo.parent;
-                    console.info("Parent node:");
-                    console.info(featureParent);
-                    for (i = featureParent.children.indexOf(nodeTo),
-                             count = featureParent.children.length; i < count; i++)
-                    {
-                        featureParent.children[i].position++;
-                        console.info(featureParent.children[i]);
-                    }
-                    current.position = featurePosition;
+                    i = featureParent.children.indexOf(nodeTo);
                     break;
                 case "after":
                     featurePosition = nodeTo.position + 1;
                     featureParent = nodeTo.parent;
-                    console.info("Parent node:");
-                    console.info(featureParent);
-                    for (i = featureParent.children.indexOf(nodeTo) + 1,
-                             count = featureParent.children.length; i < count; i++)
-                    {
-                        featureParent.children[i].position++;
-                        console.info(featureParent.children[i]);
-                    }
-                    current.position = featurePosition;
+                    i = featureParent.children.indexOf(nodeTo) + 1;
                     break;
                 default :
                     throw "Incorrect movement";
             }
+
+            console.info("Parent node:");
+            console.info(featureParent);
+
+            for (count = featureParent.children.length; i < count; i++) {
+                featureParent.children[i].position++;
+                console.info(featureParent.children[i]);
+            }
+
+            current.position = featurePosition;
         },
         buildView: function (data) {
             if (!data) {
