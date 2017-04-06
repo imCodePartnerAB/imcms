@@ -23,13 +23,13 @@ public class TextContentFilter {
 
     @PostConstruct
     public void init() {
-        final String classPath = this.getClass()
+        final String imcmsRoot = this.getClass()
                 .getProtectionDomain()
                 .getCodeSource()
                 .getLocation()
-                .getPath();
+                .getPath()
+                .split("/WEB-INF")[0];
 
-        final File imcmsRoot = new File(classPath).getParentFile().getParentFile();
         PropertyManager.setRoot(imcmsRoot);
 
         final String[] whiteListTags = PropertyManager.getServerProperty("text.editor.html.tags.whitelist")
