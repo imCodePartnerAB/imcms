@@ -5,8 +5,8 @@
 <%@ page import="imcode.server.user.UserDomainObject" %>
 <%@ page import="imcode.util.Utility" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
-<%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.io.PrintWriter" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@taglib prefix="im" uri="imcms" %>
@@ -14,6 +14,22 @@
 	<%
 		UserDomainObject user = Utility.getLoggedOnUser(request);
 		Map<String, AuthenticationMethodConfiguration> loginConfiguration = Imcms.getServices().getConfig().getAuthenticationConfiguration();
+		final boolean loginPassword = loginConfiguration.containsKey( "loginPassword" );
+		final boolean cgi = loginConfiguration.containsKey( "cgi" );
+		final boolean loginPasswordFirst = loginPassword && cgi && loginConfiguration.get( "loginPassword" ).getOrder() < loginConfiguration.get( "cgi" ).getOrder();
+		if (request.getParameter("activeLoginTab") != null) {
+			PrintWriter pw = response.getWriter();
+			if (loginPasswordFirst) {
+			    pw.print("activeLoginTab(1)");
+			} else if (loginPassword) {
+				pw.print("activeLoginTab(2)");
+			} else {
+				pw.print("activeLoginTab('default')");
+			}
+			pw.flush();
+			pw.close();
+			return;
+		}
 	%>
 	<html>
 	<head>
@@ -54,22 +70,31 @@
 	</table>
 	#gui_mid()
 	<div id="imcms-login-container">
-		<% if (loginConfiguration.size() > 1) {%>
+		<% if (loginConfiguration.size() > 1) {
+			if (loginPasswordFirst) { %>
 		<div id="imcms-login-container-tabs">
 			<div class="imcms-tab imcms-tab-active" id="imcms-default-tab"><? templates/login/index.html/2008 ?></div>
 			<div class="imcms-tab" id="imcms-bankid-tab"><? templates/login/index.html/2009 ?></div>
 			<div style="clear:both"></div>
 		</div>
-
+		<% } else if (request.getParameter("fromCgi") != null) {%>
+		<div id="imcms-login-container-tabs">
+			<div class="imcms-tab" id="imcms-bankid-tab"><? templates/login/index.html/2009 ?></div>
+			<div class="imcms-tab imcms-tab-active" id="imcms-default-tab"><? templates/login/index.html/2008 ?></div>
+			<div style="clear:both"></div>
+		</div>
+		<%} else {
+			response.sendRedirect(request.getContextPath() + "/VerifyUserViaBankId");
+		}%>
 		<script>
 			$(document).ready(function () {
 				$(".imcms-tab-active").click();
 			});
 		</script>
 		<% } else if (loginConfiguration.size() == 1) {
-			if (loginConfiguration.containsKey("cgi")) {%>
-		<div class="imcms-tab imcms-tab-active" id="imcms-bankid-tab"><? templates/login/index.html/2009 ?></div>
-		<% } else {%>
+			if ( cgi ) {
+				response.sendRedirect(request.getContextPath() + "/VerifyUserViaBankId");
+			} else {%>
 		<div class="imcms-tab imcms-tab-active" id="imcms-default-tab"><? templates/login/index.html/2008 ?></div>
 		<%
 			}%>
