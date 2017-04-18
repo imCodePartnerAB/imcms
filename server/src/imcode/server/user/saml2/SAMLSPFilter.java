@@ -1,6 +1,6 @@
 package imcode.server.user.saml2;
 
-import imcode.server.Imcms;
+import com.imcode.imcms.servlet.VerifyUser;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.saml2.store.SAMLSessionInfo;
 import imcode.server.user.saml2.store.SAMLSessionManager;
@@ -45,7 +45,6 @@ public class SAMLSPFilter implements Filter {
 	  /*
 	   * Check if request is not refer to CGI-IDP - ignore it;
       */
-		String serverName = Imcms.getServerName();
 		if (!isFilteredRequest(request) || !filterConfig.isEnabled()) {
 			log.debug("According to {} configuration parameter request is ignored + {}",
 					new Object[]{FilterConfig.EXCLUDED_URL_PATTERN_PARAMETER, request.getRequestURI()});
@@ -72,8 +71,8 @@ public class SAMLSPFilter implements Filter {
 				log.debug("Starting and store SAML session..");
 				SAMLSessionManager.getInstance().createSAMLSession(request, response,
 						samlMessageContext);
-				if (serverName != null && !response.isCommitted()) {
-					response.sendRedirect(serverName + request.getContextPath() + "/servlet/StartDoc");
+				if (!response.isCommitted()) {
+					new VerifyUser.GoToLoginSuccessfulPageCommand().dispatch(request, response);
 				} else {
 					return;
 				}
@@ -104,8 +103,8 @@ public class SAMLSPFilter implements Filter {
 			SAMLSessionManager.getInstance().loginUser(samlSessionInfo, request, response);
 			log.debug("SAML session exists and valid: grant access to secure resource");
 			//chain.doFilter(request, response);
-			if (serverName != null && !response.isCommitted()) {
-				response.sendRedirect(serverName + request.getContextPath() + "/servlet/StartDoc");
+			if (!response.isCommitted()) {
+				new VerifyUser.GoToLoginSuccessfulPageCommand().dispatch(request, response);
 			} else {
 				return;
 			}
@@ -120,8 +119,8 @@ public class SAMLSPFilter implements Filter {
 				samlRequestSender.sendSAMLAuthRequest(request, response,
 						spProviderId, filterConfig.getAcsUrl(),
 						filterConfig.getIdpSSOLoginUrl());
-			} else if (serverName != null && !response.isCommitted()) {
-				response.sendRedirect(serverName + request.getContextPath() + "/servlet/StartDoc");
+			} else if (!response.isCommitted()) {
+				new VerifyUser.GoToLoginSuccessfulPageCommand().dispatch(request, response);
 			} else {
 				return;
 			}

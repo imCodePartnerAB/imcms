@@ -7,10 +7,18 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.io.PrintWriter" %>
+<%@ page import="java.io.IOException" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@taglib prefix="im" uri="imcms" %>
 <vel:velocity>
+	<%!
+		void verifyUserViaBankId(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws IOException {
+			response.sendRedirect(request.getContextPath() + "/VerifyUserViaBankId");
+			session.setAttribute(VerifyUser.SESSION_ATTRIBUTE__NEXT_URL, request.getParameter(VerifyUser.REQUEST_PARAMETER__NEXT_URL));
+			session.setAttribute(VerifyUser.SESSION_ATTRIBUTE__NEXT_META, request.getParameter(VerifyUser.REQUEST_PARAMETER__NEXT_META));
+		}
+	%>
 	<%
 		UserDomainObject user = Utility.getLoggedOnUser(request);
 		Map<String, AuthenticationMethodConfiguration> loginConfiguration = Imcms.getServices().getConfig().getAuthenticationConfiguration();
@@ -84,7 +92,7 @@
 			<div style="clear:both"></div>
 		</div>
 		<%} else {
-			response.sendRedirect(request.getContextPath() + "/VerifyUserViaBankId");
+			verifyUserViaBankId(session, request, response);
 		}%>
 		<script>
 			$(document).ready(function () {
@@ -92,8 +100,8 @@
 			});
 		</script>
 		<% } else if (loginConfiguration.size() == 1) {
-			if ( cgi ) {
-				response.sendRedirect(request.getContextPath() + "/VerifyUserViaBankId");
+			if (cgi) {
+				verifyUserViaBankId(session, request, response);
 			} else {%>
 		<div class="imcms-tab imcms-tab-active" id="imcms-default-tab"><? templates/login/index.html/2008 ?></div>
 		<%

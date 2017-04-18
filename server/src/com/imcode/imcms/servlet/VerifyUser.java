@@ -19,10 +19,10 @@ import java.io.IOException;
 
 public class VerifyUser extends HttpServlet {
 
-    private static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
+    public static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
     public static final String REQUEST_PARAMETER__NEXT_URL = SESSION_ATTRIBUTE__NEXT_URL;
     public static final String REQUEST_PARAMETER__NEXT_META = "next_meta";
-    private static final String SESSION_ATTRIBUTE__NEXT_META = "next_meta";
+    public static final String SESSION_ATTRIBUTE__NEXT_META = "next_meta";
     private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
     public static final String REQUEST_PARAMETER__EDIT_USER = "edit_user";
     public static final String REQUEST_PARAMETER__USERNAME = "name";
@@ -74,10 +74,10 @@ public class VerifyUser extends HttpServlet {
         userEditorPage.forward(req, res);
     }
 
-    private static class GoToLoginSuccessfulPageCommand implements DispatchCommand {
+    public static class GoToLoginSuccessfulPageCommand implements DispatchCommand {
         public void dispatch(HttpServletRequest request,
                              HttpServletResponse response) throws IOException, ServletException {
-            String nexturl = "StartDoc";
+            String nexturl = "servlet/StartDoc";
             HttpSession session = request.getSession(true);
             if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null ) {
                 nexturl = "GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
