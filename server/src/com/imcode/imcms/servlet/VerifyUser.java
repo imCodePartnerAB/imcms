@@ -77,10 +77,10 @@ public class VerifyUser extends HttpServlet {
     public static class GoToLoginSuccessfulPageCommand implements DispatchCommand {
         public void dispatch(HttpServletRequest request,
                              HttpServletResponse response) throws IOException, ServletException {
-            String nexturl = "servlet/StartDoc";
+            String nexturl = "/servlet/StartDoc";
             HttpSession session = request.getSession(true);
             if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null ) {
-                nexturl = "GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
+                nexturl = "/servlet/GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
                 session.removeAttribute(SESSION_ATTRIBUTE__NEXT_META);
             } else if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL) != null ) {
                 nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL);
@@ -88,12 +88,12 @@ public class VerifyUser extends HttpServlet {
             } else if ( request.getParameter(REQUEST_PARAMETER__NEXT_URL) != null ) {
                 nexturl = request.getParameter(REQUEST_PARAMETER__NEXT_URL);
             } else if ( request.getParameter(REQUEST_PARAMETER__NEXT_META) != null ) {
-                nexturl = "GetDoc?meta_id=" + request.getParameter(REQUEST_PARAMETER__NEXT_META);
+                nexturl = "/servlet/GetDoc?meta_id=" + request.getParameter(REQUEST_PARAMETER__NEXT_META);
             } else if ( session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET) != null ) {
                 nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
                 session.removeAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
             }
-            response.sendRedirect(nexturl);
+            response.sendRedirect(request.getContextPath() + nexturl);
         }
     }
 }
