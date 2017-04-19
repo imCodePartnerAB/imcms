@@ -185,7 +185,7 @@
             editor.config.removePlugins = 'colorbutton,find,forms,newpage,removeformat,specialchar,'
                 + 'stylescombo,templates';
             var customExtraPlugins = ",switchFormatToHTML,switchFormatToText,documentSaver,fileBrowser,link,"
-                + "textHistory,w3cValidator,maximize,toolbarswitch";
+                + "textHistory,w3cValidator,maximize,toolbarswitch" + (CKEDITOR.additionalExtraPlugins || "");
 
             if (editor.config.extraPlugins.indexOf(customExtraPlugins) === -1) {
                 editor.config.extraPlugins = editor.config.extraPlugins + customExtraPlugins;
@@ -197,7 +197,7 @@
                     'Outdent', 'Indent'
                 ],
                 linkPlugins = ['Link', 'Unlink', 'Anchor'],
-                imagesPlugins = ['Image', 'openBrowser'],
+                imagesPlugins = CKEDITOR.customImagePlugins || ['Image', 'openBrowser'],
                 textPlugins = ['TextColor', 'BGColor'],
                 imcmsCustomPlugins = ['w3cValidate', 'textHistory', 'Toolbarswitch', 'saveData', 'confirm', 'cancel'],
                 switchFormatToTextPlugin = ['switchFormatToText'],
