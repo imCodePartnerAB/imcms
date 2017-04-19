@@ -93,7 +93,7 @@ public class VerifyUser extends HttpServlet {
                 nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
                 session.removeAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
             }
-            response.sendRedirect(request.getContextPath() + nexturl);
+            response.sendRedirect(nexturl.startsWith("/") ? request.getContextPath() + nexturl : nexturl);
         }
     }
 }
