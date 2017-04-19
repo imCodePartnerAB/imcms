@@ -14,9 +14,9 @@
 <vel:velocity>
 	<%!
 		void verifyUserViaBankId(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws IOException {
-			response.sendRedirect(request.getContextPath() + "/VerifyUserViaBankId");
 			session.setAttribute(VerifyUser.SESSION_ATTRIBUTE__NEXT_URL, request.getParameter(VerifyUser.REQUEST_PARAMETER__NEXT_URL));
 			session.setAttribute(VerifyUser.SESSION_ATTRIBUTE__NEXT_META, request.getParameter(VerifyUser.REQUEST_PARAMETER__NEXT_META));
+		    response.sendRedirect(request.getContextPath() + "/VerifyUserViaBankId");
 		}
 	%>
 	<%
