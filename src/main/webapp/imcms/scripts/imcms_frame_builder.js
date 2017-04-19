@@ -37,47 +37,43 @@
         },
         positioningFrame: function ($frame) {
             var changedPosition = false,
-                frameOffset = undefined,
-                frameRect = undefined;
-
-            do {
-                changedPosition = false;
-                frameOffset = $frame.offset();
+                frameOffset = $frame.offset(),
                 frameRect = {
                     left: frameOffset.left,
                     top: frameOffset.top,
                     right: frameOffset.left + $frame.width(),
                     bottom: frameOffset.top + $frame.height()
                 };
-                $frame.touching(".editor-frame").filter("[data-configured]:visible").sort(function (a, b) {
-                    var $a = $(a), $b = $(b),
-                        offsetA = $a.offset(),
-                        offsetB = $b.offset(),
-                        rightA = offsetA.left + $a.width(),
-                        rightB = offsetB.left + $b.width();
 
-                    if (rightA > rightB) {
-                        return 1;
-                    }
-                    if (rightA < rightB) {
-                        return -1;
-                    }
-                    return 0;
-                }).each(function (position, element) {
-                    var elementTop;
-                    element = $(element);
-                    if ((elementTop = element.offset().top + element.height()) > frameRect.top) {
-                        var diff = elementTop - frameRect.top;
-                        frameRect.top += diff;
-                        frameRect.bottom += diff;
-                        changedPosition = true;
-                    }
-                });
-                $frame.attr("data-configured", "");
-                if (changedPosition) {
-                    $frame.offset(frameRect);
+            // todo: it should be rewritten without strange library usage that is connected only for this single line!1!
+            $frame.touching(".editor-frame").filter("[data-configured]:visible").sort(function (a, b) {
+                var $a = $(a), $b = $(b),
+                    offsetA = $a.offset(),
+                    offsetB = $b.offset(),
+                    rightA = offsetA.left + $a.width(),
+                    rightB = offsetB.left + $b.width();
+
+                if (rightA > rightB) {
+                    return 1;
                 }
-            } while (changedPosition && $frame.is(":visible"))
+                if (rightA < rightB) {
+                    return -1;
+                }
+                return 0;
+            }).each(function (position, element) {
+                var elementTop;
+                element = $(element);
+                if ((elementTop = element.offset().top + element.height()) > frameRect.top) {
+                    var diff = elementTop - frameRect.top;
+                    frameRect.top += diff;
+                    frameRect.bottom += diff;
+                    changedPosition = true;
+                }
+            });
+            $frame.attr("data-configured", "");
+            if (changedPosition) {
+                $frame.offset(frameRect);
+            }
         },
         _createHeader: function () {
             var headerPh = $("<div>").addClass("header-ph");
