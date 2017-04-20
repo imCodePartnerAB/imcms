@@ -84,22 +84,29 @@ public class SAMLSPFilter implements Filter {
         * Check if request is logout request
         */
 		if (this.getCorrectURL(request).equals(this.filterConfig.getLogoutUrl())) {
-			log.debug("Logout action: destroying SAML session.");
 
-			try {
-				SAMLSessionInfo samlSessionInfo = SAMLSessionManager.getInstance().getSAMLSession(request.getSession());
-				samlRequestSender.sendSAMLLogoutRequest(request, response, spProviderId, filterConfig.getIdpSSOLogoutUrl(), samlSessionInfo);
-			} catch (Exception e) {
-				e.printStackTrace();
+			SAMLSessionInfo samlSessionInfo = SAMLSessionManager.getInstance().getSAMLSession(request.getSession(true));
+			if (samlSessionInfo != null) {
+				log.debug("Logout action: destroying SAML session.");
+				try {
+					samlRequestSender.sendSAMLLogoutRequest(request, response, spProviderId, filterConfig.getIdpSSOLogoutUrl(), samlSessionInfo);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				Utility.removeRememberCdCookie(request, response);
+				Utility.makeUserLoggedOut(request);
+				SAMLSessionManager.getInstance().destroySAMLSession(request.getSession(true));
+			} else {
+				response.sendRedirect( request.getContextPath() + "/servlet/LogOut" );
 			}
 
-			SAMLSessionManager.getInstance().destroySAMLSession(request.getSession());
+			return;
 		}
         /*
         *   Check if user has already authorised
         */
-		if (SAMLSessionManager.getInstance().isSAMLSessionValid(request.getSession())) {
-			SAMLSessionInfo samlSessionInfo = SAMLSessionManager.getInstance().getSAMLSession(request.getSession());
+		if (SAMLSessionManager.getInstance().isSAMLSessionValid(request.getSession(true))) {
+			SAMLSessionInfo samlSessionInfo = SAMLSessionManager.getInstance().getSAMLSession(request.getSession(true));
 			SAMLSessionManager.getInstance().loginUser(samlSessionInfo, request, response);
 			log.debug("SAML session exists and valid: grant access to secure resource");
 			//chain.doFilter(request, response);

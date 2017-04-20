@@ -32,7 +32,7 @@ public class FilterConfig {
 		excludedUrlPattern = config.getInitParameter(EXCLUDED_URL_PATTERN_PARAMETER);
 		spProviderId = serverConfig.getServerName();
 		acsUrl = spProviderId + config.getServletContext().getContextPath() + "/acs";
-		logoutUrl = config.getServletContext().getContextPath() + "/samlv2/logout";
+		logoutUrl = "/logout";
 		if (isEnabled) {
 			try { // code was decompiled because some guy made deploy but forgot to commit...
 				HTTPMetadataProvider provider = new HTTPMetadataProvider(serverConfig.getCgiMetadataUrl(), 99999999);
