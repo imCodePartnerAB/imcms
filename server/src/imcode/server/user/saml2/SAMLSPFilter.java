@@ -97,7 +97,7 @@ public class SAMLSPFilter implements Filter {
 				Utility.makeUserLoggedOut(request);
 				SAMLSessionManager.getInstance().destroySAMLSession(request.getSession(true));
 			} else {
-				response.sendRedirect( request.getContextPath() + "/servlet/LogOut" );
+				chain.doFilter(servletRequest, servletResponse);
 			}
 
 			return;
