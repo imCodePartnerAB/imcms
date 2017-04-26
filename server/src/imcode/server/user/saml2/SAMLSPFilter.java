@@ -4,7 +4,6 @@ import com.imcode.imcms.servlet.VerifyUser;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.saml2.store.SAMLSessionInfo;
 import imcode.server.user.saml2.store.SAMLSessionManager;
-import imcode.server.user.saml2.utils.OpenSamlBootstrap;
 import imcode.server.user.saml2.utils.SAMLUtils;
 import imcode.util.Utility;
 import org.opensaml.common.SAMLObject;
@@ -31,10 +30,11 @@ public class SAMLSPFilter implements Filter {
 
 	@Override
 	public void init(javax.servlet.FilterConfig config) {
-		OpenSamlBootstrap.init();
-		filterConfig = new FilterConfig(config);
-		checkSAMLResponse = new SAMLResponseVerifier();
-		samlRequestSender = new SAMLRequestSender();
+		filterConfig = FilterConfig.getInstance(config);
+		if (filterConfig.isEnabled()) {
+			checkSAMLResponse = new SAMLResponseVerifier();
+			samlRequestSender = new SAMLRequestSender();
+		}
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class SAMLSPFilter implements Filter {
 	  /*
 	   * Check if request is not refer to CGI-IDP - ignore it;
       */
-		if (!isFilteredRequest(request) || !filterConfig.isEnabled()) {
+		if (!filterConfig.isEnabled() || !isFilteredRequest(request)) {
 			log.debug("According to {} configuration parameter request is ignored + {}",
 					new Object[]{FilterConfig.EXCLUDED_URL_PATTERN_PARAMETER, request.getRequestURI()});
 			chain.doFilter(servletRequest, servletResponse);

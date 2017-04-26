@@ -2,6 +2,7 @@ package imcode.server.user.saml2;
 
 import imcode.server.Config;
 import imcode.server.Imcms;
+import imcode.server.user.saml2.utils.OpenSamlBootstrap;
 import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml2.metadata.SingleLogoutService;
@@ -26,14 +27,26 @@ public class FilterConfig {
 	private String idpSSOLogoutUrl;
 	private boolean isEnabled;
 
-	public FilterConfig(javax.servlet.FilterConfig config) {
+	private static FilterConfig instance;
+
+	public static synchronized FilterConfig getInstance(javax.servlet.FilterConfig config) {
+		if (instance == null)
+		{
+			instance = new FilterConfig(config);
+		}
+		return instance;
+	}
+
+	private FilterConfig(javax.servlet.FilterConfig config) {
 		Config serverConfig = Imcms.getServices().getConfig();
 		isEnabled = serverConfig.getAuthenticationConfiguration().containsKey(AUTHENTICATION_METHOD_NAME_PROP);
-		excludedUrlPattern = config.getInitParameter(EXCLUDED_URL_PATTERN_PARAMETER);
-		spProviderId = serverConfig.getServerName();
-		acsUrl = spProviderId + config.getServletContext().getContextPath() + "/acs";
-		logoutUrl = "/servlet/LogOut";
 		if (isEnabled) {
+			OpenSamlBootstrap.init();
+
+			excludedUrlPattern = config.getInitParameter(EXCLUDED_URL_PATTERN_PARAMETER);
+			spProviderId = serverConfig.getServerName();
+			acsUrl = spProviderId + config.getServletContext().getContextPath() + "/acs";
+			logoutUrl = "/servlet/LogOut";
 			try { // code was decompiled because some guy made deploy but forgot to commit...
 				HTTPMetadataProvider provider = new HTTPMetadataProvider(serverConfig.getCgiMetadataUrl(), 99999999);
 				provider.setParserPool(new BasicParserPool());
