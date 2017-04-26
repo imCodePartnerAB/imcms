@@ -30,8 +30,7 @@ public class FilterConfig {
 	private static FilterConfig instance;
 
 	public static synchronized FilterConfig getInstance(javax.servlet.FilterConfig config) {
-		if (instance == null)
-		{
+		if (instance == null) {
 			instance = new FilterConfig(config);
 		}
 		return instance;
