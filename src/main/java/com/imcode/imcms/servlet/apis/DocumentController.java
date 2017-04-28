@@ -686,8 +686,6 @@ public class DocumentController {
 		entity.alias = "";
 		entity.id = null;
 		entity.status = Document.PublicationStatus.NEW.asInt();
-		entity.languages = new HashMap<>();
-		entity.keywords = new HashSet<>();
 	}
 
 	/**
