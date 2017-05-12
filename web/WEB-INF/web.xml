@@ -60,7 +60,7 @@
 
     <filter-mapping>
         <filter-name>SSOFilter</filter-name>
-        <url-pattern>/logout</url-pattern>
+        <url-pattern>/servlet/LogOut</url-pattern>
     </filter-mapping>
 
     <filter-mapping>

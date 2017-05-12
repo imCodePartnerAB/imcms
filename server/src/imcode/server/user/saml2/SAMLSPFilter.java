@@ -4,7 +4,6 @@ import com.imcode.imcms.servlet.VerifyUser;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.saml2.store.SAMLSessionInfo;
 import imcode.server.user.saml2.store.SAMLSessionManager;
-import imcode.server.user.saml2.utils.OpenSamlBootstrap;
 import imcode.server.user.saml2.utils.SAMLUtils;
 import imcode.util.Utility;
 import org.opensaml.common.SAMLObject;
@@ -31,10 +30,11 @@ public class SAMLSPFilter implements Filter {
 
 	@Override
 	public void init(javax.servlet.FilterConfig config) {
-		OpenSamlBootstrap.init();
-		filterConfig = new FilterConfig(config);
-		checkSAMLResponse = new SAMLResponseVerifier();
-		samlRequestSender = new SAMLRequestSender();
+		filterConfig = FilterConfig.getInstance(config);
+		if (filterConfig.isEnabled()) {
+			checkSAMLResponse = new SAMLResponseVerifier();
+			samlRequestSender = new SAMLRequestSender();
+		}
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class SAMLSPFilter implements Filter {
 	  /*
 	   * Check if request is not refer to CGI-IDP - ignore it;
       */
-		if (!isFilteredRequest(request) || !filterConfig.isEnabled()) {
+		if (!filterConfig.isEnabled() || !isFilteredRequest(request)) {
 			log.debug("According to {} configuration parameter request is ignored + {}",
 					new Object[]{FilterConfig.EXCLUDED_URL_PATTERN_PARAMETER, request.getRequestURI()});
 			chain.doFilter(servletRequest, servletResponse);
@@ -84,22 +84,29 @@ public class SAMLSPFilter implements Filter {
         * Check if request is logout request
         */
 		if (this.getCorrectURL(request).equals(this.filterConfig.getLogoutUrl())) {
-			log.debug("Logout action: destroying SAML session.");
 
-			try {
-				SAMLSessionInfo samlSessionInfo = SAMLSessionManager.getInstance().getSAMLSession(request.getSession());
-				samlRequestSender.sendSAMLLogoutRequest(request, response, spProviderId, filterConfig.getIdpSSOLogoutUrl(), samlSessionInfo);
-			} catch (Exception e) {
-				e.printStackTrace();
+			SAMLSessionInfo samlSessionInfo = SAMLSessionManager.getInstance().getSAMLSession(request.getSession(true));
+			if (samlSessionInfo != null) {
+				log.debug("Logout action: destroying SAML session.");
+				try {
+					samlRequestSender.sendSAMLLogoutRequest(request, response, spProviderId, filterConfig.getIdpSSOLogoutUrl(), samlSessionInfo);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				Utility.removeRememberCdCookie(request, response);
+				Utility.makeUserLoggedOut(request);
+				SAMLSessionManager.getInstance().destroySAMLSession(request.getSession(true));
+			} else {
+				chain.doFilter(servletRequest, servletResponse);
 			}
 
-			SAMLSessionManager.getInstance().destroySAMLSession(request.getSession());
+			return;
 		}
         /*
         *   Check if user has already authorised
         */
-		if (SAMLSessionManager.getInstance().isSAMLSessionValid(request.getSession())) {
-			SAMLSessionInfo samlSessionInfo = SAMLSessionManager.getInstance().getSAMLSession(request.getSession());
+		if (SAMLSessionManager.getInstance().isSAMLSessionValid(request.getSession(true))) {
+			SAMLSessionInfo samlSessionInfo = SAMLSessionManager.getInstance().getSAMLSession(request.getSession(true));
 			SAMLSessionManager.getInstance().loginUser(samlSessionInfo, request, response);
 			log.debug("SAML session exists and valid: grant access to secure resource");
 			//chain.doFilter(request, response);
