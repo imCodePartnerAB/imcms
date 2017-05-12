@@ -182,7 +182,9 @@ public class ImageHandling extends HttpServlet {
             }
             
             if (useCacheFile) {
-                writeImageToResponse(cacheId, cacheFile, format, desiredFilename, path, etag, response);
+//                writeImageToResponse(cacheId, cacheFile, format, desiredFilename, path, etag, response);
+                // old way - downloading image file - replaced by new with just showing image in <img> tag
+                writeImageToResponsePage(path, request, response);
                 return;
             }
 		}
@@ -227,16 +229,30 @@ public class ImageHandling extends HttpServlet {
                 return;
             }
 
-            writeImageToResponse(cacheId, cacheFile, format, desiredFilename, path, etag, response);
-            
+//            writeImageToResponse(cacheId, cacheFile, format, desiredFilename, path, etag, response);
+            // old way - downloading image file - replaced by new with just showing image in <img> tag
+            writeImageToResponsePage(path, request, response);
+
         } finally {
             if (source.isDeleteAfterUse()) {
                 source.getSourceFile().delete();
             }
         }
 	}
-	
-	private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename,
+
+    private static void writeImageToResponsePage(String path, HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+            response.setContentType("text/html");
+            path = request.getContextPath() + "/" + path.replaceAll("//", "/");
+            response.getWriter().println("<img src=\"" + path + "\"/>");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename,
                                              String path, String etag, HttpServletResponse response) {
 
         if (etag != null) {
