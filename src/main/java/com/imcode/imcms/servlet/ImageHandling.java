@@ -77,7 +77,7 @@ public class ImageHandling extends HttpServlet {
 
     private void handleRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String desiredFilename = getDesiredFilename(request);
+//        String desiredFilename = getDesiredFilename(request);
 
         String path = StringUtils.trimToNull(request.getParameter("path"));
         String url = StringUtils.trimToNull(request.getParameter("url"));
@@ -113,7 +113,7 @@ public class ImageHandling extends HttpServlet {
 
         ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, format, width,
                 height, cropRegion, rotateDirection);
-        String cacheId = imageCache.getId();
+//        String cacheId = imageCache.getId();
 
         String etag = null;
         File cacheFile = ImageCacheManager.getCacheFile(imageCache);
@@ -131,7 +131,9 @@ public class ImageHandling extends HttpServlet {
                 }
             }
 
-            writeImageToResponse(cacheId, cacheFile, format, desiredFilename, path, etag, response);
+//            writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, path, etag, response);
+            // old way - downloading image file - replaced by new with just showing image in <img> tag
+            writeImageToResponsePage(path, request, response);
             return;
         }
 
@@ -168,8 +170,22 @@ public class ImageHandling extends HttpServlet {
             return;
         }
 
-        Format outputFormat = (format != null ? format : imageInfo.getFormat());
-        writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, path, etag, response);
+//        Format outputFormat = (format != null ? format : imageInfo.getFormat());
+//        writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, path, etag, response);
+        // old way - downloading image file - replaced by new with just showing image in <img> tag
+        writeImageToResponsePage(path, request, response);
+    }
+
+    private static void writeImageToResponsePage(String path, HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+            response.setContentType("text/html");
+            path = request.getContextPath() + "/" + path.replaceAll("//", "/");
+            response.getWriter().println("<img src=\"" + path + "\"/>");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename,
