@@ -691,56 +691,56 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<!--
-				Plugin home: http://wiki.eclipse.org/Jetty/Feature/Jetty_Maven_Plugin
-				-->
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>${jetty.version}</version>
-				<configuration>
-					<scanIntervalSeconds>${jetty.scanIntervalSeconds}</scanIntervalSeconds>
-					<stopKey>${jetty.stop.key}</stopKey>
-					<stopPort>${jetty.stop.port}</stopPort>
-					<webAppSourceDirectory>${generated.webapp.dir}</webAppSourceDirectory>
-					<connectors>
-						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-							<port>${jetty.port}</port>
-							<maxIdleTime>60000</maxIdleTime>
-						</connector>
-					</connectors>
-					<webAppConfig>
-						<contextPath>${jetty.contextPath}</contextPath>
-					</webAppConfig>
-				</configuration>
-			</plugin>
+			<!--<plugin>-->
+				<!--&lt;!&ndash;-->
+				<!--Plugin home: http://wiki.eclipse.org/Jetty/Feature/Jetty_Maven_Plugin-->
+				<!--&ndash;&gt;-->
+				<!--<groupId>org.mortbay.jetty</groupId>-->
+				<!--<artifactId>jetty-maven-plugin</artifactId>-->
+				<!--<version>${jetty.version}</version>-->
+				<!--<configuration>-->
+					<!--<scanIntervalSeconds>${jetty.scanIntervalSeconds}</scanIntervalSeconds>-->
+					<!--<stopKey>${jetty.stop.key}</stopKey>-->
+					<!--<stopPort>${jetty.stop.port}</stopPort>-->
+					<!--<webAppSourceDirectory>${generated.webapp.dir}</webAppSourceDirectory>-->
+					<!--<connectors>-->
+						<!--<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">-->
+							<!--<port>${jetty.port}</port>-->
+							<!--<maxIdleTime>60000</maxIdleTime>-->
+						<!--</connector>-->
+					<!--</connectors>-->
+					<!--<webAppConfig>-->
+						<!--<contextPath>${jetty.contextPath}</contextPath>-->
+					<!--</webAppConfig>-->
+				<!--</configuration>-->
+			<!--</plugin>-->
 
-			<!-- Used for testing purposes ONLY -->
-			<!-- The artifact must not contain pre-compiled JSP classes. -->
-			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-jspc-maven-plugin</artifactId>
-				<version>${jetty.version}</version>
-				<executions>
-					<execution>
-						<id>jspc</id>
-						<!--<phase>prepare-package</phase>-->
-						<goals>
-							<goal>jspc</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<webAppSourceDirectory>${generated.webapp.dir}</webAppSourceDirectory>
-					<excludes>
-						**/eng/jsp/category_admin_category.included.jsp,
-						**/swe/jsp/category_admin_category.included.jsp
-					</excludes>
-					<generatedClasses>${project.build.directory}/tmp/pre-compiled-jsp</generatedClasses>
-					<mergeFragment>false</mergeFragment>
-					<keepSources>true</keepSources>
-				</configuration>
-			</plugin>
+			<!--&lt;!&ndash; Used for testing purposes ONLY &ndash;&gt;-->
+			<!--&lt;!&ndash; The artifact must not contain pre-compiled JSP classes. &ndash;&gt;-->
+			<!--<plugin>-->
+				<!--<groupId>org.mortbay.jetty</groupId>-->
+				<!--<artifactId>jetty-jspc-maven-plugin</artifactId>-->
+				<!--<version>${jetty.version}</version>-->
+				<!--<executions>-->
+					<!--<execution>-->
+						<!--<id>jspc</id>-->
+						<!--&lt;!&ndash;<phase>prepare-package</phase>&ndash;&gt;-->
+						<!--<goals>-->
+							<!--<goal>jspc</goal>-->
+						<!--</goals>-->
+					<!--</execution>-->
+				<!--</executions>-->
+				<!--<configuration>-->
+					<!--<webAppSourceDirectory>${generated.webapp.dir}</webAppSourceDirectory>-->
+					<!--<excludes>-->
+						<!--**/eng/jsp/category_admin_category.included.jsp,-->
+						<!--**/swe/jsp/category_admin_category.included.jsp-->
+					<!--</excludes>-->
+					<!--<generatedClasses>${project.build.directory}/tmp/pre-compiled-jsp</generatedClasses>-->
+					<!--<mergeFragment>false</mergeFragment>-->
+					<!--<keepSources>true</keepSources>-->
+				<!--</configuration>-->
+			<!--</plugin>-->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -818,7 +818,7 @@
 		<repository>
 			<id>imcode</id>
 			<name>imCode Internal Repository</name>
-			<url>scp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
+			<url>sftp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
 		</repository>
 	</distributionManagement>
 
