@@ -57,12 +57,17 @@ public class InternalError extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Throwable exceptionFromRequest = (Throwable) request.getAttribute("javax.servlet.error.exception");
 
+        if (exceptionFromRequest != null) {
+            LOGGER.warn("Exception was occurred. ", exceptionFromRequest );
+        }
+
         UserDomainObject user = Utility.getLoggedOnUser(request);
 
         try {
             sendError(exceptionFromRequest, request, user.getId());
         } catch (Exception e) {
             request.setAttribute("error-id", 0);
+            LOGGER.warn("Problem with the error sending. ", e);
         }
 
         request.setAttribute("javax.servlet.error.exception" , null);
