@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.TextDocument;
+import imcode.server.Imcms;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -29,11 +30,15 @@ public class MenuTag extends BodyTagSupport {
     private String template;
     private MenuDomainObject menu;
     private String label;
+    private Integer document;
 
     public int doStartTag() throws JspException {
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
         ParserParameters parserParameters = ParserParameters.fromRequest(request);
-        TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
+        TextDocumentDomainObject document = ((TextDocumentDomainObject) ((this.document == null)
+                ? parserParameters.getDocumentRequest().getDocument()
+                : Imcms.getServices().getDocumentMapper().getDocument(this.document)));
+
         menu = document.getMenu(no);
         MenuItemDomainObject[] menuItems = menu.getMenuItems();
         menuItemIterator = new FilterIterator(new ArrayIterator(menuItems), new MenuParser.UserCanSeeMenuItemPredicate(parserParameters.getDocumentRequest().getUser())) ;
@@ -101,6 +106,10 @@ public class MenuTag extends BodyTagSupport {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public void setDocument(Integer document) {
+        this.document = document;
     }
 
     public void setPre(String pre) {

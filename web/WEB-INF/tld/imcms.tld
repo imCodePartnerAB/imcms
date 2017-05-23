@@ -173,6 +173,11 @@ Library 1.2//EN"
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
+            <name>document</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
             <name>pre</name>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
