@@ -394,8 +394,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         modifyPasswordIfNecessary(user);
 
         String[] params = {
-                user.getLoginName(),
-                null == user.getPassword() ? "" : user.getPassword(),
+                getSafeTrimmedString(user.getLoginName()),
+                null == user.getPassword() ? "" : user.getPassword().trim(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getTitle(),
@@ -474,6 +474,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         services.getDatabase().execute(updateUserAdminRolesCommand);
     }
 
+    private String getSafeTrimmedString(String notSafeString) {
+        return (notSafeString == null) ? null : notSafeString.trim();
+    }
+
     public synchronized void addUser(UserDomainObject user) throws UserAlreadyExistsException {
         if ( null != getActiveUser(user.getLoginName()) ) {
             throw new UserAlreadyExistsException(
@@ -491,8 +495,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
             String externalColumn = DatabaseUtils.isDatabaseMSSql(services) ? "[external]" : "external";
             Number newUserId = (Number) services.getDatabase().execute(new InsertIntoTableDatabaseCommand("users", new String[][] {
-                    { "login_name", user.getLoginName() },
-                    { "login_password", user.getPassword() },
+                    { "login_name", getSafeTrimmedString(user.getLoginName()) },
+                    { "login_password", getSafeTrimmedString(user.getPassword()) },
                     { "first_name", user.getFirstName() },
                     { "last_name", user.getLastName() },
                     { "title", user.getTitle() },
