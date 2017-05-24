@@ -93,33 +93,43 @@ public class ImcmsSetupFilter implements Filter {
             throw new MissingPasswordException(e);
 
 		} catch (Exception e) {
+            final Throwable cause = e.getCause();
+
+            if (cause != null && ("Broken pipe".equals(cause.getMessage()))) {
+                // seems that user aborted request by himself, so don't worry
+                return;
+            }
+
+            log.error("Received error: ", e);
+
             // try to go to the same URL once more with some fixes
-			ServletRequest newRequest = new HttpServletRequestWrapper(request) {
-				@Override
-				public String getParameter(String name) {
-					String parameter = super.getParameter(name);
-					return checkParam(parameter);
-				}
-
-				@Override
-				public String[] getParameterValues(String paramName) {
-					String values[] = super.getParameterValues(paramName);
-					for (int index = 0; index < values.length; index++) {
-						values[index] = checkParam(values[index]);
-					}
-					return values;
-				}
-
-				private String checkParam(String parameter) {
-					if (parameter != null && parameter.contains(",")) {
-						parameter = parameter.split(",")[0];
-					}
-					return parameter;
-				}
-			};
             try {
+                ServletRequest newRequest = new HttpServletRequestWrapper(request) {
+                    @Override
+                    public String getParameter(String name) {
+                        String parameter = super.getParameter(name);
+                        return checkParam(parameter);
+                    }
+
+                    @Override
+                    public String[] getParameterValues(String paramName) {
+                        String values[] = super.getParameterValues(paramName);
+                        for (int index = 0; index < values.length; index++) {
+                            values[index] = checkParam(values[index]);
+                        }
+                        return values;
+                    }
+
+                    private String checkParam(String parameter) {
+                        if (parameter != null && parameter.contains(",")) {
+                            parameter = parameter.split(",")[0];
+                        }
+                        return parameter;
+                    }
+                };
                 chain.doFilter(newRequest, response);
             } catch (IllegalStateException ignore) {
+            } catch (NullPointerException ignore) {
             } catch (Exception e1) {
                 log.error(e1.getMessage(), e1);
 
