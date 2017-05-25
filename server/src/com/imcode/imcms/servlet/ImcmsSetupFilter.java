@@ -113,10 +113,16 @@ public class ImcmsSetupFilter implements Filter {
 
                     @Override
                     public String[] getParameterValues(String paramName) {
-                        String values[] = super.getParameterValues(paramName);
+                        String[] values = super.getParameterValues(paramName);
+
+                        if (values == null) {
+                            return new String[]{};
+                        }
+
                         for (int index = 0; index < values.length; index++) {
                             values[index] = checkParam(values[index]);
                         }
+
                         return values;
                     }
 
