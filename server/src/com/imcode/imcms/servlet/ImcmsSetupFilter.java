@@ -55,7 +55,7 @@ public class ImcmsSetupFilter implements Filter {
 
         ResourceBundle resourceBundle = Utility.getResourceBundle(request);
         Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
-        
+
         Utility.initRequestWithApi(request, user);
 
         NDC.setMaxDepth( 0 );
@@ -115,12 +115,10 @@ public class ImcmsSetupFilter implements Filter {
                     public String[] getParameterValues(String paramName) {
                         String[] values = super.getParameterValues(paramName);
 
-                        if (values == null) {
-                            return new String[]{};
-                        }
-
-                        for (int index = 0; index < values.length; index++) {
-                            values[index] = checkParam(values[index]);
+                        if (values != null) {
+                            for (int index = 0; index < values.length; index++) {
+                                values[index] = checkParam(values[index]);
+                            }
                         }
 
                         return values;
