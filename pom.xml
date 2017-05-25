@@ -43,7 +43,7 @@
 	<groupId>com.imcode.imcms</groupId>
 	<artifactId>imcms</artifactId>
 	<packaging>war</packaging>
-    <version>4.2.26-SNAPSHOT</version>
+    <version>4.2.25-LDAP-SNAPSHOT</version>
 	<name>imCMS</name>
 
 	<properties>
@@ -385,7 +385,7 @@
 		<dependency>
 			<groupId>com.imcode.net.ldap</groupId>
 			<artifactId>imcode-ldap</artifactId>
-			<version>0.8</version>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

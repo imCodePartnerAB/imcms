@@ -47,6 +47,9 @@ ldap-bind-dn =
 ldap-password =
 ldap-test-user =
 ldap-test-password =
+ldap-read-timeout-millis = 5000
+ldap-max-connections = 20
+ldap-connection-expiry-seconds = 3600
 ldap-user-object-class = inetOrgPerson
 ldap-attribute-login-name = uid
 
