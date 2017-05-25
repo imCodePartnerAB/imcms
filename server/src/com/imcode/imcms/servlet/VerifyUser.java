@@ -9,6 +9,8 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +20,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class VerifyUser extends HttpServlet {
+
+    private static final Log log = LogFactory.getLog(VerifyUser.class);
 
     public static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
     public static final String REQUEST_PARAMETER__NEXT_URL = SESSION_ATTRIBUTE__NEXT_URL;
@@ -40,6 +44,8 @@ public class VerifyUser extends HttpServlet {
 
         String name = req.getParameter(REQUEST_PARAMETER__USERNAME);
         String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
+
+        log.info(String.format("User tried login: name=%s, passwd=%s, method=%s", name, passwd, req.getMethod()));
 
         ContentManagementSystem cms = ContentManagementSystem.login(req, res, name, passwd);
 
