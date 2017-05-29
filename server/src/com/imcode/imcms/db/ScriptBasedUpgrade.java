@@ -6,6 +6,7 @@ import org.apache.ddlutils.Platform;
 import org.apache.log4j.Logger;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
 import com.imcode.db.DatabaseException;
@@ -21,6 +22,7 @@ import javax.xml.xpath.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -96,13 +98,19 @@ public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
                     String.format("/schema-upgrade/diff[imcms:db-version-compare(string(@version), '%s') > 0]/vendor[@name = '%s']/script",
                     currentVersion, vendorName), doc, XPathConstants.NODESET);
 
-            final LinkedHashSet<Element> elements = new LinkedHashSet<Element>();
+            final LinkedHashMap<String, Element> valueToElement = new LinkedHashMap<String, Element>();
 
             for (int i = 0; i < scriptList.getLength(); i++) {
                 final Element item = (Element) scriptList.item(i);
-                elements.add(item);
+                final NamedNodeMap itemAttributes = item.getAttributes();
+
+                if (itemAttributes != null && itemAttributes.getLength() > 0) {
+                    final String nodeValue = itemAttributes.item(0).getNodeValue();
+                    valueToElement.put(nodeValue, item);
+                }
             }
 
+            final LinkedHashSet<Element> elements = new LinkedHashSet<Element>(valueToElement.values());
             //todo: sort elements with DB version comparing if needs, but I hope it is not required
 
             final int updatesCount = elements.size();
