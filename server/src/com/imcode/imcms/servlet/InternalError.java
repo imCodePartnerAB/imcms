@@ -13,19 +13,19 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.HttpClient;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
@@ -54,11 +54,11 @@ public class InternalError extends HttpServlet {
     private final String DEFAULT_RESPONSE = "N/A";
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Throwable exceptionFromRequest = (Throwable) request.getAttribute("javax.servlet.error.exception");
 
         if (exceptionFromRequest != null) {
-            LOGGER.warn("Exception was occurred. ", exceptionFromRequest );
+            LOGGER.warn("Exception was occurred. ", exceptionFromRequest);
         }
 
         UserDomainObject user = Utility.getLoggedOnUser(request);
@@ -70,7 +70,7 @@ public class InternalError extends HttpServlet {
             LOGGER.warn("Problem with the error sending. ", e);
         }
 
-        request.setAttribute("javax.servlet.error.exception" , null);
+        request.setAttribute("javax.servlet.error.exception", null);
 
         ResourceBundle resourceBundle = Utility.getResourceBundle(request);
         Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
@@ -104,7 +104,7 @@ public class InternalError extends HttpServlet {
         String serverName = request.getServerName();
         String jdbcUrl = Imcms.getServerProperties().getProperty("JdbcUrl");
         String dbName = jdbcUrl.substring(jdbcUrl.lastIndexOf("/"),
-                jdbcUrl.contains("?") ?  jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
+                jdbcUrl.contains("?") ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
         String imcmsVersion = Version.getImcmsVersion(getServletContext());
         String databaseVersion = (String) database.execute(
                 new SqlQueryCommand(
@@ -121,25 +121,25 @@ public class InternalError extends HttpServlet {
 
         List<NameValuePair> params = Form.form()
 
-                        .add("hash", hash.toString())
-                        .add("message", message)
-                        .add("cause", cause)
-                        .add("stack-trace", stackTrace)
+                .add("hash", hash.toString())
+                .add("message", message)
+                .add("cause", cause)
+                .add("stack-trace", stackTrace)
 
-                        .add("error-url", errorUrl)
-                        .add("user-agent", userAgent)
-                        .add("header-accept", headerAccept)
-                        .add("header-accept-encoding", headerAcceptEncoding)
-                        .add("header-accept-language", headerAcceptLanguage)
+                .add("error-url", errorUrl)
+                .add("user-agent", userAgent)
+                .add("header-accept", headerAccept)
+                .add("header-accept-encoding", headerAcceptEncoding)
+                .add("header-accept-language", headerAcceptLanguage)
 
-                        .add("server-name", serverName)
-                        .add("database-name", dbName)
-                        .add("imcms-version", imcmsVersion)
-                        .add("database-version", databaseVersion)
+                .add("server-name", serverName)
+                .add("database-name", dbName)
+                .add("imcms-version", imcmsVersion)
+                .add("database-version", databaseVersion)
 
-                        .add("user-id", userId.toString())
+                .add("user-id", userId.toString())
 
-                        .build();
+                .build();
 
         HttpPost httpPost = new HttpPost(errorLoggerUrl);
         httpPost.setEntity(new UrlEncodedFormEntity(params));
