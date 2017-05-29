@@ -21,6 +21,7 @@ import javax.xml.xpath.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import imcode.server.Imcms;
@@ -95,7 +96,16 @@ public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
                     String.format("/schema-upgrade/diff[imcms:db-version-compare(string(@version), '%s') > 0]/vendor[@name = '%s']/script",
                     currentVersion, vendorName), doc, XPathConstants.NODESET);
 
-            final int updatesCount = scriptList.getLength();
+            final LinkedHashSet<Element> elements = new LinkedHashSet<Element>();
+
+            for (int i = 0; i < scriptList.getLength(); i++) {
+                final Element item = (Element) scriptList.item(i);
+                elements.add(item);
+            }
+
+            //todo: sort elements with DB version comparing if needs, but I hope it is not required
+
+            final int updatesCount = elements.size();
 
             if (updatesCount == 0) {
                 LOG.info(String.format
@@ -108,8 +118,8 @@ public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
                     File scriptFile = null;
                     try {
                         Element scriptElement = null;
-                        for (int i = 0; i < updatesCount; i++) {
-                            scriptElement = (Element)scriptList.item(i);
+                        for (Element element : elements) {
+                            scriptElement = element;
                             String script = scriptElement.getAttribute("location");
                             scriptFile = new File(Imcms.getPath(), "WEB-INF/sql/diff/" + script);
                             FileInputStream fs = new FileInputStream(scriptFile);
