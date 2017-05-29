@@ -79,34 +79,42 @@ public class InternalError extends HttpServlet {
     }
 
     private void sendError(Throwable throwable, HttpServletRequest request, Integer userId) throws Exception {
-        Database database = Imcms.getServices().getDatabase();
+        final Database database = Imcms.getServices().getDatabase();
 
-        Throwable causeThrowable = throwable.getCause();
-        String cause = causeThrowable == null
-                ? throwable.getClass().getName() : ExceptionUtils.getRootCauseMessage(throwable);
-        String messageString = throwable.getMessage();
-        String message = messageString == null
-                ? throwable.getClass().getSimpleName() : messageString;
-        String stackTrace = ExceptionUtils.getStackTrace(throwable);
-        Long hash = generateHash(message, cause, stackTrace);
-        String errorUrl = StringUtils.defaultString(request.getHeader("referer"), DEFAULT_RESPONSE);
-        String userAgent = request.getHeader("user-agent");
-        String headerAccept = request.getHeader("accept");
-        String headerAcceptEncoding = request.getHeader("accept-encoding");
-        String headerAcceptLanguage = request.getHeader("accept-language");
+        final Throwable causeThrowable = throwable.getCause();
+        final String cause = (causeThrowable == null)
+                ? throwable.getClass().getName()
+                : ExceptionUtils.getRootCauseMessage(throwable);
+        final String messageString = throwable.getMessage();
+        final String message = (messageString == null) ? throwable.getClass().getSimpleName() : messageString;
+        final String stackTrace = ExceptionUtils.getStackTrace(throwable);
+        final Long hash = generateHash(message, cause, stackTrace);
+
+        final String errorUrl = StringUtils.defaultString(request.getHeader("referer"), DEFAULT_RESPONSE);
+        final String userAgent = request.getHeader("user-agent");
+        final String headerAccept = request.getHeader("accept");
+        final String headerAcceptEncoding = request.getHeader("accept-encoding");
+        final String headerAcceptLanguage = request.getHeader("accept-language");
 
         request.setAttribute("message", StringEscapeUtils.escapeHtml(message));
         request.setAttribute("cause", StringEscapeUtils.escapeHtml(cause));
         request.setAttribute("stack-trace", StringEscapeUtils.escapeHtml(stackTrace));
-
         request.setAttribute("error-url", StringUtils.defaultString(errorUrl, "unknown"));
 
-        String serverName = request.getServerName();
-        String jdbcUrl = Imcms.getServerProperties().getProperty("JdbcUrl");
-        String dbName = jdbcUrl.substring(jdbcUrl.lastIndexOf("/"),
-                jdbcUrl.contains("?") ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
-        String imcmsVersion = Version.getImcmsVersion(getServletContext());
-        String databaseVersion = (String) database.execute(
+        final String serverName = request.getServerName();
+        final String jdbcUrl = Imcms.getServerProperties().getProperty("JdbcUrl");
+
+        final int endIndex = jdbcUrl.contains("?") ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length();
+        final String dbName = jdbcUrl.substring(jdbcUrl.lastIndexOf("/"), endIndex);
+
+        String imcmsVersion;
+        try {
+            imcmsVersion = Version.getImcmsVersion(getServletContext());
+        } catch (Exception e) {
+            imcmsVersion = DEFAULT_RESPONSE;
+        }
+
+        final String databaseVersion = (String) database.execute(
                 new SqlQueryCommand(
                         "SELECT CONCAT(major, '.', minor, '.', client) FROM database_version",
                         null,
@@ -119,7 +127,7 @@ public class InternalError extends HttpServlet {
             errorLoggerUrl = Imcms.ERROR_LOGGER_URL;
         }
 
-        List<NameValuePair> params = Form.form()
+        final List<NameValuePair> params = Form.form()
 
                 .add("hash", hash.toString())
                 .add("message", message)
@@ -141,19 +149,15 @@ public class InternalError extends HttpServlet {
 
                 .build();
 
-        HttpPost httpPost = new HttpPost(errorLoggerUrl);
+        final HttpPost httpPost = new HttpPost(errorLoggerUrl);
         httpPost.setEntity(new UrlEncodedFormEntity(params));
 
-        HttpClient client = createHttpClient();
+        final HttpEntity entity = createHttpClient().execute(httpPost).getEntity();
+        final JsonObject jsonResponse = new JsonParser().parse(EntityUtils.toString(entity)).getAsJsonObject();
 
-        HttpResponse response = client.execute(httpPost);
-        HttpEntity entity = response.getEntity();
+        final String state = jsonResponse.get("state").getAsString();
+        final String errorId = jsonResponse.get("error_id").getAsString();
 
-        JsonParser parser = new JsonParser();
-        JsonObject jsonResponse = parser.parse(EntityUtils.toString(entity)).getAsJsonObject();
-
-        String state = jsonResponse.get("state").getAsString();
-        String errorId = jsonResponse.get("error_id").getAsString();
         if (state.equals("new")) {
             LOGGER.error("Internal error has occurred: {errorId =" + errorId + "; " + " userId =" + userId + "};");
         } else {

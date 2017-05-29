@@ -180,7 +180,19 @@ public class TextDocumentParser {
                     }
                     out.write(contents);
                 } catch (ServletException e) {
-                    throw new UnhandledException(e);
+                    if (request == null) {
+                        throw new UnhandledException(e);
+                    }
+
+                    request.setAttribute("javax.servlet.error.exception", e);
+                    final com.imcode.imcms.servlet.InternalError internalErrorServlet = new com.imcode.imcms.servlet.InternalError();
+                    try {
+                        internalErrorServlet.doGet(request, response);
+                    } catch (Exception e2) {
+                        LOG.error("Error in error handler.....", e2);
+                        LOG.error("Cause of error in error handler:", e);
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 String templateContent = service.getTemplateMapper().getTemplateData(templateName);
