@@ -3,7 +3,7 @@ package com.imcode.imcms.servlet;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.MissingPasswordException;
+import imcode.server.user.MissingRequestDataException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
@@ -88,10 +88,9 @@ public class ImcmsSetupFilter implements Filter {
 		try {
             chain.doFilter(request, response);
 
-        } catch (MissingPasswordException e) {
-            log.error("Null password received. User redirected to missingPassword.jsp", e);
-            throw new MissingPasswordException(e);
-
+        } catch (MissingRequestDataException e) {
+            log.error("Missing request data received. User redirected to missingRequestData.jsp.", e);
+            throw new MissingRequestDataException(e);
 		} catch (Exception e) {
             final Throwable cause = e.getCause();
 
