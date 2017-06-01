@@ -3,20 +3,20 @@
 <vel:velocity>
     <html>
     <head>
-        <title><fmt:message key="missingrequestdata.title"/></title>
+        <title><fmt:message key="missinglogindata.title"/></title>
 
         <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
     </head>
     <body bgcolor="#FFFFFF">
     #gui_outer_start()
-    #gui_head( "<fmt:message key="missingrequestdata.title"/>" )
+    #gui_head( "<fmt:message key="missinglogindata.title"/>" )
     <table border="0" cellspacing="0" cellpadding="0">
         <tr>
             <td>
                 <table border="0" cellpadding="0" cellspacing="0">
                     <form action="<%= request.getContextPath() %>/login">
                         <tr>
-                            <td><input type="Submit" value="<fmt:message key="missingrequestdata.login.page"/>"
+                            <td><input type="Submit" value="<fmt:message key="missinglogindata.login.page"/>"
                                        class="imcmsFormBtn"></td>
                         </tr>
                     </form>
@@ -39,7 +39,7 @@
 
     <table border="0" cellspacing="0" cellpadding="2" width="310">
         <tr>
-            <td align="center" class="imcmsAdmText"><b><fmt:message key="missingrequestdata.message"/></b><br>
+            <td align="center" class="imcmsAdmText"><b><fmt:message key="missinglogindata.message"/></b><br>
             </td>
         </tr>
     </table>

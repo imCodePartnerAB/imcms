@@ -436,8 +436,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
 		try {
 			UserDomainObject result = null;
 
-            if (password == null) {
-                throw new MissingRequestDataException();
+            if (login == null || password == null) {
+                throw new MissingLoginDataException();
             }
 
 			boolean userAuthenticates = externalizedImcmsAuthAndMapper.authenticate(login, password);
