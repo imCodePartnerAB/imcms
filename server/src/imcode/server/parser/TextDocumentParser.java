@@ -13,7 +13,6 @@ import imcode.util.DateConstants;
 import imcode.util.Html;
 import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
-import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -180,19 +179,7 @@ public class TextDocumentParser {
                     }
                     out.write(contents);
                 } catch (ServletException e) {
-                    if (request == null) {
-                        throw new UnhandledException(e);
-                    }
-
-                    request.setAttribute("javax.servlet.error.exception", e);
-                    final com.imcode.imcms.servlet.InternalError internalErrorServlet = new com.imcode.imcms.servlet.InternalError();
-                    try {
-                        internalErrorServlet.doGet(request, response);
-                    } catch (Exception e2) {
-                        LOG.error("Error in error handler.....", e2);
-                        LOG.error("Cause of error in error handler:", e);
-                        e.printStackTrace();
-                    }
+                    Utility.invokeInternalErrorServletWith(request, response, e);
                 }
             } else {
                 String templateContent = service.getTemplateMapper().getTemplateData(templateName);

@@ -321,6 +321,22 @@ public class Utility {
         return false ;
     }
 
+    public static void invokeInternalErrorServletWith(HttpServletRequest request, HttpServletResponse response, Exception e) {
+        if (request == null) {
+            throw new UnhandledException(e);
+        }
+
+        request.setAttribute("javax.servlet.error.exception", e);
+        final com.imcode.imcms.servlet.InternalError internalErrorServlet = new com.imcode.imcms.servlet.InternalError();
+        try {
+            internalErrorServlet.doGet(request, response);
+        } catch (Exception e2) {
+            log.error("Error in error handler.....", e2);
+            log.error("Cause of error in error handler:", e);
+            e.printStackTrace();
+        }
+    }
+
     public static boolean classIsSignedByCertificatesInKeyStore( Class clazz, KeyStore keyStore ) {
         Object[] signers = clazz.getSigners();
         if ( null == signers ) {

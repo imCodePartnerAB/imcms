@@ -135,11 +135,7 @@ public class ImcmsSetupFilter implements Filter {
             } catch (NullPointerException ignore) {
             } catch (Exception e1) {
                 log.error(e1.getMessage(), e1);
-
-                if (!e.toString().equals(e1.toString())) {
-                    log.error(e1.getMessage(), e);
-                }
-                ((HttpServletResponse)response).sendRedirect(request.getContextPath() + "/servlet/StartDoc");
+                Utility.invokeInternalErrorServletWith(request, (HttpServletResponse) response, e);
             }
         }
     }
