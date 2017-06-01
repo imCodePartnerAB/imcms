@@ -9,6 +9,8 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +20,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class VerifyUser extends HttpServlet {
+
+    private static final Log log = LogFactory.getLog(VerifyUser.class);
 
     public static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
     public static final String REQUEST_PARAMETER__NEXT_URL = SESSION_ATTRIBUTE__NEXT_URL;
@@ -38,13 +42,13 @@ public class VerifyUser extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         Utility.setDefaultHtmlContentType(res);
 
-        String name = req.getParameter(REQUEST_PARAMETER__USERNAME);
-        String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
+        final String name = req.getParameter(REQUEST_PARAMETER__USERNAME);
+        final String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
 
-        ContentManagementSystem cms = ContentManagementSystem.login(req, res, name, passwd);
+        final ContentManagementSystem cms = ContentManagementSystem.login(req, res, name, passwd);
 
         if ( null != cms ) {
-            User currentUser = cms.getCurrentUser();
+            final User currentUser = cms.getCurrentUser();
             if ( req.getParameter(REQUEST_PARAMETER__EDIT_USER) != null && !currentUser.isDefaultUser() ) {
                 goToEditUserPage(currentUser, res, req);
             } else {
@@ -68,17 +72,17 @@ public class VerifyUser extends HttpServlet {
     }
 
     private void goToEditUserPage(User user, HttpServletResponse res, HttpServletRequest req) throws IOException, ServletException {
-        UserDomainObject internalUser = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUser(user.getId()) ;
-        DispatchCommand returnCommand = new GoToLoginSuccessfulPageCommand();
-        UserEditorPage userEditorPage = new UserEditorPage(internalUser, new AdminUser.SaveUserAndReturnCommand(internalUser, returnCommand), returnCommand);
+        final UserDomainObject internalUser = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUser(user.getId()) ;
+        final DispatchCommand returnCommand = new GoToLoginSuccessfulPageCommand();
+        final UserEditorPage userEditorPage = new UserEditorPage(internalUser, new AdminUser.SaveUserAndReturnCommand(internalUser, returnCommand), returnCommand);
         userEditorPage.forward(req, res);
     }
 
     public static class GoToLoginSuccessfulPageCommand implements DispatchCommand {
-        public void dispatch(HttpServletRequest request,
-                             HttpServletResponse response) throws IOException, ServletException {
+        public void dispatch(final HttpServletRequest request,
+                             final HttpServletResponse response) throws IOException, ServletException {
             String nexturl = "/servlet/StartDoc";
-            HttpSession session = request.getSession(true);
+            final HttpSession session = request.getSession(true);
             if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null ) {
                 nexturl = "/servlet/GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
                 session.removeAttribute(SESSION_ATTRIBUTE__NEXT_META);

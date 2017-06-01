@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.imcode.imcms.api.P;
+import com.imcode.net.ldap.*;
 import imcode.server.user.ldap.MappedRoles;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -17,10 +18,7 @@ import javax.naming.directory.SearchControls;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-
-import com.imcode.net.ldap.LdapClient;
-import com.imcode.net.ldap.LdapConnection;
-import com.imcode.net.ldap.LdapClientException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The documentMapper maps LDAP attributes to Imcms internal user object.
@@ -67,7 +65,10 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     static final String INETORGPERSON_USER_IDENTITY = "uid";
 
     private final LdapClient ldapClient;
-    private LdapConnection ldapConnection;
+    private final String ldapReadTimeoutMillis;
+    private final int ldapMaxConnections;
+    private final int ldapConnectionExpirySeconds;
+    private LdapConnectionPool ldapConnectionPool;
 
     private final String ldapUserObjectClass;
     private final String[] ldapAttributesAutoMappedToRoles;
@@ -102,6 +103,9 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
                 ldapConfig.getProperty("LdapUserObjectClass", LDAP_USER_OBJECTCLASS_DEFAULT),
                 ldapConfig.getProperty("LdapBindDn", ""),
                 ldapConfig.getProperty("LdapPassword", ""),
+                ldapConfig.getProperty("LdapReadTimeoutMillis", "5000"),
+                ldapConfig.getProperty("LdapMaxConnections", "20"),
+                ldapConfig.getProperty("LdapConnectionExpirySeconds", "120"),
                 buildAttributesMappedToRoles(ldapConfig),
                 buildUserAttributes(ldapConfig), mappedRoles);
     }
@@ -121,15 +125,21 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     }
 
     /**
-     * @param ldapUserAttributes
      * @param ldapUrl            The full path to where the ldap-service is located _and_ the node where to start the searches, e.g.  "ldap://computername:389/CN=Users,DC=companyName,DC=com"
      * @param ldapUserName       A name that is used to log in (bind) to the ldap server
      * @param ldapPassword       A password that i used to log in (bind) to the ldap server
+     * @param ldapReadTimeoutMillis
+     * @param ldapMaxConnections
+     * @param ldapConnectionExpirySeconds
+     * @param ldapUserAttributes
      */
     public LdapUserAndRoleRegistry(String ldapUrl,
                                    String ldapUserObjectClass,
                                    String ldapUserName,
                                    String ldapPassword,
+                                   String ldapReadTimeoutMillis,
+                                   String ldapMaxConnections,
+                                   String ldapConnectionExpirySeconds,
                                    String[] ldapAttributesMappedToRoles,
                                    Properties ldapUserAttributes,
                                    MappedRoles mappedRoles
@@ -142,6 +152,9 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
 
         this.ldapUsername = ldapUserName;
         this.ldapPassword = ldapPassword;
+        this.ldapReadTimeoutMillis = ldapReadTimeoutMillis;
+        this.ldapMaxConnections = Integer.parseInt(ldapMaxConnections);
+        this.ldapConnectionExpirySeconds = Integer.parseInt(ldapConnectionExpirySeconds);
 
         this.mappedRoles = mappedRoles;
 
@@ -150,7 +163,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
 
     private void createLdapConnection()
             throws LdapClientException {
-        ldapConnection = ldapClient.bind(ldapUsername, ldapPassword);
+        ldapConnectionPool = ldapClient.bind(ldapUsername, ldapPassword, ldapReadTimeoutMillis, ldapMaxConnections, ldapConnectionExpirySeconds, TimeUnit.SECONDS);
     }
 
     public String[] getAllRoleNames() {
@@ -292,11 +305,19 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
             searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             searchControls.setReturningAttributes(attributesToReturn);
             searchControls.setReturningObjFlag(true);
-            Iterator<Map<String, String>> searchResult = ldapConnection.search("(&(objectClass={0})({1}={2}))",
-                    new Object[]{ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName},
-                    searchControls);
+            LdapConnection connection = null;
+            try {
+                connection = ldapConnectionPool.getConnection();
+                Iterator<Map<String, String>> searchResult = connection.search("(&(objectClass={0})({1}={2}))",
+                        new Object[]{ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName},
+                        searchControls);
 
-            if (searchResult.hasNext()) attributeMap = searchResult.next();
+                if (searchResult.hasNext()) attributeMap = searchResult.next();
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
         } catch (LdapClientException e) {
             LOG.warn("Could not find user " + loginName, e);
         }
@@ -319,12 +340,20 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
             searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             searchControls.setReturningAttributes(attributesToReturn);
 
-            Iterator<Map<String, Set<String>>> searchResult = ldapConnection.searchMultivalues(
-                    "(&(objectClass={0})({1}={2}))",
-                    new Object[]{ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName},
-                    searchControls);
+            LdapConnection connection = null;
+            try {
+                connection = ldapConnectionPool.getConnection();
+                Iterator<Map<String, Set<String>>> searchResult = connection.searchMultivalues(
+                        "(&(objectClass={0})({1}={2}))",
+                        new Object[]{ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName},
+                        searchControls);
+                if (searchResult.hasNext()) attributeMap = searchResult.next();
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
 
-            if (searchResult.hasNext()) attributeMap = searchResult.next();
         } catch (LdapClientException e) {
             LOG.error("LDAP search error. User: " + loginName, e);
         }
@@ -349,7 +378,19 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
         ImmutableSet.Builder<String> groupsBuilder = ImmutableSet.builder();
 
         try {
-            for (String group : ldapConnection.getADUserGroups(loginName)) {
+
+            LdapConnection connection = null;
+            Set<String> adUserGroups;
+            try {
+                connection = ldapConnectionPool.getConnection();
+                adUserGroups = connection.getADUserGroups(loginName);
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+
+            for (String group : adUserGroups) {
                 if (returningGroups.contains(group.toLowerCase())) {
                     groupsBuilder.add(group);
                 }

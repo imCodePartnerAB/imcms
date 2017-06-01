@@ -2,7 +2,6 @@ package com.imcode.imcms.api;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.MissingPasswordException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;

@@ -10,7 +10,6 @@ import imcode.server.document.TemplateMapper;
 import imcode.server.kerberos.KerberosLoginService;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.MissingPasswordException;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;

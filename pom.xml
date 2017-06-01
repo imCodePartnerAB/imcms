@@ -385,7 +385,7 @@
 		<dependency>
 			<groupId>com.imcode.net.ldap</groupId>
 			<artifactId>imcode-ldap</artifactId>
-			<version>0.8</version>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

@@ -36,6 +36,9 @@ public class TestLdapUserAndRoleRegistry extends TestCase {
         String ldapUrl = ldapProperties.getProperty( "ldap-url" );
         String ldapPassword = ldapProperties.getProperty( "ldap-password" );
         String ldapBindDN = ldapProperties.getProperty( "ldap-bind-dn" );
+        String ldapReadTimeoutMillis = ldapProperties.getProperty("ldap-read-timeout-millis");
+        String ldapMaxConnections = ldapProperties.getProperty("ldap-max-connections");
+        String ldapConnectionExpirySeconds = ldapProperties.getProperty( "ldap-connection-expiry-seconds" );
         String ldapUserObjectClass = ldapProperties.getProperty( "ldap-user-object-class") ;
         String ldapAttributeLoginName = ldapProperties.getProperty( "ldap-attribute-login-name" );
 
@@ -45,9 +48,11 @@ public class TestLdapUserAndRoleRegistry extends TestCase {
             throw new Exception( "Set ldap-test-user in " + propertyFileName );
         }
 
-        LdapUserAndRoleRegistry ldapUserAndRoleRegistry = new LdapUserAndRoleRegistry( ldapUrl,
-                                                                                       ldapUserObjectClass,
-                                                                                       ldapBindDN, ldapPassword, ldapAttributesMappedToRoles, new Properties(),
+        LdapUserAndRoleRegistry ldapUserAndRoleRegistry = new LdapUserAndRoleRegistry(ldapUrl,
+                ldapUserObjectClass,
+                ldapBindDN, ldapPassword,
+                ldapReadTimeoutMillis, ldapMaxConnections, ldapConnectionExpirySeconds,
+                ldapAttributesMappedToRoles, new Properties(),
                 new XMLConfig("server.xml").getLdapMappedRoles());
         ldapUserAndRoleRegistry.setUserPropertyLdapAttribute("LoginName", ldapAttributeLoginName) ;
         return ldapUserAndRoleRegistry;

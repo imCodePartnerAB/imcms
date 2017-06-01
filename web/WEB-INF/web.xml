@@ -731,8 +731,8 @@
     </welcome-file-list>
 
     <error-page>
-        <exception-type>imcode.server.user.MissingPasswordException</exception-type>
-        <location>/imcms/missingPassword.jsp</location>
+        <exception-type>imcode.server.user.MissingRequestDataException</exception-type>
+        <location>/imcms/missingRequestData.jsp</location>
     </error-page>
 
     <error-page>

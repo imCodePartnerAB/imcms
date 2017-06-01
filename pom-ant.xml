@@ -191,6 +191,9 @@
         <filter token="ldap-url" value="${ldap-url}"/>
         <filter token="ldap-bind-dn" value="${ldap-bind-dn}"/>
         <filter token="ldap-password" value="${ldap-password}"/>
+        <filter token="ldap-read-timeout-millis" value="${ldap-read-timeout-millis}"/>
+        <filter token="ldap-max-connections" value="${ldap-max-connections}"/>
+        <filter token="ldap-connection-expiry-seconds" value="${ldap-connection-expiry-seconds}"/>
         <filter token="ldap-user-object-class" value="${ldap-user-object-class}"/>
         <filter token="ldap-attribute-login-name" value="${ldap-attribute-login-name}"/>
 
