@@ -244,7 +244,7 @@ public class ImageHandling extends HttpServlet {
 
         try {
             response.setContentType("text/html");
-            path = request.getContextPath() + "/" + path.replaceAll("//", "/");
+            path = request.getContextPath() + path.replaceAll("//", "/");
             response.getWriter().println("<img src=\"" + path + "\"/>");
 
         } catch (IOException e) {
