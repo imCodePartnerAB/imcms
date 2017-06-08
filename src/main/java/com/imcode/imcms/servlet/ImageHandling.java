@@ -77,7 +77,7 @@ public class ImageHandling extends HttpServlet {
 
     private void handleRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        String desiredFilename = getDesiredFilename(request);
+        String desiredFilename = getDesiredFilename(request);
 
         String path = StringUtils.trimToNull(request.getParameter("path"));
         String url = StringUtils.trimToNull(request.getParameter("url"));
@@ -113,7 +113,7 @@ public class ImageHandling extends HttpServlet {
 
         ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, format, width,
                 height, cropRegion, rotateDirection);
-//        String cacheId = imageCache.getId();
+        String cacheId = imageCache.getId();
 
         String etag = null;
         File cacheFile = ImageCacheManager.getCacheFile(imageCache);
@@ -131,9 +131,7 @@ public class ImageHandling extends HttpServlet {
                 }
             }
 
-//            writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, path, etag, response);
-            // old way - downloading image file - replaced by new with just showing image in <img> tag
-            writeImageToResponsePage(path, request, response);
+            writeImageToResponse(cacheId, cacheFile, format, desiredFilename, path, etag, response);
             return;
         }
 
@@ -170,22 +168,8 @@ public class ImageHandling extends HttpServlet {
             return;
         }
 
-//        Format outputFormat = (format != null ? format : imageInfo.getFormat());
-//        writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, path, etag, response);
-        // old way - downloading image file - replaced by new with just showing image in <img> tag
-        writeImageToResponsePage(path, request, response);
-    }
-
-    private static void writeImageToResponsePage(String path, HttpServletRequest request, HttpServletResponse response) {
-
-        try {
-            response.setContentType("text/html");
-            path = request.getContextPath() + "/" + path.replaceAll("//", "/");
-            response.getWriter().println("<img src=\"" + path + "\"/>");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Format outputFormat = (format != null ? format : imageInfo.getFormat());
+        writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, path, etag, response);
     }
 
     private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename,
@@ -195,13 +179,7 @@ public class ImageHandling extends HttpServlet {
             response.addHeader("ETag", etag);
         }
 
-        if (format != null) {
-            response.setContentType(format.getMimeType());
-        } else {
-            response.setContentType("application/octet-stream");
-        }
-
-        response.setContentLength((int) cacheFile.length());
+        String extension = null;
 
         if (desiredFilename == null) {
             String pathname = cacheId;
@@ -216,23 +194,28 @@ public class ImageHandling extends HttpServlet {
 
 			desiredFilename = pathname;
 
-            String ext = null;
-
             if (format != null) {
-                ext = format.getExtension();
+                extension = format.getExtension();
             } else if (path != null) {
-                ext = FilenameUtils.getExtension(path);
+                extension = FilenameUtils.getExtension(path);
             }
 
-            if (ext != null && !ext.isEmpty()) {
-                desiredFilename += "." + ext;
+            if (extension != null && !extension.isEmpty()) {
+                desiredFilename += "." + extension;
             }
         }
+
+        final String contentType = (format == null)
+                ? ((extension != null && !extension.isEmpty()) ? ("image/" + extension) : "image/png")
+                : format.getMimeType();
+
+        response.setContentType(contentType);
+        response.setContentLength((int) cacheFile.length());
 
         // replace " with \"
         desiredFilename = StringUtils.replace(desiredFilename, "\"", "\\\"");
 
-        response.addHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", desiredFilename));
+        response.addHeader("Content-Disposition", String.format("inline; filename=\"%s\"", desiredFilename));
 
         InputStream input = null;
         OutputStream output = null;
