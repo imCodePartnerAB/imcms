@@ -270,7 +270,7 @@ public class ImageHandling extends HttpServlet {
 		}
 
 		final String contentType = (format == null)
-                ? ((extension != null) ? ("image/" + extension) : "image/png")
+                ? ((extension != null && !extension.isEmpty()) ? ("image/" + extension) : "image/png")
                 : format.getMimeType();
 
         response.setContentType(contentType);
