@@ -14,6 +14,9 @@
         addSubscriber: function (subscriber) {
             this.subscribers.push(subscriber);
         },
+        cleanSubscribers: function () {
+            this.subscribers = [];
+        },
         unSubscribe: function (subscriber) {
             this.subscribers.remove(subscriber);
         },

@@ -47,7 +47,7 @@
                 var publisher = Imcms.CallbackConnector.getPublisher(publisherName);
 
                 if (publisher && publisher.hasSubscriber(editor)) {
-                    publisher.unSubscribe(editor);
+                    publisher.cleanSubscribers();
                     publisher.callback();
                     publisher.callback = function () {
                     }
