@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.mapping.*;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentCommonContent;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
@@ -294,12 +297,14 @@ public class DocumentController {
 		for (int i = 0; i < DATE_TYPES.length; i++) {
 		    String userBy = byUsers[i];
 			String[] dateTimeBy = Utility.formatDateTime(dates[i]).split(" ");
-			map.put(DATE_TYPES[i], new HashedMap<String, Object>() {{
-				put("date", dateTimeBy[0]);
-				put("time", dateTimeBy[1]);
-                put("by", userBy);
-			}});
-		}
+
+            final Map<String, Object> optionToValue = new HashedMap<>();
+            optionToValue.put("date", dateTimeBy[0]);
+            optionToValue.put("time", dateTimeBy[1]);
+            optionToValue.put("by", userBy);
+
+            map.put(DATE_TYPES[i], optionToValue);
+        }
 		return map;
 	}
 
@@ -313,17 +318,19 @@ public class DocumentController {
 		Map<String, Object> result = new HashMap<>();
 
 		try {
-            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            DocumentDomainObject copyDocument = documentMapper.copyDocument(documentMapper.getDocument(id), Imcms.getUser());
-            int docId = copyDocument.getId();
-            String label = copyDocument.getHeadline();
+            final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+            final UserDomainObject user = Imcms.getUser();
+            final DocumentDomainObject document = documentMapper.getDocument(id);
+            final DocumentDomainObject copyDocument = documentMapper.copyDocument(document, user);
+            final int docId = copyDocument.getId();
+            final String label = copyDocument.getHeadline();
+            final Map<String, Object> optionToValue = new HashedMap<>();
+            optionToValue.put("id", docId);
+            optionToValue.put("label", label);
 
-			result.put("result", true);
-			result.put("data", new HashedMap<String, Object>(){{
-                put("id", docId);
-                put("label", label);
-            }});
-		} catch (DocumentSaveException e) {
+            result.put("result", true);
+            result.put("data", optionToValue);
+        } catch (DocumentSaveException e) {
 			e.printStackTrace();
 			LOG.error("Problem during document creating", e);
 			result.put("result", false);
@@ -679,8 +686,6 @@ public class DocumentController {
 		entity.alias = "";
 		entity.id = null;
 		entity.status = Document.PublicationStatus.NEW.asInt();
-		entity.languages = new HashMap<>();
-		entity.keywords = new HashSet<>();
 	}
 
 	/**

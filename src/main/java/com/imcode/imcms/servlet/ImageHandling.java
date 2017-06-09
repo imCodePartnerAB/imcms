@@ -51,6 +51,8 @@ public class ImageHandling extends HttpServlet {
 
     private static final List<String> ALLOWED_PATHS = new ArrayList<String>();
 
+    public static final int IMAGE_MAX_DIMENSION = 4096;
+
 
     static {
         File rootFile = Imcms.getPath();
@@ -86,6 +88,11 @@ public class ImageHandling extends HttpServlet {
 
         int width = NumberUtils.toInt(request.getParameter("width"));
         int height = NumberUtils.toInt(request.getParameter("height"));
+
+        // cutting dimensions to prevent generating too big images
+        width = Math.min(IMAGE_MAX_DIMENSION, width);
+        height = Math.min(IMAGE_MAX_DIMENSION, height);
+
         width = Math.max(width, 0);
         height = Math.max(height, 0);
 
@@ -172,13 +179,7 @@ public class ImageHandling extends HttpServlet {
             response.addHeader("ETag", etag);
         }
 
-        if (format != null) {
-            response.setContentType(format.getMimeType());
-        } else {
-            response.setContentType("application/octet-stream");
-        }
-
-        response.setContentLength((int) cacheFile.length());
+        String extension = null;
 
         if (desiredFilename == null) {
             String pathname = cacheId;
@@ -193,23 +194,28 @@ public class ImageHandling extends HttpServlet {
 
 			desiredFilename = pathname;
 
-            String ext = null;
-
             if (format != null) {
-                ext = format.getExtension();
+                extension = format.getExtension();
             } else if (path != null) {
-                ext = FilenameUtils.getExtension(path);
+                extension = FilenameUtils.getExtension(path);
             }
 
-            if (ext != null && !ext.isEmpty()) {
-                desiredFilename += "." + ext;
+            if (extension != null && !extension.isEmpty()) {
+                desiredFilename += "." + extension;
             }
         }
+
+        final String contentType = (format == null)
+                ? ((extension != null && !extension.isEmpty()) ? ("image/" + extension) : "image/png")
+                : format.getMimeType();
+
+        response.setContentType(contentType);
+        response.setContentLength((int) cacheFile.length());
 
         // replace " with \"
         desiredFilename = StringUtils.replace(desiredFilename, "\"", "\\\"");
 
-        response.addHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", desiredFilename));
+        response.addHeader("Content-Disposition", String.format("inline; filename=\"%s\"", desiredFilename));
 
         InputStream input = null;
         OutputStream output = null;

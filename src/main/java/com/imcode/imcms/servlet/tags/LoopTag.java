@@ -50,7 +50,7 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
 
         request = (HttpServletRequest) pageContext.getRequest();
         parserParameters = ParserParameters.fromRequest(request);
-        document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
+        document = parserParameters.getDocumentRequest().getDocument();
         editMode = TagParser.isEditable(attributes, parserParameters.isContentLoopMode());
 
         loop = document.getLoop(no);
@@ -164,5 +164,10 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
     // @Override
     public LoopEditor createEditor() {
         return new LoopEditor();
+    }
+
+    public void invalidateCurrentEntry() {
+        currentEntry = null;
+        pageContext.removeAttribute("loopitem");
     }
 }

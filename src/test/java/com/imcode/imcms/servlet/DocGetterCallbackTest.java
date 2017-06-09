@@ -36,17 +36,17 @@ public class DocGetterCallbackTest {
         ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }
 
-    @Test
-    public void default_user_change_language() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        UserDomainObject user = new UserDomainObject(UserDomainObject.DEFAULT_USER_ID);
-
-        when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(LanguageFX.mkSwedish().getCode());
-        when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn(null);
-        when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn(null);
-
-        ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
-    }
+//    @Test
+//    public void default_user_change_language() {
+//        HttpServletRequest request = mock(HttpServletRequest.class);
+//        UserDomainObject user = new UserDomainObject(UserDomainObject.DEFAULT_USER_ID);
+//
+//        when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(LanguageFX.mkSwedish().getCode());
+//        when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn(null);
+//        when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn(null);
+//
+//        ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
+//    }
 
     @Test
     public void default_user_change_version_to_working() {

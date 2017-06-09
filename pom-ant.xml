@@ -82,17 +82,17 @@
         </copy>
 
         <copy todir="${build.webapp.dir}" filtering="true" encoding="utf-8">
-            <fileset dir="src/main/web"
+            <fileset dir="src/main/webapp"
                      excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern},${swfpattern}"/>
         </copy>
 
         <copy todir="${build.webapp.dir}">
-            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**"
+            <fileset dir="src/main/webapp" excludes="imcms/lang/**,WEB-INF/templates/lang/**"
                      includes="${imagespattern},${swfpattern}"/>
         </copy>
 
         <copy todir="${webinf.solr.dir}">
-            <fileset dir="src/main/web/WEB-INF/solr"/>
+            <fileset dir="src/main/webapp/WEB-INF/solr"/>
         </copy>
 
         <antcall target="web-lang">
@@ -122,17 +122,17 @@
         <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${webinf.templates.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
-            <fileset dir="src/main/web/WEB-INF/templates/lang"/>
+            <fileset dir="src/main/webapp/WEB-INF/templates/lang"/>
         </imtranslate>
 
         <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${build.webapp.imcms.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
-            <fileset dir="src/main/web/imcms/lang" excludes="${imagespattern}"/>
+            <fileset dir="src/main/webapp/imcms/lang" excludes="${imagespattern}"/>
         </imtranslate>
 
         <copy todir="${build.webapp.imcms.dir}/${buildlanguage}" filtering="false">
-            <fileset dir="src/main/web/imcms/lang" includes="${imagespattern}"/>
+            <fileset dir="src/main/webapp/imcms/lang" includes="${imagespattern}"/>
         </copy>
     </target>
 

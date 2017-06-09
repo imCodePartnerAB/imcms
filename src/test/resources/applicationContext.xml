@@ -16,5 +16,5 @@ Can not be replaced with @Configuration since XML configuration always takes pre
   -->
   <context:property-placeholder location="classpath:server.properties" system-properties-mode="NEVER"/>
 
-  <import resource="file:${com.imcode.imcms.test.basedir}/src/main/web/WEB-INF/applicationContext.xml"/>
+  <import resource="file:${com.imcode.imcms.test.basedir}/src/main/webapp/WEB-INF/applicationContext.xml"/>
 </beans>

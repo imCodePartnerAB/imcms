@@ -4,7 +4,6 @@ import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.servlet.tags.Editor.TextEditor;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -12,50 +11,41 @@ import imcode.server.parser.TagParser;
 import org.apache.commons.lang3.StringUtils;
 
 public class TextTag extends SimpleImcmsTag {
+    public static final String SOURCE_FROM_HTML = "source-from-html";
+    public static final String CLEAN_SOURCE_FROM_HTML = "clean-source-from-html";
+    public static final String TEXT = "text";
+    public static final String HTML = "html";
+    public static final String CLEAN_HTML = "cleanhtml";
 
     protected String getContent(TagParser tagParser) {
-        String result;
-        LoopTag loopTag = (LoopTag) findAncestorWithClass(this, LoopTag.class);
+        final LoopTag loopTag = (LoopTag) findAncestorWithClass(this, LoopTag.class);
+        final String documentProp = attributes.getProperty("document");
+        final DocumentRequest documentRequest = parserParameters.getDocumentRequest();
 
-        LoopEntryRef loopEntryRef = loopTag == null ? null : loopTag.getLoopEntryRef();
-        String documentProp = attributes.getProperty("document");
-        DocumentRequest documentRequest = parserParameters.getDocumentRequest();
-
-        DocumentDomainObject doc = StringUtils.isBlank(documentProp)
+        final TextDocumentDomainObject textDoc = StringUtils.isBlank(documentProp)
                 ? documentRequest.getDocument()
                 : Imcms.getServices().getDocumentMapper().getVersionedDocument(documentProp, pageContext.getRequest());
 
-        TextDocumentDomainObject textDoc = (TextDocumentDomainObject) doc;
-        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)
-                documentRequest.getUser().getPermissionSetFor(textDoc);
+        final LoopEntryRef loopEntryRef = (loopTag == null)
+                ? null
+                : loopTag.getLoopEntryRef();
 
-        boolean hasEditTexts = permissionSet.getEditTexts();
+        final String content = tagParser.tagText(attributes, loopEntryRef, textDoc);
+        final TextDocumentPermissionSetDomainObject permissions = (TextDocumentPermissionSetDomainObject) documentRequest
+                .getUser()
+                .getPermissionSetFor(textDoc);
+
+        final boolean hasEditTexts = permissions.getEditTexts();
 
         if (TagParser.isEditable(attributes, hasEditTexts)) {
-            String locale = documentRequest.getDocument().getLanguage().getCode();
-            int textNo = Integer.parseInt(attributes.getProperty("no"));
-            String contentType = "html";
-
-            if (attributes.getProperty("formats", "").contains("text")) {
-                contentType = "text";
-
-            } else {
-                TextDomainObject textDO = (loopTag == null)
-                        ? textDoc.getText(textNo)
-                        : textDoc.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, textNo));
-
-                if (textDO != null) {
-                    contentType = textDO.getType() == TextDomainObject.TEXT_TYPE_PLAIN
-                            ? "from-html"
-                            : "html";
-                }
-            }
-
-            String label = attributes.getProperty("label", "");
-            String showLabel = attributes.getProperty("showlabel", "false");
+            final String locale = documentRequest.getDocument().getLanguage().getCode();
+            final int textNo = Integer.parseInt(attributes.getProperty("no"));
+            final String contentType = resolveContentType(textDoc, loopEntryRef, textNo);
+            final String label = attributes.getProperty("label", "");
+            final String showLabel = attributes.getProperty("showlabel", "false");
 
             ((TextEditor) editor)
-                    .setDocumentId(doc.getId())
+                    .setDocumentId(textDoc.getId())
                     .setContentType(contentType)
                     .setLabel(label)
                     .setShowlabel(showLabel)
@@ -66,9 +56,31 @@ public class TextTag extends SimpleImcmsTag {
             editor = null;
         }
 
-        result = tagParser.tagText(attributes, loopEntryRef, textDoc);
+        return content;
+    }
 
-        return result;
+    private String resolveContentType(TextDocumentDomainObject textDoc, LoopEntryRef loopEntryRef,
+                                      int textNo) {
+        String contentType = HTML; // default value
+        final String formats = attributes.getProperty("formats", "").toLowerCase();
+
+        if (formats.equals(TEXT)) {
+            contentType = TEXT;
+
+        } else {
+            final TextDomainObject textDO = (loopEntryRef == null)
+                    ? textDoc.getText(textNo)
+                    : textDoc.getText(TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, textNo));
+
+            if ((textDO != null) && (textDO.getType() == TextDomainObject.TEXT_TYPE_PLAIN)) {
+                contentType = (formats.contains("clean")) ? CLEAN_SOURCE_FROM_HTML : SOURCE_FROM_HTML;
+
+            } else if (formats.contains("clean")) {
+                contentType = CLEAN_HTML;
+            }
+        }
+
+        return contentType;
     }
 
     @Override

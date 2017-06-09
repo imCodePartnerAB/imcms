@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.jsoup.Jsoup;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -522,7 +521,10 @@ public class TagParser {
             }
         }
 
-        result = StringUtils.isEmpty(Jsoup.parse(result).text()) ? attributes.getProperty("placeholder") : result;
+        result = StringUtils.isEmpty(Utility.getTextContentFilter().cleanText(result))
+                ? attributes.getProperty("placeholder")
+                : result;
+
         result = StringUtils.isEmpty(result) ? "" : result;
 
         return result;

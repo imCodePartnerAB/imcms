@@ -175,6 +175,10 @@ public class TextDocumentContentLoader {
      * @see imcode.server.document.DocumentDomainObject
      */
     public Collection<TextHistory> getTextHistory(DocRef docRef, LoopEntryRef loopEntryRef, int textNo) {
+        if (loopEntryRef == null) {
+            return getTextHistory(docRef, textNo);
+        }
+
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         Language language = languageRepository.findByCode(docRef.getLanguageCode());
 

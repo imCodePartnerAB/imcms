@@ -12,7 +12,7 @@ public final class DocumentCommonContent implements Serializable {
         private String headline;
         private String menuText;
         private String menuImageURL;
-        private Boolean enabled;
+        private boolean enabled = false;
         private Integer versionNo;
 
         public Builder() {
@@ -84,7 +84,7 @@ public final class DocumentCommonContent implements Serializable {
     /**
      * Is current language enabled
      */
-    private final Boolean enabled;
+    private final boolean enabled;
 
     /**
      * Version of document
@@ -92,10 +92,10 @@ public final class DocumentCommonContent implements Serializable {
     private final Integer versionNo;
 
     public DocumentCommonContent() {
-        this("", "", "", null, 0);
+        this("", "", "", false, 0);
     }
 
-    public DocumentCommonContent(String headline, String menuText, String menuImageURL, Boolean enabled,
+    public DocumentCommonContent(String headline, String menuText, String menuImageURL, boolean enabled,
                                  Integer versionNo) {
         this.headline = headline;
         this.menuText = menuText;

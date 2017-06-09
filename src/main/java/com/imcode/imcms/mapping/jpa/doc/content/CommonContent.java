@@ -49,7 +49,7 @@ public class CommonContent {
      * Flag indicates is current language enabled for document
      */
     @Column(name = "is_enabled")
-    private Boolean isEnabled;
+    private boolean isEnabled;
 
     /**
      * Related document version number
