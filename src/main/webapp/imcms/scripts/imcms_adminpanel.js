@@ -81,7 +81,7 @@
             pageInfoCounter: false,
             // don't trust your IDE, function is used!
             pageInfo: function () {
-                var pageInfoCounter = this.pageInfoCounter;
+                var adminPanel = this;
 
                 if (this.pageInfoCounter === false) {
                     this.pageInfoCounter = true;
@@ -92,14 +92,14 @@
                             loader: Imcms.Editors.Document,
                             target: $("body")[0],
                             onApply: function () {
-                                pageInfoCounter = false;
+                                adminPanel.pageInfoCounter = false;
                                 Imcms.Editors.Document.update(viewer.serialize(), Imcms.BackgroundWorker.createTask({
                                     showProcessWindow: true,
                                     reloadWholePage: true
                                 }));
                             },
                             onCancel: function () {
-                                pageInfoCounter = false;
+                                adminPanel.pageInfoCounter = false;
                             }
                         });
                     });
