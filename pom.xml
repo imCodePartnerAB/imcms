@@ -1478,7 +1478,7 @@
         <repository>
             <id>imcode</id>
             <name>imCode Internal Repository</name>
-            <url>scp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
+            <url>sftp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
         </repository>
     </distributionManagement>
 
