@@ -21,7 +21,7 @@
 
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
-    <version>6.0.0-alpha108-SNAPSHOT</version>
+    <version>6.0.0-alpha109-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>imCMS</name>
@@ -832,7 +832,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.8.3</version>
+            <version>1.10.2</version>
         </dependency>
 
         <!--W3C validators api-->
@@ -1103,11 +1103,12 @@
                 <version>1.5.1</version>
                 <configuration>
                     <force>true</force>
-                    <sourceDirectory>${project.basedir}/src/main/web</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/src/main/webapp</sourceDirectory>
                     <outputDirectory>${build.webapp.dir}/</outputDirectory>
 
                     <excludes>
                         <!--excluding already minified files-->
+                        <!--<exclude>**/**</exclude>-->
                         <exclude>**/*.min.js</exclude>
                         <exclude>**/*.min.css</exclude>
                     </excludes>
@@ -1284,24 +1285,11 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/Test*.java</exclude>
-                        <exclude>**/*TestCase.java</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
-                <configuration>
-                    <argLine>-Xms512m -Xmx1024m</argLine>
-                    <includes>
-                        <include>**/*Spec.java</include>
-                        <include>**/*Suite.java</include>
-                    </includes>
-                </configuration>
             </plugin>
 
             <plugin>
@@ -1490,7 +1478,7 @@
         <repository>
             <id>imcode</id>
             <name>imCode Internal Repository</name>
-            <url>scp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
+            <url>sftp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
         </repository>
     </distributionManagement>
 

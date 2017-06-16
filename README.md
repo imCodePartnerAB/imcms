@@ -3,7 +3,7 @@ imcms
 
 imCMS, or as we prefer to call it I’m CMS, is a project that has been developed during more than 10 years. It is a java-based CMS system, with tag-based templates, and using MySQL DB (even MS SQL works). The system is used in more than hundred installations in Sweden, most frequently within the public sector.
 
-During the last year imCMS has been updated to a very new codebase, integrating among others Spring and Hybernate. This product is almost ready to go out for Alpha-testing now.
+During the last year imCMS has been updated to a very new codebase, integrating among others Spring and Hibernate. This product is almost ready to go out for Alpha-testing now.
 
 During the years imCMS has been developed within the Swedish company: imCode Partner AB. Our intention is to try to create a community around the code. This is one of few qualified Java-based CMS systems, so we hope that we would find a number of contributors.
 

@@ -1,0 +1,64 @@
+
+/* *******************************************************************************************
+ *         Default settings for the Xinha Editor "StyleList" plugin.                         *
+ *         CSS-classes in the right panel.                                                   *
+ ******************************************************************************************* */
+
+/*
+
+Uncomment to activate. Modify to fit your needs.
+If you want to use your own CSS - remove the CSS-attibutes below and just use an @import statment. Eg:
+
+@import url(my_css.css);
+@import url(default.css.jsp?editor=true);
+
+*/
+
+
+
+/*
+
+.ingress {
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+.big {
+	font-size: 1.2em;
+}
+
+.red {
+	color: #cc0000;
+}
+
+.blue {
+	color: #000000;
+}
+
+H1.inverted {
+	color: #ffffff;
+	background-color: #666666;
+	margin: 1em 0;
+	padding: 4px 8px;
+}
+
+A.redlink {
+	color: #cc0000 !important;
+	text-decoration: underline !important;
+}
+
+A.greenlink {
+	color: #00bb00 !important;
+	text-decoration: underline !important;
+}
+
+A.bluelink_noline {
+	color: #0000cc !important;
+	text-decoration: none !important;
+}
+
+A.noline {
+	text-decoration: none !important;
+}
+
+*/

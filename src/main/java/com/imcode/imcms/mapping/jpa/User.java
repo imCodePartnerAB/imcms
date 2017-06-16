@@ -199,7 +199,7 @@ public class User {
     }
 
     public void setLogin(String login) {
-        this.login = login;
+        this.login = (login == null) ? null : login.trim();
     }
 
     public String getPassword() {
@@ -207,7 +207,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = (password == null) ? null : password.trim();
     }
 
     public String getFirstName() {

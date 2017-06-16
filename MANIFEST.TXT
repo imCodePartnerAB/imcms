@@ -5,7 +5,7 @@ lib/noinstall/*.*
 server/**
 sql/**
 tools/**
-web/**
+webapp/**
 MANIFEST.TXT
 build.properties.template
 build.xml
