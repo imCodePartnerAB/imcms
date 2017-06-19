@@ -16,6 +16,7 @@ db-name = imcms
 db-user = root
 db-pass = root
 db-maxconnections = 20
+hbm2ddl = update
 
 # For MySQL
 db-target = mysql

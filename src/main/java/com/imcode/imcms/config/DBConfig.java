@@ -87,10 +87,10 @@ public class DBConfig {
         properties.put("hibernate.format_sql", "true");
         properties.put("hibernate.use_sql_comments", "true");
         properties.put("hibernate.show_sql", "false");
+        properties.put("hibernate.hbm2ddl.auto", env.getProperty("hbm2ddl.auto"));
 
         //TODO: Some additional properties for hibernate
-//        properties.put("hibernate.hbm2ddl.auto", "create");
-//        properties.put("hibernate.show_sql", "false");
+//        properties.put("hibernate.show_sql", "true");
 //        properties.put("hibernate.format_sql", "false");
 //        properties.put("hibernate.hbm2ddl.import_files", "insert-data.sql");
 //        properties.put("hibernate.ejb.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
