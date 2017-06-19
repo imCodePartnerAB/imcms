@@ -4,7 +4,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -17,9 +16,11 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Created by zemluk on 13.10.16.
+ * Updated by Serhii Maksymchuk, 19.06.17
  */
 @Configuration
 @EnableTransactionManagement
@@ -28,25 +29,20 @@ import java.util.Map;
 public class DBConfig {
 
     @Autowired
-    private Environment env;
-
-//    TODO just another way to obtain properties
-/*@Value("${JdbcUrl}")
-    private String jdbcUrl;*//*
-*/
+    private Properties imcmsProperties;
 
     @Bean
     public BasicDataSource dataSource() {
         BasicDataSource basicDataSource = new BasicDataSource();
-        basicDataSource.setDriverClassName(env.getProperty("JdbcDriver"));
-        basicDataSource.setUrl(env.getProperty("JdbcUrl"));
-        basicDataSource.setUsername(env.getProperty("User"));
-        basicDataSource.setPassword(env.getProperty("Password"));
+        basicDataSource.setDriverClassName(imcmsProperties.getProperty("JdbcDriver"));
+        basicDataSource.setUrl(imcmsProperties.getProperty("JdbcUrl"));
+        basicDataSource.setUsername(imcmsProperties.getProperty("User"));
+        basicDataSource.setPassword(imcmsProperties.getProperty("Password"));
         basicDataSource.setTestOnBorrow(true);
         basicDataSource.setValidationQuery("select 1");
         basicDataSource.setDefaultAutoCommit(false);
         basicDataSource.setMaxTotal(20);
-        basicDataSource.setMaxTotal(Integer.parseInt(env.getProperty("MaxConnectionCount")));
+        basicDataSource.setMaxTotal(Integer.parseInt(imcmsProperties.getProperty("MaxConnectionCount")));
         return basicDataSource;
     }
 
@@ -55,15 +51,15 @@ public class DBConfig {
     public BasicDataSource dataSourceWithAutoCommit() {
         BasicDataSource basicDataSource = new BasicDataSource();
 
-        basicDataSource.setDriverClassName(env.getProperty("JdbcDriver"));
-        basicDataSource.setUrl(env.getProperty("JdbcUrl"));
-        basicDataSource.setUsername(env.getProperty("User"));
-        basicDataSource.setPassword(env.getProperty("Password"));
+        basicDataSource.setDriverClassName(imcmsProperties.getProperty("JdbcDriver"));
+        basicDataSource.setUrl(imcmsProperties.getProperty("JdbcUrl"));
+        basicDataSource.setUsername(imcmsProperties.getProperty("User"));
+        basicDataSource.setPassword(imcmsProperties.getProperty("Password"));
         basicDataSource.setTestOnBorrow(true);
         basicDataSource.setValidationQuery("select 1");
         basicDataSource.setDefaultAutoCommit(false);
         basicDataSource.setMaxTotal(20);
-        basicDataSource.setMaxTotal(Integer.parseInt(env.getProperty("MaxConnectionCount")));
+        basicDataSource.setMaxTotal(Integer.parseInt(imcmsProperties.getProperty("MaxConnectionCount")));
         basicDataSource.setDefaultAutoCommit(true);
 
         return basicDataSource;
@@ -87,17 +83,7 @@ public class DBConfig {
         properties.put("hibernate.format_sql", "true");
         properties.put("hibernate.use_sql_comments", "true");
         properties.put("hibernate.show_sql", "false");
-        properties.put("hibernate.hbm2ddl.auto", env.getProperty("hbm2ddl.auto"));
-
-        //TODO: Some additional properties for hibernate
-//        properties.put("hibernate.show_sql", "true");
-//        properties.put("hibernate.format_sql", "false");
-//        properties.put("hibernate.hbm2ddl.import_files", "insert-data.sql");
-//        properties.put("hibernate.ejb.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
-
-//        properties.put("hibernate.c3p0.min_size", "2");
-//        properties.put("hibernate.c3p0.max_size", "5");
-//        properties.put("hibernate.c3p0.timeout", "300"); // 5mins
+        properties.put("hibernate.hbm2ddl.auto", imcmsProperties.getProperty("hbm2ddl.auto"));
 
         return properties;
     }
