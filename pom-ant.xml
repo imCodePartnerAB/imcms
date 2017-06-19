@@ -167,6 +167,7 @@
         <filter token="db-user" value="${db-user}"/>
         <filter token="db-pass" value="${db-pass}"/>
         <filter token="db-maxconnections" value="${db-maxconnections}"/>
+        <filter token="hibernate-hbm2ddl-auto" value="${hibernate-hbm2ddl-auto}"/>
 
         <filter token="hibernate-dialect" value="${hibernate-dialect}"/>
 
