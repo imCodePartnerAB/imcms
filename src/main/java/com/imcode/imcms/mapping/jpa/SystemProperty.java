@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping.jpa;
 
+import org.hibernate.annotations.Subselect;
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -7,6 +8,7 @@ import java.util.Objects;
  *
  */
 @Entity
+@Subselect("select * from sys_types")
 @Table(name = "sys_types")
 @SecondaryTable(name = "sys_data", pkJoinColumns = @PrimaryKeyJoinColumn(name = "type_id"))
 public class SystemProperty {
