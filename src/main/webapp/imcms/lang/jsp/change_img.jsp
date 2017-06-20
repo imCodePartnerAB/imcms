@@ -47,7 +47,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().getIm
 	<link rel="stylesheet" type="text/css"
 		href="<%=request.getContextPath()%>/imcms/css/imcms_admin.css.jsp">
 	<script
-		src="<%=request.getContextPath()%>/imcms/scripts/imcms_admin.js.jsp"
+		src="<%=request.getContextPath()%>/js/imcms/imcms_admin.js.jsp"
 		type="text/javascript">
 	</script>
 

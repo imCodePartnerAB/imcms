@@ -14,7 +14,7 @@
             <title><? webapp/imcms/lang/jsp/crop_img.jsp/title ?></title>
             
             <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp"/>
-            <script src="${contextPath}/imcms/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+            <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
             <script src="${contextPath}/imcms/jscropper/prototype.js" type="text/javascript"></script>
             <script src="${contextPath}/imcms/jscropper/scriptaculous.js?load=builder,dragdrop" type="text/javascript"></script>
             <script src="${contextPath}/imcms/jscropper/cropper.js" type="text/javascript"></script>

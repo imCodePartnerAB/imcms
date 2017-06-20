@@ -67,7 +67,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 <title><? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body>

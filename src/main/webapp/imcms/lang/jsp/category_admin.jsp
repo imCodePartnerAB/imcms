@@ -47,7 +47,7 @@ if (inDefaultMode) {
 <title><? templates/sv/AdminManager_adminTask_element.htm/17 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body onLoad="focusField('main','template')">

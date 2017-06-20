@@ -58,7 +58,7 @@
 		<meta http-equiv="Cache-Control" content="no-cache">
 
 		<link rel="stylesheet" type="text/css" href="<%= cp %>/imcms/css/imcms_admin.css.jsp"/>
-		<script type="text/javascript" src="<%= cp %>/imcms/scripts/imcms_admin.js.jsp"></script>
+		<script type="text/javascript" src="<%= cp %>/js/imcms/imcms_admin.js.jsp"></script>
 		<link rel="stylesheet" type="text/css" href="<%= cp %>/imcms/css/imcms4_admin.css.jsp"/>
 		<script type="text/javascript"
 				src="<%= cp %>/imcms/scripts/imcms4_admin_script.js.jsp?loadJq=false"></script>

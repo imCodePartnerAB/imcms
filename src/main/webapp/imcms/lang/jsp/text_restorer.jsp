@@ -400,7 +400,7 @@ heading = heading
 <title><%= heading.replaceAll("<[^>]+?>", "") %></title>
 
 <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
-<script src="<%= request.getContextPath() %>/imcms/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+<script src="<%= request.getContextPath() %>/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 </head>
 <body class="imcmsAdmBgCont" style="border:0; margin:0">
 
