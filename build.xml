@@ -197,17 +197,17 @@
     </target>
 
     <target name="database-create" depends="init">
-
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
              userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
             CREATE DATABASE ${db-name}
         </sql>
+    </target>
 
+    <target name="database-init" depends="init">
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
             <transaction src="${sql}/imcms${versionfilesuffix}-${defaultlanguage}-${db-target}.sql"/>
         </sql>
-
     </target>
 
     <target name="database-drop" depends="init">
@@ -220,6 +220,8 @@
     </target>
 
     <target name="database-recreate" depends="init,database-drop,database-create"/>
+
+    <target name="database-recreate-init" depends="init,database-drop,database-create,database-init"/>
 
     <target name="install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
         <copy todir="${webapproot}">
@@ -546,19 +548,26 @@
         depends="check-build-properties,init-version-properties">
 
         <filter token="defaultlanguage" value="${defaultlanguage}"/>
-
         <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
         <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>
 
         <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
 
-        <filter token="db-schema-version" value="${db-schema-version}"/>
         <filter token="db-driver" value="${db-driver}"/>
         <filter token="db-url" value="${db-url}"/>
         <filter token="db-name" value="${db-name}"/>
         <filter token="db-user" value="${db-user}"/>
         <filter token="db-pass" value="${db-pass}"/>
         <filter token="db-maxconnections" value="${db-maxconnections}"/>
+
+		<filter token="server-name" value="${ServerName}"/>
+		<filter token="cgi-metadata-url" value="${CgiMetadataUrl}"/>
+		<filter token="authentication-configuration" value="${AuthenticationConfiguration}"/>
+		<filter token="cgi-user-role-name" value="${CgiUserRoleName}"/>
+
+        <!--<filter token="authentication-method-1" value="${authentication-method-1}"/>-->
+        <!--<filter token="authentication-method-2" value="${authentication-method-2}"/>-->
+        <!--<filter token="cgi-authentication-method-url" value="${cgi-authentication-method-url}"/>-->
 
         <filter token="external-authenticator" value="${external-authenticator}"/>
         <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
@@ -578,6 +587,21 @@
         <filter token="secondary-ldap-password" value="${secondary-ldap-password}"/>
         <filter token="secondary-ldap-user-object-class" value="${secondary-ldap-user-object-class}"/>
         <filter token="secondary-ldap-attribute-login-name" value="${secondary-ldap-attribute-login-name}"/>
+
+
+        <filter token="sso-enabled" value="${sso-enabled}"/>
+        
+        <filter token="sso-jaas-config-name" value="${sso-jaas-config-name}"/>
+        <filter token="sso-use-local-jaas-config" value="${sso-use-local-jaas-config}"/>
+        <filter token="sso-jaas-principal-name" value="${sso-jaas-principal-name}"/>
+        <filter token="sso-jaas-principal-password" value="${sso-jaas-principal-password}"/>
+        
+        <filter token="sso-use-local-krb-config" value="${sso-use-local-krb-config}"/>
+        <filter token="sso-krb-realm" value="${sso-krb-realm}"/>
+        <filter token="sso-krb-kdc" value="${sso-krb-kdc}"/>
+        
+        <filter token="sso-kerberos-debug" value="${sso-kerberos-debug}"/>
+
 
         <filter token="smtp-server" value="${smtp-server}"/>
 

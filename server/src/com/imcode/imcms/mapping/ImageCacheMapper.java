@@ -1,38 +1,26 @@
 package com.imcode.imcms.mapping;
 
-import imcode.server.Imcms;
-import imcode.server.document.DirectDocumentReference;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.textdocument.FileDocumentImageSource;
-import imcode.server.document.textdocument.ImageArchiveImageSource;
-import imcode.server.document.textdocument.ImageCacheDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
-import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
-import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
-import imcode.util.image.Format;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import com.imcode.db.Database;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.servlet.ImageCacheManager;
+import imcode.server.Imcms;
+import imcode.server.document.DirectDocumentReference;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
+import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
+import imcode.util.image.Format;
+import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.*;
 
 public class ImageCacheMapper {
     private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
@@ -233,14 +221,18 @@ public class ImageCacheMapper {
 	}
 	
 	public void addImageCache(ImageCacheDomainObject imageCache) {
-		String deleteSQL = "DELETE FROM images_cache WHERE id = ? AND meta_id = ? AND image_index = ?";
-		String id = imageCache.getId();
-		int metaId = imageCache.getMetaId();
-		int imageIndex = imageCache.getImageIndex();
-		
-		database.execute(new SqlUpdateCommand(deleteSQL, new Object[] { id, metaId, imageIndex }));
-		
-		database.execute(new InsertIntoTableDatabaseCommand("images_cache", getColumnNamesAndValues(imageCache)));
+	    try {
+            String deleteSQL = "DELETE FROM images_cache WHERE id = ? AND meta_id = ? AND image_index = ?";
+            String id = imageCache.getId();
+            int metaId = imageCache.getMetaId();
+            int imageIndex = imageCache.getImageIndex();
+
+            database.execute(new SqlUpdateCommand(deleteSQL, new Object[] { id, metaId, imageIndex }));
+            database.execute(new InsertIntoTableDatabaseCommand("images_cache", getColumnNamesAndValues(imageCache)));
+
+	    } catch (Exception e) {
+            log.error("Error while adding image cache data to DB", e);
+        }
 	}
 	
 	public void incrementFrequency(String cacheId) {
@@ -314,8 +306,11 @@ public class ImageCacheMapper {
 		
 		CropRegion region = cache.getCropRegion();
 		boolean valid = region.isValid();
-		
-		return new Object[][] {
+
+        final Timestamp createdDateWrongType = cache.getCreatedDate();
+        final java.sql.Date createdDateCorrectType = new Date(createdDateWrongType.getTime());
+
+        return new Object[][] {
 				{ "id", cache.getId() }, 
 				{ "meta_id", cache.getMetaId() }, 
 				{ "image_index", cache.getImageIndex() }, 
@@ -331,7 +326,7 @@ public class ImageCacheMapper {
 				{ "crop_x2", (valid ? region.getCropX2() : -1) }, 
 				{ "crop_y2", (valid ? region.getCropY2() : -1) }, 
 				{ "rotate_angle", cache.getRotateDirection().getAngle() }, 
-				{ "created_dt", cache.getCreatedDate() }
+				{ "created_dt", createdDateCorrectType}
 		};
 	}
 }

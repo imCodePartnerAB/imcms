@@ -1,20 +1,20 @@
 package imcode.server;
 
+import com.imcode.db.Database;
+import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexWrapper;
 import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.index.IndexException;
 import imcode.server.user.UserDomainObject;
-import com.imcode.db.Database;
-import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
+import org.apache.log4j.Logger;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.*;
 
 import java.util.*;
-import java.sql.Timestamp;
-
-import org.apache.lucene.search.*;
-import org.apache.lucene.index.Term;
 
 public class LoggingDocumentIndex extends DocumentIndexWrapper {
+    private static final Logger log = Logger.getLogger(LoggingDocumentIndex.class);
 
     private final Database database;
 
@@ -36,12 +36,16 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
     }
 
     private void logTerms(Collection<String> terms) {
-        Timestamp timestamp = new Timestamp(new Date().getTime());
-        for ( String term : terms ) {
-            database.execute(new InsertIntoTableDatabaseCommand("document_search_log", new Object[][] {
-                    { "datetime", timestamp },
-                    { "term", term }
-            })) ;
+        try {
+            final java.sql.Date correctDateType = new java.sql.Date(new Date().getTime());
+            for ( String term : terms ) {
+                database.execute(new InsertIntoTableDatabaseCommand("document_search_log", new Object[][] {
+                        { "datetime", correctDateType },
+                        { "term", term }
+                })) ;
+            }
+        } catch (Exception e) {
+            log.error("Error while logging search terms:", e);
         }
     }
 

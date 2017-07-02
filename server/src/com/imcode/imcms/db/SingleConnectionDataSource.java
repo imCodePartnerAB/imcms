@@ -1,14 +1,13 @@
 package com.imcode.imcms.db;
 
 import com.imcode.db.jdbc.ConnectionWrapper;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.sql.DataSource;
-import java.sql.*;
 import java.io.PrintWriter;
-import java.util.Map;
+import java.sql.*;
 import java.util.Properties;
-
-import org.apache.commons.lang.NotImplementedException;
+import java.util.logging.Logger;
 
 public class SingleConnectionDataSource implements DataSource {
 
@@ -96,6 +95,10 @@ public class SingleConnectionDataSource implements DataSource {
 
     public int getLoginTimeout() throws SQLException {
         return 0;
+    }
+
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return null;
     }
 
     public <T> T unwrap(Class<T> iface) throws SQLException {
