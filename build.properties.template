@@ -16,7 +16,7 @@ db-name = imcms
 db-user = root
 db-pass = root
 db-maxconnections = 20
-hibernate-hbm2ddl-auto = update
+hibernate-hbm2ddl-auto =
 
 # For MySQL
 db-target = mysql
