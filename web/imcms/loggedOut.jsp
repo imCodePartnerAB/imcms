@@ -1,0 +1,1 @@
+<% request.getRequestDispatcher( "/servlet/StartDoc" ).forward( request, response ); %>
