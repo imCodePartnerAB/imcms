@@ -169,8 +169,9 @@ public class TagParser {
 		if (0 == tagResult.length()) {
 			return "";
 		}
-		String preAttribute = StringUtils.defaultString(attributes.getProperty("pre")).replace(">", " imcms-wrapper=''>");
-		String postAttribute = StringUtils.defaultString(attributes.getProperty("post"));
+
+		final String preAttribute = StringUtils.defaultString(attributes.getProperty("pre"));
+		final String postAttribute = StringUtils.defaultString(attributes.getProperty("post"));
 		return preAttribute + tagResult + postAttribute;
 	}
 
