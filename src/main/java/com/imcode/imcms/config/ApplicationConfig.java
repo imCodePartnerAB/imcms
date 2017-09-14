@@ -1,6 +1,8 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.imagearchive.Config;
+import com.imcode.imcms.imagearchive.util.FileArrayEditor;
+import com.imcode.imcms.imagearchive.util.FileEditor;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,34 +17,27 @@ import java.beans.PropertyEditor;
 import java.io.File;
 import java.util.Map;
 
-/**
- * Created by zemluk on 13.10.16.
- */
-
 @Configuration
 public class ApplicationConfig {
 
     @Autowired
-    private Environment env;// = new StandardServletEnvironment();
-
-    @Autowired
     @Bean
-    public Config imageArchiveConfig(Environment env2) {
+    public Config imageArchiveConfig(Environment environment) {
         BidiMap languages = new DualHashBidiMap();
         languages.put("eng", "en");
         languages.put("swe", "sv");
 
         Config config = new Config();
 
-        config.setStoragePath(new File(env2.getProperty("ImageArchiveStoragePath")));
-        config.setTmpPath(new File(env2.getProperty("ImageArchiveTempPath")));
-        config.setImageMagickPath(new File(env2.getProperty("ImageMagickPath")));
-        config.setImagesPath(new File(env2.getProperty("ImageArchiveImagesPath")));
-        config.setLibrariesPath(new File(env2.getProperty("ImageArchiveLibrariesPath")));
-        config.setOldLibraryPaths(new File[]{new File(env2.getProperty("ImageArchiveOldLibraryPaths"))});
-        config.setUsersLibraryFolder(env2.getProperty("ImageArchiveUsersLibraryFolder"));
-        config.setMaxImageUploadSize(Long.parseLong(env2.getProperty("ImageArchiveMaxImageUploadSize")));
-        config.setMaxZipUploadSize(Long.parseLong(env2.getProperty("ImageArchiveMaxZipUploadSize")));
+        config.setStoragePath(new File(environment.getProperty("ImageArchiveStoragePath")));
+        config.setTmpPath(new File(environment.getProperty("ImageArchiveTempPath")));
+        config.setImageMagickPath(new File(environment.getProperty("ImageMagickPath")));
+        config.setImagesPath(new File(environment.getProperty("ImageArchiveImagesPath")));
+        config.setLibrariesPath(new File(environment.getProperty("ImageArchiveLibrariesPath")));
+        config.setOldLibraryPaths(new File[]{new File(environment.getProperty("ImageArchiveOldLibraryPaths"))});
+        config.setUsersLibraryFolder(environment.getProperty("ImageArchiveUsersLibraryFolder"));
+        config.setMaxImageUploadSize(Long.parseLong(environment.getProperty("ImageArchiveMaxImageUploadSize")));
+        config.setMaxZipUploadSize(Long.parseLong(environment.getProperty("ImageArchiveMaxZipUploadSize")));
         config.setLanguages(languages);
         return config;
     }
@@ -51,8 +46,8 @@ public class ApplicationConfig {
     public CustomEditorConfigurer customEditorConfigurer() {
         CustomEditorConfigurer customEditorConfigurer = new CustomEditorConfigurer();
         Map<Class<?>, Class<? extends PropertyEditor>> customEditors = new ManagedMap<>();
-        customEditors.put(java.io.File.class, com.imcode.imcms.imagearchive.util.FileEditor.class);
-        customEditors.put(java.io.File[].class, com.imcode.imcms.imagearchive.util.FileArrayEditor.class);
+        customEditors.put(File.class, FileEditor.class);
+        customEditors.put(File[].class, FileArrayEditor.class);
         customEditorConfigurer.setCustomEditors(customEditors);
         return customEditorConfigurer;
     }
@@ -66,5 +61,4 @@ public class ApplicationConfig {
         source.setUseCodeAsDefaultMessage(true);
         return source;
     }
-
 }

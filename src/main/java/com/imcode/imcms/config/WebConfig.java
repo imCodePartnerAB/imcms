@@ -10,20 +10,21 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
-/**
- * Created by zemluk on 11.10.16.
- */
 @Configuration
 @EnableWebMvc
 public class WebConfig extends WebMvcConfigurerAdapter {
 
+    public final Environment environment;
+
     @Autowired
-    public Environment env;
+    public WebConfig(Environment environment) {
+        this.environment = environment;
+    }
 
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(Long.parseLong(env.getProperty("ImageArchiveMaxImageUploadSize")));
+        multipartResolver.setMaxUploadSize(Long.parseLong(environment.getProperty("ImageArchiveMaxImageUploadSize")));
         return multipartResolver;
     }
 
