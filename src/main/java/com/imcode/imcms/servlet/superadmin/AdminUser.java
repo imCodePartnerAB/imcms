@@ -1,33 +1,30 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.servlet.admin.UserFinder;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.Properties;
+import org.apache.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.servlet.admin.UserFinder;
-import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Properties;
 
 public class AdminUser extends HttpServlet {
 
+    public final static String USER_LOGIN_NAME_PARAMETER_NAME = "loginname";
     private final static Logger log = Logger.getLogger(AdminUser.class.getName());
     private final static String CHANGE_EXTERNAL_USER_URL = "/jsp/changeexternaluser.jsp";
     private static final LocalizedMessage BUTTON_TEXT__EDIT_USER = new LocalizedMessage("templates/sv/AdminChangeUser.htm/2006");
     private static final LocalizedMessage HEADLINE__EDIT_USER = new LocalizedMessage("templates/sv/AdminChangeUser.htm/4/1");
-    public final static String USER_LOGIN_NAME_PARAMETER_NAME = "loginname";
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 

@@ -1,20 +1,13 @@
 package imcode.server.document;
 
-import imcode.server.document.index.DocumentIndex;
-
-import java.util.Date;
-
-import org.apache.lucene.document.DateTools;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermRangeQuery;
-import org.apache.lucene.search.TermQuery;
-
 import com.imcode.imcms.api.Document;
-import org.apache.lucene.search.BooleanClause;
+import imcode.server.document.index.DocumentIndex;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.*;
 import org.apache.lucene.util.BytesRef;
 import org.apache.solr.common.util.DateUtil;
+
+import java.util.Date;
 
 public abstract class LifeCyclePhase {
 
@@ -53,6 +46,11 @@ public abstract class LifeCyclePhase {
             NEW, DISAPPROVED, APPROVED,
             PUBLISHED, ARCHIVED, UNPUBLISHED
     };
+    private final String name;
+
+    private LifeCyclePhase(String name) {
+        this.name = name;
+    }
 
     private static BooleanQuery add(BooleanQuery query, Query otherQuery) {
         query.add(otherQuery, BooleanClause.Occur.MUST);
@@ -76,7 +74,6 @@ public abstract class LifeCyclePhase {
     private static TermRangeQuery getArchivedRangeQuery(Date now) {
         return getDateRangeQuery(DocumentIndex.FIELD__ARCHIVED_DATETIME, now);
     }
-
 
     /**
      * @param field range field name.
@@ -104,13 +101,6 @@ public abstract class LifeCyclePhase {
 
     private static TermQuery getStatusQuery(Document.PublicationStatus publicationStatus) {
         return new TermQuery(new Term(DocumentIndex.FIELD__STATUS, publicationStatus.toString()));
-    }
-
-
-    private final String name;
-
-    private LifeCyclePhase(String name) {
-        this.name = name;
     }
 
     public String toString() {

@@ -1,16 +1,13 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.mapping.ImageCacheMapper;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.ImageCacheDomainObject;
-
-import java.io.File;
-
+import imcode.util.ImcmsImageUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.imcode.imcms.mapping.ImageCacheMapper;
-import imcode.util.ImcmsImageUtils;
-
+import java.io.File;
 import java.util.Collection;
 
 @Deprecated

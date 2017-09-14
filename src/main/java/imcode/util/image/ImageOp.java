@@ -38,7 +38,8 @@ public class ImageOp {
         if (magickPath != null
                 && !"".equals(magickPath)
                 && !magickPath.equals(Imcms.getPath())
-                && SystemUtils.IS_OS_WINDOWS) {
+                && SystemUtils.IS_OS_WINDOWS)
+        {
             return new File(magickPath, appName).getAbsolutePath();
         }
 
@@ -51,6 +52,112 @@ public class ImageOp {
         }
 
         return input;
+    }
+
+    public static ImageInfo getImageInfo(Config config, InputStream inputStream) {
+        try {
+            Process process = new ProcessBuilder(getIdentifyProcessArgs(config, "-[0]")).start();
+            StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
+            StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
+            errorHandler.start();
+            inputHandler.start();
+
+            OutputStream output = null;
+            try {
+                output = process.getOutputStream();
+                IOUtils.copy(inputStream, output);
+            } finally {
+                IOUtils.closeQuietly(output);
+            }
+
+            inputHandler.join();
+
+            return processImageInfo(inputHandler);
+        } catch (Exception ex) {
+            log.fatal(ex.getMessage(), ex);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+
+        return null;
+    }
+
+    public static ImageInfo getImageInfo(File file) {
+        try {
+            Config config = Imcms.getServices().getConfig();
+
+            String fileToIdentify = addQuotes(file.getAbsolutePath() + "[0]");
+            Process process = new ProcessBuilder(getIdentifyProcessArgs(config, fileToIdentify)).start();
+
+            StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
+            StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
+            errorHandler.start();
+            inputHandler.start();
+            inputHandler.join();
+
+            return processImageInfo(inputHandler);
+        } catch (Exception ex) {
+            log.fatal(ex.getMessage(), ex);
+        }
+        return null;
+    }
+
+    private static String[] getIdentifyProcessArgs(Config config, String... arguments) {
+        String[] args = new String[4 + arguments.length];
+
+        args[0] = addQuotes(getApplicationPath(config, "identify"));
+
+        args[1] = "-quiet";
+        args[2] = "-format";
+        args[3] = "format:'%m'width:'%w'height:'%h'";
+
+        int startIndex = 4;
+
+        for (String arg : arguments) {
+            args[startIndex++] = arg;
+        }
+
+        return args;
+    }
+
+    private static ImageInfo processImageInfo(StringInputStreamHandler inputHandler) throws InterruptedException {
+        if (inputHandler.getData() != null) {
+            String input = inputHandler.getData();
+
+            Matcher formatMatcher = FORMAT_PATTERN.matcher(input);
+            Format format = null;
+            if (formatMatcher.find()) {
+                format = Format.findFormat(formatMatcher.group(1));
+            }
+
+            Matcher widthMatcher = WIDTH_PATTERN.matcher(input);
+            int width = 0;
+            if (widthMatcher.find()) {
+                try {
+                    width = Integer.parseInt(widthMatcher.group(1), 10);
+                } catch (Exception ex) {
+                    log.warn(ex.getMessage(), ex);
+                }
+            }
+
+            Matcher heightMatcher = HEIGHT_PATTERN.matcher(input);
+            int height = 0;
+            if (heightMatcher.find()) {
+                try {
+                    height = Integer.parseInt(heightMatcher.group(1), 10);
+                } catch (Exception ex) {
+                    log.warn(ex.getMessage(), ex);
+                }
+            }
+
+            if (format == null) {
+                return null;
+            }
+
+            return new ImageInfo(format, width, height);
+        }
+
+        return null;
     }
 
     public ImageOp input(byte[] data) {
@@ -278,111 +385,5 @@ public class ImageOp {
                 IOUtils.closeQuietly(output);
             }
         }
-    }
-
-    public static ImageInfo getImageInfo(Config config, InputStream inputStream) {
-        try {
-            Process process = new ProcessBuilder(getIdentifyProcessArgs(config, "-[0]")).start();
-            StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
-            StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
-            errorHandler.start();
-            inputHandler.start();
-
-            OutputStream output = null;
-            try {
-                output = process.getOutputStream();
-                IOUtils.copy(inputStream, output);
-            } finally {
-                IOUtils.closeQuietly(output);
-            }
-
-            inputHandler.join();
-
-            return processImageInfo(inputHandler);
-        } catch (Exception ex) {
-            log.fatal(ex.getMessage(), ex);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
-        }
-
-        return null;
-    }
-
-    public static ImageInfo getImageInfo(File file) {
-        try {
-            Config config = Imcms.getServices().getConfig();
-
-            String fileToIdentify = addQuotes(file.getAbsolutePath() + "[0]");
-            Process process = new ProcessBuilder(getIdentifyProcessArgs(config, fileToIdentify)).start();
-
-            StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
-            StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
-            errorHandler.start();
-            inputHandler.start();
-            inputHandler.join();
-
-            return processImageInfo(inputHandler);
-        } catch (Exception ex) {
-            log.fatal(ex.getMessage(), ex);
-        }
-        return null;
-    }
-
-    private static String[] getIdentifyProcessArgs(Config config, String... arguments) {
-        String[] args = new String[4 + arguments.length];
-
-        args[0] = addQuotes(getApplicationPath(config, "identify"));
-
-        args[1] = "-quiet";
-        args[2] = "-format";
-        args[3] = "format:'%m'width:'%w'height:'%h'";
-
-        int startIndex = 4;
-
-        for (String arg : arguments) {
-            args[startIndex++] = arg;
-        }
-
-        return args;
-    }
-
-    private static ImageInfo processImageInfo(StringInputStreamHandler inputHandler) throws InterruptedException {
-        if (inputHandler.getData() != null) {
-            String input = inputHandler.getData();
-
-            Matcher formatMatcher = FORMAT_PATTERN.matcher(input);
-            Format format = null;
-            if (formatMatcher.find()) {
-                format = Format.findFormat(formatMatcher.group(1));
-            }
-
-            Matcher widthMatcher = WIDTH_PATTERN.matcher(input);
-            int width = 0;
-            if (widthMatcher.find()) {
-                try {
-                    width = Integer.parseInt(widthMatcher.group(1), 10);
-                } catch (Exception ex) {
-                    log.warn(ex.getMessage(), ex);
-                }
-            }
-
-            Matcher heightMatcher = HEIGHT_PATTERN.matcher(input);
-            int height = 0;
-            if (heightMatcher.find()) {
-                try {
-                    height = Integer.parseInt(heightMatcher.group(1), 10);
-                } catch (Exception ex) {
-                    log.warn(ex.getMessage(), ex);
-                }
-            }
-
-            if (format == null) {
-                return null;
-            }
-
-            return new ImageInfo(format, width, height);
-        }
-
-        return null;
     }
 }

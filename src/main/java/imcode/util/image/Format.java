@@ -42,6 +42,21 @@ public enum Format {
         this.writable = writable;
     }
 
+    public static Format findFormat(String format) {
+        return FORMAT_MAP.get(format);
+    }
+
+    public static Format findFormatByExtension(String extension) {
+        return EXTENSION_MAP.get(extension);
+    }
+
+    public static Format findFormat(int ordinal) {
+        return ORDINAL_MAP.get(ordinal);
+    }
+
+    public static boolean isImage(String name) {
+        return FORMAT_MAP.containsKey(name) || EXTENSION_MAP.containsKey(name) || ORDINAL_MAP.containsKey(name);
+    }
 
     public String getFormat() {
         return format;
@@ -61,22 +76,5 @@ public enum Format {
 
     public String getMimeType() {
         return mimeType;
-    }
-
-
-    public static Format findFormat(String format) {
-        return FORMAT_MAP.get(format);
-    }
-
-    public static Format findFormatByExtension(String extension) {
-        return EXTENSION_MAP.get(extension);
-    }
-
-    public static Format findFormat(int ordinal) {
-        return ORDINAL_MAP.get(ordinal);
-    }
-
-    public static boolean isImage(String name) {
-        return FORMAT_MAP.containsKey(name) || EXTENSION_MAP.containsKey(name) || ORDINAL_MAP.containsKey(name);
     }
 }

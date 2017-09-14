@@ -5,5 +5,6 @@ package com.imcode.imcms.servlet.tags;
  */
 public interface IAttributedTag {
     String getAttributes();
+
     void setAttributes(String attributes);
 }

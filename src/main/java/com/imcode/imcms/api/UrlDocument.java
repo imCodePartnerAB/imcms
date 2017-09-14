@@ -11,11 +11,6 @@ public class UrlDocument extends Document {
         super(document, contentManagementSystem);
     }
 
-    public void setUrl(String url) {
-        UrlDocumentDomainObject urlDocumentDomainObject = getInternalUrlDocument();
-        urlDocumentDomainObject.setUrl(url);
-    }
-
     private UrlDocumentDomainObject getInternalUrlDocument() {
         UrlDocumentDomainObject urlDocumentDomainObject = (UrlDocumentDomainObject) getInternal();
         return urlDocumentDomainObject;
@@ -23,5 +18,10 @@ public class UrlDocument extends Document {
 
     public String getUrl() {
         return getInternalUrlDocument().getUrl();
+    }
+
+    public void setUrl(String url) {
+        UrlDocumentDomainObject urlDocumentDomainObject = getInternalUrlDocument();
+        urlDocumentDomainObject.setUrl(url);
     }
 }

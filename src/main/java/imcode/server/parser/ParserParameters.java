@@ -23,7 +23,7 @@ public class ParserParameters implements Cloneable {
      * Constructor that encapsulates DocumentRequest instance
      *
      * @param document desired document
-     * @param request request
+     * @param request  request
      * @param response response
      */
     public ParserParameters(DocumentDomainObject document,

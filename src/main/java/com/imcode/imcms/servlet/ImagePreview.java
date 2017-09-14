@@ -28,6 +28,15 @@ public class ImagePreview extends HttpServlet {
 
     private static final Log log = LogFactory.getLog(ImagePreview.class);
 
+    private static boolean hasAccess(HttpServletRequest request) {
+        UserDomainObject user = Utility.getLoggedOnUser(request);
+
+        return (user != null && !user.isDefaultUser());
+    }
+
+    private static void send404(HttpServletResponse response) throws IOException {
+        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+    }
 
     protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -132,16 +141,6 @@ public class ImagePreview extends HttpServlet {
 
             tempFile.delete();
         }
-    }
-
-    private static boolean hasAccess(HttpServletRequest request) {
-        UserDomainObject user = Utility.getLoggedOnUser(request);
-
-        return (user != null && !user.isDefaultUser());
-    }
-
-    private static void send404(HttpServletResponse response) throws IOException {
-        response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
     @Override

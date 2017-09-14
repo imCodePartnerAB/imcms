@@ -1,28 +1,26 @@
 package imcode.server.document.index.service;
 
 import com.imcode.imcms.util.Value;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.core.CoreContainer;
 
 import java.io.File;
-
-import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
-import org.apache.commons.io.FileUtils;
-import org.apache.solr.core.CoreContainer;
 
 import static java.lang.String.format;
 
 public class SolrServerFactory {
 
-    private static final Logger logger = Logger.getLogger(SolrServerFactory.class);
-
     public static final String DEFAULT_CORE_NAME = "core";
     public static final String DEFAULT_DATA_DIR_NAME = "data";
+    private static final Logger logger = Logger.getLogger(SolrServerFactory.class);
 
     public static HttpSolrServer createHttpSolrServer(String solrUrl) {
         return Value.with(new HttpSolrServer(solrUrl), solr ->
-                        solr.setRequestWriter(new BinaryRequestWriter())
+                solr.setRequestWriter(new BinaryRequestWriter())
         );
     }
 

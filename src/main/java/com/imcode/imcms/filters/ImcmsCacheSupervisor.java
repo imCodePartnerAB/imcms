@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  * Cache Supervisor Filter, desires should chain go through ehcache filter or not
  *
  * @author Serhii from Ubrainians for Imcode
- *         04.11.16
+ * 04.11.16
  */
 public class ImcmsCacheSupervisor extends SimpleCachingHeadersPageCachingFilter {
 

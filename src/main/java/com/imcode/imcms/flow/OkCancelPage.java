@@ -9,56 +9,56 @@ import java.io.IOException;
 
 public abstract class OkCancelPage extends Page {
 
-	public static final String REQUEST_PARAMETER__OK = "ok";
-	public static final String REQUEST_PARAMETER__CANCEL = "cancel";
+    public static final String REQUEST_PARAMETER__OK = "ok";
+    public static final String REQUEST_PARAMETER__CANCEL = "cancel";
 
-	protected DispatchCommand okCommand;
-	protected DispatchCommand cancelCommand;
+    protected DispatchCommand okCommand;
+    protected DispatchCommand cancelCommand;
 
-	protected OkCancelPage(DispatchCommand okDispatchCommand, DispatchCommand cancelDispatchCommand) {
-		this.okCommand = okDispatchCommand;
-		this.cancelCommand = cancelDispatchCommand;
-	}
+    protected OkCancelPage(DispatchCommand okDispatchCommand, DispatchCommand cancelDispatchCommand) {
+        this.okCommand = okDispatchCommand;
+        this.cancelCommand = cancelDispatchCommand;
+    }
 
-	public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		if (wasCanceled(request)) {
-			dispatchCancel(request, response);
-		} else {
-			dispatchNotCanceled(request, response);
-		}
-	}
+    public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        if (wasCanceled(request)) {
+            dispatchCancel(request, response);
+        } else {
+            dispatchNotCanceled(request, response);
+        }
+    }
 
-	protected void dispatchNotCanceled(HttpServletRequest request,
-									   HttpServletResponse response) throws IOException, ServletException {
-		updateFromRequest(request);
-		if (wasOk(request)) {
-			dispatchOk(request, response);
-		} else {
-			dispatchOther(request, response);
-		}
-	}
+    protected void dispatchNotCanceled(HttpServletRequest request,
+                                       HttpServletResponse response) throws IOException, ServletException {
+        updateFromRequest(request);
+        if (wasOk(request)) {
+            dispatchOk(request, response);
+        } else {
+            dispatchOther(request, response);
+        }
+    }
 
-	protected void dispatchOk(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		removeFromSession(request);
-		okCommand.dispatch(request, response);
-	}
+    protected void dispatchOk(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        removeFromSession(request);
+        okCommand.dispatch(request, response);
+    }
 
-	protected void dispatchCancel(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		removeFromSession(request);
-		cancelCommand.dispatch(request, response);
-	}
+    protected void dispatchCancel(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        removeFromSession(request);
+        cancelCommand.dispatch(request, response);
+    }
 
-	protected void dispatchOther(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		throw new NotImplementedException(this.getClass().getName());
-	}
+    protected void dispatchOther(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        throw new NotImplementedException(this.getClass().getName());
+    }
 
-	protected boolean wasOk(HttpServletRequest request) {
-		return null != request.getParameter(REQUEST_PARAMETER__OK);
-	}
+    protected boolean wasOk(HttpServletRequest request) {
+        return null != request.getParameter(REQUEST_PARAMETER__OK);
+    }
 
-	protected boolean wasCanceled(HttpServletRequest request) {
-		return null != request.getParameter(REQUEST_PARAMETER__CANCEL);
-	}
+    protected boolean wasCanceled(HttpServletRequest request) {
+        return null != request.getParameter(REQUEST_PARAMETER__CANCEL);
+    }
 
-	protected abstract void updateFromRequest(HttpServletRequest request);
+    protected abstract void updateFromRequest(HttpServletRequest request);
 }

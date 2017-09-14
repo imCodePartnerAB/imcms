@@ -46,7 +46,6 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
     }
 
 
-
     /**
      * @param roleId mapping key.
      * @return permission set type for given role.

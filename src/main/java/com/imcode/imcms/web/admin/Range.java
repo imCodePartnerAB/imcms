@@ -1,9 +1,9 @@
 package com.imcode.imcms.web.admin;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.io.Serializable;
 
 public class Range<T> implements Serializable {
     private static final long serialVersionUID = -9003774059401929567L;

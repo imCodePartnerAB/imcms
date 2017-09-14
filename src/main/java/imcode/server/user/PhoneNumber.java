@@ -1,8 +1,8 @@
 package imcode.server.user;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.NullArgumentException;
+
+import java.io.Serializable;
 
 public class PhoneNumber implements Serializable {
     private final String number;

@@ -14,10 +14,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class TextDocumentViewing {
 
+    private static final String REQUEST_ATTRIBUTE__VIEWING = TextDocumentViewing.class.getName();
     private TextDocument textDocument;
     private ParserParameters parserParameters;
-
-    private static final String REQUEST_ATTRIBUTE__VIEWING = TextDocumentViewing.class.getName();
 
     public TextDocumentViewing(ParserParameters parserParameters) {
         this.parserParameters = parserParameters;
@@ -26,6 +25,13 @@ public class TextDocumentViewing {
 
     public static TextDocumentViewing fromRequest(HttpServletRequest request) {
         return (TextDocumentViewing) request.getAttribute(REQUEST_ATTRIBUTE__VIEWING);
+    }
+
+    public static TextDocumentViewing putInRequest(TextDocumentViewing viewing) {
+        HttpServletRequest httpServletRequest = viewing.parserParameters.getDocumentRequest().getHttpServletRequest();
+        TextDocumentViewing previousViewing = fromRequest(httpServletRequest);
+        httpServletRequest.setAttribute(REQUEST_ATTRIBUTE__VIEWING, viewing);
+        return previousViewing;
     }
 
     public TextDocument getTextDocument() {
@@ -61,13 +67,6 @@ public class TextDocumentViewing {
      */
     public Integer getEditedMenuIndex() {
         return parserParameters.getEditingMenuIndex();
-    }
-
-    public static TextDocumentViewing putInRequest(TextDocumentViewing viewing) {
-        HttpServletRequest httpServletRequest = viewing.parserParameters.getDocumentRequest().getHttpServletRequest();
-        TextDocumentViewing previousViewing = fromRequest(httpServletRequest);
-        httpServletRequest.setAttribute(REQUEST_ATTRIBUTE__VIEWING, viewing);
-        return previousViewing;
     }
 
 }

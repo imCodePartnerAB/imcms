@@ -1,25 +1,22 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.ImageDomainObject;
-
-import java.io.IOException;
-import java.util.Collections;
+import imcode.util.ImcmsImageUtils;
+import imcode.util.Utility;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.imcode.imcms.flow.DispatchCommand;
-import imcode.util.ImcmsImageUtils;
-import imcode.util.Utility;
-import org.apache.commons.lang3.math.NumberUtils;
-
+import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,11 +25,23 @@ import java.util.Optional;
  */
 public class EditImage extends HttpServlet {
 
-    private static final String REQUEST_ATTRIBUTE__IMAGE = EditImage.class + ".image";
-    private static final String REQUEST_ATTRIBUTE__META_ID = EditImage.class + ".metaId";
     public static final String REQUEST_PARAMETER__RETURN = "return";
     public static final String REQUEST_PARAMETER__GENFILE = "gen_file";
     public static final String REQUEST_PARAMETER__META_ID = "meta_id";
+    private static final String REQUEST_ATTRIBUTE__IMAGE = EditImage.class + ".image";
+    private static final String REQUEST_ATTRIBUTE__META_ID = EditImage.class + ".metaId";
+
+    public static String linkTo(HttpServletRequest request, String returnPath) {
+        return request.getContextPath() + Utility.getLinkService().get("admin.image.edit.return", REQUEST_PARAMETER__RETURN, returnPath);
+    }
+
+    public static ImageDomainObject getImage(HttpServletRequest request) {
+        return (ImageDomainObject) request.getAttribute(REQUEST_ATTRIBUTE__IMAGE);
+    }
+
+    public static Integer getMetaId(HttpServletRequest request) {
+        return (Integer) request.getAttribute(REQUEST_ATTRIBUTE__META_ID);
+    }
 
     public void doGet(final HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
@@ -54,7 +63,7 @@ public class EditImage extends HttpServlet {
         //fixme: language
         // Page should contain at least one image to edit.
         Map<DocumentLanguage, ImageDomainObject> images = Collections.singletonMap(Imcms.getServices().getDocumentLanguages().getDefault(), image);
-        Optional<LoopEntryRef> loopEntryRef  = LoopEntryRef.parse(request.getParameter("loop_ref"));
+        Optional<LoopEntryRef> loopEntryRef = LoopEntryRef.parse(request.getParameter("loop_ref"));
         //fixme: image no
         imageEditPage.setImagesContainer(TextDocImagesContainer.of(VersionRef.of(metaId, 0), loopEntryRef.orElse(null), 0, images));
 
@@ -64,18 +73,6 @@ public class EditImage extends HttpServlet {
         editImage.setGeneratedFilename(request.getParameter(REQUEST_PARAMETER__GENFILE));
 
         imageEditPage.forward(request, response);
-    }
-
-    public static String linkTo(HttpServletRequest request, String returnPath) {
-        return request.getContextPath() + Utility.getLinkService().get("admin.image.edit.return", REQUEST_PARAMETER__RETURN, returnPath);
-    }
-
-    public static ImageDomainObject getImage(HttpServletRequest request) {
-        return (ImageDomainObject) request.getAttribute(REQUEST_ATTRIBUTE__IMAGE);
-    }
-
-    public static Integer getMetaId(HttpServletRequest request) {
-        return (Integer) request.getAttribute(REQUEST_ATTRIBUTE__META_ID);
     }
 
     /**

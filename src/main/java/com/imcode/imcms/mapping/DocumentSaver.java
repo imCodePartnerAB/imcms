@@ -326,7 +326,8 @@ public class DocumentSaver {
         doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
 
         if (doc instanceof TextDocumentDomainObject
-                && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
+                && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields))
+        {
             Map<DocumentLanguage, TextDomainObject> texts1 = new HashMap<>();
             Map<DocumentLanguage, TextDomainObject> texts2 = new HashMap<>();
 

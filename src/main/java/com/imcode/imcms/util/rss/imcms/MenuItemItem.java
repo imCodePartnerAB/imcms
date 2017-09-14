@@ -1,19 +1,18 @@
 package com.imcode.imcms.util.rss.imcms;
 
-import java.util.Map;
-
-import org.apache.commons.lang.ArrayUtils;
-
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.util.rss.NameSpace;
 import com.imcode.imcms.util.rss.SimpleNameSpace;
 import com.imcode.imcms.util.rss.dc.DublinCoreItem;
+import org.apache.commons.lang.ArrayUtils;
+
+import java.util.Map;
 
 public class MenuItemItem extends DublinCoreItem {
 
-    private TextDocument.MenuItem menuItem;
     private static final String IMCMS_MENU_NAMESPACE_URI = "imcms:menu";
     private static final NameSpace IMCMS_MENU_NAME_SPACE = new SimpleNameSpace("imcms", IMCMS_MENU_NAMESPACE_URI);
+    private TextDocument.MenuItem menuItem;
 
     public MenuItemItem(String urlRoot, TextDocument.MenuItem menuItem) {
         super(new DocumentDublinCoreTerms(urlRoot, menuItem.getDocument()));

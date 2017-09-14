@@ -37,7 +37,6 @@ public class TextDocumentContentInitializer {
     }
 
 
-
     public void initIncludes(TextDocumentDomainObject document) {
         document.setIncludesMap(contentLoader.getIncludes(document.getId()));
     }

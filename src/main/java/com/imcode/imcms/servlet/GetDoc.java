@@ -30,22 +30,11 @@ import java.util.Stack;
  */
 public class GetDoc extends HttpServlet {
 
+    public static final String REQUEST_PARAMETER__FILE_ID = "file_id";
     private final static Logger TRACK_LOG = Logger.getLogger(ImcmsConstants.ACCESS_LOG);
     private final static Logger LOG = Logger.getLogger(GetDoc.class.getName());
     private final static String NO_ACTIVE_DOCUMENT_URL = "no_active_document.html";
-
     private static final String HTTP_HEADER_REFERRER = "Referer";// Note, intended misspelling of "Referrer", according to the HTTP spec.
-    public static final String REQUEST_PARAMETER__FILE_ID = "file_id";
-
-    public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        doGet(req, res);
-    }
-
-
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        String documentId = req.getParameter("meta_id");
-        viewDoc(documentId, req, res);
-    }
 
     /**
      * Renders document.
@@ -244,5 +233,14 @@ public class GetDoc extends HttpServlet {
 
     private static boolean isTextDocument(DocumentDomainObject document) {
         return DocumentTypeDomainObject.TEXT == document.getDocumentType();
+    }
+
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        doGet(req, res);
+    }
+
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        String documentId = req.getParameter("meta_id");
+        viewDoc(documentId, req, res);
     }
 }

@@ -40,12 +40,12 @@ public class CategoryTypeDomainObject implements Comparable, Serializable, Clone
         this.name = name;
     }
 
-    public void setMaxChoices(int maxChoices) {
-        this.maxChoices = maxChoices;
-    }
-
     public int getMaxChoices() {
         return maxChoices;
+    }
+
+    public void setMaxChoices(int maxChoices) {
+        this.maxChoices = maxChoices;
     }
 
     public boolean isInherited() {

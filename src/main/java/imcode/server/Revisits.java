@@ -9,12 +9,12 @@ public class Revisits {
         return revisitsId;
     }
 
-    public String getRevisitsDate() {
-        return revisitsDate;
-    }
-
     public void setRevisitsId(String revisitsId) {
         this.revisitsId = revisitsId;
+    }
+
+    public String getRevisitsDate() {
+        return revisitsDate;
     }
 
     public void setRevisitsDate(String revisitsDate) {

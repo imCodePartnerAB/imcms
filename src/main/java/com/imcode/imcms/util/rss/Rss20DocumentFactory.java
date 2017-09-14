@@ -1,21 +1,19 @@
 package com.imcode.imcms.util.rss;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
+import com.imcode.imcms.util.rss.dc.DublinCoreEntity;
+import com.imcode.imcms.util.rss.dc.DublinCoreTerms;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang.UnhandledException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import com.imcode.imcms.util.rss.dc.DublinCoreEntity;
-import com.imcode.imcms.util.rss.dc.DublinCoreTerms;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
 
 public class Rss20DocumentFactory implements RssDocumentFactory {
 

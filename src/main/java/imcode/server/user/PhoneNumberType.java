@@ -1,8 +1,7 @@
 package imcode.server.user;
 
-import imcode.util.IdLocalizedNamePair;
-
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import imcode.util.IdLocalizedNamePair;
 
 public class PhoneNumberType extends IdLocalizedNamePair {
     public final static PhoneNumberType OTHER = new PhoneNumberType(0, new LocalizedMessage("phone_type/name/other"));

@@ -1,5 +1,6 @@
 package imcode.util;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.ImageCropRegion;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
@@ -7,40 +8,25 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.FileDocumentImageSource;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
-import imcode.server.document.textdocument.NullImageSource;
-
-import java.util.Date;
-import java.util.Objects;
-import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.document.textdocument.ImageArchiveImageSource;
+import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Properties;
 
 //fixme: image no + image in a loop
 public class ImcmsImageUtils {

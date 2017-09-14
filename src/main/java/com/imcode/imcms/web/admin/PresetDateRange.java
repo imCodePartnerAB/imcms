@@ -1,10 +1,10 @@
 package com.imcode.imcms.web.admin;
 
-import java.util.Calendar;
-import java.util.Locale;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 public class PresetDateRange {
     private static final int MONTHS_PER_QUARTER = 3;

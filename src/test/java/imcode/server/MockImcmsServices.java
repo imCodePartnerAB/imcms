@@ -31,224 +31,224 @@ import java.util.List;
 
 public class MockImcmsServices implements ImcmsServices {
 
-	private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
-	private Database database = new MockDatabase();
-	private KeyStore keyStore;
-	private TemplateMapper templateMapper;
-	private DocumentMapper documentMapper;
-	private CategoryMapper categoryMapper;
-	private LanguageMapper languageMapper = new LanguageMapper(null, null);
-	private ImageCacheMapper imageCacheMapper;
-	private RoleGetter roleGetter;
-	private ProcedureExecutor procedureExecutor;
-	private Config config = new Config();
-	private KerberosLoginService kerberosLoginService;
+    private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
+    private Database database = new MockDatabase();
+    private KeyStore keyStore;
+    private TemplateMapper templateMapper;
+    private DocumentMapper documentMapper;
+    private CategoryMapper categoryMapper;
+    private LanguageMapper languageMapper = new LanguageMapper(null, null);
+    private ImageCacheMapper imageCacheMapper;
+    private RoleGetter roleGetter;
+    private ProcedureExecutor procedureExecutor;
+    private Config config = new Config();
+    private KerberosLoginService kerberosLoginService;
 
-	@Override
-	public <T> T getManagedBean(String name, Class<T> requiredType) {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
-	}
+    @Override
+    public <T> T getManagedBean(String name, Class<T> requiredType) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-	@Override
-	public <T> T getManagedBean(Class<T> requiredType) {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
-	}
+    @Override
+    public <T> T getManagedBean(Class<T> requiredType) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-	public UserDomainObject verifyUser(String login, String password) {
-		return null;
-	}
+    public UserDomainObject verifyUser(String login, String password) {
+        return null;
+    }
 
-	public UserDomainObject verifyUser(String clientPrincipalName) {
-		return null;
-	}
+    public UserDomainObject verifyUser(String clientPrincipalName) {
+        return null;
+    }
 
-	public void parsePage(ParserParameters paramsToParse, Writer out) throws IOException {
-	}
+    public void parsePage(ParserParameters paramsToParse, Writer out) throws IOException {
+    }
 
-	public void incrementSessionCounter() {
-	}
+    public void incrementSessionCounter() {
+    }
 
-	// set  session counter date
-	public Date getSessionCounterDate() {
-		return null;
-	}
+    // set  session counter date
+    public Date getSessionCounterDate() {
+        return null;
+    }
 
-	// set  session counter date
-	public void setSessionCounterDate(Date date) {
-	}
+    // set  session counter date
+    public void setSessionCounterDate(Date date) {
+    }
 
-	// parsedoc use template
-	public String getAdminTemplate(String adminTemplateName, UserDomainObject user, List tagsWithReplacements) {
-		return null;
-	}
+    // parsedoc use template
+    public String getAdminTemplate(String adminTemplateName, UserDomainObject user, List tagsWithReplacements) {
+        return null;
+    }
 
-	// parseExternaldoc use template
-	public String getTemplateFromDirectory(String adminTemplateName, UserDomainObject user, List variables,
-										   String directory) {
-		return null;
-	}
+    // parseExternaldoc use template
+    public String getTemplateFromDirectory(String adminTemplateName, UserDomainObject user, List variables,
+                                           String directory) {
+        return null;
+    }
 
-	// get doctype
-	public int getDocType(int meta_id) {
-		return 0;
-	}
+    // get doctype
+    public int getDocType(int meta_id) {
+        return 0;
+    }
 
-	public SystemData getSystemData() {
-		return null;
-	}
+    public SystemData getSystemData() {
+        return null;
+    }
 
-	public void setSystemData(SystemData sd) {
-	}
+    public void setSystemData(SystemData sd) {
+    }
 
-	public String[][] getAllDocumentTypes(String langPrefixStr) {
-		return new String[0][];
-	}
+    public String[][] getAllDocumentTypes(String langPrefixStr) {
+        return new String[0][];
+    }
 
-	public int getSessionCounter() {
-		return 0;
-	}
+    public int getSessionCounter() {
+        return 0;
+    }
 
-	// set session counter
-	public void setSessionCounter(int value) {
-	}
+    // set session counter
+    public void setSessionCounter(int value) {
+    }
 
-	public String getSessionCounterDateAsString() {
-		return null;
-	}
+    public String getSessionCounterDateAsString() {
+        return null;
+    }
 
-	public void updateMainLog(String logMessage) {
-	}
+    public void updateMainLog(String logMessage) {
+    }
 
-	public DocumentMapper getDocumentMapper() {
-		return documentMapper;
-	}
+    public DocumentMapper getDocumentMapper() {
+        return documentMapper;
+    }
 
-	public void setDocumentMapper(DocumentMapper documentMapper) {
-		this.documentMapper = documentMapper;
-	}
+    public void setDocumentMapper(DocumentMapper documentMapper) {
+        this.documentMapper = documentMapper;
+    }
 
-	public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
-		return imcmsAuthenticatorAndUserAndRoleMapper;
-	}
+    public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
+        return imcmsAuthenticatorAndUserAndRoleMapper;
+    }
 
-	public void setImcmsAuthenticatorAndUserAndRoleMapper(
-			ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper) {
-		this.imcmsAuthenticatorAndUserAndRoleMapper = imcmsAuthenticatorAndUserAndRoleMapper;
-	}
+    public void setImcmsAuthenticatorAndUserAndRoleMapper(
+            ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper) {
+        this.imcmsAuthenticatorAndUserAndRoleMapper = imcmsAuthenticatorAndUserAndRoleMapper;
+    }
 
-	public TemplateMapper getTemplateMapper() {
-		return templateMapper;
-	}
+    public TemplateMapper getTemplateMapper() {
+        return templateMapper;
+    }
 
-	public void setTemplateMapper(TemplateMapper templateMapper) {
-		this.templateMapper = templateMapper;
-	}
+    public void setTemplateMapper(TemplateMapper templateMapper) {
+        this.templateMapper = templateMapper;
+    }
 
-	public SMTP getSMTP() {
-		return null;
-	}
+    public SMTP getSMTP() {
+        return null;
+    }
 
-	public File getIncludePath() {
-		return null;
-	}
+    public File getIncludePath() {
+        return null;
+    }
 
-	public Collator getDefaultLanguageCollator() {
-		return null;
-	}
+    public Collator getDefaultLanguageCollator() {
+        return null;
+    }
 
-	public VelocityEngine getVelocityEngine(UserDomainObject user) {
-		return null;
-	}
+    public VelocityEngine getVelocityEngine(UserDomainObject user) {
+        return null;
+    }
 
-	public VelocityContext getVelocityContext(UserDomainObject user) {
-		return null;
-	}
+    public VelocityContext getVelocityContext(UserDomainObject user) {
+        return null;
+    }
 
-	public Config getConfig() {
-		return this.config;
-	}
+    public Config getConfig() {
+        return this.config;
+    }
 
-	public Database getDatabase() {
-		return database;
-	}
+    public Database getDatabase() {
+        return database;
+    }
 
-	public void setDatabase(Database database) {
-		this.database = database;
-	}
+    public void setDatabase(Database database) {
+        this.database = database;
+    }
 
-	public CategoryMapper getCategoryMapper() {
-		return categoryMapper;
-	}
+    public CategoryMapper getCategoryMapper() {
+        return categoryMapper;
+    }
 
-	public void setCategoryMapper(CategoryMapper categoryMapper) {
-		this.categoryMapper = categoryMapper;
-	}
+    public void setCategoryMapper(CategoryMapper categoryMapper) {
+        this.categoryMapper = categoryMapper;
+    }
 
-	public LanguageMapper getLanguageMapper() {
-		return languageMapper;
-	}
+    public LanguageMapper getLanguageMapper() {
+        return languageMapper;
+    }
 
-	public void setLanguageMapper(LanguageMapper languageMapper) {
-		this.languageMapper = languageMapper;
-	}
+    public void setLanguageMapper(LanguageMapper languageMapper) {
+        this.languageMapper = languageMapper;
+    }
 
-	public ImageCacheMapper getImageCacheMapper() {
-		return imageCacheMapper;
-	}
+    public ImageCacheMapper getImageCacheMapper() {
+        return imageCacheMapper;
+    }
 
-	public void setImageCacheMapper(ImageCacheMapper mapper) {
-		this.imageCacheMapper = mapper;
-	}
+    public void setImageCacheMapper(ImageCacheMapper mapper) {
+        this.imageCacheMapper = mapper;
+    }
 
-	public CachingFileLoader getFileCache() {
-		return null;
-	}
+    public CachingFileLoader getFileCache() {
+        return null;
+    }
 
-	public RoleGetter getRoleGetter() {
-		return roleGetter;
-	}
+    public RoleGetter getRoleGetter() {
+        return roleGetter;
+    }
 
-	public void setRoleGetter(RoleGetter roleGetter) {
-		this.roleGetter = roleGetter;
-	}
+    public void setRoleGetter(RoleGetter roleGetter) {
+        this.roleGetter = roleGetter;
+    }
 
-	public ProcedureExecutor getProcedureExecutor() {
-		return procedureExecutor;
-	}
+    public ProcedureExecutor getProcedureExecutor() {
+        return procedureExecutor;
+    }
 
-	public void setProcedureExecutor(ProcedureExecutor procedureExecutor) {
-		this.procedureExecutor = procedureExecutor;
-	}
+    public void setProcedureExecutor(ProcedureExecutor procedureExecutor) {
+        this.procedureExecutor = procedureExecutor;
+    }
 
-	public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
-		return null;
-	}
+    public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
+        return null;
+    }
 
-	public LocalizedMessageProvider getLocalizedMessageProvider() {
-		throw new NotImplementedException("imcode.server.MockImcmsServices.getLocalizedMessageFactory");
-	}
+    public LocalizedMessageProvider getLocalizedMessageProvider() {
+        throw new NotImplementedException("imcode.server.MockImcmsServices.getLocalizedMessageFactory");
+    }
 
-	public KeyStore getKeyStore() {
-		return keyStore;
-	}
+    public KeyStore getKeyStore() {
+        return keyStore;
+    }
 
-	public void setKeyStore(KeyStore keyStore) {
-		this.keyStore = keyStore;
-	}
+    public void setKeyStore(KeyStore keyStore) {
+        this.keyStore = keyStore;
+    }
 
-	public KerberosLoginService getKerberosLoginService() {
-		return kerberosLoginService;
-	}
+    public KerberosLoginService getKerberosLoginService() {
+        return kerberosLoginService;
+    }
 
-	public void setKerberosLoginService(KerberosLoginService kerberosLoginService) {
-		this.kerberosLoginService = kerberosLoginService;
-	}
+    public void setKerberosLoginService(KerberosLoginService kerberosLoginService) {
+        this.kerberosLoginService = kerberosLoginService;
+    }
 
-	public WebApplicationContext getWebApplicationContext() {
-		return null;
-	}
+    public WebApplicationContext getWebApplicationContext() {
+        return null;
+    }
 
-	public DocumentLanguages getDocumentLanguages() {
-		return null;
-	}
+    public DocumentLanguages getDocumentLanguages() {
+        return null;
+    }
 }

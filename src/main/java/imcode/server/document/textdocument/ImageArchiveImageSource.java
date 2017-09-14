@@ -18,6 +18,10 @@ public class ImageArchiveImageSource extends ImageSource {
         this.path = path.replace('\\', '/');
     }
 
+    public static String getImagesUrlPath() {
+        return "/" + Imcms.getServices().getConfig().getImageArchiveImagesPath().getName() + "/";
+    }
+
     @Override
     public InputStreamSource getInputStreamSource() {
         return new FileInputStreamSource(getFile());
@@ -41,10 +45,6 @@ public class ImageArchiveImageSource extends ImageSource {
 
     private boolean isAbsolute() {
         return path.startsWith("/");
-    }
-
-    public static String getImagesUrlPath() {
-        return "/" + Imcms.getServices().getConfig().getImageArchiveImagesPath().getName() + "/";
     }
 
     @Override

@@ -37,217 +37,217 @@ import java.util.Set;
  */
 public class ImcmsSetupFilter implements Filter {
 
-	public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
-	public static final String USER_LOGGED_IN_COOKIE_NAME = "userLoggedIn";
-	private final Logger logger = Logger.getLogger(getClass());
-	private FilterDelegate filterDelegate;
+    public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
+    public static final String USER_LOGGED_IN_COOKIE_NAME = "userLoggedIn";
+    private final Logger logger = Logger.getLogger(getClass());
+    private FilterDelegate filterDelegate;
 
-	public static String getDocumentIdString(ImcmsServices service, String path) {
-		String documentPathPrefix = service.getConfig().getDocumentPathPrefix();
-		String documentIdString = null;
-		if (StringUtils.isNotBlank(documentPathPrefix) && path.startsWith(documentPathPrefix)) {
-			documentIdString = path.substring(documentPathPrefix.length());
-			if (documentIdString.endsWith("/")) {
-				documentIdString = documentIdString.substring(0, documentIdString.length() - 1);
-			}
-		}
-		return documentIdString;
-	}
+    public static String getDocumentIdString(ImcmsServices service, String path) {
+        String documentPathPrefix = service.getConfig().getDocumentPathPrefix();
+        String documentIdString = null;
+        if (StringUtils.isNotBlank(documentPathPrefix) && path.startsWith(documentPathPrefix)) {
+            documentIdString = path.substring(documentPathPrefix.length());
+            if (documentIdString.endsWith("/")) {
+                documentIdString = documentIdString.substring(0, documentIdString.length() - 1);
+            }
+        }
+        return documentIdString;
+    }
 
-	public static void updateUserDocGetterCallback(HttpServletRequest request, ImcmsServices services, UserDomainObject user) {
-		DocGetterCallback docGetterCallback = user.getDocGetterCallback();
+    public static void updateUserDocGetterCallback(HttpServletRequest request, ImcmsServices services, UserDomainObject user) {
+        DocGetterCallback docGetterCallback = user.getDocGetterCallback();
 
-		DocumentLanguages dls = services.getDocumentLanguages();
-		DocumentLanguage defaultLanguage = dls.getDefault();
-		String docLangCode = StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE));
-		DocumentLanguage preferredLanguage = Optional.ofNullable(dls.getByCode(docLangCode))
-				.orElse(Optional.ofNullable(docGetterCallback.getLanguage())
-						.orElse(Optional.ofNullable(dls.getForHost(request.getServerName()))
-								.orElse(defaultLanguage)));
+        DocumentLanguages dls = services.getDocumentLanguages();
+        DocumentLanguage defaultLanguage = dls.getDefault();
+        String docLangCode = StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE));
+        DocumentLanguage preferredLanguage = Optional.ofNullable(dls.getByCode(docLangCode))
+                .orElse(Optional.ofNullable(docGetterCallback.getLanguage())
+                        .orElse(Optional.ofNullable(dls.getForHost(request.getServerName()))
+                                .orElse(defaultLanguage)));
 
-		docGetterCallback.setLanguage(preferredLanguage, dls.isDefault(preferredLanguage));
+        docGetterCallback.setLanguage(preferredLanguage, dls.isDefault(preferredLanguage));
 
-		Integer docId = Ints.tryParse(StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)));
-		String versionStr = StringUtils.trimToNull(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION));
+        Integer docId = Ints.tryParse(StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)));
+        String versionStr = StringUtils.trimToNull(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION));
 
-		if (null != docId && null != versionStr) {
-			switch (versionStr.toLowerCase()) {
-				case ImcmsConstants.REQUEST_PARAM_VALUE__DOC_VERSION__ALIAS_DEFAULT:
-					docGetterCallback.setDefault(docId);
-					break;
+        if (null != docId && null != versionStr) {
+            switch (versionStr.toLowerCase()) {
+                case ImcmsConstants.REQUEST_PARAM_VALUE__DOC_VERSION__ALIAS_DEFAULT:
+                    docGetterCallback.setDefault(docId);
+                    break;
 
-				case ImcmsConstants.REQUEST_PARAM_VALUE__DOC_VERSION__ALIAS_WORKING:
-					docGetterCallback.setWorking(docId);
-					break;
+                case ImcmsConstants.REQUEST_PARAM_VALUE__DOC_VERSION__ALIAS_WORKING:
+                    docGetterCallback.setWorking(docId);
+                    break;
 
-				default:
-					Integer versionNo = Ints.tryParse(versionStr);
-					if (null != versionNo) {
-						docGetterCallback.setCustom(docId, versionNo);
-					}
-			}
-		}
-	}
+                default:
+                    Integer versionNo = Ints.tryParse(versionStr);
+                    if (null != versionNo) {
+                        docGetterCallback.setCustom(docId, versionNo);
+                    }
+            }
+        }
+    }
 
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-		ServletContext servletContext = filterConfig.getServletContext();
-		Imcms.setRootPath(servletContext.getRealPath("/"));
-		Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
-		try {
-			logger.info("Starting CMS.");
-			Imcms.start();
-			filterDelegate = this::doFilterNormally;
-		} catch (Exception e) {
-			logger.error("Error starting CMS.", e);
-			filterDelegate = this::doFilterSendError;
-		}
-	}
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        ServletContext servletContext = filterConfig.getServletContext();
+        Imcms.setRootPath(servletContext.getRealPath("/"));
+        Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
+        try {
+            logger.info("Starting CMS.");
+            Imcms.start();
+            filterDelegate = this::doFilterNormally;
+        } catch (Exception e) {
+            logger.error("Error starting CMS.", e);
+            filterDelegate = this::doFilterSendError;
+        }
+    }
 
-	@Override
-	public void destroy() {
-		try {
-			logger.info("Stopping CMS.");
-			Imcms.stop();
-		} catch (Exception e) {
-			logger.error("Error stopping CMS.", e);
-		}
-	}
+    @Override
+    public void destroy() {
+        try {
+            logger.info("Stopping CMS.");
+            Imcms.stop();
+        } catch (Exception e) {
+            logger.error("Error stopping CMS.", e);
+        }
+    }
 
-	/**
-	 * Routes invocations to the delegate filter.
-	 */
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-			throws IOException, ServletException {
-		filterDelegate.doFilter(request, response, filterChain);
-	}
+    /**
+     * Routes invocations to the delegate filter.
+     */
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
+        filterDelegate.doFilter(request, response, filterChain);
+    }
 
-	void doFilterSendError(ServletRequest request, ServletResponse response, FilterChain filterChain)
-			throws IOException, ServletException {
-		((HttpServletResponse) response).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-	}
+    void doFilterSendError(ServletRequest request, ServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
+        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+    }
 
-	void doFilterNormally(ServletRequest req, ServletResponse res, FilterChain filterChain)
-			throws IOException, ServletException {
-		try {
-			HttpServletRequest request = (HttpServletRequest) req;
-			HttpServletResponse response = (HttpServletResponse) res;
-			HttpSession session = request.getSession();
-			ImcmsServices service = Imcms.getServices();
+    void doFilterNormally(ServletRequest req, ServletResponse res, FilterChain filterChain)
+            throws IOException, ServletException {
+        try {
+            HttpServletRequest request = (HttpServletRequest) req;
+            HttpServletResponse response = (HttpServletResponse) res;
+            HttpSession session = request.getSession();
+            ImcmsServices service = Imcms.getServices();
 
-			if (session.isNew()) {
-				service.incrementSessionCounter();
-				setDomainSessionCookie(response, session);
-			}
+            if (session.isNew()) {
+                service.incrementSessionCounter();
+                setDomainSessionCookie(response, session);
+            }
 
-			String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
-			FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
-					null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
-			if (null != workaroundUriEncoding) {
-				request = new UriEncodingWorkaroundWrapper(request, fallbackDecoder);
-			}
+            String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
+            FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
+                    null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
+            if (null != workaroundUriEncoding) {
+                request = new UriEncodingWorkaroundWrapper(request, fallbackDecoder);
+            }
 
-			UserDomainObject user = Utility.getLoggedOnUser(request);
-			if (null == user) {
-				user = service.verifyUserByIpOrDefault(request.getRemoteAddr());
-				assert user.isActive();
-				Utility.makeUserLoggedIn(request, user);
+            UserDomainObject user = Utility.getLoggedOnUser(request);
+            if (null == user) {
+                user = service.verifyUserByIpOrDefault(request.getRemoteAddr());
+                assert user.isActive();
+                Utility.makeUserLoggedIn(request, user);
 
-				// todo: optimize;
-				// In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
-				// -invalidates current session if it does not match to last user's session
-				// -redirects to the login page.
-			} else {
-				if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
-					String sessionId = session.getId();
-					String lastUserSessionId = service
-							.getImcmsAuthenticatorAndUserAndRoleMapper()
-							.getUserSessionId(user);
+                // todo: optimize;
+                // In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
+                // -invalidates current session if it does not match to last user's session
+                // -redirects to the login page.
+            } else {
+                if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
+                    String sessionId = session.getId();
+                    String lastUserSessionId = service
+                            .getImcmsAuthenticatorAndUserAndRoleMapper()
+                            .getUserSessionId(user);
 
-					if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
-						VerifyUser.forwardToLoginPageTooManySessions(request, response);
-						return;
-					}
-				}
+                    if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
+                        VerifyUser.forwardToLoginPageTooManySessions(request, response);
+                        return;
+                    }
+                }
                 //Adding cookie to find out is user logged in
-				if (!user.isDefaultUser()) {
-					Cookie cookie = new Cookie(USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(true));
-					cookie.setMaxAge(session.getMaxInactiveInterval());
-					cookie.setPath("/");
-					response.addCookie(cookie);
-				}
-			}
+                if (!user.isDefaultUser()) {
+                    Cookie cookie = new Cookie(USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(true));
+                    cookie.setMaxAge(session.getMaxInactiveInterval());
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                }
+            }
 
-			ResourceBundle resourceBundle = Utility.getResourceBundle(request);
-			Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
+            ResourceBundle resourceBundle = Utility.getResourceBundle(request);
+            Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-			Imcms.setUser(user);
-			ImcmsSetupFilter.updateUserDocGetterCallback(request, Imcms.getServices(), user);
+            Imcms.setUser(user);
+            ImcmsSetupFilter.updateUserDocGetterCallback(request, Imcms.getServices(), user);
 
-			Utility.initRequestWithApi(request, user);
+            Utility.initRequestWithApi(request, user);
 
-			NDC.setMaxDepth(0);
-			String contextPath = request.getContextPath();
-			if (!"".equals(contextPath)) {
-				NDC.push(contextPath);
-			}
-			NDC.push(StringUtils.substringAfterLast(request.getRequestURI(), "/"));
+            NDC.setMaxDepth(0);
+            String contextPath = request.getContextPath();
+            if (!"".equals(contextPath)) {
+                NDC.push(contextPath);
+            }
+            NDC.push(StringUtils.substringAfterLast(request.getRequestURI(), "/"));
 
-			handleDocumentUri(filterChain, request, response, service, fallbackDecoder);
-			NDC.setMaxDepth(0);
-		} finally {
-			Imcms.removeUser();
-		}
-	}
+            handleDocumentUri(filterChain, request, response, service, fallbackDecoder);
+            NDC.setMaxDepth(0);
+        } finally {
+            Imcms.removeUser();
+        }
+    }
 
-	/**
-	 * When request path matches a physical or mapped resource then processes request normally.
-	 * Otherwise threats a request as a document request.
-	 *
-	 * @throws ServletException
-	 * @throws IOException
-	 * @see GetDoc#viewDoc(String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 */
-	void handleDocumentUri(FilterChain chain, HttpServletRequest request, ServletResponse response,
-						   ImcmsServices service, FallbackDecoder fallbackDecoder) throws ServletException, IOException {
-		String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
-		path = StringUtils.substringAfter(path, request.getContextPath());
-		ServletContext servletContext = request.getSession().getServletContext();
-		Set resourcePaths = servletContext.getResourcePaths(path);
+    /**
+     * When request path matches a physical or mapped resource then processes request normally.
+     * Otherwise threats a request as a document request.
+     *
+     * @throws ServletException
+     * @throws IOException
+     * @see GetDoc#viewDoc(String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    void handleDocumentUri(FilterChain chain, HttpServletRequest request, ServletResponse response,
+                           ImcmsServices service, FallbackDecoder fallbackDecoder) throws ServletException, IOException {
+        String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
+        path = StringUtils.substringAfter(path, request.getContextPath());
+        ServletContext servletContext = request.getSession().getServletContext();
+        Set resourcePaths = servletContext.getResourcePaths(path);
 
-		if (resourcePaths == null || resourcePaths.size() == 0) {
-			String documentIdString = getDocumentIdString(service, path);
+        if (resourcePaths == null || resourcePaths.size() == 0) {
+            String documentIdString = getDocumentIdString(service, path);
 
             final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
             DocumentDomainObject document = service.getDocumentMapper()
                     .getVersionedDocument(documentIdString, langCode, request);
 
-			if (null != document) {
-				try {
-					GetDoc.viewDoc(document, request, (HttpServletResponse) response);
-					return;
-				} catch (NumberFormatException ignore) {
-				}
-			}
-		}
-		chain.doFilter(request, response);
-	}
+            if (null != document) {
+                try {
+                    GetDoc.viewDoc(document, request, (HttpServletResponse) response);
+                    return;
+                } catch (NumberFormatException ignore) {
+                }
+            }
+        }
+        chain.doFilter(request, response);
+    }
 
-	void setDomainSessionCookie(ServletResponse response, HttpSession session) {
+    void setDomainSessionCookie(ServletResponse response, HttpSession session) {
 
-		String domain = Imcms.getServices().getConfig().getSessionCookieDomain();
-		if (StringUtils.isNotBlank(domain)) {
-			Cookie cookie = new Cookie(JSESSIONID_COOKIE_NAME, session.getId());
-			cookie.setDomain(domain);
-			cookie.setPath("/");
-			((HttpServletResponse) response).addCookie(cookie);
-		}
-	}
+        String domain = Imcms.getServices().getConfig().getSessionCookieDomain();
+        if (StringUtils.isNotBlank(domain)) {
+            Cookie cookie = new Cookie(JSESSIONID_COOKIE_NAME, session.getId());
+            cookie.setDomain(domain);
+            cookie.setPath("/");
+            ((HttpServletResponse) response).addCookie(cookie);
+        }
+    }
 
-	@FunctionalInterface
-	private interface FilterDelegate {
-		void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
-				throws IOException, ServletException;
-	}
+    @FunctionalInterface
+    private interface FilterDelegate {
+        void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
+                throws IOException, ServletException;
+    }
 }

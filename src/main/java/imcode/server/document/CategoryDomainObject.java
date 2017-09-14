@@ -2,19 +2,6 @@ package imcode.server.document;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Cascade;
-
 public class CategoryDomainObject implements Comparable<CategoryDomainObject>, Serializable, Cloneable {
 
     private int id;
@@ -38,12 +25,24 @@ public class CategoryDomainObject implements Comparable<CategoryDomainObject>, S
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public int getId() {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public CategoryTypeDomainObject getType() {
         return type;
+    }
+
+    public void setType(CategoryTypeDomainObject type) {
+        this.type = type;
     }
 
     public String toString() {
@@ -72,33 +71,21 @@ public class CategoryDomainObject implements Comparable<CategoryDomainObject>, S
         return description;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    @Override
-    public int compareTo(CategoryDomainObject category) {
-        return name.compareToIgnoreCase(category.name);
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    public void setType(CategoryTypeDomainObject type) {
-        this.type = type;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    @Override
+    public int compareTo(CategoryDomainObject category) {
+        return name.compareToIgnoreCase(category.name);
     }
 
     @Override

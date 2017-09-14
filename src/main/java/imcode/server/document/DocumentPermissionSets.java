@@ -18,20 +18,20 @@ public class DocumentPermissionSets implements Serializable, Cloneable {
             new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_2)
     };
 
-    public void setRestricted1(DocumentPermissionSetDomainObject restricted1) {
-        permissionSets[0] = restricted1;
-    }
-
-    public void setRestricted2(DocumentPermissionSetDomainObject restricted2) {
-        permissionSets[1] = restricted2;
-    }
-
     public DocumentPermissionSetDomainObject getRestricted1() {
         return permissionSets[0];
     }
 
+    public void setRestricted1(DocumentPermissionSetDomainObject restricted1) {
+        permissionSets[0] = restricted1;
+    }
+
     public DocumentPermissionSetDomainObject getRestricted2() {
         return permissionSets[1];
+    }
+
+    public void setRestricted2(DocumentPermissionSetDomainObject restricted2) {
+        permissionSets[1] = restricted2;
     }
 
     public DocumentPermissionSetDomainObject getRestricted(int n) {

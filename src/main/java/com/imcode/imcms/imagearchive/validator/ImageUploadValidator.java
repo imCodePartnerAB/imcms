@@ -81,7 +81,8 @@ public class ImageUploadValidator implements Validator {
             if (!zipFile) {
                 imageInfo = ImageOp.getImageInfo(tempFile);
                 if (imageInfo == null || imageInfo.getFormat() == null
-                        || imageInfo.getWidth() < 1 || imageInfo.getHeight() < 1) {
+                        || imageInfo.getWidth() < 1 || imageInfo.getHeight() < 1)
+                {
                     errors.rejectValue("file", "archive.addImage.invalidImageError");
                     tempFile.delete();
                 }

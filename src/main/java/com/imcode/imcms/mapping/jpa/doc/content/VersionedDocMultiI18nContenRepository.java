@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping.jpa.doc.content;
 
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.Language;
+import com.imcode.imcms.mapping.jpa.doc.Version;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.io.Serializable;

@@ -6,12 +6,11 @@ import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TagParser;
 import imcode.server.parser.TextDocumentParser;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
+import java.io.IOException;
+import java.util.Properties;
 
 public abstract class SimpleImcmsTag extends TagSupport implements IEditableTag {
 

@@ -3,15 +3,14 @@ package imcode.server.document.textdocument;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.util.image.Format;
-
-import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.Date;
-import javax.persistence.*;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity(name = "ImageCache")
 @Table(name = "imcms_text_doc_images_cache")
@@ -36,12 +35,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 })
 
 public class ImageCacheDomainObject implements Serializable {
-    private static final long serialVersionUID = -2547384841538448930L;
-
     public static final short TYPE_PATH = 1;
     public static final short TYPE_FILE_DOCUMENT = 2;
     public static final short TYPE_URL = 3;
-
+    private static final long serialVersionUID = -2547384841538448930L;
     @Id
     @Column(name = "id", length = 40, nullable = false)
     private String id;

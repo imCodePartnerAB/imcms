@@ -1,30 +1,12 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.util.HumanReadable;
+import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
@@ -32,8 +14,13 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.imcode.util.HumanReadable;
-import com.imcode.util.MultipartHttpServletRequest;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.*;
 
 public class FileAdmin extends HttpServlet {
 
@@ -41,6 +28,20 @@ public class FileAdmin extends HttpServlet {
     private static final int BUFFER_SIZE = 65536;
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING = "FileAdminCopyOverwriteWarning.html";
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING = "FileAdminMoveOverwriteWarning.html";
+
+    static File findUniqueFilename(File file) {
+        File uniqueFile = file;
+        int counter = 1;
+        String previousSuffix = "";
+        while (uniqueFile.exists()) {
+            String filenameWithoutSuffix = StringUtils.substringBeforeLast(uniqueFile.getName(), previousSuffix);
+            String suffix = "." + counter;
+            counter++;
+            uniqueFile = new File(uniqueFile.getParentFile(), filenameWithoutSuffix + suffix);
+            previousSuffix = suffix;
+        }
+        return uniqueFile;
+    }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
@@ -361,20 +362,6 @@ public class FileAdmin extends HttpServlet {
         res.getWriter().print(parseFileAdmin(user, dir1, dir2));
     }
 
-    static File findUniqueFilename(File file) {
-        File uniqueFile = file;
-        int counter = 1;
-        String previousSuffix = "";
-        while (uniqueFile.exists()) {
-            String filenameWithoutSuffix = StringUtils.substringBeforeLast(uniqueFile.getName(), previousSuffix);
-            String suffix = "." + counter;
-            counter++;
-            uniqueFile = new File(uniqueFile.getParentFile(), filenameWithoutSuffix + suffix);
-            previousSuffix = suffix;
-        }
-        return uniqueFile;
-    }
-
     private void outputMoveOverwriteWarning(String option_list, File sourceDir, File destDir,
                                             String file_list, File dir1, File dir2, HttpServletResponse res,
                                             UserDomainObject user, ImcmsServices imcref) throws IOException {
@@ -466,10 +453,6 @@ public class FileAdmin extends HttpServlet {
         vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
         Utility.setDefaultHtmlContentType(res);
         res.getWriter().print(imcref.getAdminTemplate("FileAdminNameBlank.html", user, vec));
-    }
-
-    private interface FromSourceFileToDestinationFileCommand {
-        void execute(File source, File destination) throws IOException;
     }
 
     private void moveOk(HttpServletRequest mp, File[] roots) throws IOException {
@@ -720,6 +703,10 @@ public class FileAdmin extends HttpServlet {
 
             }
         };
+    }
+
+    private interface FromSourceFileToDestinationFileCommand {
+        void execute(File source, File destination) throws IOException;
     }
 
 }

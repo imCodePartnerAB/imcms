@@ -225,7 +225,8 @@ public class PaginationTag extends BodyTagSupport {
                     }
                 }
             } else {
-                for (int i = (currentPage - pagesBetweenEllipseAndCenter); i < (currentPage + pagesBetweenEllipseAndCenter + 1); i++) {
+                for (int i = (currentPage - pagesBetweenEllipseAndCenter); i < (currentPage + pagesBetweenEllipseAndCenter + 1); i++)
+                {
                     if (i == currentPage) {
                         pages.add(Page.selected(i));
                     } else {

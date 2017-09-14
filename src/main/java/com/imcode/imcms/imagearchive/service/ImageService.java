@@ -49,7 +49,7 @@ public class ImageService {
     @Autowired
     private PlatformTransactionManager txManager;
 
-    @PersistenceContext(unitName="com.imcode.imcms")
+    @PersistenceContext(unitName = "com.imcode.imcms")
 //    @Autowired
     private EntityManager entityManager;
 
@@ -240,7 +240,8 @@ public class ImageService {
                     IOUtils.closeQuietly(inputStream);
                     ImageInfo imageInfo = ImageOp.getImageInfo(entryFile);
                     if (imageInfo == null || imageInfo.getFormat() == null
-                            || imageInfo.getWidth() < 1 || imageInfo.getHeight() < 1) {
+                            || imageInfo.getWidth() < 1 || imageInfo.getHeight() < 1)
+                    {
                         continue;
                     }
                     this.createImageActivated(entryFile, imageInfo, fileName, user);

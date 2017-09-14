@@ -1,19 +1,13 @@
 package imcode.util.log;
 
 import imcode.server.DocumentRequest;
-import imcode.server.Imcms;
 import imcode.server.Revisits;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import org.apache.log4j.or.ObjectRenderer;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Iterator;
-import java.util.Set;
-
-import org.apache.commons.collections.iterators.TransformIterator;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.or.ObjectRenderer;
 
 public class FakeRequestRenderer implements ObjectRenderer {
 

@@ -2,36 +2,10 @@ package imcode.server.user;
 
 public abstract class UserPassword {
 
-    public enum Type {
-        PLAIN, ENCRYPTED, RESET
-    }
-
     private final Type type;
 
     private UserPassword(Type type) {
         this.type = type;
-    }
-
-    public final Type type() {
-        return type;
-    }
-
-    public final static class Plain extends UserPassword {
-        private Plain() {
-            super(Type.PLAIN);
-        }
-    }
-
-    public final static class Encrypted extends UserPassword {
-        private Encrypted() {
-            super(Type.ENCRYPTED);
-        }
-    }
-
-    public final static class Reset extends UserPassword {
-        private Reset() {
-            super(Type.RESET);
-        }
     }
 
     public static Plain plain() {
@@ -61,6 +35,32 @@ public abstract class UserPassword {
             case RESET:
                 UserPassword.Reset rp = (UserPassword.Reset) up;
                 break;
+        }
+    }
+
+    public final Type type() {
+        return type;
+    }
+
+    public enum Type {
+        PLAIN, ENCRYPTED, RESET
+    }
+
+    public final static class Plain extends UserPassword {
+        private Plain() {
+            super(Type.PLAIN);
+        }
+    }
+
+    public final static class Encrypted extends UserPassword {
+        private Encrypted() {
+            super(Type.ENCRYPTED);
+        }
+    }
+
+    public final static class Reset extends UserPassword {
+        private Reset() {
+            super(Type.RESET);
         }
     }
 }

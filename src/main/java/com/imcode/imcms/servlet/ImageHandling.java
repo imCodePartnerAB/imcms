@@ -37,22 +37,15 @@ import java.util.regex.Pattern;
 
 @Deprecated
 public class ImageHandling extends HttpServlet {
+    public static final int IMAGE_MAX_DIMENSION = 4096;
     private static final long serialVersionUID = 6075455980496678862L;
-
     private static final Log log = LogFactory.getLog(ImageHandling.class);
-
     private static final Pattern FILENAME_PATTERN = Pattern.compile("/imagehandling/([^/]+?)/?$");
     private static final Pattern DOT_OR_COLON_PATTERN = Pattern.compile("\\.{2,}|:+");
     private static final Pattern ABSOLUTE_PATH_PATTERN = Pattern.compile("^(\\\\|/)+");
-
     private static final String USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.9) Gecko/20071025 Firefox/2.0.0.9";
-
     private static final HttpClient HTTP_CLIENT = new DefaultHttpClient(new ThreadSafeClientConnManager());
-
     private static final List<String> ALLOWED_PATHS = new ArrayList<String>();
-
-    public static final int IMAGE_MAX_DIMENSION = 4096;
-
 
     static {
         File rootFile = Imcms.getPath();
@@ -72,104 +65,6 @@ public class ImageHandling extends HttpServlet {
                 }
             }
         }
-    }
-
-
-    private void handleRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String desiredFilename = getDesiredFilename(request);
-
-        String path = StringUtils.trimToNull(request.getParameter("path"));
-        String url = StringUtils.trimToNull(request.getParameter("url"));
-        int fileId = NumberUtils.toInt(request.getParameter("file_id"));
-
-        String formatParam = StringUtils.trimToEmpty(request.getParameter("format")).toLowerCase();
-        Format format = Format.findFormatByExtension(formatParam);
-
-        int width = NumberUtils.toInt(request.getParameter("width"));
-        int height = NumberUtils.toInt(request.getParameter("height"));
-
-        // cutting dimensions to prevent generating too big images
-        width = Math.min(IMAGE_MAX_DIMENSION, width);
-        height = Math.min(IMAGE_MAX_DIMENSION, height);
-
-        width = Math.max(width, 0);
-        height = Math.max(height, 0);
-
-        if ((path == null && url == null && fileId <= 0) || (format != null && !format.isWritable())) {
-            sendNotFound(response);
-            return;
-        }
-
-        int cropX1 = NumberUtils.toInt(request.getParameter("crop_x1"), -1);
-        int cropY1 = NumberUtils.toInt(request.getParameter("crop_y1"), -1);
-        int cropX2 = NumberUtils.toInt(request.getParameter("crop_x2"), -1);
-        int cropY2 = NumberUtils.toInt(request.getParameter("crop_y2"), -1);
-
-        CropRegion cropRegion = new CropRegion(cropX1, cropY1, cropX2, cropY2);
-
-        int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
-        RotateDirection rotateDirection = RotateDirection.getByAngleDefaultIfNull(rotateAngle);
-
-        ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, format, width,
-                height, cropRegion, rotateDirection);
-        String cacheId = imageCache.getId();
-
-        String etag = null;
-        File cacheFile = ImageCacheManager.getCacheFile(imageCache);
-
-        if (cacheFile != null) {
-            if (path != null) {
-                File imageFile = getLocalFile(path);
-
-                etag = ImcmsImageUtils.getImageETag(path, imageFile, format, width, height, cropRegion, rotateDirection);
-
-                String ifNoneMatch = request.getHeader("If-None-Match");
-                if (etag.equals(ifNoneMatch)) {
-                    response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-                    return;
-                }
-            }
-
-            writeImageToResponse(cacheId, cacheFile, format, desiredFilename, path, etag, response);
-            return;
-        }
-
-        File imageFile = null;
-        boolean deleteFile = false;
-        if (path != null) {
-            imageFile = getLocalFile(path);
-        } else if (fileId > 0) {
-            imageFile = getFileDocument(fileId);
-            deleteFile = true;
-        } else {
-            imageFile = retrieveExternalFile(url);
-            deleteFile = true;
-        }
-
-        if (imageFile == null) {
-            sendNotFound(response);
-            return;
-        }
-
-        ImageInfo imageInfo = ImageOp.getImageInfo(imageFile);
-        if (imageInfo == null || (format == null && !imageInfo.getFormat().isWritable())) {
-            if (deleteFile) {
-                imageFile.delete();
-            }
-
-            sendNotFound(response);
-            return;
-        }
-
-        cacheFile = ImageCacheManager.storeImage(imageCache, imageFile, deleteFile);
-        if (cacheFile == null) {
-            sendNotFound(response);
-            return;
-        }
-
-        Format outputFormat = (format != null ? format : imageInfo.getFormat());
-        writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, path, etag, response);
     }
 
     private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename,
@@ -192,7 +87,7 @@ public class ImageHandling extends HttpServlet {
                 }
             }
 
-			desiredFilename = pathname;
+            desiredFilename = pathname;
 
             if (format != null) {
                 extension = format.getExtension();
@@ -258,7 +153,6 @@ public class ImageHandling extends HttpServlet {
 
         return imageCache;
     }
-
 
     static File getLocalFile(String filepath) {
         File root = Imcms.getPath();
@@ -391,6 +285,103 @@ public class ImageHandling extends HttpServlet {
 
     private static void sendNotFound(HttpServletResponse response) throws IOException {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    private void handleRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String desiredFilename = getDesiredFilename(request);
+
+        String path = StringUtils.trimToNull(request.getParameter("path"));
+        String url = StringUtils.trimToNull(request.getParameter("url"));
+        int fileId = NumberUtils.toInt(request.getParameter("file_id"));
+
+        String formatParam = StringUtils.trimToEmpty(request.getParameter("format")).toLowerCase();
+        Format format = Format.findFormatByExtension(formatParam);
+
+        int width = NumberUtils.toInt(request.getParameter("width"));
+        int height = NumberUtils.toInt(request.getParameter("height"));
+
+        // cutting dimensions to prevent generating too big images
+        width = Math.min(IMAGE_MAX_DIMENSION, width);
+        height = Math.min(IMAGE_MAX_DIMENSION, height);
+
+        width = Math.max(width, 0);
+        height = Math.max(height, 0);
+
+        if ((path == null && url == null && fileId <= 0) || (format != null && !format.isWritable())) {
+            sendNotFound(response);
+            return;
+        }
+
+        int cropX1 = NumberUtils.toInt(request.getParameter("crop_x1"), -1);
+        int cropY1 = NumberUtils.toInt(request.getParameter("crop_y1"), -1);
+        int cropX2 = NumberUtils.toInt(request.getParameter("crop_x2"), -1);
+        int cropY2 = NumberUtils.toInt(request.getParameter("crop_y2"), -1);
+
+        CropRegion cropRegion = new CropRegion(cropX1, cropY1, cropX2, cropY2);
+
+        int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
+        RotateDirection rotateDirection = RotateDirection.getByAngleDefaultIfNull(rotateAngle);
+
+        ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, format, width,
+                height, cropRegion, rotateDirection);
+        String cacheId = imageCache.getId();
+
+        String etag = null;
+        File cacheFile = ImageCacheManager.getCacheFile(imageCache);
+
+        if (cacheFile != null) {
+            if (path != null) {
+                File imageFile = getLocalFile(path);
+
+                etag = ImcmsImageUtils.getImageETag(path, imageFile, format, width, height, cropRegion, rotateDirection);
+
+                String ifNoneMatch = request.getHeader("If-None-Match");
+                if (etag.equals(ifNoneMatch)) {
+                    response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                    return;
+                }
+            }
+
+            writeImageToResponse(cacheId, cacheFile, format, desiredFilename, path, etag, response);
+            return;
+        }
+
+        File imageFile = null;
+        boolean deleteFile = false;
+        if (path != null) {
+            imageFile = getLocalFile(path);
+        } else if (fileId > 0) {
+            imageFile = getFileDocument(fileId);
+            deleteFile = true;
+        } else {
+            imageFile = retrieveExternalFile(url);
+            deleteFile = true;
+        }
+
+        if (imageFile == null) {
+            sendNotFound(response);
+            return;
+        }
+
+        ImageInfo imageInfo = ImageOp.getImageInfo(imageFile);
+        if (imageInfo == null || (format == null && !imageInfo.getFormat().isWritable())) {
+            if (deleteFile) {
+                imageFile.delete();
+            }
+
+            sendNotFound(response);
+            return;
+        }
+
+        cacheFile = ImageCacheManager.storeImage(imageCache, imageFile, deleteFile);
+        if (cacheFile == null) {
+            sendNotFound(response);
+            return;
+        }
+
+        Format outputFormat = (format != null ? format : imageInfo.getFormat());
+        writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, path, etag, response);
     }
 
     @Override

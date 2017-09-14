@@ -1,43 +1,51 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.Imcms;
-import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
-
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 public class VerifyUser extends HttpServlet {
 
+    public static final String REQUEST_PARAMETER__NEXT_META = "next_meta";
+    public static final String REQUEST_PARAMETER__EDIT_USER = "edit_user";
+    public static final String REQUEST_PARAMETER__USERNAME = "name";
+    public static final String REQUEST_PARAMETER__PASSWORD = "passwd";
+    public static final String REQUEST_ATTRIBUTE__ERROR = "error";
     /**
      * Too many sessions message key.
      */
     private final static LocalizedMessage LOGIN_MSG__TOO_MANY_SESSIONS
             = new LocalizedMessage("templates/login/TooManySessions");
-
     private static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
     public static final String REQUEST_PARAMETER__NEXT_URL = SESSION_ATTRIBUTE__NEXT_URL;
-    public static final String REQUEST_PARAMETER__NEXT_META = "next_meta";
     private static final String SESSION_ATTRIBUTE__NEXT_META = "next_meta";
     private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
-    public static final String REQUEST_PARAMETER__EDIT_USER = "edit_user";
-    public static final String REQUEST_PARAMETER__USERNAME = "name";
-    public static final String REQUEST_PARAMETER__PASSWORD = "passwd";
-    public static final String REQUEST_ATTRIBUTE__ERROR = "error";
-
     private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
+
+    public static void forwardToLogin(HttpServletRequest req, HttpServletResponse res, LocalizedMessage errorMsg) throws IOException, ServletException {
+        String loginPage = "/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2() + "/login/index.jsp";
+
+        req.getSession().invalidate();
+        req.setAttribute(REQUEST_ATTRIBUTE__ERROR, errorMsg);
+        req.getRequestDispatcher(loginPage).forward(req, res);
+    }
+
+    public static void forwardToLoginPageTooManySessions(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        forwardToLogin(req, res, LOGIN_MSG__TOO_MANY_SESSIONS);
+    }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         doPost(req, res);
@@ -61,20 +69,6 @@ public class VerifyUser extends HttpServlet {
         } else {
             goToLoginFailedPage(req, res);
         }
-    }
-
-
-    public static void forwardToLogin(HttpServletRequest req, HttpServletResponse res, LocalizedMessage errorMsg) throws IOException, ServletException {
-        String loginPage = "/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2() + "/login/index.jsp";
-
-        req.getSession().invalidate();
-        req.setAttribute(REQUEST_ATTRIBUTE__ERROR, errorMsg);
-        req.getRequestDispatcher(loginPage).forward(req, res);
-    }
-
-
-    public static void forwardToLoginPageTooManySessions(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        forwardToLogin(req, res, LOGIN_MSG__TOO_MANY_SESSIONS);
     }
 
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {

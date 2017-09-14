@@ -6,6 +6,22 @@ import com.google.common.base.Joiner;
  * Created by Shadowgun on 12.01.2015.
  */
 public class SupportEditor extends BaseEditor {
+    public SupportEditor() {
+        super(new SupportBuilder());
+    }
+
+    public String getWrapperPre() {
+        try {
+            return ((SupportBuilder) super.builder).buildPre();
+        } finally {
+            builder.clear();
+        }
+    }
+
+    public String getWrapperPost() {
+        return ((SupportBuilder) super.builder).buildPost();
+    }
+
     protected static class SupportBuilder extends BaseEditor.BuilderBase {
         final String buildPre() {
 
@@ -20,22 +36,5 @@ public class SupportEditor extends BaseEditor {
         final String buildPost() {
             return "</div>";
         }
-    }
-
-    public SupportEditor() {
-        super(new SupportBuilder());
-    }
-
-    public String getWrapperPre() {
-        try {
-            return ((SupportBuilder) super.builder).buildPre();
-        }
-        finally {
-            builder.clear();
-        }
-    }
-
-    public String getWrapperPost() {
-        return ((SupportBuilder) super.builder).buildPost();
     }
 }

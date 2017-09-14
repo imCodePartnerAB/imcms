@@ -1,12 +1,11 @@
 package com.imcode.imcms.util.rss.imcms;
 
-import imcode.util.Utility;
-
-import java.util.Date;
-
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.util.rss.dc.DublinCoreEntity;
 import com.imcode.imcms.util.rss.dc.DublinCoreTerms;
+import imcode.util.Utility;
+
+import java.util.Date;
 
 public class DocumentDublinCoreTerms implements DublinCoreTerms {
 

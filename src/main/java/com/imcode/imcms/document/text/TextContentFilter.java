@@ -8,18 +8,17 @@ import org.jsoup.safety.Whitelist;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 
 /**
  * Text content filter, based on Jsoup's tags whitelist and cleaning text feature.
- *
+ * <p>
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 29.03.17.
  */
 @Component
 public class TextContentFilter {
     private final Whitelist htmlTagsWhitelist = Whitelist.none()
-            .addAttributes("img", "class",  "data-no", "data-meta", "data-cke-saved-src", "src");
+            .addAttributes("img", "class", "data-no", "data-meta", "data-cke-saved-src", "src");
 
     @PostConstruct
     public void init() {

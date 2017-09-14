@@ -26,13 +26,13 @@ public class RoleService {
     @Autowired
     private Facade facade;
 
-    @PersistenceContext(unitName="com.imcode.imcms")
+    @PersistenceContext(unitName = "com.imcode.imcms")
 //    @Autowired
     private EntityManager entityManager;
 
     private Session getCurrentSession() {
         return entityManager.unwrap(Session.class);
-    }    
+    }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Roles findRoleById(int id) {

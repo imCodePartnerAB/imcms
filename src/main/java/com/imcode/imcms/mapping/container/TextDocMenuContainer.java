@@ -9,17 +9,16 @@ import java.util.Objects;
  */
 public class TextDocMenuContainer extends TextDocVersionedContainer {
 
-    public static TextDocMenuContainer of(VersionRef versionRef, int menuNo, MenuDomainObject menu) {
-        return new TextDocMenuContainer(versionRef, menuNo, menu);
-    }
-
     private final int menuNo;
     private final MenuDomainObject menu;
-
     public TextDocMenuContainer(VersionRef versionRef, int menuNo, MenuDomainObject menu) {
         super(versionRef);
         this.menu = Objects.requireNonNull(menu);
         this.menuNo = menuNo;
+    }
+
+    public static TextDocMenuContainer of(VersionRef versionRef, int menuNo, MenuDomainObject menu) {
+        return new TextDocMenuContainer(versionRef, menuNo, menu);
     }
 
     public int getMenuNo() {

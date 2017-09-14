@@ -1,13 +1,12 @@
 package com.imcode.imcms.servlet;
 
-import java.io.IOException;
-import java.util.List;
+import org.apache.lucene.search.Query;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.lucene.search.Query;
+import java.io.IOException;
+import java.util.List;
 
 public interface DocumentFinderPage {
 

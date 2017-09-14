@@ -10,10 +10,9 @@ import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
+import junit.framework.TestCase;
 
 import java.util.Date;
-
-import junit.framework.TestCase;
 
 public class TestTextDocument extends TestCase {
 

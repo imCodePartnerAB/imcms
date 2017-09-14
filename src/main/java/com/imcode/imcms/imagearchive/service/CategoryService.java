@@ -7,7 +7,6 @@ import com.imcode.imcms.imagearchive.entity.Roles;
 import com.imcode.imcms.imagearchive.service.exception.CategoryExistsException;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +19,10 @@ import java.util.List;
 @Transactional
 public class CategoryService {
 
-    @PersistenceContext(unitName="com.imcode.imcms")
+    @PersistenceContext(unitName = "com.imcode.imcms")
 //    @Autowired
     private EntityManager entityManager;
-    
+
     private Session getCurrentSession() {
         return entityManager.unwrap(Session.class);
     }

@@ -1,39 +1,32 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.OkCancelPage;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.image.ImageInfo;
-
-import java.awt.geom.AffineTransform;
-import java.io.IOException;
-import java.util.Map;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.math.NumberUtils;
-
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.OkCancelPage;
-
+import java.awt.geom.AffineTransform;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Map;
 
 public class ImageCropPage extends OkCancelPage {
-    private static final long serialVersionUID = 2032206435742139836L;
-
     public static final String REQUEST_PARAMETER__ROTATE_LEFT = "rotateLeft";
     public static final String REQUEST_PARAMETER__ROTATE_RIGHT = "rotateRight";
-
     public static final String PARAM_CROP_X1 = "crop_x1";
     public static final String PARAM_CROP_Y1 = "crop_y1";
     public static final String PARAM_CROP_X2 = "crop_x2";
     public static final String PARAM_CROP_Y2 = "crop_y2";
     public static final String PARAM_ROTATE_ANGLE = "rotate_angle";
-
+    private static final long serialVersionUID = 2032206435742139836L;
     private static final Map<String, Object> CONSTANTS = Utility.getConstants(ImageCropPage.class);
 
     private Handler<CropResult> selectRegionCommand;

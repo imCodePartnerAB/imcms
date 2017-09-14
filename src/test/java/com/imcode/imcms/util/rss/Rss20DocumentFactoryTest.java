@@ -1,23 +1,15 @@
 package com.imcode.imcms.util.rss;
 
-import imcode.util.Utility;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-
-import javax.xml.transform.stream.StreamResult;
-
-import junit.framework.TestCase;
-
-import org.apache.commons.beanutils.DynaBean;
-import org.w3c.dom.Document;
-
 import com.imcode.imcms.util.rss.dc.DublinCoreEntity;
 import com.imcode.imcms.util.rss.dc.DublinCoreItem;
 import com.imcode.imcms.util.rss.dc.DublinCoreTerms;
+import imcode.util.Utility;
+import junit.framework.TestCase;
+import org.apache.commons.beanutils.DynaBean;
+import org.w3c.dom.Document;
+
+import javax.xml.transform.stream.StreamResult;
+import java.util.*;
 
 public class Rss20DocumentFactoryTest extends TestCase {
 
@@ -30,8 +22,8 @@ public class Rss20DocumentFactoryTest extends TestCase {
         SimpleDublinCoreTerms dublinCoreTerms = new SimpleDublinCoreTerms();
         dublinCoreTerms.setTitle("title");
         dublinCoreTerms.setIssued(new Date());
-        DublinCoreItem item = new DublinCoreItem(dublinCoreTerms) ;
-        channel.setItems(Arrays.asList(new Item[] { item }));
+        DublinCoreItem item = new DublinCoreItem(dublinCoreTerms);
+        channel.setItems(Arrays.asList(new Item[]{item}));
         Document rssDocument = rssDocumentFactory.createRssDocument(channel);
         Utility.writeXmlDocument(rssDocument, new StreamResult(System.out));
     }
@@ -50,12 +42,24 @@ public class Rss20DocumentFactoryTest extends TestCase {
             return created;
         }
 
+        public void setCreated(Date created) {
+            this.created = created;
+        }
+
         public DublinCoreEntity getCreator() {
             return creator;
         }
 
+        public void setCreator(DublinCoreEntity creator) {
+            this.creator = creator;
+        }
+
         public String getDescription() {
             return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
         }
 
         public String getIdentifer() {
@@ -66,40 +70,28 @@ public class Rss20DocumentFactoryTest extends TestCase {
             return issued;
         }
 
-        public Date getModified() {
-            return modified;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setCreated(Date created) {
-            this.created = created;
-        }
-
-        public void setCreator(DublinCoreEntity creator) {
-            this.creator = creator;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        public void setIdentifier(String identifier) {
-            this.identifier = identifier;
-        }
-
         public void setIssued(Date issued) {
             this.issued = issued;
+        }
+
+        public Date getModified() {
+            return modified;
         }
 
         public void setModified(Date modified) {
             this.modified = modified;
         }
 
+        public String getTitle() {
+            return title;
+        }
+
         public void setTitle(String title) {
             this.title = title;
+        }
+
+        public void setIdentifier(String identifier) {
+            this.identifier = identifier;
         }
     }
 
@@ -114,16 +106,32 @@ public class Rss20DocumentFactoryTest extends TestCase {
             return title;
         }
 
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
         public String getLink() {
             return link;
+        }
+
+        public void setLink(String link) {
+            this.link = link;
         }
 
         public String getDescription() {
             return description;
         }
 
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
         public Iterable<Item> getItems() {
             return items;
+        }
+
+        public void setItems(Collection<Item> items) {
+            this.items = items;
         }
 
         public Map<NameSpace, Map<String, String>> getNameSpaceStrings() {
@@ -132,22 +140,6 @@ public class Rss20DocumentFactoryTest extends TestCase {
 
         public Map<NameSpace, DynaBean> getNameSpaceBeans() {
             return Collections.EMPTY_MAP;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        public void setItems(Collection<Item> items) {
-            this.items = items;
-        }
-
-        public void setLink(String link) {
-            this.link = link;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
         }
     }
 }

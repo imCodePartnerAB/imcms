@@ -13,13 +13,13 @@ public class EnvironmentConfig {
 
     private Environment env;
 
+    public Environment getEnv() {
+        return env;
+    }
+
     @Inject
     public void setEnv(StandardEnvironment env) {
         env.getPropertySources().remove(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
         this.env = env;
-    }
-
-    public Environment getEnv() {
-        return env;
     }
 }

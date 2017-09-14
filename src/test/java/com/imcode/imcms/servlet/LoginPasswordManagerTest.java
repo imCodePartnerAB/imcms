@@ -10,7 +10,7 @@ import java.util.Collection;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(value=Parameterized.class)
+@RunWith(value = Parameterized.class)
 public class LoginPasswordManagerTest {
 
     private LoginPasswordManager manager;
@@ -21,7 +21,7 @@ public class LoginPasswordManagerTest {
 
     @Parameterized.Parameters
     static public Collection<String[]> parameters() {
-        return Arrays.asList(new String[][] {{null}, {""}, {"secret"}});
+        return Arrays.asList(new String[][]{{null}, {""}, {"secret"}});
     }
 
     @Test

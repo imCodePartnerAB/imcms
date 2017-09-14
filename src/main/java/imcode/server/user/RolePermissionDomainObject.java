@@ -1,8 +1,8 @@
 package imcode.server.user;
 
-import java.io.Serializable;
-
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+
+import java.io.Serializable;
 
 public class RolePermissionDomainObject implements Serializable {
     private int id;

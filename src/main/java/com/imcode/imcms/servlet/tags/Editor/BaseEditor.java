@@ -10,6 +10,24 @@ import java.util.List;
  */
 public abstract class BaseEditor {
 
+    protected final BuilderBase builder;
+
+    protected BaseEditor(BuilderBase builder) {
+        this.builder = builder;
+    }
+
+    public BaseEditor() {
+        this(new BuilderBase());
+    }
+
+    public String wrap(String content) {
+        try {
+            return builder.build(content);
+        } finally {
+            builder.clear();
+        }
+    }
+
     protected static class BuilderBase {
         protected static final String EDITOR_PREFIX = "editor-";
         protected static final String ATTR_PREFIX = "data-";
@@ -59,24 +77,6 @@ public abstract class BaseEditor {
         final void clear() {
             stringBuilder = new StringBuilder();
             classList.clear();
-        }
-    }
-
-    protected final BuilderBase builder;
-
-    protected BaseEditor(BuilderBase builder) {
-        this.builder = builder;
-    }
-
-    public BaseEditor() {
-        this(new BuilderBase());
-    }
-
-    public String wrap(String content) {
-        try {
-            return builder.build(content);
-        } finally {
-            builder.clear();
         }
     }
 }

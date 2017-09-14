@@ -1,25 +1,13 @@
 package imcode.util.log;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
+
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Complete ripoff of org.apache.log4j.DailyRollingFileAppender in log4j 1.2.8,
@@ -37,14 +25,14 @@ public class DailyRollingFileAppender extends FileAppender {
     static final int TOP_OF_DAY = 3;
     static final int TOP_OF_WEEK = 4;
     static final int TOP_OF_MONTH = 5;
-
-
+    // The gmtTimeZone is used only in computeCheckPeriod() method.
+    private static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone("GMT");
+    int checkPeriod = TOP_OF_TROUBLE;
     /**
      * The date pattern. By default, the pattern is set to
      * "'.'yyyy-MM-dd" meaning daily rollover.
      */
     private String datePattern = "'.'yyyy-MM-dd";
-
     /**
      * The log file will be renamed to the value of the
      * scheduledFilename variable when the next interval is entered. For
@@ -56,22 +44,13 @@ public class DailyRollingFileAppender extends FileAppender {
      * activity.
      */
     private String scheduledFilename;
-
     /**
      * The next time we estimate a rollover should occur.
      */
     private long nextCheck = System.currentTimeMillis() - 1;
-
     private Date now = new Date();
-
     private SimpleDateFormat sdf;
-
     private RollingCalendar rc = new RollingCalendar();
-
-    int checkPeriod = TOP_OF_TROUBLE;
-
-    // The gmtTimeZone is used only in computeCheckPeriod() method.
-    private static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone("GMT");
 
 
     /**
@@ -92,13 +71,22 @@ public class DailyRollingFileAppender extends FileAppender {
         activateOptions();
     }
 
-    /**
-     * The <b>DatePattern</b> takes a string in the same format as
-     * expected by {@link SimpleDateFormat}. This options determines the
-     * rollover schedule.
-     */
-    public void setDatePattern(String pattern) {
-        datePattern = pattern;
+    private static boolean copyFile(File from, File to) {
+        try {
+            InputStream in = new BufferedInputStream(new FileInputStream(from));
+            OutputStream out = new BufferedOutputStream(new FileOutputStream(to));
+            int b;
+            while ((b = in.read()) != -1) {
+                out.write(b);
+            }
+            out.flush();
+            out.close();
+            return true;
+        } catch (FileNotFoundException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     /**
@@ -106,6 +94,15 @@ public class DailyRollingFileAppender extends FileAppender {
      */
     private String getDatePattern() {
         return datePattern;
+    }
+
+    /**
+     * The <b>DatePattern</b> takes a string in the same format as
+     * expected by {@link SimpleDateFormat}. This options determines the
+     * rollover schedule.
+     */
+    public void setDatePattern(String pattern) {
+        datePattern = pattern;
     }
 
     public void activateOptions() {
@@ -124,6 +121,16 @@ public class DailyRollingFileAppender extends FileAppender {
                     + name + "].");
         }
     }
+
+
+    // This method computes the roll over period by looping over the
+    // periods, starting with the shortest, and stopping when the r0 is
+    // different from from r1, where r0 is the epoch formatted according
+    // the datePattern (supplied by the user) and r1 is the
+    // epoch+nextMillis(i) formatted according to datePattern. All date
+    // formatting is done in GMT and not local format because the test
+    // logic is based on comparisons relative to 1970-01-01 00:00:00
+    // GMT (the epoch).
 
     private void printPeriodicity(int type) {
         switch (type) {
@@ -154,16 +161,6 @@ public class DailyRollingFileAppender extends FileAppender {
                 LogLog.warn("Unknown periodicity for appender [" + name + "].");
         }
     }
-
-
-    // This method computes the roll over period by looping over the
-    // periods, starting with the shortest, and stopping when the r0 is
-    // different from from r1, where r0 is the epoch formatted according
-    // the datePattern (supplied by the user) and r1 is the
-    // epoch+nextMillis(i) formatted according to datePattern. All date
-    // formatting is done in GMT and not local format because the test
-    // logic is based on comparisons relative to 1970-01-01 00:00:00
-    // GMT (the epoch).
 
     private int computeCheckPeriod() {
         RollingCalendar rollingCalendar = new RollingCalendar(GMT_TIME_ZONE, Locale.ENGLISH);
@@ -232,24 +229,6 @@ public class DailyRollingFileAppender extends FileAppender {
             errorHandler.error("setFile(" + fileName + ", false) call failed.");
         }
         scheduledFilename = datedFilename;
-    }
-
-    private static boolean copyFile(File from, File to) {
-        try {
-            InputStream in = new BufferedInputStream(new FileInputStream(from));
-            OutputStream out = new BufferedOutputStream(new FileOutputStream(to));
-            int b;
-            while ((b = in.read()) != -1) {
-                out.write(b);
-            }
-            out.flush();
-            out.close();
-            return true;
-        } catch (FileNotFoundException e) {
-            return false;
-        } catch (IOException e) {
-            return false;
-        }
     }
 
     /**

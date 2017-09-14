@@ -18,7 +18,8 @@ public class ImageTag extends SimpleImcmsTag {
                 parserParameters.getDocumentRequest().getDocument() :
                 Imcms.getServices().getDocumentMapper().getDocument(attributes.getProperty("document")));
         if (TagParser.isEditable(attributes,
-                ((TextDocumentPermissionSetDomainObject) parserParameters.getDocumentRequest().getUser().getPermissionSetFor(doc)).getEditImages())) {
+                ((TextDocumentPermissionSetDomainObject) parserParameters.getDocumentRequest().getUser().getPermissionSetFor(doc)).getEditImages()))
+        {
             ((ImageEditor) editor).setDocumentId(doc.getId())
                     .setLoopEntryRef(loopEntryRef)
                     .setNo(Integer.parseInt(attributes.getProperty("no")));

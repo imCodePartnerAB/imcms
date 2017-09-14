@@ -5,7 +5,6 @@ import com.imcode.imcms.api.SaveException;
 import com.imcode.imcms.api.User;
 import com.imcode.imcms.api.UserService;
 import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -32,11 +31,11 @@ public class UserBrowser extends HttpServlet {
     public static final String REQUEST_PARAMETER__SEARCH_STRING = "searchstring";
     public static final String REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS = "includeInactive";
     public static final String REQUEST_ATTRIBUTE__FORM_DATA = "formData";
-    private static final String JSP__USER_BROWSER = "/jsp/userbrowser.jsp";
     public static final String REQUEST_PARAMETER__SELECT_USER_BUTTON = "selectUserButton";
     public static final String REQUEST_PARAMETER__ARCHIVE_USER_BUTTON = "archiveUserButton";
     public static final String REQUEST_PARAMETER__ADD_USER = "addUser";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
+    private static final String JSP__USER_BROWSER = "/jsp/userbrowser.jsp";
     private static final LocalizedMessage ERROR__USER_ALREADY_EXISTS = new LocalizedMessage("error/servlet/AdminUserProps/username_already_exists");
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -190,32 +189,32 @@ public class UserBrowser extends HttpServlet {
             return searchString;
         }
 
-        public UserDomainObject[] getUsers() {
-            return users;
-        }
-
         public void setSearchString(String searchString) {
             this.searchString = searchString;
         }
 
-        public void setSelectedRoles(RoleDomainObject[] selectedRoles) {
-            this.selectedRoles = selectedRoles;
-        }
-
-        public RoleDomainObject[] getSelectedRoles() {
-            return this.selectedRoles;
+        public UserDomainObject[] getUsers() {
+            return users;
         }
 
         public void setUsers(UserDomainObject[] users) {
             this.users = users;
         }
 
-        public void setIncludeInactiveUsers(boolean includeInactiveUsers) {
-            this.includeInactiveUsers = includeInactiveUsers;
+        public RoleDomainObject[] getSelectedRoles() {
+            return this.selectedRoles;
+        }
+
+        public void setSelectedRoles(RoleDomainObject[] selectedRoles) {
+            this.selectedRoles = selectedRoles;
         }
 
         public boolean isIncludeInactiveUsers() {
             return includeInactiveUsers;
+        }
+
+        public void setIncludeInactiveUsers(boolean includeInactiveUsers) {
+            this.includeInactiveUsers = includeInactiveUsers;
         }
 
         public void forward(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

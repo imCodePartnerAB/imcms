@@ -1,7 +1,5 @@
 package com.imcode.imcms.config;
 
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
-
 /**
  * Created by zemluk on 11.10.16.
  */

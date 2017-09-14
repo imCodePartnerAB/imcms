@@ -2,14 +2,9 @@ package imcode.server.document.index.service.impl;
 
 public class ServiceFailure {
 
-    public enum Type {
-        SEARCH, UPDATE, REBUILD
-    }
-
     private final ManagedDocumentIndexService service;
     private final Throwable exception;
     private final Type type;
-
     public ServiceFailure(ManagedDocumentIndexService service, Throwable exception, Type type) {
         this.service = service;
         this.exception = exception;
@@ -26,5 +21,9 @@ public class ServiceFailure {
 
     public Type getType() {
         return type;
+    }
+
+    public enum Type {
+        SEARCH, UPDATE, REBUILD
     }
 }

@@ -20,10 +20,8 @@ public class LoginPasswordManager {
     private static final int SALT_LENGTH = 16;
 
     private static final String KEY_ALGORITHM = "PBKDF2WithHmacSHA1";
-
-    private byte[] sharedSalt;
-
     private static Logger logger = Logger.getLogger(LoginPasswordManager.class);
+    private byte[] sharedSalt;
 
     /**
      * Creates new instance of UserLoginPasswordManager without shared salt.

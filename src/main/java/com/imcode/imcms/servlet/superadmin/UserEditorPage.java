@@ -231,11 +231,13 @@ public class UserEditorPage extends OkCancelPage {
             editedUser.addPhoneNumber(editedPhoneNumber);
             currentPhoneNumber = new PhoneNumber("", PhoneNumberType.OTHER);
         } else if (null != request.getParameter(REQUEST_PARAMETER__REMOVE_PHONE_NUMBER)
-                && null != selectedPhoneNumber) {
+                && null != selectedPhoneNumber)
+        {
             editedUser.removePhoneNumber(selectedPhoneNumber);
             currentPhoneNumber = selectedPhoneNumber;
         } else if (null != request.getParameter(REQUEST_PARAMETER__EDIT_PHONE_NUMBER)
-                && null != selectedPhoneNumber) {
+                && null != selectedPhoneNumber)
+        {
             currentPhoneNumber = selectedPhoneNumber;
         }
         forward(request, response);
@@ -250,7 +252,8 @@ public class UserEditorPage extends OkCancelPage {
                 boolean editedUserHasOnlyTheUsersRole = 1 == editedUser.getRoleIds().length;
                 UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
                 if (editedUserHasOnlyTheUsersRole || loggedOnUser.isUserAdminAndNotSuperAdmin()
-                        && !loggedOnUser.canEditRolesAccordingToUserAdminRoles(editedUser)) {
+                        && !loggedOnUser.canEditRolesAccordingToUserAdminRoles(editedUser))
+                {
                     errorMessage = ERROR__EDITED_USER_MUST_HAVE_AT_LEAST_ONE_ROLE;
                 } else {
                     super.dispatchOk(request, response);

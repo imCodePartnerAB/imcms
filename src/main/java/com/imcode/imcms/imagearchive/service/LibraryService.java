@@ -30,10 +30,10 @@ public class LibraryService {
     @Autowired
     private Facade facade;
 
-    @PersistenceContext(unitName="com.imcode.imcms")
+    @PersistenceContext(unitName = "com.imcode.imcms")
 //    @Autowired
     private EntityManager entityManager;
-    
+
     private Session getCurrentSession() {
         return entityManager.unwrap(Session.class);
     }

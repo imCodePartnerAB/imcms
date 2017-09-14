@@ -1,12 +1,8 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.admin.AdminDoc;
-import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +24,39 @@ import java.io.IOException;
 public class AdminPanelServlet extends HttpServlet {
 
     public static final String PARAM_COOKIE_PANEL_HIDE = "imcmsToolBarHide";
+
+    public static String getPathToAjaxHandler(int metaId, HttpServletRequest request) {
+        return request.getContextPath() + "/servlet/AdminPanelServlet?meta_id=" + metaId + "&ajax=true";
+    }
+
+    public static int getIntRequestParameter(String param, int defaultVal, HttpServletRequest request) {
+        if (null != request.getParameter(param) && StringUtils.isNumeric(request.getParameter(param))) {
+            try {
+                return Integer.parseInt(request.getParameter(param));
+            } catch (Exception ignore) {
+            }
+        }
+        return defaultVal;
+    }
+
+    public static String getCookie(String theName, HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (null != cookies) {
+            for (Cookie cookie : cookies) {
+                if (theName.equalsIgnoreCase(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return "";
+    }
+
+    public static void setCookie(String theName, String theValue, HttpServletResponse response) {
+        Cookie cookie = new Cookie(theName, theValue);
+        cookie.setMaxAge(60 * 60 * 24 * 365);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response, false);
@@ -62,39 +91,6 @@ public class AdminPanelServlet extends HttpServlet {
             ParserParameters.putInRequest(parserParameters) ;*/
             request.getRequestDispatcher("/WEB-INF/imcms/jsp/admin_panel/ajax_handler.jsp").forward(request, response);
         }
-    }
-
-    public static String getPathToAjaxHandler(int metaId, HttpServletRequest request) {
-        return request.getContextPath() + "/servlet/AdminPanelServlet?meta_id=" + metaId + "&ajax=true";
-    }
-
-    public static int getIntRequestParameter(String param, int defaultVal, HttpServletRequest request) {
-        if (null != request.getParameter(param) && StringUtils.isNumeric(request.getParameter(param))) {
-            try {
-                return Integer.parseInt(request.getParameter(param));
-            } catch (Exception ignore) {
-            }
-        }
-        return defaultVal;
-    }
-
-    public static String getCookie(String theName, HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (null != cookies) {
-            for (Cookie cookie : cookies) {
-                if (theName.equalsIgnoreCase(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return "";
-    }
-
-    public static void setCookie(String theName, String theValue, HttpServletResponse response) {
-        Cookie cookie = new Cookie(theName, theValue);
-        cookie.setMaxAge(60 * 60 * 24 * 365);
-        cookie.setPath("/");
-        response.addCookie(cookie);
     }
 
 }

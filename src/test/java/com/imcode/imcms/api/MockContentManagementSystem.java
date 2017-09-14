@@ -20,6 +20,10 @@ public class MockContentManagementSystem extends ContentManagementSystem {
         return currentUser;
     }
 
+    public void setCurrentUser(User user) {
+        currentUser = user;
+    }
+
     public DatabaseService getDatabaseService() {
         return null;  // TODO
     }
@@ -32,22 +36,18 @@ public class MockContentManagementSystem extends ContentManagementSystem {
         return null;  // TODO
     }
 
-    public void runAsSuperadmin( ContentManagementSystemRunnable runnable ) throws NoPermissionException {
+    public void runAsSuperadmin(ContentManagementSystemRunnable runnable) throws NoPermissionException {
     }
 
     ImcmsServices getInternal() {
         return imcmsServices;
     }
 
-    public void setInternal( ImcmsServices imcmsServices ) {
+    public void setInternal(ImcmsServices imcmsServices) {
         this.imcmsServices = imcmsServices;
     }
 
-    public void setCurrentUser( User user ) {
-        currentUser = user;
-    }
-
-    public void setCurrentInternalUser( UserDomainObject user ) {
-        currentUser = new User( user );
+    public void setCurrentInternalUser(UserDomainObject user) {
+        currentUser = new User(user);
     }
 }

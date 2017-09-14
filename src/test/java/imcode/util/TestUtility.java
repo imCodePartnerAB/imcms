@@ -1,8 +1,6 @@
 package imcode.util;
 
 import junit.framework.TestCase;
-import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.map.MultiValueMap;
 
 public class TestUtility extends TestCase {
 
@@ -22,9 +20,9 @@ public class TestUtility extends TestCase {
 //    }
 
     public void testThrowableContainsMessageContaining() {
-        assertTrue(Utility.throwableContainsMessageContaining(new Throwable( "test"), "e" )) ;
-        assertTrue( Utility.throwableContainsMessageContaining( new Throwable( new Throwable( "test" ) ), "t" ) );
-        assertFalse( Utility.throwableContainsMessageContaining( new Throwable( new Throwable( "test" ) ), "p" ) );
-        assertFalse( Utility.throwableContainsMessageContaining( new Throwable( new Throwable( (String)null ) ), "t" ) );
+        assertTrue(Utility.throwableContainsMessageContaining(new Throwable("test"), "e"));
+        assertTrue(Utility.throwableContainsMessageContaining(new Throwable(new Throwable("test")), "t"));
+        assertFalse(Utility.throwableContainsMessageContaining(new Throwable(new Throwable("test")), "p"));
+        assertFalse(Utility.throwableContainsMessageContaining(new Throwable(new Throwable((String) null)), "t"));
     }
 }

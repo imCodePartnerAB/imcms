@@ -30,30 +30,19 @@ import java.util.stream.Collectors;
  */
 public class DocGetterCallback {
 
-    private interface Callback {
-        DocumentDomainObject getDoc(int docId, DocumentMapper docMapper);
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(DocGetterCallback.class);
-
     private volatile DocumentLanguage language;
-
     private volatile boolean isDefaultLanguage;
-
     private UserDomainObject user;
-
     private Map<Integer, Callback> callbacks = new ConcurrentHashMap<>();
-
     private Callback workingDocCallback = (docId, docMapper) -> {
         logger.trace("Working doc requested - user: {}, docId: {}, language: {}.", user, docId, language);
         return docMapper.getWorkingDocument(docId, language);
     };
-
     private Callback uncheckedDefaultDocCallback = (docId, docMapper) -> {
         logger.trace("Default doc (unchecked) requested - user: {}, docId: {}, language: {}.", user, docId, language);
         return docMapper.getDefaultDocument(docId, language);
     };
-
     private Callback defaultDocCallback = (docId, docMapper) -> {
         logger.trace("Default doc requested - user: {}, docId: {}, language: {}.", docId, language);
 
@@ -79,13 +68,13 @@ public class DocGetterCallback {
         return doc;
     };
 
+    public DocGetterCallback(UserDomainObject user) {
+        this.user = user;
+    }
+
     private boolean shouldDocBeShownWithDefaultLang(DocumentDomainObject doc, List<DocumentLanguage> docLanguages) {
         return (doc.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE
                 && docLanguages.contains(Imcms.getServices().getDocumentLanguages().getDefault()));
-    }
-
-    public DocGetterCallback(UserDomainObject user) {
-        this.user = user;
     }
 
     @SuppressWarnings("unchecked")
@@ -124,12 +113,16 @@ public class DocGetterCallback {
         return language;
     }
 
+    public void setLanguage(DocumentLanguage language) {
+        this.language = language;
+    }
+
     public void setLanguage(DocumentLanguage language, boolean isDefaultLanguage) {
         this.language = language;
         this.isDefaultLanguage = isDefaultLanguage;
     }
 
-    public void setLanguage(DocumentLanguage language) {
-        this.language = language;
+    private interface Callback {
+        DocumentDomainObject getDoc(int docId, DocumentMapper docMapper);
     }
 }

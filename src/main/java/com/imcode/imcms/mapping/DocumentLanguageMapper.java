@@ -54,7 +54,7 @@ public class DocumentLanguageMapper {
             jpaLanguage.setNativeName(language.getNativeName());
         } else {
             languageRepository.save(
-                new Language(language.getCode(), language.getName(), language.getNativeName())
+                    new Language(language.getCode(), language.getName(), language.getNativeName())
             );
         }
     }

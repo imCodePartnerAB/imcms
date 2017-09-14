@@ -1,18 +1,16 @@
 package imcode.util;
 
 import imcode.server.Imcms;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-
-import org.apache.commons.lang.UnhandledException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class CollectingHttpServletResponse extends HttpServletResponseWrapper {
 

@@ -25,8 +25,8 @@ public class MenuLoopTag extends TagSupport {
                 : menuTag.getList();
 
         return (nextMenuItem() && menuTag.nextMenuItem(currentItem.getMenuItem()))
-            ? EVAL_BODY_INCLUDE
-            : SKIP_BODY;
+                ? EVAL_BODY_INCLUDE
+                : SKIP_BODY;
     }
 
     public int doAfterBody() throws JspException {

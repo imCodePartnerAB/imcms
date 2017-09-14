@@ -3,7 +3,6 @@ package com.imcode.imcms.servlet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import imcode.server.Imcms;
 import imcode.util.Utility;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -13,13 +12,13 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.*;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.apache.http.ssl.SSLContextBuilder;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -38,11 +37,9 @@ import static org.apache.commons.lang3.StringUtils.defaultString;
 
 public class InternalError extends HttpServlet {
 
-    private final String ERROR_500_VIEW_URL = "/imcms/500.jsp";
-
-    private final String DEFAULT_RESPONSE = "N/A";
-
     private final static Logger LOGGER = Logger.getLogger(InternalError.class);
+    private final String ERROR_500_VIEW_URL = "/imcms/500.jsp";
+    private final String DEFAULT_RESPONSE = "N/A";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -73,12 +70,12 @@ public class InternalError extends HttpServlet {
         setInfo(request, exceptionInfo, requestInfo);
 
         String errorLoggerUrl = ofNullable(serverProperties.getProperty("ErrorLoggerUrl"))
-                                    .map(url -> !url.isEmpty() ? url : Imcms.ERROR_LOGGER_URL)
-                                    .orElse(Imcms.ERROR_LOGGER_URL);
+                .map(url -> !url.isEmpty() ? url : Imcms.ERROR_LOGGER_URL)
+                .orElse(Imcms.ERROR_LOGGER_URL);
 
         String jdbcUrl = serverProperties.getProperty("JdbcUrl");
         String dbName = jdbcUrl.substring(jdbcUrl.lastIndexOf("/"),
-                jdbcUrl.contains("?") ?  jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
+                jdbcUrl.contains("?") ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
 
         HttpClient httpClient = createHttpClient();
 

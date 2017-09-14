@@ -6,7 +6,6 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RolePermissionDomainObject;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +17,7 @@ import java.util.*;
 @Transactional
 public class UserService {
 
-    @PersistenceContext(unitName="com.imcode.imcms")
+    @PersistenceContext(unitName = "com.imcode.imcms")
 //    @Autowired
     private EntityManager entityManager;
 

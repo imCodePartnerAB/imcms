@@ -1,12 +1,12 @@
 package imcode.server.kerberos;
 
-import java.security.PrivilegedAction;
-
 import org.apache.log4j.Logger;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
+
+import java.security.PrivilegedAction;
 
 
 class EstablishContextAction implements PrivilegedAction<EstablishContextResult> {

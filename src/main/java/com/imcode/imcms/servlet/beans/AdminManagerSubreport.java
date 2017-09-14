@@ -1,9 +1,9 @@
 package com.imcode.imcms.servlet.beans;
 
-import java.util.List;
-
 import com.imcode.imcms.servlet.superadmin.AdminManager;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+
+import java.util.List;
 
 public class AdminManagerSubreport {
 
@@ -23,40 +23,40 @@ public class AdminManagerSubreport {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getSortorder() {
         return sortorder;
+    }
+
+    public void setSortorder(String sortorder) {
+        this.sortorder = sortorder;
     }
 
     public LocalizedMessage getHeading() {
         return heading;
     }
 
-    public List getDocuments() {
-        return documents;
+    public void setHeading(LocalizedMessage heading) {
+        this.heading = heading;
     }
 
-    public boolean isExpanded() {
-        return expanded;
+    public List getDocuments() {
+        return documents;
     }
 
     public void setDocuments(List documents) {
         this.documents = documents;
     }
 
+    public boolean isExpanded() {
+        return expanded;
+    }
+
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
-    }
-
-    public void setHeading(LocalizedMessage heading) {
-        this.heading = heading;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setSortorder(String sortorder) {
-        this.sortorder = sortorder;
     }
 
     public void setMaxDocumentCount(int maxDocumentCount) {
@@ -71,11 +71,11 @@ public class AdminManagerSubreport {
         return 0 != maxDocumentCount && i > maxDocumentCount;
     }
 
-    public void setSearchQueryString(String searchQueryString) {
-        this.searchQueryString = searchQueryString;
-    }
-
     public String getSearchQueryString() {
         return searchQueryString;
+    }
+
+    public void setSearchQueryString(String searchQueryString) {
+        this.searchQueryString = searchQueryString;
     }
 }

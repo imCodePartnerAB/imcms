@@ -2,13 +2,11 @@ package com.imcode.imcms.flow;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.server.Imcms;
-
-import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 // Experimental
 public class ChangeDocDefaultVersionPageFlow extends DocumentPageFlow {

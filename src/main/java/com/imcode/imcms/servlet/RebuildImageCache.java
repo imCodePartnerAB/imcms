@@ -98,43 +98,6 @@ class RebuildImageCacheThread extends Thread {
         this.logInterval = logInterval;
     }
 
-    @Override
-    public void run() {
-        List<ImageDomainObject> images = Imcms.getServices().getImageCacheMapper().getAllDocumentImages();
-        int documentImagesCount = images.size();
-
-        log.info(String.format("Beginning to cache %d images", documentImagesCount));
-
-        int currentImage = 0;
-        long lastLogTime = System.currentTimeMillis();
-
-        for (ImageDomainObject image : images) {
-            if (cancelled) {
-                return;
-            }
-
-            ++currentImage;
-            try {
-                cacheImage(image);
-
-            } catch (Exception ex) {
-                log.warn(getFailureMessage(image), ex);
-            }
-
-            long currentTime = System.currentTimeMillis();
-
-            if ((currentTime - lastLogTime) >= logInterval) {
-                lastLogTime = currentTime;
-
-                int progress = (int) ((currentImage / (float) documentImagesCount) * 100.0);
-
-                log.info(String.format("Progress: %d%%", progress));
-            }
-        }
-
-        log.info("Done");
-    }
-
     private static void cacheImage(ImageDomainObject image) {
         ImageSource imageSource = image.getSource();
 
@@ -191,6 +154,43 @@ class RebuildImageCacheThread extends Thread {
 
     private static String getFailureMessage(ImageDomainObject image) {
         return String.format("Failed to create cache of image: %s", image);
+    }
+
+    @Override
+    public void run() {
+        List<ImageDomainObject> images = Imcms.getServices().getImageCacheMapper().getAllDocumentImages();
+        int documentImagesCount = images.size();
+
+        log.info(String.format("Beginning to cache %d images", documentImagesCount));
+
+        int currentImage = 0;
+        long lastLogTime = System.currentTimeMillis();
+
+        for (ImageDomainObject image : images) {
+            if (cancelled) {
+                return;
+            }
+
+            ++currentImage;
+            try {
+                cacheImage(image);
+
+            } catch (Exception ex) {
+                log.warn(getFailureMessage(image), ex);
+            }
+
+            long currentTime = System.currentTimeMillis();
+
+            if ((currentTime - lastLogTime) >= logInterval) {
+                lastLogTime = currentTime;
+
+                int progress = (int) ((currentImage / (float) documentImagesCount) * 100.0);
+
+                log.info(String.format("Progress: %d%%", progress));
+            }
+        }
+
+        log.info("Done");
     }
 
     public boolean isCancelled() {

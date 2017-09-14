@@ -125,12 +125,12 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
         return EVAL_PAGE;
     }
 
-    public void setNo(int no) {
-        this.no = no;
-    }
-
     public int getNo() {
         return no;
+    }
+
+    public void setNo(int no) {
+        this.no = no;
     }
 
     public void setMode(String mode) {

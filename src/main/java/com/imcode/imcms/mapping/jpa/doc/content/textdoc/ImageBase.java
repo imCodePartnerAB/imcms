@@ -4,7 +4,6 @@ import com.imcode.imcms.mapping.jpa.doc.content.VersionedI18nContent;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
 public class ImageBase extends VersionedI18nContent {

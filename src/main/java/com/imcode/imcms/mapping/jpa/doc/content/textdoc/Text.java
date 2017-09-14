@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.Language;
+import com.imcode.imcms.mapping.jpa.doc.Version;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;

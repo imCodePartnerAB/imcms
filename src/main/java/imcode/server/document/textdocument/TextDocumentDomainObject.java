@@ -514,6 +514,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         private final int entryNo;
         private final int itemNo;
         private final int cachedHashCode;
+
         public LoopItemRef(int loopNo, int entryNo, int itemNo) {
             this.loopNo = loopNo;
             this.entryNo = entryNo;

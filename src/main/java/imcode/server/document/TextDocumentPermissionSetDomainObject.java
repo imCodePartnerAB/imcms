@@ -8,12 +8,6 @@ import java.util.Set;
 
 public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSetDomainObject {
 
-    private HashSet<Integer> allowedTemplateGroupIds = new HashSet<>();
-
-    /**
-     * Types of docs a user may create.
-     */
-    private HashSet<Integer> allowedDocumentTypeIds = new HashSet<>();
     public static final DocumentPermission EDIT_TEXTS = DocumentPermissionSetDomainObject.EDIT;
     public static final DocumentPermission EDIT_MENUS = new DocumentPermission("editMenus");
     public static final DocumentPermission EDIT_TEMPLATE = new DocumentPermission("editTemplates");
@@ -26,6 +20,11 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
     public final static int EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE;
     public final static int EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES;
     public final static int EDIT_TEXT_DOCUMENT_LOOPS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_CONTENT_LOOPS;
+    private HashSet<Integer> allowedTemplateGroupIds = new HashSet<>();
+    /**
+     * Types of docs a user may create.
+     */
+    private HashSet<Integer> allowedDocumentTypeIds = new HashSet<>();
 
     public TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject typeId) {
         super(typeId);
@@ -91,20 +90,20 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
         setEditLoops(0 != (permissionBits & EDIT_TEXT_DOCUMENT_LOOPS_PERMISSION_ID));
     }
 
-    public void setAllowedTemplateGroupIds(Set<Integer> allowedTemplateGroupIds) {
-        this.allowedTemplateGroupIds = new HashSet<>(allowedTemplateGroupIds);
-    }
-
     public Set<Integer> getAllowedTemplateGroupIds() {
         return Collections.unmodifiableSet(allowedTemplateGroupIds);
     }
 
-    public void setAllowedDocumentTypeIds(Set<Integer> allowedDocumentTypeIds) {
-        this.allowedDocumentTypeIds = new HashSet<>(allowedDocumentTypeIds);
+    public void setAllowedTemplateGroupIds(Set<Integer> allowedTemplateGroupIds) {
+        this.allowedTemplateGroupIds = new HashSet<>(allowedTemplateGroupIds);
     }
 
     public Set<Integer> getAllowedDocumentTypeIds() {
         return Collections.unmodifiableSet(allowedDocumentTypeIds);
+    }
+
+    public void setAllowedDocumentTypeIds(Set<Integer> allowedDocumentTypeIds) {
+        this.allowedDocumentTypeIds = new HashSet<>(allowedDocumentTypeIds);
     }
 
     public void addAllowedTemplateGroupId(int templateGroupId) {

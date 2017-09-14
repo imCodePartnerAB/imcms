@@ -11,20 +11,20 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
-import java.io.File;
-import java.nio.file.Paths;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DataSourceConfig.class})
 public class DBTest {
 
-    @Inject @Named("dataSource")
+    @Inject
+    @Named("dataSource")
     DataSource dataSource;
 
-    @Inject @Named("dataSourceWithoutDbName")
+    @Inject
+    @Named("dataSourceWithoutDbName")
     DataSource dataSourceWithoutDbName;
 
     @Inject

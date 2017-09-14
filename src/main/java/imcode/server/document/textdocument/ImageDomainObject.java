@@ -14,25 +14,22 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.*;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ImageDomainObject implements Serializable, Cloneable {
 
     public static final int IMAGE_NAME_LENGTH = 40;
-
-    private static final int GEN_FILE_LENGTH = 255;
-
     public static final String ALIGN_NONE = "";
     public static final String ALIGN_TOP = "top";
     public static final String ALIGN_MIDDLE = "middle";
     public static final String ALIGN_BOTTOM = "bottom";
     public static final String ALIGN_LEFT = "left";
     public static final String ALIGN_RIGHT = "right";
-
     public static final String TARGET_TOP = "_top";
     public static final String TARGET_BLANK = "_blank";
     public static final String TARGET_PARENT = "_parent";
     public static final String TARGET_SELF = "_self";
-
+    private static final int GEN_FILE_LENGTH = 255;
     private volatile ImageSource source = new NullImageSource();
 
     private volatile int width;
@@ -70,6 +67,10 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String image_name) {
+        this.name = image_name;
     }
 
     public ImageSize getDisplayImageSize() {
@@ -217,40 +218,80 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return width;
     }
 
+    public void setWidth(int image_width) {
+        this.width = image_width;
+    }
+
     public int getHeight() {
         return height;
+    }
+
+    public void setHeight(int image_height) {
+        this.height = image_height;
     }
 
     public int getBorder() {
         return border;
     }
 
+    public void setBorder(int image_border) {
+        this.border = image_border;
+    }
+
     public String getAlign() {
         return align;
+    }
+
+    public void setAlign(String image_align) {
+        this.align = image_align;
     }
 
     public String getAlternateText() {
         return alternateText;
     }
 
+    public void setAlternateText(String alt_text) {
+        this.alternateText = alt_text;
+    }
+
     public String getLowResolutionUrl() {
         return lowResolutionUrl;
+    }
+
+    public void setLowResolutionUrl(String low_scr) {
+        this.lowResolutionUrl = low_scr;
     }
 
     public int getVerticalSpace() {
         return verticalSpace;
     }
 
+    public void setVerticalSpace(int v_space) {
+        this.verticalSpace = v_space;
+    }
+
     public int getHorizontalSpace() {
         return horizontalSpace;
+    }
+
+    public void setHorizontalSpace(int h_space) {
+        this.horizontalSpace = h_space;
     }
 
     public String getTarget() {
         return target;
     }
 
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
     public String getLinkUrl() {
         return linkUrl;
+    }
+
+    public void setLinkUrl(String image_ref_link) {
+        this.linkUrl = image_ref_link;
     }
 
     public RotateDirection getRotateDirection() {
@@ -259,50 +300,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     public void setRotateDirection(RotateDirection rotateDirection) {
         this.rotateAngle = rotateDirection.getAngle();
-    }
-
-    public void setName(String image_name) {
-        this.name = image_name;
-    }
-
-    public void setWidth(int image_width) {
-        this.width = image_width;
-    }
-
-    public void setHeight(int image_height) {
-        this.height = image_height;
-    }
-
-    public void setBorder(int image_border) {
-        this.border = image_border;
-    }
-
-    public void setAlign(String image_align) {
-        this.align = image_align;
-    }
-
-    public void setAlternateText(String alt_text) {
-        this.alternateText = alt_text;
-    }
-
-    public void setLowResolutionUrl(String low_scr) {
-        this.lowResolutionUrl = low_scr;
-    }
-
-    public void setVerticalSpace(int v_space) {
-        this.verticalSpace = v_space;
-    }
-
-    public void setHorizontalSpace(int h_space) {
-        this.horizontalSpace = h_space;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    public void setLinkUrl(String image_ref_link) {
-        this.linkUrl = image_ref_link;
     }
 
     public Long getArchiveImageId() {
@@ -325,11 +322,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
         setSource(source);
         setWidth(0);
         setHeight(0);
-    }
-
-    @JsonDeserialize(as = ImagesPathRelativePathImageSource.class)
-    public void setSource(ImageSource source) {
-        this.source = Objects.requireNonNull(source, "image source can not be null");
     }
 
     public boolean isEmpty() {
@@ -438,6 +430,11 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return source;
     }
 
+    @JsonDeserialize(as = ImagesPathRelativePathImageSource.class)
+    public void setSource(ImageSource source) {
+        this.source = Objects.requireNonNull(source, "image source can not be null");
+    }
+
     public CropRegion getCropRegion() {
         return cropRegion;
     }
@@ -500,6 +497,58 @@ public class ImageDomainObject implements Serializable, Cloneable {
             throw new RuntimeException(e);
         }
     }
+
+    public enum RotateDirection {
+        NORTH(0, -90, 90),
+        EAST(90, 0, 180),
+        SOUTH(180, 90, -90),
+        WEST(-90, 180, 0);
+
+        private static final Map<Integer, RotateDirection> ANGLE_MAP = new HashMap<>(RotateDirection.values().length);
+
+        static {
+            for (RotateDirection direction : RotateDirection.values()) {
+                ANGLE_MAP.put(direction.getAngle(), direction);
+            }
+        }
+
+        private final int angle;
+        private final int leftAngle;
+        private final int rightAngle;
+
+        private RotateDirection(int angle, int leftAngle, int rightAngle) {
+            this.angle = angle;
+            this.leftAngle = leftAngle;
+            this.rightAngle = rightAngle;
+        }
+
+        public static RotateDirection getByAngle(int angle) {
+            return ANGLE_MAP.get(angle);
+        }
+
+        public static RotateDirection getByAngleDefaultIfNull(int angle) {
+            RotateDirection direction = getByAngle(angle);
+
+            return (direction != null ? direction : RotateDirection.NORTH);
+        }
+
+        public int getAngle() {
+            return angle;
+        }
+
+        public RotateDirection getLeftDirection() {
+            return getByAngle(leftAngle);
+        }
+
+        public RotateDirection getRightDirection() {
+            return getByAngle(rightAngle);
+        }
+
+        public boolean isDefault() {
+            return this == RotateDirection.NORTH;
+        }
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CropRegion implements Serializable {
         private static final long serialVersionUID = -586488435877347784L;
@@ -606,57 +655,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
         @Override
         public String toString() {
             return String.format("%s(%d, %d, %d, %d)", CropRegion.class.getName(), cropX1, cropY1, cropX2, cropY2);
-        }
-    }
-
-    public enum RotateDirection {
-        NORTH(0, -90, 90),
-        EAST(90, 0, 180),
-        SOUTH(180, 90, -90),
-        WEST(-90, 180, 0);
-
-        private static final Map<Integer, RotateDirection> ANGLE_MAP = new HashMap<>(RotateDirection.values().length);
-
-        static {
-            for (RotateDirection direction : RotateDirection.values()) {
-                ANGLE_MAP.put(direction.getAngle(), direction);
-            }
-        }
-
-        private final int angle;
-        private final int leftAngle;
-        private final int rightAngle;
-
-        private RotateDirection(int angle, int leftAngle, int rightAngle) {
-            this.angle = angle;
-            this.leftAngle = leftAngle;
-            this.rightAngle = rightAngle;
-        }
-
-        public int getAngle() {
-            return angle;
-        }
-
-        public RotateDirection getLeftDirection() {
-            return getByAngle(leftAngle);
-        }
-
-        public RotateDirection getRightDirection() {
-            return getByAngle(rightAngle);
-        }
-
-        public static RotateDirection getByAngle(int angle) {
-            return ANGLE_MAP.get(angle);
-        }
-
-        public boolean isDefault() {
-            return this == RotateDirection.NORTH;
-        }
-
-        public static RotateDirection getByAngleDefaultIfNull(int angle) {
-            RotateDirection direction = getByAngle(angle);
-
-            return (direction != null ? direction : RotateDirection.NORTH);
         }
     }
 }

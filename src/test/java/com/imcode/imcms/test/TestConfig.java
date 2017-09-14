@@ -2,13 +2,13 @@ package com.imcode.imcms.test;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Configuration;
-import javax.inject.Inject;
-import javax.sql.DataSource;
-
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
+
+import javax.inject.Inject;
+import javax.sql.DataSource;
 
 @Configuration
 @Import(EnvironmentConfig.class)

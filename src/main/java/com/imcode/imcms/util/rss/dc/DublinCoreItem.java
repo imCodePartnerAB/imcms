@@ -1,13 +1,12 @@
 package com.imcode.imcms.util.rss.dc;
 
-import java.util.Map;
-
+import com.imcode.imcms.util.rss.Item;
+import com.imcode.imcms.util.rss.NameSpace;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.WrapDynaBean;
 import org.apache.commons.lang.ArrayUtils;
 
-import com.imcode.imcms.util.rss.Item;
-import com.imcode.imcms.util.rss.NameSpace;
+import java.util.Map;
 
 public class DublinCoreItem implements Item {
 

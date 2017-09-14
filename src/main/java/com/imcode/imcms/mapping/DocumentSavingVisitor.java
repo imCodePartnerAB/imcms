@@ -12,7 +12,7 @@ import imcode.server.user.UserDomainObject;
 
 /**
  * Updates existing document content.
-
+ *
  * @see com.imcode.imcms.mapping.DocumentSaver
  */
 public class DocumentSavingVisitor extends DocumentStoringVisitor {

@@ -1,15 +1,13 @@
 package com.imcode.imcms.web.util;
 
-import java.util.Locale;
+import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.api.DocumentLanguages;
+import imcode.server.Imcms;
+import org.springframework.web.servlet.LocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.api.DocumentLanguage;
-import org.springframework.web.servlet.LocaleResolver;
-
-import imcode.server.Imcms;
+import java.util.Locale;
 
 public class ImcmsLocaleResolver implements LocaleResolver {
     public Locale resolveLocale(HttpServletRequest request) {

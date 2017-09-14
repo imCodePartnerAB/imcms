@@ -17,6 +17,7 @@ public class ExportImageCommand implements Serializable {
     private int[] qualities = new int[]{10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
     private boolean keepAspectRatio;
     private SizeUnit sizeUnit;
+
     public ExportImageCommand() {
         for (Format format : Format.values()) {
             if (format.isWritable()) {

@@ -27,38 +27,6 @@ import java.util.concurrent.Executors;
 
 public class PasswordReset extends HttpServlet {
 
-    public static abstract class UserIdentity {
-        public abstract UserDomainObject user();
-
-        public abstract String identity();
-
-        public static UserIdentity of(final UserDomainObject user, final String identity) {
-            return new UserIdentity() {
-                @Override
-                public UserDomainObject user() {
-                    return user;
-                }
-
-                @Override
-                public String identity() {
-                    return identity;
-                }
-            };
-        }
-    }
-
-    private static final Logger logger = org.apache.log4j.Logger.getLogger(PasswordReset.class);
-
-    // Ops
-    public enum Op {
-        REQUEST_RESET,
-        SEND_RESET_URL,
-        RESET,
-        SAVE_NEW_PASSWORD,
-        UNDEFINED
-    }
-
-
     // Request parameters associated with ops.
     public static final String
             REQUEST_PARAM_OP = "op",
@@ -66,23 +34,33 @@ public class PasswordReset extends HttpServlet {
             REQUEST_USER_IDENTITY = "uid",
             REQUEST_PARAM_PASSWORD = "password",
             REQUEST_PARAM_PASSWORD_CHECK = "password_check";
-
     // Attribute is bounded to List<String> of error messages.
     public static final String REQUEST_ATTR_VALIDATION_ERRORS = "validation_errors";
-
-
+    private static final Logger logger = org.apache.log4j.Logger.getLogger(PasswordReset.class);
     // Views
     private static final String
             identity_form_view = "identity_form.jsp",
             email_sent_confirmation_view = "email_sent_confirmation.jsp",
             password_reset_form_view = "password_reset_form.jsp",
             password_changed_confirmation_view = "password_changed_confirmation.jsp";
-
-
+    private final LocalizedMessage validationErrorMissingUserId = new LocalizedMessage("passwordreset.error.missing_identity");
     private ExecutorService emailSender = Executors.newSingleThreadExecutor();
 
-    private final LocalizedMessage validationErrorMissingUserId = new LocalizedMessage("passwordreset.error.missing_identity");
+    private static void render(HttpServletRequest request, HttpServletResponse response, String view)
+            throws IOException, ServletException {
 
+        if (view == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        } else {
+            request.getRequestDispatcher("/WEB-INF/passwordreset/" + view).forward(request, response);
+        }
+    }
+
+    private static UserDomainObject getUserByPasswordResetId(HttpServletRequest request) {
+        String resetId = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_RESET_ID));
+
+        return Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUserByPasswordResetId(resetId);
+    }
 
     /**
      * Forwards request to password reset or password edit view.
@@ -163,25 +141,6 @@ public class PasswordReset extends HttpServlet {
         render(request, response, view);
     }
 
-
-    private static void render(HttpServletRequest request, HttpServletResponse response, String view)
-            throws IOException, ServletException {
-
-        if (view == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-        } else {
-            request.getRequestDispatcher("/WEB-INF/passwordreset/" + view).forward(request, response);
-        }
-    }
-
-
-    private static UserDomainObject getUserByPasswordResetId(HttpServletRequest request) {
-        String resetId = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_RESET_ID));
-
-        return Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUserByPasswordResetId(resetId);
-    }
-
-
     private Op getOp(HttpServletRequest request) {
         String opValue = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_OP)).toUpperCase();
 
@@ -191,7 +150,6 @@ public class PasswordReset extends HttpServlet {
             return Op.UNDEFINED;
         }
     }
-
 
     private void setValidationErrors(HttpServletRequest request, String first, String... rest) {
         List<String> errors = new LinkedList<String>();
@@ -204,7 +162,6 @@ public class PasswordReset extends HttpServlet {
 
         request.setAttribute(REQUEST_ATTR_VALIDATION_ERRORS, errors);
     }
-
 
     private UserIdentity createPasswordReset(String identity) {
         UserIdentity result = null;
@@ -287,7 +244,6 @@ public class PasswordReset extends HttpServlet {
         return result;
     }
 
-
     private void asyncSendPasswordResetURL(final UserIdentity userAndEmail, final String serverName, final String url) {
         emailSender.submit(new Runnable() {
             public void run() {
@@ -329,10 +285,39 @@ public class PasswordReset extends HttpServlet {
         });
     }
 
-
     @Override
     public void destroy() {
         super.destroy();
         emailSender.shutdownNow();
+    }
+
+
+    // Ops
+    public enum Op {
+        REQUEST_RESET,
+        SEND_RESET_URL,
+        RESET,
+        SAVE_NEW_PASSWORD,
+        UNDEFINED
+    }
+
+    public static abstract class UserIdentity {
+        public static UserIdentity of(final UserDomainObject user, final String identity) {
+            return new UserIdentity() {
+                @Override
+                public UserDomainObject user() {
+                    return user;
+                }
+
+                @Override
+                public String identity() {
+                    return identity;
+                }
+            };
+        }
+
+        public abstract UserDomainObject user();
+
+        public abstract String identity();
     }
 }

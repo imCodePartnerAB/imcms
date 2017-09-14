@@ -4,8 +4,6 @@ import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

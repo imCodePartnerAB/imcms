@@ -260,7 +260,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
         menuItems.remove(childId);
     }
 
-    public void removeAllMenuItems(){
+    public void removeAllMenuItems() {
         menuItems.clear();
     }
 

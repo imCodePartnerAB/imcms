@@ -9,6 +9,17 @@ import java.util.regex.Pattern;
 
 public final class Version implements Comparable<Version> {
 
+    private final int major;
+    private final int minor;
+
+    public Version(int major, int minor) {
+        Validate.isTrue(major > 0, "'major argument' must be > 0 but was %d.", major);
+        Validate.isTrue(minor >= 0, "'minor argument' must be >= 0 but was %d.", minor);
+
+        this.major = major;
+        this.minor = minor;
+    }
+
     public static Version of(int major, int minor) {
         return new Version(major, minor);
     }
@@ -23,17 +34,6 @@ public final class Version implements Comparable<Version> {
         }
 
         return new Version(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)));
-    }
-
-    private final int major;
-    private final int minor;
-
-    public Version(int major, int minor) {
-        Validate.isTrue(major > 0, "'major argument' must be > 0 but was %d.", major);
-        Validate.isTrue(minor >= 0, "'minor argument' must be >= 0 but was %d.", minor);
-
-        this.major = major;
-        this.minor = minor;
     }
 
     public int getMajor() {

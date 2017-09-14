@@ -59,8 +59,16 @@ public class DocumentPermissionSet {
         return internalDocPermSet.getEditDocumentInformation();
     }
 
+    public void setEditDocumentInformationPermission(boolean b) {
+        internalDocPermSet.setEditDocumentInformation(b);
+    }
+
     public boolean getEditRolePermissionsPermission() {
         return internalDocPermSet.getEditPermissions();
+    }
+
+    public void setEditRolePermissionsPermission(boolean b) {
+        internalDocPermSet.setEditPermissions(b);
     }
 
     public boolean getEditTextsPermission() {
@@ -71,6 +79,12 @@ public class DocumentPermissionSet {
         return false;
     }
 
+    public void setEditTextsPermission(boolean b) {
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditTexts(b);
+        }
+    }
+
     public boolean getEditIncludesPermission() {
         if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
             return ((TextDocumentPermissionSetDomainObject) internalDocPermSet).getEditIncludes();
@@ -78,11 +92,23 @@ public class DocumentPermissionSet {
         return false;
     }
 
+    public void setEditIncludesPermission(boolean b) {
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditIncludes(b);
+        }
+    }
+
     public boolean getEditPicturesPermission() {
         if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
             return ((TextDocumentPermissionSetDomainObject) internalDocPermSet).getEditImages();
         }
         return false;
+    }
+
+    public void setEditPicturesPermission(boolean b) {
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditImages(b);
+        }
     }
 
     public boolean getEditMenusPermission() {
@@ -93,12 +119,19 @@ public class DocumentPermissionSet {
         return false;
     }
 
+    public void setEditMenusPermission(boolean b) {
+        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
+            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditMenus(b);
+        }
+    }
+
     public String[] getEditableTemplateGroupNames() {
         if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
             Set<Integer> allowedTemplateGroupIds = ((TextDocumentPermissionSetDomainObject) internalDocPermSet).getAllowedTemplateGroupIds();
             List<TemplateGroupDomainObject> allowedTemplateGroups = Imcms.getServices().getTemplateMapper().getTemplateGroups(allowedTemplateGroupIds);
             String[] templateGroupNames = new String[allowedTemplateGroupIds.size()];
-            for (CountingIterator<TemplateGroupDomainObject> iterator = new CountingIterator<>(allowedTemplateGroups.iterator()); iterator.hasNext(); ) {
+            for (CountingIterator<TemplateGroupDomainObject> iterator = new CountingIterator<>(allowedTemplateGroups.iterator()); iterator.hasNext(); )
+            {
                 TemplateGroupDomainObject templateGroup = iterator.next();
                 templateGroupNames[iterator.getCount() - 1] = templateGroup.getName();
             }
@@ -107,39 +140,7 @@ public class DocumentPermissionSet {
         return new String[]{};
     }
 
-    public void setEditDocumentInformationPermission(boolean b) {
-        internalDocPermSet.setEditDocumentInformation(b);
-    }
-
-    public void setEditIncludesPermission(boolean b) {
-        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
-            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditIncludes(b);
-        }
-    }
-
     public void setEditPermissionsPermission(boolean b) {
-        internalDocPermSet.setEditPermissions(b);
-    }
-
-    public void setEditPicturesPermission(boolean b) {
-        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
-            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditImages(b);
-        }
-    }
-
-    public void setEditMenusPermission(boolean b) {
-        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
-            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditMenus(b);
-        }
-    }
-
-    public void setEditTextsPermission(boolean b) {
-        if (internalDocPermSet instanceof TextDocumentPermissionSetDomainObject) {
-            ((TextDocumentPermissionSetDomainObject) internalDocPermSet).setEditTexts(b);
-        }
-    }
-
-    public void setEditRolePermissionsPermission(boolean b) {
         internalDocPermSet.setEditPermissions(b);
     }
 }

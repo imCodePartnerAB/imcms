@@ -167,7 +167,6 @@ public class TextDocumentContentLoader {
      * @param docRef {@link DocRef} item
      * @param textNo text id
      * @return {@link Collection<TextHistory>} of text history
-     *
      * @see Version
      * @see Language
      * @see DocRef

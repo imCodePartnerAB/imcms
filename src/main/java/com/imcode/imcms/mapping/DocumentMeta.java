@@ -9,7 +9,10 @@ import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import org.apache.commons.lang.NullArgumentException;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -20,29 +23,17 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class DocumentMeta implements Serializable, Cloneable {
 
-    /**
-     * Document show mode for disabled language.
-     */
-    public enum DisabledLanguageShowMode {
-        SHOW_IN_DEFAULT_LANGUAGE,
-        DO_NOT_SHOW,
-    }
-
     private volatile Integer id;
-
     private volatile int defaultVersionNo = DocumentVersion.WORKING_VERSION_NO;
-
     /**
      * Disabled language's content show option.
      */
     private volatile DisabledLanguageShowMode disabledLanguageShowMode = DisabledLanguageShowMode.DO_NOT_SHOW;
-
     // todo: rename to documentTypeId
     private volatile Integer documentType;
     private volatile Boolean restrictedOneMorePrivilegedThanRestrictedTwo;
     private volatile Boolean linkableByOtherUsers;
     private volatile Boolean linkedForUnauthorizedUsers;
-
     /**
      * (Saved) value of modified dt at the time this meta was actually loaded.
      * When loaded from the db its value is set to modifiedDatetime.
@@ -53,35 +44,24 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile Date actualModifiedDatetime;
     private volatile boolean searchDisabled;
     private volatile String target;
-
     private volatile Date createdDatetime;
     private volatile Date modifiedDatetime;
     private volatile Date archivedDatetime;
     private volatile Date publicationStartDatetime;
     private volatile Date publicationEndDatetime;
-
     private volatile Integer creatorId;
     // we haven't modifierId field
     private volatile Integer archiverId;
     private volatile Integer publisherId;
     private volatile Integer depublisherId;
-
     private volatile Map<String, String> properties = new ConcurrentHashMap<>();
-
     private volatile Set<Integer> categoryIds = new CopyOnWriteArraySet<>();
-
     private volatile Set<DocumentLanguage> enabledLanguages = new CopyOnWriteArraySet<>();
-
     private volatile Set<String> keywords = new CopyOnWriteArraySet<>();
-
     private volatile DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-
     private volatile DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
-
     private volatile RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
-
     private volatile Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
-
 
     @Override
     public DocumentMeta clone() {
@@ -350,5 +330,13 @@ public class DocumentMeta implements Serializable, Cloneable {
 
     public void setDefaultVersionNo(Integer defaultVersionNo) {
         this.defaultVersionNo = defaultVersionNo;
+    }
+
+    /**
+     * Document show mode for disabled language.
+     */
+    public enum DisabledLanguageShowMode {
+        SHOW_IN_DEFAULT_LANGUAGE,
+        DO_NOT_SHOW,
     }
 }

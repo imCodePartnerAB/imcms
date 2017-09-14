@@ -2,10 +2,9 @@ package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
 import com.imcode.imcms.mapping.jpa.doc.content.VersionedContent;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.Map;
 
 @MappedSuperclass
 public class MenuBase extends VersionedContent {

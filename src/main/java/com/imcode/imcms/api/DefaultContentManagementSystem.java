@@ -11,13 +11,13 @@ import java.security.KeyStore;
 
 public class DefaultContentManagementSystem extends ContentManagementSystem implements Cloneable {
 
+    protected ImcmsServices service;
+    volatile UserDomainObject currentUser;
     private UserService userService;
     private DocumentService documentService;
     private TemplateService templateService;
     private DatabaseService databaseService;
     private MailService mailService;
-    volatile UserDomainObject currentUser;
-    protected ImcmsServices service;
 
     public DefaultContentManagementSystem(ImcmsServices service, UserDomainObject accessor) {
         this.service = service;

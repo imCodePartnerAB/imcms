@@ -1,6 +1,13 @@
 package imcode.util.io;
 
+import com.imcode.util.FileTreeTraverser;
 import imcode.server.Imcms;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.oro.text.regex.*;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -9,23 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.MatchResult;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.PatternMatcher;
-import org.apache.oro.text.regex.PatternMatcherInput;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
-import org.apache.oro.text.regex.Substitution;
-import org.apache.oro.text.regex.Util;
-
-import com.imcode.util.FileTreeTraverser;
 
 public class FileUtility {
 
@@ -63,7 +53,8 @@ public class FileUtility {
 
     public static boolean directoryIsAncestorOfOrEqualTo(File dir, File file) throws IOException {
         dir = dir.getCanonicalFile();
-        for (File currentFile = file.getCanonicalFile(); null != currentFile; currentFile = currentFile.getParentFile()) {
+        for (File currentFile = file.getCanonicalFile(); null != currentFile; currentFile = currentFile.getParentFile())
+        {
             if (currentFile.equals(dir)) {
                 return true;
             }

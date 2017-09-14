@@ -1,15 +1,13 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.servlet.WebComponent;
 import imcode.util.HttpSessionUtils;
-
-import java.io.IOException;
-import java.io.Serializable;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.imcode.imcms.servlet.WebComponent;
+import java.io.IOException;
+import java.io.Serializable;
 
 public class ImageBrowser extends WebComponent {
 

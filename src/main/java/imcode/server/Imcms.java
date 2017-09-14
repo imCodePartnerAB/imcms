@@ -55,29 +55,24 @@ public class Imcms {
     private static final String DEFAULT_SQLR_HOME = "WEB-INF/solr";
 
     private static final Logger logger = Logger.getLogger(Imcms.class);
-
+    private static final String DOCUMENT_VERSIONING_PROPERTY = "document.versioning";
     /**
      * imCMS deployment (real context) path.
      */
     private static volatile File path;
-
     /**
      * Core services.
      */
     private static volatile ImcmsServices services;
-
     /**
      * Spring-framework application context.
      */
     private static volatile ApplicationContext applicationContext;
-
     private static volatile String sqlScriptsPath = DEFAULT_SQL_SCRIPTS_PATH;
-
     /**
      * Used to disable db init/upgrade on start.
      */
     private static volatile boolean prepareDatabaseOnStart = true;
-
     /**
      * Users associated with servlet requests.
      *
@@ -86,9 +81,6 @@ public class Imcms {
     private static InheritableThreadLocal<UserDomainObject> users = new InheritableThreadLocal<>();
     @SuppressWarnings("unused")
     private static volatile String solrHome = DEFAULT_SQLR_HOME;
-
-    private static final String DOCUMENT_VERSIONING_PROPERTY = "document.versioning";
-
     /**
      * Flag variable that shows is document versioning feature are turned on in server properties
      */
@@ -373,17 +365,17 @@ public class Imcms {
         return isVersioningAllowed;
     }
 
-    public static class StartupException extends RuntimeException {
-        public StartupException(String message, Exception e) {
-            super(message, e);
-        }
-    }
-
     /**
      * Regenerating images according to DB(Generates last version of generated image)
      */
     public static void regenerateImages() {
         List<Image> allImages = Utility.getFacade().getImageService().getAllGeneratedImages();
-        allImages.forEach((img) -> ImcmsImageUtils.generateImage(ImcmsImageUtils.toDomainObject(img),false));
+        allImages.forEach((img) -> ImcmsImageUtils.generateImage(ImcmsImageUtils.toDomainObject(img), false));
+    }
+
+    public static class StartupException extends RuntimeException {
+        public StartupException(String message, Exception e) {
+            super(message, e);
+        }
     }
 }

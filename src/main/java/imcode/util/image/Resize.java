@@ -31,14 +31,6 @@ public enum Resize {
         this.ordinal = ordinal;
     }
 
-    public String getModifier() {
-        return modifier;
-    }
-
-    public int getOrdinal() {
-        return ordinal;
-    }
-
     public static Resize getByName(String value) {
         if (value == null) {
             return null;
@@ -63,5 +55,13 @@ public enum Resize {
         }
 
         return null;
+    }
+
+    public String getModifier() {
+        return modifier;
+    }
+
+    public int getOrdinal() {
+        return ordinal;
     }
 }

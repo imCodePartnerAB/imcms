@@ -10,9 +10,9 @@ import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
@@ -32,7 +32,7 @@ public class CategoryMapper {
 
     @Inject
     private CategoryTypeRepository categoryTypeRepository;
-    
+
 
     public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
         CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
@@ -137,7 +137,7 @@ public class CategoryMapper {
                 throw new MaxCategoryDomainObjectsOfTypeExceededException("Document may have at most " + maxChoices
                         + " categories of type '"
                         + categoryType.getName()
-                        + "'" );
+                        + "'");
             }
         }
     }
@@ -150,7 +150,7 @@ public class CategoryMapper {
                 throw new CategoryAlreadyExistsException("A category with name \"" + category.getName()
                         + "\" already exists in category type \""
                         + category.getType().getName()
-                        + "\"." );
+                        + "\".");
             }
         }
 

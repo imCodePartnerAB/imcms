@@ -524,7 +524,7 @@ public class TextDocumentContentSaver {
     private Version findVersion(Container container) {
         return versionRepository.findByDocIdAndNo(container.getDocId(), container.getVersionNo());
     }
-    
+
     private User findUser(UserDomainObject userDomainObject) {
         return userRepository.getOne(userDomainObject.getId());
     }

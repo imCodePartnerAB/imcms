@@ -58,7 +58,8 @@ public class RoleCategoriesDto implements Serializable {
 
         final RoleCategoriesDto other = (RoleCategoriesDto) obj;
         if (this.roleId != other.roleId && this.categoryId != other.categoryId
-                && this.canUse != other.canUse && this.canChange != other.canChange) {
+                && this.canUse != other.canUse && this.canChange != other.canChange)
+        {
             return false;
         }
 

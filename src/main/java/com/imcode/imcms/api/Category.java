@@ -55,6 +55,10 @@ public class Category implements Comparable<Category> {
         return internalCategory.getDescription();
     }
 
+    public void setDescription(String description) {
+        internalCategory.setDescription(description);
+    }
+
     public int getId() {
         return internalCategory.getId();
     }
@@ -65,10 +69,6 @@ public class Category implements Comparable<Category> {
 
     public void setImage(String imageUrl) {
         internalCategory.setImageUrl(imageUrl);
-    }
-
-    public void setDescription(String description) {
-        internalCategory.setDescription(description);
     }
 
     @Override

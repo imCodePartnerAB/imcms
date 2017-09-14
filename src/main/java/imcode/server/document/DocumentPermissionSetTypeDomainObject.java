@@ -41,6 +41,14 @@ public enum DocumentPermissionSetTypeDomainObject implements Serializable {
         this.id = id;
     }
 
+    public static DocumentPermissionSetTypeDomainObject fromInt(int id) {
+        try {
+            return values()[id];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return NONE;
+        }
+    }
+
     public int getId() {
         return id;
     }
@@ -59,13 +67,5 @@ public enum DocumentPermissionSetTypeDomainObject implements Serializable {
 
     public boolean isAtLeastAsPrivilegedAs(DocumentPermissionSetTypeDomainObject type) {
         return id <= type.id;
-    }
-
-    public static DocumentPermissionSetTypeDomainObject fromInt(int id) {
-        try {
-            return values()[id];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return NONE;
-        }
     }
 }

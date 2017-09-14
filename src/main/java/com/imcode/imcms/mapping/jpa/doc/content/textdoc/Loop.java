@@ -2,8 +2,6 @@ package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.VersionedContent;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -20,6 +18,91 @@ import java.util.Objects;
 @Entity
 @Table(name = "imcms_text_doc_content_loops")
 public class Loop extends VersionedContent {
+
+    @Min(1)
+    @NotNull
+    @Column(updatable = false)
+    private Integer no;
+    @Min(1)
+    @NotNull
+    @Column(name = "next_content_no")
+    private Integer nextEntryNo;
+    @ElementCollection
+    @CollectionTable(
+            name = "imcms_text_doc_contents",
+            joinColumns = @JoinColumn(name = "loop_id")
+    )
+    @OrderColumn(name = "ix")
+    private List<Entry> entries = new LinkedList<>();
+
+    public Loop() {
+    }
+
+    public Loop(Integer id, Version version, Integer no, Integer nextEntryNo, List<Entry> entries) {
+        setId(id);
+        setVersion(version);
+        this.no = no;
+        this.nextEntryNo = nextEntryNo;
+        this.entries = new LinkedList<>(entries);
+    }
+
+    public Loop(Version version, Integer no, Integer nextEntryNo, List<Entry> entries) {
+        this(null, version, no, nextEntryNo, entries);
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", getId())
+                .add("docVersion", getVersion())
+                .add("no", no)
+                .add("entries", entries).toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getVersion(), no, entries);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o == this || (o instanceof Loop && equals((Loop) o));
+    }
+
+    private boolean equals(Loop that) {
+        return Objects.equals(getId(), that.getId())
+                && Objects.equals(getVersion(), that.getVersion())
+                && Objects.equals(no, that.no)
+                && Objects.equals(entries, that.entries);
+    }
+
+    public boolean containsEntry(int entryNo) {
+        return entries.stream().anyMatch(entry -> entry.no == entryNo);
+    }
+
+    public Integer getNo() {
+        return no;
+    }
+
+    public void setNo(Integer no) {
+        this.no = no;
+    }
+
+    public List<Entry> getEntries() {
+        return entries;
+    }
+
+    public void setEntries(List<Entry> items) {
+        this.entries = items;
+    }
+
+    public Integer getNextEntryNo() {
+        return nextEntryNo;
+    }
+
+    public void setNextEntryNo(Integer nextEntryNo) {
+        this.nextEntryNo = nextEntryNo;
+    }
 
     @Embeddable
     public static class Entry {
@@ -76,94 +159,5 @@ public class Loop extends VersionedContent {
         public void setEnabled(boolean enabled) {
             this.enabled = enabled;
         }
-    }
-
-    @Min(1)
-    @NotNull
-    @Column(updatable = false)
-    private Integer no;
-
-    @Min(1)
-    @NotNull
-    @Column(name = "next_content_no")
-    private Integer nextEntryNo;
-
-    public Loop() {
-    }
-
-    public Loop(Integer id, Version version, Integer no, Integer nextEntryNo, List<Entry> entries) {
-        setId(id);
-        setVersion(version);
-        this.no = no;
-        this.nextEntryNo = nextEntryNo;
-        this.entries = new LinkedList<>(entries);
-    }
-
-    public Loop(Version version, Integer no, Integer nextEntryNo, List<Entry> entries) {
-        this(null, version, no, nextEntryNo, entries);
-    }
-
-
-    @ElementCollection
-    @CollectionTable(
-            name = "imcms_text_doc_contents",
-            joinColumns = @JoinColumn(name = "loop_id")
-    )
-    @OrderColumn(name = "ix")
-    private List<Entry> entries = new LinkedList<>();
-
-    @Override
-    public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("id", getId())
-                .add("docVersion", getVersion())
-                .add("no", no)
-                .add("entries", entries).toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getVersion(), no, entries);
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        return o == this || (o instanceof Loop && equals((Loop) o));
-    }
-
-    private boolean equals(Loop that) {
-        return Objects.equals(getId(), that.getId())
-                && Objects.equals(getVersion(), that.getVersion())
-                && Objects.equals(no, that.no)
-                && Objects.equals(entries, that.entries);
-    }
-
-    public boolean containsEntry(int entryNo) {
-        return entries.stream().anyMatch(entry -> entry.no == entryNo);
-    }
-
-    public Integer getNo() {
-        return no;
-    }
-
-    public void setNo(Integer no) {
-        this.no = no;
-    }
-
-    public List<Entry> getEntries() {
-        return entries;
-    }
-
-    public void setEntries(List<Entry> items) {
-        this.entries = items;
-    }
-
-    public Integer getNextEntryNo() {
-        return nextEntryNo;
-    }
-
-    public void setNextEntryNo(Integer nextEntryNo) {
-        this.nextEntryNo = nextEntryNo;
     }
 }

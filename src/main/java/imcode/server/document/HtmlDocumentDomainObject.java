@@ -4,12 +4,12 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
 
     private String html = "";
 
-    public void setHtml(String html) {
-        this.html = html;
-    }
-
     public String getHtml() {
         return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
     }
 
     public DocumentTypeDomainObject getDocumentType() {

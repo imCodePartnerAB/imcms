@@ -1,10 +1,14 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.mapping.TextDocumentContentLoader;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -14,26 +18,22 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.ImcmsImageUtils;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
-
-import java.io.IOException;
-import java.util.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
-import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
-import imcode.util.ImcmsImageUtils;
-import org.apache.commons.lang3.math.NumberUtils;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -102,7 +102,8 @@ public class ChangeImage extends HttpServlet {
                 ImcmsServices services = Imcms.getServices();
                 String firstGeneratedFilename = null;
 
-                for (ListIterator<ImageDomainObject> i = new LinkedList<>(images.getImages().values()).listIterator(); i.hasNext();) {
+                for (ListIterator<ImageDomainObject> i = new LinkedList<>(images.getImages().values()).listIterator(); i.hasNext(); )
+                {
                     boolean first = i.nextIndex() == 0;
                     ImageDomainObject editImage = i.next();
 
@@ -124,8 +125,8 @@ public class ChangeImage extends HttpServlet {
                     throw new ShouldHaveCheckedPermissionsEarlierException(e);
                 } catch (NoPermissionToAddDocumentToMenuException e) {
                     throw new ConcurrentDocumentModificationException(e);
-                    } catch (DocumentSaveException e) {
-                        throw new ShouldNotBeThrownException(e);
+                } catch (DocumentSaveException e) {
+                    throw new ShouldNotBeThrownException(e);
                 }
                 services.updateMainLog("ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
                         " in  " + "[" + document.getId() + "] modified by user: [" +

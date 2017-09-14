@@ -41,12 +41,12 @@ public class BrowserCheck {
         this.setOs();
     }
 
-    public void setUserAgent(String httpUserAgent) {
-        this.userAgent = httpUserAgent.toLowerCase();
-    }
-
     public String getUserAgent() {
         return userAgent;
+    }
+
+    public void setUserAgent(String httpUserAgent) {
+        this.userAgent = httpUserAgent.toLowerCase();
     }
 
     private void setCompany() {

@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping.jpa;
 
 import org.hibernate.annotations.Subselect;
+
 import javax.persistence.*;
 import java.util.Objects;
 

@@ -9,19 +9,19 @@ import java.util.Objects;
  */
 public class TextDocImageContainer extends TextDocObjectContainer {
 
+    private final ImageDomainObject image;
+
+    public TextDocImageContainer(DocRef docRef, LoopEntryRef loopEntryRef, int imageNo, ImageDomainObject image) {
+        super(docRef, loopEntryRef, imageNo);
+        this.image = Objects.requireNonNull(image);
+    }
+
     public static TextDocImageContainer of(DocRef docRef, int imageNo, ImageDomainObject image) {
         return new TextDocImageContainer(docRef, null, imageNo, image);
     }
 
     public static TextDocImageContainer of(DocRef docRef, LoopEntryRef loopEntryRef, int imageNo, ImageDomainObject image) {
         return new TextDocImageContainer(docRef, loopEntryRef, imageNo, image);
-    }
-
-    private final ImageDomainObject image;
-
-    public TextDocImageContainer(DocRef docRef, LoopEntryRef loopEntryRef, int imageNo, ImageDomainObject image) {
-        super(docRef, loopEntryRef, imageNo);
-        this.image = Objects.requireNonNull(image);
     }
 
     public int getImageNo() {

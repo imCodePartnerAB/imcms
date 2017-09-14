@@ -2,17 +2,17 @@ package com.imcode.imcms.flow;
 
 import imcode.server.document.DocumentDomainObject;
 
-import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 // fixme: remove
 public abstract class EditDocumentPageFlow extends DocumentPageFlow {
 
-    protected DocumentDomainObject document;
     public final static String URL_I15D_PAGE__PREFIX = "/imcms/";
     public static final String PAGE__EDIT = "edit";
+    protected DocumentDomainObject document;
 
     protected EditDocumentPageFlow(final DocumentDomainObject document, DispatchCommand returnCommand,
                                    SaveDocumentCommand saveDocumentCommand) {

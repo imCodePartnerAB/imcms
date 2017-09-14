@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ImagesPathRelativePathImageSource extends ImageSource {
     private String path;
@@ -21,6 +22,10 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
     @JsonCreator
     public ImagesPathRelativePathImageSource(@JsonProperty("urlPathRelativeToContextPath") String path) {
         this.path = path.replace('\\', '/');
+    }
+
+    public static String getImagesUrlPath() {
+        return Imcms.getServices().getConfig().getImageUrl();
     }
 
     @JsonIgnore
@@ -43,10 +48,6 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
 
     private boolean isAbsolute() {
         return path.startsWith("/");
-    }
-
-    public static String getImagesUrlPath() {
-        return Imcms.getServices().getConfig().getImageUrl();
     }
 
     public String toStorageString() {

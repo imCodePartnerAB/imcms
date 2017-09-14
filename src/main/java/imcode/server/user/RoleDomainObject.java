@@ -1,10 +1,10 @@
 package imcode.server.user;
 
+import com.imcode.imcms.util.l10n.LocalizedMessage;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class RoleDomainObject implements Serializable, Comparable<RoleDomainObject>, Cloneable {
 
@@ -37,12 +37,16 @@ public class RoleDomainObject implements Serializable, Comparable<RoleDomainObje
         this.adminRoleId = adminRoleId;
     }
 
-    public void setId(RoleId id) {
-        this.id = id;
+    public static RolePermissionDomainObject[] getAllRolePermissions() {
+        return ALL_ROLE_PERMISSIONS;
     }
 
     public RoleId getId() {
         return id;
+    }
+
+    public void setId(RoleId id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -121,10 +125,6 @@ public class RoleDomainObject implements Serializable, Comparable<RoleDomainObje
 
     private boolean bitIsSet(int unionOfRolePermissionIds, int bitValue) {
         return 0 != (unionOfRolePermissionIds & bitValue);
-    }
-
-    public static RolePermissionDomainObject[] getAllRolePermissions() {
-        return ALL_ROLE_PERMISSIONS;
     }
 
     @Override

@@ -10,20 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 
 public abstract class ContentManagementSystem {
 
-    public abstract UserService getUserService();
-
-    public abstract DocumentService getDocumentService();
-
-    public abstract User getCurrentUser();
-
-    public abstract DatabaseService getDatabaseService();
-
-    public abstract TemplateService getTemplateService();
-
-    public abstract MailService getMailService();
-
-    public abstract void runAsSuperadmin(ContentManagementSystemRunnable runnable) throws NoPermissionException;
-
     /**
      * Get a ContentManagementSystem for the given username and password.
      */
@@ -69,6 +55,20 @@ public abstract class ContentManagementSystem {
     public static ContentManagementSystem fromRequest(ServletRequest request) {
         return Utility.getContentManagementSystemFromRequest(request);
     }
+
+    public abstract UserService getUserService();
+
+    public abstract DocumentService getDocumentService();
+
+    public abstract User getCurrentUser();
+
+    public abstract DatabaseService getDatabaseService();
+
+    public abstract TemplateService getTemplateService();
+
+    public abstract MailService getMailService();
+
+    public abstract void runAsSuperadmin(ContentManagementSystemRunnable runnable) throws NoPermissionException;
 
     abstract ImcmsServices getInternal();
 }

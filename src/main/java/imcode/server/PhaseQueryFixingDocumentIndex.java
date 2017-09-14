@@ -4,15 +4,14 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.document.index.*;
 import imcode.server.user.UserDomainObject;
-
-import java.util.Date;
-import java.util.List;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Rewrites queries containing {@link DocumentIndex#FIELD__PHASE} fields with

@@ -1,21 +1,14 @@
 package imcode.server;
 
+import com.imcode.db.Database;
+import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.imcode.db.Database;
-import com.imcode.db.commands.SqlQueryCommand;
+import java.util.*;
 
 /**
  * @author kreiger
@@ -25,10 +18,9 @@ public class LanguageMapper {
      * {@see <a href="http://www.loc.gov/standards/iso639-2/langhome.html">http://www.loc.gov/standards/iso639-2/langhome.html</a>} *
      */
     public final static String ISO639_2 = "ISO 639-2";
-
+    private final static Logger log = Logger.getLogger(LanguageMapper.class.getName());
     private static Map<String, String> iso639_1to639_2map;
     private static Map<String, String> iso639_2to639_1map;
-
     private static String[][] iso6391to6392table = new String[][]{
             {"aar", "aa"}, {"abk", "ab"}, {"ace", ""}, {"ach", ""}, {"ada", ""}, {"ady", ""}, {"afa", ""},
             {"afh", ""}, {"afr", "af"}, {"aka", "ak"}, {"akk", ""}, {"alb/sqi", "sq"}, {"ale", ""},
@@ -110,8 +102,6 @@ public class LanguageMapper {
             {"yap", ""}, {"yid", "yi"}, {"yor", "yo"}, {"ypk", ""}, {"zap", ""}, {"zen", ""},
             {"zha", "za"}, {"chi/zho", "zh"}, {"znd", ""}, {"zul", "zu"}, {"zun", ""},};
 
-    private final static Logger log = Logger.getLogger(LanguageMapper.class.getName());
-
     static {
         Map<String, String> iso6391to6392map = new HashMap<>();
         Map<String, String> iso6392to6391map = new HashMap<>();
@@ -137,44 +127,6 @@ public class LanguageMapper {
     public LanguageMapper(Database database, String defaultLanguage) {
         this.database = database;
         this.defaultLanguage = defaultLanguage;
-    }
-
-    public String getCurrentLanguageNameInUsersLanguage(UserDomainObject user,
-                                                        String documentLanguage) {
-        List<String> languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage(user);
-        String result = null;
-        for (Iterator<String> iterator = languageKeysAndNamesInUsersLanguage.iterator(); iterator.hasNext(); ) {
-            String langPrefix = iterator.next();
-            String languageNameInUserLanguage = iterator.next();
-            if (langPrefix.equalsIgnoreCase(documentLanguage)) {
-                result = languageNameInUserLanguage;
-            }
-        }
-        return result;
-    }
-
-    public String createLanguagesOptionList(UserDomainObject user,
-                                            String documentLanguage) {
-        List languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage(user);
-        return Html.createOptionList(languageKeysAndNamesInUsersLanguage, documentLanguage);
-    }
-
-    private List<String> getListOfLanguageKeysAndNamesInUsersLanguage(UserDomainObject user) {
-        final Object[] parameters = new String[]{
-                user.getLanguageIso639_2()};
-        String[][] languages = (String[][]) database.execute(new SqlQueryCommand("select lang_prefix, user_prefix, language from languages where user_prefix = ?", parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-        List<String> languagesInOptionList = new ArrayList<>();
-        for (String[] entry : languages) {
-            String langStr = entry[0];
-            langStr = getAsIso639_2OrDefaultLanguage(langStr, defaultLanguage);
-            String userLangPrefix = entry[1];
-            String languageNameInUserLanguage = entry[2];
-            if (userLangPrefix.equalsIgnoreCase(user.getLanguageIso639_2())) {
-                languagesInOptionList.add(langStr);
-                languagesInOptionList.add(languageNameInUserLanguage);
-            }
-        }
-        return languagesInOptionList;
     }
 
     public static String getAsIso639_2OrDefaultLanguage(String langStr, String defaultLanguage) {
@@ -230,6 +182,44 @@ public class LanguageMapper {
             langStr = convert639_1to639_2(langStr);
         }
         return langStr;
+    }
+
+    public String getCurrentLanguageNameInUsersLanguage(UserDomainObject user,
+                                                        String documentLanguage) {
+        List<String> languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage(user);
+        String result = null;
+        for (Iterator<String> iterator = languageKeysAndNamesInUsersLanguage.iterator(); iterator.hasNext(); ) {
+            String langPrefix = iterator.next();
+            String languageNameInUserLanguage = iterator.next();
+            if (langPrefix.equalsIgnoreCase(documentLanguage)) {
+                result = languageNameInUserLanguage;
+            }
+        }
+        return result;
+    }
+
+    public String createLanguagesOptionList(UserDomainObject user,
+                                            String documentLanguage) {
+        List languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage(user);
+        return Html.createOptionList(languageKeysAndNamesInUsersLanguage, documentLanguage);
+    }
+
+    private List<String> getListOfLanguageKeysAndNamesInUsersLanguage(UserDomainObject user) {
+        final Object[] parameters = new String[]{
+                user.getLanguageIso639_2()};
+        String[][] languages = (String[][]) database.execute(new SqlQueryCommand("select lang_prefix, user_prefix, language from languages where user_prefix = ?", parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        List<String> languagesInOptionList = new ArrayList<>();
+        for (String[] entry : languages) {
+            String langStr = entry[0];
+            langStr = getAsIso639_2OrDefaultLanguage(langStr, defaultLanguage);
+            String userLangPrefix = entry[1];
+            String languageNameInUserLanguage = entry[2];
+            if (userLangPrefix.equalsIgnoreCase(user.getLanguageIso639_2())) {
+                languagesInOptionList.add(langStr);
+                languagesInOptionList.add(languageNameInUserLanguage);
+            }
+        }
+        return languagesInOptionList;
     }
 
     public String getDefaultLanguage() {

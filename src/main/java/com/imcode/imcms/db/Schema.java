@@ -15,13 +15,37 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public final class Schema {
+
+    private final Version version;
+    private final Init init;
+    private final Set<Diff> diffs;
+    private final String scriptsDir;
+    public Schema(Version version, Init init, Set<Diff> diffs) {
+        this(version, init, diffs, "");
+    }
+    public Schema(Version version, Init init, Set<Diff> diffs, String scriptsDir) {
+        Validate.isTrue(diffs.size() == diffs.stream().map(Diff::getFrom).distinct().count(),
+                "diffs from version value must be distinct: %s", diffs);
+
+        diffs.forEach(diff -> {
+            LinkedList<Diff> chain = diffsChainFrom(diffs, diff.getFrom());
+            Diff lastDiff = chain.getLast();
+
+            Validate.isTrue(lastDiff.getTo().equals(version),
+                    "Diffs' chain %s must end (diff.to value) with version %s.", chain, lastDiff);
+        });
+
+        this.version = version;
+        this.init = init;
+        this.diffs = diffs;
+        this.scriptsDir = scriptsDir;
+    }
 
     public static Schema fromFile(File file) {
         try {
@@ -80,37 +104,6 @@ public final class Schema {
         }
     }
 
-    private final Version version;
-    private final Init init;
-    private final Set<Diff> diffs;
-    private final String scriptsDir;
-
-    public Schema(Version version, Init init, Set<Diff> diffs) {
-        this(version, init, diffs, "");
-    }
-
-    public Schema(Version version, Init init, Set<Diff> diffs, String scriptsDir) {
-        Validate.isTrue(diffs.size() == diffs.stream().map(Diff::getFrom).distinct().count(),
-                "diffs from version value must be distinct: %s", diffs);
-
-        diffs.forEach(diff -> {
-            LinkedList<Diff> chain = diffsChainFrom(diffs, diff.getFrom());
-            Diff lastDiff = chain.getLast();
-
-            Validate.isTrue(lastDiff.getTo().equals(version),
-                    "Diffs' chain %s must end (diff.to value) with version %s.", chain, lastDiff);
-        });
-
-        this.version = version;
-        this.init = init;
-        this.diffs = diffs;
-        this.scriptsDir = scriptsDir;
-    }
-
-    public List<Diff> diffsChainFrom(Version version) {
-        return diffsChainFrom(diffs, version);
-    }
-
     private static LinkedList<Diff> diffsChainFrom(Set<Diff> diffs, Version from) {
         LinkedList<Diff> chain = new LinkedList<>();
         Version current = from;
@@ -133,6 +126,9 @@ public final class Schema {
         return diffs.stream().filter(d -> d.getFrom().equals(from)).findAny();
     }
 
+    public List<Diff> diffsChainFrom(Version version) {
+        return diffsChainFrom(diffs, version);
+    }
 
     public Version getVersion() {
         return version;

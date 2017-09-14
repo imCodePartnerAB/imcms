@@ -22,15 +22,15 @@ public class ImcmsPrefsLocalizedMessageProvider extends LocalizedMessageProvider
 
     public ResourceBundle getResourceBundle(String languageIso639_2) {
         String propertiesFilename = "WEB-INF/conf/imcms_" + languageIso639_2 + ".properties";
-		final Properties languageProperties = PropertyManager.getPropertiesFrom(propertiesFilename);
-		return new ResourceBundle() {
-			protected Object handleGetObject(String key) {
-				return languageProperties.getProperty(key);
-			}
+        final Properties languageProperties = PropertyManager.getPropertiesFrom(propertiesFilename);
+        return new ResourceBundle() {
+            protected Object handleGetObject(String key) {
+                return languageProperties.getProperty(key);
+            }
 
-			public Enumeration<String> getKeys() {
-				return new IteratorEnumeration(languageProperties.keySet().iterator());
-			}
-		};
-	}
+            public Enumeration<String> getKeys() {
+                return new IteratorEnumeration(languageProperties.keySet().iterator());
+            }
+        };
+    }
 }

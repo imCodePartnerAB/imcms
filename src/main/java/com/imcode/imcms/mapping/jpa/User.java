@@ -14,125 +14,59 @@ import java.util.Objects;
 @Table(name = "users")
 public class User {
 
-    public enum PasswordType {
-        UNENCRYPTED, ENCRYPTED
-    }
-
-    @Embeddable
-    public static class PasswordReset {
-
-        @NotNull
-        @Column(name = "login_password_reset_id")
-        private String id;
-
-        @NotNull
-        @Column(name = "login_password_reset_ts")
-        private long timestamp;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public long getTimestamp() {
-            return timestamp;
-        }
-
-        public void setTimestamp(long timestamp) {
-            this.timestamp = timestamp;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(id, timestamp);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return this == obj || (obj instanceof PasswordReset && equals((PasswordReset) obj));
-        }
-
-        private boolean equals(PasswordReset that) {
-            return Objects.equals(this.id, that.id) && Objects.equals(this.timestamp, that.timestamp);
-        }
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Integer id;
-
     @NotNull
     @Column(name = "login_name")
     private String login;
-
     @NotNull
     @Column(name = "login_password")
     private String password;
-
     @NotNull
     @Column(name = "first_name")
     private String firstName = "";
-
     @NotNull
     @Column(name = "last_name")
     private String lastName = "";
-
     @NotNull
     private String title = "";
-
     @NotNull
     private String company = "";
-
     @NotNull
     private String address = "";
-
     @NotNull
     private String city = "";
-
     @NotNull
     private String zip = "";
-
     @NotNull
     private String country = "";
-
     @Column(name = "county_council")
     private String province = "";
-
     @Email
     @NotNull
     @Column(name = "email")
     private String email = "";
-
     private boolean active = true;
-
     @NotNull
     @Column(name = "create_date")
     private Date createDate = new Date();
-
     @NotNull
     @Column(name = "language")
     private String languageIso639_2 = "";
-
     @NotNull
     private boolean external;
-
     @Column(name = "remember_cd")
     private String rememberCd;
-
     /**
      * Http session id.
      */
     @Column(name = "session_id")
     private String sessionId;
-
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "login_password_is_encrypted")
     private PasswordType passwordType = PasswordType.UNENCRYPTED;
-
     @Embedded
     private PasswordReset passwordReset;
 
@@ -344,5 +278,51 @@ public class User {
 
     public void setPasswordReset(PasswordReset passwordReset) {
         this.passwordReset = passwordReset;
+    }
+
+    public enum PasswordType {
+        UNENCRYPTED, ENCRYPTED
+    }
+
+    @Embeddable
+    public static class PasswordReset {
+
+        @NotNull
+        @Column(name = "login_password_reset_id")
+        private String id;
+
+        @NotNull
+        @Column(name = "login_password_reset_ts")
+        private long timestamp;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(long timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(id, timestamp);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return this == obj || (obj instanceof PasswordReset && equals((PasswordReset) obj));
+        }
+
+        private boolean equals(PasswordReset that) {
+            return Objects.equals(this.id, that.id) && Objects.equals(this.timestamp, that.timestamp);
+        }
     }
 }

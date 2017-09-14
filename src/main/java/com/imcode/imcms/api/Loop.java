@@ -4,26 +4,8 @@ import java.util.*;
 
 public final class Loop {
 
-    public static Loop of(Map<Integer, Boolean> entries, int nextContentNo) {
-        return new Loop(entries, nextContentNo);
-    }
-
-    public static Loop of(Map<Integer, Boolean> entries) {
-        return Loop.of(entries, entries.keySet().stream().mapToInt(Integer::intValue).max().orElse(0) + 1);
-    }
-
-    public static Loop empty() {
-        return Loop.of(Collections.emptyMap());
-    }
-
-    public static Loop singleEntry() {
-        return Loop.of(Collections.singletonMap(1, true));
-    }
-
     private final Map<Integer, Boolean> entries;
-
     private final int nextEntryNo;
-
     private final int cachedHashCode;
 
     public Loop(Map<Integer, Boolean> entries, int nextEntryNo) {
@@ -38,6 +20,22 @@ public final class Loop {
         this.entries = Collections.unmodifiableMap(new LinkedHashMap<>(entries));
         this.nextEntryNo = nextEntryNo;
         this.cachedHashCode = Objects.hash(entries, nextEntryNo);
+    }
+
+    public static Loop of(Map<Integer, Boolean> entries, int nextContentNo) {
+        return new Loop(entries, nextContentNo);
+    }
+
+    public static Loop of(Map<Integer, Boolean> entries) {
+        return Loop.of(entries, entries.keySet().stream().mapToInt(Integer::intValue).max().orElse(0) + 1);
+    }
+
+    public static Loop empty() {
+        return Loop.of(Collections.emptyMap());
+    }
+
+    public static Loop singleEntry() {
+        return Loop.of(Collections.singletonMap(1, true));
     }
 
     @Override

@@ -1,23 +1,26 @@
 package imcode.util;
 
+import org.apache.log4j.Logger;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 
-import org.apache.log4j.Logger;
-
 public class FallbackDecoder {
 
+    private final static Logger LOG = Logger.getLogger(FallbackDecoder.class);
     private Charset charset;
     private Charset fallbackCharset;
-
-    private final static Logger LOG = Logger.getLogger(FallbackDecoder.class);
 
     public FallbackDecoder(Charset charset, Charset fallbackCharset) {
         this.charset = charset;
         this.fallbackCharset = fallbackCharset;
+    }
+
+    private static CharsetDecoder createReportingDecoder(Charset charset) {
+        return charset.newDecoder().onMalformedInput(CodingErrorAction.REPORT);
     }
 
     public String decodeBytes(byte[] inputBytes,
@@ -41,10 +44,6 @@ public class FallbackDecoder {
             }
         }
         return result;
-    }
-
-    private static CharsetDecoder createReportingDecoder(Charset charset) {
-        return charset.newDecoder().onMalformedInput(CodingErrorAction.REPORT);
     }
 
     public Charset getFallbackCharset() {

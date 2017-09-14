@@ -1,7 +1,6 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -14,10 +13,29 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Stack;
 
 public class BackDoc extends HttpServlet {
+
+    public static DocumentDomainObject getNextToLastTextDocumentFromHistory(Stack<Integer> history, ImcmsServices imcref) {
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument(history.pop()); // remove top document from stack ( this is current text document )
+
+        if (null != history && !history.empty()) {
+            while (!history.empty()) {
+                document = documentMapper.getDocument(history.pop());
+                if (isTextDocument(document)) {
+                    break;
+                }
+            }
+        }
+
+        return document;
+    }
+
+    private static boolean isTextDocument(DocumentDomainObject document) {
+        return DocumentTypeDomainObject.TEXT == document.getDocumentType();
+    }
 
     /**
      * doGet()
@@ -45,25 +63,5 @@ public class BackDoc extends HttpServlet {
     private void redirectToDocumentId(HttpServletRequest request, HttpServletResponse response, int meta_id) throws IOException {
         DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(meta_id);
         response.sendRedirect(Utility.getAbsolutePathToDocument(request, document));
-    }
-
-    public static DocumentDomainObject getNextToLastTextDocumentFromHistory(Stack<Integer> history, ImcmsServices imcref) {
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument(history.pop()); // remove top document from stack ( this is current text document )
-
-        if (null != history && !history.empty()) {
-            while (!history.empty()) {
-                document = documentMapper.getDocument(history.pop());
-                if (isTextDocument(document)) {
-                    break;
-                }
-            }
-        }
-
-        return document;
-    }
-
-    private static boolean isTextDocument(DocumentDomainObject document) {
-        return DocumentTypeDomainObject.TEXT == document.getDocumentType();
     }
 }

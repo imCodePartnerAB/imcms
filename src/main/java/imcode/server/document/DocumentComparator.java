@@ -1,11 +1,40 @@
 package imcode.server.document;
 
-import org.apache.commons.lang.NullArgumentException;
-
 import com.imcode.util.ChainableReversibleNullComparator;
+import org.apache.commons.lang.NullArgumentException;
 
 public abstract class DocumentComparator extends ChainableReversibleNullComparator {
 
+    public final static DocumentComparator ID = new DocumentComparator("ID") {
+        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
+            return d1.getId() - d2.getId();
+        }
+    };
+    public final static DocumentComparator HEADLINE = new DocumentComparator("HEADLINE") {
+        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
+            return d1.getHeadline().compareToIgnoreCase(d2.getHeadline());
+        }
+    };
+    public final static DocumentComparator MODIFIED_DATETIME = new DocumentComparator("MODIFIED_DATETIME") {
+        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
+            return d1.getModifiedDatetime().compareTo(d2.getModifiedDatetime());
+        }
+    };
+    public final static DocumentComparator ARCHIVED_DATETIME = new DocumentComparator("ARCHIVED_DATETIME") {
+        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
+            return d1.getArchivedDatetime().compareTo(d2.getArchivedDatetime());
+        }
+    };
+    public final static DocumentComparator PUBLICATION_START_DATETIME = new DocumentComparator("PUBLICATION_START_DATETIME") {
+        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
+            return d1.getPublicationStartDatetime().compareTo(d2.getPublicationStartDatetime());
+        }
+    };
+    public final static DocumentComparator PUBLICATION_END_DATETIME = new DocumentComparator("PUBLICATION_END_DATETIME") {
+        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
+            return d1.getPublicationEndDatetime().compareTo(d2.getPublicationEndDatetime());
+        }
+    };
     private final String name;
 
     protected DocumentComparator(String name) {
@@ -32,41 +61,5 @@ public abstract class DocumentComparator extends ChainableReversibleNullComparat
     }
 
     protected abstract int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2);
-
-    public final static DocumentComparator ID = new DocumentComparator("ID") {
-        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
-            return d1.getId() - d2.getId();
-        }
-    };
-
-    public final static DocumentComparator HEADLINE = new DocumentComparator("HEADLINE") {
-        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
-            return d1.getHeadline().compareToIgnoreCase(d2.getHeadline());
-        }
-    };
-
-    public final static DocumentComparator MODIFIED_DATETIME = new DocumentComparator("MODIFIED_DATETIME") {
-        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
-            return d1.getModifiedDatetime().compareTo(d2.getModifiedDatetime());
-        }
-    };
-
-    public final static DocumentComparator ARCHIVED_DATETIME = new DocumentComparator("ARCHIVED_DATETIME") {
-        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
-            return d1.getArchivedDatetime().compareTo(d2.getArchivedDatetime());
-        }
-    };
-
-    public final static DocumentComparator PUBLICATION_START_DATETIME = new DocumentComparator("PUBLICATION_START_DATETIME") {
-        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
-            return d1.getPublicationStartDatetime().compareTo(d2.getPublicationStartDatetime());
-        }
-    };
-
-    public final static DocumentComparator PUBLICATION_END_DATETIME = new DocumentComparator("PUBLICATION_END_DATETIME") {
-        protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
-            return d1.getPublicationEndDatetime().compareTo(d2.getPublicationEndDatetime());
-        }
-    };
 
 }

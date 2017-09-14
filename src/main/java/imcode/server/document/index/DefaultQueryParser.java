@@ -1,12 +1,12 @@
 package imcode.server.document.index;
 
-import java.util.Arrays;
-
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
+
+import java.util.Arrays;
 
 @Deprecated
 public class DefaultQueryParser implements QueryParser {

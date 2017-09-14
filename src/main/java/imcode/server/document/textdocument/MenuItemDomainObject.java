@@ -123,6 +123,11 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         setTreeSortKey(new TreeSortKeyDomainObject(treeSortIndex));
     }
 
+    @Override
+    public String toString() {
+        return getTreeSortIndex();
+    }
+
     public static class TreeMenuItemDomainObject {
         private MenuItemDomainObject menuItem;
         private LinkedList<TreeMenuItemDomainObject> subMenuItems;
@@ -146,10 +151,5 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         public boolean hasMore() {
             return subMenuItems.size() > 0;
         }
-    }
-
-    @Override
-    public String toString() {
-        return getTreeSortIndex();
     }
 }

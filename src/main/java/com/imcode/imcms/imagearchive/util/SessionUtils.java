@@ -5,7 +5,9 @@ import com.imcode.imcms.imagearchive.SessionConstants;
 import javax.servlet.http.HttpSession;
 
 public class SessionUtils {
-    /** Transfer selected image to Vaadin image handling window. */
+    /**
+     * Transfer selected image to Vaadin image handling window.
+     */
     public static final String TRANSFER_TO_PICKER = "transferToPicker";
 
     private SessionUtils() {

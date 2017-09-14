@@ -1,17 +1,15 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.servlet.WebComponent;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
-
-import java.io.IOException;
-import java.io.Serializable;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.imcode.imcms.servlet.WebComponent;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
+import java.io.IOException;
+import java.io.Serializable;
 
 public class UserFinder extends WebComponent {
 
@@ -30,26 +28,26 @@ public class UserFinder extends WebComponent {
         return userFinder;
     }
 
-    public void setUsersAddable(boolean usersAddable) {
-        this.usersAddable = usersAddable;
-    }
-
     public void forward(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute(this, request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE);
         UserBrowser.UserBrowserPage userBrowserPage = new UserBrowser.UserBrowserPage();
         userBrowserPage.forward(request, response);
     }
 
-    public void setSelectButtonText(LocalizedMessage buttonText) {
-        this.selectButtonText = buttonText;
-    }
-
     public LocalizedMessage getSelectButtonText() {
         return selectButtonText;
     }
 
+    public void setSelectButtonText(LocalizedMessage buttonText) {
+        this.selectButtonText = buttonText;
+    }
+
     public boolean isUsersAddable() {
         return usersAddable;
+    }
+
+    public void setUsersAddable(boolean usersAddable) {
+        this.usersAddable = usersAddable;
     }
 
     public boolean isNullSelectable() {

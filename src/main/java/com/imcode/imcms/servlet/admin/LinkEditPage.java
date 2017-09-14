@@ -2,8 +2,10 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.servlet.DocumentFinder;
+import imcode.server.Imcms;
+import imcode.server.document.DocumentDomainObject;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
@@ -11,18 +13,34 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.Imcms;
-
 public class LinkEditPage extends OkCancelPage {
 
-    private EditLink.Link link;
     private final Handler<EditLink.Link> linkRetrievalCommand;
+    private EditLink.Link link;
     private boolean targetEditable = true;
 
     protected LinkEditPage(DispatchCommand returnCommand, Handler<EditLink.Link> linkRetrievalCommand) {
         super(returnCommand, returnCommand);
         this.linkRetrievalCommand = linkRetrievalCommand;
+    }
+
+    public static String getTargetFromRequest(HttpServletRequest request, String parameterName) {
+        String[] possibleTargets = request.getParameterValues(parameterName);
+        String target = null;
+        if (null != possibleTargets) {
+            for (String possibleTarget : possibleTargets) {
+                target = possibleTarget;
+                boolean targetIsPredefinedTarget
+                        = "_self".equalsIgnoreCase(target)
+                        || "_blank".equalsIgnoreCase(target)
+                        || "_parent".equalsIgnoreCase(target)
+                        || "_top".equalsIgnoreCase(target);
+                if (targetIsPredefinedTarget) {
+                    break;
+                }
+            }
+        }
+        return target;
     }
 
     protected void dispatchOk(HttpServletRequest request,
@@ -47,17 +65,6 @@ public class LinkEditPage extends OkCancelPage {
         this.targetEditable = targetEditable;
     }
 
-    public enum Parameter {
-        TYPE,
-        HREF,
-        TITLE,
-        TARGET,
-        CLASS,
-        STYLE,
-        OTHER,
-        SEARCH
-    }
-
     protected void dispatchOther(HttpServletRequest request,
                                  HttpServletResponse response) throws IOException, ServletException {
         if (null != request.getParameter(Parameter.SEARCH.toString())) {
@@ -69,11 +76,11 @@ public class LinkEditPage extends OkCancelPage {
                                      HttpServletResponse response) throws IOException, ServletException {
                     Integer documentId = documentRetrievalCommand.getDocumentId();
                     if (null != documentId) {
-                        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper() ;
-                        DocumentDomainObject doc = documentMapper.getDocument(documentId) ;
+                        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+                        DocumentDomainObject doc = documentMapper.getDocument(documentId);
                         setLink(new SimpleLink(
                                 link.getType(),
-                                request.getContextPath()+"/"+doc.getName(),
+                                request.getContextPath() + "/" + doc.getName(),
                                 link.getTitle(),
                                 link.getTarget(),
                                 link.getCssClass(),
@@ -91,7 +98,7 @@ public class LinkEditPage extends OkCancelPage {
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
-        setLink(getLinkFromRequest(request)) ;
+        setLink(getLinkFromRequest(request));
     }
 
     private EditLink.Link getLinkFromRequest(HttpServletRequest request) {
@@ -106,7 +113,18 @@ public class LinkEditPage extends OkCancelPage {
     }
 
     public String getPath(HttpServletRequest request) {
-        return "/WEB-INF/imcms/jsp/edit_link.jsp" ;
+        return "/WEB-INF/imcms/jsp/edit_link.jsp";
+    }
+
+    public enum Parameter {
+        TYPE,
+        HREF,
+        TITLE,
+        TARGET,
+        CLASS,
+        STYLE,
+        OTHER,
+        SEARCH
     }
 
     static class SimpleLink implements EditLink.Link {
@@ -169,25 +187,6 @@ public class LinkEditPage extends OkCancelPage {
         public Integer getDocumentId() {
             return documentId;
         }
-    }
-
-    public static String getTargetFromRequest(HttpServletRequest request, String parameterName) {
-        String[] possibleTargets = request.getParameterValues( parameterName );
-        String target = null;
-        if (null != possibleTargets) {
-            for ( String possibleTarget : possibleTargets ) {
-                target = possibleTarget;
-                boolean targetIsPredefinedTarget
-                        = "_self".equalsIgnoreCase(target)
-                        || "_blank".equalsIgnoreCase(target)
-                        || "_parent".equalsIgnoreCase(target)
-                        || "_top".equalsIgnoreCase(target);
-                if ( targetIsPredefinedTarget ) {
-                    break;
-                }
-            }
-        }
-        return target;
     }
 
 }

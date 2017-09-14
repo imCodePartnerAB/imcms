@@ -11,7 +11,7 @@ public class IncludeTag extends SimpleImcmsTag {
 
     @Override
     public BaseEditor createEditor() {
-        return  null;
+        return null;
     }
 
     public void setPath(String path) {

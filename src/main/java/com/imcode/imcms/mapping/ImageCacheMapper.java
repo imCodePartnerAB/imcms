@@ -7,13 +7,11 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.HashSet;
@@ -25,124 +23,122 @@ import java.util.Set;
 @Transactional
 public class ImageCacheMapper {
 
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
+    @SuppressWarnings("unused")
+    private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
 
-	@PersistenceContext(unitName="com.imcode.imcms")
+    @PersistenceContext(unitName = "com.imcode.imcms")
 //	@Autowired
-	private EntityManager entityManager;
+    private EntityManager entityManager;
 
 
+    private Session getCurrentSession() {
+        return entityManager.unwrap(Session.class);
+    }
 
 
-	private Session getCurrentSession() {
-		return entityManager.unwrap(Session.class);
-	}
+    public void deleteDocumentImagesCache(Map<Integer, ImageDomainObject> images) {
+        Set<String> cacheIds = new HashSet<>();
 
+        for (int imageIndex : images.keySet()) {
+            ImageDomainObject image = images.get(imageIndex);
 
-	public void deleteDocumentImagesCache(Map<Integer, ImageDomainObject> images) {
-		Set<String> cacheIds = new HashSet<>();
+            if (image.isEmpty()) {
+                continue;
+            }
 
-		for (int imageIndex : images.keySet()) {
-			ImageDomainObject image = images.get(imageIndex);
+            ImageCacheDomainObject imageCache = new ImageCacheDomainObject();
+            imageCache.setWidth(image.getWidth());
+            imageCache.setHeight(image.getHeight());
+            imageCache.setFormat(image.getFormat());
+            imageCache.setCropRegion(image.getCropRegion());
+            imageCache.setRotateDirection(image.getRotateDirection());
 
-			if (image.isEmpty()) {
-				continue;
-			}
+            ImageSource source = image.getSource();
+            if (source instanceof FileDocumentImageSource) {
+                FileDocumentImageSource fileDocSource = (FileDocumentImageSource) source;
+                imageCache.setResource(Integer.toString(fileDocSource.getFileDocument().getId()));
+                imageCache.setType(ImageCacheDomainObject.TYPE_FILE_DOCUMENT);
+            } else {
+                imageCache.setResource(image.getUrlPathRelativeToContextPath());
+                imageCache.setType(ImageCacheDomainObject.TYPE_PATH);
+            }
+            imageCache.generateId();
 
-			ImageCacheDomainObject imageCache = new ImageCacheDomainObject();
-			imageCache.setWidth(image.getWidth());
-			imageCache.setHeight(image.getHeight());
-			imageCache.setFormat(image.getFormat());
-			imageCache.setCropRegion(image.getCropRegion());
-			imageCache.setRotateDirection(image.getRotateDirection());
+            cacheIds.add(imageCache.getId());
+        }
 
-			ImageSource source = image.getSource();
-			if (source instanceof FileDocumentImageSource) {
-				FileDocumentImageSource fileDocSource = (FileDocumentImageSource) source;
-				imageCache.setResource(Integer.toString(fileDocSource.getFileDocument().getId()));
-				imageCache.setType(ImageCacheDomainObject.TYPE_FILE_DOCUMENT);
-			} else {
-				imageCache.setResource(image.getUrlPathRelativeToContextPath());
-				imageCache.setType(ImageCacheDomainObject.TYPE_PATH);
-			}
-			imageCache.generateId();
+        if (cacheIds.isEmpty()) {
+            return;
+        }
 
-			cacheIds.add(imageCache.getId());
-		}
+        getCurrentSession()
+                .getNamedQuery("ImageCache.deleteAllById")
+                .setParameterList("ids", cacheIds)
+                .executeUpdate();
 
-		if (cacheIds.isEmpty()) {
-			return;
-		}
+        ImageCacheManager.deleteTextImageCacheEntries(cacheIds);
+    }
 
-		getCurrentSession()
-				.getNamedQuery("ImageCache.deleteAllById")
-				.setParameterList("ids", cacheIds)
-				.executeUpdate();
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public long getTextImageCacheFileSizeTotal() {
+        Number total = (Number) getCurrentSession()
+                .getNamedQuery("ImageCache.fileSizeTotal")
+                .uniqueResult();
 
-		ImageCacheManager.deleteTextImageCacheEntries(cacheIds);
-	}
+        return (total != null ? total.longValue() : 0L);
+    }
 
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public long getTextImageCacheFileSizeTotal() {
-		Number total = (Number) getCurrentSession()
-				.getNamedQuery("ImageCache.fileSizeTotal")
-				.uniqueResult();
+    public void deleteTextImageCacheLFUEntries() {
+        Session session = getCurrentSession();
 
-		return (total != null ? total.longValue() : 0L);
-	}
+        Number count = (Number) session
+                .getNamedQuery("ImageCache.countEntries")
+                .uniqueResult();
 
-	public void deleteTextImageCacheLFUEntries() {
-		Session session = getCurrentSession();
+        int deleteCount = (int) Math.ceil(count.longValue() * 0.1);
+        if (deleteCount < 1) {
+            return;
+        }
 
-		Number count = (Number) session
-				.getNamedQuery("ImageCache.countEntries")
-				.uniqueResult();
+        @SuppressWarnings("unchecked")
+        List<String> cacheIds = session
+                .getNamedQuery("ImageCache.idsByFrequency")
+                .setMaxResults(deleteCount)
+                .list();
 
-		int deleteCount = (int) Math.ceil(count.longValue() * 0.1);
-		if (deleteCount < 1) {
-			return;
-		}
+        if (cacheIds.isEmpty()) {
+            return;
+        }
 
-		@SuppressWarnings("unchecked")
-		List<String> cacheIds = session
-				.getNamedQuery("ImageCache.idsByFrequency")
-				.setMaxResults(deleteCount)
-				.list();
+        session.getNamedQuery("ImageCache.deleteAllById")
+                .setParameterList("ids", cacheIds)
+                .executeUpdate();
 
-		if (cacheIds.isEmpty()) {
-			return;
-		}
+        ImageCacheManager.deleteTextImageCacheEntries(cacheIds);
+    }
 
-		session.getNamedQuery("ImageCache.deleteAllById")
-				.setParameterList("ids", cacheIds)
-				.executeUpdate();
+    public void addImageCache(ImageCacheDomainObject imageCache) {
+        Session session = getCurrentSession();
 
-		ImageCacheManager.deleteTextImageCacheEntries(cacheIds);
-	}
+        session.getNamedQuery("ImageCache.deleteById")
+                .setString("id", imageCache.getId())
+                .executeUpdate();
 
-	public void addImageCache(ImageCacheDomainObject imageCache) {
-		Session session = getCurrentSession();
+        session.persist(imageCache);
+        session.flush();
+    }
 
-		session.getNamedQuery("ImageCache.deleteById")
-				.setString("id", imageCache.getId())
-				.executeUpdate();
+    public void incrementFrequency(String cacheId) {
+        getCurrentSession()
+                .getNamedQuery("ImageCache.incFrequency")
+                .setString("id", cacheId)
+                .setInteger("maxFreq", Integer.MAX_VALUE)
+                .executeUpdate();
+    }
 
-		session.persist(imageCache);
-		session.flush();
-	}
-
-	public void incrementFrequency(String cacheId) {
-		getCurrentSession()
-				.getNamedQuery("ImageCache.incFrequency")
-				.setString("id", cacheId)
-				.setInteger("maxFreq", Integer.MAX_VALUE)
-				.executeUpdate();
-	}
-
-	//fixme: implement - document version?
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<ImageDomainObject> getAllDocumentImages() {
-		throw new NotImplementedException();
-	}
+    //fixme: implement - document version?
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<ImageDomainObject> getAllDocumentImages() {
+        throw new NotImplementedException();
+    }
 }

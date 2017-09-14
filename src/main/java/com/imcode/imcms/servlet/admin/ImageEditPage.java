@@ -571,7 +571,8 @@ public class ImageEditPage extends OkCancelPage {
 
                 if (!(source.getTypeId() == otherSource.getTypeId()
                         && source.getUrlPathRelativeToContextPath().equals(
-                        otherSource.getUrlPathRelativeToContextPath()))) {
+                        otherSource.getUrlPathRelativeToContextPath())))
+                {
                     mayShareImages = false;
                     break;
                 }
@@ -613,7 +614,8 @@ public class ImageEditPage extends OkCancelPage {
     public String getLangCodes() {
         String[] codes = new String[imagesContainer.getImages().size()];
 
-        for (ListIterator<DocumentLanguage> i = new LinkedList<>(imagesContainer.getImages().keySet()).listIterator(); i.hasNext(); ) {
+        for (ListIterator<DocumentLanguage> i = new LinkedList<>(imagesContainer.getImages().keySet()).listIterator(); i.hasNext(); )
+        {
             codes[i.nextIndex()] = i.next().getCode();
         }
 
