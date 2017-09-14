@@ -19,7 +19,6 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.io.FileInputStreamSource;
-import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -287,7 +286,7 @@ public class DocumentController {
     protected Object getDateTimes(@PathVariable(value = "id") int id,
                                   HttpServletRequest request) {
 
-        Map<String, Object> map = new HashedMap<>();
+        Map<String, Object> map = new HashMap<>();
         DocumentDomainObject doc = Imcms.getServices().getDocumentMapper().getDocument(id);
 
         Date[] dates = doc.getArrDates();
@@ -297,7 +296,7 @@ public class DocumentController {
             String userBy = byUsers[i];
             String[] dateTimeBy = Utility.formatDateTime(dates[i]).split(" ");
 
-            final Map<String, Object> optionToValue = new HashedMap<>();
+            final Map<String, Object> optionToValue = new HashMap<>();
             optionToValue.put("date", dateTimeBy[0]);
             optionToValue.put("time", dateTimeBy[1]);
             optionToValue.put("by", userBy);
@@ -323,7 +322,7 @@ public class DocumentController {
             final DocumentDomainObject copyDocument = documentMapper.copyDocument(document, user);
             final int docId = copyDocument.getId();
             final String label = copyDocument.getHeadline();
-            final Map<String, Object> optionToValue = new HashedMap<>();
+            final Map<String, Object> optionToValue = new HashMap<>();
             optionToValue.put("id", docId);
             optionToValue.put("label", label);
 

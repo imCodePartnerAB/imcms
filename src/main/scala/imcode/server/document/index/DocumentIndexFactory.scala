@@ -5,10 +5,8 @@ import com.imcode._
 import _root_.imcode.server.ImcmsServices
 import _root_.imcode.server.document.index.service.impl._
 import _root_.imcode.server.document.FileDocumentDomainObject
-import com.imcode.imcms.mapping.{CategoryMapper, DocumentMapper}
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.io.FilenameUtils
-import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
 
 /**
  *
@@ -66,8 +64,6 @@ object DocumentIndexFactory extends Log4jLogger {
     new DocumentIndexServiceOps(
       services.getDocumentMapper,
       new DocumentIndexer(
-//        services.getManagedBean(classOf[DocumentMapper]),
-//        services.getManagedBean(classOf[CategoryMapper]),
         services.getDocumentMapper,
         services.getCategoryMapper,
         new DocumentContentIndexer(

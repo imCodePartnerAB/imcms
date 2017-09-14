@@ -285,12 +285,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>19.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
             <version>1.11</version>
@@ -307,51 +301,9 @@
         </dependency>
 
         <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.9.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.joda</groupId>
-            <artifactId>joda-convert</artifactId>
-            <version>1.8.1</version>
-        </dependency>
-
-        <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
-            <version>1.5.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.9.2</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.10</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-betwixt</groupId>
-            <artifactId>commons-betwixt</artifactId>
-            <version>0.8</version>
+            <version>1.6</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -383,35 +335,6 @@
             <version>1.6</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-digester3</artifactId>
-            <version>3.2</version>
-            <classifier>with-deps</classifier>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>cglib</artifactId>
-                    <groupId>cglib</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.3.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-        </dependency>
-
         <!--
             both commons-lang:commons-lang:2.6 and org.apache.commons:commons-lang3:3.1 are required
         -->
@@ -424,19 +347,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-pool</groupId>
-            <artifactId>commons-pool</artifactId>
-            <version>1.6</version>
-        </dependency>
-
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <version>1.6.1</version>
+            <version>3.6</version>
         </dependency>
 
         <dependency>
@@ -444,20 +355,6 @@
             <artifactId>commons-email</artifactId>
             <version>1.4</version>
         </dependency>
-
-        <!-- imCode Internal Repository dependencies -->
-        <!--dependency>
-            <groupId>gnu-crypto-javax-security</groupId>
-            <artifactId>gnu-crypto-javax-security</artifactId>
-            <version>2.0.1</version>
-        </dependency-->
-
-        <dependency>
-            <groupId>gnu-inetlib</groupId>
-            <artifactId>gnu-inetlib</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <!-- End of imCode Internal Repository dependencies -->
 
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -500,25 +397,6 @@
             <artifactId>imcode-ldap</artifactId>
             <version>0.1</version>
         </dependency>
-
-        <dependency>
-            <groupId>oro</groupId>
-            <artifactId>oro</artifactId>
-            <version>2.0.8</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-
-        <!-- MS-SQL JDBC Driver-->
-        <!--<dependency>-->
-        <!--<groupId>net.sourceforge.jtds</groupId>-->
-        <!--<artifactId>jtds</artifactId>-->
-        <!--<version>1.3.1</version>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>mysql</groupId>
@@ -564,7 +442,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>1.7.1.RELEASE</version>
+            <version>1.10.5.RELEASE</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.hibernate.javax.persistence</groupId>
@@ -587,12 +465,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.8.8</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
             <version>1.7</version>
@@ -609,21 +481,6 @@
             <artifactId>sanselan</artifactId>
             <version>0.97-incubator</version>
         </dependency>
-
-        <!-- PROVIDED -->
-        <!--<dependency>-->
-        <!--<groupId>checkstyle</groupId>-->
-        <!--<artifactId>checkstyle</artifactId>-->
-        <!--<version>4.4</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <dependency>
-            <groupId>jakarta-regexp</groupId>
-            <artifactId>jakarta-regexp</artifactId>
-            <version>1.4</version>
-        </dependency>
-
 
         <!-- ===== -->
         <!-- Scala -->
@@ -695,30 +552,6 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.apache.solr</groupId>-->
-        <!--<artifactId>solr-solrj</artifactId>-->
-        <!--<version>${solr.version}</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>org.apache.lucene</groupId>-->
-        <!--<artifactId>lucene-core</artifactId>-->
-        <!--<version>${solr.version}</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>org.apache.lucene</groupId>-->
-        <!--<artifactId>lucene-queryparser</artifactId>-->
-        <!--<version>${solr.version}</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>org.apache.lucene</groupId>-->
-        <!--<artifactId>lucene-analyzers-common</artifactId>-->
-        <!--<version>${solr.version}</version>-->
-        <!--</dependency>-->
-
         <!--
         HttpSolr depends on httpclient and httpmime
         -->
@@ -739,24 +572,6 @@
             <artifactId>httpcore</artifactId>
             <version>4.4.4</version>
         </dependency>
-
-        <dependency>
-            <groupId>net.jcip</groupId>
-            <artifactId>jcip-annotations</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpmime</artifactId>
-            <version>4.3.6</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.8.1</version>
-        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -772,13 +587,6 @@
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency>
-
-        <!--dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-servlet-api</artifactId>
-            <version>${tomcat.version}</version>
-            <scope>provided</scope>
-        </dependency-->
 
         <dependency>
             <groupId>org.apache.tomcat</groupId>
@@ -803,20 +611,6 @@
             <version>${tomcat.version}</version>
         </dependency>
 
-        <!--dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-dbcp</artifactId>
-            <version>${tomcat.version}</version>
-            <scope>provided</scope>
-        </dependenc-->
-
-        <dependency>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-            <version>2.0.2</version>
-        </dependency>
-
-
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -840,24 +634,6 @@
             <groupId>com.jcabi</groupId>
             <artifactId>jcabi-w3c</artifactId>
             <version>1.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jcabi</groupId>
-            <artifactId>jcabi-matchers</artifactId>
-            <version>1.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-common</artifactId>
-            <version>2.22.1</version>
         </dependency>
         <!--/W3C validators api-->
     </dependencies>
@@ -965,19 +741,6 @@
                     <artifactId>tomcat7-maven-plugin</artifactId>
                     <version>2.2</version>
                 </plugin>
-
-                <!--plugin>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-maven-plugin</artifactId>
-                    <version>${jetty.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.tomcat</groupId>
-                            <artifactId>tomcat-dbcp</artifactId>
-                            <version>${tomcat.version}</version>
-                        </dependency>
-                    </dependencies>
-                </plugin-->
             </plugins>
         </pluginManagement>
 
@@ -1010,20 +773,6 @@
                         <jvmArg>-Xms1024m</jvmArg>
                         <jvmArg>-Xmx1024m</jvmArg>
                     </jvmArgs>
-                    <args>
-                        <!--<arg>-feature</arg>-->
-                        <!--<arg>-unchecked</arg>-->
-                        <!--<arg>-deprecation</arg>-->
-                        <!--<arg>-explaintypes</arg>-->
-                        <!--
-                            Shortens generated classfile names - unpredictable behaviour
-                        -->
-                        <!--<arg>-Xmax-classfile-name</arg>-->
-                        <!--<arg>72</arg>-->
-                    </args>
-                    <!--<excludes>-->
-                    <!--<exclude>**/test/**</exclude>-->
-                    <!--</excludes>-->
                     <verbose>true</verbose>
                 </configuration>
 
@@ -1216,11 +965,11 @@
                                     <srcfiles dir="${project.basedir}" includes="build.properties.template"/>
                                 </uptodate>
 
-                                <!--<fail unless="build-properties-up-to-date">-->
-                                <!--'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT-->
-                                <!--for details.)-->
-                                <!--Copy 'build.properties.template' content into 'build.properties' and edit it!-->
-                                <!--</fail>-->
+                                <fail unless="build-properties-up-to-date">
+                                'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT
+                                for details.)
+                                Copy 'build.properties.template' content into 'build.properties' and edit it!
+                                </fail>
                             </target>
                         </configuration>
                         <goals>
@@ -1246,36 +995,6 @@
 
                 </executions>
             </plugin>
-
-            <!--<plugin>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-jspc-maven-plugin</artifactId>-->
-            <!--<version>${jetty.version}</version>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<id>jspc</id>-->
-            <!--<phase>test</phase>-->
-            <!--<goals>-->
-            <!--<goal>jspc</goal>-->
-            <!--</goals>-->
-            <!--<configuration>-->
-            <!--<excludes>-->
-            <!--**/apisamples/*,-->
-            <!--**/eng/jsp/category_admin_category.included.jsp, **/eng/jsp/text_restorer.jsp,-->
-            <!--**/swe/jsp/category_admin_category.included.jsp, **/swe/jsp/text_restorer.jsp,-->
-
-            <!--**/document_search_terms.jsp-->
-            <!--</excludes>-->
-            <!--<mergeFragment>false</mergeFragment>-->
-            <!--<webAppSourceDirectory>${build.webapp.dir}</webAppSourceDirectory>-->
-            <!--<jspc>-->
-            <!--<compilerSourceVM>1.8</compilerSourceVM>-->
-            <!--<compilerTargetVM>1.8</compilerTargetVM>-->
-            <!--</jspc>-->
-            <!--</configuration>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--</plugin>-->
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -1321,33 +1040,13 @@
                             </includes>
                         </resource>
                     </webResources>
-
-                    <!--
-                        War source directory must not be set to existing directory
-                        since webappDirectory (the directory where the webapp is built) is created using ant script.
-                    -->
-                    <!--<outputDirectory>docs/common/webapp/</outputDirectory>-->
-                    <!--<outputDirectory>target/</outputDirectory>-->
-
                     <warSourceDirectory/>
-
-                    <!--<webResources>-->
-                    <!--<resource>-->
-                    <!--<directory>src/main/sql</directory>-->
-                    <!--<targetPath>WEB-INF/sql</targetPath>-->
-                    <!--</resource>-->
-                    <!--</webResources>-->
                 </configuration>
             </plugin>
 
             <plugin>
                 <artifactId>maven-install-plugin</artifactId>
                 <version>2.5.2</version>
-                <configuration>
-                    <!--
-                    <updateReleaseInfo>true</updateReleaseInfo>
-                    -->
-                </configuration>
             </plugin>
 
             <plugin>

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -33,7 +34,7 @@ public class LinkService {
     private final static String URL_PARAMETER_PATTERN = "\\{\\d{1,3}\\}";
     private static final Log logger = LogFactory.getLog(LinkService.class);
     private static final String LINKS_JSON = "/WEB-INF/conf/links.json";
-    private Map<String, String> linksMap = new HashedMap<>();
+    private Map<String, String> linksMap = new HashMap<>();
     private List<StringLink> links;
 
     @Autowired
