@@ -2,6 +2,7 @@
     <%@ page import="com.imcode.imcms.servlet.Version" %>
     <%@ page import="imcode.server.Imcms "%>
     <%@ page import="imcode.server.document.DocumentDomainObject" %>
+    <%@ page import="imcode.server.ImcmsConstants"%>
     <%@ page contentType="text/javascript" pageEncoding="UTF-8"	%>
     <%
 
@@ -15,6 +16,7 @@
 	final String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext());
 
 	pageContext.setAttribute("version", imcmsVersion);
+    pageContext.setAttribute("editModeFlags", ImcmsConstants.PERM_EDIT_DOCUMENT);
     pageContext.setAttribute("isEditMode", isEditMode);
     pageContext.setAttribute("isVersioningAllowed", Imcms.isVersioningAllowed());
     pageContext.setAttribute("language", language);
@@ -22,6 +24,7 @@
 
 %>
     Imcms = {
+        flags: ${isEditMode ? editModeFlags : 0},
         contextPath: "${pageContext.request.contextPath}",
         version: "${version}",
         isEditMode: ${isEditMode},
