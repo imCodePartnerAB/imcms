@@ -1,28 +1,39 @@
-<%@ page import="com.imcode.imcms.api.DocumentLanguage" %><%@
-	page import="com.imcode.imcms.servlet.Version" %><%@
-	page import="imcode.server.Imcms "%><%@
-	page import="imcode.server.document.DocumentDomainObject" %><%@
-	page contentType="text/javascript" pageEncoding="UTF-8"	%><%
+<%@ page import="com.imcode.imcms.api.DocumentLanguage" %>
+    <%@ page import="com.imcode.imcms.servlet.Version" %>
+    <%@ page import="imcode.server.Imcms "%>
+    <%@ page import="imcode.server.document.DocumentDomainObject" %>
+    <%@ page contentType="text/javascript" pageEncoding="UTF-8"	%>
+    <%
 
-	final Integer metaId = Integer.parseInt(request.getParameter("meta_id"));
+    final Integer metaId = Integer.parseInt(request.getParameter("meta_id"));
 	final DocumentDomainObject document =  Imcms.getServices().getDocumentMapper().getDocument(metaId);
 	final DocumentLanguage language = document.getLanguage();
+
 	final boolean isEditMode = (request.getParameterMap().containsKey("flags")
 		 && Integer.valueOf(request.getParameter("flags")) > 0);
+
+	final String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext());
+
+	pageContext.setAttribute("version", imcmsVersion);
+    pageContext.setAttribute("isEditMode", isEditMode);
+    pageContext.setAttribute("isVersioningAllowed", Imcms.isVersioningAllowed());
+    pageContext.setAttribute("language", language);
+    pageContext.setAttribute("document", document);
+
 %>
     Imcms = {
         contextPath: "${pageContext.request.contextPath}",
-        version: "<%= Version.getImcmsVersion(getServletConfig().getServletContext()) %>",
-        isEditMode: <%= isEditMode %>,
-        isVersioningAllowed: <%= Imcms.isVersioningAllowed() %>,
+        version: "${version}",
+        isEditMode: ${isEditMode},
+        isVersioningAllowed: ${isVersioningAllowed},
         document: {
-            id: <%=document.getId()%>,
-            type: <%=document.getDocumentTypeId()%>,
-            label: "<%=document.getHeadline()%>"
+            id: ${document.id},
+            type: ${document.documentTypeId},
+            label: "${document.headline}"
         },
         language: {
-            name: "<%=language.getName()%>",
-            nativeName: "<%=language.getNativeName()%>",
-            code: "<%=language.getCode()%>"
+            name: "${language.name}",
+            nativeName: "${language.nativeName}",
+            code: "${language.code}"
         }
     };
