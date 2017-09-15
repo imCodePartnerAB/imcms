@@ -252,7 +252,7 @@
         update: function (indexes, isEnabledFlags, loopId, callback) {
             API.update({
                 loopId: loopId,
-                meta: Imcms.document.meta,
+                meta: Imcms.document.id,
                 indexes: indexes,
                 isEnabledFlags: isEnabledFlags
             }, callback);

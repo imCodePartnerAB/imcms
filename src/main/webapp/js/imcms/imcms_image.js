@@ -1255,7 +1255,7 @@
         },
         generateImageTag: function (imageNo, src) {
             this._id = imageNo;
-            this._meta = Imcms.document.meta;
+            this._meta = Imcms.document.id;
             this._language = Imcms.language.code;
 
             this._element = $("<div>")
@@ -1310,7 +1310,7 @@
         },
         onBrowserOpen: function () {
             $.ajax({
-                url: Imcms.Linker.getContextPath() + "/api/content/image/emptyNo/" + Imcms.document.meta + "/LOWER",
+                url: Imcms.Linker.getContextPath() + "/api/content/image/emptyNo/" + Imcms.document.id + "/LOWER",
                 success: this.onFreeImageIndexReceived.bind(this)
             });
         },
@@ -1348,12 +1348,12 @@
     };
 
     function resolveLoopImageStringObject(docData) {
-        return ((docData._meta || Imcms.document.meta) + "/" + docData._id + "?loopId=" + docData._loopId +
+        return ((docData._meta || Imcms.document.id) + "/" + docData._id + "?loopId=" + docData._loopId +
         "&entryId=" + docData._entryId + "&langCode=" + docData._language)
     }
 
     function resolveImageStringObject(docData) {
-        return (docData._meta || Imcms.document.meta) + "/" + docData._id + "?langCode=" + docData._language;
+        return (docData._meta || Imcms.document.id) + "/" + docData._id + "?langCode=" + docData._language;
     }
 
     Imcms.Image.Loader = function () {

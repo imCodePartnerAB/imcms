@@ -85,7 +85,7 @@
 
                 if (this.pageInfoCounter === false) {
                     this.pageInfoCounter = true;
-                    Imcms.Editors.Document.getDocument(Imcms.document.meta, function (data) {
+                    Imcms.Editors.Document.getDocument(Imcms.document.id, function (data) {
                         var viewer = new Imcms.Document.Viewer({
                             data: data,
                             type: Imcms.document.type,

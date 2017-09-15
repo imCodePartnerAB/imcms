@@ -34,7 +34,7 @@
                 Imcms.Events.on("TextEditorRedirect", function () {
                     Imcms.BackgroundWorker.createTask({
                         showProcessWindow: true,
-                        redirectURL: Imcms.Linker.get("admin.document.redirect.full", Imcms.document.meta)
+                        redirectURL: Imcms.Linker.get("admin.document.redirect.full", Imcms.document.id)
                     })()
                 });
             }
@@ -65,7 +65,7 @@
                     Imcms.Events.on("imcmsEditorClose", function () {
                         Imcms.BackgroundWorker.createTask({
                             showProcessWindow: true,
-                            redirectURL: Imcms.Linker.get("admin.document.redirect.full", Imcms.document.meta)
+                            redirectURL: Imcms.Linker.get("admin.document.redirect.full", Imcms.document.id)
                         })()
                     });
                 }, 500);
