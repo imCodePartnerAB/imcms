@@ -1,0 +1,37 @@
+.imcms-date-time {
+    background-color: #fff;
+    border: 1px solid #d3d8de;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    display: inline-block;
+    overflow: visible;
+    padding: 10px;
+    position: relative;
+    max-width: 160px;
+    min-width: 94px;
+}
+
+.imcms-date-time .imcms-date-time__date-picker {
+    display: inline-block;
+    float: left;
+    width: 70%;
+}
+
+.imcms-date-time .imcms-date-picker__current-date input {
+    text-align: center;
+}
+
+.imcms-date-time .imcms-time-picker__current-time input {
+    text-align: left;
+}
+
+.imcms-date-time .imcms-date-time__time-picker {
+    display: inline-block;
+    float: left;
+    width: 30%;
+}
+
+.imcms-date-time--without-label {
+    margin-top: 25px;
+}

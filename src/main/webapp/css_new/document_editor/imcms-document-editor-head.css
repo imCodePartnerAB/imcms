@@ -1,0 +1,30 @@
+.imcms-document-editor-head {
+    width: 100%;
+}
+
+.imcms-document-editor-head__tools {
+    padding: 0 27px 14px;
+}
+
+.imcms-document-editor-head-tools__tool {
+    padding: 0 10px;
+}
+
+.imcms-document-editor-head-tool__button {
+    padding: 13px 17px;
+    width: 100%;
+}
+
+.imcms-input-search__text-box {
+    width: 100%;
+    padding: 10px 30px 10px 15px;
+}
+
+.imcms-document-editor-head-tool__select {
+    display: block;
+    width: 100%;
+}
+
+.imcms-document-editor-head-tool__select .imcms-drop-down-list {
+    display: block;
+}

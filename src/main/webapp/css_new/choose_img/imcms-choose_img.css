@@ -1,0 +1,88 @@
+.imcms-choose-img-wrap {
+    cursor: pointer;
+    display: block;
+    float: left;
+    width: 11%;
+    min-width: 146px;
+    margin-right: 1.5%;
+    margin-bottom: 51px;
+    padding: 14px;
+}
+
+.imcms-choose-img {
+    background: #e4e4f2 url("../../images_new/choose_img/img1.png") no-repeat center;
+    background-size: contain;
+    width: 100%;
+    height: 146px;
+}
+
+.imcms-choose-img-description {
+    padding: 7px;
+    position: relative;
+    width: 100%;
+}
+
+.imcms-choose-img-description__date {
+    color: #587380;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 25px;
+    text-align: left;
+}
+
+.imcms-choose-img-description__button {
+    display: none;
+    position: absolute;
+    top: 7px;
+    right: 7px;
+}
+
+.imcms-choose-img-description__img-title {
+    font-size: 17px;
+}
+
+.imcms-choose-img-description__img-size {
+    color: #587380;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 22px;
+    text-align: left;
+}
+
+.imcms-choose-img-wrap:hover {
+    background-color: #fff;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
+    margin-bottom: 65px;
+    padding: 7px;
+}
+
+.imcms-choose-img-wrap:hover .imcms-choose-img {
+    background-color: #fff;
+}
+
+.imcms-choose-img-wrap:hover .imcms-choose-img-description__button {
+    display: block;
+}
+
+.imcms-choose-img-wrap--active {
+    background-color: #fff;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
+    margin-bottom: 65px;
+    padding: 7px;
+}
+
+.imcms-choose-img-wrap--active .imcms-choose-img {
+    background-color: #fff;
+}
+
+.imcms-choose-img-wrap--active .imcms-choose-img-description__button {
+    display: block;
+}

@@ -1,0 +1,41 @@
+.imcms-head {
+    text-align: center;
+    display: block;
+    width: 100%;
+}
+
+.imcms-left-side {
+    -webkit-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    display: block;
+    float: left;
+    height: 100%;
+    width: 25%;
+}
+
+.imcms-content-manager .imcms-right-side {
+    height: 85%;
+}
+
+.imcms-right-side {
+    display: block;
+    float: left;
+    overflow-y: auto;
+    padding: 0 27px;
+    width: 75%;
+    height: 80%;
+}
+
+.imcms-footer {
+    display: block;
+    float: left;
+    padding: 27px;
+    width: 75%;
+    height: 15%;
+}
+
+.imcms-footer button {
+    float: right;
+    margin-left: 8px;
+}

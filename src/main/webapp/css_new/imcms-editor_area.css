@@ -1,0 +1,84 @@
+.imcms-editor-area {
+    background-color: white;
+    border: 2px solid #f2f2fc;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
+    display: inline-block;
+    padding: 10px 25px 10px 10px;
+    position: relative;
+    width: 100%;
+}
+
+.imcms-editor-area__text-toolbar {
+    background-color: white;
+    width: 100%;
+    position: absolute;
+    top: -32px;
+    left: -2px;
+}
+
+.imcms-editor-area--active,
+.imcms-editor-area:hover {
+    border: 2px solid rgba(0, 149, 217, 0.58);
+}
+
+.imcms-editor-area--image {
+    width: fit-content;
+}
+
+.imcms-editor-area__content-wrap,
+.imcms-editor-area__content {
+    width: 100%;
+    display: inline-block;
+}
+
+.imcms-editor-area__control-wrap {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.imcms-editor-area__control-edit {
+    display: block;
+    float: right;
+
+}
+
+.imcms-editor-area__control-title {
+    background: #2e3f47;
+    border-radius: 5px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 40px;
+    text-align: center;
+    display: none;
+    position: absolute;
+    top: -47px;
+    left: -46px;
+    width: 120px;
+    height: 40px;
+    z-index: 25;
+}
+
+.imcms-editor-area__control-title:before {
+    content: '';
+    background: #2e3f47;
+    display: block;
+    position: absolute;
+    bottom: -5px;
+    left: 51px;
+    width: 10px;
+    height: 10px;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.imcms-editor-area__control-wrap:hover .imcms-editor-area__control-title {
+    display: block;
+}

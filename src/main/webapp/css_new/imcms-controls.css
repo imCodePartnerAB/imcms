@@ -1,0 +1,72 @@
+.imcms-main-folders-controls {
+    border-bottom: 2px solid #d3d8de;
+    display: block;
+    overflow: hidden;
+    padding: 26px 25px;
+    width: 100%;
+}
+
+.imcms-main-folders-controls__control {
+    float: right;
+}
+
+.imcms-folder__controls,
+.imcms-menu-item__controls {
+    display: none;
+    float: right;
+    padding: 26px 0;
+    position: relative;
+}
+
+.imcms-menu-item__controls {
+    display: none;
+    padding: 14px 0;
+    position: absolute;
+    top: 0;
+    right: 27px;
+}
+
+.imcms-controls__control {
+    display: block;
+    float: right;
+    margin-left: 18px;
+}
+
+.imcms-panel-named {
+    background-color: #545c6f;
+    display: block;
+    height: 70px;
+    width: 100%;
+    overflow: hidden;
+    padding-left: 70px;
+    padding-top: 16px;
+}
+
+.imcms-panel-named__input {
+    display: inline-block;
+    width: 70%;
+    margin-right: 10px;
+    padding: 8px 15px;
+}
+
+.imcms-panel-named__input:focus {
+    border-color: #d3d8de;
+}
+
+.imcms-panel-named__button {
+    display: inline-block;
+    color: #fff;
+}
+
+.imcms-panel-named__button:hover {
+    color: #0b94d8;
+}
+
+.imcms-main-folders-controls__name {
+    padding-left: 45px;
+    color: #fff;
+    cursor: pointer;
+    text-transform: uppercase;
+    text-align: left;
+    float: left;
+}

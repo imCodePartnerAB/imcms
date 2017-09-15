@@ -1,0 +1,18 @@
+.imcms-edit-image {
+    text-align: center;
+    display: block;
+    padding-top: 40px;
+}
+
+.imcms-edit-image__button {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.imcms-edit-image__button:hover {
+    border-color: #0b94d8;
+}
+
+.imcms-edit-image__button:last-child {
+    margin-right: 0;
+}

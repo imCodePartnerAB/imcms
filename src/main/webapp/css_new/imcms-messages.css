@@ -1,0 +1,27 @@
+.imcms-error-msg {
+    color: #da1a1a;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+}
+
+.imcms-info-msg {
+    color: #b35100;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+}
+
+.imcms-title {
+    color: #2f4047;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 15px;
+}
+
+.imcms-form__field .imcms-title {
+    margin-bottom: 10px;
+}

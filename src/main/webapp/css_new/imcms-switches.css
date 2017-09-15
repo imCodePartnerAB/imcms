@@ -1,0 +1,18 @@
+.imcms-switches {
+    overflow: hidden;
+}
+
+.imcms-flags::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.imcms-switches__switch {
+    float: left;
+    margin-right: 10px;
+}
+
+.imcms-switches__switch:last-child {
+    margin-right: 0;
+}

@@ -1,0 +1,109 @@
+.imcms-image_editor {
+    background-color: #f3f3fc;
+    display: block;
+    width: 100%;
+    height: 100%;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.imcms-image_editor__head {
+    background-color: #fff;
+    -webkit-box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
+    -moz-box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
+    box-shadow: 0 0 31px 4px rgba(47, 58, 144, 0.16);
+    padding-left: 42px;
+    padding-right: 42px;
+    position: relative;
+    z-index: 20;
+}
+
+.imcms-image_editor__head .imcms-head__title {
+    color: #0b94d8;
+    text-align: left;
+}
+
+.imcms-image_editor__head button {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+}
+
+.imcms-image_editor__image-characteristics {
+    border-bottom: 1px solid #d3d8de;
+    padding-right: 42px;
+    padding-left: 42px;
+    height: 64px;
+}
+
+.imcms-image_editor__image-characteristics:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.imcms-image_editor__left-side {
+    float: left;
+    position: relative;
+    width: 74%;
+    height: 88%;
+    height: -webkit-calc(100% - 106px);
+    height: -moz-calc(100% - 106px);
+    height: -o-calc(100% - 106px);
+    height: calc(100% - 106px);
+}
+
+.imcms-image_editor__right-side {
+    display: inline-block;
+    position: relative;
+    width: 26%;
+    height: 88%;
+    height: -webkit-calc(100% - 106px);
+    height: -moz-calc(100% - 106px);
+    height: -o-calc(100% - 106px);
+    height: calc(100% - 106px);
+}
+
+.imcms-image_editor__footer {
+    border-top: 1px solid #d3d8de;
+    border-left: 1px solid #d3d8de;
+    display: block;
+    position: relative;
+    height: 125px;
+    width: 100%;
+}
+
+.imcms-image_editor__footer button {
+    position: absolute;
+    top: 25%;
+}
+
+.imcms-image_editor__footer .imcms-button--negative {
+    right: 40%;
+}
+
+.imcms-image_editor__footer .imcms-button--save {
+    right: 2%;
+}
+
+@media screen and (max-width: 1650px) {
+    .imcms-image_editor__footer .imcms-button--negative {
+        right: 45%;
+    }
+}
+
+@media screen and (max-width: 1450px) {
+
+    .imcms-image_editor__footer button {
+        position: static;
+        margin: 10px auto;
+    }
+}
+
+@media screen and (max-width: 790px) {
+    .imcms-image_editor__image-characteristics {
+        padding: 0 20px;
+    }
+}

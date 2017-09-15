@@ -1,0 +1,67 @@
+.imcms-modal-layout {
+    background-color: rgba(42, 42, 42, 0.8);
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10001;
+}
+
+.imcms-modal-layout--front {
+    z-index: 10004;
+}
+
+.imcms-modal-window {
+    -webkit-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+    position: absolute;
+    top: -webkit-calc(50% - 100px);
+    top: -moz-calc(50% - 100px);
+    top: -ms-calc(50% - 100px);
+    top: -o-calc(50% - 100px);
+    top: calc(50% - 100px);
+    left: -webkit-calc(50% - 130px);
+    left: -moz-calc(50% - 130px);
+    left: -ms-calc(50% - 130px);
+    left: -o-calc(50% - 130px);
+    left: calc(50% - 130px);
+    height: 200px;
+    width: 260px;
+    z-index: 10005;
+}
+
+.imcms-modal-window__modal-head {
+    background-color: #389ecf;
+}
+
+.imcms-modal-window__modal-body {
+    background-color: #f3f5f7;
+    display: block;
+    width: 100%;
+    height: 100px;
+}
+
+.imcms-modal-body__text {
+    line-height: 25px;
+    font-size: 15px;
+    text-align: center;
+    padding: 5px 15px;
+}
+
+.imcms-modal-window__modal-footer {
+    background-color: #f3f5f7;
+    text-align: center;
+    display: block;
+    width: 100%;
+    height: 58px;
+}
+
+.imcms-modal-footer__button {
+    display: inline-block;
+    margin: 11px 10px;
+    padding: 10px 18px;
+}

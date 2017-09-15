@@ -1,0 +1,41 @@
+.imcms-edit-size {
+    display: block;
+    min-width: 300px;
+    height: 100%;
+}
+
+.imcms-edit-size__title {
+    display: block;
+    width: 100%;
+    line-height: 40px;
+}
+
+.imcms-edit-size__number {
+    float: left;
+}
+
+.imcms-edit-size .imcms-number {
+    float: left;
+    width: 100px;
+}
+
+.imcms-edit-size__button {
+    float: left;
+    margin: 3px 15px;
+}
+
+.imcms-edit-size .imcms-edit-size__number {
+    width: auto;
+}
+
+.imcms-edit-size__number .imcms-number__label {
+    margin-right: 5px;
+}
+
+.imcms-edit-size__number .imcms-number-box {
+    display: inline-block;
+}
+
+.imcms-edit-size__number .imcms-number-box__input {
+    width: 100px;
+}

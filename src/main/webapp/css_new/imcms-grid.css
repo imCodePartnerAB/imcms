@@ -1,0 +1,14 @@
+.imcms-field__item--col-3 {
+    width: 33.33%;
+    margin-right: 0;
+    margin-bottom: 10px;
+}
+
+.imcms-field__item--col-3 .imcms-item__input {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.imcms-field__item--col-3 .imcms-item__label {
+    display: block;
+}

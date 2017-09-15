@@ -1,0 +1,45 @@
+.imcms-menu-item {
+    cursor: pointer;
+    display: block;
+    overflow: hidden;;
+    padding-left: 70px;
+    padding-right: 35px;
+    position: relative;
+    width: 100%;
+}
+
+.imcms-menu-item__btn {
+    padding-left: 70px;
+    background: url("../../images_new/controls/icon_sub_close_dark.png") no-repeat center;
+}
+
+.imcms-menu-item__btn {
+    cursor: pointer;
+    display: block;
+    padding: 10px;
+    position: absolute;
+    top: 12px;
+    left: 37px;
+    width: 10px;
+    height: 10px;
+}
+
+.imcms-menu-item-btn--open {
+    background: url("../../images_new/controls/icon_sub_open_dark.png") no-repeat center;
+}
+
+.imcms-menu-item__info {
+    cursor: pointer;
+    line-height: 45px;
+    text-transform: none;
+    text-align: left;
+    float: left;
+}
+
+.imcms-menu-item:hover {
+    background: #d0e9f9;
+}
+
+.imcms-menu-item:hover .imcms-menu-item__controls {
+    display: block;
+}

@@ -1,0 +1,107 @@
+.imcms-right-side::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.imcms-right-side::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+}
+
+.imcms-right-side::-webkit-scrollbar-thumb {
+    background-color: #abacad;
+}
+
+.imcms-left-side::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.imcms-left-side::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+}
+
+.imcms-left-side::-webkit-scrollbar-thumb {
+    background-color: #abacad;
+}
+
+.imcms-content-manager__left-side::-webkit-scrollbar-thumb {
+    background-color: #6c7383;
+}
+
+.imcms-text-area__input::-webkit-scrollbar-track {
+    background-color: transparent;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.imcms-text-area__input::-webkit-scrollbar {
+    background-color: transparent;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    width: 6px;
+}
+
+.imcms-text-area__input::-webkit-scrollbar-thumb {
+    background-color: #abacad;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.imcms-editable-img-area::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.imcms-editable-img-area::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+    height: 6px;
+}
+
+.imcms-editable-img-area::-webkit-scrollbar-thumb {
+    background-color: #6c7383;
+}
+
+.imcms-editable-controls-area::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.imcms-editable-controls-area::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+    height: 10px;
+}
+
+.imcms-editable-controls-area::-webkit-scrollbar-thumb {
+    background-color: #abacad;
+}
+
+.imcms-menu-list__items::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.imcms-menu-list__items::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+    height: 6px;
+}
+
+.imcms-menu-list__items::-webkit-scrollbar-thumb {
+    background-color: #abacad;
+}
+
+.imcms-document-list__items::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.imcms-document-list__items::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+    height: 6px;
+}
+
+.imcms-document-list__items::-webkit-scrollbar-thumb {
+    background-color: #abacad;
+}

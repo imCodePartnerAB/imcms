@@ -1,0 +1,41 @@
+.imcms-field__keywords-box .imcms-keyword__label {
+    display: block;
+}
+
+.imcms-keyword .imcms-text-box__input {
+    display: inline-block;
+    margin-right: 23px;
+}
+
+.imcms-keyword__button {
+    display: inline-block;
+}
+
+.imcms-keyword__keywords {
+    display: none;
+    margin-top: 11px;
+}
+
+.imcms-keyword__keyword {
+    color: #2f4047;
+    background-color: #d0e9f9;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 15px;
+    display: inline-block;
+    margin-right: 5px;
+    padding: 6px 14px;
+}
+
+.imcms-keyword__keyword:last-child {
+    margin-right: 0;
+}
+
+.imcms-field .imcms-keyword .imcms-input.imcms-input--wide {
+    width: 90%;
+    margin-right: 23px;
+}
