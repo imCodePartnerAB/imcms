@@ -12,13 +12,13 @@ Imcms.define("imcms-text-editor-initializer",
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
         var inlineEditorConfig = {
-            skin_url: contextPath + '/libs/tinymce/skins/white',
+            skin_url: contextPath + '/js/libs/tinymce/skins/white',
             cache_suffix: '?v=0.0.1',
             branding: false,
             skin: 'white',
             inline: true,
             toolbar_items_size: 'small',
-            content_css: contextPath + '/stylesheets/imcms-text_editor.css',
+            content_css: contextPath + '/css_new/imcms-text_editor.css',
             plugins: ['autolink link image lists hr code fullscreen save table contextmenu'],
             toolbar: 'code | bold italic underline | bullist numlist | hr |' +
             ' alignleft aligncenter alignright alignjustify | link image | fullscreen | save',
