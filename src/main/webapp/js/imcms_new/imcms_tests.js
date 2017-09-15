@@ -69,13 +69,6 @@ Imcms.define("imcms-tests", ["imcms", "jquery"], function (imcms, $) {
             });
             return true;
         },
-        checkJqueryMaskModuleLoading: function () {
-            Imcms.require(["jquery", "jquery-mask"], function ($) {
-                console.assert($, "jQuery not loaded!");
-                console.assert($.fn.mask, "jQuery.mask not found!");
-            });
-            return true;
-        },
         checkIndependentDefine: function () {
             Imcms.define("imcms-independent-define", function () {
                 console.assert(arguments.length === 0, "Some wrong arguments applied! " + arguments);
@@ -91,33 +84,6 @@ Imcms.define("imcms-tests", ["imcms", "jquery"], function (imcms, $) {
                 });
             }, 300);
 
-            return true;
-        },
-        checkInputEventSequance: function () {
-            Imcms.require(["jquery"], function ($) {
-
-                $('body').detach();
-
-                function keydown() {
-                    console.log("keydown: " + this.value)
-                }
-
-                function keypress() {
-                    console.log("keypress: " + this.value)
-                }
-
-                function keyup() {
-                    console.log("keyup: " + this.value)
-                }
-
-                function input() {
-                    console.log("input: " + this.value)
-                }
-
-                var $body = $('<body>')
-                    .append($('<input>').keydown(keydown).keyup(keyup).keypress(keypress).on('input', input));
-                $('html').append($body);
-            });
             return true;
         },
         runAllTests: function () {
