@@ -16,7 +16,7 @@
 	final String imcmsVersion = Version.getImcmsVersion(getServletConfig().getServletContext());
 
 	pageContext.setAttribute("version", imcmsVersion);
-    pageContext.setAttribute("accessFlags", isEditMode ? ImcmsConstants.PERM_EDIT_DOCUMENT : 0);
+    pageContext.setAttribute("editDocAccessFlags", ImcmsConstants.PERM_EDIT_DOCUMENT);
     pageContext.setAttribute("isEditMode", isEditMode);
     pageContext.setAttribute("isVersioningAllowed", Imcms.isVersioningAllowed());
     pageContext.setAttribute("language", language);
@@ -24,7 +24,7 @@
 
 %>
     Imcms = {
-        accessFlags: ${accessFlags},
+        accessFlags: ${editDocAccessFlags},
         contextPath: "${pageContext.request.contextPath}",
         version: "${version}",
         isEditMode: ${isEditMode},
