@@ -2055,7 +2055,7 @@ Imcms.Document.TypeViewer.prototype = {
         documentSearchDialog.open();
     },
     onLoaded: function (data) {
-        $(this._builder.ref("parentDocument").getHTMLElement()).val(Imcms.document.label).attr("data-id", Imcms.document.meta);
+        $(this._builder.ref("parentDocument").getHTMLElement()).val(Imcms.document.label).attr("data-id", Imcms.document.id);
     },
     apply: function () {
         this._options.onApply({

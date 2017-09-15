@@ -114,7 +114,7 @@
             if ((data.content !== content) || CKEDITOR.switchFormat) {
                 data.content = content;
                 if (!data.meta) {
-                    data.meta = Imcms.document.meta;
+                    data.meta = Imcms.document.id;
                 }
 
                 var shouldRefreshPage = false;
@@ -163,7 +163,7 @@
             data = { // sending only needed data, other can produce errors
                 locale: data.locale,
                 loopentryref: data.loopentryref,
-                meta: Imcms.document.meta,
+                meta: Imcms.document.id,
                 no: data.no
             };
 
