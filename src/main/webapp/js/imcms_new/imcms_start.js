@@ -5,5 +5,10 @@
  * 07.08.17.
  */
 Imcms.require(["imcms-admin-panel-builder", "imcms"], function (panelBuilder, imcms) {
-    panelBuilder.buildPanel({active: imcms.isEditMode ? 'edit' : 'public'});
+    panelBuilder.buildPanel({
+        active: imcms.isEditMode ? 'edit' : 'public'
+    });
+    imcms.isEditMode && imcms.require("imcms-editors-initializer", function (editorsInit) {
+        editorsInit.initEditors();
+    });
 });
