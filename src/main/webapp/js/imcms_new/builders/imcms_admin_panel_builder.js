@@ -3,8 +3,11 @@
  * 07.08.17.
  */
 Imcms.define("imcms-admin-panel-builder",
-    ["imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder", "jquery"],
-    function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $) {
+    [
+        "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder",
+        "jquery", "imcms"
+    ],
+    function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms) {
         var $panel;
 
         var panelSensitivePixels = 15;
@@ -51,7 +54,7 @@ Imcms.define("imcms-admin-panel-builder",
                 {
                     name: 'public',
                     tag: '<a>',
-                    href: 'index.html', // todo: temporary demo pages, should be changed!!!1
+                    href: imcms.contextPath + '/' + imcms.document.id,
                     content: 'public',
                     modifiers: ["public"]
                 }, {
