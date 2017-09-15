@@ -1,6 +1,7 @@
 <%@ page import="com.imcode.imcms.api.DocumentLanguage" %><%@
-	page import="imcode.server.Imcms" %><%@
-	page import="imcode.server.document.DocumentDomainObject"%><%@
+	page import="com.imcode.imcms.servlet.Version" %><%@
+	page import="imcode.server.Imcms "%><%@
+	page import="imcode.server.document.DocumentDomainObject" %><%@
 	page contentType="text/javascript" pageEncoding="UTF-8"	%><%
 
 	final Integer metaId = Integer.parseInt(request.getParameter("meta_id"));
@@ -10,6 +11,7 @@
 		 && Integer.valueOf(request.getParameter("flags")) > 0);
 %>
     Imcms = {
+        version: "<%= Version.getImcmsVersion(getServletConfig().getServletContext()) %>",
         isEditMode: <%= isEditMode %>,
         isVersioningAllowed: <%= Imcms.isVersioningAllowed() %>,
         document: {
