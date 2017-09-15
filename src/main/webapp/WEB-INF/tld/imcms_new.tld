@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://java.sun.com/xml/ns/j2ee"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
+
+    <tlib-version>6.0</tlib-version>
+    <short-name>imcms_new</short-name>
+    <uri>imcms_new</uri>
+
+    <tag>
+        <name>contextPath</name>
+        <tag-class>com.imcode.imcms.servlet.tags.ContextPathTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+    <tag>
+        <name>variables</name>
+        <tag-class>com.imcode.imcms.servlet.tags.VariablesTag</tag-class>
+        <body-content>empty</body-content>
+        <variable>
+            <name-given>document</name-given>
+            <variable-class>com.imcode.imcms.api.TextDocument</variable-class>
+            <scope>AT_BEGIN</scope>
+        </variable>
+        <variable>
+            <name-given>user</name-given>
+            <variable-class>com.imcode.imcms.api.User</variable-class>
+            <scope>AT_BEGIN</scope>
+        </variable>
+        <variable>
+            <name-given>cms</name-given>
+            <variable-class>com.imcode.imcms.api.ContentManagementSystem</variable-class>
+            <scope>AT_BEGIN</scope>
+        </variable>
+        <variable>
+            <name-given>viewing</name-given>
+            <variable-class>com.imcode.imcms.api.TextDocumentViewing</variable-class>
+            <scope>AT_BEGIN</scope>
+        </variable>
+    </tag>
+
+    <tag-file>
+        <name>admin</name>
+        <path>/WEB-INF/tags/imcms/admin/admin.tag</path>
+    </tag-file>
+</taglib>
