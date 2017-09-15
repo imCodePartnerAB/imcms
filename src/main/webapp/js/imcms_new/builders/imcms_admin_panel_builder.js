@@ -60,7 +60,7 @@ Imcms.define("imcms-admin-panel-builder",
                 }, {
                     name: 'edit',
                     tag: '<a>',
-                    href: 'edit_mode.html', // todo: temporary demo pages, should be changed!!!1
+                    href: imcms.contextPath + "/servlet/AdminDoc?meta_id=" + imcms.document.id + "&flags=" + imcms.accessFlags,
                     content: 'edit',
                     modifiers: ["edit"]
                 }, {
