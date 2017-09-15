@@ -179,5 +179,5 @@
 </div>
 
 </body>
-<imcms:admin/>
+<imcms:admin_new/>
 </html>
