@@ -5,6 +5,9 @@ Imcms.dependencyTree = {
     imcms: []
 };
 Imcms.requiresQueue = [];
+Imcms.browserInfo = {
+    isIE10: window.navigator.userAgent.indexOf("Mozilla/5.0 (compatible; MSIE 10.0;") === 0
+};
 Imcms.config = {
     basePath: Imcms.contextPath + "/js/imcms_new",
     dependencies: {
@@ -14,18 +17,17 @@ Imcms.config = {
                 return $.noConflict(true);
             }
         },
-        "jquery-mask": {
-            path: "./libs/jquery.mask.min.js",
-            moduleName: "jquery-mask"
-        },
         "tinyMCE": {
             path: "//cdn.tinymce.com/4/tinymce.min.js",
             moduleName: "tinyMCE",
             onLoad: function () {
                 var tinyMCE = window.tinyMCE;
 
-                delete window.tinyMCE;
-                delete window.tinymce;
+                // TinyMCE version for IE 10 plugins require "tinymce" in global scope
+                if (!Imcms.browserInfo.isIE10) {
+                    delete window.tinyMCE;
+                    delete window.tinymce;
+                }
 
                 return tinyMCE;
             }
@@ -109,6 +111,9 @@ Imcms.config = {
         "imcms-image-rest-api": "rest/imcms_image_rest_api.js"
     }
 };
+if (Imcms.browserInfo.isIE10) {
+    Imcms.config.dependencies.tinyMCE.path = "//cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.7/tinymce.min.js";
+}
 Imcms.modules = {
     imcms: Imcms // default module
 };
@@ -218,7 +223,7 @@ Function.prototype.applyAsync = function (args, context) {
         }
         var ajaxRequest = createXMLHttpRequest();
         ajaxRequest.open("GET", url, async);
-        ajaxRequest.overrideMimeType('application/javascript');
+        ajaxRequest.overrideMimeType && ajaxRequest.overrideMimeType('application/javascript');
         ajaxRequest.onreadystatechange = function () {
             if (ajaxRequest.readyState !== XMLHttpRequest.DONE) {
                 return;

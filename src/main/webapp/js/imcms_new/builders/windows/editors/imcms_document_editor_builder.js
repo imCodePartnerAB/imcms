@@ -269,10 +269,10 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function removeDocument(documentId) {
-            var documentRow = this.parentElement.parentElement;
+            var $documentRow = $(this).parent().parent();
 
             docRestApi.remove(documentId).done(function (responseCode) {
-                responseCode === 200 && documentRow.remove();
+                responseCode === 200 && $documentRow.remove();
             });
         }
 

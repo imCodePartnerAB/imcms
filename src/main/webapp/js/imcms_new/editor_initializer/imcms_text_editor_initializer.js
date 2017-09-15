@@ -91,6 +91,12 @@ Imcms.define("imcms-text-editor-initializer",
                 fixed_toolbar_container: "#" + toolbarId
             }, inlineEditorConfig);
 
+            // 4.5.7 the last version compatible with IE 10
+            if (Imcms.browserInfo.isIE10) {
+                tinyMCE.baseURL = "https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.7";
+                tinyMCE.suffix = ".min";
+            }
+
             tinyMCE.init(config);
         }
 
