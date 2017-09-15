@@ -11,12 +11,12 @@
 		 && Integer.valueOf(request.getParameter("flags")) > 0);
 %>
     Imcms = {
+        contextPath: "${pageContext.request.contextPath}",
         version: "<%= Version.getImcmsVersion(getServletConfig().getServletContext()) %>",
         isEditMode: <%= isEditMode %>,
         isVersioningAllowed: <%= Imcms.isVersioningAllowed() %>,
         document: {
             id: <%=document.getId()%>,
-            meta: <%=metaId%>,
             type: <%=document.getDocumentTypeId()%>,
             label: "<%=document.getHeadline()%>"
         },
