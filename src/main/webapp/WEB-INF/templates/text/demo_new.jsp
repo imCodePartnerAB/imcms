@@ -3,7 +3,7 @@
   Date: 15.09.17
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="imcms" uri="imcms" %>
+<%@ taglib prefix="imcms" uri="imcms_new" %>
 
 <imcms:variables/>
 <!DOCTYPE html>
@@ -13,8 +13,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>imcms v2</title>
     <!--style files-->
-    <link rel="stylesheet" href="<imcms:contextpath/>/css_new/imcms-imports_files.css">
-    <link rel="stylesheet" href="<imcms:contextpath/>/demo/css/demo.css">
+    <link rel="stylesheet" href="<imcms:contextPath/>/css_new/imcms-imports_files.css">
+    <link rel="stylesheet" href="<imcms:contextPath/>/demo/css/demo.css">
 </head>
 <body>
 
@@ -99,7 +99,7 @@
             <div class="demo-row__column demo-element">
                 <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="1001" data-image-id="1">
                     <div class="imcms-editor-area__content imcms-editor-content">
-                        <img src="<imcms:contextpath/>/demo/img/demo1.jpg"/>
+                        <img src="<imcms:contextPath/>/demo/img/demo1.jpg"/>
                     </div>
                     <div class="imcms-editor-area__control-wrap">
                         <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
@@ -125,7 +125,7 @@
             <div class="demo-row__column demo-element">
                 <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="1001" data-image-id="2">
                     <div class="imcms-editor-area__content imcms-editor-content">
-                        <img src="<imcms:contextpath/>/images_new/choose_img/img2.png"/>
+                        <img src="<imcms:contextPath/>/images_new/choose_img/img2.png"/>
                     </div>
                     <div class="imcms-editor-area__control-wrap">
                         <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
@@ -151,7 +151,7 @@
             <div class="demo-row__column demo-element">
                 <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="1001" data-image-id="3">
                     <div class="imcms-editor-area__content imcms-editor-content">
-                        <img src="<imcms:contextpath/>/images_new/choose_img/img4.png"/>
+                        <img src="<imcms:contextPath/>/images_new/choose_img/img4.png"/>
                     </div>
                     <div class="imcms-editor-area__control-wrap">
                         <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
@@ -179,5 +179,5 @@
 </div>
 
 </body>
-<imcms:admin_new/>
+<imcms:admin/>
 </html>
