@@ -37,6 +37,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.*;
+import javax.servlet.jsp.PageContext;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -397,6 +398,14 @@ public class Utility {
 
     public static ContentManagementSystem getContentManagementSystemFromRequest(ServletRequest request) {
         return (ContentManagementSystem) request.getAttribute(CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE);
+    }
+
+    public static ContentManagementSystem getCMS(ServletRequest request) {
+        return getContentManagementSystemFromRequest(request);
+    }
+
+    public static ContentManagementSystem getCMS(PageContext context) {
+        return getCMS(context.getRequest());
     }
 
     public static String fallbackUrlDecode(String input, FallbackDecoder fallbackDecoder) {
