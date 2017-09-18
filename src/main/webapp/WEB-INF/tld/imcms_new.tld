@@ -7,6 +7,12 @@
     <tlib-version>6.0</tlib-version>
     <short-name>imcms_new</short-name>
     <uri>imcms_new</uri>
+    
+    <function>
+        <name>getCurrentDocId</name>
+        <function-class>com.imcode.imcms.web.tag.Functions</function-class>
+        <function-signature>int getCurrentDocId(javax.servlet.jsp.PageContext)</function-signature>
+    </function>
 
     <tag>
         <name>contextPath</name>
@@ -38,6 +44,22 @@
             <variable-class>com.imcode.imcms.api.TextDocumentViewing</variable-class>
             <scope>AT_BEGIN</scope>
         </variable>
+    </tag>
+
+    <tag>
+        <name>image</name>
+        <tag-class>com.imcode.imcms.servlet.tags.ImageTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>no</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>document</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
 
     <tag-file>
