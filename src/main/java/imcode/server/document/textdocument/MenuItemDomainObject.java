@@ -24,18 +24,20 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
     @JsonIgnore
     private DocumentReference documentReference;
 
-    public MenuItemDomainObject() {
-    }
+    private Integer id;
 
-    public MenuItemDomainObject(DocumentReference documentReference,
-                                Integer sortKey, TreeSortKeyDomainObject treeSortKey) {
-        this.documentReference = documentReference;
-        this.sortKey = sortKey;
-        this.treeSortKey = treeSortKey;
+    public MenuItemDomainObject() {
     }
 
     public MenuItemDomainObject(DocumentReference documentReference) {
         this(documentReference, null, new TreeSortKeyDomainObject(""));
+    }
+
+    private MenuItemDomainObject(DocumentReference documentReference,
+                                 Integer sortKey, TreeSortKeyDomainObject treeSortKey) {
+        this.documentReference = documentReference;
+        this.sortKey = sortKey;
+        this.treeSortKey = treeSortKey;
     }
 
     @Override
@@ -121,6 +123,14 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
 
     public void setTreeSortIndex(String treeSortIndex) {
         setTreeSortKey(new TreeSortKeyDomainObject(treeSortIndex));
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     @Override
