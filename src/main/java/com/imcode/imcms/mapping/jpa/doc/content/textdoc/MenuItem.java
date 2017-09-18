@@ -6,6 +6,9 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class MenuItem {
 
+    @Column
+    private Integer id;
+
     @Column(name = "manual_sort_order")
     private Integer sortKey;
 
@@ -26,5 +29,13 @@ public class MenuItem {
 
     public void setTreeSortIndex(String treeSortIndex) {
         this.treeSortIndex = treeSortIndex;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

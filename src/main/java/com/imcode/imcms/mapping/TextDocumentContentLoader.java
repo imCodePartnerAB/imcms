@@ -326,6 +326,7 @@ public class TextDocumentContentLoader {
             menuItemDO.setDocumentReference(gtr);
             menuItemDO.setSortKey(menuItem.getSortKey());
             menuItemDO.setTreeSortIndex(menuItem.getTreeSortIndex());
+            menuItemDO.setId(menuItem.getId());
 
             menuDO.addMenuItemUnchecked(menuItemDO);
         });

@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.apis;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imcode.imcms.dto.MenuElementDTO;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.container.TextDocMenuContainer;
 import imcode.server.Imcms;
@@ -15,17 +16,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * This Class provide access to operations with menus.
- * It is a simple {@link RestController}
- */
 @RestController
 @RequestMapping("/menu")
 public class MenuController {
@@ -112,4 +106,20 @@ public class MenuController {
 
         return result;
     }
+
+
+    @RequestMapping(params = {"docId", "menuId"}, method = RequestMethod.GET)
+    public List<MenuElementDTO> getMenuItems(@RequestParam("menuId") Integer menuNo,
+                                             @RequestParam("docId") Integer documentId) {
+        return imcmsServices
+                .getDocumentMapper()
+                .<TextDocumentDomainObject>getWorkingDocument(documentId)
+                .getMenu(menuNo)
+                .getMenuItemsAsTree()
+                .stream()
+                .map(MenuElementDTO::of)
+                .collect(Collectors.toList());
+    }
+
 }
+
