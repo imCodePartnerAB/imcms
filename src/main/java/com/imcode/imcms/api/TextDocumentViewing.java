@@ -1,13 +1,12 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletRequest;
 
 /**
  * An instance of this class is fetchable in JSPs included in text documents (with &lt;?imcms:include path="..."?&gt;)
- * via {@link #fromRequest(javax.servlet.http.HttpServletRequest)},
+ * via {@link #fromRequest(javax.servlet.ServletRequest)},
  * and in velocity code in text templates as <code>$viewing</code>.
  *
  * @since 2.0
@@ -20,17 +19,17 @@ public class TextDocumentViewing {
 
     public TextDocumentViewing(ParserParameters parserParameters) {
         this.parserParameters = parserParameters;
-        textDocument = new TextDocument((TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument(), ContentManagementSystem.fromRequest(parserParameters.getDocumentRequest().getHttpServletRequest()));
+        textDocument = new TextDocument(parserParameters.getDocumentRequest().getDocument(), ContentManagementSystem.fromRequest(parserParameters.getDocumentRequest().getHttpServletRequest()));
     }
 
-    public static TextDocumentViewing fromRequest(HttpServletRequest request) {
+    public static TextDocumentViewing fromRequest(ServletRequest request) {
         return (TextDocumentViewing) request.getAttribute(REQUEST_ATTRIBUTE__VIEWING);
     }
 
     public static TextDocumentViewing putInRequest(TextDocumentViewing viewing) {
-        HttpServletRequest httpServletRequest = viewing.parserParameters.getDocumentRequest().getHttpServletRequest();
-        TextDocumentViewing previousViewing = fromRequest(httpServletRequest);
-        httpServletRequest.setAttribute(REQUEST_ATTRIBUTE__VIEWING, viewing);
+        ServletRequest servletRequest = viewing.parserParameters.getDocumentRequest().getHttpServletRequest();
+        TextDocumentViewing previousViewing = fromRequest(servletRequest);
+        servletRequest.setAttribute(REQUEST_ATTRIBUTE__VIEWING, viewing);
         return previousViewing;
     }
 
