@@ -512,11 +512,6 @@
 		<path>/WEB-INF/tags/imcms/ui/statusIcon.tag</path>
 	</tag-file>
 
-	<tag-file>
-		<name>admin_new</name>
-		<path>/WEB-INF/tags/imcms/admin/admin.tag</path>
-	</tag-file>
-
 	<function>
 		<name>canEditDocument</name>
 		<function-class>com.imcode.imcms.web.tag.Functions</function-class>
