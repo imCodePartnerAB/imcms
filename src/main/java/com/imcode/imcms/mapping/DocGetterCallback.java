@@ -9,6 +9,7 @@ import imcode.server.user.UserDomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
  * @see com.imcode.imcms.servlet.ImcmsSetupFilter
  * @see com.imcode.imcms.mapping.DocumentGetter#getDocument(int)
  */
-public class DocGetterCallback {
+public class DocGetterCallback implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(DocGetterCallback.class);
     private volatile DocumentLanguage language;
