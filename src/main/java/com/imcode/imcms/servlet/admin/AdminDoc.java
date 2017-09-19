@@ -8,7 +8,6 @@ import com.imcode.imcms.flow.ChangeDocDefaultVersionPageFlow;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.PageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.GetDoc;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -94,15 +93,18 @@ public class AdminDoc extends HttpServlet {
             }
         }
 
-        if (user.canEdit(document)) {
-            DocumentRequest documentRequest = new DocumentRequest(imcref, user, document, null, req, res);
-            final ParserParameters parserParameters = new ParserParameters(documentRequest);
-            parserParameters.setFlags(flags);
-
-            final TextDocumentViewing viewing = new TextDocumentViewing(parserParameters);
-            TextDocumentViewing.putInRequest(viewing);
-            ParserParameters.putInRequest(parserParameters);
+        if (!user.canEdit(document)) {
+            req.getRequestDispatcher("/login").forward(req, res);
+            return;
         }
+
+        final DocumentRequest documentRequest = new DocumentRequest(imcref, user, document, null, req, res);
+        final ParserParameters parserParameters = new ParserParameters(documentRequest);
+        parserParameters.setFlags(flags);
+
+        final TextDocumentViewing viewing = new TextDocumentViewing(parserParameters);
+        TextDocumentViewing.putInRequest(viewing);
+        ParserParameters.putInRequest(parserParameters);
 
         final String newPath = "/api/viewDoc/" + meta_id;
         req.getRequestDispatcher(newPath).forward(req, res);
