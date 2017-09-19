@@ -1,6 +1,6 @@
 Imcms.define("imcms-documents-rest-api", ["imcms-rest-api"], function (rest) {
 
-    var api = new rest.API("/api/documents");
+    var api = new rest.API("/documents");
 
 
     var currentTime = (function getCurrentTime() {

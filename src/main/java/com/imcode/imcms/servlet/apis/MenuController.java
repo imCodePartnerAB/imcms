@@ -109,8 +109,8 @@ public class MenuController {
 
 
     @RequestMapping(params = {"docId", "menuId"}, method = RequestMethod.GET)
-    public List<MenuElementDTO> getMenuItems(@RequestParam("menuId") Integer menuNo,
-                                             @RequestParam("docId") Integer documentId) {
+    public List<MenuElementDTO> getMenuItems(@RequestParam("menuId") int menuNo,
+                                             @RequestParam("docId") int documentId) {
         return imcmsServices
                 .getDocumentMapper()
                 .<TextDocumentDomainObject>getWorkingDocument(documentId)

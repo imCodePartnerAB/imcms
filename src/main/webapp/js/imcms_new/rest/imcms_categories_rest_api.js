@@ -1,7 +1,7 @@
 Imcms.define("imcms-categories-rest-api", ["imcms-rest-api"], function (rest) {
 
 
-    var api = new rest.API("/api/categories");
+    var api = new rest.API("/categories");
 
     //mock data
     api.read = function () {

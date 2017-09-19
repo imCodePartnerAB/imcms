@@ -58,7 +58,7 @@ Imcms.define("imcms-modal-window-builder",
                     "modal-body": buildBody(question),
                     "modal-footer": buildFooter(callback)
                 }
-            }).buildBlock("<div>");
+            }).buildBlockStructure("<div>");
         }
 
         function createLayout() {

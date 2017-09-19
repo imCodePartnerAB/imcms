@@ -1,7 +1,7 @@
 Imcms.define("imcms-templates-rest-api", ["imcms-rest-api"], function (rest) {
 
 
-    var api = new rest.API("/api/templates");
+    var api = new rest.API("/templates");
 
     //mock data
     api.read = function () {
