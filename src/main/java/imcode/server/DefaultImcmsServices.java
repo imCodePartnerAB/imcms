@@ -53,7 +53,6 @@ import java.util.*;
 
 public class DefaultImcmsServices implements ImcmsServices {
 
-    private static final int DEFAULT_STARTDOCUMENT = 1001;
     private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
     private final static Logger log = Logger.getLogger(DefaultImcmsServices.class.getName());
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
@@ -683,7 +682,7 @@ public class DefaultImcmsServices implements ImcmsServices {
 
         final Object[] parameters5 = new String[0];
         String startDocument = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 0", parameters5, Utility.SINGLE_STRING_HANDLER));
-        sd.setStartDocument(startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt(startDocument));
+        sd.setStartDocument(startDocument == null ? ImcmsConstants.DEFAULT_START_DOC_ID : Integer.parseInt(startDocument));
 
         final Object[] parameters4 = new String[0];
         String systemMessage = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 3", parameters4, Utility.SINGLE_STRING_HANDLER));
