@@ -10,20 +10,11 @@
 
     <display-name>imCMS</display-name>
 
-    <!--
-     imCMS setup:
-        com.imcode.imcms.servlet.ImcmsLog4jConfigListener must be registered first prior to
-        org.springframework.web.context.ContextLoaderListener.
-    -->
-
     <context-param>
         <param-name>contextClass</param-name>
         <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
     </context-param>
 
-    <!-- Configuration locations must consist of one or more comma- or space-delimited
-        fully-qualified @Configuration classes. Fully-qualified packages may also be
-        specified for component-scanning -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>com.imcode.imcms.config.MainConfig</param-value>
@@ -140,11 +131,9 @@
             <param-name>contextClass</param-name>
             <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
         </init-param>
-        <!-- Again, config locations must consist of one or more comma- or space-delimited
-             and fully-qualified @Configuration classes -->
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>com.imcode.imcms.config.MainConfig</param-value>
+            <param-value>com.imcode.imcms.config.WebConfig</param-value>
         </init-param>
     </servlet>
 

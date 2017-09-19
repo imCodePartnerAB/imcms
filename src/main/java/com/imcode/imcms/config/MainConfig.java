@@ -12,7 +12,6 @@ import java.util.Properties;
 @PropertySource(value = "/WEB-INF/conf/server.properties", name = "imcms.properties")
 @Import({
         DBConfig.class,
-        WebConfig.class,
         ApplicationConfig.class
 })
 @ComponentScan({
@@ -20,7 +19,6 @@ import java.util.Properties;
         "com.imcode.imcms.imagearchive",
         "com.imcode.imcms.api.linker",
         "imcode.util",
-        "com.imcode.imcms.servlet.apis",
         "com.imcode.imcms.document.text"
 })
 public class MainConfig {

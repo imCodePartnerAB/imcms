@@ -2,17 +2,23 @@ package com.imcode.imcms.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
 @EnableWebMvc
-public class WebConfig extends WebMvcConfigurerAdapter {
+@ComponentScan({
+        "com.imcode.imcms.servlet.apis",
+        "com.imcode.imcms.controller"
+})
+public class WebConfig {
 
     public final Environment environment;
 
@@ -29,12 +35,21 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public UrlBasedViewResolver urlBasedViewResolver() {
-        UrlBasedViewResolver urlBasedViewResolver = new UrlBasedViewResolver();
-        urlBasedViewResolver.setViewClass(org.springframework.web.servlet.view.JstlView.class);
-        urlBasedViewResolver.setPrefix("/WEB-INF/jsp/imcms/views/");
-        urlBasedViewResolver.setSuffix(".jsp");
-        return urlBasedViewResolver;
+    public ViewResolver templateViewResolver() {
+        return instantiateJspViewResolver("/WEB-INF/templates/text/");
+    }
+
+    @Bean
+    public ViewResolver internalViewResolver() {
+        return instantiateJspViewResolver("/WEB-INF/jsp/imcms/views/");
+    }
+
+    private ViewResolver instantiateJspViewResolver(String prefix) {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setViewClass(JstlView.class);
+        viewResolver.setPrefix(prefix);
+        viewResolver.setSuffix(".jsp");
+        return viewResolver;
     }
 
     @Bean
