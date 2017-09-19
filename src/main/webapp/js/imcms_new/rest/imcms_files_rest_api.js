@@ -4,7 +4,7 @@
  */
 Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
 
-    var api = new rest.API("/api/files");
+    var api = new rest.API("/files");
 
     var mockResponse = [{
         name: "images",

@@ -3,7 +3,7 @@
  * 05.09.17
  */
 Imcms.define("imcms-image-rest-api", ["imcms-rest-api"], function (rest) {
-    var api = new rest.API("/api/image");
+    var api = new rest.API("/image");
 
     // mock data
     api.read = function (data) {

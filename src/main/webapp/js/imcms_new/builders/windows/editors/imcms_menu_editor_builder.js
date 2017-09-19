@@ -59,7 +59,7 @@ Imcms.define("imcms-menu-editor-builder",
                 }
             }
 
-            function removeMenuItem(menuItemDocId) {
+            function removeMenuItem() {
                 var currentMenuItem = $(this).closest(".imcms-menu-item"),
                     currentMenuItemName = currentMenuItem.find(".imcms-menu-item__info").text();
 
@@ -69,13 +69,7 @@ Imcms.define("imcms-menu-editor-builder",
                         return;
                     }
 
-                    menuRestApi.remove({
-                        docId: docId,
-                        menuId: menuId,
-                        menuItemDocId: menuItemDocId
-                    }).done(function () {
-                        removeMenuItemFromEditor(currentMenuItem)
-                    });
+                    removeMenuItemFromEditor(currentMenuItem)
                 });
             }
 

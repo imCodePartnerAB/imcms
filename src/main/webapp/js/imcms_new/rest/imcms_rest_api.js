@@ -1,7 +1,10 @@
-Imcms.define("imcms-rest-api", ["jquery"], function ($) {
+Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (Imcms, $) {
+
+    var API_PREFIX = "/api";
+
     function ajax(data, callback) {
         return $.ajax({
-            url: Imcms.contextPath + this.url,
+            url: Imcms.contextPath + API_PREFIX + this.url,
             type: this.type,
             data: data,
             success: callback
