@@ -1,5 +1,6 @@
 package com.imcode.imcms.web.tag;
 
+import com.imcode.imcms.api.TextDocument;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -19,5 +20,9 @@ public class Functions {
         UserDomainObject user = Utility.getLoggedOnUser((HttpServletRequest) pageContext.getRequest());
 
         return user.canEditDocumentInformationFor(document);
+    }
+
+    public static TextDocument getDocument(String docIdentifier, PageContext pageContext) {
+        return Utility.getCMS(pageContext).getDocumentService().getTextDocument(docIdentifier);
     }
 }
