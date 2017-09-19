@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
+// todo: remove after new tag implementation
+@Deprecated
 public class AdminTag extends TagSupport {
 
     public int doStartTag() throws JspException {

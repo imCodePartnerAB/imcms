@@ -8,6 +8,8 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.TagParser;
 import org.apache.commons.lang3.StringUtils;
 
+// todo: remove after new tag implementation
+@Deprecated
 public class ImageTag extends SimpleImcmsTag {
 
     protected String getContent(TagParser tagParser) {

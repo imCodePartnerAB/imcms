@@ -58,17 +58,19 @@
         </variable>
     </tag>
 
-	<tag>
-		<name>contextpath</name>
-		<tag-class>com.imcode.imcms.servlet.tags.ContextPathTag</tag-class>
-		<body-content>empty</body-content>
-	</tag>
+    <!-- old contextpath tag, remove after new one implementation -->
+    <!--<tag>-->
+		<!--<name>contextpath</name>-->
+		<!--<tag-class>com.imcode.imcms.servlet.tags.ContextPathTag</tag-class>-->
+		<!--<body-content>empty</body-content>-->
+	<!--</tag>-->
 
-	<tag>
-		<name>admin</name>
-		<tag-class>com.imcode.imcms.servlet.tags.AdminTag</tag-class>
-		<body-content>empty</body-content>
-	</tag>
+    <!-- old admin tag, remove after new one implementation -->
+    <!--<tag>-->
+		<!--<name>admin</name>-->
+		<!--<tag-class>com.imcode.imcms.servlet.tags.AdminTag</tag-class>-->
+		<!--<body-content>empty</body-content>-->
+	<!--</tag>-->
 
 	<tag>
 		<name>text</name>
@@ -131,58 +133,59 @@
         </attribute>
 	</tag>
 
-	<tag>
-		<name>image</name>
-		<tag-class>com.imcode.imcms.servlet.tags.ImageTag</tag-class>
-		<body-content>empty</body-content>
-		<attribute>
-			<name>no</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>document</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>version</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>id</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>label</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>styleClass</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>style</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>usemap</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>mode</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>pre</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>post</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-	</tag>
+    <!-- old image tag, remove after new one implementation -->
+	<!--<tag>-->
+		<!--<name>image</name>-->
+		<!--<tag-class>com.imcode.imcms.servlet.tags.ImageTag</tag-class>-->
+		<!--<body-content>empty</body-content>-->
+		<!--<attribute>-->
+			<!--<name>no</name>-->
+			<!--<required>true</required>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>document</name>-->
+			<!--<required>false</required>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>version</name>-->
+			<!--<required>false</required>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>id</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>label</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>styleClass</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>style</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>usemap</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>mode</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>pre</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>post</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+	<!--</tag>-->
 
 	<tag>
 		<name>include</name>
@@ -511,6 +514,27 @@
 		<name>statusIcon</name>
 		<path>/WEB-INF/tags/imcms/ui/statusIcon.tag</path>
 	</tag-file>
+
+    <tag-file>
+        <name>admin</name>
+        <path>/WEB-INF/tags/imcms/admin/admin.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>image</name>
+        <path>/WEB-INF/tags/imcms/admin/image.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>contextPath</name>
+        <path>/WEB-INF/tags/imcms/admin/contextPath.tag</path>
+    </tag-file>
+
+    <function>
+        <name>getDocument</name>
+        <function-class>com.imcode.imcms.web.tag.Functions</function-class>
+        <function-signature>com.imcode.imcms.api.TextDocument getDocument(java.lang.String,javax.servlet.jsp.PageContext)</function-signature>
+    </function>
 
 	<function>
 		<name>canEditDocument</name>

@@ -3,7 +3,7 @@
   Date: 15.09.17
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="imcms" uri="imcms_new" %>
+<%@ taglib prefix="imcms" uri="imcms" %>
 
 <imcms:variables/>
 <!DOCTYPE html>
