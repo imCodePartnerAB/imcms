@@ -1,23 +1,31 @@
 package com.imcode.imcms.servlet.apis;
 
+import com.imcode.imcms.dto.CategoryDTO;
 import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.Imcms;
 import imcode.server.document.CategoryTypeDomainObject;
-import imcode.server.document.DocumentDomainObject;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Realise API for working with  {@link DocumentDomainObject}
- */
+// TODO: 19.09.17 Make todos according to order
 @RestController
-@RequestMapping("/category")
+// TODO: 19.09.17 Replace value to "/categories" => (order = 2)
+@RequestMapping("/")
 public class CategoryController {
-    @RequestMapping
+
+    private CategoryMapper categoryMapper;
+
+    public CategoryController() {
+        categoryMapper = Imcms.getServices().getCategoryMapper();
+    }
+
+    // TODO: 19.09.17 Remove me => (order = 1)
+    @RequestMapping("/category")
     public Object getCategoriesList() {
         CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
 
@@ -34,4 +42,14 @@ public class CategoryController {
                         )
                 );
     }
+
+    // TODO: 19.09.17 Remove value attribute => (order = 3)
+    @RequestMapping(value = "/categories", method = RequestMethod.GET)
+    public List<CategoryDTO> getCategories() {
+        return categoryMapper.getAllCategories().stream()
+                .map(CategoryDTO::of)
+                .collect(Collectors.toList());
+    }
+
+
 }

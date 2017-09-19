@@ -91,6 +91,7 @@ public class ImcmsSetupFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        System.out.println("ImcmsSetupFilter init");
         ServletContext servletContext = filterConfig.getServletContext();
         Imcms.setRootPath(servletContext.getRealPath("/"));
         Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));

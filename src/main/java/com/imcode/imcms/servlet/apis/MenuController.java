@@ -24,10 +24,10 @@ import java.util.stream.Stream;
 @RequestMapping("/menu")
 public class MenuController {
 
-    private ImcmsServices imcmsServices;
+    private DocumentMapper documentMapper;
 
     public MenuController() {
-        imcmsServices = Imcms.getServices();
+        documentMapper = Imcms.getServices().getDocumentMapper();
     }
 
     /**
@@ -43,7 +43,7 @@ public class MenuController {
     protected Object getMenuItemsList(@PathVariable("documentId") Integer documentId,
                                       @PathVariable("menuId") Integer menuId) throws ServletException, IOException {
 
-        TextDocumentDomainObject document = imcmsServices.getDocumentMapper().getWorkingDocument(documentId);
+        TextDocumentDomainObject document = documentMapper.getWorkingDocument(documentId);
 
         return Stream.of(document.getMenu(menuId).getMenuItems())
                 .map(it -> {
@@ -79,7 +79,6 @@ public class MenuController {
 
         Map<String, Object> result = new HashMap<>();
         try {
-            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             TextDocumentDomainObject document = documentMapper.getWorkingDocument(documentId);
             MenuDomainObject menu = document.getMenu(menuId);
             ArrayList<LinkedHashMap<String, Object>> menuItemsData = new ObjectMapper().readValue(data.getFirst("data"), new TypeReference<ArrayList<LinkedHashMap<String, Object>>>() {
@@ -111,8 +110,7 @@ public class MenuController {
     @RequestMapping(params = {"docId", "menuId"}, method = RequestMethod.GET)
     public List<MenuElementDTO> getMenuItems(@RequestParam("menuId") int menuNo,
                                              @RequestParam("docId") int documentId) {
-        return imcmsServices
-                .getDocumentMapper()
+        return documentMapper
                 .<TextDocumentDomainObject>getWorkingDocument(documentId)
                 .getMenu(menuNo)
                 .getMenuItemsAsTree()
