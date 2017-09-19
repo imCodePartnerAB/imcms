@@ -155,7 +155,7 @@ public class TextDocumentParser {
             imcmsAdminHeadTagTags.add("" + document.getId());
             imcmsAdminHeadTagTags.add("#getFlag#");
             imcmsAdminHeadTagTags.add("" + parserParameters.getFlags());
-            final String imcmsAdminHeadTag = service.getAdminTemplate("textdoc/imcms_admin_headtag.html", user, imcmsAdminHeadTagTags);
+
             if (null == template) {
                 throw new RuntimeException("Template not found: " + templateName);
             } else if (template.getFileName().endsWith(".jsp") || template.getFileName().endsWith(".jspx")) {
@@ -170,7 +170,7 @@ public class TextDocumentParser {
                     if (hasAdminPanel) {
                         contents = Util.substitute(patMat, headEndTagPattern,
                                 (stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
-                                        -> stringBuffer.append(imcmsAdminHeadTag).append(matchResult.group(0)),
+                                        -> stringBuffer.append(matchResult.group(0)),
                                 contents);
                     } else {
                         AdminPanelServlet.setCookie(AdminPanelServlet.PARAM_COOKIE_PANEL_HIDE, "", documentRequest.getHttpServletResponse());
@@ -199,7 +199,7 @@ public class TextDocumentParser {
                 if (hasAdminPanel) {
                     cont = Util.substitute(patMat, headEndTagPattern,
                             (stringBuffer, matchResult, i, patternMatcherInput, patternMatcher, pattern)
-                                    -> stringBuffer.append(imcmsAdminHeadTag).append(matchResult.group(0)),
+                                    -> stringBuffer.append(matchResult.group(0)),
                             cont);
                 } else {
                     AdminPanelServlet.setCookie(AdminPanelServlet.PARAM_COOKIE_PANEL_HIDE, "", documentRequest.getHttpServletResponse());
