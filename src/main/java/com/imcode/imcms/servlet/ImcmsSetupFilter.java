@@ -123,12 +123,12 @@ public class ImcmsSetupFilter implements Filter {
         filterDelegate.doFilter(request, response, filterChain);
     }
 
-    void doFilterSendError(ServletRequest request, ServletResponse response, FilterChain filterChain)
+    private void doFilterSendError(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
         ((HttpServletResponse) response).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
     }
 
-    void doFilterNormally(ServletRequest req, ServletResponse res, FilterChain filterChain)
+    private void doFilterNormally(ServletRequest req, ServletResponse res, FilterChain filterChain)
             throws IOException, ServletException {
         try {
             HttpServletRequest request = (HttpServletRequest) req;
@@ -207,10 +207,14 @@ public class ImcmsSetupFilter implements Filter {
      *
      * @throws ServletException
      * @throws IOException
-     * @see GetDoc#viewDoc(String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    void handleDocumentUri(FilterChain chain, HttpServletRequest request, ServletResponse response,
-                           ImcmsServices service, FallbackDecoder fallbackDecoder) throws ServletException, IOException {
+    private void handleDocumentUri(FilterChain chain,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response,
+                                   ImcmsServices service,
+                                   FallbackDecoder fallbackDecoder)
+            throws ServletException, IOException {
+
         String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
         path = StringUtils.substringAfter(path, request.getContextPath());
         ServletContext servletContext = request.getSession().getServletContext();
@@ -224,17 +228,15 @@ public class ImcmsSetupFilter implements Filter {
                     .getVersionedDocument(documentIdString, langCode, request);
 
             if (null != document) {
-                try {
-                    GetDoc.viewDoc(document, request, (HttpServletResponse) response);
-                    return;
-                } catch (NumberFormatException ignore) {
-                }
+                final String newPath = "/api/viewDoc" + request.getServletPath();
+                request.getRequestDispatcher(newPath).forward(request, response);
+                return;
             }
         }
         chain.doFilter(request, response);
     }
 
-    void setDomainSessionCookie(ServletResponse response, HttpSession session) {
+    private void setDomainSessionCookie(ServletResponse response, HttpSession session) {
 
         String domain = Imcms.getServices().getConfig().getSessionCookieDomain();
         if (StringUtils.isNotBlank(domain)) {
