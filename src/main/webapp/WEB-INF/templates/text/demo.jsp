@@ -131,7 +131,7 @@
             <h2>Learn more</h2>
 
             <imcms:text no="2" document="1001" mode="read" pre=""/>
-            <imcms:text label="label test 2" no="4" formats="text" showlabel="true"/>
+            <imcms:text label="label test 2" no="4" formats="text"/>
         </div>
         <div class="wrapper">
             <imcms:loop no="1">
@@ -140,8 +140,7 @@
                         <div class="figure">
                             <imcms:image no="1" document="${document.id}" style="max-width:100px;"/>
                             <div class="description">
-                                <imcms:text no="1" document="${document.id}" label="loop_1" showlabel="true"
-                                            formats="CLEANHTML"/>
+                                <imcms:text no="1" document="${document.id}" label="loop_1" formats="CLEANHTML"/>
                             </div>
                         </div>
                     </imcms:loopitem>
@@ -154,7 +153,7 @@
         <section class="footer">
             <div class="wrapper">
                 <div class="additional">
-                    <imcms:text no="3" document="1001" label="label test once more" showlabel="true"
+                    <imcms:text no="3" document="1001" label="label test once more"
                                 placeholder="<i>now empty text field can be filled with attr `placeholder`</i>"/>
                 </div>
                 <div class="logo">
