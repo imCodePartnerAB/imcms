@@ -97,6 +97,7 @@
         </div>
         <div class="imcms-demo-content__images-texts-demo demo-row">
             <div class="demo-row__column demo-element">
+                <imcms:image no="1"/>
                 <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="1001" data-image-id="1">
                     <div class="imcms-editor-area__content imcms-editor-content">
                         <img src="<imcms:contextPath/>/demo/img/demo1.jpg"/>
