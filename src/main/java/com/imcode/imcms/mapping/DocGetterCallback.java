@@ -123,7 +123,7 @@ public class DocGetterCallback implements Serializable {
         this.isDefaultLanguage = isDefaultLanguage;
     }
 
-    private interface Callback {
+    private interface Callback extends Serializable {
         DocumentDomainObject getDoc(int docId, DocumentMapper docMapper);
     }
 }
