@@ -72,7 +72,9 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
 
             // check is current entry enabled
             if (currentEntry.getValue()) {
-                pageContext.setAttribute("loopitem", new TextDocument.LoopItem(currentEntry, no, document));
+                final TextDocument.LoopItem loopItem = new TextDocument.LoopItem(currentEntry, no, document);
+                pageContext.setAttribute("loopItem", loopItem);
+                request.setAttribute("loopEntryRef", loopItem.getLoopEntryRef()); // for nested tags usage
                 return EVAL_BODY_AGAIN;
             }
         }
@@ -166,8 +168,9 @@ public class LoopTag extends BodyTagSupport implements IEditableTag {
         return new LoopEditor();
     }
 
-    public void invalidateCurrentEntry() {
+    void invalidateCurrentEntry() {
         currentEntry = null;
-        pageContext.removeAttribute("loopitem");
+        pageContext.removeAttribute("loopItem");
+        request.removeAttribute("loopEntryRef");
     }
 }

@@ -7,7 +7,8 @@
 <c:set var="targetDoc" value="${empty document ? currentDocument : (imcms:getDocument(document, pageContext))}"/>
 
 <c:set var="imageContent">
-    <c:set var="imgPath" value="${targetDoc.getImage(no).getSrc(pageContext.request.contextPath)}"/>
+    <c:set var="image" value="${loopEntryRef eq null ? targetDoc.getImage(no) : targetDoc.getLoopImage(loopEntryRef.loopNo, loopEntryRef.entryNo, no)}"/>
+    <c:set var="imgPath" value="${image.getSrc(pageContext.request.contextPath)}"/>
     <c:set var="imgPath"
            value="${empty imgPath ? pageContext.request.contextPath.concat('/imcms/eng/images/admin/ico_image.gif') : imgPath}"/>
     <img src="${imgPath}"${empty style ? '' : ' style=\"'.concat(style).concat('\"')}/>
