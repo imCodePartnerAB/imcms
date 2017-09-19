@@ -13,6 +13,10 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.Optional;
+
+import static imcode.server.ImcmsConstants.PERM_EDIT_DOCUMENT;
+
 /**
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 18.09.17.
@@ -41,19 +45,28 @@ public class ViewDocumentController {
                 .getTextDocument(docIdentifier);
 
         // save doc data
-
         // this should be done to use tags functionality on page
-        ParserParameters parserParameters = new ParserParameters(textDocument.getInternal(), request, response);
-        TextDocumentViewing.putInRequest(new TextDocumentViewing(parserParameters));
+
+        final ParserParameters parserParameters = Optional.ofNullable(ParserParameters.fromRequest(request))
+                .orElse(new ParserParameters(textDocument.getInternal(), request, response));
+
+        final TextDocumentViewing viewing = Optional.ofNullable(TextDocumentViewing.fromRequest(request))
+                .orElse(new TextDocumentViewing(parserParameters));
+
+        TextDocumentViewing.putInRequest(viewing);
         ParserParameters.putInRequest(parserParameters);
 
-        // add if edit mode
-//        parserParameters.setFlags(PERM_EDIT_DOCUMENT);
+        final boolean isEditMode = viewing.isEditing();
+
+        if (isEditMode) {
+            parserParameters.setFlags(PERM_EDIT_DOCUMENT);
+        }
 
         final String viewName = textDocument.getTemplate().getName();
         mav.setViewName(viewName);
 
         mav.addObject("currentDocument", textDocument);
+        mav.addObject("isEditMode", isEditMode);
 
         return mav;
     }

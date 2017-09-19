@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.flow.ChangeDocDefaultVersionPageFlow;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.PageFlow;
@@ -93,15 +94,18 @@ public class AdminDoc extends HttpServlet {
             }
         }
 
-        if (!user.canEdit(document)) {
-            GetDoc.viewDoc(String.valueOf(meta_id), req, res);
-            return;
+        if (user.canEdit(document)) {
+            DocumentRequest documentRequest = new DocumentRequest(imcref, user, document, null, req, res);
+            final ParserParameters parserParameters = new ParserParameters(documentRequest);
+            parserParameters.setFlags(flags);
+
+            final TextDocumentViewing viewing = new TextDocumentViewing(parserParameters);
+            TextDocumentViewing.putInRequest(viewing);
+            ParserParameters.putInRequest(parserParameters);
         }
 
-        DocumentRequest documentRequest = new DocumentRequest(imcref, user, document, null, req, res);
-        final ParserParameters parserParameters = new ParserParameters(documentRequest);
-        parserParameters.setFlags(flags);
-        imcref.parsePage(parserParameters, res.getWriter());
+        final String newPath = "/api/viewDoc/" + meta_id;
+        req.getRequestDispatcher(newPath).forward(req, res);
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
