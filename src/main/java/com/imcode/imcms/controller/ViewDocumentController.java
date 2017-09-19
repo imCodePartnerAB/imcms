@@ -53,7 +53,7 @@ public class ViewDocumentController {
         final String viewName = textDocument.getTemplate().getName();
         mav.setViewName(viewName);
 
-        mav.addObject("currentDocId", textDocument.getId());
+        mav.addObject("currentDocument", textDocument);
 
         return mav;
     }
