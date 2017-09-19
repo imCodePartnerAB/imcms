@@ -135,12 +135,17 @@
         </div>
         <div class="wrapper">
             <imcms:loop no="1">
-                <div class="figure">
-                    <imcms:image no="1" document="${document.id}" style="max-width:100px;"/>
-                    <div class="description">
-                        <imcms:text no="1" document="${document.id}" label="loop_1" showlabel="true" formats="CLEANHTML"/>
-                    </div>
-                </div>
+                <imcms:loopentry>
+                    <imcms:loopitem>
+                        <div class="figure">
+                            <imcms:image no="1" document="${document.id}" style="max-width:100px;"/>
+                            <div class="description">
+                                <imcms:text no="1" document="${document.id}" label="loop_1" showlabel="true"
+                                            formats="CLEANHTML"/>
+                            </div>
+                        </div>
+                    </imcms:loopitem>
+                </imcms:loopentry>
             </imcms:loop>
         </div>
     </section>
