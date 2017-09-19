@@ -97,17 +97,7 @@
         </div>
         <div class="imcms-demo-content__images-texts-demo demo-row">
             <div class="demo-row__column demo-element">
-                <imcms:image no="1"/>
-                <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="1001" data-image-id="1">
-                    <div class="imcms-editor-area__content imcms-editor-content">
-                        <img src="<imcms:contextPath/>/demo/img/demo1.jpg"/>
-                    </div>
-                    <div class="imcms-editor-area__control-wrap">
-                        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
-                            <div class="imcms-editor-area__control-title">Image Editor</div>
-                        </div>
-                    </div>
-                </div>
+                <imcms:image no="1" document="1002"/>
                 <div class="imcms-editor-area imcms-editor-area--text">
                     <div class="imcms-editor-area__text-toolbar"></div>
                     <div class="imcms-editor-area__content-wrap">
@@ -124,16 +114,7 @@
                 </div>
             </div>
             <div class="demo-row__column demo-element">
-                <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="1001" data-image-id="2">
-                    <div class="imcms-editor-area__content imcms-editor-content">
-                        <img src="<imcms:contextPath/>/images_new/choose_img/img2.png"/>
-                    </div>
-                    <div class="imcms-editor-area__control-wrap">
-                        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
-                            <div class="imcms-editor-area__control-title">Image Editor</div>
-                        </div>
-                    </div>
-                </div>
+                <imcms:image no="2"/>
                 <div class="imcms-editor-area imcms-editor-area--text">
                     <div class="imcms-editor-area__text-toolbar"></div>
                     <div class="imcms-editor-area__content-wrap">
@@ -150,16 +131,7 @@
                 </div>
             </div>
             <div class="demo-row__column demo-element">
-                <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="1001" data-image-id="3">
-                    <div class="imcms-editor-area__content imcms-editor-content">
-                        <img src="<imcms:contextPath/>/images_new/choose_img/img4.png"/>
-                    </div>
-                    <div class="imcms-editor-area__control-wrap">
-                        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
-                            <div class="imcms-editor-area__control-title">Image Editor</div>
-                        </div>
-                    </div>
-                </div>
+                <imcms:image no="3"/>
                 <div class="imcms-editor-area imcms-editor-area--text">
                     <div class="imcms-editor-area__text-toolbar"></div>
                     <div class="imcms-editor-area__content-wrap">
