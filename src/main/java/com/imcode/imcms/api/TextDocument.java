@@ -282,9 +282,7 @@ public class TextDocument extends Document {
      * @return image of document or empty image if not exist
      */
     public Image getLoopImage(int loopNo, int entryNo, int imageNo) {
-        return getLoopImage(TextDocumentDomainObject.LoopItemRef
-                .of(loopNo, entryNo, imageNo)
-        );
+        return getLoopImage(TextDocumentDomainObject.LoopItemRef.of(loopNo, entryNo, imageNo));
     }
 
     /**
