@@ -2,6 +2,8 @@ package imcode.server;
 
 public class ImcmsConstants {
 
+    public static final int DEFAULT_START_DOC_ID = 1001;
+
     /* Permissions for restricted permission-sets 1 and 2, applicable for all document-types. */
 
     /**
