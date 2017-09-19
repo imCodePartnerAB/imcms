@@ -13,7 +13,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>imcms v2</title>
     <!--style files-->
-    <link rel="stylesheet" href="<imcms:contextPath/>/css_new/imcms-imports_files.css">
     <link rel="stylesheet" href="<imcms:contextPath/>/demo/css/demo.css">
 </head>
 <body>
