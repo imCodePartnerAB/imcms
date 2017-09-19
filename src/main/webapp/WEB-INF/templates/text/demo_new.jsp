@@ -96,55 +96,16 @@
         </div>
         <div class="imcms-demo-content__images-texts-demo demo-row">
             <div class="demo-row__column demo-element">
-                <imcms:image no="1" document="1002"/>
-                <div class="imcms-editor-area imcms-editor-area--text">
-                    <div class="imcms-editor-area__text-toolbar"></div>
-                    <div class="imcms-editor-area__content-wrap">
-                        <div class="imcms-editor-content imcms-editor-content--text">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ultrices dui ac mauris
-                            facilisis ornare. Morbi congue mauris non eros ultrices porta.
-                        </div>
-                    </div>
-                    <div class="imcms-editor-area__control-wrap">
-                        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
-                            <div class="imcms-editor-area__control-title">Text Editor</div>
-                        </div>
-                    </div>
-                </div>
+                <imcms:image no="1"/>
+                <imcms:text no="1"/>
             </div>
             <div class="demo-row__column demo-element">
                 <imcms:image no="2"/>
-                <div class="imcms-editor-area imcms-editor-area--text">
-                    <div class="imcms-editor-area__text-toolbar"></div>
-                    <div class="imcms-editor-area__content-wrap">
-                        <div class="imcms-editor-content imcms-editor-content--text">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ultrices dui ac mauris
-                            facilisis ornare. Morbi congue mauris non eros ultrices porta.
-                        </div>
-                    </div>
-                    <div class="imcms-editor-area__control-wrap">
-                        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
-                            <div class="imcms-editor-area__control-title">Text Editor</div>
-                        </div>
-                    </div>
-                </div>
+                <imcms:text no="2"/>
             </div>
             <div class="demo-row__column demo-element">
                 <imcms:image no="3"/>
-                <div class="imcms-editor-area imcms-editor-area--text">
-                    <div class="imcms-editor-area__text-toolbar"></div>
-                    <div class="imcms-editor-area__content-wrap">
-                        <div class="imcms-editor-content imcms-editor-content--text">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ultrices dui ac mauris
-                            facilisis ornare. Morbi congue mauris non eros ultrices porta.
-                        </div>
-                    </div>
-                    <div class="imcms-editor-area__control-wrap">
-                        <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
-                            <div class="imcms-editor-area__control-title">Text Editor</div>
-                        </div>
-                    </div>
-                </div>
+                <imcms:text no="1"/>
             </div>
         </div>
     </div>

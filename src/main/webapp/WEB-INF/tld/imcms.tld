@@ -72,66 +72,67 @@
 		<!--<body-content>empty</body-content>-->
 	<!--</tag>-->
 
-	<tag>
-		<name>text</name>
-		<tag-class>com.imcode.imcms.servlet.tags.TextTag</tag-class>
-		<body-content>empty</body-content>
-		<attribute>
-			<name>placeholder</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>no</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>document</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>version</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>label</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>rows</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-            <description>
-                Can be set to "read" to prevent content changing or "write" mode
-            </description>
-			<name>mode</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-            <description>
-                Can be set to "text" to mark that it should be represented
-                as plain text without HTML editing plugins, or to "html"
-            </description>
-            <name>formats</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>pre</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>post</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-        <attribute>
-            <name>showlabel</name>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-	</tag>
+    <!-- old text tag, remove after new one implementation -->
+    <!--<tag>-->
+		<!--<name>text</name>-->
+		<!--<tag-class>com.imcode.imcms.servlet.tags.TextTag</tag-class>-->
+		<!--<body-content>empty</body-content>-->
+		<!--<attribute>-->
+			<!--<name>placeholder</name>-->
+			<!--<required>false</required>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>no</name>-->
+			<!--<required>true</required>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>document</name>-->
+			<!--<required>false</required>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>version</name>-->
+			<!--<required>false</required>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>label</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>rows</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+            <!--<description>-->
+                <!--Can be set to "read" to prevent content changing or "write" mode-->
+            <!--</description>-->
+			<!--<name>mode</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+            <!--<description>-->
+                <!--Can be set to "text" to mark that it should be represented-->
+                <!--as plain text without HTML editing plugins, or to "html"-->
+            <!--</description>-->
+            <!--<name>formats</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>pre</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>post</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+        <!--<attribute>-->
+            <!--<name>showlabel</name>-->
+            <!--<rtexprvalue>true</rtexprvalue>-->
+        <!--</attribute>-->
+	<!--</tag>-->
 
     <!-- old image tag, remove after new one implementation -->
 	<!--<tag>-->
@@ -523,6 +524,11 @@
     <tag-file>
         <name>image</name>
         <path>/WEB-INF/tags/imcms/admin/image.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>text</name>
+        <path>/WEB-INF/tags/imcms/admin/text.tag</path>
     </tag-file>
 
     <tag-file>
