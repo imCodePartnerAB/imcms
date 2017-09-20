@@ -16,7 +16,7 @@
     background-color: white;
     display: none;
     position: absolute;
-    top: -27px;
+    bottom: calc(100% - 2px);
     left: -2px;
     padding: 3px 10px;
     border: 2px solid rgba(0, 149, 217, 0.58);
