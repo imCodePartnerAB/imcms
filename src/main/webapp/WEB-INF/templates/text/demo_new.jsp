@@ -43,39 +43,6 @@
             </imcms:menuLoop>
         </div>
     </imcms:menu>
-    <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="1001" data-menu-id="1">
-        <div class="imcms-editor-area__content imcms-editor-content">
-            <div class="imcms-demo-page__menu imcms-demo-menu">
-                <div class="imcms-demo-menu__menu-item imcms-demo-menu__menu-item--active imcms-demo-menu-item">
-                    <div class="imcms-demo-menu-item__text">Start page</div>
-                </div>
-                <div class="imcms-demo-menu__menu-item imcms-demo-menu-item imcms-demo-menu__menu-item--parent">
-                    <div class="imcms-demo-menu-item__text">Some page</div>
-                    <div class="imcms-demo-menu__menu-items imcms-demo-menu__menu-items--child">
-                        <div class="imcms-demo-menu__menu-item imcms-demo-menu-item__text">Some page child 1</div>
-                        <div class="imcms-demo-menu__menu-item imcms-demo-menu-item__text">Some page child 2</div>
-                        <div class="imcms-demo-menu__menu-item imcms-demo-menu-item__text">Some page child 3</div>
-                    </div>
-                </div>
-                <div class="imcms-demo-menu__menu-item imcms-demo-menu-item">
-                    <div class="imcms-demo-menu-item__text">Childless page</div>
-                </div>
-                <div class="imcms-demo-menu__menu-item imcms-demo-menu-item imcms-demo-menu__menu-item--parent">
-                    <div class="imcms-demo-menu-item__text">One more parent page</div>
-                    <div class="imcms-demo-menu__menu-items imcms-demo-menu__menu-items--child">
-                        <div class="imcms-demo-menu__menu-item imcms-demo-menu-item__text">Page child 1</div>
-                        <div class="imcms-demo-menu__menu-item imcms-demo-menu-item__text">Page child 2</div>
-                        <div class="imcms-demo-menu__menu-item imcms-demo-menu-item__text">Page child 3</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="imcms-editor-area__control-wrap">
-            <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu"></div>
-            <div class="imcms-editor-area__control-title">Menu Editor</div>
-        </div>
-    </div>
-
     <div class="imcms-demo-page__content imcms-demo-content">
         <div class="imcms-demo-content__title">Start page</div>
         <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="1001" data-loop-id="1">
