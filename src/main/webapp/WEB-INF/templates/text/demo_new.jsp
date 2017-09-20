@@ -27,7 +27,7 @@
                 <imcms:menuItem>
                     <div class="imcms-demo-menu__menu-item imcms-demo-menu-item${hasChildren?' imcms-demo-menu__menu-item--parent':''}">
                         <div class="imcms-demo-menu-item__text">
-                            <%--<imcms:menuItemLink>${menuitem.document.headline}</imcms:menuItemLink>--%>${menuItem.document.headline}
+                            <imcms:menuItemLink>${menuItem.document.headline}</imcms:menuItemLink>
                         </div>
                         <%--<imcms:menuLoop>--%>
                             <%--<div class="imcms-demo-menu__menu-items imcms-demo-menu__menu-items--child">--%>
