@@ -18,6 +18,10 @@
 <%@ variable name-given="target" scope="NESTED" variable-class="java.lang.String" %>
 <c:set var="target" value="${menuItem.document.target}" scope="request"/>
 
+<%-- this done for nested menuLoop tags to pick up child documents --%>
+<%@ variable name-given="menuItems" scope="NESTED" variable-class="java.util.Collection" %>
+<c:set var="menuItems" value="${treeMenuItem.subMenuItems}" scope="request"/>
+
 <jsp:doBody/>
 
 <c:remove var="menuItem"/>

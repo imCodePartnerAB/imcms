@@ -29,15 +29,15 @@
                         <div class="imcms-demo-menu-item__text">
                             <imcms:menuItemLink>${menuItem.document.headline}</imcms:menuItemLink>
                         </div>
-                        <%--<imcms:menuLoop>--%>
-                            <%--<div class="imcms-demo-menu__menu-items imcms-demo-menu__menu-items--child">--%>
-                                <%--<imcms:menuItem>--%>
-                                    <%--<div class="imcms-demo-menu__menu-item imcms-demo-menu-item__text">--%>
-                                        <%--&lt;%&ndash;<imcms:menuItemLink>${menuitem.document.headline}</imcms:menuItemLink>&ndash;%&gt;${menuItem.document.headline}--%>
-                                    <%--</div>--%>
-                                <%--</imcms:menuItem>--%>
-                            <%--</div>--%>
-                        <%--</imcms:menuLoop>--%>
+                        <imcms:menuLoop>
+                            <div class="imcms-demo-menu__menu-items imcms-demo-menu__menu-items--child">
+                                <imcms:menuItem>
+                                    <div class="imcms-demo-menu__menu-item imcms-demo-menu-item__text">
+                                        <imcms:menuItemLink>${menuItem.document.headline}</imcms:menuItemLink>
+                                    </div>
+                                </imcms:menuItem>
+                            </div>
+                        </imcms:menuLoop>
                     </div>
                 </imcms:menuItem>
             </imcms:menuLoop>

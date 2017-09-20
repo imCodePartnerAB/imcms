@@ -7,7 +7,7 @@
 <%@ attribute name="pre" required="false" %>
 <%@ attribute name="post" required="false" %>
 
-<%@ variable name-given="menu" scope="NESTED" variable-class="imcode.server.document.textdocument.MenuDomainObject" %>
+<%@ variable name-given="menuItems" scope="NESTED" variable-class="java.util.Collection" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
@@ -15,9 +15,9 @@
 <%--@elvariable id="isEditMode" type="boolean"--%>
 
 <c:set var="targetDoc" value="${empty docId ? currentDocument : (imcms:getDocument(docId, pageContext))}"/>
-<c:set var="menu" value="${targetDoc.internal.getMenu(no)}" scope="request"/>
+<c:set var="menuItems" value="${targetDoc.internal.getMenu(no).menuItemsVisibleToUserAsTree}" scope="request"/>
 <c:set var="menuContent">${pre}<jsp:doBody/>${post}</c:set>
-<c:remove var="menu"/>
+<c:remove var="menuItems"/>
 
 <c:if test="${isEditMode}">
     <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDoc.id}" data-menu-id="${no}">
