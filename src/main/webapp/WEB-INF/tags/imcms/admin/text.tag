@@ -16,6 +16,7 @@
 
 <c:if test="${isEditMode}">
     <div class="imcms-editor-area imcms-editor-area--text">
+        <div class="imcms-editor-area__text-label">${label}</div>
         <div class="imcms-editor-area__text-toolbar"></div>
         <div class="imcms-editor-area__content-wrap">
             <div class="imcms-editor-content imcms-editor-content--text">${textContent}</div>

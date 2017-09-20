@@ -11,6 +11,23 @@
     width: 100%;
 }
 
+.imcms-editor-area__text-label {
+    width: calc(100% + 4px);
+    background-color: white;
+    display: none;
+    position: absolute;
+    top: -27px;
+    left: -2px;
+    padding: 3px 10px;
+    border: 2px solid rgba(0, 149, 217, 0.58);
+    border-bottom-width: 1px;
+    border-radius: 5px 5px 0 0;
+}
+
+.imcms-editor-area--text:hover .imcms-editor-area__text-label {
+    display: block;
+}
+
 .imcms-editor-area__text-toolbar {
     background-color: white;
     width: 100%;
