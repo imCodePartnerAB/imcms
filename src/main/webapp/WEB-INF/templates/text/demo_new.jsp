@@ -97,15 +97,15 @@
         <div class="imcms-demo-content__images-texts-demo demo-row">
             <div class="demo-row__column demo-element">
                 <imcms:image no="1"/>
-                <imcms:text no="1"/>
+                <imcms:text no="1" label="Demo text 1"/>
             </div>
             <div class="demo-row__column demo-element">
                 <imcms:image no="2"/>
-                <imcms:text no="2"/>
+                <imcms:text no="2" label="Demo text 2"/>
             </div>
             <div class="demo-row__column demo-element">
                 <imcms:image no="3"/>
-                <imcms:text no="1"/>
+                <imcms:text no="1" label="Demo text 3"/>
             </div>
         </div>
     </div>

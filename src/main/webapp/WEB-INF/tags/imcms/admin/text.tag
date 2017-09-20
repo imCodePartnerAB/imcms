@@ -3,7 +3,7 @@
 <%@ attribute name="no" required="true" %>
 <%@ attribute name="document" required="false" %>
 <%@ attribute name="placeholder" required="false" %>
-<%@ attribute name="label" required="false" %>
+<%@ attribute name="label" required="true" %>
 <%@ attribute name="rows" required="false" %>
 <%@ attribute name="mode" required="false" %>
 <%@ attribute name="formats" required="false" %>
