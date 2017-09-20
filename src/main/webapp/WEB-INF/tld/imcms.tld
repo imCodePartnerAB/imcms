@@ -226,83 +226,88 @@
 		</attribute>
 	</tag>
 
-	<tag>
-		<name>menu</name>
-		<tag-class>com.imcode.imcms.servlet.tags.MenuTag</tag-class>
-		<body-content>JSP</body-content>
-		<variable>
-			<name-given>menuitem</name-given>
-			<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>
-			<scope>NESTED</scope>
-		</variable>
-		<attribute>
-			<name>id</name>
-		</attribute>
-		<attribute>
-			<name>no</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>docId</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>label</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>pre</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>post</name>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-	</tag>
+	<!--<tag>-->
+		<!--<name>menu</name>-->
+		<!--<tag-class>com.imcode.imcms.servlet.tags.MenuTag</tag-class>-->
+		<!--<body-content>JSP</body-content>-->
+		<!--<variable>-->
+			<!--<name-given>menuitem</name-given>-->
+			<!--<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>-->
+			<!--<scope>NESTED</scope>-->
+		<!--</variable>-->
+		<!--<attribute>-->
+			<!--<name>id</name>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>no</name>-->
+			<!--<required>true</required>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>docId</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>label</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>pre</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+		<!--<attribute>-->
+			<!--<name>post</name>-->
+			<!--<rtexprvalue>true</rtexprvalue>-->
+		<!--</attribute>-->
+	<!--</tag>-->
 
-	<tag>
-		<name>menuloop</name>
-		<tag-class>com.imcode.imcms.servlet.tags.MenuLoopTag</tag-class>
-		<body-content>JSP</body-content>
-		<variable>
-			<name-given>menuitem</name-given>
-			<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>
-			<scope>NESTED</scope>
-		</variable>
-	</tag>
+	<!--<tag>-->
+		<!--<name>menuloop</name>-->
+		<!--<tag-class>com.imcode.imcms.servlet.tags.MenuLoopTag</tag-class>-->
+		<!--<body-content>JSP</body-content>-->
+		<!--<variable>-->
+			<!--<name-given>menuitem</name-given>-->
+			<!--<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>-->
+			<!--<scope>NESTED</scope>-->
+		<!--</variable>-->
+		<!--<variable>-->
+			<!--<name-given>hasChildren</name-given>-->
+			<!--<variable-class>java.lang.Boolean</variable-class>-->
+			<!--<scope>NESTED</scope>-->
+		<!--</variable>-->
+	<!--</tag>-->
 
-	<tag>
-		<name>menuitem</name>
-		<tag-class>com.imcode.imcms.servlet.tags.MenuItemTag</tag-class>
-		<body-content>JSP</body-content>
-		<variable>
-			<name-given>menuitem</name-given>
-			<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>
-			<scope>NESTED</scope>
-		</variable>
-	</tag>
+	<!--<tag>-->
+		<!--<name>menuitem</name>-->
+		<!--<tag-class>com.imcode.imcms.servlet.tags.MenuItemTag</tag-class>-->
+		<!--<body-content>JSP</body-content>-->
+		<!--<variable>-->
+			<!--<name-given>menuitem</name-given>-->
+			<!--<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>-->
+			<!--<scope>NESTED</scope>-->
+		<!--</variable>-->
+	<!--</tag>-->
 
-	<tag>
-		<name>menuitemhide</name>
-		<tag-class>com.imcode.imcms.servlet.tags.MenuItemHideTag</tag-class>
-		<body-content>JSP</body-content>
-		<variable>
-			<name-given>menuitem</name-given>
-			<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>
-			<scope>NESTED</scope>
-		</variable>
-	</tag>
+	<!--<tag>-->
+		<!--<name>menuitemhide</name>-->
+		<!--<tag-class>com.imcode.imcms.servlet.tags.MenuItemHideTag</tag-class>-->
+		<!--<body-content>JSP</body-content>-->
+		<!--<variable>-->
+			<!--<name-given>menuitem</name-given>-->
+			<!--<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>-->
+			<!--<scope>NESTED</scope>-->
+		<!--</variable>-->
+	<!--</tag>-->
 
-	<tag>
-		<name>menuitemlink</name>
-		<tag-class>com.imcode.imcms.servlet.tags.MenuItemLinkTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>classes</name>
-			<required>false</required>
-		</attribute>
-	</tag>
+	<!--<tag>-->
+		<!--<name>menuitemlink</name>-->
+		<!--<tag-class>com.imcode.imcms.servlet.tags.MenuItemLinkTag</tag-class>-->
+		<!--<body-content>JSP</body-content>-->
+		<!--<attribute>-->
+			<!--<name>classes</name>-->
+			<!--<required>false</required>-->
+		<!--</attribute>-->
+	<!--</tag>-->
 	<tag>
 		<name>login</name>
 		<tag-class>com.imcode.imcms.servlet.tags.LoginTag</tag-class>
@@ -529,6 +534,21 @@
     <tag-file>
         <name>text</name>
         <path>/WEB-INF/tags/imcms/admin/text.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>menu</name>
+        <path>/WEB-INF/tags/imcms/admin/menu.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>menuLoop</name>
+        <path>/WEB-INF/tags/imcms/admin/menuLoop.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>menuItem</name>
+        <path>/WEB-INF/tags/imcms/admin/menuItem.tag</path>
     </tag-file>
 
     <tag-file>

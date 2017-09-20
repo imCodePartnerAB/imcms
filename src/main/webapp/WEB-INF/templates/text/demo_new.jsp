@@ -21,6 +21,28 @@
 <div class="imcms-info-msg">Implemented admin panel buttons: "Public", "Edit", "Page Info" and "Document"</div>
 
 <div class="imcms-demo-page">
+    <imcms:menu no='1'>
+        <div class="imcms-demo-page__menu imcms-demo-menu">
+            <imcms:menuLoop>
+                <imcms:menuItem>
+                    <div class="imcms-demo-menu__menu-item imcms-demo-menu-item${hasChildren?' imcms-demo-menu__menu-item--parent':''}">
+                        <div class="imcms-demo-menu-item__text">
+                            <%--<imcms:menuItemLink>${menuitem.document.headline}</imcms:menuItemLink>--%>${menuItem.document.headline}
+                        </div>
+                        <%--<imcms:menuLoop>--%>
+                            <%--<div class="imcms-demo-menu__menu-items imcms-demo-menu__menu-items--child">--%>
+                                <%--<imcms:menuItem>--%>
+                                    <%--<div class="imcms-demo-menu__menu-item imcms-demo-menu-item__text">--%>
+                                        <%--&lt;%&ndash;<imcms:menuItemLink>${menuitem.document.headline}</imcms:menuItemLink>&ndash;%&gt;${menuItem.document.headline}--%>
+                                    <%--</div>--%>
+                                <%--</imcms:menuItem>--%>
+                            <%--</div>--%>
+                        <%--</imcms:menuLoop>--%>
+                    </div>
+                </imcms:menuItem>
+            </imcms:menuLoop>
+        </div>
+    </imcms:menu>
     <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="1001" data-menu-id="1">
         <div class="imcms-editor-area__content imcms-editor-content">
             <div class="imcms-demo-page__menu imcms-demo-menu">
