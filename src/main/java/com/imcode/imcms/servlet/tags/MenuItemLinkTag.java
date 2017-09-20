@@ -39,7 +39,7 @@ public class MenuItemLinkTag extends TagSupport implements IEditableTag {
         try {
             if (parserParameters.isAnyMode())
                 pageContext.getOut().print(editor.getWrapperPre());
-            pageContext.getOut().print("<a id=\"" + docId + "\" class=\"" + classes + "\" href=\"" + pathToDocument + "\" target=\"" + document.getTarget() + "\">");
+            pageContext.getOut().print("<a id=\"" + docId + (classes == null ? "" : "\" class=\"" + classes) + "\" href=\"" + pathToDocument + "\" target=\"" + document.getTarget() + "\">");
         } catch (IOException e) {
             throw new JspException(e);
         }
