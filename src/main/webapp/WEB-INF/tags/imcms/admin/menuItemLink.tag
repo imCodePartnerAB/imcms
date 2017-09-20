@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ attribute name="classes" required="false" %>
 
-<c:set var="classes" value="${classes ne null ? '' : ' class=\"'.concat(classes).concat('\"')}"/>
+<c:set var="classes" value="${empty classes ? '' : ' class=\"'.concat(classes).concat('\"')}"/>
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="docId" type="java.lang.Integer"--%>

@@ -1,5 +1,6 @@
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="treeMenuItem" type="imcode.server.document.textdocument.MenuItemDomainObject.TreeMenuItemDomainObject"--%>
+<%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 
@@ -11,6 +12,9 @@
 
 <%@ variable name-given="docId" scope="NESTED" variable-class="java.lang.Integer" %>
 <c:set var="docId" value="${menuItem.documentId}" scope="request"/>
+
+<%@ variable name-given="isCurrent" scope="NESTED" variable-class="java.lang.Boolean" %>
+<c:set var="isCurrent" value="${docId eq currentDocument.id}" scope="request"/>
 
 <%@ variable name-given="pathToDocument" scope="NESTED" variable-class="java.lang.String" %>
 <c:set var="pathToDocument" value="${imcms:getAbsolutePathToDocument(pageContext.request, menuItem.document)}" scope="request"/>
@@ -29,3 +33,4 @@
 <c:remove var="docId"/>
 <c:remove var="pathToDocument"/>
 <c:remove var="target"/>
+<c:remove var="isCurrent"/>

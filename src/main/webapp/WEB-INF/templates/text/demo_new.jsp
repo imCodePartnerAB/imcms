@@ -25,15 +25,15 @@
         <div class="imcms-demo-page__menu imcms-demo-menu">
             <imcms:menuLoop>
                 <imcms:menuItem>
-                    <div class="imcms-demo-menu__menu-item imcms-demo-menu-item${hasChildren?' imcms-demo-menu__menu-item--parent':''}">
-                        <div class="imcms-demo-menu-item__text">
-                            <imcms:menuItemLink>${menuItem.document.headline}</imcms:menuItemLink>
-                        </div>
+                    <div class="imcms-demo-menu__menu-item imcms-demo-menu-item${hasChildren?' imcms-demo-menu__menu-item--parent':''}${isCurrent?' imcms-demo-menu__menu-item--active':''}">
+                        <imcms:menuItemLink
+                                classes="imcms-demo-menu-item__text">${menuItem.document.headline}</imcms:menuItemLink>
                         <imcms:menuLoop>
                             <div class="imcms-demo-menu__menu-items imcms-demo-menu__menu-items--child">
                                 <imcms:menuItem>
-                                    <div class="imcms-demo-menu__menu-item imcms-demo-menu-item__text">
-                                        <imcms:menuItemLink>${menuItem.document.headline}</imcms:menuItemLink>
+                                    <div class="imcms-demo-menu__menu-item">
+                                        <imcms:menuItemLink
+                                                classes="imcms-demo-menu-item__text">${menuItem.document.headline}</imcms:menuItemLink>
                                     </div>
                                 </imcms:menuItem>
                             </div>
