@@ -40,22 +40,9 @@ Imcms.define("imcms-text-editor-initializer",
                 });
         }
 
-        function resizeEditorToolbar(e) {
-            var $editorArea = e.target.$().closest(".imcms-editor-area--text");
-
-            var heightPx = $editorArea.find(".mce-tinymce.mce-tinymce-inline.mce-container.mce-panel")
-                .css("height");
-
-            var height = parseInt(heightPx) || 0;
-
-            $editorArea.find(".imcms-editor-area__text-toolbar")
-                .css("top", -height + 1);
-        }
-
         function prepareEditor(editor) {
             clearSaveBtnText(editor);
             setEditorFocusOnEditControlClick(editor);
-            editor.on('focus', resizeEditorToolbar);
         }
 
         function toggleFocusEditArea(e) {

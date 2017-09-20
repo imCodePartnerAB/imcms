@@ -32,7 +32,7 @@
     background-color: white;
     width: 100%;
     position: absolute;
-    top: -32px;
+    bottom: calc(100% - 2px);
     left: -2px;
 }
 
