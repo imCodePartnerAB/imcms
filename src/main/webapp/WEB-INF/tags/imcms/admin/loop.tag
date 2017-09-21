@@ -7,7 +7,7 @@
 <%@ attribute name="pre"%>
 <%@ attribute name="post"%>
 
-<%@ variable name-given="loopEntries" scope="NESTED" variable-class="java.util.Collection" %>
+<%@ variable name-given="loop" scope="NESTED" variable-class="com.imcode.imcms.api.Loop" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
@@ -15,9 +15,9 @@
 <%--@elvariable id="isEditMode" type="boolean"--%>
 
 <c:set var="targetDoc" value="${empty document ? currentDocument : (imcms:getDocument(document, pageContext))}"/>
-<%--<c:set var="loopEntries" value="${targetDoc.internal.getMenu(no).menuItemsVisibleToUserAsTree}" scope="request"/>--%>
+<c:set var="loop" value="${targetDoc.internal.getLoop(no)}" scope="request"/>
 <c:set var="loopContent">${pre}<jsp:doBody/>${post}</c:set>
-<c:remove var="loopContent"/>
+<c:remove var="loop"/>
 
 <c:if test="${isEditMode}">
     <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDoc.id}" data-loop-id="${no}">
