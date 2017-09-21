@@ -8,55 +8,55 @@
     <short-name>imcms</short-name>
     <uri>imcms</uri>
 
-    <tag>
-        <name>loop</name>
-        <tag-class>com.imcode.imcms.servlet.tags.LoopTag</tag-class>
-        <body-content>JSP</body-content>
-        <variable>
-            <name-given>loopitem</name-given>
-            <variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>
-            <scope>NESTED</scope>
-        </variable>
-        <attribute>
-            <name>no</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>label</name>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>pre</name>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>post</name>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-    </tag>
+    <!--<tag>-->
+        <!--<name>loop</name>-->
+        <!--<tag-class>com.imcode.imcms.servlet.tags.LoopTag</tag-class>-->
+        <!--<body-content>JSP</body-content>-->
+        <!--<variable>-->
+            <!--<name-given>loopitem</name-given>-->
+            <!--<variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>-->
+            <!--<scope>NESTED</scope>-->
+        <!--</variable>-->
+        <!--<attribute>-->
+            <!--<name>no</name>-->
+            <!--<required>true</required>-->
+            <!--<rtexprvalue>true</rtexprvalue>-->
+        <!--</attribute>-->
+        <!--<attribute>-->
+            <!--<name>label</name>-->
+            <!--<rtexprvalue>true</rtexprvalue>-->
+        <!--</attribute>-->
+        <!--<attribute>-->
+            <!--<name>pre</name>-->
+            <!--<rtexprvalue>true</rtexprvalue>-->
+        <!--</attribute>-->
+        <!--<attribute>-->
+            <!--<name>post</name>-->
+            <!--<rtexprvalue>true</rtexprvalue>-->
+        <!--</attribute>-->
+    <!--</tag>-->
 
-    <tag>
-        <name>loopentry</name>
-        <tag-class>com.imcode.imcms.servlet.tags.LoopEntryTag</tag-class>
-        <body-content>JSP</body-content>
-        <variable>
-            <name-given>loopitem</name-given>
-            <variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>
-            <scope>NESTED</scope>
-        </variable>
-    </tag>
+    <!--<tag>-->
+        <!--<name>loopentry</name>-->
+        <!--<tag-class>com.imcode.imcms.servlet.tags.LoopEntryTag</tag-class>-->
+        <!--<body-content>JSP</body-content>-->
+        <!--<variable>-->
+            <!--<name-given>loopitem</name-given>-->
+            <!--<variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>-->
+            <!--<scope>NESTED</scope>-->
+        <!--</variable>-->
+    <!--</tag>-->
 
-    <tag>
-        <name>loopitem</name>
-        <tag-class>com.imcode.imcms.servlet.tags.LoopItemTag</tag-class>
-        <body-content>JSP</body-content>
-        <variable>
-            <name-given>loopitem</name-given>
-            <variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>
-            <scope>NESTED</scope>
-        </variable>
-    </tag>
+    <!--<tag>-->
+        <!--<name>loopitem</name>-->
+        <!--<tag-class>com.imcode.imcms.servlet.tags.LoopItemTag</tag-class>-->
+        <!--<body-content>JSP</body-content>-->
+        <!--<variable>-->
+            <!--<name-given>loopitem</name-given>-->
+            <!--<variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>-->
+            <!--<scope>NESTED</scope>-->
+        <!--</variable>-->
+    <!--</tag>-->
 
     <!-- old contextpath tag, remove after new one implementation -->
     <!--<tag>-->
@@ -554,6 +554,11 @@
     <tag-file>
         <name>menuItemLink</name>
         <path>/WEB-INF/tags/imcms/admin/menuItemLink.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>loop</name>
+        <path>/WEB-INF/tags/imcms/admin/loop.tag</path>
     </tag-file>
 
     <tag-file>

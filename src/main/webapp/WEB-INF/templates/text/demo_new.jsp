@@ -46,6 +46,13 @@
     </imcms:menu>
     <div class="imcms-demo-page__content imcms-demo-content">
         <div class="imcms-demo-content__title">Start page</div>
+        <imcms:loop no="1">
+            <%--<imcms:loopentry>--%>
+                <%--<imcms:loopitem>--%>
+
+                <%--</imcms:loopitem>--%>
+            <%--</imcms:loopentry>--%>
+        </imcms:loop>
         <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="1001" data-loop-id="1">
             <div class="imcms-editor-area__content imcms-editor-content">
                 <div class="imcms-demo-content__loop-content demo-loop-content">
