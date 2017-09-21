@@ -562,13 +562,8 @@
     </tag-file>
 
     <tag-file>
-        <name>loopEntry</name>
-        <path>/WEB-INF/tags/imcms/admin/loopEntry.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>loopItem</name>
-        <path>/WEB-INF/tags/imcms/admin/loopItem.tag</path>
+        <name>loop</name>
+        <path>/WEB-INF/tags/imcms/admin/loop.tag</path>
     </tag-file>
 
     <tag-file>
