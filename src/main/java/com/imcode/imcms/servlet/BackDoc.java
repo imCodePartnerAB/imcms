@@ -24,17 +24,13 @@ public class BackDoc extends HttpServlet {
         if (null != history && !history.empty()) {
             while (!history.empty()) {
                 document = documentMapper.getDocument(history.pop());
-                if (isTextDocument(document)) {
+                if (Utility.isTextDocument(document)) {
                     break;
                 }
             }
         }
 
         return document;
-    }
-
-    private static boolean isTextDocument(DocumentDomainObject document) {
-        return DocumentTypeDomainObject.TEXT == document.getDocumentType();
     }
 
     /**

@@ -8,6 +8,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
@@ -228,8 +229,14 @@ public class ImcmsSetupFilter implements Filter {
                     .getVersionedDocument(documentIdString, langCode, request);
 
             if (null != document) {
-                final String newPath = "/api/viewDoc" + request.getServletPath();
-                request.getRequestDispatcher(newPath).forward(request, response);
+                if (Utility.isTextDocument(document)) {
+                    final String newPath = "/api/viewDoc" + request.getServletPath();
+                    request.getRequestDispatcher(newPath).forward(request, response);
+
+                } else {
+                    GetDoc.viewDoc(document, request, response);
+                }
+
                 return;
             }
         }

@@ -17,6 +17,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.collections.*;
@@ -130,6 +131,10 @@ public class Utility {
         res.setHeader("Cache-Control", "no-cache; must-revalidate;");
         res.setHeader("Pragma", "no-cache;");
         res.setDateHeader("Expires", 0);
+    }
+
+    public static boolean isTextDocument(DocumentDomainObject document) {
+        return DocumentTypeDomainObject.TEXT == document.getDocumentType();
     }
 
     public static UserDomainObject getLoggedOnUser(HttpServletRequest req) {

@@ -98,7 +98,7 @@ public class GetDoc extends HttpServlet {
         }
 
         Integer docId = document.getId();
-        if (isTextDocument(document) && (history.empty() || !history.peek().equals(docId))) {
+        if (Utility.isTextDocument(document) && (history.empty() || !history.peek().equals(docId))) {
             history.push(docId);
         }
 
@@ -229,10 +229,6 @@ public class GetDoc extends HttpServlet {
             TRACK_LOG.info(documentRequest);
             imcref.parsePage(paramsToParser, res.getWriter());
         }
-    }
-
-    private static boolean isTextDocument(DocumentDomainObject document) {
-        return DocumentTypeDomainObject.TEXT == document.getDocumentType();
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
