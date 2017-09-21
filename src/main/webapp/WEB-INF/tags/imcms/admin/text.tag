@@ -3,7 +3,7 @@
 <%@ attribute name="no" required="true" %>
 <%@ attribute name="document" required="false" %>
 <%@ attribute name="placeholder" required="false" %>
-<%@ attribute name="label" required="true" %>
+<%@ attribute name="label" required="false" %>
 <%@ attribute name="rows" required="false" %>
 <%@ attribute name="mode" required="false" %>
 <%@ attribute name="formats" required="false" %>
@@ -16,7 +16,9 @@
 
 <c:if test="${isEditMode}">
     <div class="imcms-editor-area imcms-editor-area--text">
-        <div class="imcms-editor-area__text-label">${label}</div>
+        <c:if test="${not empty label}">
+            <div class="imcms-editor-area__text-label">${label}</div>
+        </c:if>
         <div class="imcms-editor-area__text-toolbar"></div>
         <div class="imcms-editor-area__content-wrap">
             <div class="imcms-editor-content imcms-editor-content--text">${textContent}</div>
