@@ -93,7 +93,7 @@ public class AdminDoc extends HttpServlet {
             }
         }
 
-        if (!user.canEdit(document)) {
+        if (!user.canEdit(document) || user.isDefaultUser()) {
             req.getRequestDispatcher("/login").forward(req, res);
             return;
         }
