@@ -408,8 +408,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         updateLoopsContent();
     }
 
-    public Loop getLoop(int no) {
-        return loops.get(no);
+    public Loop getLoop(int loopId) {
+        return Optional.ofNullable(loops.get(loopId)).orElse(setLoop(loopId, Loop.singleEntry()));
     }
 
     /**
