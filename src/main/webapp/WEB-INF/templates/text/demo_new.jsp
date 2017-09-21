@@ -47,11 +47,11 @@
     <div class="imcms-demo-page__content imcms-demo-content">
         <div class="imcms-demo-content__title">Start page</div>
         <imcms:loop no="1">
-            <%--<imcms:loopentry>--%>
+            <imcms:loopEntry>
                 <%--<imcms:loopitem>--%>
 
                 <%--</imcms:loopitem>--%>
-            <%--</imcms:loopentry>--%>
+            </imcms:loopEntry>
         </imcms:loop>
         <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="1001" data-loop-id="1">
             <div class="imcms-editor-area__content imcms-editor-content">
