@@ -24,25 +24,25 @@
                 <!-- Example of ImCMS menu tag -->
                 <imcms:menu no='1' docId="1001" label="Example">
                     <ul>
-                        <imcms:menuloop>
-                            <imcms:menuitem>
+                        <imcms:menuLoop>
+                            <imcms:menuItem>
                                 <li>
-                                    <imcms:menuitemlink>
+                                    <imcms:menuItemLink>
                                         ${menuitem.document.headline}
-                                    </imcms:menuitemlink>
+                                    </imcms:menuItemLink>
                                     <!-- sub menu definition -->
-                                    <imcms:menuloop>
-                                        <imcms:menuitem>
+                                    <imcms:menuLoop>
+                                        <imcms:menuItem>
                                             <div>
-                                                <imcms:menuitemlink>
+                                                <imcms:menuItemLink>
                                                     ${menuitem.document.headline}
-                                                </imcms:menuitemlink>
+                                                </imcms:menuItemLink>
                                             </div>
-                                        </imcms:menuitem>
-                                    </imcms:menuloop>
+                                        </imcms:menuItem>
+                                    </imcms:menuLoop>
                                 </li>
-                            </imcms:menuitem>
-                        </imcms:menuloop>
+                            </imcms:menuItem>
+                        </imcms:menuLoop>
                     </ul>
                 </imcms:menu>
             </div>
