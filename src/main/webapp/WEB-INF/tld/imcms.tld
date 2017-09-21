@@ -557,8 +557,8 @@
     </tag-file>
 
     <tag-file>
-        <name>loop</name>
-        <path>/WEB-INF/tags/imcms/admin/loop.tag</path>
+        <name>contentLoop</name>
+        <path>/WEB-INF/tags/imcms/admin/contentLoop.tag</path>
     </tag-file>
 
     <tag-file>

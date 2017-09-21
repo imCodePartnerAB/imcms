@@ -46,13 +46,41 @@
     </imcms:menu>
     <div class="imcms-demo-page__content imcms-demo-content">
         <div class="imcms-demo-content__title">Start page</div>
-        <imcms:loop no="1">
+        <imcms:contentLoop no="1">
             <imcms:loopEntry>
-                <%--<imcms:loopitem>--%>
+                <imcms:loopItem>
+                    <div class="imcms-demo-content__loop-content demo-loop-content">
+                        <div class="demo-loop-content__image">Lorem ipsum dolor sit amet, consectetur adipiscing</div>
+                        <div class="demo-loop-content__text-area demo-loop-texts">
+                            <div class="demo-loop-texts__text-area demo-text-area demo-text-area--left">
+                                <p>Title Name 1</p>
 
-                <%--</imcms:loopitem>--%>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ultrices dui ac mauris
+                                facilisis ornare. Morbi congue mauris non eros ultrices porta. Suspendisse sed consequat
+                                elit. Proin placerat augue tortor, nec gravida odio tempor a. Duis facilisis erat in
+                                maximus sagittis. Suspendisse potenti. Vivamus rutrum facilisis elit, non ultricies
+                                nulla tincidunt in. Suspendisse commodo tincidunt varius. Duis tincidunt, augue aliquet
+                                tristique scelerisque, mi felis vehicula dui, a rhoncus mi mauris in neque. Maecenas non
+                                elit non lacus blandit volutpat iaculis ac lacus. Sed sed mollis eros. Praesent bibendum
+                                egestas mauris loopEntryid tincidunt. Nulla lectus massa, tempor vel interdum non, sollicitudin
+                                vitae nunc. Vestibulum nec sapien sit amet orci rutrum iaculis. Quisque sit amet aliquam
+                                lorem.
+                            </div>
+                            <div class="demo-loop-texts__text-area demo-text-area demo-text-area--right">
+                                <p>Title Name 2</p>
+
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ultrices dui ac mauris
+                                facilisis ornare. Morbi congue mauris non eros ultrices porta. Suspendisse sed consequat
+                                elit. Proin placerat augue tortor, nec gravida odio tempor a. Duis facilisis erat in
+                                maximus sagittis. Suspendisse potenti. Vivamus rutrum facilisis elit, non ultricies
+                                nulla tincidunt in. Suspendisse commodo tincidunt varius. Duis tincidunt, augue aliquet
+                                tristique scelerisque, mi felis vehicula dui, a rhoncus mi mauris in neque.
+                            </div>
+                        </div>
+                    </div>
+                </imcms:loopItem>
             </imcms:loopEntry>
-        </imcms:loop>
+        </imcms:contentLoop>
         <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="1001" data-loop-id="1">
             <div class="imcms-editor-area__content imcms-editor-content">
                 <div class="imcms-demo-content__loop-content demo-loop-content">
@@ -102,7 +130,7 @@
             </div>
             <div class="demo-row__column demo-element">
                 <imcms:image no="3"/>
-                <imcms:text no="1" label="Demo text 3"/>
+                <imcms:text no="3" label="Demo text 3"/>
             </div>
         </div>
     </div>

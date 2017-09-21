@@ -135,18 +135,18 @@
             <imcms:text label="label test 2" no="4" formats="text"/>
         </div>
         <div class="wrapper">
-            <imcms:loop no="1">
-                <imcms:loopentry>
-                    <imcms:loopitem>
+            <imcms:contentLoop no="1">
+                <imcms:loopEntry>
+                    <imcms:loopItem>
                         <div class="figure">
                             <imcms:image no="1" document="${currentDocument.id}" style="max-width:100px;"/>
                             <div class="description">
                                 <imcms:text no="1" document="${currentDocument.id}" label="loop_1" formats="CLEANHTML"/>
                             </div>
                         </div>
-                    </imcms:loopitem>
-                </imcms:loopentry>
-            </imcms:loop>
+                    </imcms:loopItem>
+                </imcms:loopEntry>
+            </imcms:contentLoop>
         </div>
     </section>
 
