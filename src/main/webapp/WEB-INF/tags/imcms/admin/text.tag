@@ -19,7 +19,7 @@
 
 <c:set var="targetDoc" value="${empty document ? currentDocument : (imcms:getDocument(document, pageContext))}"/>
 <c:set var="textField" value="${loopEntryRef eq null ? targetDoc.getTextField(no) : targetDoc.getLoopTextField(loopEntryRef.loopNo, loopEntryRef.entryNo, no)}"/>
-<c:set var="textContent" value="${textField.text}"/>
+<c:set var="textContent" value="${pre}${textField.text}${post}"/>
 
 <c:if test="${isEditMode}">
     <div class="imcms-editor-area imcms-editor-area--text">
