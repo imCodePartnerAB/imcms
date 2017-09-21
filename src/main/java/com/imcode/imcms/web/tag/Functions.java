@@ -28,8 +28,9 @@ public class Functions {
         return Utility.getCMS(pageContext).getDocumentService().getTextDocument(docIdentifier);
     }
 
-    public static TextDocument.LoopItem createLoopItem(Map.Entry<Integer, Boolean> entry, int loopNo,
+    public static TextDocument.LoopItem createLoopItem(Object entry, int loopNo,
                                                        TextDocumentDomainObject document) {
-        return new TextDocument.LoopItem(entry, loopNo, document);
+        // this cast have to be done since JSP processor doesn't understand interface in interface or something
+        return new TextDocument.LoopItem(((Map.Entry<Integer, Boolean>) entry), loopNo, document);
     }
 }

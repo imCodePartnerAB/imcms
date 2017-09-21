@@ -567,6 +567,11 @@
     </tag-file>
 
     <tag-file>
+        <name>loopItem</name>
+        <path>/WEB-INF/tags/imcms/admin/loopItem.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>contextPath</name>
         <path>/WEB-INF/tags/imcms/admin/contextPath.tag</path>
     </tag-file>
@@ -606,8 +611,7 @@
     <function>
         <name>createLoopItem</name>
         <function-class>com.imcode.imcms.web.tag.Functions</function-class>
-        <function-signature>com.imcode.imcms.api.TextDocument.LoopItem
-            createLoopItem(java.util.Map.Entry,int,imcode.server.document.textdocument.TextDocumentDomainObject)
+        <function-signature>com.imcode.imcms.api.TextDocument.LoopItem createLoopItem(java.lang.Object,int,imcode.server.document.textdocument.TextDocumentDomainObject)
         </function-signature>
     </function>
 </taglib>
