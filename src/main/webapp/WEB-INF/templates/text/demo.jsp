@@ -4,12 +4,13 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 
-<imcms:variables/>
+<imcms:contextPath/>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-    <base href="${pageContext.request.contextPath}">
-    <title>${document.headline} - Powered by imCMS from imCode Partner AB</title>
+    <base href="${contextPath}">
+    <title>${currentDocument.headline} - Powered by imCMS from imCode Partner AB</title>
     <meta charset="utf-8"/>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/imcms/css/template/demo.css"/>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -28,14 +29,14 @@
                             <imcms:menuItem>
                                 <li>
                                     <imcms:menuItemLink>
-                                        ${menuitem.document.headline}
+                                        ${menuItem.document.headline}
                                     </imcms:menuItemLink>
                                     <!-- sub menu definition -->
                                     <imcms:menuLoop>
                                         <imcms:menuItem>
                                             <div>
                                                 <imcms:menuItemLink>
-                                                    ${menuitem.document.headline}
+                                                    ${menuItem.document.headline}
                                                 </imcms:menuItemLink>
                                             </div>
                                         </imcms:menuItem>
@@ -124,9 +125,9 @@
     </section>
     <section class="content">
         <div class="wrapper">
-            <h1>${document.headline}</h1>
+            <h1>${currentDocument.headline}</h1>
 
-            <imcms:text label="test label" no="1" document="${document.id}"/>
+            <imcms:text label="test label" no="1" document="${currentDocument.id}"/>
 
             <h2>Learn more</h2>
 
@@ -138,9 +139,9 @@
                 <imcms:loopentry>
                     <imcms:loopitem>
                         <div class="figure">
-                            <imcms:image no="1" document="${document.id}" style="max-width:100px;"/>
+                            <imcms:image no="1" document="${currentDocument.id}" style="max-width:100px;"/>
                             <div class="description">
-                                <imcms:text no="1" document="${document.id}" label="loop_1" formats="CLEANHTML"/>
+                                <imcms:text no="1" document="${currentDocument.id}" label="loop_1" formats="CLEANHTML"/>
                             </div>
                         </div>
                     </imcms:loopitem>
