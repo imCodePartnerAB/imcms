@@ -31,6 +31,10 @@
     display: block;
 }
 
+.imcms-demo-menu-item {
+    width: 15%;
+}
+
 .imcms-demo-menu__menu-item {
     line-height: 45px;
     cursor: pointer;
@@ -73,6 +77,10 @@
 
 .imcms-demo-menu__menu-item--parent:hover .imcms-demo-menu__menu-items {
     display: block;
+}
+
+.imcms-demo-menu__menu-items--child .imcms-demo-menu__menu-item {
+    width: 100%;
 }
 
 .imcms-demo-menu__menu-items--child .imcms-demo-menu-item__text:hover {
