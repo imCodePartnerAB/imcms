@@ -547,11 +547,6 @@
     </tag-file>
 
     <tag-file>
-        <name>menuItem</name>
-        <path>/WEB-INF/tags/imcms/admin/menuItem.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>menuItemLink</name>
         <path>/WEB-INF/tags/imcms/admin/menuItemLink.tag</path>
     </tag-file>

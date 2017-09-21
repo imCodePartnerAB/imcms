@@ -26,23 +26,19 @@
                 <imcms:menu no='1' docId="1001" label="Example">
                     <ul>
                         <imcms:menuLoop>
-                            <imcms:menuItem>
-                                <li>
-                                    <imcms:menuItemLink>
-                                        ${menuItem.document.headline}
-                                    </imcms:menuItemLink>
-                                    <!-- sub menu definition -->
-                                    <imcms:menuLoop>
-                                        <imcms:menuItem>
-                                            <div>
-                                                <imcms:menuItemLink>
-                                                    ${menuItem.document.headline}
-                                                </imcms:menuItemLink>
-                                            </div>
-                                        </imcms:menuItem>
-                                    </imcms:menuLoop>
-                                </li>
-                            </imcms:menuItem>
+                            <li>
+                                <imcms:menuItemLink>
+                                    ${menuItem.document.headline}
+                                </imcms:menuItemLink>
+                                <!-- sub menu definition -->
+                                <imcms:menuLoop>
+                                    <div>
+                                        <imcms:menuItemLink>
+                                            ${menuItem.document.headline}
+                                        </imcms:menuItemLink>
+                                    </div>
+                                </imcms:menuLoop>
+                            </li>
                         </imcms:menuLoop>
                     </ul>
                 </imcms:menu>
@@ -136,16 +132,14 @@
         </div>
         <div class="wrapper">
             <imcms:contentLoop no="1">
-                <imcms:loopEntry>
-                    <imcms:loopItem>
-                        <div class="figure">
-                            <imcms:image no="1" document="${currentDocument.id}" style="max-width:100px;"/>
-                            <div class="description">
-                                <imcms:text no="1" document="${currentDocument.id}" label="loop_1" formats="CLEANHTML"/>
-                            </div>
+                <imcms:loop>
+                    <div class="figure">
+                        <imcms:image no="1" document="${currentDocument.id}" style="max-width:100px;"/>
+                        <div class="description">
+                            <imcms:text no="1" document="${currentDocument.id}" label="loop_1" formats="CLEANHTML"/>
                         </div>
-                    </imcms:loopItem>
-                </imcms:loopEntry>
+                    </div>
+                </imcms:loop>
             </imcms:contentLoop>
         </div>
     </section>
