@@ -409,7 +409,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public Loop getLoop(int loopId) {
-        return Optional.ofNullable(loops.get(loopId)).orElse(setLoop(loopId, Loop.singleEntry()));
+        return Optional.ofNullable(loops.get(loopId)).orElseGet(() -> setLoop(loopId, Loop.singleEntry()));
     }
 
     /**
