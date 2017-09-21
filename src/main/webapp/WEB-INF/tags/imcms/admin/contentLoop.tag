@@ -17,7 +17,7 @@
 <%--@elvariable id="isEditMode" type="boolean"--%>
 
 <c:set var="targetDoc" value="${empty document ? currentDocument : (imcms:getDocument(document, pageContext))}"/>
-<c:set var="loop" value="${targetDoc.internal.getLoop(no)}" scope="request"/>
+<c:set var="loop" value="${targetDoc.getLoop(no)}" scope="request"/>
 <c:set var="loopNo" value="${no}" scope="request"/>
 <c:set var="loopDoc" value="${targetDoc}" scope="request"/>
 
