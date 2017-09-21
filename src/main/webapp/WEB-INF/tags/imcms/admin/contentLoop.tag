@@ -21,7 +21,9 @@
 <c:set var="loopNo" value="${no}" scope="request"/>
 <c:set var="loopDoc" value="${targetDoc}" scope="request"/>
 
-<c:set var="loopContent">${pre}<jsp:doBody/>${post}</c:set>
+<c:if test="${loop.entries.size() gt 0}">
+    <c:set var="loopContent">${pre}<jsp:doBody/>${post}</c:set>
+</c:if>
 
 <c:remove var="loop"/>
 <c:remove var="loopNo"/>
