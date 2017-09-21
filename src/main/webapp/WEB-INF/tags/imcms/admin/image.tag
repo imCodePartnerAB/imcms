@@ -4,6 +4,13 @@
 <%@ attribute name="document" required="false" %>
 <%@ attribute name="style" required="false" %>
 
+<%-- do not remove - it helps Idea to understand var types --%>
+<%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
+<%--@elvariable id="targetDoc" type="com.imcode.imcms.api.TextDocument"--%>
+<%--@elvariable id="isEditMode" type="boolean"--%>
+<%--@elvariable id="loopEntryRef" type="com.imcode.imcms.mapping.container.LoopEntryRef"--%>
+<%--@elvariable id="image" type="com.imcode.imcms.api.Image"--%>
+
 <c:set var="targetDoc" value="${empty document ? currentDocument : (imcms:getDocument(document, pageContext))}"/>
 
 <c:set var="imageContent">

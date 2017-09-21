@@ -5,7 +5,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 
-<imcms:variables/>
+<imcms:contextPath/>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>imcms v2</title>
     <!--style files-->
-    <link rel="stylesheet" href="<imcms:contextPath/>/demo/css/demo.css">
+    <link rel="stylesheet" href="${contextPath}/demo/css/demo.css">
 </head>
 <body>
 
