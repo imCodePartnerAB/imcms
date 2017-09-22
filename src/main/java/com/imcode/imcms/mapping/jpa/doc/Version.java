@@ -9,29 +9,6 @@ import java.util.Date;
 
 @Entity
 @Table(name = "imcms_doc_versions")
-
-@NamedQueries({
-        @NamedQuery(name = "Version.findByDocIdAndNo",
-                query = "SELECT v FROM Version v WHERE v.docId = ?1 AND v.no = ?2"),
-
-        @NamedQuery(name = "Version.findByDocIdOrderByNo",
-                query = "SELECT v FROM Version v WHERE v.docId = ?1 ORDER BY v.no"),
-
-        @NamedQuery(name = "Version.findLatest",
-                query = "SELECT v FROM Version v WHERE v.id = (SELECT max(v.id) FROM Version v WHERE v.docId = ?1)"),
-
-        @NamedQuery(name = "Version.findLatestNo",
-                query = "SELECT v.no FROM Version v WHERE v.id = (SELECT max(v.id) FROM Version v WHERE v.docId = ?1)"),
-
-        @NamedQuery(name = "Version.findWorking",
-                query = "SELECT v FROM Version v WHERE v.no = 0 AND v.docId = ?1"),
-
-        @NamedQuery(name = "Version.findDefault",
-                query = " SELECT v FROM Meta m, Version v WHERE m.defaultVersionNo = v.no AND m.id = v.docId AND m.id = ?1"),
-
-        @NamedQuery(name = "Version.updateDefaultNo",
-                query = " UPDATE Meta m SET m.defaultVersionNo = :no, m.publisherId = :publisherId WHERE m.id = :docId"),
-})
 public class Version implements Cloneable, Serializable {
 
     @Id
