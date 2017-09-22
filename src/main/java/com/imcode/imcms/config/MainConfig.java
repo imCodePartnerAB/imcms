@@ -19,6 +19,7 @@ import java.util.Properties;
         "com.imcode.imcms.imagearchive",
         "com.imcode.imcms.api.linker",
         "imcode.util",
+        "com.imcode.imcms.service",
         "com.imcode.imcms.document.text"
 })
 public class MainConfig {

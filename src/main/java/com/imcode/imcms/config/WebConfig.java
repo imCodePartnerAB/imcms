@@ -1,8 +1,5 @@
 package com.imcode.imcms.config;
 
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.Imcms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,8 +16,7 @@ import org.springframework.web.servlet.view.JstlView;
 @EnableWebMvc
 @ComponentScan({
         "com.imcode.imcms.servlet.apis",
-        "com.imcode.imcms.controller",
-        "com.imcode.imcms.service"
+        "com.imcode.imcms.controller"
 })
 public class WebConfig {
 
