@@ -1,6 +1,9 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -23,6 +26,9 @@ public class CategoryType implements Cloneable {
 
     @Column(name = "is_image_archive", nullable = false)
     private boolean imageArchive;
+
+    @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
+    private List<Category> categories;
 
     public CategoryType() {
     }
@@ -66,6 +72,11 @@ public class CategoryType implements Cloneable {
                 && imageArchive == that.imageArchive;
     }
 
+    @JsonIgnore
+    @Transient
+    public boolean isMultiSelect() {
+        return maxChoices == 0;
+    }
 
     @Override
     public String toString() {
@@ -116,5 +127,13 @@ public class CategoryType implements Cloneable {
 
     public void setImageArchive(boolean imageArchive) {
         this.imageArchive = imageArchive;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }
