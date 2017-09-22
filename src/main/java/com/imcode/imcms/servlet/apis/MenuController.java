@@ -1,9 +1,13 @@
 package com.imcode.imcms.servlet.apis;
 
-import com.imcode.imcms.dto.MenuElementDTO;
+import com.imcode.imcms.mapping.dto.MenuElementDTO;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.mappers.Mappable;
 import imcode.server.Imcms;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject.TreeMenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -13,10 +17,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/menu")
 public class MenuController {
 
-    private DocumentMapper documentMapper;
+    private final DocumentMapper documentMapper;
+    private final Mappable<TreeMenuItemDomainObject, MenuElementDTO> mapper;
 
-    public MenuController() {
-        documentMapper = Imcms.getServices().getDocumentMapper();
+    @Autowired
+    public MenuController(DocumentMapper documentMapper, Mappable<TreeMenuItemDomainObject, MenuElementDTO> mapper) {
+        this.documentMapper = documentMapper;
+        this.mapper = mapper;
     }
 
     @RequestMapping(params = {"docId", "menuId"}, method = RequestMethod.GET)
@@ -27,7 +34,7 @@ public class MenuController {
                 .getMenu(menuNo)
                 .getMenuItemsAsTree()
                 .stream()
-                .map(MenuElementDTO::of)
+                .map(mapper::map)
                 .collect(Collectors.toList());
     }
 
