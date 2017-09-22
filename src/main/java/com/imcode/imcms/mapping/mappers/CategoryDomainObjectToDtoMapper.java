@@ -1,15 +1,15 @@
 package com.imcode.imcms.mapping.mappers;
 
 import com.imcode.imcms.mapping.dto.CategoryDTO;
-import imcode.server.document.CategoryDomainObject;
+import com.imcode.imcms.mapping.jpa.doc.Category;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CategoryDomainObjectToDtoMapper implements Mappable<CategoryDomainObject, CategoryDTO> {
+public class CategoryDomainObjectToDtoMapper implements Mappable<Category, CategoryDTO> {
 
     @Override
-    public CategoryDTO map(CategoryDomainObject categoryDO) {
-        return new CategoryDTO(categoryDO.getId(), categoryDO.getName());
+    public CategoryDTO map(Category category) {
+        return new CategoryDTO(category.getId(), category.getName());
     }
 
 }
