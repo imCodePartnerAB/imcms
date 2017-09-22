@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.apis;
 
+import com.imcode.imcms.api.linker.LinkService;
 import com.imcode.imcms.api.linker.StringLink;
 import com.imcode.imcms.imagearchive.service.Facade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import java.util.List;
 public class LinkController {
 
     @Autowired
-    Facade facade;
+    private LinkService linkService;
 
     /**
      * Send to client links information in JSON
@@ -31,7 +32,7 @@ public class LinkController {
     @RequestMapping(value = "/links", method = RequestMethod.GET)
     @ResponseBody
     public List<StringLink> getLinksConfigPath() {
-        return facade.getLinkService().getJSON();
+        return linkService.getJSON();
     }
 
 }

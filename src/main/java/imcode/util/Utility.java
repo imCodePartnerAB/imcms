@@ -77,8 +77,8 @@ public class Utility {
     private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
     private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
-    private static Facade facade;
     private static TextService textService;
+    private static LinkService linkService; // sorry for this, I'm in hurry
 
     private Utility() {
     }
@@ -503,15 +503,7 @@ public class Utility {
     }
 
     public static LinkService getLinkService() {
-        return facade.getLinkService();
-    }
-
-    public static Facade getFacade() {
-        return facade;
-    }
-
-    public static void setFacade(Facade facade) {
-        Utility.facade = facade;
+        return linkService;
     }
 
     @SuppressWarnings("unused")
@@ -618,8 +610,8 @@ public class Utility {
     }
 
     @Autowired
-    public void init(Facade facade, TextService textService) {
-        Utility.facade = facade;
+    public void init(LinkService linkService, TextService textService) {
+        Utility.linkService = linkService;
         Utility.textService = textService;
     }
 
