@@ -1,5 +1,8 @@
 package com.imcode.imcms.config;
 
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.Imcms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -55,5 +58,15 @@ public class WebConfig {
     @Bean
     public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
         return new MappingJackson2HttpMessageConverter();
+    }
+
+    @Bean
+    public DocumentMapper documentMapper() {
+        return Imcms.getServices().getDocumentMapper();
+    }
+
+    @Bean
+    public CategoryMapper categoryMapper() {
+        return Imcms.getServices().getCategoryMapper();
     }
 }
