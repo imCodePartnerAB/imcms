@@ -19,7 +19,8 @@ import org.springframework.web.servlet.view.JstlView;
 @EnableWebMvc
 @ComponentScan({
         "com.imcode.imcms.servlet.apis",
-        "com.imcode.imcms.controller"
+        "com.imcode.imcms.controller",
+        "com.imcode.imcms.service"
 })
 public class WebConfig {
 
