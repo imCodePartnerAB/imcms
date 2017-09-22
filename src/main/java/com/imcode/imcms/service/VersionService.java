@@ -1,5 +1,6 @@
 package com.imcode.imcms.service;
 
+import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,5 +15,9 @@ public class VersionService {
 
     public VersionService(VersionRepository versionRepository) {
         this.versionRepository = versionRepository;
+    }
+
+    public Version getDocumentWorkingVersion(int docId) {
+        return versionRepository.findWorking(docId);
     }
 }
