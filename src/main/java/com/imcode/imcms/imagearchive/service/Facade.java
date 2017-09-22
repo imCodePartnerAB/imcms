@@ -22,8 +22,8 @@ public class Facade {
     private RoleService roleService;
     @Autowired
     private LibraryService libraryService;
-    @Autowired
-    private CategoryService categoryService;
+//    @Autowired
+//    private CategoryService categoryService;
     @Autowired
     private LinkService linkService;
 
@@ -60,9 +60,9 @@ public class Facade {
         return libraryService;
     }
 
-    public CategoryService getCategoryService() {
-        return categoryService;
-    }
+//    public CategoryService getCategoryService() {
+//        return categoryService;
+//    }
 
     public LinkService getLinkService() {
         return linkService;
