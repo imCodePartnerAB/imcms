@@ -40,10 +40,9 @@ Imcms.define("imcms-loop-editor-builder",
                     enabled: true
                 };
 
-                loopREST.create(newLoopEntry)
-                    .done(function () {
-                        $listItems.append(itemsBEM.makeBlockElement("item", buildItem(newLoopEntry)));
-                    });
+                loopREST.create(newLoopEntry).done(function () {
+                    $listItems.append(itemsBEM.makeBlockElement("item", buildItem(newLoopEntry)));
+                });
             }
 
             function onSaveAndCloseClicked() {
