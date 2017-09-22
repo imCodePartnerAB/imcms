@@ -24,7 +24,7 @@ public class MenuController {
         this.mapper = mapper;
     }
 
-    @RequestMapping(params = {"docId", "menuId"}, method = RequestMethod.GET)
+    @GetMapping(params = {"docId", "menuId"})
     public List<MenuElementDTO> getMenuItems(@RequestParam("menuId") int menuNo,
                                              @RequestParam("docId") int documentId) {
         return documentMapper

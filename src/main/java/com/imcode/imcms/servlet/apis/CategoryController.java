@@ -6,6 +6,7 @@ import com.imcode.imcms.mapping.mappers.Mappable;
 import imcode.server.Imcms;
 import imcode.server.document.CategoryDomainObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +27,7 @@ public class CategoryController {
         this.mapper = mapper;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public List<CategoryDTO> getCategories() {
         return categoryMapper.getAllCategories().stream()
                 .map(mapper::map)
