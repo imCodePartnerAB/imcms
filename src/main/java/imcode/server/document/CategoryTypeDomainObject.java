@@ -15,14 +15,14 @@ public class CategoryTypeDomainObject implements Comparable, Serializable, Clone
     public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited) {
         this.id = id;
         this.name = name;
-        this.maxChoices = maxChoices;  // 0=single choice, 1=multi choice
+        this.maxChoices = maxChoices;  // 1=single choice, 0=multi choice
         this.inherited = inherited;
     }
 
     public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited, boolean imageArchive) {
         this.id = id;
         this.name = name;
-        this.maxChoices = maxChoices;  // 0=single choice, 1=multi choice
+        this.maxChoices = maxChoices;  // 1=single choice, 0=multi choice
         this.inherited = inherited;
         this.imageArchive = imageArchive;
     }
