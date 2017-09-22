@@ -17,13 +17,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/categories")
 public class CategoryController {
 
-    private CategoryMapper categoryMapper;
-
+    private final CategoryMapper categoryMapper;
     private final Mappable<CategoryDomainObject, CategoryDTO> mapper;
 
     @Autowired
-    public CategoryController(Mappable<CategoryDomainObject, CategoryDTO> mapper) {
-        categoryMapper = Imcms.getServices().getCategoryMapper();
+    public CategoryController(CategoryMapper categoryMapper, Mappable<CategoryDomainObject, CategoryDTO> mapper) {
+        this.categoryMapper = categoryMapper;
         this.mapper = mapper;
     }
 
