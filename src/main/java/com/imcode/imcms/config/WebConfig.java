@@ -60,13 +60,4 @@ public class WebConfig {
         return new MappingJackson2HttpMessageConverter();
     }
 
-    @Bean
-    public DocumentMapper documentMapper() {
-        return Imcms.getServices().getDocumentMapper();
-    }
-
-    @Bean
-    public CategoryMapper categoryMapper() {
-        return Imcms.getServices().getCategoryMapper();
-    }
 }
