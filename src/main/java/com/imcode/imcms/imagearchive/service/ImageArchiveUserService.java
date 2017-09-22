@@ -15,7 +15,7 @@ import java.util.*;
 
 @Service
 @Transactional
-public class UserService {
+public class ImageArchiveUserService {
 
     @PersistenceContext(unitName = "com.imcode.imcms")
 //    @Autowired

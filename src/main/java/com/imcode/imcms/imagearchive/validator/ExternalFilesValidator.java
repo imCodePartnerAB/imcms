@@ -2,7 +2,7 @@ package com.imcode.imcms.imagearchive.validator;
 
 import com.imcode.imcms.imagearchive.command.ExternalFilesCommand;
 import com.imcode.imcms.imagearchive.service.Facade;
-import com.imcode.imcms.imagearchive.service.file.FileService;
+import com.imcode.imcms.imagearchive.service.file.ImageArchiveFileService;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
 import org.apache.commons.lang3.StringUtils;
@@ -84,7 +84,7 @@ public class ExternalFilesValidator implements Validator {
                         return;
                     }
 
-                    Matcher matcher = FileService.FILENAME_PATTERN.matcher(fileName);
+                    Matcher matcher = ImageArchiveFileService.FILENAME_PATTERN.matcher(fileName);
                     if (!matcher.matches() || StringUtils.isEmpty((fileName = StringUtils.trimToEmpty(matcher.group(1))))) {
                         errors.rejectValue("file", "archive.externalFiles.fileError");
 
@@ -92,7 +92,7 @@ public class ExternalFilesValidator implements Validator {
                     }
                     String extension = StringUtils.substringAfterLast(fileName, ".").toLowerCase();
 
-                    if (!FileService.IMAGE_EXTENSIONS_SET.contains(extension)) {
+                    if (!ImageArchiveFileService.IMAGE_EXTENSIONS_SET.contains(extension)) {
                         errors.rejectValue("file", "archive.externalFiles.fileError");
                     }
                 }

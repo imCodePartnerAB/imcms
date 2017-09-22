@@ -2,7 +2,7 @@ package com.imcode.imcms.imagearchive.service;
 
 import com.imcode.imcms.api.linker.LinkService;
 import com.imcode.imcms.imagearchive.Config;
-import com.imcode.imcms.imagearchive.service.file.FileService;
+import com.imcode.imcms.imagearchive.service.file.ImageArchiveFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,21 +11,21 @@ public class Facade {
     @Autowired
     private Config config;
     @Autowired
-    private UserService userService;
+    private ImageArchiveUserService userService;
     @Autowired
     private CommonService commonService;
     @Autowired
-    private FileService fileService;
+    private ImageArchiveFileService fileService;
     @Autowired
-    private ImageService imageService;
+    private ImageArchiveImageService imageService;
     @Autowired
-    private RoleService roleService;
+    private ImageArchiveRoleService roleService;
     @Autowired
     private LibraryService libraryService;
 //    @Autowired
 //    private CategoryService categoryService;
-    @Autowired
-    private LinkService linkService;
+//    @Autowired
+//    private LinkService linkService;
 
 
     public Facade() {
@@ -36,7 +36,7 @@ public class Facade {
         return config;
     }
 
-    public UserService getUserService() {
+    public ImageArchiveUserService getUserService() {
         return userService;
     }
 
@@ -44,15 +44,15 @@ public class Facade {
         return commonService;
     }
 
-    public FileService getFileService() {
+    public ImageArchiveFileService getFileService() {
         return fileService;
     }
 
-    public ImageService getImageService() {
+    public ImageArchiveImageService getImageService() {
         return imageService;
     }
 
-    public RoleService getRoleService() {
+    public ImageArchiveRoleService getRoleService() {
         return roleService;
     }
 
@@ -64,7 +64,7 @@ public class Facade {
 //        return categoryService;
 //    }
 
-    public LinkService getLinkService() {
-        return linkService;
-    }
+//    public LinkService getLinkService() {
+//        return linkService;
+//    }
 }
