@@ -18,19 +18,16 @@ public class LoopController {
 
     private final LoopService loopService;
     private final VersionService versionService;
-    private final Mappable<Loop, LoopDTO> loopToDtoMapper;
 
-    public LoopController(LoopService loopService, VersionService versionService, Mappable<Loop, LoopDTO> loopToDtoMapper) {
+    public LoopController(LoopService loopService, VersionService versionService) {
         this.loopService = loopService;
         this.versionService = versionService;
-        this.loopToDtoMapper = loopToDtoMapper;
     }
 
     @GetMapping
     public LoopDTO getDocumentLoop(@ModelAttribute LoopRequestData loopRequestData) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopRequestData.docId);
-        final Loop loop = loopService.getLoop(documentWorkingVersion, loopRequestData.loopId);
-        return loopToDtoMapper.map(loop);
+        return loopService.getLoop(documentWorkingVersion, loopRequestData.loopId);
     }
 
     @Data
