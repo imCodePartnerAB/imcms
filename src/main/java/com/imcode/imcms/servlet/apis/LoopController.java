@@ -3,7 +3,7 @@ package com.imcode.imcms.servlet.apis;
 import com.imcode.imcms.mapping.dto.LoopDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
-import com.imcode.imcms.mapping.mapper.LoopToDtoMapper;
+import com.imcode.imcms.mapping.mapper.Mappable;
 import com.imcode.imcms.service.LoopService;
 import com.imcode.imcms.service.VersionService;
 import lombok.Data;
@@ -18,9 +18,9 @@ public class LoopController {
 
     private final LoopService loopService;
     private final VersionService versionService;
-    private final LoopToDtoMapper loopToDtoMapper;
+    private final Mappable<Loop, LoopDTO> loopToDtoMapper;
 
-    public LoopController(LoopService loopService, VersionService versionService, LoopToDtoMapper loopToDtoMapper) {
+    public LoopController(LoopService loopService, VersionService versionService, Mappable<Loop, LoopDTO> loopToDtoMapper) {
         this.loopService = loopService;
         this.versionService = versionService;
         this.loopToDtoMapper = loopToDtoMapper;

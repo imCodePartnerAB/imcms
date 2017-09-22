@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 @Component
 public class LoopToDtoMapper implements Mappable<Loop, LoopDTO> {
 
-    private final LoopEntryToDtoMapper loopEntryToDtoMapper;
+    private final Mappable<Loop.Entry, LoopEntryDTO> loopEntryToDtoMapper;
 
-    public LoopToDtoMapper(LoopEntryToDtoMapper loopEntryToDtoMapper) {
+    public LoopToDtoMapper(Mappable<Loop.Entry, LoopEntryDTO> loopEntryToDtoMapper) {
         this.loopEntryToDtoMapper = loopEntryToDtoMapper;
     }
 
