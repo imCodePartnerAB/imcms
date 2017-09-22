@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping.mappers;
+package com.imcode.imcms.mapping.mapper;
 
 import com.imcode.imcms.mapping.dto.MenuElementDTO;
 import imcode.server.document.textdocument.MenuItemDomainObject;

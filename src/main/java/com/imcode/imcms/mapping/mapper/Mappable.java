@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping.mappers;
+package com.imcode.imcms.mapping.mapper;
 
 @FunctionalInterface
 public interface Mappable<FROM, TO> {

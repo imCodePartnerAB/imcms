@@ -2,7 +2,7 @@ package com.imcode.imcms.service;
 
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.dto.MenuElementDTO;
-import com.imcode.imcms.mapping.mappers.Mappable;
+import com.imcode.imcms.mapping.mapper.Mappable;
 import imcode.server.document.textdocument.MenuItemDomainObject.TreeMenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import org.springframework.beans.factory.annotation.Autowired;
