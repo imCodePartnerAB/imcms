@@ -1,27 +1,21 @@
 package com.imcode.imcms.mapping.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.io.Serializable;
 import java.util.List;
 
-public class MenuElementDTO extends AbstractIdDTO implements Serializable {
+@Getter
+@AllArgsConstructor
+public class MenuElementDTO implements Serializable {
 
     private static final long serialVersionUID = -3232121568216145805L;
 
+    private Integer id;
+
     private String title;
+
     private List<MenuElementDTO> children;
-
-    public MenuElementDTO(Integer id, String title, List<MenuElementDTO> children) {
-        super(id);
-        this.title = title;
-        this.children = children;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public List<MenuElementDTO> getChildren() {
-        return children;
-    }
 
 }
