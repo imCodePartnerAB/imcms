@@ -77,8 +77,7 @@ public class Imcms {
      * @see com.imcode.imcms.servlet.ImcmsSetupFilter
      */
     private static InheritableThreadLocal<UserDomainObject> users = new InheritableThreadLocal<>();
-    @SuppressWarnings("unused")
-    private static volatile String solrHome = DEFAULT_SQLR_HOME;
+
     /**
      * Flag variable that shows is document versioning feature are turned on in server properties
      */
