@@ -30,8 +30,19 @@ Imcms.define("imcms-bem-builder", ["jquery"], function ($) {
         this.block = options.block;
     };
 
+    BemBuilder.buildClass = function (block, element, modifier) {
+        modifier = (element && modifier) ? MODIFIER_SEPARATOR + modifier : "";
+        element = (element || "");
+        block = (block ? block + BLOCK_SEPARATOR : "");
+        return block + element + modifier;
+    };
+
     BemBuilder.getBlockSeparator = function () {
         return BLOCK_SEPARATOR;
+    };
+
+    BemBuilder.getModifierSeparator = function () {
+        return MODIFIER_SEPARATOR;
     };
 
     BemBuilder.prototype = {

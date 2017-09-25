@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 14.07.17.
  */
-Imcms.define("imcms-tests", ["imcms", "jquery"], function (imcms, $) {
+Imcms.define("imcms-tests", ["imcms", "jquery", "imcms-bem-builder"], function (imcms, $, BEM) {
     return {
         checkRequired: function () {
             Imcms.require("imcms-tests", function (tests) {
@@ -85,6 +85,19 @@ Imcms.define("imcms-tests", ["imcms", "jquery"], function (imcms, $) {
             }, 300);
 
             return true;
+        },
+        checkBemClassBuilder: function () {
+            var block = "block-name";
+            var element = "element-name";
+            var modifier = "modifier-name";
+
+            var resultClass = "block-name" + BEM.getBlockSeparator() + "element-name" + BEM.getModifierSeparator() + "modifier-name";
+            var builtClass = BEM.buildClass(block, element, modifier);
+
+            var testedExpression = (resultClass === builtClass);
+            console.assert(testedExpression, "BEM class builder test failed!");
+
+            return testedExpression;
         },
         runAllTests: function () {
             var testsRun = 0;
