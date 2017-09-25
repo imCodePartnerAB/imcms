@@ -21,7 +21,7 @@ Imcms.define("imcms-categories-tab-builder",
                 categoriesTypesRestApi.read(null)
                     .done(function (categoriesTypes) {
                         categoriesTypes.forEach(function (categoryType) {
-                            var $categoryType = (categoryType.multi_select)
+                            var $categoryType = (categoryType.multiSelect)
                                 ? createMultiSelectCategoryType(categoryType, document)
                                 : createSingleSelectCategoryType(categoryType, document);
 
