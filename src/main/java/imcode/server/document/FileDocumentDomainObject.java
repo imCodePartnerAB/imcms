@@ -2,11 +2,13 @@ package imcode.server.document;
 
 import imcode.util.Utility;
 import imcode.util.io.ExceptionFreeInputStreamSource;
+import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -189,6 +191,10 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
             return new ExceptionFreeInputStreamSource(inputStreamSource);
         }
 
+        public boolean isFileInputStreamSource() {
+            return inputStreamSource instanceof FileInputStreamSource;
+        }
+
         public void setInputStreamSource(InputStreamSource inputStreamSource) {
             this.inputStreamSource = inputStreamSource;
         }
@@ -211,6 +217,10 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
         public FileDocumentFile clone() throws CloneNotSupportedException {
             return (FileDocumentFile) super.clone();
+        }
+
+        public File getFile() {
+            return ((FileInputStreamSource) inputStreamSource).getFile();
         }
     }
 }

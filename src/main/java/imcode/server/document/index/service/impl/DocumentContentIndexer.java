@@ -88,7 +88,12 @@ public class DocumentContentIndexer {
 
 
     public SolrInputDocument indexFileDoc(FileDocumentDomainObject doc, SolrInputDocument indexDoc) {
-        Optional.ofNullable(doc.getDefaultFile()).filter(fileDocFileFilter::test).ifPresent(file -> {
+        Optional.ofNullable(doc.getDefaultFile()).filter(fileDocFileFilter).ifPresent(file -> {
+
+            if (file.isFileInputStreamSource() && !file.getFile().exists()) {
+                return;
+            }
+
             indexDoc.addField(DocumentIndex.FIELD__MIME_TYPE, file.getMimeType());
             Metadata metadata = Value.with(new Metadata(), m -> {
                 m.set(HttpHeaders.CONTENT_DISPOSITION, file.getFilename());
