@@ -423,7 +423,7 @@ Function.prototype.applyAsync = function (args, context) {
             } else {
                 failsCount = 0;
                 var dependencies = require.requires.map(getModule);
-                require.onLoad.applyAsync(dependencies);
+                require.onLoad && require.onLoad.applyAsync(dependencies);
             }
         }
 
