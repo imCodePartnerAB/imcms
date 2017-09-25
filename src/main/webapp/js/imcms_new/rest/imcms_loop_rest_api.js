@@ -5,30 +5,13 @@
 Imcms.define("imcms-loop-rest-api", ["imcms-rest-api"], function (rest) {
     var api = new rest.API("/loop");
 
-    api.remove = function (data) {
+    api.update = function (data) {
         return {
             done: function (callback) {
-                console.log("%c Removing (not really) loop entry:", "color: blue");
+                console.log("%c Updating (not really) loop entries:", "color: blue");
                 console.log(data);
 
-                callback({
-                    code: 200,
-                    status: "OK"
-                });
-            }
-        }
-    };
-
-    api.create = function (data) {
-        return {
-            done: function (callback) {
-                console.log("%c Creating (not really) new loop entry:", "color: blue");
-                console.log(data);
-
-                callback({
-                    code: 200,
-                    status: "OK"
-                });
+                callback.call();
             }
         }
     };
