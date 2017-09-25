@@ -12,8 +12,8 @@ Imcms.define("imcms-loop-editor-builder",
 
         var modifiers = {
             ID: ["col-1", "id"],
-            CONTENT: ["col-10"],
-            CONTROLS: ["col-1"]
+            CONTENT: ["col-10", "content"],
+            CONTROLS: ["col-1", "control"]
         };
 
         var docId, loopId;
@@ -58,8 +58,38 @@ Imcms.define("imcms-loop-editor-builder",
                 $listItems.append(itemsBEM.makeBlockElement("item", buildItem(newLoopEntry)));
             }
 
+            function getLoopData() {
+                var loopEntries = $listItems.children()
+                    .toArray()
+                    .map(function (listItem) {
+                        var $listItem = $(listItem);
+
+                        var loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
+                        var no = +($listItem.find(loopItemIdClass).text());
+
+                        var loopItemContentClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.CONTENT[1]);
+                        var content = $listItem.find(loopItemContentClass).html();
+
+                        var loopItemControlsClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.CONTROLS[1]);
+                        var isEnabled = $listItem.find(loopItemControlsClass).find("input").is(":checked");
+
+                        return {
+                            no: no,
+                            content: content,
+                            enabled: isEnabled
+                        };
+                    });
+
+                return {
+                    docId: docId,
+                    loopId: loopId,
+                    entries: loopEntries
+                };
+            }
+
             function onSaveAndCloseClicked() {
-                loopREST.update().done(loopWindowBuilder.closeWindow.bind(loopWindowBuilder));
+                var loopElement = getLoopData();
+                loopREST.update(loopElement).done(loopWindowBuilder.closeWindow.bind(loopWindowBuilder));
             }
 
             var $head = loopWindowBuilder.buildHead("Loop Editor");
