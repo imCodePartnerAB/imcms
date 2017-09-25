@@ -55,9 +55,7 @@ Imcms.define("imcms-loop-editor-builder",
                     enabled: true
                 };
 
-                loopREST.create(newLoopEntry).done(function () {
-                    $listItems.append(itemsBEM.makeBlockElement("item", buildItem(newLoopEntry)));
-                });
+                $listItems.append(itemsBEM.makeBlockElement("item", buildItem(newLoopEntry)));
             }
 
             function onSaveAndCloseClicked() {
@@ -107,28 +105,10 @@ Imcms.define("imcms-loop-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
-        function removeLoopEntry(response) {
-            if (response.code !== 200) {
-                return;
-            }
-
-            this.detach();
-        }
-
-        function onRemoveLoopEntryClicked(loopEntry) {
-            loopREST.remove({
-                docId: docId,
-                loopId: loopId,
-                entryNo: loopEntry.no
-            }).done(
-                removeLoopEntry.bind(this)
-            );
-        }
-
-        function buildControls(loopEntry) {
+        function buildControls() {
             var $remove = controls.remove(function () {
                 var $item = $remove.parents("." + LOOP_ITEM_CLASS);
-                onRemoveLoopEntryClicked.call($item, loopEntry);
+                $item.detach();
             });
 
             return controls.buildControlsBlock("<div>", [$remove]);
@@ -151,7 +131,7 @@ Imcms.define("imcms-loop-editor-builder",
                 block: LOOP_ITEM_CLASS,
                 elements: {
                     "info": [$no, $content, $isEnabled],
-                    "controls": buildControls(loopEntry)
+                    "controls": buildControls()
                 }
             }).buildBlockStructure("<div>");
         }
