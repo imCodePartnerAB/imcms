@@ -11,17 +11,19 @@ Imcms.define("imcms-loop-editor-builder",
         var $title, $body, $listItems;
 
         var modifiers = {
-            ID: ["col-1"],
+            ID: ["col-1", "id"],
             CONTENT: ["col-10"],
             CONTROLS: ["col-1"]
         };
 
         var docId, loopId;
 
+        var LOOP_ITEM_CLASS = "imcms-loop-item";
+
         var itemsBEM = new BEM({
             block: "imcms-loop-items",
             elements: {
-                "item": "imcms-loop-item"
+                "item": LOOP_ITEM_CLASS
             }
         });
 
@@ -33,9 +35,22 @@ Imcms.define("imcms-loop-editor-builder",
         });
 
         function buildEditor() {
+            function getMaxLoopItemID() {
+                return $listItems.children()
+                    .toArray()
+                    .map(function (listItem) {
+                        var loopItemIdClass = BEM.buildClass(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
+                        return +($(listItem).find("." + loopItemIdClass).text());
+                    })
+                    .sort(function (a, b) {
+                        return (a - b);
+                    })
+                    .pop();
+            }
+
             function onCreateNewClicked() {
                 var newLoopEntry = {
-                    no: ++$listItems.children().length,
+                    no: getMaxLoopItemID() + 1,
                     content: "",
                     enabled: true
                 };
@@ -112,7 +127,7 @@ Imcms.define("imcms-loop-editor-builder",
 
         function buildControls(loopEntry) {
             var $remove = controls.remove(function () {
-                var $item = $remove.parents(".imcms-loop-item");
+                var $item = $remove.parents("." + LOOP_ITEM_CLASS);
                 onRemoveLoopEntryClicked.call($item, loopEntry);
             });
 
@@ -133,7 +148,7 @@ Imcms.define("imcms-loop-editor-builder",
             $isEnabled.modifiers = modifiers.CONTROLS;
 
             return new BEM({
-                block: "imcms-loop-item",
+                block: LOOP_ITEM_CLASS,
                 elements: {
                     "info": [$no, $content, $isEnabled],
                     "controls": buildControls(loopEntry)
