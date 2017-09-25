@@ -21,7 +21,7 @@ import java.util.*;
 
 @Service
 @Transactional
-public class RoleService {
+public class ImageArchiveRoleService {
 
     @Autowired
     private Facade facade;

@@ -28,9 +28,6 @@ import static java.util.stream.Collectors.toMap;
 @Transactional(propagation = Propagation.SUPPORTS)
 public class TextDocumentContentLoader {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Inject
     private VersionRepository versionRepository;
 

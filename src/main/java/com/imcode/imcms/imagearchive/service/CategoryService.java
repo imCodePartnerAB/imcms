@@ -15,8 +15,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Service
-@Transactional
+//@Service
+//@Transactional
 public class CategoryService {
 
     @PersistenceContext(unitName = "com.imcode.imcms")

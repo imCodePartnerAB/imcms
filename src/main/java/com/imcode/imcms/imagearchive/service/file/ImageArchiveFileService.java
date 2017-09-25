@@ -24,7 +24,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 @Service
-public class FileService {
+public class ImageArchiveFileService {
     public static final String[] IMAGE_EXTENSIONS = new String[]{
             "ai", "bmp", "eps", "gif",
             "jpeg", "jpg", "pct", "pdf", "pic", "pict",
@@ -38,7 +38,7 @@ public class FileService {
     public static final Set<String> IMAGE_EXTENSIONS_SET = new HashSet<String>(Arrays.asList(IMAGE_EXTENSIONS));
     public static final Pattern FILENAME_PATTERN = Pattern.compile("^.*?/?([^/\\:]+?)$");
     public static final String OSX_RESOURCE_FORK_PREFIX = "__MACOSX/";
-    private static final Log log = LogFactory.getLog(FileService.class);
+    private static final Log log = LogFactory.getLog(ImageArchiveFileService.class);
     private static final String IMAGE_ORIGINAL_INFIX = "orig";
     private static final String IMAGE_FULL_INFIX = "full";
     private static final String IMAGE_SMALL_THUMB_INFIX = ThumbSize.SMALL.getName();
@@ -418,7 +418,7 @@ public class FileService {
                 Matcher matcher = FILENAME_PATTERN.matcher(fileName);
 
                 /* skipping OSX resource forks(__MAXOSC/) */
-                if (fileName.startsWith(FileService.OSX_RESOURCE_FORK_PREFIX) || !matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
+                if (fileName.startsWith(ImageArchiveFileService.OSX_RESOURCE_FORK_PREFIX) || !matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
                     continue;
                 }
 

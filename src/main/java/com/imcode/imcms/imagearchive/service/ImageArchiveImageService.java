@@ -3,13 +3,12 @@ package com.imcode.imcms.imagearchive.service;
 import com.imcode.imcms.api.User;
 import com.imcode.imcms.imagearchive.command.SearchImageCommand;
 import com.imcode.imcms.imagearchive.entity.*;
-import com.imcode.imcms.imagearchive.service.file.FileService;
+import com.imcode.imcms.imagearchive.service.file.ImageArchiveFileService;
 import com.imcode.imcms.imagearchive.util.Pagination;
 import com.imcode.imcms.imagearchive.util.Utils;
 import com.imcode.imcms.imagearchive.util.exif.ExifData;
 import com.imcode.imcms.imagearchive.util.exif.ExifUtils;
 import com.imcode.imcms.imagearchive.util.exif.Flash;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image;
 import imcode.server.user.RoleDomainObject;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
@@ -39,9 +38,9 @@ import java.util.zip.ZipFile;
 
 @Service
 @Transactional
-public class ImageService {
+public class ImageArchiveImageService {
     private static final Pattern LIKE_SPECIAL_PATTERN = Pattern.compile("([%_|])");
-    private static final Logger log = LoggerFactory.getLogger(ImageService.class);
+    private static final Logger log = LoggerFactory.getLogger(ImageArchiveImageService.class);
 
     @Autowired
     private Facade facade;
@@ -214,14 +213,14 @@ public class ImageService {
                 ZipEntry entry = entries.nextElement();
 
                 String fileName = entry.getName();
-                Matcher matcher = FileService.FILENAME_PATTERN.matcher(fileName);
+                Matcher matcher = ImageArchiveFileService.FILENAME_PATTERN.matcher(fileName);
 
-                if (fileName.startsWith(FileService.OSX_RESOURCE_FORK_PREFIX) || !matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
+                if (fileName.startsWith(ImageArchiveFileService.OSX_RESOURCE_FORK_PREFIX) || !matcher.matches() || StringUtils.isEmpty((fileName = matcher.group(1).trim()))) {
                     continue;
                 }
 
                 String extension = StringUtils.substringAfterLast(fileName, ".").toLowerCase();
-                if (!FileService.IMAGE_EXTENSIONS_SET.contains(extension)) {
+                if (!ImageArchiveFileService.IMAGE_EXTENSIONS_SET.contains(extension)) {
                     continue;
                 }
 
@@ -694,13 +693,6 @@ public class ImageService {
 
         List<Images> images = query.list();
 
-        return images;
-    }
-
-    public List<Image> getAllGeneratedImages() {
-        Session session = getCurrentSession();
-        Query query = session.createQuery("FROM Image im WHERE im.generatedFilename != null AND im.generatedFilename != '' ORDER BY im.id DESC");
-        List<Image> images = query.list();
         return images;
     }
 

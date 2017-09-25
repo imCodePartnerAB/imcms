@@ -342,7 +342,7 @@ public class LibraryService {
                     .list();
         }
 
-        List<Integer> roleIds = UserService.getRoleIds(user);
+        List<Integer> roleIds = ImageArchiveUserService.getRoleIds(user);
         if (roleIds.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
@@ -378,7 +378,7 @@ public class LibraryService {
             return library;
         }
 
-        List<Integer> roleIds = UserService.getRoleIds(user);
+        List<Integer> roleIds = ImageArchiveUserService.getRoleIds(user);
         if (roleIds.isEmpty()) {
             return library;
         }

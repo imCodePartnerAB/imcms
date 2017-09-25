@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -39,6 +40,8 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
     @Query("SELECT i.id FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.no = ?3 AND i.loopEntryRef = ?4")
     Integer findIdByVersionAndLanguageAndNoAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
 
+    @Query("SELECT i FROM Image i WHERE i.generatedFilename != null AND i.generatedFilename != '' ORDER BY i.id DESC")
+    Collection<Image> findAllGeneratedImages();
 
     @Modifying
     @Query("DELETE FROM Image i WHERE i.version = ?1 AND i.language = ?2")

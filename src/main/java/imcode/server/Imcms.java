@@ -12,6 +12,7 @@ import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.Schema;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image;
+import com.imcode.imcms.service.ImageService;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
@@ -27,10 +28,7 @@ import javax.servlet.ServletRequest;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Singleton registry.
@@ -123,6 +121,7 @@ public class Imcms {
             if (services.getDocumentMapper().getDocumentIndex().getService().rebuildIfEmpty().isDefined()) {
                 logger.info("Document index is empty, initiated index rebuild.");
             }
+            // this method should not be here!!!!!!11!
             //If generated images was cleared before start up
             regenerateImages();
         } catch (Exception e) {
@@ -369,7 +368,8 @@ public class Imcms {
      * Regenerating images according to DB(Generates last version of generated image)
      */
     public static void regenerateImages() {
-        List<Image> allImages = Utility.getFacade().getImageService().getAllGeneratedImages();
+        // this method should not be here!!!
+        Collection<Image> allImages = applicationContext.getBean(ImageService.class).getAllGeneratedImages();
         allImages.forEach((img) -> ImcmsImageUtils.generateImage(ImcmsImageUtils.toDomainObject(img), false));
     }
 
