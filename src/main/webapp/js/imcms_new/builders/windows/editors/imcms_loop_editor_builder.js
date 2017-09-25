@@ -59,8 +59,7 @@ Imcms.define("imcms-loop-editor-builder",
             }
 
             function onSaveAndCloseClicked() {
-                // todo: implement saving, for now it's just closing!!1
-                loopWindowBuilder.closeWindow();
+                loopREST.update().done(loopWindowBuilder.closeWindow.bind(loopWindowBuilder));
             }
 
             var $head = loopWindowBuilder.buildHead("Loop Editor");
