@@ -2,15 +2,12 @@ package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.mapping.dto.LoopDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
-import com.imcode.imcms.mapping.mapper.Mappable;
 import com.imcode.imcms.service.LoopService;
 import com.imcode.imcms.service.VersionService;
+import com.imcode.imcms.util.JsonResponse;
+import imcode.server.Imcms;
 import lombok.Data;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/loop")
@@ -28,6 +25,18 @@ public class LoopController {
     public LoopDTO getDocumentLoop(@ModelAttribute LoopRequestData loopRequestData) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopRequestData.docId);
         return loopService.getLoop(documentWorkingVersion, loopRequestData.loopId);
+    }
+
+    @PostMapping
+    public JsonResponse saveLoop(@ModelAttribute LoopDTO loopRequestData) throws IllegalAccessException {
+
+        if (!Imcms.getUser().isSuperAdmin()) {
+            throw new IllegalAccessException("User do not have access to change loop structure.");
+        }
+
+//        loopService.saveLoop(loopDTO);
+
+        return JsonResponse.ok();
     }
 
     @Data
