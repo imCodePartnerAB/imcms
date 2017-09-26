@@ -15,8 +15,12 @@ import java.io.InputStream;
 @Import({MainConfig.class})
 public class TestConfig {
 
+    private final DataSource dataSource;
+
     @Autowired
-    private DataSource dataSource;
+    public TestConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @PostConstruct
     public void createImcmsDatabaseStructure() {

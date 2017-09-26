@@ -3,7 +3,6 @@ package com.imcode.imcms.test;
 import com.imcode.imcms.config.WebConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.web.WebAppConfiguration;
