@@ -90,14 +90,9 @@ Imcms.define("imcms-loop-editor-builder",
             function onSaveAndCloseClicked() {
                 var loopElement = getLoopData();
 
-                loopREST.create(loopElement).done(function (response) {
-                    if (response.code === 200) {
-                        loopWindowBuilder.closeWindow();
-
-                    } else {
-                        console.error(response);
-                    }
-                });
+                loopREST.create(loopElement)
+                    .success(loopWindowBuilder.closeWindow.bind(loopWindowBuilder))
+                    .error(console.error.bind(console));
             }
 
             var $head = loopWindowBuilder.buildHead("Loop Editor");
