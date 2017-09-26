@@ -32,7 +32,7 @@ public class EditImage extends HttpServlet {
     private static final String REQUEST_ATTRIBUTE__META_ID = EditImage.class + ".metaId";
 
     public static String linkTo(HttpServletRequest request, String returnPath) {
-        return request.getContextPath() + Utility.getLinkService().get("admin.image.edit.return", REQUEST_PARAMETER__RETURN, returnPath);
+        return request.getContextPath() + "/servlet/EditImage?" + REQUEST_PARAMETER__RETURN + "=" + returnPath;
     }
 
     public static ImageDomainObject getImage(HttpServletRequest request) {

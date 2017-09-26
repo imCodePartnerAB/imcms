@@ -17,7 +17,6 @@ import java.util.Properties;
 @ComponentScan({
         "com.imcode.imcms.mapping",
         "com.imcode.imcms.imagearchive",
-        "com.imcode.imcms.api.linker",
         "imcode.util",
         "com.imcode.imcms.service",
         "com.imcode.imcms.document.text"

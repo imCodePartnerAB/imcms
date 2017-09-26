@@ -63,7 +63,7 @@ public class ChangeImage extends HttpServlet {
         forcedWidth = Math.max(forcedWidth, 0);
         forcedHeight = Math.max(forcedHeight, 0);
 
-        /**
+        /*
          * Image DTO. Holds generic properties such as size and border. 
          */
         final ImageDomainObject defaultImage = loopEntryRef == null
@@ -80,59 +80,50 @@ public class ChangeImage extends HttpServlet {
         }
 
         final String returnURL = request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL);
-        DispatchCommand returnCommand =
-                new DispatchCommand() {
-                    public void dispatch(HttpServletRequest request,
-                                         HttpServletResponse response) throws IOException {
-                        String redirectURL = returnURL == null
-                                ? Utility.getLinkService().get("admin.document.redirect",
-                                String.valueOf(document.getId()),
-                                String.valueOf(ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES))
-                                : returnURL;
+        DispatchCommand returnCommand = (DispatchCommand) (request1, response1) -> {
+            String redirectURL = returnURL == null
+                    ? "AdminDoc?meta_id=" + document.getId() + "&flags=" + ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES
+                    : returnURL;
 
-                        response.sendRedirect(redirectURL);
-                    }
-                };
+            response1.sendRedirect(redirectURL);
+        };
 
-        Handler<ImageEditResult> imageCommand = new Handler<ImageEditResult>() {
-            public void handle(ImageEditResult editResult) {
-                boolean shareImages = editResult.isShareImages();
-                TextDocImagesContainer images = editResult.getEditedImages();
+        Handler<ImageEditResult> imageCommand = (Handler<ImageEditResult>) editResult -> {
+            boolean shareImages = editResult.isShareImages();
+            TextDocImagesContainer images = editResult.getEditedImages();
 
-                ImcmsServices services = Imcms.getServices();
-                String firstGeneratedFilename = null;
+            ImcmsServices services = Imcms.getServices();
+            String firstGeneratedFilename = null;
 
-                for (ListIterator<ImageDomainObject> i = new LinkedList<>(images.getImages().values()).listIterator(); i.hasNext(); )
-                {
-                    boolean first = i.nextIndex() == 0;
-                    ImageDomainObject editImage = i.next();
+            for (ListIterator<ImageDomainObject> i = new LinkedList<>(images.getImages().values()).listIterator(); i.hasNext(); )
+            {
+                boolean first = i.nextIndex() == 0;
+                ImageDomainObject editImage = i.next();
 
-                    if (first || !shareImages) {
-                        editImage.generateFilename();
-                        firstGeneratedFilename = editImage.getGeneratedFilename();
+                if (first || !shareImages) {
+                    editImage.generateFilename();
+                    firstGeneratedFilename = editImage.getGeneratedFilename();
 
-                        ImcmsImageUtils.generateImage(editImage, false);
+                    ImcmsImageUtils.generateImage(editImage, false);
 
-                    } else if (shareImages) {
-                        // share the same generated filename
-                        editImage.setGeneratedFilename(firstGeneratedFilename);
-                    }
+                } else if (shareImages) {
+                    // share the same generated filename
+                    editImage.setGeneratedFilename(firstGeneratedFilename);
                 }
-
-                try {
-                    services.getDocumentMapper().saveTextDocImages(images, user);
-                } catch (NoPermissionToEditDocumentException e) {
-                    throw new ShouldHaveCheckedPermissionsEarlierException(e);
-                } catch (NoPermissionToAddDocumentToMenuException e) {
-                    throw new ConcurrentDocumentModificationException(e);
-                } catch (DocumentSaveException e) {
-                    throw new ShouldNotBeThrownException(e);
-                }
-                services.updateMainLog("ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
-                        " in  " + "[" + document.getId() + "] modified by user: [" +
-                        user.getFullName() + "]");
-
             }
+
+            try {
+                services.getDocumentMapper().saveTextDocImages(images, user);
+            } catch (NoPermissionToEditDocumentException e) {
+                throw new ShouldHaveCheckedPermissionsEarlierException(e);
+            } catch (NoPermissionToAddDocumentToMenuException e) {
+                throw new ConcurrentDocumentModificationException(e);
+            } catch (DocumentSaveException e) {
+                throw new ShouldNotBeThrownException(e);
+            }
+            services.updateMainLog("ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
+                    " in  " + "[" + document.getId() + "] modified by user: [" +
+                    user.getFullName() + "]");
 
         };
 

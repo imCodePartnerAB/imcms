@@ -38,8 +38,6 @@ import java.util.*;
 
 public class TagParser {
 
-//	private static final java.util.regex.Pattern REMOVE_ATTRS_PATTERN = java.util.regex.Pattern.compile(
-//			"(?<!-)(?:)\\s*:\\s*\\d+\\s*px\\s*;?", java.util.regex.Pattern.CASE_INSENSITIVE);
     /**
      * Used as default image in tagImage when document.getImage returns null.max-width|width|max-height|height
      */
@@ -68,14 +66,6 @@ public class TagParser {
             attributesPattern = patComp.compile("\\s+(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.SINGLELINE_MASK
                     | Perl5Compiler.READ_ONLY_MASK);
 
-//            widthPattern = patComp.compile("(?:^|[\\s;])width\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
-
-//			heightPattern = patComp.compile("(?:^|[\\s;])height\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
-
-//            maxWidthPattern = patComp.compile("(?:^|[\\s;])max-width\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
-
-//			maxHeightPattern = patComp.compile("(?:^|[\\s;])max-height\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
-
         } catch (MalformedPatternException e) {
             LOG.fatal("RegExp init failed.", e);
 
@@ -83,10 +73,6 @@ public class TagParser {
         }
     }
 
-    //    private static Pattern widthPattern;
-//	private static Pattern heightPattern;
-    //    private static Pattern maxWidthPattern;
-//	private static Pattern maxHeightPattern;
     private TextDocumentParser textDocParser;
 
     private boolean includeMode;
@@ -109,7 +95,7 @@ public class TagParser {
         this.textDocParser = textdocparser;
         this.parserParameters = parserParameters;
         this.documentRequest = parserParameters.getDocumentRequest();
-        this.document = (TextDocumentDomainObject) documentRequest.getDocument();
+        this.document = documentRequest.getDocument();
         this.service = documentRequest.getServices();
 
         this.includeMode = parserParameters.isIncludesMode();
@@ -356,11 +342,7 @@ public class TagParser {
                 documentStr = Util.substitute(patMat, htmlPostbodyPattern, NULL_SUBSTITUTION, documentStr);
                 return documentStr;
             }
-        } catch (NumberFormatException ex) {
-            return "<!-- imcms:include document failed: " + ex + " -->";
-        } catch (IOException ex) {
-            return "<!-- imcms:include document failed: " + ex + " -->";
-        } catch (RuntimeException ex) {
+        } catch (IOException | RuntimeException ex) {
             return "<!-- imcms:include document failed: " + ex + " -->";
         }
         return "";
@@ -381,7 +363,6 @@ public class TagParser {
             includedParserParameters = (ParserParameters) parserParameters.clone();
             includedParserParameters.setTemplate(attributes.getProperty("template"));
             includedParserParameters.setParameter(attributes.getProperty("param"));
-            //includedParserParameters.getGetDocumentCallback().setDocument(service.getDocumentMapper().getDefaultDocument(included_meta_id));
             includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getDocument(included_meta_id));
             includedParserParameters.getDocumentRequest().setReferrer(document);
             includedParserParameters.setFlags(0);
@@ -439,45 +420,8 @@ public class TagParser {
      *                   - formats
      *                   - rows
      */
-    public String tagText(Properties attributes) {
+    private String tagText(Properties attributes) {
         return tagText(attributes, null, document);
-    }
-
-    /**
-     * Handle a <?imcms:text ...?> tag
-     *
-     * @param attributes   The attributes of the text tag
-     *                     attributes:
-     *                     - no  Text number in document
-     *                     - document  Document to get text from ( id or alias )
-     *                     - label Label to show in write mode
-     *                     - mode  ( "read" | "write" )
-     *                     - filter
-     *                     - formats
-     *                     - rows
-     * @param loopEntryRef reference of Loop's entry if text is in loop
-     * @return text tag
-     */
-    public String tagText(Properties attributes, LoopEntryRef loopEntryRef) {
-        return tagText(attributes, loopEntryRef, document);
-    }
-
-    /**
-     * @param attributes        The attributes of the text tag
-     *                          attributes:
-     *                          - no  Text number in document
-     *                          - document  Document to get text from ( id or alias )
-     *                          - label Label to show in write mode
-     *                          - mode  ( "read" | "write" )
-     *                          - filter
-     *                          - formats
-     *                          - rows
-     * @param textDocumentToUse The document from which text should be taken,
-     *                          in case if it is not current doc
-     * @return text tag
-     */
-    public String tagText(Properties attributes, TextDocumentDomainObject textDocumentToUse) {
-        return tagText(attributes, null, textDocumentToUse);
     }
 
     /**
@@ -550,7 +494,7 @@ public class TagParser {
      *
      * @param attributes The attributes of the image tag
      */
-    public String tagImage(Properties attributes) {
+    private String tagImage(Properties attributes) {
         return tagImage(attributes, imageMode, implicitImageIndex, documentRequest.getUser(), document,
                 documentRequest.getHttpServletRequest(), service, null);
     }
@@ -560,10 +504,10 @@ public class TagParser {
                 documentRequest.getHttpServletRequest(), service, loopEntryRef);
     }
 
-    public String tagImage(Properties attributes, boolean imageMode, int[] implicitImageIndex,
-                           UserDomainObject user, TextDocumentDomainObject document,
-                           HttpServletRequest httpServletRequest, ImcmsServices service,
-                           LoopEntryRef loopEntryRef) {
+    private String tagImage(Properties attributes, boolean imageMode, int[] implicitImageIndex,
+                            UserDomainObject user, TextDocumentDomainObject document,
+                            HttpServletRequest httpServletRequest, ImcmsServices service,
+                            LoopEntryRef loopEntryRef) {
 
         if (shouldOutputNothingAccordingToMode(attributes, imageMode) || document == null) {
             return "";
@@ -588,18 +532,11 @@ public class TagParser {
 
         ImageSource imageSource = image.getSource();
         String imageTag = "";
-//		String style = attributes.getProperty("style");
+
         if (!(imageSource instanceof FileDocumentImageSource)
                 || imageMode
                 || user.canAccess(((FileDocumentImageSource) imageSource).getFileDocument()))
         {
-
-//			if (style != null) {
-//				Matcher matcher = REMOVE_ATTRS_PATTERN.matcher(style);
-//				String cleanedStyle = matcher.replaceAll(" ");
-//				attributes.put("style", cleanedStyle);
-//			}
-
             imageTag = ImcmsImageUtils.getImageHtmlTag(image, httpServletRequest, attributes);
         }
 
@@ -612,37 +549,8 @@ public class TagParser {
                 admin_template_file = "textdoc/admin_image.frag";
             }
 
-//			String imageWidth = "0";
-//			String imageHeight = "0";
-//			String maxWidth = "0";
-//			String maxHeight = "0";
-//			if (style != null) {
-//				PatternMatcher matcher = new Perl5Matcher();
-//
-//				if (matcher.contains(style, widthPattern)) {
-//					imageWidth = matcher.getMatch().group(1);
-//				}
-//				if (matcher.contains(style, heightPattern)) {
-//					imageHeight = matcher.getMatch().group(1);
-//				}
-//				if (matcher.contains(style, maxWidthPattern)) {
-//					maxWidth = matcher.getMatch().group(1);
-//				}
-//				if (matcher.contains(style, maxHeightPattern)) {
-//					maxHeight = matcher.getMatch().group(1);
-//				}
-//			}
-
             List<String> replaceTags = new ArrayList<>(replace_tags.length + 10);
             CollectionUtils.addAll(replaceTags, replace_tags);
-//			replaceTags.add("#image_width#");
-//			replaceTags.add(imageWidth);
-//			replaceTags.add("#image_height#");
-//			replaceTags.add(imageHeight);
-//			replaceTags.add("#max_width#");
-//			replaceTags.add(maxWidth);
-//			replaceTags.add("#max_height#");
-//			replaceTags.add(maxHeight);
             replaceTags.add("#loop_ref#");
             replaceTags.add(loopEntryRef != null ? loopEntryRef.toUriQueryString() : "");
 
@@ -824,7 +732,7 @@ public class TagParser {
         return documentRequest.getHttpServletRequest().getContextPath();
     }
 
-    public String replaceTags(String template, boolean insideText) {
+    String replaceTags(String template, boolean insideText) {
         StringBuffer result = new StringBuffer();
         PatternMatcherInput input = new PatternMatcherInput(template);
         int lastMatchEndOffset = 0;
@@ -903,31 +811,10 @@ public class TagParser {
         return stringWriter.toString();
     }
 
-    private TextDocumentDomainObject getTextDocumentToUse(Properties attributes) {
-        String documentName = attributes.getProperty("document");
-        String documentVersionStr = attributes.getProperty("version");
-        Integer documentVersion = documentVersionStr == null ? null : new Integer(documentVersionStr);
-        TextDocumentDomainObject textDocumentToUse = document;
-
-        try {
-            if (StringUtils.isNotBlank(documentName)) {
-                textDocumentToUse = (TextDocumentDomainObject) service.getDocumentMapper().getDocument(documentName);
-            } else if (documentVersion != null) {
-                Integer docmentId = textDocumentToUse.getId();
-                textDocumentToUse = service.getDocumentMapper().getDocument(docmentId);
-            }
-        } catch (ClassCastException e) {
-            /* return null */
-            textDocumentToUse = null;
-        }
-
-        return textDocumentToUse;
-    }
-
     /**
      * Take a String of attributes, as may be found inside a tag, (name="...", and so on...) and transform it into a Properties.
      */
-    public Properties parseAttributes(String attributes_string, PatternMatcher patternMatcher) {
+    Properties parseAttributes(String attributes_string, PatternMatcher patternMatcher) {
         Properties attributes = new Properties();
 
         PatternMatcherInput attributes_input = new PatternMatcherInput(attributes_string);
@@ -954,7 +841,7 @@ public class TagParser {
 
         private int metaId;
 
-        public MetaIdHeaderHttpServletRequest(HttpServletRequest request, int metaId) {
+        MetaIdHeaderHttpServletRequest(HttpServletRequest request, int metaId) {
             super(request);
             this.metaId = metaId;
         }

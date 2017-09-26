@@ -4,13 +4,11 @@ import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.I18nMessage$;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
-import com.imcode.imcms.api.linker.LinkService;
 import com.imcode.imcms.db.BooleanFromRowFactory;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.document.text.TextContentFilter;
-import com.imcode.imcms.imagearchive.service.Facade;
 import com.imcode.imcms.imagearchive.service.TextService;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
@@ -20,12 +18,10 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
-import org.apache.commons.collections.*;
-import org.apache.commons.collections.iterators.ObjectArrayIterator;
-import org.apache.commons.collections.iterators.TransformIterator;
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
@@ -54,9 +50,7 @@ import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
-import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -78,7 +72,6 @@ public class Utility {
     private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
     private static TextService textService;
-    private static LinkService linkService; // sorry for this, I'm in hurry
 
     private Utility() {
     }
@@ -181,7 +174,7 @@ public class Utility {
         return convertStringArrayToIntArray(parameterValues);
     }
 
-    public static int[] convertStringArrayToIntArray(String[] strings) {
+    private static int[] convertStringArrayToIntArray(String[] strings) {
         int[] parameterInts = new int[strings.length];
         for (int i = 0; i < strings.length; i++) {
             parameterInts[i] = Integer.parseInt(strings[i]);
@@ -244,11 +237,11 @@ public class Utility {
         return formatDatetimeWithSpecial(dateTime, "-- --");
     }
 
-    public static String formatDatetimeWithSpecial(Date dateTime, String ifNull) {
+    private static String formatDatetimeWithSpecial(Date dateTime, String ifNull) {
         return (null == dateTime) ? ifNull : newSimpleDateFormat(dateTime);
     }
 
-    public static String newSimpleDateFormat(Date dateTime) {
+    private static String newSimpleDateFormat(Date dateTime) {
         return new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING + " "
                 + DateConstants.TIME_NO_SECONDS_FORMAT_STRING).format(dateTime);
     }
@@ -445,7 +438,7 @@ public class Utility {
         response.addCookie(cookie);
     }
 
-    public static void setCookieDomain(HttpServletRequest request, Cookie cookie) {
+    private static void setCookieDomain(HttpServletRequest request, Cookie cookie) {
         String serverName = request.getServerName();
         if (!IP_PATTERN.matcher(serverName).matches()) {
             Matcher matcher = DOMAIN_PATTERN.matcher(serverName);
@@ -502,49 +495,6 @@ public class Utility {
         return new MessageFormat(i(key)).format(args);
     }
 
-    public static LinkService getLinkService() {
-        return linkService;
-    }
-
-    @SuppressWarnings("unused")
-    public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String rememberCd) {
-        Cookie cookie = new Cookie("im_remember_cd", rememberCd);
-        cookie.setMaxAge(60 * 60 * 2);
-        cookie.setPath("/");
-
-        setCookieDomain(request, cookie);
-        response.addCookie(cookie);
-    }
-
-	/*
-
-				Unused methods
-
-	*/
-
-    @SuppressWarnings("unused")
-    public static int compareDatesWithNullFirst(Date date1, Date date2) {
-        if (null == date1 && null == date2) {
-            return 0;
-        } else if (null == date1) {
-            return -1;
-        } else if (null == date2) {
-            return +1;
-        } else {
-            return date1.compareTo(date2);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public static void removeNullValuesFromMap(Map map) {
-        Collection values = map.values();
-        for (Iterator iterator = values.iterator(); iterator.hasNext(); ) {
-            if (null == iterator.next()) {
-                iterator.remove();
-            }
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public static String createQueryStringFromParameterMultiMap(MultiMap requestParameters) {
         Set<String> requestParameterStrings = SetUtils.orderedSet(new HashSet());
@@ -564,96 +514,8 @@ public class Utility {
         return StringUtils.join(requestParameterStrings.iterator(), "&");
     }
 
-    @SuppressWarnings("unused")
-    public static String formatUser(UserDomainObject user) {
-        return StringEscapeUtils.escapeHtml4(user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName() + ")");
-    }
-
-    @SuppressWarnings("unused")
-    public static String formatNullableHtmlDatetime(Date datetime) {
-        return formatHtmlDatetimeWithSpecial(datetime, null);
-    }
-
-    @SuppressWarnings("unused")
-    public static Map getMapViewOfObjectPairArray(final Object[][] array) {
-        return new ArrayMap(array, new ObjectPairToMapEntryTransformer());
-    }
-
-    @SuppressWarnings("unused")
-    public static Date parseDateFormat(DateFormat dateFormat, String dateString) {
-        try {
-            return dateFormat.parse(dateString);
-        } catch (NullPointerException npe) {
-            return null;
-        } catch (ParseException pe) {
-            return null;
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public static Object findMatch(Factory factory, Predicate predicate) {
-        Object unique;
-        do {
-            unique = factory.create();
-        } while (!predicate.evaluate(unique));
-        return unique;
-    }
-
-    @SuppressWarnings("unused")
-    public static String numberToAlphaNumerics(long identityHashCode) {
-        return Long.toString(identityHashCode, Character.MAX_RADIX);
-    }
-
-    @SuppressWarnings("unused")
-    public static Integer getInteger(Object object) {
-        return null == object ? null : ((Number) object).intValue();
-    }
-
     @Autowired
-    public void init(LinkService linkService, TextService textService) {
-        Utility.linkService = linkService;
+    public void init(TextService textService) {
         Utility.textService = textService;
-    }
-
-    private static class ObjectPairToMapEntryTransformer implements Transformer {
-        public Object transform(Object input) {
-            final Object[] pair = (Object[]) input;
-            return new Map.Entry() {
-                public Object getKey() {
-                    return pair[0];
-                }
-
-                public Object getValue() {
-                    return pair[1];
-                }
-
-                public Object setValue(Object value) {
-                    throw new UnsupportedOperationException();
-                }
-            };
-        }
-    }
-
-    private static class ArrayMap extends AbstractMap {
-
-        private final Object[] array;
-        private Transformer transformer;
-
-        ArrayMap(Object[] array, Transformer transformer) {
-            this.array = array;
-            this.transformer = transformer;
-        }
-
-        public Set entrySet() {
-            return new AbstractSet() {
-                public int size() {
-                    return array.length;
-                }
-
-                public Iterator iterator() {
-                    return new TransformIterator(new ObjectArrayIterator(array), transformer);
-                }
-            };
-        }
     }
 }
