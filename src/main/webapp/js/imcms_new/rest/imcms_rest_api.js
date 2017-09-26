@@ -1,4 +1,4 @@
-Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (Imcms, $) {
+Imcms.define("imcms-rest-api", ["imcms", "jquery", "imcms-ajax-request-data-decorator"], function (Imcms, $, decorate) {
 
     var API_PREFIX = "/api";
 
@@ -6,7 +6,9 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (Imcms, $) {
         return $.ajax({
             url: Imcms.contextPath + API_PREFIX + this.url,
             type: this.type,
-            data: data,
+            data: decorate(data),
+            dataType: "json",
+            contentType: "application/json",
             success: callback
         });
     }
