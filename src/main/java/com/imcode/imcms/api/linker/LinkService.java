@@ -51,7 +51,7 @@ public class LinkService {
     /**
      * Getting all links from JSON file and saving it in RAM
      */
-    private void initializeLinksMap(String realPathToJSON) throws IOException {
+    public void initializeLinksMap(String realPathToJSON) throws IOException {
         // Convert JSON string from file to Object
         File linksJSON = new File(realPathToJSON);
         links = new ObjectMapper().readValue(linksJSON, new TypeReference<List<StringLink>>() {
