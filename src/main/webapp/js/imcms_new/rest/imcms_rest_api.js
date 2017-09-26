@@ -7,7 +7,6 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery", "imcms-ajax-request-data-deco
             url: Imcms.contextPath + API_PREFIX + this.url,
             type: this.type,
             data: decorate(data),
-            dataType: "json",
             contentType: "application/json",
             success: callback
         });

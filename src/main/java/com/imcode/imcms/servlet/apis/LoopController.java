@@ -4,7 +4,6 @@ import com.imcode.imcms.mapping.dto.LoopDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.service.LoopService;
 import com.imcode.imcms.service.VersionService;
-import com.imcode.imcms.util.JsonResponse;
 import imcode.server.Imcms;
 import lombok.Data;
 import org.springframework.web.bind.annotation.*;
@@ -28,15 +27,13 @@ public class LoopController {
     }
 
     @PostMapping
-    public JsonResponse saveLoop(@ModelAttribute LoopDTO loopRequestData) throws IllegalAccessException {
+    public void saveLoop(@ModelAttribute LoopDTO loopDTO) throws IllegalAccessException {
 
         if (!Imcms.getUser().isSuperAdmin()) {
             throw new IllegalAccessException("User do not have access to change loop structure.");
         }
 
-//        loopService.saveLoop(loopDTO);
-
-        return JsonResponse.ok();
+        loopService.saveLoop(loopDTO);
     }
 
     @Data
