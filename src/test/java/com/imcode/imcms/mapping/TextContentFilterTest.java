@@ -1,8 +1,15 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.config.WebConfig;
 import com.imcode.imcms.document.text.TextContentFilter;
+import com.imcode.imcms.test.TestConfig;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,7 +17,10 @@ import static org.junit.Assert.assertEquals;
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 29.03.17.
  */
-public class MockTextContentFilter {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class, WebConfig.class})
+@WebAppConfiguration
+public class TextContentFilterTest {
 
     private final String[] allowedTags = {
             "div",
@@ -18,24 +28,25 @@ public class MockTextContentFilter {
             "p",
     };
     private final String[] badTagsArr = {
-            "q",
-            "img",
+            "iframe",
             "script"
     };
+
+    @Autowired
     private TextContentFilter textContentFilter;
 
     @Before
     public void setUp() throws Exception {
-        textContentFilter = new TextContentFilter().addHtmlTagsToWhiteList(allowedTags);
+        textContentFilter = textContentFilter.addHtmlTagsToWhiteList(allowedTags);
     }
 
     @Test
     public void testBadTags() {
         final String textWithBadTags = "<" + badTagsArr[0] + " class=\"some-class\">alalal</" + badTagsArr[0] + ">"
                 + "test text"
-                + "<" + badTagsArr[1] + " src=\"http://blabla.com\">"
-                + "test text"
-                + "<" + badTagsArr[2] + " src=\"http://blabla.com\"/>";
+                + "<" + badTagsArr[1] + " src=\"http://blabla.com\"></" + badTagsArr[1] + ">"
+                + "<" + badTagsArr[1] + ">alert('!!!')</" + badTagsArr[1] + ">"
+                + "test text";
 
         final String expectedCleanedText = "alalal"
                 + "test text"
