@@ -5,10 +5,6 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-/**
- * Created by Serhii Maksymchuk from Ubrainians for imCode
- * 22.09.17.
- */
 @Data
 @AllArgsConstructor
 public class LoopEntryDTO implements Serializable {
@@ -17,4 +13,7 @@ public class LoopEntryDTO implements Serializable {
     private Integer no;
     private Boolean enabled;
     private String content;
+
+    public LoopEntryDTO() {
+    }
 }

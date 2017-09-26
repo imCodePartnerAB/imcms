@@ -6,10 +6,6 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.Collection;
 
-/**
- * Created by Serhii Maksymchuk from Ubrainians for imCode
- * 22.09.17.
- */
 @Data
 @AllArgsConstructor
 public class LoopDTO implements Serializable {
@@ -19,4 +15,7 @@ public class LoopDTO implements Serializable {
     private Integer docId;
     private Integer loopId;
     private Collection<LoopEntryDTO> entries;
+
+    public LoopDTO() {
+    }
 }
