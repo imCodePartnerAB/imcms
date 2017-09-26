@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true" threshold="${log4j.threshold}">
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="Threshold" value="${log4j.console-appender.threshold}"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="TESTFILE" class="org.apache.log4j.FileAppender">
+        <param name="file" value="target/test-classes/log/test.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
+        </layout>
+    </appender>
+
+    <category name="org" additivity="false">
+        <priority value="INFO"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="TESTFILE"/>
+    </category>
+    <category name="com" additivity="false">
+        <priority value="INFO"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="TESTFILE"/>
+    </category>
+    <category name="net" additivity="false">
+        <priority value="INFO"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="TESTFILE"/>
+    </category>
+
+    <root>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="TESTFILE"/>
+    </root>
+
+</log4j:configuration>
