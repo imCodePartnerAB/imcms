@@ -1,41 +1,29 @@
 package com.imcode.imcms.test;
 
-import com.imcode.imcms.config.DBConfig;
+import com.imcode.imcms.config.MainConfig;
+import com.imcode.imcms.db.DB;
+import com.imcode.imcms.db.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.*;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.env.StandardEnvironment;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
-import java.util.Properties;
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+import java.io.InputStream;
 
 @Configuration
-@PropertySource(value = "classpath:server.properties", name = "test.properties")
-@Import({DBConfig.class})
-@ComponentScan({
-        "com.imcode.imcms.mapping",
-        "com.imcode.imcms.imagearchive",
-        "imcode.util",
-        "com.imcode.imcms.service",
-        "com.imcode.imcms.document.text"
-})
+@Import({MainConfig.class})
 public class TestConfig {
 
-    private final StandardEnvironment env;
-
     @Autowired
-    public TestConfig(StandardEnvironment env) {
-        this.env = env;
-    }
+    private DataSource dataSource;
 
-    //    Required to be able to access properties file from environment at other configs
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyPlaceHolderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
-
-    @Bean
-    public Properties imcmsProperties() {
-        return (Properties) env.getPropertySources().get("test.properties").getSource();
+    @PostConstruct
+    public void createImcmsDatabaseStructure() {
+        final InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema.xml");
+        final Schema schema = Schema.fromInputStream(inputStream);
+        final DB db = new DB(dataSource);
+        db.prepare(schema.setScriptsDir("src/main/webapp/WEB-INF/sql"));
     }
 
 }

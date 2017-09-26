@@ -3,13 +3,15 @@ package com.imcode.imcms.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.web.context.support.StandardServletEnvironment;
+import org.springframework.core.env.StandardEnvironment;
 
 import java.util.Properties;
 
 @Configuration
-//TODO: Check properties for  system-properties-mode="NEVER" option
-@PropertySource(value = "/WEB-INF/conf/server.properties", name = "imcms.properties")
+@PropertySource(value = {
+        "/WEB-INF/conf/server.properties", // prod server.properties
+        "classpath:server.properties"}, // test server.properties
+        name = "imcms.properties", ignoreResourceNotFound = true)
 @Import({
         DBConfig.class,
         ApplicationConfig.class
@@ -23,10 +25,10 @@ import java.util.Properties;
 })
 public class MainConfig {
 
-    private final StandardServletEnvironment env;
+    private final StandardEnvironment env;
 
     @Autowired
-    public MainConfig(StandardServletEnvironment env) {
+    public MainConfig(StandardEnvironment env) {
         this.env = env;
     }
 
