@@ -30,4 +30,8 @@ public class LoopService {
     public LoopDTO getLoop(Version version, int loopId) {
         return loopToDtoMapper.map(loopRepository.findByVersionAndNo(version, loopId));
     }
+
+    public void saveLoop(LoopDTO loopDTO) {
+
+    }
 }
