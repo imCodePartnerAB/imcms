@@ -1,39 +1,37 @@
 package com.imcode.imcms.document.text;
 
-import imcode.util.PropertyManager;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
 /**
  * Text content filter, based on Jsoup's tags whitelist and cleaning text feature.
+ * Used to clean non-supported tags from e.g. imcms:text tag.
  * <p>
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 29.03.17.
  */
 @Component
 public class TextContentFilter {
-    private final Whitelist htmlTagsWhitelist = Whitelist.none()
-            .addAttributes("img", "class", "data-no", "data-meta", "data-cke-saved-src", "src");
+
+    private static final String[] WHITE_LIST_ATTRIBUTES = {"class", "data-no", "data-meta", "data-cke-saved-src", "src"};
+    private final Whitelist htmlTagsWhitelist = Whitelist.none().addAttributes("img", WHITE_LIST_ATTRIBUTES);
+    private final Environment environment;
+
+    @Autowired
+    public TextContentFilter(Environment environment) {
+        this.environment = environment;
+    }
 
     @PostConstruct
     public void init() {
-        final String imcmsRoot = this.getClass()
-                .getProtectionDomain()
-                .getCodeSource()
-                .getLocation()
-                .getPath()
-                .split("/WEB-INF")[0];
-
-        PropertyManager.setRoot(imcmsRoot);
-
-        final String[] whiteListTags = PropertyManager.getServerProperty("text.editor.html.tags.whitelist")
-                .split(";");
-
+        final String[] whiteListTags = environment.getProperty("text.editor.html.tags.whitelist").split(";");
         addHtmlTagsToWhiteList(whiteListTags);
     }
 
