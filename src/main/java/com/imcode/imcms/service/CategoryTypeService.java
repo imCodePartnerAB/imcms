@@ -13,7 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(propagation = Propagation.SUPPORTS)
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class CategoryTypeService {
 
     private final CategoryTypeRepository categoryTypeRepository;
