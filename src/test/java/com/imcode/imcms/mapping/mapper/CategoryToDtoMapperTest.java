@@ -3,7 +3,6 @@ package com.imcode.imcms.mapping.mapper;
 import com.imcode.imcms.mapping.dto.CategoryDTO;
 import com.imcode.imcms.mapping.jpa.doc.Category;
 import com.imcode.imcms.test.TestConfig;
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -15,14 +14,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes = TestConfig.class)
 public class CategoryToDtoMapperTest extends AbstractMapperTest<Category, CategoryDTO> {
 
-    @Before
-    public void setUp() {
+    @Override
+    protected Category getOrigin() {
         final Category category = new Category();
         category.setId(0);
         category.setName("Test");
-        final CategoryDTO expectedResult = new CategoryDTO(category.getId(), category.getName());
+        return category;
+    }
 
-        super.setUp(category, expectedResult);
+    @Override
+    protected CategoryDTO getExpectedResult() {
+        final Category origin = getOrigin();
+        return new CategoryDTO(origin.getId(), origin.getName());
     }
 
 }

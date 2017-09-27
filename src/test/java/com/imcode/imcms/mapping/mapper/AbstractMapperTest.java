@@ -1,26 +1,23 @@
 package com.imcode.imcms.mapping.mapper;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.function.Function;
 
+import static org.junit.Assert.assertEquals;
+
 public abstract class AbstractMapperTest<FROM, TO> {
 
     @Autowired
-    protected Function<FROM, TO> mapper;
+    private Function<FROM, TO> mapper;
 
-    protected FROM origin;
-    protected TO expectedResult;
+    protected abstract FROM getOrigin();
 
-    protected void setUp(FROM origin, TO expectedResult) {
-        this.origin = origin;
-        this.expectedResult = expectedResult;
-    }
+    protected abstract TO getExpectedResult();
 
     @Test
     public void expectedEqualsMapResult() throws Exception {
-        Assert.assertEquals(expectedResult, mapper.apply(origin));
+        assertEquals(getExpectedResult(), mapper.apply(getOrigin()));
     }
 }
