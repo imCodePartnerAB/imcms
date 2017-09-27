@@ -12,7 +12,6 @@ public interface CategoryTypeRepository extends JpaRepository<CategoryType, Inte
     @Query("select cat_type from CategoryType cat_type join fetch cat_type.categories")
     List<CategoryType> findAllFetchCategoriesEagerly();
 
-    CategoryType findByName(String name);
-
     CategoryType findByNameIgnoreCase(String name);
+
 }
