@@ -4,10 +4,6 @@ import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by Serhii Maksymchuk from Ubrainians for imCode
- * 22.09.17.
- */
 @Service
 public class VersionService {
 
