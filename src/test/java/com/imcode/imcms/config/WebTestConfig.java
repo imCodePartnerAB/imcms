@@ -1,6 +1,5 @@
-package com.imcode.imcms.test;
+package com.imcode.imcms.config;
 
-import com.imcode.imcms.config.WebConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

@@ -1,6 +1,5 @@
-package com.imcode.imcms.test;
+package com.imcode.imcms.config;
 
-import com.imcode.imcms.config.MainConfig;
 import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.Schema;
 import org.springframework.beans.factory.annotation.Autowired;

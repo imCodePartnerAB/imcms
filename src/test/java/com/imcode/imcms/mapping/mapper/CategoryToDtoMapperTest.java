@@ -2,7 +2,7 @@ package com.imcode.imcms.mapping.mapper;
 
 import com.imcode.imcms.mapping.dto.CategoryDTO;
 import com.imcode.imcms.mapping.jpa.doc.Category;
-import com.imcode.imcms.test.TestConfig;
+import com.imcode.imcms.config.TestConfig;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

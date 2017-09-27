@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
-import com.imcode.imcms.test.TestConfig;
+import com.imcode.imcms.config.TestConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.jpa;
 
-import com.imcode.imcms.test.TestConfig;
+import com.imcode.imcms.config.TestConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

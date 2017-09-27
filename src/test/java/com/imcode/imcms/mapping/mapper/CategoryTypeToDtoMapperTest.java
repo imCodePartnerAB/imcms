@@ -4,7 +4,7 @@ import com.imcode.imcms.mapping.dto.CategoryDTO;
 import com.imcode.imcms.mapping.dto.CategoryTypeDTO;
 import com.imcode.imcms.mapping.jpa.doc.Category;
 import com.imcode.imcms.mapping.jpa.doc.CategoryType;
-import com.imcode.imcms.test.TestConfig;
+import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.util.Value;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

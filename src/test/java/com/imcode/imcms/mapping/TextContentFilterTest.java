@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.document.text.TextContentFilter;
-import com.imcode.imcms.test.TestConfig;
+import com.imcode.imcms.config.TestConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
