@@ -5,12 +5,15 @@ import com.imcode.imcms.mapping.jpa.doc.CategoryType;
 import com.imcode.imcms.mapping.jpa.doc.CategoryTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(propagation = Propagation.SUPPORTS)
 public class CategoryTypeService {
 
     private final CategoryTypeRepository categoryTypeRepository;
@@ -23,7 +26,7 @@ public class CategoryTypeService {
     }
 
     public List<CategoryTypeDTO> getAll() {
-        return categoryTypeRepository.findAllFetchCategoriesEagerly()
+        return categoryTypeRepository.findAll()
                 .stream()
                 .map(mapper)
                 .collect(Collectors.toList());
