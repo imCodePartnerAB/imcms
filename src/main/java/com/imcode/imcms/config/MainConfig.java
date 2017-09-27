@@ -9,8 +9,8 @@ import java.util.Properties;
 
 @Configuration
 @PropertySource(value = {
-        "/WEB-INF/conf/server.properties", // prod server.properties
-        "classpath:server.properties"}, // test server.properties
+        "/WEB-INF/conf/server.properties",
+        "classpath:test.server.properties"},
         name = "imcms.properties", ignoreResourceNotFound = true)
 @Import({
         DBConfig.class,
