@@ -1,15 +1,13 @@
 package com.imcode.imcms.mapping.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
 
-@Getter
+@Data
 @AllArgsConstructor
-@EqualsAndHashCode
 public class CategoryTypeDTO implements Serializable {
 
     private static final long serialVersionUID = -4636053716188761920L;
