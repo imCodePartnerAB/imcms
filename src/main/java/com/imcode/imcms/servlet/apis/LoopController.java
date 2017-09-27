@@ -23,7 +23,7 @@ public class LoopController {
     @GetMapping
     public LoopDTO getDocumentLoop(@ModelAttribute LoopRequestData loopRequestData) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopRequestData.docId);
-        return loopService.getLoop(documentWorkingVersion, loopRequestData.loopId);
+        return loopService.getLoop(loopRequestData.loopId, documentWorkingVersion);
     }
 
     @PostMapping

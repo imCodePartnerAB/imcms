@@ -28,7 +28,7 @@ public class LoopService {
         this.loopToDtoMapper = loopToDtoMapper;
     }
 
-    public LoopDTO getLoop(Version version, int loopId) {
+    public LoopDTO getLoop(int loopId, Version version) {
         return loopToDtoMapper.apply(loopRepository.findByVersionAndNo(version, loopId));
     }
 
