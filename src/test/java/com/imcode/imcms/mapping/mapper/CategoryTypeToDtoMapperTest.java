@@ -6,13 +6,11 @@ import com.imcode.imcms.mapping.jpa.doc.Category;
 import com.imcode.imcms.mapping.jpa.doc.CategoryType;
 import com.imcode.imcms.test.TestConfig;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -21,9 +19,6 @@ import java.util.stream.Collectors;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class CategoryTypeToDtoMapperTest extends AbstractMapperTest<CategoryType, CategoryTypeDTO> {
-
-    @Autowired
-    private Function<Category, CategoryDTO> mapper;
 
     @Override
     public CategoryType getOrigin() {
@@ -43,7 +38,7 @@ public class CategoryTypeToDtoMapperTest extends AbstractMapperTest<CategoryType
         final CategoryType origin = getOrigin();
         final List<CategoryDTO> categoriesOfCategoryType = origin.getCategories()
                 .stream()
-                .map(mapper)
+                .map(category -> new CategoryDTO(category.getId(), category.getName()))
                 .collect(Collectors.toList());
         return new CategoryTypeDTO(origin.getId(), origin.getName(), origin.isMultiSelect(), categoriesOfCategoryType);
     }
