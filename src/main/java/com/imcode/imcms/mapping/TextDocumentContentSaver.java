@@ -30,8 +30,6 @@ import java.util.Map;
 @Transactional
 public class TextDocumentContentSaver {
 
-    @PersistenceContext
-    private EntityManager entityManager;
     @Inject
     private VersionRepository versionRepository;
     @Inject
@@ -54,10 +52,6 @@ public class TextDocumentContentSaver {
     private LanguageRepository languageRepository;
     @Inject
     private IncludeRepository includeRepository;
-    @Inject
-    private DocumentGetter menuItemDocumentGetter;
-    @Inject
-    private DocumentLanguageMapper languageMapper;
     @Inject
     private UserRepository userRepository;
 
@@ -349,31 +343,12 @@ public class TextDocumentContentSaver {
 
         if (loop == null) {
             loop = new Loop();
-            //Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
-            //loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
             loop.setVersion(version);
             loop.setNo(loopNo);
             loop.getEntries().add(new Loop.Entry(entryNo));
-            /*neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
-            if (neighbor != null)
-                neighbor.setNextEntryNo(loopNo);*/
-            //loopRepository.save(loop);
         } else {
             if (!loop.containsEntry(entryRef.getEntryNo())) {
-                /*Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);*/
                 loop.getEntries().add(new Loop.Entry(entryNo));
-                /*loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
-                neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
-                if (neighbor != null)
-                    neighbor.setNextEntryNo(loopNo);*/
-                //loopRepository.save(loop);
-            /*} else {
-                Loop neighbor = loopRepository.findNextNeighborAfter(version, loopNo);
-                loop.setNextEntryNo(neighbor == null ? loopNo + 1 : neighbor.getNo());
-                neighbor = loopRepository.findNextNeighborBefore(version, loopNo);
-                if (neighbor != null)
-                    neighbor.setNextEntryNo(loopNo);
-                loopRepository.save(loop);*/
             }
         }
         loop.setNextEntryNo(loop.getEntries().stream()

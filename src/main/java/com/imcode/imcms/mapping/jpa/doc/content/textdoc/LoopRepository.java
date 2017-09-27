@@ -17,16 +17,6 @@ public interface LoopRepository extends JpaRepository<Loop, Integer> {
     @Query("SELECT l FROM Loop l WHERE l.version = ?1 AND l.no = ?2")
     Loop findByVersionAndNo(Version version, int no);
 
-    @Query("SELECT l FROM Loop l WHERE l.version = ?1 AND l.no > ?2 ORDER BY l.no")
-    Loop findNextNeighborAfter(Version version, int no);
-
-    @Query("SELECT l FROM Loop l WHERE l.version = ?1 AND l.no < ?2 ORDER BY l.no DESC")
-    Loop findNextNeighborBefore(Version version, int no);
-
-    @Modifying
-    @Query("DELETE FROM Loop l WHERE l.version = ?1")
-    int deleteByVersion(Version version);
-
     @Query("SELECT l.id FROM Loop l WHERE l.version = ?1 AND l.no = ?2")
     Integer findIdByVersionAndNo(Version version, int no);
 
