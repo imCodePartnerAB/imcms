@@ -26,10 +26,6 @@ public class Category implements Cloneable {
     public Category() {
     }
 
-    public Category(Integer id, String name) {
-        this(id, name, null, null, null);
-    }
-
     public Category(String name, String description, String imageUrl, CategoryType type) {
         this(null, name, description, imageUrl, type);
     }

@@ -15,12 +15,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class CategoryToDtoMapperTest extends AbstractMapperTest<Category, CategoryDTO> {
 
     @Override
-    public Category getOrigin() {
-        return new Category(0, "Test");
+    Category getOrigin() {
+        final Category category = new Category();
+        category.setId(0);
+        category.setName("Test");
+        return category;
     }
 
     @Override
-    public CategoryDTO getExpectedResult() {
+    CategoryDTO getExpectedResult() {
         final Category origin = getOrigin();
         return new CategoryDTO(origin.getId(), origin.getName());
     }

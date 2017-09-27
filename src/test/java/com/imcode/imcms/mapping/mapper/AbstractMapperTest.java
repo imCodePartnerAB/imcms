@@ -12,9 +12,9 @@ public abstract class AbstractMapperTest<FROM, TO> {
     @Autowired
     private Function<FROM, TO> mapper;
 
-    protected abstract FROM getOrigin();
+    abstract FROM getOrigin();
 
-    protected abstract TO getExpectedResult();
+    abstract TO getExpectedResult();
 
     @Test
     public void expectedEqualsMapResult() throws Exception {

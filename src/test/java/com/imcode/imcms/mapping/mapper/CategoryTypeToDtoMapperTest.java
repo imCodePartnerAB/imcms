@@ -5,6 +5,7 @@ import com.imcode.imcms.mapping.dto.CategoryTypeDTO;
 import com.imcode.imcms.mapping.jpa.doc.Category;
 import com.imcode.imcms.mapping.jpa.doc.CategoryType;
 import com.imcode.imcms.test.TestConfig;
+import com.imcode.imcms.util.Value;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -21,20 +22,35 @@ import java.util.stream.Collectors;
 public class CategoryTypeToDtoMapperTest extends AbstractMapperTest<CategoryType, CategoryTypeDTO> {
 
     @Override
-    public CategoryType getOrigin() {
+    CategoryType getOrigin() {
         final CategoryType categoryType = new CategoryType(0, "Test", 0, false, false);
         categoryType.setCategories(Arrays.asList(
-                new Category(0, "Test 0"),
-                new Category(1, "Test 1"),
-                new Category(2, "Test 2"),
-                new Category(3, "Test 3"),
-                new Category(4, "Test 4")
+                Value.with(new Category(), category -> {
+                    category.setId(0);
+                    category.setName("Test 0");
+                }),
+                Value.with(new Category(), category -> {
+                    category.setId(1);
+                    category.setName("Test 1");
+                }),
+                Value.with(new Category(), category -> {
+                    category.setId(2);
+                    category.setName("Test 2");
+                }),
+                Value.with(new Category(), category -> {
+                    category.setId(3);
+                    category.setName("Test 3");
+                }),
+                Value.with(new Category(), category -> {
+                    category.setId(4);
+                    category.setName("Test 4");
+                })
         ));
         return categoryType;
     }
 
     @Override
-    public CategoryTypeDTO getExpectedResult() {
+    CategoryTypeDTO getExpectedResult() {
         final CategoryType origin = getOrigin();
         final List<CategoryDTO> categoriesOfCategoryType = origin.getCategories()
                 .stream()
