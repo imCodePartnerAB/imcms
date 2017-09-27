@@ -22,7 +22,6 @@ public class CategoryService {
         this.mapper = mapper;
     }
 
-
     public List<CategoryDTO> getAll() {
         return categoryRepository.findAll()
                 .stream()
