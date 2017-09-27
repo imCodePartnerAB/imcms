@@ -66,7 +66,7 @@ public class LoopRepositoryTest {
     }
 
     @Test
-    public void textFindByDocVersion() {
+    public void testFindByDocVersion() {
         recreateLoops();
 
         Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
@@ -76,7 +76,7 @@ public class LoopRepositoryTest {
     }
 
     @Test
-    public void textFindByDocVersionAndNo() {
+    public void testFindByDocVersionAndNo() {
         recreateLoops();
 
         Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
