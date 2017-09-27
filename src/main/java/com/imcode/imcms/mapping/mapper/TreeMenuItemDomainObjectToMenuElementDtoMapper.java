@@ -6,13 +6,14 @@ import imcode.server.document.textdocument.MenuItemDomainObject.TreeMenuItemDoma
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class TreeMenuItemDomainObjectToMenuElementDtoMapper implements Mappable<TreeMenuItemDomainObject, MenuElementDTO> {
+public class TreeMenuItemDomainObjectToMenuElementDtoMapper implements Function<TreeMenuItemDomainObject, MenuElementDTO> {
 
     @Override
-    public MenuElementDTO map(TreeMenuItemDomainObject treeMenuItemDomainObject) {
+    public MenuElementDTO apply(TreeMenuItemDomainObject treeMenuItemDomainObject) {
         final MenuItemDomainObject menuItem = treeMenuItemDomainObject.getMenuItem();
 
         final Integer id = menuItem.getId();
@@ -20,7 +21,7 @@ public class TreeMenuItemDomainObjectToMenuElementDtoMapper implements Mappable<
         final List<MenuElementDTO> children = treeMenuItemDomainObject
                 .getSubMenuItems()
                 .stream()
-                .map(this::map)
+                .map(this)
                 .collect(Collectors.toList());
 
         return new MenuElementDTO(id, title, children);

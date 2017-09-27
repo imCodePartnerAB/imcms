@@ -3,9 +3,11 @@ package com.imcode.imcms.mapping.mapper;
 import com.imcode.imcms.mapping.dto.LoopDTO;
 import com.imcode.imcms.mapping.dto.LoopEntryDTO;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -13,19 +15,19 @@ import java.util.stream.Collectors;
  * 22.09.17.
  */
 @Component
-public class LoopToDtoMapper implements Mappable<Loop, LoopDTO> {
+public class LoopToDtoMapper implements Function<Loop, LoopDTO> {
 
-    private final Mappable<Loop.Entry, LoopEntryDTO> loopEntryToDtoMapper;
+    private final Function<Entry, LoopEntryDTO> loopEntryToDtoMapper;
 
-    public LoopToDtoMapper(Mappable<Loop.Entry, LoopEntryDTO> loopEntryToDtoMapper) {
+    public LoopToDtoMapper(Function<Entry, LoopEntryDTO> loopEntryToDtoMapper) {
         this.loopEntryToDtoMapper = loopEntryToDtoMapper;
     }
 
     @Override
-    public LoopDTO map(Loop loop) {
+    public LoopDTO apply(Loop loop) {
         final List<LoopEntryDTO> loopEntryDTOs = loop.getEntries()
                 .stream()
-                .map(loopEntryToDtoMapper::map)
+                .map(loopEntryToDtoMapper)
                 .collect(Collectors.toList());
 
         return new LoopDTO(loop.getDocumentId(), loop.getId(), loopEntryDTOs);
