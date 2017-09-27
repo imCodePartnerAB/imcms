@@ -1,11 +1,8 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.mapping.dto.LoopDTO;
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.service.LoopService;
-import com.imcode.imcms.service.VersionService;
 import imcode.server.Imcms;
-import lombok.Data;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,17 +10,14 @@ import org.springframework.web.bind.annotation.*;
 public class LoopController {
 
     private final LoopService loopService;
-    private final VersionService versionService;
 
-    public LoopController(LoopService loopService, VersionService versionService) {
+    public LoopController(LoopService loopService) {
         this.loopService = loopService;
-        this.versionService = versionService;
     }
 
     @GetMapping
-    public LoopDTO getDocumentLoop(@ModelAttribute LoopRequestData loopRequestData) {
-        final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopRequestData.docId);
-        return loopService.getLoop(loopRequestData.loopId, documentWorkingVersion);
+    public LoopDTO getDocumentLoop(@ModelAttribute LoopDTO loopRequestData) {
+        return loopService.getLoop(loopRequestData.getLoopId(), loopRequestData.getDocId());
     }
 
     @PostMapping
@@ -34,12 +28,6 @@ public class LoopController {
         }
 
         loopService.saveLoop(loopDTO);
-    }
-
-    @Data
-    private static class LoopRequestData {
-        private int docId;
-        private int loopId;
     }
 
 //    @RequestMapping
