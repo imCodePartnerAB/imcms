@@ -7,20 +7,21 @@ import com.imcode.imcms.mapping.jpa.doc.CategoryType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class CategoryTypeToDtoMapper implements Mappable<CategoryType, CategoryTypeDTO> {
+public class CategoryTypeToDtoMapper implements Function<CategoryType, CategoryTypeDTO> {
 
-    private final Mappable<Category, CategoryDTO> categoryMapper;
+    private final Function<Category, CategoryDTO> categoryMapper;
 
     @Autowired
-    public CategoryTypeToDtoMapper(Mappable<Category, CategoryDTO> categoryMapper) {
+    public CategoryTypeToDtoMapper(Function<Category, CategoryDTO> categoryMapper) {
         this.categoryMapper = categoryMapper;
     }
 
     @Override
-    public CategoryTypeDTO map(CategoryType categoryTypeDO) {
+    public CategoryTypeDTO apply(CategoryType categoryTypeDO) {
         return new CategoryTypeDTO(
                 categoryTypeDO.getId(),
                 categoryTypeDO.getName(),
@@ -28,7 +29,7 @@ public class CategoryTypeToDtoMapper implements Mappable<CategoryType, CategoryT
                 categoryTypeDO
                         .getCategories()
                         .stream()
-                        .map(categoryMapper::map)
+                        .map(categoryMapper)
                         .collect(Collectors.toList())
         );
     }
