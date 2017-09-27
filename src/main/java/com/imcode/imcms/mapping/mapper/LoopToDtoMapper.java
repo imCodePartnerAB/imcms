@@ -30,6 +30,6 @@ public class LoopToDtoMapper implements Function<Loop, LoopDTO> {
                 .map(loopEntryToDtoMapper)
                 .collect(Collectors.toList());
 
-        return new LoopDTO(loop.getDocumentId(), loop.getId(), loopEntryDTOs);
+        return new LoopDTO(loop.getDocumentId(), loop.getNo(), loopEntryDTOs);
     }
 }
