@@ -29,7 +29,7 @@ public class CategoryTypeServiceTest {
     }
 
     @Test
-    public void getAllExpectedEqualsCategoriesTypesAsDtoTest() {
+    public void getAllExpectedEqualsCategoryTypesAsDtoTest() {
         assertEquals(categoryDataInitilizer.getCategoryTypesAsDTO(), categoryTypeService.getAll());
     }
 
