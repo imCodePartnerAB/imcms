@@ -5,7 +5,6 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.util.datainitializer.CategoryDataInitializer;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,6 @@ public class CategoryControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Before
     @After
     public void cleanRepos() {
         categoryDataInitializer.cleanRepositories();
