@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
@@ -31,6 +30,7 @@ public class LoopServiceTest {
 
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_LOOP_ID = 1;
+    private static final int TEST_VERSION_NO = 0;
 
     private static final LoopDTO TEST_LOOP_DTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_ID, Collections.emptyList());
 
@@ -58,7 +58,7 @@ public class LoopServiceTest {
         final User user = userRepository.findById(1);
 
         final Version testVersion = Value.with(new Version(), version -> {
-            version.setNo(0);
+            version.setNo(TEST_VERSION_NO);
             version.setDocId(TEST_DOC_ID);
             version.setCreatedBy(user);
             version.setCreatedDt(new Date());
@@ -71,7 +71,7 @@ public class LoopServiceTest {
             loop.setVersion(testVersion);
             loop.setNo(TEST_LOOP_ID);
             loop.setEntries(Collections.emptyList());
-            loop.setNextEntryNo(1);// or 0?
+            loop.setNextEntryNo(1);
         });
         loopRepository.saveAndFlush(testLoop);
     }
