@@ -14,7 +14,8 @@ import java.util.Properties;
         name = "imcms.properties", ignoreResourceNotFound = true)
 @Import({
         DBConfig.class,
-        ApplicationConfig.class
+        ApplicationConfig.class,
+        MappingConfig.class
 })
 @ComponentScan({
         "com.imcode.imcms.mapping",

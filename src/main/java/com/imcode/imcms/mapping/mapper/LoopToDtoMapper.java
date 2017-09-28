@@ -7,6 +7,7 @@ import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,8 @@ public class LoopToDtoMapper implements Function<Loop, LoopDTO> {
 
     @Override
     public LoopDTO apply(Loop loop) {
-        final List<LoopEntryDTO> loopEntryDTOs = loop.getEntries()
+        final List<LoopEntryDTO> loopEntryDTOs = Objects.requireNonNull(loop)
+                .getEntries()
                 .stream()
                 .map(loopEntryToDtoMapper)
                 .collect(Collectors.toList());
