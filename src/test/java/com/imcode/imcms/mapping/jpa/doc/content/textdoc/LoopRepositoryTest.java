@@ -1,16 +1,17 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
+import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.config.TestConfig;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -19,12 +20,10 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
-@Transactional
 public class LoopRepositoryTest {
 
     private static final VersionRef DOC_VERSION_REF = new VersionRef(1001, 0);
@@ -38,12 +37,9 @@ public class LoopRepositoryTest {
     @Inject
     private LoopRepository loopRepository;
 
-    private void recreateLoops() {
-        loopRepository.deleteAll();
-        loopRepository.flush();
-
-        versionRepository.deleteAll();
-        versionRepository.flush();
+    @Before
+    public void recreateLoops() {
+        clearTestData();
 
         final User user = userRepository.findById(1);
         final Version version = versionRepository.saveAndFlush(
@@ -65,10 +61,17 @@ public class LoopRepositoryTest {
         );
     }
 
+    @After
+    public void clearTestData() {
+        loopRepository.deleteAll();
+        loopRepository.flush();
+
+        versionRepository.deleteAll();
+        versionRepository.flush();
+    }
+
     @Test
     public void testFindByDocVersion() {
-        recreateLoops();
-
         Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
         List<Loop> loops = loopRepository.findByVersion(version);
 
@@ -77,8 +80,6 @@ public class LoopRepositoryTest {
 
     @Test
     public void testFindByDocVersionAndNo() {
-        recreateLoops();
-
         Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
         Loop loop1 = loopRepository.findByVersionAndNo(version, 1);
         Loop loop2 = loopRepository.findByVersionAndNo(version, 2);
@@ -87,5 +88,14 @@ public class LoopRepositoryTest {
         assertNotNull(loop1);
         assertNotNull(loop2);
         assertNotNull(loop3);
+    }
+
+    @Test
+    public void testSavedData() {
+        Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
+        Loop loop1 = loopRepository.findByVersionAndNo(version, 1);
+
+        assertEquals(loop1.getNo(), Integer.valueOf(1));
+        assertEquals(loop1.getDocumentId(), Integer.valueOf(DOC_VERSION_REF.getDocId()));
     }
 }
