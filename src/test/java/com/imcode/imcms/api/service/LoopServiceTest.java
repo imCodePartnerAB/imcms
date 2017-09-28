@@ -9,6 +9,7 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
 import com.imcode.imcms.service.LoopService;
+import com.imcode.imcms.util.RepositoryTestDataCleaner;
 import com.imcode.imcms.util.Value;
 import org.junit.After;
 import org.junit.Assert;
@@ -20,6 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Date;
 
@@ -32,6 +34,8 @@ public class LoopServiceTest {
 
     private static final LoopDTO TEST_LOOP_DTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_ID, Collections.emptyList());
 
+    private RepositoryTestDataCleaner testDataCleaner;
+
     @Autowired
     private LoopService loopService;
 
@@ -41,6 +45,11 @@ public class LoopServiceTest {
     private VersionRepository versionRepository;
     @Autowired
     private UserRepository userRepository;
+
+    @PostConstruct
+    public void init() {
+        testDataCleaner = new RepositoryTestDataCleaner(loopRepository, versionRepository);
+    }
 
     @Before
     public void saveData() {
@@ -69,11 +78,7 @@ public class LoopServiceTest {
 
     @After
     public void clearTestData() {
-        loopRepository.deleteAll();
-        loopRepository.flush();
-
-        versionRepository.deleteAll();
-        versionRepository.flush();
+        testDataCleaner.cleanRepositories();
     }
 
     @Test

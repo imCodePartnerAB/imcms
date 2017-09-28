@@ -6,6 +6,7 @@ import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.util.RepositoryTestDataCleaner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +29,7 @@ import static org.junit.Assert.*;
 public class LoopRepositoryTest {
 
     private static final VersionRef DOC_VERSION_REF = new VersionRef(1001, 0);
+    private RepositoryTestDataCleaner testDataCleaner;
 
     @Inject
     private UserRepository userRepository;
@@ -36,6 +39,11 @@ public class LoopRepositoryTest {
 
     @Inject
     private LoopRepository loopRepository;
+
+    @PostConstruct
+    public void init() {
+        testDataCleaner = new RepositoryTestDataCleaner(loopRepository, versionRepository);
+    }
 
     @Before
     public void recreateLoops() {
@@ -63,11 +71,7 @@ public class LoopRepositoryTest {
 
     @After
     public void clearTestData() {
-        loopRepository.deleteAll();
-        loopRepository.flush();
-
-        versionRepository.deleteAll();
-        versionRepository.flush();
+        testDataCleaner.cleanRepositories();
     }
 
     @Test
