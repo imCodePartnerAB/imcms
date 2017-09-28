@@ -71,7 +71,7 @@ public class LoopRepositoryTest {
     }
 
     @Test
-    public void testFindByDocVersion() {
+    public void testFindByDocVersionExpectCorrectResultSize() {
         Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
         List<Loop> loops = loopRepository.findByVersion(version);
 
@@ -79,7 +79,7 @@ public class LoopRepositoryTest {
     }
 
     @Test
-    public void testFindByDocVersionAndNo() {
+    public void testFindByDocVersionAndNoExpectNotNullResults() {
         Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
         Loop loop1 = loopRepository.findByVersionAndNo(version, 1);
         Loop loop2 = loopRepository.findByVersionAndNo(version, 2);
@@ -91,7 +91,7 @@ public class LoopRepositoryTest {
     }
 
     @Test
-    public void testSavedData() {
+    public void testSavedDataExpectEqualNoAndDocId() {
         Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
         Loop loop1 = loopRepository.findByVersionAndNo(version, 1);
 

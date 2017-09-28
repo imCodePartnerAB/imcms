@@ -77,7 +77,7 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void testGetLoop() {
+    public void testGetLoopExpectCorrectDTO() {
         final LoopDTO loop = loopService.getLoop(TEST_LOOP_ID, TEST_DOC_ID);
         Assert.assertEquals(TEST_LOOP_DTO, loop);
     }
