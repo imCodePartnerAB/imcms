@@ -22,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -104,5 +105,34 @@ public class LoopServiceTest {
         Assert.assertThat(savedLoop.getDocId(), is(TEST_DOC_ID));
         Assert.assertThat(savedLoop.getLoopId(), is(testLoopId));
         Assert.assertThat(savedLoop.getEntries().size(), is(entries.size()));
+    }
+
+    @Test
+    public void testSaveLoopWithEntriesExpectNotNullCorrectSizeAndValues() {
+        final int entryNo_0 = 1, entryNo_1 = 2, entryNo_2 = 3;
+        final boolean entryIsEnabled_0 = true, entryIsEnabled_1 = false, entryIsEnabled_2 = true;
+
+        final List<LoopEntryDTO> entries = Arrays.asList(
+                new LoopEntryDTO(entryNo_0, entryIsEnabled_0),
+                new LoopEntryDTO(entryNo_1, entryIsEnabled_1),
+                new LoopEntryDTO(entryNo_2, entryIsEnabled_2)
+        );
+
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, 42, entries);
+        loopService.saveLoop(loopDTO);
+        final List<LoopEntryDTO> resultEntries = loopService.getLoop(loopDTO.getLoopId(), loopDTO.getDocId())
+                .getEntries();
+
+        Assert.assertNotNull(resultEntries);
+        Assert.assertThat(resultEntries.size(), is(entries.size()));
+
+        Assert.assertThat(resultEntries.get(0).getNo(), is(entryNo_0));
+        Assert.assertThat(resultEntries.get(0).isEnabled(), is(entryIsEnabled_0));
+
+        Assert.assertThat(resultEntries.get(1).getNo(), is(entryNo_1));
+        Assert.assertThat(resultEntries.get(1).isEnabled(), is(entryIsEnabled_1));
+
+        Assert.assertThat(resultEntries.get(2).getNo(), is(entryNo_2));
+        Assert.assertThat(resultEntries.get(2).isEnabled(), is(entryIsEnabled_2));
     }
 }
