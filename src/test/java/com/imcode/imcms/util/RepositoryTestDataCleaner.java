@@ -2,7 +2,7 @@ package com.imcode.imcms.util;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public class RepositoryTestDataCleaner {
+public class RepositoryTestDataCleaner implements RepositoryCleaner {
     private final JpaRepository[] jpaRepositories;
 
     public RepositoryTestDataCleaner(JpaRepository... jpaRepositories) {
@@ -10,9 +10,6 @@ public class RepositoryTestDataCleaner {
     }
 
     public void cleanRepositories() {
-        for (JpaRepository jpaRepository : jpaRepositories) {
-            jpaRepository.deleteAll();
-            jpaRepository.flush();
-        }
+        cleanRepositories(jpaRepositories);
     }
 }

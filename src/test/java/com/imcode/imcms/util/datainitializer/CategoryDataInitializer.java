@@ -1,10 +1,12 @@
 package com.imcode.imcms.util.datainitializer;
 
 import com.imcode.imcms.mapping.dto.CategoryDTO;
+import com.imcode.imcms.mapping.dto.CategoryTypeDTO;
 import com.imcode.imcms.mapping.jpa.doc.Category;
 import com.imcode.imcms.mapping.jpa.doc.CategoryRepository;
 import com.imcode.imcms.mapping.jpa.doc.CategoryType;
 import com.imcode.imcms.mapping.jpa.doc.CategoryTypeRepository;
+import com.imcode.imcms.util.RepositoryCleaner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +15,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.util.Collections.singletonList;
+
 @Component
-public class CategoryDataInitializer {
+public class CategoryDataInitializer implements RepositoryCleaner {
 
     @Autowired
     private CategoryTypeRepository categoryTypeRepository;
@@ -23,25 +27,25 @@ public class CategoryDataInitializer {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private Function<Category, CategoryDTO> mapper;
+    private Function<Category, CategoryDTO> categoryMapper;
+
+    @Autowired
+    private Function<CategoryType, CategoryTypeDTO> categoryTypeMapper;
 
     private List<CategoryType> types;
     private List<Category> categories;
 
     private int elementsCount;
 
+    @Override
+    public void cleanRepositories() {
+        cleanRepositories(categoryRepository, categoryTypeRepository);
+    }
+
     public void init(int elementsCount) {
-        clearRepos();
         this.elementsCount = elementsCount;
         types = recreateTypes();
         categories = recreateCategories();
-    }
-
-    private void clearRepos() {
-        categoryRepository.deleteAll();
-        categoryRepository.flush();
-        categoryTypeRepository.deleteAll();
-        categoryTypeRepository.flush();
     }
 
     public List<CategoryType> getTypes() {
@@ -49,7 +53,18 @@ public class CategoryDataInitializer {
     }
 
     public List<CategoryDTO> getCategoriesAsDTO() {
-        return categories.stream().map(mapper).collect(Collectors.toList());
+        return categories.stream()
+                .map(categoryMapper)
+                .collect(Collectors.toList());
+    }
+
+    public List<CategoryTypeDTO> getCategoryTypesAsDTO() {
+        IntStream.range(0, elementsCount)
+                .forEach(i -> types.get(i).setCategories(singletonList(categories.get(i))));
+
+        return types.stream()
+                .map(categoryTypeMapper)
+                .collect(Collectors.toList());
     }
 
     private List<CategoryType> recreateTypes() {
