@@ -31,9 +31,17 @@ public class CategoryDataInitializer {
     private int elementsCount;
 
     public void init(int elementsCount) {
+        clearRepos();
         this.elementsCount = elementsCount;
         types = recreateTypes();
         categories = recreateCategories();
+    }
+
+    private void clearRepos() {
+        categoryRepository.deleteAll();
+        categoryRepository.flush();
+        categoryTypeRepository.deleteAll();
+        categoryTypeRepository.flush();
     }
 
     public List<CategoryType> getTypes() {
