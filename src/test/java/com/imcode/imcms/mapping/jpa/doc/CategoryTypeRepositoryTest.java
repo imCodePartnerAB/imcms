@@ -1,6 +1,8 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.util.datainitializer.CategoryDataInitializer;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -17,21 +20,40 @@ import static org.junit.Assert.assertNotNull;
 public class CategoryTypeRepositoryTest {
 
     @Autowired
+    private CategoryDataInitializer categoryDataInitializer;
+
+    @Autowired
     private CategoryTypeRepository categoryTypeRepository;
 
     @Before
-    public void createCategoriesAndTypes() {
-        categoryTypeRepository.saveAndFlush(new CategoryType("DocCategoryTypeOne", 0, false, false));
-        categoryTypeRepository.saveAndFlush(new CategoryType("DocCategoryTypeTwo", 0, false, false));
+    public void initData() {
+        categoryDataInitializer.init(4);
     }
 
     @Test
-    public void testFindByNameIgnoreCase() throws Exception {
-        CategoryType type1 = categoryTypeRepository.findByNameIgnoreCase("dOCcATEGORYtYPEoNE");
-        CategoryType type2 = categoryTypeRepository.findByNameIgnoreCase("dOCcATEGORYtYPEtWO");
+    public void invertCaseTest() {
+        Assert.assertEquals("aBaBaB000", invertCase("AbAbAb000"));
+    }
 
-        assertNotNull(type1);
-        assertNotNull(type2);
+    @Test
+    public void findByNameIgnoreCaseExpectedNotNullTest() {
+        final List<CategoryType> types = categoryDataInitializer.getTypes();
+
+        types.stream()
+                .map(CategoryType::getName)
+                .map(this::invertCase)
+                .map(categoryTypeRepository::findByNameIgnoreCase)
+                .forEach(Assert::assertNotNull);
+    }
+
+
+    private String invertCase(String str) {
+        return str
+                .chars()
+                .map(charCode -> Character.isLowerCase(charCode)
+                        ? Character.toUpperCase(charCode) : Character.toLowerCase(charCode))
+                .mapToObj(charCode -> String.valueOf((char) charCode))
+                .collect(Collectors.joining());
     }
 
 }
