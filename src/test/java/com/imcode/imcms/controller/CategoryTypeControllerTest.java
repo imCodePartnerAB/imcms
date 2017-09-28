@@ -14,7 +14,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 @WebAppConfiguration
-public class CategoryControllerTest extends AbstractControllerTest {
+public class CategoryTypeControllerTest extends AbstractControllerTest {
     @Autowired
     private CategoryDataInitializer categoryDataInitializer;
 
@@ -25,18 +25,18 @@ public class CategoryControllerTest extends AbstractControllerTest {
 
     @Override
     protected String controllerPath() {
-        return "/categories";
+        return "/category-types";
     }
 
     @Test
-    public void getAllExpectedOkAndJsonContentEqualsCategoyDtosAsJsonTest() throws Exception {
+    public void getAllExpectedOkAndJsonContentEqualsCategoyTypeDtosAsJsonTest() throws Exception {
         categoryDataInitializer.init(4);
-        final String expectedCategories = asJson(categoryDataInitializer.getCategoriesAsDTO());
+        final String expectedCategories = asJson(categoryDataInitializer.getCategoryTypesAsDTO());
         getAllExpectedOkAndJsonContentEquals(expectedCategories);
     }
 
     @Test
-    public void getAllExpectedOkAndJsonContentEqualsEmptyArrayOnNonExistingCategoryTest() throws Exception {
+    public void getAllExpectedOkAndJsonContentEqualsEmptyArrayOnNonExistingCategoryTypesTest() throws Exception {
         getAllExpectedOkAndJsonContentEquals("[]");
     }
 
