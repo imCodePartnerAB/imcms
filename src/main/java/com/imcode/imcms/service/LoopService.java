@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Service
@@ -18,13 +18,15 @@ public class LoopService {
 
     private final LoopRepository loopRepository;
     private final Function<Loop, LoopDTO> loopToDtoMapper;
+    private final BiFunction<LoopDTO, Version, Loop> loopDtoToLoop;
     private final VersionService versionService;
 
     @Autowired
     public LoopService(LoopRepository loopRepository, Function<Loop, LoopDTO> loopToDtoMapper,
-                       VersionService versionService) {
+                       BiFunction<LoopDTO, Version, Loop> loopDtoToLoop, VersionService versionService) {
         this.loopRepository = loopRepository;
         this.loopToDtoMapper = loopToDtoMapper;
+        this.loopDtoToLoop = loopDtoToLoop;
         this.versionService = versionService;
     }
 
@@ -34,6 +36,7 @@ public class LoopService {
     }
 
     public void saveLoop(LoopDTO loopDTO) {
-        loopDTO.setEntries(Collections.emptyList());
+        final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopDTO.getDocId());
+        loopDtoToLoop.andThen(loopRepository::save).apply(loopDTO, documentWorkingVersion);
     }
 }

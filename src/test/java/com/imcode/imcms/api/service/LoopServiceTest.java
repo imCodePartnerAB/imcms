@@ -86,4 +86,13 @@ public class LoopServiceTest {
         final LoopDTO loop = loopService.getLoop(TEST_LOOP_ID, TEST_DOC_ID);
         Assert.assertEquals(TEST_LOOP_DTO, loop);
     }
+
+    @Test
+    public void testSaveLoopExpectNotNull() {
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, 23, Collections.emptyList());
+        loopService.saveLoop(loopDTO);
+        final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopId(), loopDTO.getDocId());
+
+        Assert.assertNotNull(savedLoop);
+    }
 }
