@@ -43,6 +43,7 @@ public class CategoryDataInitializer implements RepositoryCleaner {
     }
 
     public void init(int elementsCount) {
+        cleanRepositories();
         this.elementsCount = elementsCount;
         types = recreateTypes();
         categories = recreateCategories();
