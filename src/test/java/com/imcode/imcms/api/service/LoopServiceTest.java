@@ -2,6 +2,7 @@ package com.imcode.imcms.api.service;
 
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.mapping.dto.LoopDTO;
+import com.imcode.imcms.mapping.dto.LoopEntryDTO;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
@@ -23,6 +24,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -88,11 +92,17 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void testSaveLoopExpectNotNull() {
-        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, 23, Collections.emptyList());
+    public void testSaveLoopExpectNotNullAndCorrectFieldsData() {
+        final int testLoopId = 23;
+        final List<LoopEntryDTO> entries = Collections.emptyList();
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopId, entries);
+
         loopService.saveLoop(loopDTO);
         final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopId(), loopDTO.getDocId());
 
         Assert.assertNotNull(savedLoop);
+        Assert.assertThat(savedLoop.getDocId(), is(TEST_DOC_ID));
+        Assert.assertThat(savedLoop.getLoopId(), is(testLoopId));
+        Assert.assertThat(savedLoop.getEntries().size(), is(entries.size()));
     }
 }

@@ -14,9 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @see CategoryTypeToDtoMapper
- */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class CategoryTypeToDtoMapperTest extends AbstractMapperTest<CategoryType, CategoryTypeDTO> {
