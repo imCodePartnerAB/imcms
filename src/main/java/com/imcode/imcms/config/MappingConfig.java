@@ -29,7 +29,9 @@ public class MappingConfig {
                     .map(loopEntryDtoToEntry)
                     .collect(Collectors.toList());
 
-            return new Loop(version, loopDTO.getLoopId(), entries.size(), entries);
+            final int nextEntryNo = Math.max(1, entries.size());
+
+            return new Loop(version, loopDTO.getLoopId(), nextEntryNo, entries);
         };
     }
 }
