@@ -1,4 +1,4 @@
-package com.imcode.imcms.servlet.apis;
+package com.imcode.imcms.controller;
 
 import com.imcode.imcms.mapping.dto.CategoryDTO;
 import com.imcode.imcms.service.CategoryService;

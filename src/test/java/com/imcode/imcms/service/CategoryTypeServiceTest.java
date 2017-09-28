@@ -24,7 +24,6 @@ public class CategoryTypeServiceTest {
 
     @Before
     public void setUpCategoryDataInitilizer() {
-        categoryDataInitilizer.cleanRepositories();
         categoryDataInitilizer.init(4);
     }
 
