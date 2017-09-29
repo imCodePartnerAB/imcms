@@ -1,4 +1,4 @@
-Imcms.define("imcms-rest-api", ["imcms", "jquery", "imcms-ajax-request-data-decorator"], function (Imcms, $, decorate) {
+Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (Imcms, $) {
 
     var API_PREFIX = "/api";
 
@@ -6,21 +6,32 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery", "imcms-ajax-request-data-deco
         return $.ajax({
             url: Imcms.contextPath + API_PREFIX + this.url,
             type: this.type,
-            data: decorate(data),
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data: data,
             success: callback
         });
     }
 
-    function post(path) {
-        return ajax.bind({url: path, type: "POST"});
+    function ajaxWithBody(data, callback) {
+        return $.ajax({
+            url: Imcms.contextPath + API_PREFIX + this.url,
+            type: this.type,
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(data),
+            success: callback
+        });
     }
 
     function get(path) {
         return ajax.bind({url: path, type: "GET"});
     }
 
+    function post(path) {
+        return ajaxWithBody.bind({url: path, type: "POST"});
+    }
+
     function put(path) {
-        return ajax.bind({url: path, type: "PUT"});
+        return ajaxWithBody.bind({url: path, type: "PUT"});
     }
 
     function remove(path) {
