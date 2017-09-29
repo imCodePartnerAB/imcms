@@ -1,6 +1,6 @@
-package com.imcode.imcms.service;
+package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.mapping.dto.LoopDTO;
+import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;

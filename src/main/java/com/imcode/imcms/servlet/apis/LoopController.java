@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.apis;
 
-import com.imcode.imcms.mapping.dto.LoopDTO;
-import com.imcode.imcms.service.LoopService;
+import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.service.LoopService;
 import imcode.server.Imcms;
 import org.springframework.web.bind.annotation.*;
 

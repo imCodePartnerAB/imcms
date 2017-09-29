@@ -1,6 +1,6 @@
-package com.imcode.imcms.service;
+package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.mapping.dto.CategoryDTO;
+import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.persistence.entity.Category;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;

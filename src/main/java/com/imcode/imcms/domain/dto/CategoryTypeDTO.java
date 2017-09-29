@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping.dto;
+package com.imcode.imcms.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

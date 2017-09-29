@@ -1,4 +1,4 @@
-package com.imcode.imcms.service;
+package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;

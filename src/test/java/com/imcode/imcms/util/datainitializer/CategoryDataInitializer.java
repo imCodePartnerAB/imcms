@@ -1,7 +1,7 @@
 package com.imcode.imcms.util.datainitializer;
 
-import com.imcode.imcms.mapping.dto.CategoryDTO;
-import com.imcode.imcms.mapping.dto.CategoryTypeDTO;
+import com.imcode.imcms.domain.dto.CategoryDTO;
+import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.persistence.entity.Category;
 import com.imcode.imcms.persistence.entity.CategoryType;
 import com.imcode.imcms.persistence.repository.CategoryRepository;

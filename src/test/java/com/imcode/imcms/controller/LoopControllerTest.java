@@ -2,7 +2,7 @@ package com.imcode.imcms.controller;
 
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
-import com.imcode.imcms.mapping.dto.LoopDTO;
+import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
 import org.junit.After;
 import org.junit.Before;
