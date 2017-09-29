@@ -1,10 +1,8 @@
-package com.imcode.imcms.mapping.jpa.doc;
+package com.imcode.imcms.repository;
 
+import com.imcode.imcms.mapping.jpa.doc.CategoryType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface CategoryTypeRepository extends JpaRepository<CategoryType, Integer> {

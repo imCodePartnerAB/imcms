@@ -1,5 +1,7 @@
-package com.imcode.imcms.mapping.jpa.doc;
+package com.imcode.imcms.repository;
 
+import com.imcode.imcms.mapping.jpa.doc.Category;
+import com.imcode.imcms.mapping.jpa.doc.CategoryType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
