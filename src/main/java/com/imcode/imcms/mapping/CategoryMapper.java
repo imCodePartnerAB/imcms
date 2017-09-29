@@ -2,9 +2,9 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.mapping.jpa.doc.Category;
-import com.imcode.imcms.mapping.jpa.doc.CategoryRepository;
 import com.imcode.imcms.mapping.jpa.doc.CategoryType;
-import com.imcode.imcms.mapping.jpa.doc.CategoryTypeRepository;
+import com.imcode.imcms.repository.CategoryRepository;
+import com.imcode.imcms.repository.CategoryTypeRepository;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;

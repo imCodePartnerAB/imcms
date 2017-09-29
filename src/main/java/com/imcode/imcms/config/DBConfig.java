@@ -21,6 +21,7 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {
+        "com.imcode.imcms.repository",
         "com.imcode.imcms.mapping.jpa",
         "com.imcode.imcms.imagearchive.entity"
 })

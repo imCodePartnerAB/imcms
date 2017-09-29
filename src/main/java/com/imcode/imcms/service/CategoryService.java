@@ -2,7 +2,7 @@ package com.imcode.imcms.service;
 
 import com.imcode.imcms.mapping.dto.CategoryDTO;
 import com.imcode.imcms.mapping.jpa.doc.Category;
-import com.imcode.imcms.mapping.jpa.doc.CategoryRepository;
+import com.imcode.imcms.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
