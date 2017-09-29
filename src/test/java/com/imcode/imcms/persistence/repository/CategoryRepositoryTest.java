@@ -1,8 +1,8 @@
-package com.imcode.imcms.repository;
+package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.mapping.jpa.doc.Category;
-import com.imcode.imcms.mapping.jpa.doc.CategoryType;
+import com.imcode.imcms.persistence.entity.Category;
+import com.imcode.imcms.persistence.entity.CategoryType;
 import com.imcode.imcms.util.datainitializer.CategoryDataInitializer;
 import org.junit.Before;
 import org.junit.Test;

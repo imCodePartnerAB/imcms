@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping.jpa.doc;
+package com.imcode.imcms.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

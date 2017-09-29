@@ -1,11 +1,11 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.mapping.dto.*;
-import com.imcode.imcms.mapping.jpa.doc.Category;
-import com.imcode.imcms.mapping.jpa.doc.CategoryType;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry;
+import com.imcode.imcms.persistence.entity.Category;
+import com.imcode.imcms.persistence.entity.CategoryType;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject.TreeMenuItemDomainObject;
 import org.springframework.context.annotation.Bean;

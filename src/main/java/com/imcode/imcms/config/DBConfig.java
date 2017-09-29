@@ -21,7 +21,7 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {
-        "com.imcode.imcms.repository",
+        "com.imcode.imcms.persistence.repository",
         "com.imcode.imcms.mapping.jpa",
         "com.imcode.imcms.imagearchive.entity"
 })
@@ -58,7 +58,7 @@ public class DBConfig {
         entityManagerFactory.setDataSource(dataSource);
         entityManagerFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         entityManagerFactory.setJpaDialect(new HibernateJpaDialect());
-        entityManagerFactory.setPackagesToScan("com.imcode.imcms.imagearchive", "com.imcode.imcms.mapping.jpa");
+        entityManagerFactory.setPackagesToScan("com.imcode.imcms.imagearchive", "com.imcode.imcms.mapping.jpa", "com.imcode.imcms.persistence.entity");
         entityManagerFactory.setPersistenceUnitName("com.imcode.imcms");
         entityManagerFactory.setJpaPropertyMap(createHibernateJpaProperties());
         return entityManagerFactory;

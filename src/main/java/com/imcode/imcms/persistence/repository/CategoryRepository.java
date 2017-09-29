@@ -1,7 +1,7 @@
-package com.imcode.imcms.repository;
+package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.mapping.jpa.doc.Category;
-import com.imcode.imcms.mapping.jpa.doc.CategoryType;
+import com.imcode.imcms.persistence.entity.Category;
+import com.imcode.imcms.persistence.entity.CategoryType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

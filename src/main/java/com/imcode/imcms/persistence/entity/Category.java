@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping.jpa.doc;
+package com.imcode.imcms.persistence.entity;
 
 import javax.persistence.*;
 import java.util.Objects;

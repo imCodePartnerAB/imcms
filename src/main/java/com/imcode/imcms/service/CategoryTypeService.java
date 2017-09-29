@@ -1,8 +1,8 @@
 package com.imcode.imcms.service;
 
 import com.imcode.imcms.mapping.dto.CategoryTypeDTO;
-import com.imcode.imcms.mapping.jpa.doc.CategoryType;
-import com.imcode.imcms.repository.CategoryTypeRepository;
+import com.imcode.imcms.persistence.entity.CategoryType;
+import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
