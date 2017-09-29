@@ -20,16 +20,15 @@ public abstract class AbstractControllerTest {
 
     protected abstract String controllerPath();
 
-    protected void getAllExpectedOkAndJsonContentEquals(String expectedJson) throws Exception {
+    void getAllExpectedOkAndJsonContentEquals(String expectedJson) throws Exception {
         mockMvc.perform(get(controllerPath()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().json(expectedJson));
     }
 
-    protected String asJson(Object object) throws JsonProcessingException {
+    String asJson(Object object) throws JsonProcessingException {
         return objectMapper.writeValueAsString(object);
-
     }
 
 }
