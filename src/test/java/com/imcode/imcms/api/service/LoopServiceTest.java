@@ -12,6 +12,7 @@ import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
 import com.imcode.imcms.service.LoopService;
 import com.imcode.imcms.util.RepositoryTestDataCleaner;
 import com.imcode.imcms.util.Value;
+import com.imcode.imcms.util.datainitializer.VersionDataInitializer;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,36 +43,24 @@ public class LoopServiceTest {
     private RepositoryTestDataCleaner testDataCleaner;
 
     @Autowired
+    private VersionDataInitializer versionDataInitializer;
+
+    @Autowired
     private LoopService loopService;
 
     @Autowired
     private LoopRepository loopRepository;
-    @Autowired
-    private VersionRepository versionRepository;
-    @Autowired
-    private UserRepository userRepository;
 
     @PostConstruct
     public void init() {
-        testDataCleaner = new RepositoryTestDataCleaner(loopRepository, versionRepository);
+        testDataCleaner = new RepositoryTestDataCleaner(loopRepository);
     }
 
     @Before
     public void saveData() {
         clearTestData();
 
-        final User user = userRepository.findById(1);
-
-        final Version testVersion = Value.with(new Version(), version -> {
-            version.setNo(TEST_VERSION_NO);
-            version.setDocId(TEST_DOC_ID);
-            version.setCreatedBy(user);
-            version.setCreatedDt(new Date());
-            version.setModifiedBy(user);
-            version.setModifiedDt(new Date());
-        });
-        versionRepository.saveAndFlush(testVersion);
-
+        final Version testVersion = versionDataInitializer.createData(TEST_VERSION_NO, TEST_DOC_ID);
         final Loop testLoop = Value.with(new Loop(), loop -> {
             loop.setVersion(testVersion);
             loop.setNo(TEST_LOOP_ID);
@@ -84,6 +73,7 @@ public class LoopServiceTest {
     @After
     public void clearTestData() {
         testDataCleaner.cleanRepositories();
+        versionDataInitializer.cleanRepositories();
     }
 
     @Test
