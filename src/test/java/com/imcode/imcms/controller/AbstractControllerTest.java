@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -20,16 +21,19 @@ public abstract class AbstractControllerTest {
 
     protected abstract String controllerPath();
 
-    protected void getAllExpectedOkAndJsonContentEquals(String expectedJson) throws Exception {
-        mockMvc.perform(get(controllerPath()))
+    void performRequestBuilderExpectedOkAndJsonContentEquals(MockHttpServletRequestBuilder builder, String expectedJson) throws Exception {
+        mockMvc.perform(builder)
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().json(expectedJson));
     }
 
-    protected String asJson(Object object) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(object);
+    void getAllExpectedOkAndJsonContentEquals(String expectedJson) throws Exception {
+        performRequestBuilderExpectedOkAndJsonContentEquals(get(controllerPath()), expectedJson);
+    }
 
+    String asJson(Object object) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(object);
     }
 
 }
