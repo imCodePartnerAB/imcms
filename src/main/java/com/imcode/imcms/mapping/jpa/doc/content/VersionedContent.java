@@ -38,7 +38,6 @@ public abstract class VersionedContent {
     public void setVersion(Version contentVersion) {
         this.version = contentVersion;
         this.documentId = contentVersion.getDocId();
-        this.id = contentVersion.getId();
     }
 
     public Integer getDocumentId() {
