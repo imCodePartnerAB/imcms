@@ -22,16 +22,17 @@ import java.util.Collections;
 @WebAppConfiguration
 public class LoopControllerTest extends AbstractControllerTest {
     private static final int TEST_DOC_ID = 1001;
-    private static final int TEST_LOOP_ID = 1;
+    private static final int TEST_LOOP_INDEX = 1;
 
-    private static final LoopDTO TEST_LOOP_DTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_ID, Collections.emptyList());
+    private static final LoopDTO TEST_LOOP_DTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.emptyList());
 
     @Autowired
     private LoopDataInitializer loopDataInitializer;
 
     @Before
     public void createData() {
-        loopDataInitializer.createData(TEST_DOC_ID, TEST_LOOP_ID);
+        cleanRepos();
+        loopDataInitializer.createData(TEST_DOC_ID, TEST_LOOP_INDEX);
     }
 
     @After
@@ -48,7 +49,7 @@ public class LoopControllerTest extends AbstractControllerTest {
     public void getLoopExpectedOkAndResponseEqualTestData() throws Exception {
         final String expectedJsonData = asJson(TEST_LOOP_DTO);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("loopId", String.valueOf(TEST_LOOP_ID))
+                .param("loopIndex", String.valueOf(TEST_LOOP_INDEX))
                 .param("docId", String.valueOf(TEST_DOC_ID));
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJsonData);

@@ -30,9 +30,9 @@ public class LoopService {
         this.versionService = versionService;
     }
 
-    public LoopDTO getLoop(int loopId, int docId) {
+    public LoopDTO getLoop(int loopIndex, int docId) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(docId);
-        return loopToDtoMapper.apply(loopRepository.findByVersionAndNo(documentWorkingVersion, loopId));
+        return loopToDtoMapper.apply(loopRepository.findByVersionAndNo(documentWorkingVersion, loopIndex));
     }
 
     public void saveLoop(LoopDTO loopDTO) {

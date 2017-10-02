@@ -16,7 +16,7 @@ Imcms.define("imcms-loop-editor-builder",
             CONTROLS: ["col-1", "control"]
         };
 
-        var docId, loopId;
+        var docId, loopIndex;
 
         var LOOP_ITEM_CLASS = "imcms-loop-item";
 
@@ -82,7 +82,7 @@ Imcms.define("imcms-loop-editor-builder",
 
                 return {
                     docId: docId,
-                    loopId: loopId,
+                    loopIndex: loopIndex,
                     entries: loopEntries
                 };
             }
@@ -188,7 +188,7 @@ Imcms.define("imcms-loop-editor-builder",
 
         function buildData(loop) {
             docId = loop.docId;
-            loopId = loop.loopId;
+            loopIndex = loop.loopIndex;
 
             addHeadData(loop);
 
@@ -197,7 +197,7 @@ Imcms.define("imcms-loop-editor-builder",
         }
 
         function addHeadData(loop) {
-            $title.append(": " + loop.docId + "-" + loop.loopId);
+            $title.append(": " + loop.docId + "-" + loop.loopIndex);
         }
 
         function clearData() {

@@ -13,7 +13,9 @@ import java.util.Collections;
 @Component
 public class LoopDataInitializer extends RepositoryTestDataCleaner {
     private static final int TEST_VERSION_NO = 0;
+
     private final LoopRepository loopRepository;
+
     @Autowired
     private VersionDataInitializer versionDataInitializer;
 
@@ -22,11 +24,11 @@ public class LoopDataInitializer extends RepositoryTestDataCleaner {
         this.loopRepository = loopRepository;
     }
 
-    public void createData(int docId, int loopId) {
+    public void createData(int docId, int loopIndex) {
         final Version testVersion = versionDataInitializer.createData(TEST_VERSION_NO, docId);
         final Loop testLoop = Value.with(new Loop(), loop -> {
             loop.setVersion(testVersion);
-            loop.setNo(loopId);
+            loop.setNo(loopIndex);
             loop.setEntries(Collections.emptyList());
             loop.setNextEntryNo(1);
         });

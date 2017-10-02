@@ -25,9 +25,9 @@ import static org.hamcrest.CoreMatchers.is;
 public class LoopServiceTest {
 
     private static final int TEST_DOC_ID = 1001;
-    private static final int TEST_LOOP_ID = 1;
+    private static final int TEST_LOOP_INDEX = 1;
 
-    private static final LoopDTO TEST_LOOP_DTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_ID, Collections.emptyList());
+    private static final LoopDTO TEST_LOOP_DTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.emptyList());
 
     @Autowired
     private LoopDataInitializer loopDataInitializer;
@@ -38,7 +38,7 @@ public class LoopServiceTest {
     @Before
     public void saveData() {
         clearTestData();
-        loopDataInitializer.createData(TEST_DOC_ID, TEST_LOOP_ID);
+        loopDataInitializer.createData(TEST_DOC_ID, TEST_LOOP_INDEX);
     }
 
     @After
@@ -48,7 +48,7 @@ public class LoopServiceTest {
 
     @Test
     public void testGetLoopExpectCorrectDTO() {
-        final LoopDTO loop = loopService.getLoop(TEST_LOOP_ID, TEST_DOC_ID);
+        final LoopDTO loop = loopService.getLoop(TEST_LOOP_INDEX, TEST_DOC_ID);
         Assert.assertEquals(TEST_LOOP_DTO, loop);
     }
 
@@ -59,11 +59,11 @@ public class LoopServiceTest {
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopId, entries);
 
         loopService.saveLoop(loopDTO);
-        final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopId(), loopDTO.getDocId());
+        final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
 
         Assert.assertNotNull(savedLoop);
         Assert.assertThat(savedLoop.getDocId(), is(TEST_DOC_ID));
-        Assert.assertThat(savedLoop.getLoopId(), is(testLoopId));
+        Assert.assertThat(savedLoop.getLoopIndex(), is(testLoopId));
         Assert.assertThat(savedLoop.getEntries().size(), is(entries.size()));
     }
 
@@ -80,7 +80,7 @@ public class LoopServiceTest {
 
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, 42, entries);
         loopService.saveLoop(loopDTO);
-        final List<LoopEntryDTO> resultEntries = loopService.getLoop(loopDTO.getLoopId(), loopDTO.getDocId())
+        final List<LoopEntryDTO> resultEntries = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId())
                 .getEntries();
 
         Assert.assertNotNull(resultEntries);

@@ -45,7 +45,7 @@ public class MappingConfig {
 
             final int nextEntryNo = Math.max(1, entries.size());
 
-            return new Loop(version, loopDTO.getLoopId(), nextEntryNo, entries);
+            return new Loop(version, loopDTO.getLoopIndex(), nextEntryNo, entries);
         };
     }
 

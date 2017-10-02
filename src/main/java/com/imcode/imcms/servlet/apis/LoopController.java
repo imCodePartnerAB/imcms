@@ -17,7 +17,7 @@ public class LoopController {
 
     @GetMapping
     public LoopDTO getDocumentLoop(@ModelAttribute LoopDTO loopRequestData) {
-        return loopService.getLoop(loopRequestData.getLoopId(), loopRequestData.getDocId());
+        return loopService.getLoop(loopRequestData.getLoopIndex(), loopRequestData.getDocId());
     }
 
     @PostMapping
