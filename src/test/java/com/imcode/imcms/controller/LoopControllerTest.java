@@ -84,7 +84,10 @@ public class LoopControllerTest extends AbstractControllerTest {
             Assert.fail("Expected exception wasn't thrown!");
 
         } catch (NestedServletException e) {
-            Assert.assertEquals(e.getCause().getMessage(), "User do not have access to change loop structure.");
+            Assert.assertTrue(
+                    "Should be DocumentNotExistException!!",
+                    (e.getCause() instanceof IllegalAccessException)
+            );
             return;
         }
 
