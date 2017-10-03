@@ -3,8 +3,14 @@ package com.imcode.imcms.controller;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
+import com.imcode.imcms.mapping.jpa.doc.Version;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
 import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
 import imcode.server.Imcms;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -33,6 +39,10 @@ public class LoopControllerTest extends AbstractControllerTest {
 
     @Autowired
     private LoopDataInitializer loopDataInitializer;
+    @Autowired
+    private LoopRepository loopRepository;
+    @Autowired
+    private VersionRepository versionRepository;
 
     @Before
     public void createData() {
@@ -75,6 +85,84 @@ public class LoopControllerTest extends AbstractControllerTest {
 
         } catch (NestedServletException e) {
             Assert.assertEquals(e.getCause().getMessage(), "User do not have access to change loop structure.");
+            return;
         }
+
+        Assert.fail("Expected exception wasn't thrown!");
+    }
+
+    @Test
+    public void postLoop_When_UserIsAdmin_Expect_Ok() throws Exception {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        final MockHttpServletRequestBuilder getLoopReqBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("loopIndex", String.valueOf(TEST_LOOP_INDEX))
+                .param("docId", String.valueOf(TEST_DOC_ID));
+
+        final String loopJson = performRequestBuilderExpectedOkAndContentJsonUtf8(getLoopReqBuilder)
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(loopJson);
+
+        performRequestBuilderExpectedOk(requestBuilder);
+    }
+
+    @Test
+    public void postLoop_When_UserIsAdminAndDocNotExist_Expect_Exception() throws Exception {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        final int nonExistingDocId = -13;
+        final LoopDTO loopDTO = new LoopDTO(nonExistingDocId, TEST_LOOP_INDEX, Collections.emptyList());
+        final String jsonData = asJson(loopDTO);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonData);
+
+        try {
+            performRequestBuilderExpectedOk(requestBuilder); // here exception should be thrown!!1
+            Assert.fail("Expected exception wasn't thrown!");
+
+        } catch (NestedServletException e) {
+            Assert.assertTrue(
+                    "Should be DocumentNotExistException!!",
+                    (e.getCause() instanceof DocumentNotExistException)
+            );
+            return;
+        }
+
+        Assert.fail("Expected exception wasn't thrown!");
+    }
+
+    @Test
+    public void postLoop_When_UserIsAdminAndLoopNotExist_Expect_Ok() throws Exception {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        final int nonExistingLoopIndex = 666;
+        final Version workingVersion = versionRepository.findWorking(TEST_DOC_ID);
+        final Loop shouldNotExist = loopRepository.findByVersionAndNo(workingVersion, nonExistingLoopIndex);
+
+        if (shouldNotExist != null) { // this should newer happen, but...
+            loopRepository.delete(shouldNotExist);
+        }
+
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, nonExistingLoopIndex, Collections.emptyList());
+        final String jsonData = asJson(loopDTO);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonData);
+
+        performRequestBuilderExpectedOk(requestBuilder);
     }
 }

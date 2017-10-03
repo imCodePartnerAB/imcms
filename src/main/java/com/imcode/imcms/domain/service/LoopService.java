@@ -45,7 +45,11 @@ public class LoopService {
 
     public void saveLoop(LoopDTO loopDTO) throws DocumentNotExistException {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopDTO.getDocId());
-        loopDtoToLoop.andThen(loopRepository::save).apply(loopDTO, documentWorkingVersion);
+        final Loop loopForSave = loopDtoToLoop.apply(loopDTO, documentWorkingVersion);
+        final Loop prevLoop = getOrCreateLoop(documentWorkingVersion, loopDTO.getLoopIndex());
+
+        loopForSave.setId(prevLoop.getId());
+        loopRepository.save(loopForSave);
     }
 
     private Loop createLoop(Version version, Integer loopIndex) {
