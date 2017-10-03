@@ -19,8 +19,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class LoopServiceTest {
@@ -54,7 +52,7 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void getLoop_When_NotExist_Expect_Exception() {
+    public void getLoop_When_DocNotExist_Expect_Exception() {
         final int nonExistingDocId = 42;
         try {
             loopService.getLoop(TEST_LOOP_INDEX, nonExistingDocId); // should threw exception
@@ -66,6 +64,16 @@ public class LoopServiceTest {
         }
 
         Assert.fail("Expected exception was not caught!");
+    }
+
+    @Test
+    public void getLoop_When_NotExist_ExpectEmptyLoop() throws DocumentNotExistException {
+        final int nonExistingLoopIndex = 42;
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, nonExistingLoopIndex, Collections.emptyList());
+        final LoopDTO loop = loopService.getLoop(nonExistingLoopIndex, TEST_DOC_ID);
+
+        Assert.assertNotNull(loop);
+        Assert.assertEquals(loop, loopDTO);
     }
 
     @Test
