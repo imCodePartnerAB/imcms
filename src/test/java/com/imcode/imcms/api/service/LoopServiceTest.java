@@ -49,9 +49,7 @@ public class LoopServiceTest {
     @Test
     public void getLoop_Expect_correctFieldsData() {
         final LoopDTO loop = loopService.getLoop(TEST_LOOP_INDEX, TEST_DOC_ID);
-        Assert.assertEquals(TEST_LOOP_DTO.getDocId(), loop.getDocId());
-        Assert.assertEquals(TEST_LOOP_DTO.getLoopIndex(), loop.getLoopIndex());
-        Assert.assertEquals(TEST_LOOP_DTO.getEntries(), loop.getEntries());
+        Assert.assertEquals(TEST_LOOP_DTO, loop);
     }
 
     @Test
@@ -64,9 +62,7 @@ public class LoopServiceTest {
         final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
 
         Assert.assertNotNull(savedLoop);
-        Assert.assertThat(savedLoop.getDocId(), is(TEST_DOC_ID));
-        Assert.assertThat(savedLoop.getLoopIndex(), is(testLoopIndex));
-        Assert.assertThat(savedLoop.getEntries().size(), is(entries.size()));
+        Assert.assertEquals(savedLoop, loopDTO);
     }
 
     @Test
@@ -74,27 +70,15 @@ public class LoopServiceTest {
         final int entryNo_0 = 1, entryNo_1 = 2, entryNo_2 = 3;
         final boolean entryIsEnabled_0 = true, entryIsEnabled_1 = false, entryIsEnabled_2 = true;
 
-        final List<LoopEntryDTO> entries = Arrays.asList(
-                new LoopEntryDTO(entryNo_0, entryIsEnabled_0),
-                new LoopEntryDTO(entryNo_1, entryIsEnabled_1),
-                new LoopEntryDTO(entryNo_2, entryIsEnabled_2)
-        );
+        final LoopEntryDTO loopEntryDto0 = new LoopEntryDTO(entryNo_0, entryIsEnabled_0);
+        final LoopEntryDTO loopEntryDto1 = new LoopEntryDTO(entryNo_1, entryIsEnabled_1);
+        final LoopEntryDTO loopEntryDto2 = new LoopEntryDTO(entryNo_2, entryIsEnabled_2);
+        final List<LoopEntryDTO> entries = Arrays.asList(loopEntryDto0, loopEntryDto1, loopEntryDto2);
 
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, 42, entries);
         loopService.saveLoop(loopDTO);
-        final List<LoopEntryDTO> resultEntries = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId())
-                .getEntries();
+        final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
 
-        Assert.assertNotNull(resultEntries);
-        Assert.assertThat(resultEntries.size(), is(entries.size()));
-
-        Assert.assertThat(resultEntries.get(0).getNo(), is(entryNo_0));
-        Assert.assertThat(resultEntries.get(0).isEnabled(), is(entryIsEnabled_0));
-
-        Assert.assertThat(resultEntries.get(1).getNo(), is(entryNo_1));
-        Assert.assertThat(resultEntries.get(1).isEnabled(), is(entryIsEnabled_1));
-
-        Assert.assertThat(resultEntries.get(2).getNo(), is(entryNo_2));
-        Assert.assertThat(resultEntries.get(2).isEnabled(), is(entryIsEnabled_2));
+        Assert.assertEquals(savedLoop, loopDTO);
     }
 }
