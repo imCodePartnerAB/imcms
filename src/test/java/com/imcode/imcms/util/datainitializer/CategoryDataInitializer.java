@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 import static java.util.Collections.singletonList;
 
 @Component
-public class CategoryDataInitializer implements RepositoryCleaner {
+public class CategoryDataInitializer extends RepositoryCleaner {
 
     @Autowired
     private CategoryTypeRepository categoryTypeRepository;

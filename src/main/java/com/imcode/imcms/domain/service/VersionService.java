@@ -1,8 +1,11 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class VersionService {
@@ -13,7 +16,7 @@ public class VersionService {
         this.versionRepository = versionRepository;
     }
 
-    public Version getDocumentWorkingVersion(int docId) {
-        return versionRepository.findWorking(docId);
+    Version getDocumentWorkingVersion(int docId) throws DocumentNotExistException {
+        return Optional.ofNullable(versionRepository.findWorking(docId)).orElseThrow(DocumentNotExistException::new);
     }
 }

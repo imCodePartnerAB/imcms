@@ -48,7 +48,7 @@ public class LoopDtoToLoopTest {
     public void expectedEqualsMapResult() throws Exception {
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.emptyList());
         final Version workingVersion = versionRepository.findByDocIdAndNo(TEST_DOC_ID, TEST_VERSION_NO);
-        final Loop expected = new Loop(workingVersion, TEST_LOOP_INDEX, 1, Collections.emptyList());
+        final Loop expected = Loop.emptyLoop(workingVersion, TEST_LOOP_INDEX);
 
         assertEquals(expected, mapper.apply(loopDTO, workingVersion));
     }

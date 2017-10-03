@@ -2,7 +2,7 @@ package com.imcode.imcms.util;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public class RepositoryTestDataCleaner implements RepositoryCleaner {
+public class RepositoryTestDataCleaner extends RepositoryCleaner {
     private final JpaRepository[] jpaRepositories;
 
     public RepositoryTestDataCleaner(JpaRepository... jpaRepositories) {

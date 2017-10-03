@@ -4,9 +4,9 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
 import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +18,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -38,7 +39,7 @@ public class LoopServiceTest {
     @Before
     public void saveData() {
         clearTestData();
-        loopDataInitializer.createData(TEST_DOC_ID, TEST_LOOP_INDEX);
+        loopDataInitializer.createData(TEST_LOOP_DTO);
     }
 
     @After
@@ -47,52 +48,51 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void testGetLoopExpectCorrectDTO() {
+    public void getLoop_Expect_correctFieldsData() throws DocumentNotExistException {
         final LoopDTO loop = loopService.getLoop(TEST_LOOP_INDEX, TEST_DOC_ID);
-        Assert.assertEquals(TEST_LOOP_DTO, loop);
+        assertEquals(TEST_LOOP_DTO, loop);
+    }
+
+    @Test(expected = DocumentNotExistException.class)
+    public void getLoop_When_DocNotExist_Expect_Exception() throws DocumentNotExistException {
+        final int nonExistingDocId = 42;
+        loopService.getLoop(TEST_LOOP_INDEX, nonExistingDocId); // should threw exception
     }
 
     @Test
-    public void testSaveLoopExpectNotNullAndCorrectFieldsData() {
-        final int testLoopId = 23;
-        final List<LoopEntryDTO> entries = Collections.emptyList();
-        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopId, entries);
+    public void getLoop_When_NotExist_ExpectEmptyLoop() throws DocumentNotExistException {
+        final int nonExistingLoopIndex = 42;
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, nonExistingLoopIndex, Collections.emptyList());
+        final LoopDTO loop = loopService.getLoop(nonExistingLoopIndex, TEST_DOC_ID);
+
+        assertNotNull(loop);
+        assertEquals(loop, loopDTO);
+    }
+
+    @Test
+    public void saveLoop_Expect_NotNullAndCorrectFieldsData() throws DocumentNotExistException {
+        final int testLoopIndex = 23;
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopIndex, Collections.emptyList());
 
         loopService.saveLoop(loopDTO);
         final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
 
-        Assert.assertNotNull(savedLoop);
-        Assert.assertThat(savedLoop.getDocId(), is(TEST_DOC_ID));
-        Assert.assertThat(savedLoop.getLoopIndex(), is(testLoopId));
-        Assert.assertThat(savedLoop.getEntries().size(), is(entries.size()));
+        assertNotNull(savedLoop);
+        assertEquals(savedLoop, loopDTO);
     }
 
     @Test
-    public void testSaveLoopWithEntriesExpectNotNullCorrectSizeAndValues() {
-        final int entryNo_0 = 1, entryNo_1 = 2, entryNo_2 = 3;
-        final boolean entryIsEnabled_0 = true, entryIsEnabled_1 = false, entryIsEnabled_2 = true;
-
+    public void saveLoop_With_Entries_Expect_NotNullCorrectSizeAndValues() throws DocumentNotExistException {
         final List<LoopEntryDTO> entries = Arrays.asList(
-                new LoopEntryDTO(entryNo_0, entryIsEnabled_0),
-                new LoopEntryDTO(entryNo_1, entryIsEnabled_1),
-                new LoopEntryDTO(entryNo_2, entryIsEnabled_2)
+                new LoopEntryDTO(1, true),
+                new LoopEntryDTO(2, false),
+                new LoopEntryDTO(3, true)
         );
-
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, 42, entries);
+
         loopService.saveLoop(loopDTO);
-        final List<LoopEntryDTO> resultEntries = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId())
-                .getEntries();
+        final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
 
-        Assert.assertNotNull(resultEntries);
-        Assert.assertThat(resultEntries.size(), is(entries.size()));
-
-        Assert.assertThat(resultEntries.get(0).getNo(), is(entryNo_0));
-        Assert.assertThat(resultEntries.get(0).isEnabled(), is(entryIsEnabled_0));
-
-        Assert.assertThat(resultEntries.get(1).getNo(), is(entryNo_1));
-        Assert.assertThat(resultEntries.get(1).isEnabled(), is(entryIsEnabled_1));
-
-        Assert.assertThat(resultEntries.get(2).getNo(), is(entryNo_2));
-        Assert.assertThat(resultEntries.get(2).isEnabled(), is(entryIsEnabled_2));
+        assertEquals(savedLoop, loopDTO);
     }
 }

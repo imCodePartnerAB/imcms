@@ -6,6 +6,7 @@ import com.imcode.imcms.mapping.jpa.doc.content.VersionedContent;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -48,6 +49,10 @@ public class Loop extends VersionedContent {
 
     public Loop(Version version, Integer no, Integer nextEntryNo, List<Entry> entries) {
         this(null, version, no, nextEntryNo, entries);
+    }
+
+    public static Loop emptyLoop(Version version, Integer index) {
+        return new Loop(version, index, 1, Collections.emptyList());
     }
 
     @Override

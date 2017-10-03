@@ -1,77 +1,91 @@
-//package com.imcode.imcms.mapping.jpa.doc.content;
-//
-//import com.imcode.imcms.mapping.jpa.doc.Language;
-//import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
-//import org.springframework.test.context.ContextConfiguration;
-//import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-//import org.springframework.transaction.annotation.Transactional;
-//
-//import javax.inject.Inject;
-//import java.util.Arrays;
-//import java.util.List;
-//
-//import static org.hamcrest.CoreMatchers.is;
-//import static org.junit.Assert.*;
-//
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(classes = {com.imcode.imcms.config.MainConfig.class})
-//@Transactional
-//public class CommonContentRepositoryTest {
-//
-//    @Inject
-//    LanguageRepository languageRepository;
-//
-//    @Inject
-//    CommonContentRepository commonContentRepository;
-//
-//    public List<CommonContent> recreateCommonContents() {
-//        commonContentRepository.deleteAll();
-//        languageRepository.deleteAll();
-//
-//        Language en = languageRepository.saveAndFlush(new Language("en", "English", "English"));
-//        Language se = languageRepository.saveAndFlush(new Language("se", "Swedish", "Svenska"));
-//
-//        return Arrays.asList(
-//                commonContentRepository.saveAndFlush(
-//                        new CommonContent(1001, en, "headline_en", "menuText_en", "menuImageUrl_en")
-//                ),
-//
-//                commonContentRepository.saveAndFlush(
-//                        new CommonContent(1001, se, "headline_se", "menuText_se", "menuImageUrl_se")
-//                )
-//
-//        );
-//    }
-//
-//    @Test
-//    public void testFindByDocId() throws Exception {
-//        recreateCommonContents();
-//
-//        List<CommonContent> commonContents = commonContentRepository.findByDocIdAndVersionNo(1001, 0);
-//
-//        assertThat(commonContents.size(), is(2));
-//    }
-//
-//    @Test
-//    public void testFindByDocIdAndLanguage() throws Exception {
-//        recreateCommonContents();
-//
-//        Language se = languageRepository.findByCode("se");
-//        CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(1001, 0, se);
-//
-//        assertNotNull(commonContent);
-//        assertEquals("headline_se", commonContent.getHeadline());
-//    }
-//
-//    @Test
-//    public void testFindByDocIdAndDocLanguageCode() throws Exception {
-//        recreateCommonContents();
-//
-//        CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(1001, 0, "se");
-//
-//        assertNotNull(commonContent);
-//        assertEquals("headline_se", commonContent.getHeadline());
-//    }
-//}
+package com.imcode.imcms.mapping.jpa.doc.content;
+
+import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.mapping.jpa.doc.Language;
+import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.util.RepositoryTestDataCleaner;
+import com.imcode.imcms.util.datainitializer.VersionDataInitializer;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class})
+@Transactional
+public class CommonContentRepositoryTest {
+
+    private static final int DOC_ID = 1001;
+    private static final int VERSION_NO = 0;
+    private static final String ENG_CODE = "en";
+    private static final String SWE_CODE = "sv";
+    @Inject
+    private LanguageRepository languageRepository;
+
+    @Inject
+    private CommonContentRepository commonContentRepository;
+
+    @Autowired
+    private VersionDataInitializer versionDataInitializer;
+    @Autowired
+    private VersionRepository versionRepository;
+    private RepositoryTestDataCleaner testDataCleaner;
+
+    @PostConstruct
+    public void init() {
+        testDataCleaner = new RepositoryTestDataCleaner(commonContentRepository, versionRepository);
+    }
+
+    @Before
+    public void recreateCommonContents() {
+        testDataCleaner.cleanRepositories();
+
+        Language en = languageRepository.findByCode(ENG_CODE);
+        Language se = languageRepository.findByCode(SWE_CODE);
+        // both langs should be already created
+
+        versionDataInitializer.createData(VERSION_NO, DOC_ID);
+
+        commonContentRepository.saveAndFlush(new CommonContent(
+                DOC_ID, en, "headline_en", "menuText_en", "menuImageUrl_en", true, VERSION_NO
+        ));
+        commonContentRepository.saveAndFlush(new CommonContent(
+                DOC_ID, se, "headline_se", "menuText_se", "menuImageUrl_se", true, VERSION_NO
+        ));
+    }
+
+    @Test
+    public void testFindByDocId() throws Exception {
+        List<CommonContent> commonContents = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, VERSION_NO);
+
+        assertThat(commonContents.size(), is(2));
+    }
+
+    @Test
+    public void testFindByDocIdAndLanguage() throws Exception {
+        Language se = languageRepository.findByCode(SWE_CODE);
+        CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(DOC_ID, VERSION_NO, se);
+
+        assertNotNull(commonContent);
+        assertEquals("headline_se", commonContent.getHeadline());
+    }
+
+    @Test
+    public void testFindByDocIdAndDocLanguageCode() throws Exception {
+        CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(DOC_ID, VERSION_NO, SWE_CODE);
+
+        assertNotNull(commonContent);
+        assertEquals("headline_se", commonContent.getHeadline());
+    }
+}
