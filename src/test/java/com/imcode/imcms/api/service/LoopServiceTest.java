@@ -82,15 +82,13 @@ public class LoopServiceTest {
 
     @Test
     public void saveLoop_With_Entries_Expect_NotNullCorrectSizeAndValues() throws DocumentNotExistException {
-        final int entryNo_0 = 1, entryNo_1 = 2, entryNo_2 = 3;
-        final boolean entryIsEnabled_0 = true, entryIsEnabled_1 = false, entryIsEnabled_2 = true;
-
-        final LoopEntryDTO loopEntryDto0 = new LoopEntryDTO(entryNo_0, entryIsEnabled_0);
-        final LoopEntryDTO loopEntryDto1 = new LoopEntryDTO(entryNo_1, entryIsEnabled_1);
-        final LoopEntryDTO loopEntryDto2 = new LoopEntryDTO(entryNo_2, entryIsEnabled_2);
-        final List<LoopEntryDTO> entries = Arrays.asList(loopEntryDto0, loopEntryDto1, loopEntryDto2);
-
+        final List<LoopEntryDTO> entries = Arrays.asList(
+                new LoopEntryDTO(1, true),
+                new LoopEntryDTO(2, false),
+                new LoopEntryDTO(3, true)
+        );
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, 42, entries);
+
         loopService.saveLoop(loopDTO);
         final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
 
