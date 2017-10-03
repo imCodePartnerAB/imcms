@@ -22,7 +22,7 @@ public class LoopController {
     }
 
     @PostMapping
-    public void saveLoop(@RequestBody LoopDTO loopDTO) throws IllegalAccessException {
+    public void saveLoop(@RequestBody LoopDTO loopDTO) throws IllegalAccessException, DocumentNotExistException {
 
         if (!Imcms.getUser().isSuperAdmin()) {
             throw new IllegalAccessException("User do not have access to change loop structure.");

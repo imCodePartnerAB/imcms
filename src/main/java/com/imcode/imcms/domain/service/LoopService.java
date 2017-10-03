@@ -33,11 +33,6 @@ public class LoopService {
 
     public LoopDTO getLoop(int loopIndex, int docId) throws DocumentNotExistException {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(docId);
-
-        if (documentWorkingVersion == null) {
-            throw new DocumentNotExistException();
-        }
-
         final Loop loop = getOrCreateLoop(documentWorkingVersion, loopIndex);
         return loopToDtoMapper.apply(loop);
     }
@@ -52,7 +47,7 @@ public class LoopService {
         return loop;
     }
 
-    public void saveLoop(LoopDTO loopDTO) {
+    public void saveLoop(LoopDTO loopDTO) throws DocumentNotExistException {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopDTO.getDocId());
         loopDtoToLoop.andThen(loopRepository::save).apply(loopDTO, documentWorkingVersion);
     }
