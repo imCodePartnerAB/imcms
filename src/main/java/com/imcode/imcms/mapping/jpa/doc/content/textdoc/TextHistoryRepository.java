@@ -7,16 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public interface TextHistoryRepository extends JpaRepository<TextHistory, Integer> {
-    @Query("SELECT th FROM TextHistory th WHERE th.no = ?2 AND th.documentId = ?1")
-    public Set<TextHistory> findAllByDocumentAndTextNo(int docId, int textId);
-
     @Query("SELECT th FROM TextHistory th WHERE th.no = ?3 AND th.version = ?1 AND th.language=?2 AND th.loopEntryRef=null")
-    public List<TextHistory> findAllByVersionAndLanguageAndNo(Version version, Language language, int no);
+    List<TextHistory> findAllByVersionAndLanguageAndNo(Version version, Language language, int no);
 
     @Query("SELECT th FROM TextHistory th WHERE th.no = ?4 AND th.version = ?1 AND th.language=?2 AND th.loopEntryRef=?3")
-    public List<TextHistory> findAllByVersionAndLanguageAndLoopEntryRefAndNo(Version version, Language language, LoopEntryRef loopEntryRef, int no);
+    List<TextHistory> findAllByVersionAndLanguageAndLoopEntryRefAndNo(Version version, Language language, LoopEntryRef loopEntryRef, int no);
 }
