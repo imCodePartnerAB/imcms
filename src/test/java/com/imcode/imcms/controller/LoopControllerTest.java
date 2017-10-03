@@ -4,16 +4,21 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.NestedServletException;
 
 import java.util.Collections;
 
@@ -53,5 +58,23 @@ public class LoopControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(TEST_DOC_ID));
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJsonData);
+    }
+
+    @Test
+    public void postLoop_When_UserIsNotAdmin_Expect_BadRequest() throws Exception {
+        final UserDomainObject user = new UserDomainObject(2);
+        Imcms.setUser(user); // means current user is default user
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJson(TEST_LOOP_DTO));
+
+        try {
+            performRequestBuilderExpectedOk(requestBuilder);
+            Assert.fail("Expected exception wasn't thrown!");
+
+        } catch (NestedServletException e) {
+            Assert.assertEquals(e.getCause().getMessage(), "User do not have access to change loop structure.");
+        }
     }
 }
