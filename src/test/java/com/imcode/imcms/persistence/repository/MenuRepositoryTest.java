@@ -41,12 +41,13 @@ public class MenuRepositoryTest {
 
     @Test
     public void findOne_Expect_theSameMenuNoAndVersion() throws Exception {
+        final Version version = menu.getVersion();
         final Menu menuPersisted = menuRepository.findOne(menu.getId());
         final Version persistedVersion = menuPersisted.getVersion();
 
         assertEquals(menu.getNo(), menuPersisted.getNo());
-        assertEquals(menu.getDocumentId(), persistedVersion.getDocId());
-        assertEquals(menu.getVersion().getNo(), persistedVersion.getNo());
+        assertEquals(version.getDocId(), persistedVersion.getDocId());
+        assertEquals(version.getNo(), persistedVersion.getNo());
     }
 
 
