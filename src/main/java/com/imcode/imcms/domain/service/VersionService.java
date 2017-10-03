@@ -5,6 +5,8 @@ import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class VersionService {
 
@@ -15,12 +17,6 @@ public class VersionService {
     }
 
     Version getDocumentWorkingVersion(int docId) throws DocumentNotExistException {
-        final Version workingVersion = versionRepository.findWorking(docId);
-
-        if (workingVersion == null) {
-            throw new DocumentNotExistException();
-        }
-
-        return workingVersion;
+        return Optional.ofNullable(versionRepository.findWorking(docId)).orElseThrow(DocumentNotExistException::new);
     }
 }

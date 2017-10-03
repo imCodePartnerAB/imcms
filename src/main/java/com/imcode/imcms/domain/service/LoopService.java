@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -38,13 +39,8 @@ public class LoopService {
     }
 
     private Loop getOrCreateLoop(Version documentWorkingVersion, int loopIndex) {
-        final Loop loop = loopRepository.findByVersionAndNo(documentWorkingVersion, loopIndex);
-
-        if (loop == null) {
-            return createLoop(documentWorkingVersion, loopIndex);
-        }
-
-        return loop;
+        return Optional.ofNullable(loopRepository.findByVersionAndNo(documentWorkingVersion, loopIndex))
+                .orElseGet(() -> createLoop(documentWorkingVersion, loopIndex));
     }
 
     public void saveLoop(LoopDTO loopDTO) throws DocumentNotExistException {
