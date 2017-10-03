@@ -51,19 +51,10 @@ public class LoopServiceTest {
         Assert.assertEquals(TEST_LOOP_DTO, loop);
     }
 
-    @Test
-    public void getLoop_When_DocNotExist_Expect_Exception() {
+    @Test(expected = DocumentNotExistException.class)
+    public void getLoop_When_DocNotExist_Expect_Exception() throws DocumentNotExistException {
         final int nonExistingDocId = 42;
-        try {
-            loopService.getLoop(TEST_LOOP_INDEX, nonExistingDocId); // should threw exception
-            Assert.fail("Expected exception wasn't thrown!");
-
-        } catch (DocumentNotExistException e) {
-            // all fine, this is expected behavior
-            return;
-        }
-
-        Assert.fail("Expected exception was not caught!");
+        loopService.getLoop(TEST_LOOP_INDEX, nonExistingDocId); // should threw exception
     }
 
     @Test
