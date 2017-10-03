@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class MenuDataInitializer implements RepositoryCleaner {
+public class MenuDataInitializer extends RepositoryCleaner {
 
     private final MenuRepository menuRepository;
     private final VersionDataInitializer versionDataInitializer;
