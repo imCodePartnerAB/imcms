@@ -4,6 +4,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
 import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
 import org.junit.After;
 import org.junit.Assert;
@@ -47,13 +48,28 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void getLoop_Expect_correctFieldsData() {
+    public void getLoop_Expect_correctFieldsData() throws DocumentNotExistException {
         final LoopDTO loop = loopService.getLoop(TEST_LOOP_INDEX, TEST_DOC_ID);
         Assert.assertEquals(TEST_LOOP_DTO, loop);
     }
 
     @Test
-    public void saveLoop_Expect_NotNullAndCorrectFieldsData() {
+    public void getLoop_When_NotExist_Expect_Exception() {
+        final int nonExistingDocId = 42;
+        try {
+            loopService.getLoop(TEST_LOOP_INDEX, nonExistingDocId); // should threw exception
+            Assert.fail("Expected exception wasn't thrown!");
+
+        } catch (DocumentNotExistException e) {
+            // all fine, this is expected behavior
+            return;
+        }
+
+        Assert.fail("Expected exception was not caught!");
+    }
+
+    @Test
+    public void saveLoop_Expect_NotNullAndCorrectFieldsData() throws DocumentNotExistException {
         final int testLoopIndex = 23;
         final List<LoopEntryDTO> entries = Collections.emptyList();
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopIndex, entries);
@@ -66,7 +82,7 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void saveLoop_With_Entries_Expect_NotNullCorrectSizeAndValues() {
+    public void saveLoop_With_Entries_Expect_NotNullCorrectSizeAndValues() throws DocumentNotExistException {
         final int entryNo_0 = 1, entryNo_1 = 2, entryNo_2 = 3;
         final boolean entryIsEnabled_0 = true, entryIsEnabled_1 = false, entryIsEnabled_2 = true;
 

@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
@@ -30,9 +31,15 @@ public class LoopService {
         this.versionService = versionService;
     }
 
-    public LoopDTO getLoop(int loopIndex, int docId) {
+    public LoopDTO getLoop(int loopIndex, int docId) throws DocumentNotExistException {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(docId);
-        return loopToDtoMapper.apply(loopRepository.findByVersionAndNo(documentWorkingVersion, loopIndex));
+
+        if (documentWorkingVersion == null) {
+            throw new DocumentNotExistException();
+        }
+
+        final Loop loop = loopRepository.findByVersionAndNo(documentWorkingVersion, loopIndex);
+        return loopToDtoMapper.apply(loop);
     }
 
     public void saveLoop(LoopDTO loopDTO) {
