@@ -70,8 +70,7 @@ public class LoopServiceTest {
     @Test
     public void saveLoop_Expect_NotNullAndCorrectFieldsData() throws DocumentNotExistException {
         final int testLoopIndex = 23;
-        final List<LoopEntryDTO> entries = Collections.emptyList();
-        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopIndex, entries);
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopIndex, Collections.emptyList());
 
         loopService.saveLoop(loopDTO);
         final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
