@@ -41,6 +41,5 @@ public class VersionDataInitializer extends RepositoryTestDataCleaner {
     @Override
     public void cleanRepositories() {
         super.cleanRepositories();
-        userDataInitializer.cleanRepositories();
     }
 }
