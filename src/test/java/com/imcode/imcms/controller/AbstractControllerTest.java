@@ -23,13 +23,16 @@ public abstract class AbstractControllerTest {
     protected abstract String controllerPath();
 
     ResultActions performRequestBuilderExpectedOk(MockHttpServletRequestBuilder builder) throws Exception {
-        return mockMvc.perform(builder)
-                .andExpect(status().isOk())
+        return mockMvc.perform(builder).andExpect(status().isOk());
+    }
+
+    ResultActions performRequestBuilderExpectedOkAndContentJsonUtf8(MockHttpServletRequestBuilder builder) throws Exception {
+        return performRequestBuilderExpectedOk(builder)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
     }
 
     void performRequestBuilderExpectedOkAndJsonContentEquals(MockHttpServletRequestBuilder builder, String expectedJson) throws Exception {
-        performRequestBuilderExpectedOk(builder).andExpect(content().json(expectedJson));
+        performRequestBuilderExpectedOkAndContentJsonUtf8(builder).andExpect(content().json(expectedJson));
     }
 
     void getAllExpectedOkAndJsonContentEquals(String expectedJson) throws Exception {

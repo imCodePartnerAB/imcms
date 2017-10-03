@@ -1,5 +1,6 @@
 package com.imcode.imcms.util.datainitializer;
 
+import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
@@ -24,11 +25,11 @@ public class LoopDataInitializer extends RepositoryTestDataCleaner {
         this.loopRepository = loopRepository;
     }
 
-    public void createData(int docId, int loopIndex) {
-        final Version testVersion = versionDataInitializer.createData(TEST_VERSION_NO, docId);
+    public void createData(LoopDTO loopDTO) {
+        final Version testVersion = versionDataInitializer.createData(TEST_VERSION_NO, loopDTO.getDocId());
         final Loop testLoop = Value.with(new Loop(), loop -> {
             loop.setVersion(testVersion);
-            loop.setNo(loopIndex);
+            loop.setNo(loopDTO.getLoopIndex());
             loop.setEntries(Collections.emptyList());
             loop.setNextEntryNo(1);
         });

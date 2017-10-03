@@ -38,7 +38,7 @@ public class LoopServiceTest {
     @Before
     public void saveData() {
         clearTestData();
-        loopDataInitializer.createData(TEST_DOC_ID, TEST_LOOP_INDEX);
+        loopDataInitializer.createData(TEST_LOOP_DTO);
     }
 
     @After
@@ -47,23 +47,25 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void testGetLoopExpectCorrectDTO() {
+    public void getLoop_Expect_correctFieldsData() {
         final LoopDTO loop = loopService.getLoop(TEST_LOOP_INDEX, TEST_DOC_ID);
-        Assert.assertEquals(TEST_LOOP_DTO, loop);
+        Assert.assertEquals(TEST_LOOP_DTO.getDocId(), loop.getDocId());
+        Assert.assertEquals(TEST_LOOP_DTO.getLoopIndex(), loop.getLoopIndex());
+        Assert.assertEquals(TEST_LOOP_DTO.getEntries(), loop.getEntries());
     }
 
     @Test
     public void testSaveLoopExpectNotNullAndCorrectFieldsData() {
-        final int testLoopId = 23;
+        final int testLoopIndex = 23;
         final List<LoopEntryDTO> entries = Collections.emptyList();
-        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopId, entries);
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopIndex, entries);
 
         loopService.saveLoop(loopDTO);
         final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
 
         Assert.assertNotNull(savedLoop);
         Assert.assertThat(savedLoop.getDocId(), is(TEST_DOC_ID));
-        Assert.assertThat(savedLoop.getLoopIndex(), is(testLoopId));
+        Assert.assertThat(savedLoop.getLoopIndex(), is(testLoopIndex));
         Assert.assertThat(savedLoop.getEntries().size(), is(entries.size()));
     }
 

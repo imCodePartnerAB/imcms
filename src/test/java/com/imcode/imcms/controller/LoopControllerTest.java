@@ -37,7 +37,7 @@ public class LoopControllerTest extends AbstractControllerTest {
     @Before
     public void createData() {
         cleanRepos();
-        loopDataInitializer.createData(TEST_DOC_ID, TEST_LOOP_INDEX);
+        loopDataInitializer.createData(TEST_LOOP_DTO);
     }
 
     @After
@@ -51,7 +51,7 @@ public class LoopControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getLoopExpectedOkAndResponseEqualTestData() throws Exception {
+    public void getLoop_Expect_OkAndResponseEqualTestData() throws Exception {
         final String expectedJsonData = asJson(TEST_LOOP_DTO);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("loopIndex", String.valueOf(TEST_LOOP_INDEX))
@@ -70,7 +70,7 @@ public class LoopControllerTest extends AbstractControllerTest {
                 .content(asJson(TEST_LOOP_DTO));
 
         try {
-            performRequestBuilderExpectedOk(requestBuilder);
+            performRequestBuilderExpectedOk(requestBuilder); // here exception should be thrown!!1
             Assert.fail("Expected exception wasn't thrown!");
 
         } catch (NestedServletException e) {
