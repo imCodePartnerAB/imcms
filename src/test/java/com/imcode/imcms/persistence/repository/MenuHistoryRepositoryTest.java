@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.lang.reflect.InvocationTargetException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -44,7 +45,10 @@ public class MenuHistoryRepositoryTest {
     public void findOne_Expect_theSameMenuNoAndVersion() throws Exception {
         final MenuHistory menuPersisted = menuHistoryRepository.findOne(menuHistory.getId());
         final Version persistedVersion = menuPersisted.getVersion();
+        final int modifiedDateDiff = menuHistory.getModifiedDate().compareTo(menuPersisted.getModifiedDate());
 
+        assertEquals(menuHistory.getUserId(), menuPersisted.getUserId());
+        assertTrue(modifiedDateDiff == 0 || modifiedDateDiff == -1);
         assertEquals(menuHistory.getNo(), menuPersisted.getNo());
         assertEquals(menuHistory.getDocumentId(), persistedVersion.getDocId());
         assertEquals(menuHistory.getVersion().getNo(), persistedVersion.getNo());
