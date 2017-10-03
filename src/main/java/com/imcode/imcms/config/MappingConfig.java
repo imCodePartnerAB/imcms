@@ -78,7 +78,7 @@ public class MappingConfig {
                     .map(loopEntryToDtoMapper)
                     .collect(Collectors.toList());
 
-            return new LoopDTO(loop.getDocumentId(), loop.getNo(), loopEntryDTOs);
+            return new LoopDTO(loop.getVersion().getDocId(), loop.getNo(), loopEntryDTOs);
         };
     }
 
