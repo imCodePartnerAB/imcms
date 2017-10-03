@@ -98,21 +98,21 @@ public class DocumentSaver {
     @Transactional
     public void saveImages(TextDocImagesContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        textDocumentContentSaver.saveImages(container, user);
+        textDocumentContentSaver.saveImages(container);
         docRepository.touch(container.getVersionRef(), user);
     }
 
     @Transactional
     public void saveMenu(TextDocMenuContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        textDocumentContentSaver.saveMenu(container, user);
+        textDocumentContentSaver.saveMenu(container);
         docRepository.touch(container.getVersionRef(), user);
     }
 
     @Transactional
     public void saveImage(TextDocImageContainer container, UserDomainObject user)
             throws NoPermissionInternalException, DocumentSaveException {
-        textDocumentContentSaver.saveImage(container, user);
+        textDocumentContentSaver.saveImage(container);
         docRepository.touch(container.getDocVersionRef(), user);
     }
 
@@ -249,7 +249,7 @@ public class DocumentSaver {
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
             firstDoc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
         } else {
-            textDocumentContentSaver.createCommonContent((TextDocumentDomainObject) firstDoc, user);
+            textDocumentContentSaver.createCommonContent((TextDocumentDomainObject) firstDoc);
 
             for (DocumentDomainObject doc : docs) {
                 textDocumentContentSaver.createI18nContent((TextDocumentDomainObject) doc, user);
