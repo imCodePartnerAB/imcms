@@ -55,7 +55,7 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void testSaveLoopExpectNotNullAndCorrectFieldsData() {
+    public void saveLoop_Expect_NotNullAndCorrectFieldsData() {
         final int testLoopIndex = 23;
         final List<LoopEntryDTO> entries = Collections.emptyList();
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopIndex, entries);
@@ -70,7 +70,7 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void testSaveLoopWithEntriesExpectNotNullCorrectSizeAndValues() {
+    public void saveLoop_With_Entries_Expect_NotNullCorrectSizeAndValues() {
         final int entryNo_0 = 1, entryNo_1 = 2, entryNo_2 = 3;
         final boolean entryIsEnabled_0 = true, entryIsEnabled_1 = false, entryIsEnabled_2 = true;
 
