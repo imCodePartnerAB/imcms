@@ -13,7 +13,6 @@ import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +26,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.util.NestedServletException;
 
 import java.util.Collections;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
@@ -81,17 +83,17 @@ public class LoopControllerTest extends AbstractControllerTest {
 
         try {
             performRequestBuilderExpectedOk(requestBuilder); // here exception should be thrown!!1
-            Assert.fail("Expected exception wasn't thrown!");
+            fail("Expected exception wasn't thrown!");
 
         } catch (NestedServletException e) {
-            Assert.assertTrue(
+            assertTrue(
                     "Should be DocumentNotExistException!!",
                     (e.getCause() instanceof IllegalAccessException)
             );
             return;
         }
 
-        Assert.fail("Expected exception wasn't thrown!");
+        fail("Expected exception wasn't thrown!");
     }
 
     @Test
@@ -132,17 +134,17 @@ public class LoopControllerTest extends AbstractControllerTest {
 
         try {
             performRequestBuilderExpectedOk(requestBuilder); // here exception should be thrown!!1
-            Assert.fail("Expected exception wasn't thrown!");
+            fail("Expected exception wasn't thrown!");
 
         } catch (NestedServletException e) {
-            Assert.assertTrue(
+            assertTrue(
                     "Should be DocumentNotExistException!!",
                     (e.getCause() instanceof DocumentNotExistException)
             );
             return;
         }
 
-        Assert.fail("Expected exception wasn't thrown!");
+        fail("Expected exception wasn't thrown!");
     }
 
     @Test

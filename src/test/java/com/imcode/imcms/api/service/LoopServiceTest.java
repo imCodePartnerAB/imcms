@@ -7,7 +7,6 @@ import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
 import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +17,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -48,7 +50,7 @@ public class LoopServiceTest {
     @Test
     public void getLoop_Expect_correctFieldsData() throws DocumentNotExistException {
         final LoopDTO loop = loopService.getLoop(TEST_LOOP_INDEX, TEST_DOC_ID);
-        Assert.assertEquals(TEST_LOOP_DTO, loop);
+        assertEquals(TEST_LOOP_DTO, loop);
     }
 
     @Test(expected = DocumentNotExistException.class)
@@ -63,8 +65,8 @@ public class LoopServiceTest {
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, nonExistingLoopIndex, Collections.emptyList());
         final LoopDTO loop = loopService.getLoop(nonExistingLoopIndex, TEST_DOC_ID);
 
-        Assert.assertNotNull(loop);
-        Assert.assertEquals(loop, loopDTO);
+        assertNotNull(loop);
+        assertEquals(loop, loopDTO);
     }
 
     @Test
@@ -75,8 +77,8 @@ public class LoopServiceTest {
         loopService.saveLoop(loopDTO);
         final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
 
-        Assert.assertNotNull(savedLoop);
-        Assert.assertEquals(savedLoop, loopDTO);
+        assertNotNull(savedLoop);
+        assertEquals(savedLoop, loopDTO);
     }
 
     @Test
@@ -91,6 +93,6 @@ public class LoopServiceTest {
         loopService.saveLoop(loopDTO);
         final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
 
-        Assert.assertEquals(savedLoop, loopDTO);
+        assertEquals(savedLoop, loopDTO);
     }
 }
