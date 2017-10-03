@@ -16,7 +16,7 @@ Imcms.define("imcms-loop-editor-builder",
             CONTROLS: ["col-1", "control"]
         };
 
-        var docId, loopIndex;
+        var currentLoop;
 
         var LOOP_ITEM_CLASS = "imcms-loop-item";
 
@@ -59,7 +59,7 @@ Imcms.define("imcms-loop-editor-builder",
             }
 
             function getLoopData() {
-                var loopEntries = $listItems.children()
+                currentLoop.entries = $listItems.children()
                     .toArray()
                     .map(function (listItem) {
                         var $listItem = $(listItem);
@@ -80,11 +80,7 @@ Imcms.define("imcms-loop-editor-builder",
                         };
                     });
 
-                return {
-                    docId: docId,
-                    loopIndex: loopIndex,
-                    entries: loopEntries
-                };
+                return currentLoop;
             }
 
             function onSaveAndCloseClicked() {
@@ -187,8 +183,7 @@ Imcms.define("imcms-loop-editor-builder",
         }
 
         function buildData(loop) {
-            docId = loop.docId;
-            loopIndex = loop.loopIndex;
+            currentLoop = loop;
 
             addHeadData(loop);
 
