@@ -38,13 +38,18 @@ public class LoopService {
             throw new DocumentNotExistException();
         }
 
-        Loop loop = loopRepository.findByVersionAndNo(documentWorkingVersion, loopIndex);
+        final Loop loop = getOrCreateLoop(documentWorkingVersion, loopIndex);
+        return loopToDtoMapper.apply(loop);
+    }
+
+    private Loop getOrCreateLoop(Version documentWorkingVersion, int loopIndex) {
+        final Loop loop = loopRepository.findByVersionAndNo(documentWorkingVersion, loopIndex);
 
         if (loop == null) {
-            loop = createLoop(documentWorkingVersion, loopIndex);
+            return createLoop(documentWorkingVersion, loopIndex);
         }
 
-        return loopToDtoMapper.apply(loop);
+        return loop;
     }
 
     public void saveLoop(LoopDTO loopDTO) {
