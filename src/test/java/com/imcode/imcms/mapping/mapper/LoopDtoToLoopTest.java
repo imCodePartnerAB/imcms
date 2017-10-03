@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 @ContextConfiguration(classes = TestConfig.class)
 public class LoopDtoToLoopTest {
     private static final int TEST_DOC_ID = 1001;
-    private static final int TEST_LOOP_ID = 1;
+    private static final int TEST_LOOP_INDEX = 1;
     private static final int TEST_VERSION_NO = 0;
 
     @Autowired
@@ -46,9 +46,9 @@ public class LoopDtoToLoopTest {
 
     @Test
     public void expectedEqualsMapResult() throws Exception {
-        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_ID, Collections.emptyList());
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.emptyList());
         final Version workingVersion = versionRepository.findByDocIdAndNo(TEST_DOC_ID, TEST_VERSION_NO);
-        final Loop expected = new Loop(workingVersion, TEST_LOOP_ID, 1, Collections.emptyList());
+        final Loop expected = new Loop(workingVersion, TEST_LOOP_INDEX, 1, Collections.emptyList());
 
         assertEquals(expected, mapper.apply(loopDTO, workingVersion));
     }

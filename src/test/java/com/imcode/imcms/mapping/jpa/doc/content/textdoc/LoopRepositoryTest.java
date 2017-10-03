@@ -100,6 +100,6 @@ public class LoopRepositoryTest {
         Loop loop1 = loopRepository.findByVersionAndNo(version, 1);
 
         assertEquals(loop1.getNo(), Integer.valueOf(1));
-        assertEquals(loop1.getDocumentId(), Integer.valueOf(DOC_VERSION_REF.getDocId()));
+        assertEquals(loop1.getVersion().getDocId(), Integer.valueOf(DOC_VERSION_REF.getDocId()));
     }
 }

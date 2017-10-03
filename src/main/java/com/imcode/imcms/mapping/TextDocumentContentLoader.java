@@ -102,44 +102,6 @@ public class TextDocumentContentLoader {
         return result;
     }
 
-
-    public Map<DocumentLanguage, TextDomainObject> getTexts(VersionRef versionRef, int textNo) {
-        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
-        Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
-
-        for (Text text : textRepository.findByVersionAndNoWhereLoopEntryRefIsNull(version, textNo)) {
-            result.put(languageMapper.toApiObject(text.getLanguage()), toDomainObject(text));
-        }
-
-        return result;
-    }
-
-    public Map<DocumentLanguage, TextDomainObject> getLoopTexts(VersionRef versionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
-        Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
-        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
-
-        for (Text text : textRepository.findByVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
-            result.put(languageMapper.toApiObject(text.getLanguage()), toDomainObject(text));
-        }
-
-        return result;
-    }
-
-    public TextDomainObject getFirstLoopEntryText(DocRef docRef, com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
-        LoopEntryRef loopEntryRefJpa = new LoopEntryRef(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo());
-
-        return toDomainObject(
-                textRepository.findFirst(version, language, loopEntryRefJpa)
-        );
-    }
-
-    public Set<TextHistory> getTextHistory(int docId, int textNo) {
-        return textHistoryRepository.findAllByDocumentAndTextNo(docId, textNo);
-    }
-
     /**
      * Return text history based on special document {@link Version}, {@link Language}, and text id
      *
@@ -188,16 +150,6 @@ public class TextDocumentContentLoader {
 
         return toDomainObject(
                 textRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, textNo)
-        );
-    }
-
-    public TextDomainObject getLoopText(DocRef docRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
-        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
-
-        return toDomainObject(
-                textRepository.findByVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
         );
     }
 
@@ -285,12 +237,6 @@ public class TextDocumentContentLoader {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
         return loopRepository.findByVersion(version).stream().collect(toMap(loop -> loop.getNo(), this::toApiObject));
-    }
-
-    public Loop getLoop(VersionRef versionRef, int loopNo) {
-        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
-
-        return toApiObject(loopRepository.findByVersionAndNo(version, loopNo));
     }
 
 
