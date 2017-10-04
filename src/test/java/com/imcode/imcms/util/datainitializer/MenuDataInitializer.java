@@ -40,8 +40,10 @@ public class MenuDataInitializer extends RepositoryCleaner {
         return savedMenu;
     }
 
-    public List<MenuItemDTO> expectedMenuItems() {
-        return savedMenu.getMenuItems().stream()
+    public List<MenuItemDTO> getMenuItemDTOs() {
+        return menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(savedMenu.getNo(), savedMenu.getVersion())
+                .getMenuItems()
+                .stream()
                 .map(this::mapMenuItems)
                 .collect(Collectors.toList());
     }

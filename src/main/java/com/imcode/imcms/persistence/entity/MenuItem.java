@@ -24,7 +24,7 @@ public class MenuItem {
     @JoinColumn(name = "menu_id")
     private Menu menu;
 
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_item_id")
     @OrderBy("sortOrder")
     private List<MenuItem> children = new ArrayList<>();
