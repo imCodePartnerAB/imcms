@@ -8,7 +8,6 @@ import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextHistory;
-import com.imcode.imcms.servlet.tags.TextTag;
 import com.jcabi.w3c.Defect;
 import com.jcabi.w3c.ValidationResponse;
 import com.jcabi.w3c.ValidatorBuilder;
@@ -18,7 +17,7 @@ import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -46,6 +45,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/text")
 public class TextController {
     private static final Logger log = Logger.getLogger(TextController.class);
+
+    public static final String TEXT = "text";
+    public static final String HTML = "html";
+    private static final String SOURCE_FROM_HTML = "source-from-html";
+    private static final String CLEAN_SOURCE_FROM_HTML = "clean-source-from-html";
+    private static final String CLEAN_HTML = "cleanhtml";
 
     private ImcmsServices imcmsServices;
 
@@ -146,15 +151,14 @@ public class TextController {
                 );
         }
 
-        if ((contentType != null) && (contentType.toLowerCase().contains("clean"))) {
+        if ((contentType != null) && (contentType.equals(CLEAN_SOURCE_FROM_HTML) || contentType.equals(CLEAN_HTML))) {
             content = textContentFilter.cleanText(content);
         }
 
         try {
             final int contentTypeInt = Optional.ofNullable(contentType)
-                    .map(type -> (type.contains(TextTag.TEXT) || type.contains(TextTag.SOURCE_FROM_HTML))
-                            ? TextDomainObject.TEXT_TYPE_PLAIN
-                            : TextDomainObject.TEXT_TYPE_HTML)
+                    .filter(type -> (type.contains(TEXT) || type.contains(SOURCE_FROM_HTML)))
+                    .map(type -> TextDomainObject.TEXT_TYPE_PLAIN)
                     .orElse(TextDomainObject.TEXT_TYPE_HTML);
 
             final TextDomainObject textDomainObject = new TextDomainObject(

@@ -28,6 +28,7 @@ public class Functions {
         return Utility.getCMS(pageContext).getDocumentService().getTextDocument(docIdentifier);
     }
 
+    @SuppressWarnings("unchecked")
     public static TextDocument.LoopItem createLoopItem(Object entry, int loopNo,
                                                        TextDocumentDomainObject document) {
         // this cast have to be done since JSP processor doesn't understand interface in interface or something
