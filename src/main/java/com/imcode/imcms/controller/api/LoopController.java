@@ -1,4 +1,4 @@
-package com.imcode.imcms.servlet.apis;
+package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.service.api.LoopService;
