@@ -6,7 +6,7 @@ package com.imcode.imcms.domain.service.exception;
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 03.10.17.
  */
-public class DocumentNotExistException extends Exception {
+public class DocumentNotExistException extends RuntimeException {
     private static final long serialVersionUID = 8436506557570083168L;
 
     public DocumentNotExistException() {

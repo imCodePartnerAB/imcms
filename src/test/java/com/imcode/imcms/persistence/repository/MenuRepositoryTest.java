@@ -48,10 +48,11 @@ public class MenuRepositoryTest {
     }
 
     @Test
-    public void getOne_When_menuWithMenuItems_Expect_correctItemsCapacity() throws Exception {
+    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_Expect_correctItemsCapacity()
+            throws Exception {
         final Menu menu = menuDataInitializer.createData(true);
 
-        final Menu menuPersisted = menuRepository.getOne(menu.getId());
+        final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getNo(), menu.getVersion());
 
         final List<MenuItem> menuItems = menuPersisted.getMenuItems();
 
@@ -61,10 +62,11 @@ public class MenuRepositoryTest {
     }
 
     @Test
-    public void getOne_When_menuWithMenuItems_Expect_correctItemsOrder() throws Exception {
+    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_Expect_correctItemsOrder()
+            throws Exception {
         final Menu menu = menuDataInitializer.createData(true);
 
-        final Menu menuPersisted = menuRepository.getOne(menu.getId());
+        final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getNo(), menu.getVersion());
 
         final List<MenuItem> menuItems = menuPersisted.getMenuItems();
 

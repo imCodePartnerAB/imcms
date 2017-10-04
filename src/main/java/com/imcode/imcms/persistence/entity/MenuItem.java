@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "com.imcode.imcms.persistence.entity.MenuItem")
@@ -26,7 +27,7 @@ public class MenuItem {
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_item_id")
     @OrderBy("sortOrder")
-    private List<MenuItem> children;
+    private List<MenuItem> children = new ArrayList<>();
 
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;

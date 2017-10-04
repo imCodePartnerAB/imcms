@@ -16,7 +16,7 @@ public class VersionService {
         this.versionRepository = versionRepository;
     }
 
-    Version getDocumentWorkingVersion(int docId) throws DocumentNotExistException {
+    public Version getDocumentWorkingVersion(int docId) {
         return Optional.ofNullable(versionRepository.findWorking(docId)).orElseThrow(DocumentNotExistException::new);
     }
 }

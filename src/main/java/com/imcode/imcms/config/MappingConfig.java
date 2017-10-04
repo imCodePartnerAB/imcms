@@ -6,6 +6,7 @@ import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry;
 import com.imcode.imcms.persistence.entity.Category;
 import com.imcode.imcms.persistence.entity.CategoryType;
+import com.imcode.imcms.persistence.entity.MenuItem;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject.TreeMenuItemDomainObject;
 import org.springframework.context.annotation.Bean;
@@ -65,6 +66,22 @@ public class MappingConfig {
                         .collect(Collectors.toList());
 
                 return new MenuElementDTO(id, title, children);
+            }
+        };
+    }
+
+    @Bean
+    public Function<MenuItem, MenuItemDTO> menuItemToDTO() {
+        return new Function<MenuItem, MenuItemDTO>() {
+            @Override
+            public MenuItemDTO apply(MenuItem menuItem) {
+                final MenuItemDTO menuItemDTO = new MenuItemDTO();
+                menuItemDTO.setId(menuItem.getId());
+                menuItemDTO.setDocumentId(menuItem.getDocumentId());
+                menuItemDTO.setChildren(menuItem.getChildren().stream()
+                        .map(this)
+                        .collect(Collectors.toList()));
+                return menuItemDTO;
             }
         };
     }

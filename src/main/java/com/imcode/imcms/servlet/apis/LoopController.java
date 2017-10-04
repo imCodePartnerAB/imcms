@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
 import imcode.server.Imcms;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +16,12 @@ public class LoopController {
     }
 
     @GetMapping
-    public LoopDTO getDocumentLoop(@ModelAttribute LoopDTO loopRequestData) throws DocumentNotExistException {
+    public LoopDTO getDocumentLoop(@ModelAttribute LoopDTO loopRequestData) {
         return loopService.getLoop(loopRequestData.getLoopIndex(), loopRequestData.getDocId());
     }
 
     @PostMapping
-    public void saveLoop(@RequestBody LoopDTO loopDTO) throws IllegalAccessException, DocumentNotExistException {
+    public void saveLoop(@RequestBody LoopDTO loopDTO) throws IllegalAccessException {
 
         if (!Imcms.getUser().isSuperAdmin()) {
             throw new IllegalAccessException("User do not have access to change loop structure.");
