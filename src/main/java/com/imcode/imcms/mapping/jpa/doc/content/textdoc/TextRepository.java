@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TextRepository extends JpaRepository<Text, Integer>, TextRepositoryCustom {
+public interface TextRepository extends JpaRepository<Text, Integer> {
 
     @Query("SELECT t FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.loopEntryRef IS NULL")
     List<Text> findByVersionAndLanguageWhereLoopEntryRefIsNull(Version version, Language language);

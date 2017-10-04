@@ -7,7 +7,6 @@ import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
