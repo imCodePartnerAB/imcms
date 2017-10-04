@@ -6,13 +6,13 @@ import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
 import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
+@Transactional
 public class LoopServiceTest {
 
     private static final int TEST_DOC_ID = 1001;
@@ -38,13 +39,7 @@ public class LoopServiceTest {
 
     @Before
     public void saveData() {
-        clearTestData();
         loopDataInitializer.createData(TEST_LOOP_DTO);
-    }
-
-    @After
-    public void clearTestData() {
-        loopDataInitializer.cleanRepositories();
     }
 
     @Test

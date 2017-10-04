@@ -12,7 +12,6 @@ import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.NestedServletException;
 
 import java.util.Collections;
@@ -33,6 +33,7 @@ import static org.junit.Assert.fail;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 @WebAppConfiguration
+@Transactional
 public class LoopControllerTest extends AbstractControllerTest {
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_LOOP_INDEX = 1;
@@ -48,13 +49,7 @@ public class LoopControllerTest extends AbstractControllerTest {
 
     @Before
     public void createData() {
-        cleanRepos();
         loopDataInitializer.createData(TEST_LOOP_DTO);
-    }
-
-    @After
-    public void cleanRepos() {
-        loopDataInitializer.cleanRepositories();
     }
 
     @Override
