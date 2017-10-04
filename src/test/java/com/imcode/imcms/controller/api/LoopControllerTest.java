@@ -1,7 +1,8 @@
-package com.imcode.imcms.controller;
+package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
+import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.jpa.doc.Version;

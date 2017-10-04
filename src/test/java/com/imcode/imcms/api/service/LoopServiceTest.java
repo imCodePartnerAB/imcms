@@ -3,7 +3,7 @@ package com.imcode.imcms.api.service;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
-import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.api.LoopService;
 import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
 import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
 import org.junit.Before;

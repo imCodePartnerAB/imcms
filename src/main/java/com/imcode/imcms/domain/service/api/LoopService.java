@@ -1,4 +1,4 @@
-package com.imcode.imcms.domain.service;
+package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;

@@ -1,7 +1,7 @@
-package com.imcode.imcms.controller;
+package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.CategoryDTO;
-import com.imcode.imcms.domain.service.CategoryService;
+import com.imcode.imcms.domain.service.api.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
