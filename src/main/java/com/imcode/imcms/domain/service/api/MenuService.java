@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.mapping.jpa.doc.Version;
+import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
@@ -48,8 +49,11 @@ public class MenuService {
 
     private void addTitleToMenuItem(MenuItemDTO menuItemDTO, UserDomainObject user) {
         final Version menuItemVersion = versionService.getDocumentWorkingVersion(menuItemDTO.getDocumentId());
-        commonContentService
+        final CommonContent commonContent = commonContentService
                 .findByDocIdAndVersionNoAndUserDomainObject(menuItemVersion.getDocId(), menuItemVersion.getNo(), user);
+
+        menuItemDTO.setTitle(commonContent.getHeadline());
+
         menuItemDTO.getChildren()
                 .forEach(childMenuItemDTO -> addTitleToMenuItem(childMenuItemDTO, user));
     }
