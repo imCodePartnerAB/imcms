@@ -1,5 +1,6 @@
 package com.imcode.imcms.util.datainitializer;
 
+import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
@@ -11,12 +12,14 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class MenuDataInitializer extends RepositoryCleaner {
 
     private final MenuRepository menuRepository;
     private final VersionDataInitializer versionDataInitializer;
+    private Menu savedMenu;
 
     public MenuDataInitializer(@Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
                                VersionDataInitializer versionDataInitializer) {
@@ -30,11 +33,28 @@ public class MenuDataInitializer extends RepositoryCleaner {
         final Version version = versionDataInitializer.createData(0, 1001);
         menu.setVersion(version);
         menu.setNo(1);
-        final Menu savedMenu = menuRepository.saveAndFlush(menu);
+        savedMenu = menuRepository.saveAndFlush(menu);
         if (withMenuItems) {
             addMenuItemsTo(savedMenu);
         }
         return savedMenu;
+    }
+
+    public List<MenuItemDTO> expectedMenuItems() {
+        return savedMenu.getMenuItems().stream()
+                .map(this::mapMenuItems)
+                .collect(Collectors.toList());
+    }
+
+    private MenuItemDTO mapMenuItems(MenuItem menuItem) {
+        final MenuItemDTO menuItemDTO = new MenuItemDTO();
+        menuItemDTO.setId(menuItem.getId());
+        menuItemDTO.setDocumentId(menuItem.getDocumentId());
+        menuItemDTO.setTitle("Start page");
+        menuItemDTO.setChildren(menuItem.getChildren().stream()
+                .map(this::mapMenuItems)
+                .collect(Collectors.toList()));
+        return menuItemDTO;
     }
 
     @Override
