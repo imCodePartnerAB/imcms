@@ -6,14 +6,13 @@ import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.functors.CloneTransformer;
-import org.apache.commons.collections.map.TransformedSortedMap;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class TextDocument extends Document {
 
@@ -30,23 +29,15 @@ public class TextDocument extends Document {
     }
 
     /**
-     * @return A SortedMap that contains the textFileds index as keys, and instances of TextFields as values. Only the
+     * @return A SortedMap that contains the textFields index as keys, and instances of TextFields as values. Only the
      * TextFields that contains any text is returned.
      */
     public SortedMap<Integer, TextField> getTextFields() {
-        Predicate predicate = o -> {
-            Map.Entry entry = (Map.Entry) o;
-            TextDomainObject tempTextField = (TextDomainObject) entry.getValue();
-            return StringUtils.isNotEmpty(tempTextField.getText());
-        };
-
-        Transformer fromDomainToAPITransformer = o -> {
-            TextDomainObject tempTextField = (TextDomainObject) o;
-            return new TextField(tempTextField);
-        };
-
+        Predicate<Entry<?, TextDomainObject>> predicate = entry -> StringUtils.isNotEmpty(entry.getValue().getText());
+        Function<TextDomainObject, TextField> fromDomainToApiTransformer = TextField::new;
         Map<Integer, TextDomainObject> textFieldsMap = getInternalTextDocument().getTexts();
-        return filterAndConvertValues(textFieldsMap, predicate, fromDomainToAPITransformer);
+
+        return filterAndConvertValues(textFieldsMap, predicate, fromDomainToApiTransformer);
     }
 
     /**
@@ -54,20 +45,11 @@ public class TextDocument extends Document {
      * Image that has an url is returned.
      */
     public SortedMap<Integer, Image> getImages() {
-        Predicate predicate = o -> {
-            Map.Entry entry = (Map.Entry) o;
-            ImageDomainObject tempImage = (ImageDomainObject) entry.getValue();
-            return !tempImage.isEmpty();
-        };
-
-        Transformer fromDomainToAPITransformer = o -> {
-            ImageDomainObject tempImage = (ImageDomainObject) o;
-            return new Image(tempImage);
-        };
-
+        Predicate<Entry<?, ImageDomainObject>> predicate = entry -> !entry.getValue().isEmpty();
+        Function<ImageDomainObject, Image> fromDomainToApiTransformer = Image::new;
         Map<Integer, ImageDomainObject> imagesMap = getInternalTextDocument().getImages();
-        return filterAndConvertValues(imagesMap, predicate, fromDomainToAPITransformer);
 
+        return filterAndConvertValues(imagesMap, predicate, fromDomainToApiTransformer);
     }
 
     /**
@@ -75,33 +57,32 @@ public class TextDocument extends Document {
      * includes that has a document is returned.
      */
     public SortedMap<Integer, Document> getIncludes() {
-        Predicate predicate = o -> {
-            Map.Entry entry = (Map.Entry) o;
-            Integer tempMetaId = (Integer) entry.getValue();
-            return null != tempMetaId;
-        };
+        Predicate<Entry<?, Integer>> predicate = entry -> null != entry.getValue();
+        final DocumentGetter documentGetter = getDocumentGetter();
 
-        Transformer fromDomainToAPITransformer = o -> {
-            Integer tempMetaId = (Integer) o;
-            return DocumentService.wrapDocumentDomainObject(getDocumentGetter().getDocument(tempMetaId), contentManagementSystem);
-        };
+        Function<Integer, Document> fromDomainToApiTransformer =
+                tempMetaId -> DocumentService.wrapDocumentDomainObject(
+                        documentGetter.getDocument(tempMetaId), contentManagementSystem
+                );
 
         Map<Integer, Integer> includeMap = getInternalTextDocument().getIncludesMap();
-        return filterAndConvertValues(includeMap, predicate, fromDomainToAPITransformer);
+
+        return filterAndConvertValues(includeMap, predicate, fromDomainToApiTransformer);
     }
 
     private DocumentGetter getDocumentGetter() {
         return contentManagementSystem.getInternal().getDocumentMapper();
     }
 
-    private <T> SortedMap<Integer, T> filterAndConvertValues(Map<Integer, ?> map, Predicate predicate, Transformer transformer) {
-        Collection<Map.Entry<Integer, ?>> nonEmptyTextFields = CollectionUtils.select(map.entrySet(), predicate);
-        final SortedMap<Integer, T> sortedMap = TransformedSortedMap.decorate(new TreeMap<>(), CloneTransformer.INSTANCE, transformer);
+    private <T, O> SortedMap<Integer, T> filterAndConvertValues(Map<Integer, O> map, Predicate<Entry<?, O>> predicate,
+                                                                Function<O, T> transformer) {
+        final Map<Integer, T> filteredConverted = map.entrySet()
+                .stream()
+                .filter(predicate)
+                .sorted()
+                .collect(Collectors.toMap(Entry::getKey, entry -> transformer.apply(entry.getValue())));
 
-        for (Map.Entry<Integer, ?> entry : nonEmptyTextFields) {
-            sortedMap.put(entry.getKey(), (T) entry.getValue());
-        }
-        return sortedMap;
+        return new TreeMap<>(filteredConverted);
     }
 
     public TextField getTextField(int textFieldIndexInDocument) {
@@ -211,10 +192,6 @@ public class TextDocument extends Document {
         return getInternal().getLoop(no);
     }
 
-    public void setLoop(int no, Loop loop) {
-        getInternal().setLoop(no, loop);
-    }
-
     /**
      * Get text field from loop
      *
@@ -248,32 +225,6 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Set text field to loop
-     *
-     * @param loopNo  loop index in document
-     * @param entryNo number of loop entry
-     * @param textNo  text index in loop
-     * @param text    text field that should be saved
-     */
-    public void setLoopTextField(int loopNo, int entryNo, int textNo, TextField text) {
-        setLoopTextField(TextDocumentDomainObject.LoopItemRef.of(loopNo, entryNo, textNo), text);
-    }
-
-    /**
-     * Set text field to loop
-     *
-     * @param loopItemRef loop item reference of text in loop
-     * @param text        text field that should be saved
-     */
-    public void setLoopTextField(TextDocumentDomainObject.LoopItemRef loopItemRef, TextField text) {
-        TextDomainObject internalText = (text == null)
-                ? new TextDomainObject("")
-                : new TextDomainObject(text.getText(), text.getFormat().getType());
-
-        getInternal().setText(loopItemRef, internalText);
-    }
-
-    /**
      * Get image from loop
      *
      * @param loopNo  loop index in document
@@ -296,32 +247,6 @@ public class TextDocument extends Document {
         ImageDomainObject image = internalDoc.getImage(loopItemRef);
 
         return new Image(image);
-    }
-
-    /**
-     * Set image to loop
-     *
-     * @param loopNo  loop index in document
-     * @param entryNo number of loop entry
-     * @param imageNo image index in loop
-     * @param image   image that should be saved
-     */
-    public void setLoopImage(int loopNo, int entryNo, int imageNo, Image image) {
-        setLoopImage(TextDocumentDomainObject.LoopItemRef.of(loopNo, entryNo, imageNo), image);
-    }
-
-    /**
-     * Set image to loop
-     *
-     * @param loopItemRef loop item reference of image in loop
-     * @param image       image that should be saved
-     */
-    public void setLoopImage(TextDocumentDomainObject.LoopItemRef loopItemRef, Image image) {
-        ImageDomainObject internalImage = (image == null)
-                ? new ImageDomainObject()
-                : image.getInternal();
-
-        getInternal().setImage(loopItemRef, internalImage);
     }
 
     public static class TextField {
@@ -377,7 +302,7 @@ public class TextDocument extends Document {
         LoopEntryRef loopEntryRef;
         TextDocumentDomainObject doc;
 
-        public LoopItem(Map.Entry<Integer, Boolean> entry, int no, TextDocumentDomainObject doc) {
+        public LoopItem(Entry<Integer, Boolean> entry, int no, TextDocumentDomainObject doc) {
             this.loopEntryRef = new LoopEntryRef(no, entry.getKey());
             this.doc = doc;
         }

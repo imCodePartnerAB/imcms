@@ -108,9 +108,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Returns menu.
      * If menu does not exists creates and adds menu to this document.
-     *
-     * @param menuNo
-     * @return Menu
      */
     public MenuDomainObject getMenu(int menuNo) {
         MenuDomainObject menu = menus.get(menuNo);
@@ -165,11 +162,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         includesMap.put(includeIndex, includedDocumentId);
     }
 
-    /**
-     * @param no
-     * @param menu
-     */
-    public void setMenu(int no, MenuDomainObject menu) {
+    private void setMenu(int no, MenuDomainObject menu) {
         MenuDomainObject newMenu = menu.clone();
         MenuDomainObject oldMenu = menus.get(no);
 
@@ -245,15 +238,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public String getDefaultTemplateNameForRestricted2() {
         return templateNames.getDefaultTemplateNameForRestricted2();
     }
-
-    public void setDefaultTemplateIdForRestricted1(String defaultTemplateIdForRestricted1) {
-        templateNames.setDefaultTemplateNameForRestricted1(defaultTemplateIdForRestricted1);
-    }
-
-    public void setDefaultTemplateIdForRestricted2(String defaultTemplateIdForRestricted2) {
-        templateNames.setDefaultTemplateNameForRestricted2(defaultTemplateIdForRestricted2);
-    }
-
 
     /**
      * @return images outside ot content loops.
@@ -408,25 +392,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         updateLoopsContent();
     }
 
-    public Loop getLoop(int loopId) {
-        return loops.get(loopId);
+    public Loop getLoop(int loopIndex) {
+        return loops.get(loopIndex);
     }
 
-    /**
-     * Sets content loop clone passed to the method.
-     *
-     * @param no   content loop no in this document.
-     * @param loop content loop to set.
-     * @return contentLoop set to this document.
-     */
-    public Loop setLoop(int no, Loop loop) {
-        loops.put(no, loop);
-        updateLoopContent(no, loop);
-
-        return loop;
-    }
-
-    public void updateLoopsContent() {
+    private void updateLoopsContent() {
         loops.forEach(this::updateLoopContent);
     }
 
@@ -536,7 +506,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             Integer itemNoInt = Ints.tryParse(itemNo);
 
             return Optional.ofNullable(
-                    loopNoInt != null && contentNoInt != null && itemNo != null
+                    loopNoInt != null && contentNoInt != null && itemNoInt != null
                             ? LoopItemRef.of(loopNoInt, contentNoInt, itemNoInt)
                             : null
             );
