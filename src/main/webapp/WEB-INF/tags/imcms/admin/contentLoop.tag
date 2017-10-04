@@ -30,7 +30,7 @@
 <c:remove var="loopDoc"/>
 
 <c:if test="${isEditMode}">
-    <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDoc.id}" data-loop-id="${no}">
+    <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDoc.id}" data-loop-index="${no}">
         <div class="imcms-editor-area__content imcms-editor-content">${loopContent}</div>
         <div class="imcms-editor-area__control-wrap">
             <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
