@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
-import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
@@ -32,7 +31,7 @@ public class LoopService {
         this.versionService = versionService;
     }
 
-    public LoopDTO getLoop(int loopIndex, int docId) throws DocumentNotExistException {
+    public LoopDTO getLoop(int loopIndex, int docId) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(docId);
         final Loop loop = getOrCreateLoop(documentWorkingVersion, loopIndex);
         return loopToDtoMapper.apply(loop);
@@ -43,7 +42,7 @@ public class LoopService {
                 .orElseGet(() -> createLoop(documentWorkingVersion, loopIndex));
     }
 
-    public void saveLoop(LoopDTO loopDTO) throws DocumentNotExistException {
+    public void saveLoop(LoopDTO loopDTO) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopDTO.getDocId());
         final Loop loopForSave = loopDtoToLoop.apply(loopDTO, documentWorkingVersion);
         final Loop prevLoop = getOrCreateLoop(documentWorkingVersion, loopDTO.getLoopIndex());

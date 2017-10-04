@@ -6,8 +6,7 @@ import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop.Entry;
 import com.imcode.imcms.persistence.entity.Category;
 import com.imcode.imcms.persistence.entity.CategoryType;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject.TreeMenuItemDomainObject;
+import com.imcode.imcms.persistence.entity.MenuItem;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -50,21 +49,17 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<TreeMenuItemDomainObject, MenuElementDTO> treeMenuItemDomainObjectToMenuElementDTO() {
-        return new Function<TreeMenuItemDomainObject, MenuElementDTO>() {
+    public Function<MenuItem, MenuItemDTO> menuItemToDTO() {
+        return new Function<MenuItem, MenuItemDTO>() {
             @Override
-            public MenuElementDTO apply(TreeMenuItemDomainObject treeMenuItemDomainObject) {
-                final MenuItemDomainObject menuItem = treeMenuItemDomainObject.getMenuItem();
-
-                final Integer id = menuItem.getId();
-                final String title = menuItem.getDocument().getHeadline();
-                final List<MenuElementDTO> children = treeMenuItemDomainObject
-                        .getSubMenuItems()
-                        .stream()
+            public MenuItemDTO apply(MenuItem menuItem) {
+                final MenuItemDTO menuItemDTO = new MenuItemDTO();
+                menuItemDTO.setId(menuItem.getId());
+                menuItemDTO.setDocumentId(menuItem.getDocumentId());
+                menuItemDTO.setChildren(menuItem.getChildren().stream()
                         .map(this)
-                        .collect(Collectors.toList());
-
-                return new MenuElementDTO(id, title, children);
+                        .collect(Collectors.toList()));
+                return menuItemDTO;
             }
         };
     }

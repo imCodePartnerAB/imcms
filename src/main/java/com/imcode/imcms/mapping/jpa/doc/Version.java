@@ -11,6 +11,10 @@ import java.util.Date;
 @Table(name = "imcms_doc_versions")
 public class Version implements Cloneable, Serializable {
 
+    /**
+     * @deprecated need to make composite primary key from docId and no
+     */
+    @Deprecated
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -77,10 +81,12 @@ public class Version implements Cloneable, Serializable {
         return Objects.hashCode(id, no, docId, createdBy, createdDt, modifiedBy, modifiedDt);
     }
 
+    @Deprecated
     public Integer getId() {
         return id;
     }
 
+    @Deprecated
     public void setId(Integer id) {
         this.id = id;
     }

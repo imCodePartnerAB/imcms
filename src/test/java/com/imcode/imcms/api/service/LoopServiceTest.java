@@ -43,19 +43,19 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void getLoop_Expect_correctFieldsData() throws DocumentNotExistException {
+    public void getLoop_Expect_correctFieldsData() {
         final LoopDTO loop = loopService.getLoop(TEST_LOOP_INDEX, TEST_DOC_ID);
         assertEquals(TEST_LOOP_DTO, loop);
     }
 
     @Test(expected = DocumentNotExistException.class)
-    public void getLoop_When_DocNotExist_Expect_Exception() throws DocumentNotExistException {
+    public void getLoop_When_DocNotExist_Expect_Exception() {
         final int nonExistingDocId = 42;
         loopService.getLoop(TEST_LOOP_INDEX, nonExistingDocId); // should threw exception
     }
 
     @Test
-    public void getLoop_When_NotExist_ExpectEmptyLoop() throws DocumentNotExistException {
+    public void getLoop_When_NotExist_ExpectEmptyLoop() {
         final int nonExistingLoopIndex = 42;
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, nonExistingLoopIndex, Collections.emptyList());
         final LoopDTO loop = loopService.getLoop(nonExistingLoopIndex, TEST_DOC_ID);
@@ -65,7 +65,7 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void saveLoop_Expect_NotNullAndCorrectFieldsData() throws DocumentNotExistException {
+    public void saveLoop_Expect_NotNullAndCorrectFieldsData() {
         final int testLoopIndex = 23;
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopIndex, Collections.emptyList());
 
@@ -77,7 +77,7 @@ public class LoopServiceTest {
     }
 
     @Test
-    public void saveLoop_With_Entries_Expect_NotNullCorrectSizeAndValues() throws DocumentNotExistException {
+    public void saveLoop_With_Entries_Expect_NotNullCorrectSizeAndValues() {
         final List<LoopEntryDTO> entries = Arrays.asList(
                 new LoopEntryDTO(1, true),
                 new LoopEntryDTO(2, false),
