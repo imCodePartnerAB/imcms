@@ -42,7 +42,7 @@
     </imcms:menu>
     <div class="imcms-demo-page__content imcms-demo-content">
         <div class="imcms-demo-content__title">Start page</div>
-        <imcms:contentLoop no="1">
+        <imcms:contentLoop index="1">
             <imcms:loop>
                 <div class="imcms-demo-content__loop-content demo-loop-content">
                     <div class="demo-loop-content__image">Lorem ipsum dolor sit amet, consectetur adipiscing</div>
