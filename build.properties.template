@@ -14,9 +14,9 @@ server-name = http://localhost:8080
 db-host = localhost
 db-name = imcms
 db-user = root
-db-pass = root
+db-pass =
 db-maxconnections = 20
-hibernate-hbm2ddl-auto =
+hibernate-hbm2ddl-auto = validate
 
 # For MySQL
 db-target = mysql
