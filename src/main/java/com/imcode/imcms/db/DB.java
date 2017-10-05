@@ -8,9 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 public final class DB {
@@ -36,7 +34,7 @@ public final class DB {
         return Version.parse(versionStr);
     }
 
-    public synchronized void updateVersion(Version newVersion) {
+    private synchronized void updateVersion(Version newVersion) {
         logger.info("Updating database version from {} to {}.", getVersion(), newVersion);
         jdbcTemplate.update("UPDATE database_version SET major=?, minor=?", newVersion.getMajor(), newVersion.getMinor());
     }
@@ -55,29 +53,26 @@ public final class DB {
                 return dbVersion;
 
             case 1:
-                Optional.of(
-                        String.format(
-                                "Unexpected database version. Database version %s is greater that required version %s",
-                                requiredVersion, requiredVersion)
-                ).ifPresent(errorMsg -> {
-                    logger.error(errorMsg);
-                    throw new IllegalStateException(errorMsg);
-                });
+                String errorMsg = String.format(
+                        "Unexpected database version. Database version %s is greater that required version %s",
+                        requiredVersion, requiredVersion);
+
+                logger.error(errorMsg);
+                throw new IllegalStateException(errorMsg);
 
             default:
                 logger.info("Database have to be updated. Required version: {}, database version: {}", requiredVersion, dbVersion);
                 List<Diff> diffs = schema.diffsChainFrom(dbVersion);
 
                 if (diffs.isEmpty()) {
-                    Optional.of(String.format("No diff is available for version %s", dbVersion)).ifPresent(errorMsg -> {
-                        logger.error(errorMsg);
-                        throw new IllegalStateException(errorMsg);
-                    });
+                    final String errorMessage = String.format("No diff is available for version %s", dbVersion);
+                    logger.error(errorMessage);
+                    throw new IllegalStateException(errorMessage);
                 }
 
                 logger.info("The following diff will be applied: {}.", diffs);
 
-                diffs.stream().forEach(diff -> {
+                diffs.forEach(diff -> {
                     runScripts(diff.getScripts().stream().map(script -> scriptFullPath(schema, script)));
                     updateVersion(diff.getTo());
                 });
@@ -106,7 +101,7 @@ public final class DB {
         return update(schema);
     }
 
-    public synchronized void runScripts(Stream<String> scripts) {
+    private synchronized void runScripts(Stream<String> scripts) {
         jdbcTemplate.execute((ConnectionCallback<Void>) connection -> {
             IBatisPatchedScriptRunner scriptRunner = new IBatisPatchedScriptRunner(connection);
             scriptRunner.setAutoCommit(false);
@@ -125,11 +120,4 @@ public final class DB {
         });
     }
 
-    public synchronized void runScripts(Collection<String> scripts) {
-        runScripts(scripts.stream());
-    }
-
-    public JdbcTemplate getJdbcTemplate() {
-        return jdbcTemplate;
-    }
 }

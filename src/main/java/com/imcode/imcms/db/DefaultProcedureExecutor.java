@@ -5,7 +5,6 @@ import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import imcode.util.CachingFileLoader;
-import imcode.util.io.FileUtility;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.ArrayUtils;
@@ -13,10 +12,8 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -106,8 +103,13 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
     }
 
     protected File getFile(String wantedProcedure) {
-        return FileUtility.getFileFromWebappRelativePath("WEB-INF/sql/sprocs/"
-                + wantedProcedure.toLowerCase() + ".prc");
+        final URL procedureResource = Thread.currentThread()
+                .getContextClassLoader()
+                .getResource("sql/sprocs/" + wantedProcedure.toLowerCase() + ".prc");
+
+        return Optional.ofNullable(procedureResource)
+                .map(url -> new File(url.getPath()))
+                .orElseThrow(() -> new RuntimeException("SQL procedure resource not found in classpath!"));
     }
 
     private Map<String, Integer> getParameterNameToIndexMapParsedFromHeader(Pattern parameterPattern, String headerParameters) {

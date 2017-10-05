@@ -1,6 +1,5 @@
 package com.imcode.imcms.db;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.Validate;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -11,8 +10,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
@@ -26,10 +23,12 @@ public final class Schema {
     private final Init init;
     private final Set<Diff> diffs;
     private final String scriptsDir;
-    public Schema(Version version, Init init, Set<Diff> diffs) {
+
+    private Schema(Version version, Init init, Set<Diff> diffs) {
         this(version, init, diffs, "");
     }
-    public Schema(Version version, Init init, Set<Diff> diffs, String scriptsDir) {
+
+    private Schema(Version version, Init init, Set<Diff> diffs, String scriptsDir) {
         Validate.isTrue(diffs.size() == diffs.stream().map(Diff::getFrom).distinct().count(),
                 "diffs from version value must be distinct: %s", diffs);
 
@@ -47,19 +46,11 @@ public final class Schema {
         this.scriptsDir = scriptsDir;
     }
 
-    public static Schema fromFile(File file) {
-        try {
-            return fromXml(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static Schema fromInputStream(InputStream in) {
         return fromXml(new Scanner(in, StandardCharsets.UTF_8.name()).useDelimiter("\\Z").next());
     }
 
-    public static Schema fromXml(String xml) {
+    private static Schema fromXml(String xml) {
         try {
             Document document = DocumentBuilderFactory.newInstance()
                     .newDocumentBuilder()
@@ -126,7 +117,7 @@ public final class Schema {
         return diffs.stream().filter(d -> d.getFrom().equals(from)).findAny();
     }
 
-    public List<Diff> diffsChainFrom(Version version) {
+    List<Diff> diffsChainFrom(Version version) {
         return diffsChainFrom(diffs, version);
     }
 
@@ -138,11 +129,7 @@ public final class Schema {
         return init;
     }
 
-    public Set<Diff> getDiffs() {
-        return diffs;
-    }
-
-    public String getScriptsDir() {
+    String getScriptsDir() {
         return scriptsDir;
     }
 

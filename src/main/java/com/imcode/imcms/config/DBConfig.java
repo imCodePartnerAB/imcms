@@ -1,5 +1,7 @@
 package com.imcode.imcms.config;
 
+import com.imcode.imcms.db.DB;
+import com.imcode.imcms.db.Schema;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +16,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 @Configuration
@@ -54,6 +59,7 @@ public class DBConfig {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+        runSqlDiffs(dataSource);
         final LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactory.setDataSource(dataSource);
         entityManagerFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
@@ -62,6 +68,34 @@ public class DBConfig {
         entityManagerFactory.setPersistenceUnitName("com.imcode.imcms");
         entityManagerFactory.setJpaPropertyMap(createHibernateJpaProperties());
         return entityManagerFactory;
+    }
+
+    private void runSqlDiffs(DataSource dataSource) {
+        final URL sqlDiffsResource = Thread.currentThread()
+                .getContextClassLoader()
+                .getResource("sql");
+
+        final String sqlResourcesPath = Optional.ofNullable(sqlDiffsResource)
+                .orElseThrow(() -> new RuntimeException("SQL resources folder not found in classpath!"))
+                .getPath();
+
+        final InputStream inputStream = getDatabaseSchemaInputStream();
+        final Schema schema = Schema.fromInputStream(inputStream).setScriptsDir(sqlResourcesPath);
+
+        new DB(dataSource).prepare(schema);
+    }
+
+    private InputStream getDatabaseSchemaInputStream() {
+        final InputStream resourceAsStream = Thread.currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream("schema.xml");
+
+        if (resourceAsStream == null) {
+            String errMsg = "Database schema config file 'schema.xml' can not be found in the classpath.";
+            throw new RuntimeException(errMsg);
+        }
+
+        return resourceAsStream;
     }
 
     private Map<String, String> createHibernateJpaProperties() {

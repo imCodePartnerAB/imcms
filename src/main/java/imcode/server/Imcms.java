@@ -3,13 +3,10 @@ package imcode.server;
 import com.google.common.collect.Maps;
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
-import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentLanguageException;
 import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
-import com.imcode.imcms.db.Schema;
 import com.imcode.imcms.domain.service.api.ImageService;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image;
@@ -23,10 +20,8 @@ import imcode.util.PropertyManager;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
-import javax.servlet.ServletRequest;
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -40,11 +35,6 @@ public class Imcms {
     public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
 
     public static final String ERROR_LOGGER_URL = "https://errors.imcode.com/ErrorLogger";
-
-    /**
-     * Default SQL scripts directory path relative to deployment path
-     */
-    private static final String DEFAULT_SQL_SCRIPTS_PATH = "WEB-INF/sql";
 
     /**
      * Default Embedded SOLr home directory relative to deployment path
@@ -65,11 +55,6 @@ public class Imcms {
      * Spring-framework application context.
      */
     private static volatile ApplicationContext applicationContext;
-    private static volatile String sqlScriptsPath = DEFAULT_SQL_SCRIPTS_PATH;
-    /**
-     * Used to disable db init/upgrade on start.
-     */
-    private static volatile boolean prepareDatabaseOnStart = true;
     /**
      * Users associated with servlet requests.
      *
@@ -96,8 +81,6 @@ public class Imcms {
      * Initializes services.
      * <p>
      * Path and ApplicationContext must be set.
-     *
-     * @throws StartupException
      */
     public static synchronized void start() throws StartupException {
         try {
@@ -110,12 +93,8 @@ public class Imcms {
             }
 
             users = new InheritableThreadLocal<>();
-
-            if (prepareDatabaseOnStart) {
-                prepareDatabase();
-            }
-
             services = createServices();
+
             if (services.getDocumentMapper().getDocumentIndex().getService().rebuildIfEmpty().isDefined()) {
                 logger.info("Document index is empty, initiated index rebuild.");
             }
@@ -290,69 +269,14 @@ public class Imcms {
         return new DocumentLanguages(languages, languagesByHosts, languageMapper.getDefault());
     }
 
-    /**
-     * Inits and/or updates database if necessary.
-     */
-    public static void prepareDatabase() {
-        String sqlScriptsPath = getSQLScriptsPath();
-
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema.xml");
-
-        if (inputStream == null) {
-            String errMsg = "Database schema config file 'schema.xml' can not be found in the classpath.";
-            logger.fatal(errMsg);
-            throw new RuntimeException(errMsg);
-        }
-
-        logger.info("Loading database schema config from stream");
-        Schema schema = Schema.fromInputStream(inputStream);
-
-        DataSource dataSource = applicationContext.getBean("dataSource", DataSource.class);
-        DB db = new DB(dataSource);
-
-        db.prepare(schema.setScriptsDir(sqlScriptsPath));
-    }
-
-    public static String getSQLScriptsPath() {
+    private static String getSolrHome() {
         if (path == null) throw new IllegalStateException("Application path is not set.");
-        if (sqlScriptsPath == null) throw new IllegalStateException("SQL scripts path is not set.");
 
-        return sqlScriptsPath.startsWith("/")
-                ? sqlScriptsPath
-                : new File(path.getAbsolutePath(), sqlScriptsPath).getAbsolutePath();
-    }
-
-    public static void setSQLScriptsPath(String sqlScriptsPath) {
-        Imcms.sqlScriptsPath = sqlScriptsPath;
-    }
-
-    public static String getSolrHome() {
-        if (path == null) throw new IllegalStateException("Application path is not set.");
-        String solrHome = DEFAULT_SQLR_HOME;
-
-        return solrHome.startsWith("/")
-                ? solrHome
-                : new File(path.getAbsolutePath(), solrHome).getAbsolutePath();
-    }
-
-    public static ApplicationContext getApplicationContext() {
-        return applicationContext;
+        return new File(path.getAbsolutePath(), DEFAULT_SQLR_HOME).getAbsolutePath();
     }
 
     public static void setApplicationContext(ApplicationContext applicationContext) {
         Imcms.applicationContext = applicationContext;
-    }
-
-    public static boolean isPrepareDatabaseOnStart() {
-        return prepareDatabaseOnStart;
-    }
-
-    public static void setPrepareDatabaseOnStart(boolean prepareDatabaseOnStart) {
-        Imcms.prepareDatabaseOnStart = prepareDatabaseOnStart;
-    }
-
-    public static ContentManagementSystem fromRequest(ServletRequest request) {
-        return ContentManagementSystem.fromRequest(request);
     }
 
     /**
@@ -365,14 +289,16 @@ public class Imcms {
     /**
      * Regenerating images according to DB(Generates last version of generated image)
      */
-    public static void regenerateImages() {
+    private static void regenerateImages() {
         // this method should not be here!!!
         Collection<Image> allImages = applicationContext.getBean(ImageService.class).getAllGeneratedImages();
         allImages.forEach((img) -> ImcmsImageUtils.generateImage(ImcmsImageUtils.toDomainObject(img), false));
     }
 
     public static class StartupException extends RuntimeException {
-        public StartupException(String message, Exception e) {
+        private static final long serialVersionUID = -8220639564136797058L;
+
+        StartupException(String message, Exception e) {
             super(message, e);
         }
     }
