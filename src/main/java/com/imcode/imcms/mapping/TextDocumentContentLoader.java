@@ -276,7 +276,7 @@ public class TextDocumentContentLoader {
         return menuDO;
     }
 
-    private Loop toApiObject(com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop jpaLoop) {
+    private Loop toApiObject(com.imcode.imcms.persistence.entity.Loop jpaLoop) {
         if (jpaLoop == null) {
             return null;
 

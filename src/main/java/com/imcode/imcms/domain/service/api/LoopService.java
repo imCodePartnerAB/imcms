@@ -2,7 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
+import com.imcode.imcms.persistence.entity.Loop;
 import com.imcode.imcms.persistence.repository.LoopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
