@@ -25,7 +25,7 @@ public class MappingConfig {
 
     @Bean
     public Function<Entry, LoopEntryDTO> loopEntryToLoopEntryDTO() {
-        return entry -> new LoopEntryDTO(entry.getNo(), entry.isEnabled());
+        return entry -> new LoopEntryDTO(entry.getIndex(), entry.isEnabled());
     }
 
     @Bean
@@ -42,9 +42,7 @@ public class MappingConfig {
                     .map(loopEntryDtoToEntry)
                     .collect(Collectors.toList());
 
-            final int nextEntryNo = Math.max(1, entries.size());
-
-            return new Loop(version, loopDTO.getLoopIndex(), nextEntryNo, entries);
+            return new Loop(version, loopDTO.getLoopIndex(), entries);
         };
     }
 
@@ -73,7 +71,7 @@ public class MappingConfig {
                     .map(loopEntryToDtoMapper)
                     .collect(Collectors.toList());
 
-            return new LoopDTO(loop.getVersion().getDocId(), loop.getNo(), loopEntryDTOs);
+            return new LoopDTO(loop.getVersion().getDocId(), loop.getIndex(), loopEntryDTOs);
         };
     }
 

@@ -38,7 +38,7 @@ public class LoopService {
     }
 
     private Loop getOrCreateLoop(Version documentWorkingVersion, int loopIndex) {
-        return Optional.ofNullable(loopRepository.findByVersionAndNo(documentWorkingVersion, loopIndex))
+        return Optional.ofNullable(loopRepository.findByVersionAndIndex(documentWorkingVersion, loopIndex))
                 .orElseGet(() -> createLoop(documentWorkingVersion, loopIndex));
     }
 

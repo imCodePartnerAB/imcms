@@ -116,16 +116,15 @@ public class TextDocumentContentSaver {
     }
 
     private void createLoops(TextDocumentDomainObject textDocument, Version version) {
-        textDocument.getLoops().forEach((loopNo, loopDO) -> {
+        textDocument.getLoops().forEach((index, loopDO) -> {
             Loop loop = new Loop();
             List<Loop.Entry> items = new LinkedList<>();
 
-            loopDO.getEntries().forEach((entryNo, enabled) -> items.add(new Loop.Entry(entryNo, enabled)));
+            loopDO.getEntries().forEach((entryIndex, enabled) -> items.add(new Loop.Entry(entryIndex, enabled)));
 
             loop.setVersion(version);
-            loop.setNo(loopNo);
+            loop.setIndex(index);
             loop.setEntries(items);
-            loop.setNextEntryNo(items.stream().mapToInt(Loop.Entry::getNo).max().orElse(1) + 1);
 
             loopRepository.save(loop);
         });
@@ -133,7 +132,7 @@ public class TextDocumentContentSaver {
 
     public void saveLoop(TextDocLoopContainer container) {
         Version version = findVersion(container);
-        Integer id = loopRepository.findIdByVersionAndNo(version, container.getLoopNo());
+        Integer id = loopRepository.findIdByVersionAndIndex(version, container.getLoopNo());
         Loop loop = toJpaObject(container);
         loop.setId(id);
 
@@ -324,23 +323,21 @@ public class TextDocumentContentSaver {
     private void createLoopEntryIfNotExists(Version version, LoopEntryRef entryRef) {
         if (entryRef == null) return;
 
-        Loop loop = loopRepository.findByVersionAndNo(
+        Loop loop = loopRepository.findByVersionAndIndex(
                 version, entryRef.getLoopNo());
-        int entryNo = entryRef.getEntryNo();
-        int loopNo = entryRef.getLoopNo();
+        int entryIndex = entryRef.getEntryNo();
+        int loopIndex = entryRef.getLoopNo();
 
         if (loop == null) {
             loop = new Loop();
             loop.setVersion(version);
-            loop.setNo(loopNo);
-            loop.getEntries().add(new Loop.Entry(entryNo));
+            loop.setIndex(loopIndex);
+            loop.getEntries().add(new Loop.Entry(entryIndex));
         } else {
             if (!loop.containsEntry(entryRef.getEntryNo())) {
-                loop.getEntries().add(new Loop.Entry(entryNo));
+                loop.getEntries().add(new Loop.Entry(entryIndex));
             }
         }
-        loop.setNextEntryNo(loop.getEntries().stream()
-                .mapToInt(Loop.Entry::getNo).max().orElse(1) + 1);
         loopRepository.save(loop);
     }
 
@@ -429,8 +426,7 @@ public class TextDocumentContentSaver {
                 new Loop(),
                 l -> {
                     l.setEntries(entries);
-                    l.setNo(loopNo);
-                    l.setNextEntryNo(loopDO.getNextEntryNo());
+                    l.setIndex(loopNo);
                     l.setVersion(version);
                 }
         );

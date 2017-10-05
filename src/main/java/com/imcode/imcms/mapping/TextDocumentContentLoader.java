@@ -235,7 +235,7 @@ public class TextDocumentContentLoader {
     public Map<Integer, Loop> getLoops(VersionRef versionRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
-        return loopRepository.findByVersion(version).stream().collect(toMap(loop -> loop.getNo(), this::toApiObject));
+        return loopRepository.findByVersion(version).stream().collect(toMap(loop -> loop.getIndex(), this::toApiObject));
     }
 
 
@@ -282,8 +282,8 @@ public class TextDocumentContentLoader {
 
         } else {
             Map<Integer, Boolean> entries = new ListOrderedMap<>();
-            jpaLoop.getEntries().forEach(entry -> entries.put(entry.getNo(), entry.isEnabled()));
-            return Loop.of(entries, jpaLoop.getNextEntryNo());
+            jpaLoop.getEntries().forEach(entry -> entries.put(entry.getIndex(), entry.isEnabled()));
+            return Loop.of(entries);
         }
     }
 }

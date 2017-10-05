@@ -14,10 +14,10 @@ public interface LoopRepository extends JpaRepository<Loop, Integer> {
     @Query("SELECT l FROM Loop l WHERE l.version = ?1")
     List<Loop> findByVersion(Version version);
 
-    @Query("SELECT l FROM Loop l WHERE l.version = ?1 AND l.no = ?2")
-    Loop findByVersionAndNo(Version version, int no);
+    @Query("SELECT l FROM Loop l WHERE l.version = ?1 AND l.index = ?2")
+    Loop findByVersionAndIndex(Version version, int index);
 
-    @Query("SELECT l.id FROM Loop l WHERE l.version = ?1 AND l.no = ?2")
-    Integer findIdByVersionAndNo(Version version, int no);
+    @Query("SELECT l.id FROM Loop l WHERE l.version = ?1 AND l.index = ?2")
+    Integer findIdByVersionAndIndex(Version version, int index);
 
 }

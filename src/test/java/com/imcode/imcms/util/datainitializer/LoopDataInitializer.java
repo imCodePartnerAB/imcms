@@ -29,9 +29,8 @@ public class LoopDataInitializer extends RepositoryTestDataCleaner {
         final Version testVersion = versionDataInitializer.createData(TEST_VERSION_NO, loopDTO.getDocId());
         final Loop testLoop = Value.with(new Loop(), loop -> {
             loop.setVersion(testVersion);
-            loop.setNo(loopDTO.getLoopIndex());
+            loop.setIndex(loopDTO.getLoopIndex());
             loop.setEntries(Collections.emptyList());
-            loop.setNextEntryNo(1);
         });
         loopRepository.saveAndFlush(testLoop);
     }

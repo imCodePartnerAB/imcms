@@ -47,13 +47,13 @@ public class LoopRepositoryTest {
         );
 
         loopRepository.saveAndFlush(
-                new Loop(version, 1, 2, Collections.singletonList(new Loop.Entry(1)))
+                new Loop(version, 1, Collections.singletonList(new Loop.Entry(1)))
         );
         loopRepository.saveAndFlush(
-                new Loop(version, 2, 3, Arrays.asList(new Loop.Entry(1), new Loop.Entry(2)))
+                new Loop(version, 2, Arrays.asList(new Loop.Entry(1), new Loop.Entry(2)))
         );
         loopRepository.saveAndFlush(
-                new Loop(version, 3, 4, Arrays.asList(
+                new Loop(version, 3, Arrays.asList(
                         new Loop.Entry(1),
                         new Loop.Entry(2),
                         new Loop.Entry(3)
@@ -72,9 +72,9 @@ public class LoopRepositoryTest {
     @Test
     public void testFindByDocVersionAndNoExpectNotNullResults() {
         Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
-        Loop loop1 = loopRepository.findByVersionAndNo(version, 1);
-        Loop loop2 = loopRepository.findByVersionAndNo(version, 2);
-        Loop loop3 = loopRepository.findByVersionAndNo(version, 3);
+        Loop loop1 = loopRepository.findByVersionAndIndex(version, 1);
+        Loop loop2 = loopRepository.findByVersionAndIndex(version, 2);
+        Loop loop3 = loopRepository.findByVersionAndIndex(version, 3);
 
         assertNotNull(loop1);
         assertNotNull(loop2);
@@ -84,9 +84,9 @@ public class LoopRepositoryTest {
     @Test
     public void testSavedDataExpectEqualNoAndDocId() {
         Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
-        Loop loop1 = loopRepository.findByVersionAndNo(version, 1);
+        Loop loop1 = loopRepository.findByVersionAndIndex(version, 1);
 
-        assertEquals(loop1.getNo(), Integer.valueOf(1));
+        assertEquals(loop1.getIndex(), Integer.valueOf(1));
         assertEquals(loop1.getVersion().getDocId(), Integer.valueOf(DOC_VERSION_REF.getDocId()));
     }
 }

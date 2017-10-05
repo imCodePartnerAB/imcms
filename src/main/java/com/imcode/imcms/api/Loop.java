@@ -5,20 +5,11 @@ import java.util.*;
 public final class Loop {
 
     private final Map<Integer, Boolean> entries;
-    private final int nextEntryNo;
     private final int cachedHashCode;
 
     public Loop(Map<Integer, Boolean> entries, int nextEntryNo) {
-        int minAllowedNextEntryNo = entries.keySet().stream().mapToInt(Integer::intValue).max().orElse(0) + 1;
-        if (nextEntryNo < minAllowedNextEntryNo) {
-            throw new IllegalArgumentException(
-                    String.format("nextEntryNo must be >= %d but was %d, entries: %s",
-                            minAllowedNextEntryNo, nextEntryNo, entries)
-            );
-        }
 
         this.entries = Collections.unmodifiableMap(new LinkedHashMap<>(entries));
-        this.nextEntryNo = nextEntryNo;
         this.cachedHashCode = Objects.hash(entries, nextEntryNo);
     }
 
@@ -42,7 +33,6 @@ public final class Loop {
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("entries", entries)
-                .add("nextEntryNo", nextEntryNo)
                 .toString();
     }
 
@@ -70,14 +60,6 @@ public final class Loop {
 
     public Optional<Integer> getLastEntryIndex() {
         return entries.keySet().stream().max(Integer::compare).flatMap(this::findEntryIndexByNo);
-    }
-
-    public int getNextEntryNo() {
-        return nextEntryNo;
-    }
-
-    public LoopOps ops() {
-        return new LoopOps(this);
     }
 
     public Optional<Integer> findEntryIndexByNo(int no) {

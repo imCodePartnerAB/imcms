@@ -2,6 +2,10 @@ package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.VersionedContent;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -18,126 +22,77 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "imcms_text_doc_content_loops")
+@ToString
+@EqualsAndHashCode(callSuper = false)
+@Getter
+@Setter
 public class Loop extends VersionedContent {
 
     @Min(1)
     @NotNull
-    @Column(updatable = false)
-    private Integer no;
-    @Min(1)
-    @NotNull
-    @Column(name = "next_content_no")
-    private Integer nextEntryNo;
+    @Column(name = "`index`", updatable = false)
+    private Integer index;
+
     @ElementCollection
     @CollectionTable(
             name = "imcms_text_doc_contents",
             joinColumns = @JoinColumn(name = "loop_id")
     )
-    @OrderColumn(name = "ix")
+    @OrderColumn(name = "order_index")
     private List<Entry> entries = new LinkedList<>();
 
     public Loop() {
     }
 
-    public Loop(Integer id, Version version, Integer no, Integer nextEntryNo, List<Entry> entries) {
+    public Loop(Integer id, Version version, Integer index, List<Entry> entries) {
         setId(id);
         setVersion(version);
-        this.no = no;
-        this.nextEntryNo = nextEntryNo;
+        this.index = index;
         this.entries = new LinkedList<>(entries);
     }
 
-    public Loop(Version version, Integer no, Integer nextEntryNo, List<Entry> entries) {
-        this(null, version, no, nextEntryNo, entries);
+    public Loop(Version version, Integer index, List<Entry> entries) {
+        this(null, version, index, entries);
     }
 
     public static Loop emptyLoop(Version version, Integer index) {
-        return new Loop(version, index, 1, Collections.emptyList());
+        return new Loop(version, index, Collections.emptyList());
     }
 
-    @Override
-    public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("id", getId())
-                .add("docVersion", getVersion())
-                .add("no", no)
-                .add("entries", entries).toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getVersion(), no, entries);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o == this || (o instanceof Loop && equals((Loop) o));
-    }
-
-    private boolean equals(Loop that) {
-        return Objects.equals(getId(), that.getId())
-                && Objects.equals(getVersion(), that.getVersion())
-                && Objects.equals(no, that.no)
-                && Objects.equals(entries, that.entries);
-    }
-
-    public boolean containsEntry(int entryNo) {
-        return entries.stream().anyMatch(entry -> entry.no == entryNo);
-    }
-
-    public Integer getNo() {
-        return no;
-    }
-
-    public void setNo(Integer no) {
-        this.no = no;
-    }
-
-    public List<Entry> getEntries() {
-        return entries;
-    }
-
-    public void setEntries(List<Entry> items) {
-        this.entries = items;
-    }
-
-    public Integer getNextEntryNo() {
-        return nextEntryNo;
-    }
-
-    public void setNextEntryNo(Integer nextEntryNo) {
-        this.nextEntryNo = nextEntryNo;
+    public boolean containsEntry(int entryIndex) {
+        return entries.stream().anyMatch(entry -> entry.index == entryIndex);
     }
 
     @Embeddable
     public static class Entry {
 
-        private int no;
+        @Column(name = "`index`")
+        private int index;
 
         private boolean enabled;
 
         public Entry() {
         }
 
-        public Entry(int no) {
-            this(no, true);
+        public Entry(int index) {
+            this(index, true);
         }
 
-        public Entry(int no, boolean enabled) {
-            this.no = no;
+        public Entry(int index, boolean enabled) {
+            this.index = index;
             this.enabled = enabled;
         }
 
         @Override
         public String toString() {
             return com.google.common.base.Objects.toStringHelper(this)
-                    .add("no", no)
+                    .add("index", index)
                     .add("enabled", enabled).toString();
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(no, enabled);
+            return Objects.hash(index, enabled);
         }
 
         @Override
@@ -146,15 +101,15 @@ public class Loop extends VersionedContent {
         }
 
         private boolean equals(Entry that) {
-            return this.enabled == that.enabled && this.no == that.no;
+            return this.enabled == that.enabled && this.index == that.index;
         }
 
-        public int getNo() {
-            return no;
+        public int getIndex() {
+            return index;
         }
 
-        public void setNo(int no) {
-            this.no = no;
+        public void setIndex(int index) {
+            this.index = index;
         }
 
         public boolean isEnabled() {
