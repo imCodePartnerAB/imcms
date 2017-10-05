@@ -35,7 +35,7 @@ public class Images implements Serializable {
     @Column(name = "image_nm", length = 255, nullable = false)
     private String imageNm = "";
 
-    @Column(name = "format", nullable = false)
+    @Column(name = "format", nullable = false, columnDefinition = "smallint")
     private int format;
 
     @Column(name = "width", nullable = false)
@@ -301,11 +301,7 @@ public class Images implements Serializable {
         }
 
         final Images other = (Images) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-
-        return true;
+        return this.id == other.id;
     }
 
     @Override

@@ -41,13 +41,13 @@ public class Meta {
     @Column(name = "owner_id", nullable = false)
     private Integer creatorId;
     // CHECKED
-    @Column(name = "permissions", nullable = false)
+    @Column(name = "permissions", nullable = false, columnDefinition = "int")
     private Boolean restrictedOneMorePrivilegedThanRestrictedTwo;
     // CHECKED
-    @Column(name = "shared", nullable = false)
+    @Column(name = "shared", nullable = false, columnDefinition = "int")
     private Boolean linkableByOtherUsers;
     // CHECKED
-    @Column(name = "show_meta", nullable = false)
+    @Column(name = "show_meta", nullable = false, columnDefinition = "int")
     private Boolean linkedForUnauthorizedUsers;
     /**
      * Deprecated with no replacement.
@@ -65,7 +65,7 @@ public class Meta {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDatetime;
     // CHECKED
-    @Column(name = "disable_search", nullable = false)
+    @Column(name = "disable_search", nullable = false, columnDefinition = "int")
     private boolean searchDisabled;
     // CHECKED
     @Column(name = "target", nullable = false)
@@ -112,7 +112,7 @@ public class Meta {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "roles_rights", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "role_id")
-    @Column(name = "set_id")
+    @Column(name = "set_id", columnDefinition = "smallint")
     private Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<>();
     /**
      * Limited 1 permission set's bits for new document.
@@ -393,7 +393,7 @@ public class Meta {
     /**
      * Document show mode for disabled language.
      */
-    public static enum DisabledLanguageShowMode {
+    public enum DisabledLanguageShowMode {
         SHOW_IN_DEFAULT_LANGUAGE,
         DO_NOT_SHOW,
     }

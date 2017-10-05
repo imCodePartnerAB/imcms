@@ -27,7 +27,7 @@ public class Language implements Serializable, Cloneable {
     @Column(name = "native_name")
     private String nativeName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "tinyint")
     private boolean enabled;
 
     public Language() {

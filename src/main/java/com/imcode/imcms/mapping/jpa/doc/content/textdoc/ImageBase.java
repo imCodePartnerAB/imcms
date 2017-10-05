@@ -43,12 +43,12 @@ public class ImageBase extends VersionedI18nContent {
 
     private Integer type;
 
-    @Column(name = "format", nullable = false)
+    @Column(name = "format", nullable = false, columnDefinition = "smallint")
     private int format;
 
     private ImageCropRegion cropRegion = new ImageCropRegion();
 
-    @Column(name = "rotate_angle", nullable = false)
+    @Column(name = "rotate_angle", nullable = false, columnDefinition = "smallint")
     private int rotateAngle;
 
     @Column(name = "gen_file")

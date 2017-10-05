@@ -20,8 +20,8 @@ public class FileDocFile extends VersionedContent {
     @Column(name = "filename")
     private String filename;
 
-    @Column(name = "created_as_image")
-    private Boolean createdAsImage;
+    @Column(name = "created_as_image", columnDefinition = "INT")
+    private boolean createdAsImage;
 
     @Column(name = "mime")
     private String mimeType;
@@ -40,11 +40,11 @@ public class FileDocFile extends VersionedContent {
         this.filename = filename;
     }
 
-    public Boolean getCreatedAsImage() {
+    public boolean isCreatedAsImage() {
         return createdAsImage;
     }
 
-    public void setCreatedAsImage(Boolean createdAsImage) {
+    public void setCreatedAsImage(boolean createdAsImage) {
         this.createdAsImage = createdAsImage;
     }
 

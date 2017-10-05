@@ -46,7 +46,7 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
             file.setFilename(item.getFilename());
             file.setMimeType(item.getMimeType());
-            file.setCreatedAsImage(item.getCreatedAsImage());
+            file.setCreatedAsImage(item.isCreatedAsImage());
 
             File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getVersionRef(), fileId);
             if (!fileForFileDocument.exists()) {

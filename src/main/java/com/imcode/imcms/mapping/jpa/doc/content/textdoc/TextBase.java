@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
 import com.imcode.imcms.mapping.jpa.doc.content.VersionedI18nContent;
 
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
@@ -14,6 +15,7 @@ public class TextBase extends VersionedI18nContent {
     @NotNull
     private TextType type;
 
+    @Column(columnDefinition = "longtext")
     private String text;
 
     private LoopEntryRef loopEntryRef;

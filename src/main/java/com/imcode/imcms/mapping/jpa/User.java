@@ -48,6 +48,7 @@ public class User {
     @NotNull
     @Column(name = "email")
     private String email = "";
+    @Column(columnDefinition = "int")
     private boolean active = true;
     @NotNull
     @Column(name = "create_date")
@@ -56,6 +57,7 @@ public class User {
     @Column(name = "language")
     private String languageIso639_2 = "";
     @NotNull
+    @Column(columnDefinition = "int")
     private boolean external;
     @Column(name = "remember_cd")
     private String rememberCd;
@@ -65,7 +67,7 @@ public class User {
     @Column(name = "session_id")
     private String sessionId;
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "login_password_is_encrypted")
+    @Column(name = "login_password_is_encrypted", columnDefinition = "bit")
     private PasswordType passwordType = PasswordType.UNENCRYPTED;
     @Embedded
     private PasswordReset passwordReset;

@@ -91,7 +91,7 @@ public class Exif implements Serializable {
     @Column(name = "color_space")
     private String colorSpace;
 
-    @Column(name = "resolution_unit")
+    @Column(name = "resolution_unit", columnDefinition = "smallint")
     private Integer resolutionUnit;
 
     @Column(name = "pixel_x_dimension")
@@ -350,11 +350,7 @@ public class Exif implements Serializable {
             return false;
         }
 
-        if (this.type != other.type) {
-            return false;
-        }
-
-        return true;
+        return this.type == other.type;
     }
 
     @Override
