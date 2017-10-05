@@ -2,22 +2,19 @@
 <%@ taglib prefix="imcms" uri="imcms" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
-<%--@elvariable id="loop" type="com.imcode.imcms.api.Loop"--%>
-<%--@elvariable id="loopNo" type="java.lang.Integer"--%>
-<%--@elvariable id="loopDoc" type="com.imcode.imcms.api.TextDocument"--%>
+<%--@elvariable id="loop" type="com.imcode.imcms.domain.dto.LoopDTO"--%>
 
 <%@ variable name-given="entryNo" scope="NESTED" variable-class="java.lang.Integer" %>
-<%@ variable name-given="loopItem" scope="NESTED" variable-class="com.imcode.imcms.api.TextDocument.LoopItem " %>
-<%@ variable name-given="loopEntryRef" scope="NESTED" variable-class="com.imcode.imcms.mapping.container.LoopEntryRef  " %>
+<%@ variable name-given="loopItem" scope="NESTED" variable-class="com.imcode.imcms.domain.dto.LoopEntryDTO" %>
 
 <c:forEach var="loopEntry" items="${loop.entries}" varStatus="status">
-    <c:set var="entryNo" value="${status.index}" scope="request"/>
-    <c:set var="loopItem" value="${imcms:createLoopItem(loopEntry, loopNo, loopDoc.internal)}" scope="request"/>
-    <c:set var="loopEntryRef" value="${loopItem.loopEntryRef}" scope="request"/>
+    <c:if test="${loopEntry.enabled}">
+        <c:set var="loopItem" value="${loopEntry}" scope="request"/>
+        <c:set var="entryNo" value="${loopItem.no}" scope="request"/>
 
-    <jsp:doBody/>
+        <jsp:doBody/>
 
-    <c:remove var="loopItem"/>
-    <c:remove var="loopEntryRef"/>
-    <c:remove var="entryNo"/>
+        <c:remove var="loopItem"/>
+        <c:remove var="entryNo"/>
+    </c:if>
 </c:forEach>
