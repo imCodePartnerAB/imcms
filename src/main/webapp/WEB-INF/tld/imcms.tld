@@ -597,11 +597,4 @@
             imcode.server.document.DocumentDomainObject)
         </function-signature>
     </function>
-
-    <function>
-        <name>createLoopItem</name>
-        <function-class>com.imcode.imcms.web.tag.Functions</function-class>
-        <function-signature>com.imcode.imcms.api.TextDocument.LoopItem createLoopItem(java.lang.Object,int,imcode.server.document.textdocument.TextDocumentDomainObject)
-        </function-signature>
-    </function>
 </taglib>
