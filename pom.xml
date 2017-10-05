@@ -169,7 +169,7 @@
                         <version>1.5.1</version>
                         <executions>
                             <execution>
-                                <phase>prepare-package</phase>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>compress</goal>
                                 </goals>
@@ -177,7 +177,6 @@
                         </executions>
                         <configuration>
                             <nosuffix>true</nosuffix>
-                            <suffix>.min</suffix>
                             <jswarn>false</jswarn>
                         </configuration>
                     </plugin>
@@ -195,7 +194,7 @@
                         <version>1.5.1</version>
                         <executions>
                             <execution>
-                                <phase>prepare-package</phase>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>compress</goal>
                                 </goals>
@@ -206,12 +205,6 @@
                                 <!-- do not minify in this profile for dev purposes -->
                                 <exclude>**/*.*</exclude>
                             </excludes>
-
-                            <aggregations>
-                                <aggregation>
-                                    <removeIncluded>false</removeIncluded>
-                                </aggregation>
-                            </aggregations>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -865,65 +858,21 @@
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
                 <version>1.5.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <force>true</force>
-                    <sourceDirectory>${project.basedir}/src/main/webapp</sourceDirectory>
-                    <outputDirectory>${build.webapp.dir}/</outputDirectory>
-
                     <excludes>
                         <!--excluding already minified files-->
-                        <!--<exclude>**/**</exclude>-->
                         <exclude>**/*.min.js</exclude>
                         <exclude>**/*.min.css</exclude>
                     </excludes>
-
-                    <aggregations>
-                        <aggregation>
-                            <insertNewLine>true</insertNewLine>
-                            <removeIncluded>true</removeIncluded>
-                            <output>${build.webapp.dir}/application.min.js</output>
-                            <inputDir>${build.webapp.dir}/</inputDir>
-                            <includes>
-                                <!--libs-->
-                                <include>**/tree.jquery.js</include>
-                                <include>**/jquery.nearest.min.js</include>
-                                <include>**/prism/prism.js</include>
-                                <include>**/jqtree/tree.jquery.js</include>
-                                <include>**/jquery.i18n.properties.min.js</include>
-                                <!--imcms files-->
-                                <include>**/JSFormBuilder.js</include>
-                                <include>**/imcms_addons.js</include>
-                                <include>**/imcms_linker.js</include>
-                                <include>**/imcms_rest_api.js</include>
-                                <include>**/imcms_simple_api_factory.js</include>
-                                <include>**/imcms_editors.js</include>
-                                <include>**/imcms_bootstrap.js</include>
-                                <include>**/imcms_frame_builder.js</include>
-                                <include>**/imcms_connector.js</include>
-                                <include>**/imcms_adminpanel.js</include>
-                                <include>**/imcms_logger.js</include>
-                                <include>**/imcms_utils.js</include>
-                                <include>**/imcms_backgroundworker.js</include>
-                                <include>**/imcms_ckeditor_extension.js</include>
-                                <include>**/imcms_events.js</include>
-                                <include>**/imcms_loop.js</include>
-                                <include>**/imcms_menu.js</include>
-                                <include>**/imcms_text.js</include>
-                                <include>**/imcms_document.js</include>
-                                <include>**/imcms_file.js</include>
-                                <include>**/imcms_folder.js</include>
-                                <include>**/imcms_content.js</include>
-                                <include>**/imcms_image.js</include>
-                                <include>**/imcms_start.js</include>
-                            </includes>
-                            <excludes>
-                                <!--excluding lang files from packaging-->
-                                <exclude>**/ckeditor/lang/*.js</exclude>
-                                <exclude>**/ckeditor/plugins/*/lang/*.js</exclude>
-                                <exclude>**/ckeditor/plugins/*/*/lang/*.js</exclude>
-                            </excludes>
-                        </aggregation>
-                    </aggregations>
                 </configuration>
             </plugin>
 
