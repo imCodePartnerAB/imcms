@@ -9,6 +9,7 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
+import com.imcode.imcms.persistence.repository.LoopRepository;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import imcode.util.ImcmsImageUtils;
@@ -18,8 +19,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;

@@ -3,7 +3,7 @@ package com.imcode.imcms.util.datainitializer;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopRepository;
+import com.imcode.imcms.persistence.repository.LoopRepository;
 import com.imcode.imcms.util.RepositoryTestDataCleaner;
 import com.imcode.imcms.util.Value;
 import org.springframework.beans.factory.annotation.Autowired;

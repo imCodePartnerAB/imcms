@@ -1,4 +1,4 @@
-package com.imcode.imcms.domain.service;
+package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.util.datainitializer.CategoryDataInitializer;

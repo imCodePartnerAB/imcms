@@ -1,9 +1,11 @@
-package com.imcode.imcms.mapping.jpa.doc.content;
+package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
+import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import com.imcode.imcms.util.RepositoryTestDataCleaner;
 import com.imcode.imcms.util.datainitializer.VersionDataInitializer;
 import org.junit.Before;

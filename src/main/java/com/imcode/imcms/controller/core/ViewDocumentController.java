@@ -1,4 +1,4 @@
-package com.imcode.imcms.controller;
+package com.imcode.imcms.controller.core;
 
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.api.TextDocumentViewing;
@@ -12,7 +12,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.util.Optional;
 
 import static imcode.server.ImcmsConstants.PERM_EDIT_DOCUMENT;

@@ -1,4 +1,4 @@
-package com.imcode.imcms.domain.service;
+package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.persistence.entity.Category;

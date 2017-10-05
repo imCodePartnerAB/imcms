@@ -1,4 +1,4 @@
-package com.imcode.imcms.controller;
+package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.api.MenuService;

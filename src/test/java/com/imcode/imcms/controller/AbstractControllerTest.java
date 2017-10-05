@@ -22,24 +22,24 @@ public abstract class AbstractControllerTest {
 
     protected abstract String controllerPath();
 
-    ResultActions performRequestBuilderExpectedOk(MockHttpServletRequestBuilder builder) throws Exception {
+    protected ResultActions performRequestBuilderExpectedOk(MockHttpServletRequestBuilder builder) throws Exception {
         return mockMvc.perform(builder).andExpect(status().isOk());
     }
 
-    ResultActions performRequestBuilderExpectedOkAndContentJsonUtf8(MockHttpServletRequestBuilder builder) throws Exception {
+    protected ResultActions performRequestBuilderExpectedOkAndContentJsonUtf8(MockHttpServletRequestBuilder builder) throws Exception {
         return performRequestBuilderExpectedOk(builder)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
     }
 
-    void performRequestBuilderExpectedOkAndJsonContentEquals(MockHttpServletRequestBuilder builder, String expectedJson) throws Exception {
+    protected void performRequestBuilderExpectedOkAndJsonContentEquals(MockHttpServletRequestBuilder builder, String expectedJson) throws Exception {
         performRequestBuilderExpectedOkAndContentJsonUtf8(builder).andExpect(content().json(expectedJson));
     }
 
-    void getAllExpectedOkAndJsonContentEquals(String expectedJson) throws Exception {
+    protected void getAllExpectedOkAndJsonContentEquals(String expectedJson) throws Exception {
         performRequestBuilderExpectedOkAndJsonContentEquals(get(controllerPath()), expectedJson);
     }
 
-    String asJson(Object object) throws JsonProcessingException {
+    protected String asJson(Object object) throws JsonProcessingException {
         return objectMapper.writeValueAsString(object);
     }
 
