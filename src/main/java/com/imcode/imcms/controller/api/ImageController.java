@@ -1,4 +1,4 @@
-package com.imcode.imcms.servlet.apis;
+package com.imcode.imcms.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.api.DocumentLanguage;
@@ -9,6 +9,8 @@ import com.imcode.imcms.mapping.TextDocumentContentSaver;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocImageContainer;
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
+import com.imcode.imcms.servlet.apis.FileController;
+import com.imcode.imcms.servlet.apis.FolderController;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
