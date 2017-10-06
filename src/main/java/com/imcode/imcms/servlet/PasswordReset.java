@@ -18,10 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -69,11 +66,6 @@ public class PasswordReset extends HttpServlet {
      * Password edit request required valid reset-id parameter.
      * <p/>
      * Forwards to 404 if request parameters do not met requirements.
-     *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Op op = getOp(request);
@@ -89,11 +81,6 @@ public class PasswordReset extends HttpServlet {
 
     /**
      * Handles password recovery email sending and new password saving.
-     *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Op op = getOp(request);
@@ -152,13 +139,10 @@ public class PasswordReset extends HttpServlet {
     }
 
     private void setValidationErrors(HttpServletRequest request, String first, String... rest) {
-        List<String> errors = new LinkedList<String>();
+        List<String> errors = new LinkedList<>();
 
         errors.add(first);
-
-        for (String error : rest) {
-            errors.add(error);
-        }
+        errors.addAll(Arrays.asList(rest));
 
         request.setAttribute(REQUEST_ATTR_VALIDATION_ERRORS, errors);
     }
@@ -245,42 +229,34 @@ public class PasswordReset extends HttpServlet {
     }
 
     private void asyncSendPasswordResetURL(final UserIdentity userAndEmail, final String serverName, final String url) {
-        emailSender.submit(new Runnable() {
-            public void run() {
-                UserDomainObject user = userAndEmail.user();
-                String emailAddress = userAndEmail.identity();
+        emailSender.submit(() -> {
+            final UserDomainObject user = userAndEmail.user();
+            final String emailAddress = userAndEmail.identity();
+            final String loginName = user.getLoginName();
 
-                try {
-                    logger.debug(String.format(
-                            "Sending password reset URL to the user %s, using e-mail address %s.", user, emailAddress));
+            try {
+                logger.debug(String.format(
+                        "Sending password reset URL to the user %s, using e-mail address %s.", user, emailAddress));
 
-                    String subject = new LocalizedMessageFormat("passwordreset.password_reset_email.subject", serverName).toLocalizedString(user);
-                    String body = new LocalizedMessageFormat("passwordreset.password_reset_email.body", serverName, url).toLocalizedString(user);
+                final String passResetMessageSubjectKey = "passwordreset.password_reset_email.subject";
+                final String subject = new LocalizedMessageFormat(passResetMessageSubjectKey, serverName)
+                        .toLocalizedString(user);
 
-                    SystemData sysData = Imcms.getServices().getSystemData();
-                    String eMailServerMaster = sysData.getServerMasterAddress();
-                    SMTP smtp = Imcms.getServices().getSMTP();
+                final String passResetMessageBodyKey = "passwordreset.password_reset_email.body";
+                final String body = new LocalizedMessageFormat(passResetMessageBodyKey, serverName, url, loginName)
+                        .toLocalizedString(user);
 
-                    smtp.sendMail(new SMTP.Mail(eMailServerMaster, new String[]{emailAddress}, subject, body));
+                final SystemData sysData = Imcms.getServices().getSystemData();
+                final String eMailServerMaster = sysData.getServerMasterAddress();
+                final SMTP smtp = Imcms.getServices().getSMTP();
 
-//                        Email email = new SimpleEmail();
-//                        email.setDebug(true);
-//                        email.setHostName("smtp.gmail.com");
-//                        email.setSmtpPort(587);
-//                        email.setDebug(true);
-//                        email.setAuthenticator(new DefaultAuthenticator("@gmail.com", ""));
-//                        email.setTLS(true);
-//                        email.setFrom("admin@imcode.com");
-//                        email.setSubject(subject);
-//                        email.setMsg(body);
-//                        email.addTo("@gmail.com");
-//                        email.send();
-                } catch (Exception e) {
-                    logger.error(String.format(
-                            "Failed to send password reset URL to the user %s, using e-mail address %s.",
-                            user, emailAddress),
-                            e);
-                }
+                smtp.sendMail(new SMTP.Mail(eMailServerMaster, new String[]{emailAddress}, subject, body));
+
+            } catch (Exception e) {
+                logger.error(String.format(
+                        "Failed to send password reset URL to the user %s, using e-mail address %s.",
+                        user, emailAddress),
+                        e);
             }
         });
     }
