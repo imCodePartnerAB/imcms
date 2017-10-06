@@ -62,7 +62,7 @@ public class LoopControllerTest extends AbstractControllerTest {
     public void getLoop_Expect_OkAndResponseEqualTestData() throws Exception {
         final String expectedJsonData = asJson(TEST_LOOP_DTO);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("loopIndex", String.valueOf(TEST_LOOP_INDEX))
+                .param("index", String.valueOf(TEST_LOOP_INDEX))
                 .param("docId", String.valueOf(TEST_DOC_ID));
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJsonData);
@@ -99,7 +99,7 @@ public class LoopControllerTest extends AbstractControllerTest {
         Imcms.setUser(user); // means current user is admin now
 
         final MockHttpServletRequestBuilder getLoopReqBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("loopIndex", String.valueOf(TEST_LOOP_INDEX))
+                .param("index", String.valueOf(TEST_LOOP_INDEX))
                 .param("docId", String.valueOf(TEST_DOC_ID));
 
         final String loopJson = performRequestBuilderExpectedOkAndContentJsonUtf8(getLoopReqBuilder)

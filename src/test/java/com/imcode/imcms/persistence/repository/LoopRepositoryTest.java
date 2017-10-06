@@ -7,6 +7,7 @@ import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Loop;
+import com.imcode.imcms.persistence.entity.LoopEntry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,16 +48,16 @@ public class LoopRepositoryTest {
         );
 
         loopRepository.saveAndFlush(
-                new Loop(version, 1, Collections.singletonList(new Loop.Entry(1)))
+                new Loop(version, 1, Collections.singletonList(new LoopEntry(1)))
         );
         loopRepository.saveAndFlush(
-                new Loop(version, 2, Arrays.asList(new Loop.Entry(1), new Loop.Entry(2)))
+                new Loop(version, 2, Arrays.asList(new LoopEntry(1), new LoopEntry(2)))
         );
         loopRepository.saveAndFlush(
                 new Loop(version, 3, Arrays.asList(
-                        new Loop.Entry(1),
-                        new Loop.Entry(2),
-                        new Loop.Entry(3)
+                        new LoopEntry(1),
+                        new LoopEntry(2),
+                        new LoopEntry(3)
                 ))
         );
     }

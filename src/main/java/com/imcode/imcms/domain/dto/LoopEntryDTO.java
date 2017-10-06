@@ -12,6 +12,6 @@ import java.io.Serializable;
 public class LoopEntryDTO implements Serializable {
     private static final long serialVersionUID = 8928942908190412349L;
 
-    private Integer no;
+    private Integer index;
     private boolean enabled;
 }

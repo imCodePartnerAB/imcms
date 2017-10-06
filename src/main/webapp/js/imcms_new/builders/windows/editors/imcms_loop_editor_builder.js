@@ -65,17 +65,13 @@ Imcms.define("imcms-loop-editor-builder",
                         var $listItem = $(listItem);
 
                         var loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
-                        var no = +($listItem.find(loopItemIdClass).text());
-
-                        var loopItemContentClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.CONTENT[1]);
-                        var content = $listItem.find(loopItemContentClass).html();
+                        var entryIndex = +($listItem.find(loopItemIdClass).text());
 
                         var loopItemControlsClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.CONTROLS[1]);
                         var isEnabled = $listItem.find(loopItemControlsClass).find("input").is(":checked");
 
                         return {
-                            no: no,
-                            content: content,
+                            index: entryIndex,
                             enabled: isEnabled
                         };
                     });
@@ -143,9 +139,10 @@ Imcms.define("imcms-loop-editor-builder",
         }
 
         function buildItem(loopEntry) {
-            var $no = components.texts.titleText("<div>", loopEntry.no);
+            var $no = components.texts.titleText("<div>", loopEntry.index);
             $no.modifiers = modifiers.ID;
 
+            // todo: get content from the page!
             var $content = components.texts.titleText("<div>", loopEntry.content);
             $content.modifiers = modifiers.CONTENT;
 
@@ -192,7 +189,7 @@ Imcms.define("imcms-loop-editor-builder",
         }
 
         function addHeadData(loop) {
-            $title.append(": " + loop.docId + "-" + loop.loopIndex);
+            $title.append(": " + loop.docId + "-" + loop.index);
         }
 
         function clearData() {

@@ -10,7 +10,7 @@
 <c:forEach var="loopEntry" items="${loop.entries}" varStatus="status">
     <c:if test="${loopEntry.enabled}">
         <c:set var="loopItem" value="${loopEntry}" scope="request"/>
-        <c:set var="entryNo" value="${loopItem.no}" scope="request"/>
+        <c:set var="entryNo" value="${loopItem.index}" scope="request"/>
 
         <jsp:doBody/>
 

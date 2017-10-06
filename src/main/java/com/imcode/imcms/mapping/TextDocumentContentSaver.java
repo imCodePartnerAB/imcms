@@ -10,6 +10,7 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Loop;
+import com.imcode.imcms.persistence.entity.LoopEntry;
 import com.imcode.imcms.persistence.repository.LoopRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -119,9 +120,9 @@ public class TextDocumentContentSaver {
     private void createLoops(TextDocumentDomainObject textDocument, Version version) {
         textDocument.getLoops().forEach((index, loopDO) -> {
             Loop loop = new Loop();
-            List<Loop.Entry> items = new LinkedList<>();
+            List<LoopEntry> items = new LinkedList<>();
 
-            loopDO.getEntries().forEach((entryIndex, enabled) -> items.add(new Loop.Entry(entryIndex, enabled)));
+            loopDO.getEntries().forEach((entryIndex, enabled) -> items.add(new LoopEntry(entryIndex, enabled)));
 
             loop.setVersion(version);
             loop.setIndex(index);
@@ -333,10 +334,10 @@ public class TextDocumentContentSaver {
             loop = new Loop();
             loop.setVersion(version);
             loop.setIndex(loopIndex);
-            loop.getEntries().add(new Loop.Entry(entryIndex));
+            loop.getEntries().add(new LoopEntry(entryIndex));
         } else {
             if (!loop.containsEntry(entryRef.getEntryNo())) {
-                loop.getEntries().add(new Loop.Entry(entryIndex));
+                loop.getEntries().add(new LoopEntry(entryIndex));
             }
         }
         loopRepository.save(loop);
@@ -418,10 +419,10 @@ public class TextDocumentContentSaver {
     }
 
     private Loop toJpaObject(VersionRef versionRef, int loopNo, com.imcode.imcms.api.Loop loopDO) {
-        List<Loop.Entry> entries = new LinkedList<>();
+        List<LoopEntry> entries = new LinkedList<>();
         Version version = findVersion(versionRef);
 
-        loopDO.getEntries().forEach((entryNo, enabled) -> entries.add(new Loop.Entry(entryNo, enabled)));
+        loopDO.getEntries().forEach((entryNo, enabled) -> entries.add(new LoopEntry(entryNo, enabled)));
 
         return Value.with(
                 new Loop(),

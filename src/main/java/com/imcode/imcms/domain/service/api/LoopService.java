@@ -45,7 +45,7 @@ public class LoopService {
     public void saveLoop(LoopDTO loopDTO) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopDTO.getDocId());
         final Loop loopForSave = loopDtoToLoop.apply(loopDTO, documentWorkingVersion);
-        final Loop prevLoop = getOrCreateLoop(documentWorkingVersion, loopDTO.getLoopIndex());
+        final Loop prevLoop = getOrCreateLoop(documentWorkingVersion, loopDTO.getIndex());
 
         loopForSave.setId(prevLoop.getId());
         loopRepository.save(loopForSave);

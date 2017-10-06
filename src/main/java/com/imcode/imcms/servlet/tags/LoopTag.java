@@ -26,9 +26,9 @@
 //
 //    private Loop loop;
 //
-//    private Iterator<Map.Entry<Integer, Boolean>> loopIterator;
+//    private Iterator<Map.LoopEntry<Integer, Boolean>> loopIterator;
 //
-//    private volatile Map.Entry<Integer, Boolean> currentEntry;
+//    private volatile Map.LoopEntry<Integer, Boolean> currentEntry;
 //
 //    private Properties attributes = new Properties();
 //

@@ -69,7 +69,7 @@ public class LoopServiceTest {
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopIndex, Collections.emptyList());
 
         loopService.saveLoop(loopDTO);
-        final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
+        final LoopDTO savedLoop = loopService.getLoop(loopDTO.getIndex(), loopDTO.getDocId());
 
         assertNotNull(savedLoop);
         assertEquals(savedLoop, loopDTO);
@@ -85,7 +85,7 @@ public class LoopServiceTest {
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, 42, entries);
 
         loopService.saveLoop(loopDTO);
-        final LoopDTO savedLoop = loopService.getLoop(loopDTO.getLoopIndex(), loopDTO.getDocId());
+        final LoopDTO savedLoop = loopService.getLoop(loopDTO.getIndex(), loopDTO.getDocId());
 
         assertEquals(savedLoop, loopDTO);
     }

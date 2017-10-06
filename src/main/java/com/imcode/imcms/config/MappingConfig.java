@@ -2,11 +2,7 @@ package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.persistence.entity.Category;
-import com.imcode.imcms.persistence.entity.CategoryType;
-import com.imcode.imcms.persistence.entity.Loop;
-import com.imcode.imcms.persistence.entity.Loop.Entry;
-import com.imcode.imcms.persistence.entity.MenuItem;
+import com.imcode.imcms.persistence.entity.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,12 +15,12 @@ import java.util.stream.Collectors;
 @Configuration
 public class MappingConfig {
     @Bean
-    public Function<LoopEntryDTO, Entry> loopEntryDtoToEntry() {
-        return loopEntryDTO -> new Entry(loopEntryDTO.getNo(), loopEntryDTO.isEnabled());
+    public Function<LoopEntryDTO, LoopEntry> loopEntryDtoToEntry() {
+        return loopEntryDTO -> new LoopEntry(loopEntryDTO.getIndex(), loopEntryDTO.isEnabled());
     }
 
     @Bean
-    public Function<Entry, LoopEntryDTO> loopEntryToLoopEntryDTO() {
+    public Function<LoopEntry, LoopEntryDTO> loopEntryToLoopEntryDTO() {
         return entry -> new LoopEntryDTO(entry.getIndex(), entry.isEnabled());
     }
 
@@ -34,15 +30,15 @@ public class MappingConfig {
     }
 
     @Bean
-    public BiFunction<LoopDTO, Version, Loop> loopDtoToLoop(Function<LoopEntryDTO, Entry> loopEntryDtoToEntry) {
+    public BiFunction<LoopDTO, Version, Loop> loopDtoToLoop(Function<LoopEntryDTO, LoopEntry> loopEntryDtoToEntry) {
         return (loopDTO, version) -> {
-            final List<Entry> entries = Objects.requireNonNull(loopDTO)
+            final List<LoopEntry> entries = Objects.requireNonNull(loopDTO)
                     .getEntries()
                     .stream()
                     .map(loopEntryDtoToEntry)
                     .collect(Collectors.toList());
 
-            return new Loop(version, loopDTO.getLoopIndex(), entries);
+            return new Loop(version, loopDTO.getIndex(), entries);
         };
     }
 
@@ -63,7 +59,7 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<Loop, LoopDTO> loopToLoopDTO(Function<Entry, LoopEntryDTO> loopEntryToDtoMapper) {
+    public Function<Loop, LoopDTO> loopToLoopDTO(Function<LoopEntry, LoopEntryDTO> loopEntryToDtoMapper) {
         return loop -> {
             final List<LoopEntryDTO> loopEntryDTOs = Objects.requireNonNull(loop)
                     .getEntries()
