@@ -283,7 +283,7 @@ public class TextDocumentContentLoader {
         } else {
             Map<Integer, Boolean> entries = new ListOrderedMap<>();
             jpaLoop.getEntries().forEach(entry -> entries.put(entry.getIndex(), entry.isEnabled()));
-            return Loop.of(entries);
+            return new Loop(entries);
         }
     }
 }
