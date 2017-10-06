@@ -1,10 +1,14 @@
 package com.imcode.imcms.mapping.jpa.doc.content;
 
 import com.imcode.imcms.mapping.jpa.doc.Version;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class VersionedContent {
 
@@ -20,19 +24,4 @@ public abstract class VersionedContent {
     })
     private Version version;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Version getVersion() {
-        return version;
-    }
-
-    public void setVersion(Version contentVersion) {
-        this.version = contentVersion;
-    }
 }
