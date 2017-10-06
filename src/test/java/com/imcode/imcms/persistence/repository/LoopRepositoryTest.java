@@ -85,4 +85,18 @@ public class LoopRepositoryTest {
         assertEquals(loop1.getIndex(), Integer.valueOf(1));
         assertEquals(loop1.getVersion().getDocId(), Integer.valueOf(DOC_ID));
     }
+
+    @Test
+    public void removeOneSavedEntry_Expect_EntriesSizeDecreased() {
+        Version version = versionRepository.findByDocIdAndNo(DOC_ID, VERSION_NO);
+        Loop loop = loopRepository.findByVersionAndIndex(version, 3);
+
+        assertEquals(loop.getEntries().size(), 3);
+
+        loop.getEntries().remove(1);
+        loopRepository.save(loop);
+        loop = loopRepository.findByVersionAndIndex(version, 3);
+
+        assertEquals(loop.getEntries().size(), 2);
+    }
 }
