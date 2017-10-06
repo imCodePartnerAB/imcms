@@ -1,16 +1,16 @@
 package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.mapping.container.VersionRef;
-import com.imcode.imcms.mapping.jpa.User;
-import com.imcode.imcms.mapping.jpa.UserRepository;
+import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Loop;
-import com.imcode.imcms.persistence.entity.LoopEntry;
+import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,10 +28,8 @@ import static org.junit.Assert.*;
 @Transactional
 public class LoopRepositoryTest {
 
-    private static final VersionRef DOC_VERSION_REF = new VersionRef(1001, 0);
-
-    @Inject
-    private UserRepository userRepository;
+    private static final int DOC_ID = 1001;
+    private static final int VERSION_NO = 0;
 
     @Inject
     private VersionRepository versionRepository;
@@ -40,31 +37,29 @@ public class LoopRepositoryTest {
     @Inject
     private LoopRepository loopRepository;
 
+    @Autowired
+    private LoopDataInitializer loopDataInitializer;
+
     @Before
     public void recreateLoops() {
-        final User user = userRepository.findById(1);
-        final Version version = versionRepository.saveAndFlush(
-                new Version(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo(), user, new Date(), user, new Date())
+        loopDataInitializer.cleanRepositories();
+
+        final List<LoopEntryDTO> oneEntry = Collections.singletonList(new LoopEntryDTO(1));
+        final List<LoopEntryDTO> twoEntries = Arrays.asList(new LoopEntryDTO(1), new LoopEntryDTO(2));
+        final List<LoopEntryDTO> threeEntries = Arrays.asList(
+                new LoopEntryDTO(1),
+                new LoopEntryDTO(2),
+                new LoopEntryDTO(3)
         );
 
-        loopRepository.saveAndFlush(
-                new Loop(version, 1, Collections.singletonList(new LoopEntry(1)))
-        );
-        loopRepository.saveAndFlush(
-                new Loop(version, 2, Arrays.asList(new LoopEntry(1), new LoopEntry(2)))
-        );
-        loopRepository.saveAndFlush(
-                new Loop(version, 3, Arrays.asList(
-                        new LoopEntry(1),
-                        new LoopEntry(2),
-                        new LoopEntry(3)
-                ))
-        );
+        loopDataInitializer.createData(new LoopDTO(DOC_ID, 1, oneEntry));
+        loopDataInitializer.createData(new LoopDTO(DOC_ID, 2, twoEntries));
+        loopDataInitializer.createData(new LoopDTO(DOC_ID, 3, threeEntries));
     }
 
     @Test
     public void testFindByDocVersionExpectCorrectResultSize() {
-        Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
+        Version version = versionRepository.findByDocIdAndNo(DOC_ID, VERSION_NO);
         List<Loop> loops = loopRepository.findByVersion(version);
 
         assertThat(loops.size(), is(3));
@@ -72,7 +67,7 @@ public class LoopRepositoryTest {
 
     @Test
     public void testFindByDocVersionAndNoExpectNotNullResults() {
-        Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
+        Version version = versionRepository.findByDocIdAndNo(DOC_ID, VERSION_NO);
         Loop loop1 = loopRepository.findByVersionAndIndex(version, 1);
         Loop loop2 = loopRepository.findByVersionAndIndex(version, 2);
         Loop loop3 = loopRepository.findByVersionAndIndex(version, 3);
@@ -84,10 +79,10 @@ public class LoopRepositoryTest {
 
     @Test
     public void testSavedDataExpectEqualNoAndDocId() {
-        Version version = versionRepository.findByDocIdAndNo(DOC_VERSION_REF.getDocId(), DOC_VERSION_REF.getNo());
+        Version version = versionRepository.findByDocIdAndNo(DOC_ID, VERSION_NO);
         Loop loop1 = loopRepository.findByVersionAndIndex(version, 1);
 
         assertEquals(loop1.getIndex(), Integer.valueOf(1));
-        assertEquals(loop1.getVersion().getDocId(), Integer.valueOf(DOC_VERSION_REF.getDocId()));
+        assertEquals(loop1.getVersion().getDocId(), Integer.valueOf(DOC_ID));
     }
 }

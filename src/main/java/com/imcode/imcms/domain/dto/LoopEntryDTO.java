@@ -14,4 +14,9 @@ public class LoopEntryDTO implements Serializable {
 
     private Integer index;
     private boolean enabled;
+
+    public LoopEntryDTO(Integer index) {
+        this.index = index;
+        this.enabled = true;
+    }
 }
