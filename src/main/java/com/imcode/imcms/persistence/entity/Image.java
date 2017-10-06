@@ -50,7 +50,7 @@ public class Image extends VersionedI18nContent {
     @Column(name = "image_name")
     private String name = "";
 
-    private Integer type;
+    private int type;
 
     @Column(name = "format", nullable = false, columnDefinition = "smallint")
     private int format;
