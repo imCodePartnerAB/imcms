@@ -11,6 +11,7 @@ import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Loop;
 import com.imcode.imcms.persistence.entity.LoopEntry;
+import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LoopRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.textdocument.ImageDomainObject;
