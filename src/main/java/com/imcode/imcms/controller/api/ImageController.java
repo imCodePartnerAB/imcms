@@ -10,7 +10,6 @@ import com.imcode.imcms.mapping.container.LoopEntryRef;
 import com.imcode.imcms.mapping.container.TextDocImageContainer;
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 import com.imcode.imcms.servlet.apis.FileController;
-import com.imcode.imcms.servlet.apis.FolderController;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
@@ -37,18 +36,16 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Provide access to processing images
- */
 @RestController
 @RequestMapping("/content/image")
 public class ImageController {
 
-    @Autowired
-    private FolderController folderController;
+    private final FileController fileController;
 
     @Autowired
-    private FileController fileController;
+    public ImageController(FileController fileController) {
+        this.fileController = fileController;
+    }
 
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
@@ -180,7 +177,7 @@ public class ImageController {
 
         if (StringUtils.isNotBlank(imageDomainObject.getGeneratedFilename())) {
             if (Imcms.isVersioningAllowed()) {
-                // todo : rewrite process when versions are turned on to delete old image only if it not used in other versions
+                // todo : when versions are turned on delete old image only if it is not used in other versions
             } else {
                 imageDomainObject.getGeneratedFile().delete();
             }
