@@ -5,33 +5,30 @@ import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Loop;
 import com.imcode.imcms.persistence.repository.LoopRepository;
 import com.imcode.imcms.util.RepositoryTestDataCleaner;
-import com.imcode.imcms.util.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.function.BiFunction;
 
 @Component
 public class LoopDataInitializer extends RepositoryTestDataCleaner {
     private static final int TEST_VERSION_NO = 0;
 
     private final LoopRepository loopRepository;
+    private final BiFunction<LoopDTO, Version, Loop> loopDtoToLoop;
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
 
-    public LoopDataInitializer(LoopRepository loopRepository) {
+    public LoopDataInitializer(LoopRepository loopRepository, BiFunction<LoopDTO, Version, Loop> loopDtoToLoop) {
         super(loopRepository);
         this.loopRepository = loopRepository;
+        this.loopDtoToLoop = loopDtoToLoop;
     }
 
     public void createData(LoopDTO loopDTO) {
         final Version testVersion = versionDataInitializer.createData(TEST_VERSION_NO, loopDTO.getDocId());
-        final Loop testLoop = Value.with(new Loop(), loop -> {
-            loop.setVersion(testVersion);
-            loop.setIndex(loopDTO.getIndex());
-            loop.setEntries(Collections.emptyList());
-        });
+        final Loop testLoop = loopDtoToLoop.apply(loopDTO, testVersion);
         loopRepository.saveAndFlush(testLoop);
     }
 
