@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping.jpa.doc.content;
 
 import com.imcode.imcms.mapping.jpa.doc.Language;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 @MappedSuperclass
 public abstract class VersionedI18nContent extends VersionedContent {
 
