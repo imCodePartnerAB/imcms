@@ -297,8 +297,8 @@ public class TextDocumentContentSaver {
         if (saveMode == SaveMode.UPDATE) {
             LoopEntryRef loopEntryRef = image.getLoopEntryRef();
             Integer id = loopEntryRef == null
-                    ? imageRepository.findIdByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(image.getVersion(), image.getLanguage(), image.getNo())
-                    : imageRepository.findIdByVersionAndLanguageAndNoAndLoopEntryRef(image.getVersion(), image.getLanguage(), image.getNo(), loopEntryRef);
+                    ? imageRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(image.getVersion(), image.getLanguage(), image.getIndex())
+                    : imageRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(image.getVersion(), image.getLanguage(), image.getIndex(), loopEntryRef);
 
             image.setId(id);
         }
@@ -311,8 +311,8 @@ public class TextDocumentContentSaver {
         if (saveMode == SaveMode.UPDATE) {
             LoopEntryRef loopEntryRef = text.getLoopEntryRef();
             Integer id = loopEntryRef == null
-                    ? textRepository.findIdByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(text.getVersion(), text.getLanguage(), text.getNo())
-                    : textRepository.findIdByVersionAndLanguageAndNoAndLoopEntryRef(text.getVersion(), text.getLanguage(), text.getNo(), loopEntryRef);
+                    ? textRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(text.getVersion(), text.getLanguage(), text.getIndex())
+                    : textRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(text.getVersion(), text.getLanguage(), text.getIndex(), loopEntryRef);
 
             text.setId(id);
         }
@@ -327,9 +327,9 @@ public class TextDocumentContentSaver {
         if (entryRef == null) return;
 
         Loop loop = loopRepository.findByVersionAndIndex(
-                version, entryRef.getLoopNo());
-        int entryIndex = entryRef.getEntryNo();
-        int loopIndex = entryRef.getLoopNo();
+                version, entryRef.getLoopIndex());
+        int entryIndex = entryRef.getLoopEntryIndex();
+        int loopIndex = entryRef.getLoopIndex();
 
         if (loop == null) {
             loop = new Loop();
@@ -337,7 +337,7 @@ public class TextDocumentContentSaver {
             loop.setIndex(loopIndex);
             loop.getEntries().add(new LoopEntry(entryIndex));
         } else {
-            if (!loop.containsEntry(entryRef.getEntryNo())) {
+            if (!loop.containsEntry(entryRef.getLoopEntryIndex())) {
                 loop.getEntries().add(new LoopEntry(entryIndex));
             }
         }
@@ -357,7 +357,7 @@ public class TextDocumentContentSaver {
 
         text.setLanguage(language);
         text.setVersion(version);
-        text.setNo(no);
+        text.setIndex(no);
         text.setText(textDO.getText());
         text.setType(TextType.values()[textDO.getType()]);
         text.setLoopEntryRef(loopEntryRef);
@@ -381,7 +381,7 @@ public class TextDocumentContentSaver {
 
         Image image = new Image();
 
-        image.setNo(no);
+        image.setIndex(no);
         image.setLanguage(language);
         image.setVersion(version);
         image.setLoopEntryRef(loopEntryRef);

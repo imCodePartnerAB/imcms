@@ -14,7 +14,8 @@ import javax.persistence.Table;
 @Setter
 public class Image extends VersionedI18nContent {
 
-    private Integer no;
+    @Column(name = "`index`")
+    private Integer index;
 
     private int width;
 

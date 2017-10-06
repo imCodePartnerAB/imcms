@@ -24,7 +24,7 @@ public class TextHistory extends TextBase {
     public TextHistory(Text text, User modifiedBy) {
         setVersion(text.getVersion());
         setLanguage(text.getLanguage());
-        setNo(text.getNo());
+        setIndex(text.getIndex());
         setText(text.getText());
         setType(text.getType());
         setLoopEntryRef(text.getLoopEntryRef());
@@ -42,7 +42,7 @@ public class TextHistory extends TextBase {
                 && Objects.equals(getVersion(), that.getVersion())
                 && Objects.equals(getLanguage(), that.getLanguage())
                 && Objects.equals(getType(), that.getType())
-                && Objects.equals(getNo(), that.getNo())
+                && Objects.equals(getIndex(), that.getIndex())
                 && Objects.equals(getLoopEntryRef(), that.getLoopEntryRef())
                 && Objects.equals(modifiedBy, that.modifiedBy)
                 && Objects.equals(modifiedDt, that.modifiedDt);
@@ -50,7 +50,7 @@ public class TextHistory extends TextBase {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getVersion(), getLanguage(), getText(), getType(), getNo(),
+        return Objects.hash(getId(), getVersion(), getLanguage(), getText(), getType(), getIndex(),
                 getLoopEntryRef(), modifiedBy, modifiedDt);
     }
 

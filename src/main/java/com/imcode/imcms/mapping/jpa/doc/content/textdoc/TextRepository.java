@@ -18,14 +18,14 @@ public interface TextRepository extends JpaRepository<Text, Integer> {
     @Query("SELECT t FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.loopEntryRef IS NOT NULL")
     List<Text> findByVersionAndLanguageWhereLoopEntryRefIsNotNull(Version version, Language language);
 
-    @Query("SELECT t FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef IS NULL")
-    Text findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(Version version, Language language, int no);
+    @Query("SELECT t FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.index = ?3 AND t.loopEntryRef IS NULL")
+    Text findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, Language language, int no);
 
-    @Query("SELECT t.id FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef IS NULL")
-    Integer findIdByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(Version version, Language language, int no);
+    @Query("SELECT t.id FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.index = ?3 AND t.loopEntryRef IS NULL")
+    Integer findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, Language language, int no);
 
-    @Query("SELECT t.id FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.no = ?3 AND t.loopEntryRef = ?4")
-    Integer findIdByVersionAndLanguageAndNoAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
+    @Query("SELECT t.id FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.index = ?3 AND t.loopEntryRef = ?4")
+    Integer findIdByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
 
 
     @Modifying

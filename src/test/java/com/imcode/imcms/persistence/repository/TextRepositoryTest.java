@@ -29,9 +29,9 @@ import static org.junit.Assert.*;
 public class TextRepositoryTest {
 
     private static final int DOC_ID = 1001;
-    private static final int MIN_TEXT_NO = 1;
-    private static final int MAX_TEXT_NO = 10;
-    private static final int TEXTS_COUNT__PER_VERSION__PER_LANGUAGE = 10;
+    private static final int MIN_TEXT_INDEX = 1;
+    private static final int MAX_TEXT_INDEX = 10;
+    private static final int TEXTS_COUNT__PER_VERSION__PER_LANGUAGE = MAX_TEXT_INDEX;
 
     @Autowired
     private TextRepository textRepository;
@@ -57,19 +57,19 @@ public class TextRepositoryTest {
         );
 
         // texts with odd no have loop entry with the same loop no and entry no
-        for (int no = MIN_TEXT_NO; no <= MAX_TEXT_NO; no++) {
+        for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
             for (Language language : languages) {
                 for (Version version : versions) {
                     Text text = new Text();
 
-                    text.setNo(no);
+                    text.setIndex(index);
                     text.setType(TextType.PLAIN_TEXT);
                     text.setLanguage(language);
                     text.setVersion(version);
                     text.setText("test");
 
-                    if ((no & 1) == 1) {
-                        text.setLoopEntryRef(new LoopEntryRef(no, no));
+                    if ((index & 1) == 1) {
+                        text.setLoopEntryRef(new LoopEntryRef(index, index));
                     }
 
                     textRepository.save(text);
@@ -80,15 +80,15 @@ public class TextRepositoryTest {
     }
 
     @Test
-    public void testFindByDocVersionAndNoAndLoopEntryIsNull() throws Exception {
-        for (int no = MIN_TEXT_NO; no <= MAX_TEXT_NO; no++) {
+    public void testFindByDocVersionAndIndexAndLoopEntryIsNull() throws Exception {
+        for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
             for (Language language : languages) {
                 for (Version version : versions) {
-                    Text text = textRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(
-                            version, language, no
+                    Text text = textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
+                            version, language, index
                     );
 
-                    if ((no & 1) == 1) {
+                    if ((index & 1) == 1) {
                         assertNull(text);
                     } else {
                         assertNotNull(text);

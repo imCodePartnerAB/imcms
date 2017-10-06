@@ -15,9 +15,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class LoopEntryRef implements Serializable, Cloneable {
 
-    @Column(name = "content_loop_no")
-    private int loopNo;
+    @Column(name = "loop_index")
+    private int loopIndex;
 
-    @Column(name = "content_no")
-    private int entryNo;
+    @Column(name = "loop_entry_index")
+    private int loopEntryIndex;
 }
