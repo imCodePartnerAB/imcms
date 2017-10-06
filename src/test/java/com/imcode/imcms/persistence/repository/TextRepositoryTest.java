@@ -1,5 +1,6 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
@@ -8,7 +9,6 @@ import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Text;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextType;
-import com.imcode.imcms.util.datainitializer.VersionDataInitializer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

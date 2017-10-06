@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @Import({MainConfig.class})
 @ComponentScan({
-        "com.imcode.imcms.util.datainitializer"
+        "com.imcode.imcms.components.datainitializer"
 })
 public class TestConfig {
 }

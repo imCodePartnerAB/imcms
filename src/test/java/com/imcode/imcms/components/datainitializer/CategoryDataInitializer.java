@@ -1,12 +1,12 @@
-package com.imcode.imcms.util.datainitializer;
+package com.imcode.imcms.components.datainitializer;
 
+import com.imcode.imcms.components.cleaner.RepositoryCleaner;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.persistence.entity.Category;
 import com.imcode.imcms.persistence.entity.CategoryType;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
-import com.imcode.imcms.util.RepositoryCleaner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

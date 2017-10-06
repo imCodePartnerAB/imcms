@@ -1,11 +1,11 @@
-package com.imcode.imcms.util.datainitializer;
+package com.imcode.imcms.components.datainitializer;
 
+import com.imcode.imcms.components.cleaner.RepositoryCleaner;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.util.RepositoryCleaner;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 

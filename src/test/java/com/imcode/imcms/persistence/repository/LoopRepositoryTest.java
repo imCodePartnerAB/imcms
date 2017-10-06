@@ -1,12 +1,12 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Loop;
-import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

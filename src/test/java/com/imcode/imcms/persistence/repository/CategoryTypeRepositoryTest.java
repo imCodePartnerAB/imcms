@@ -1,8 +1,8 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.persistence.entity.CategoryType;
-import com.imcode.imcms.util.datainitializer.CategoryDataInitializer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

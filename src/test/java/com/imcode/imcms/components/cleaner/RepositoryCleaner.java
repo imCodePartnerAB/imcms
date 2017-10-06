@@ -1,4 +1,4 @@
-package com.imcode.imcms.util;
+package com.imcode.imcms.components.cleaner;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

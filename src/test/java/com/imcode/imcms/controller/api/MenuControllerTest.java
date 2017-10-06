@@ -1,12 +1,12 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
+import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.service.exception.MenuNotExistException;
 import com.imcode.imcms.persistence.entity.Menu;
-import com.imcode.imcms.util.datainitializer.MenuDataInitializer;
-import com.imcode.imcms.util.datainitializer.VersionDataInitializer;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;

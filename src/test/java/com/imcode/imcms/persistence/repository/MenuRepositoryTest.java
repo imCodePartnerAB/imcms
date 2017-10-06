@@ -1,11 +1,11 @@
 package com.imcode.imcms.persistence.repository;
 
 
+import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
-import com.imcode.imcms.util.datainitializer.MenuDataInitializer;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;

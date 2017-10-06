@@ -1,5 +1,6 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
@@ -9,7 +10,6 @@ import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Loop;
 import com.imcode.imcms.persistence.repository.LoopRepository;
-import com.imcode.imcms.util.datainitializer.LoopDataInitializer;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;

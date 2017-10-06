@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.util.datainitializer.CategoryDataInitializer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
