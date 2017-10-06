@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image;
+import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import org.springframework.stereotype.Service;
 

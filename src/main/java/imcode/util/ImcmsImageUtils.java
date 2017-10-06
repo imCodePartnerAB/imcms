@@ -1,8 +1,8 @@
 package imcode.util;
 
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.ImageCropRegion;
+import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;

@@ -9,7 +9,7 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.domain.service.api.ImageService;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image;
+import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
