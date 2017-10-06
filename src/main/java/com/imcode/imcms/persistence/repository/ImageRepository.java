@@ -23,24 +23,24 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
 
 
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.index = ?2 AND i.loopEntryRef IS NULL")
-    List<Image> findByVersionAndIndexWhereLoopEntryRefIsNull(Version version, int no);
+    List<Image> findByVersionAndIndexWhereLoopEntryRefIsNull(Version version, int index);
 
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.index = ?2 AND i.loopEntryRef = ?3")
-    List<Image> findByVersionAndIndexAndLoopEntryRef(Version version, int no, LoopEntryRef loopEntryRef);
+    List<Image> findByVersionAndIndexAndLoopEntryRef(Version version, int index, LoopEntryRef loopEntryRef);
 
 
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef IS NULL")
-    Image findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, Language language, int no);
+    Image findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, Language language, int index);
 
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef = ?4")
-    Image findByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
+    Image findByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, Language language, int index, LoopEntryRef loopEntryRef);
 
 
     @Query("SELECT i.id FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef IS NULL")
-    Integer findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, Language language, int no);
+    Integer findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, Language language, int index);
 
     @Query("SELECT i.id FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef = ?4")
-    Integer findIdByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, Language language, int no, LoopEntryRef loopEntryRef);
+    Integer findIdByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, Language language, int index, LoopEntryRef loopEntryRef);
 
     @Query("SELECT i FROM Image i WHERE i.generatedFilename != null AND i.generatedFilename != '' ORDER BY i.id DESC")
     Collection<Image> findAllGeneratedImages();
