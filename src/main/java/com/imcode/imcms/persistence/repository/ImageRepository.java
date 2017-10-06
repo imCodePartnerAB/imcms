@@ -47,5 +47,5 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
 
     @Modifying
     @Query("DELETE FROM Image i WHERE i.version = ?1 AND i.language = ?2")
-    int deleteByVersionAndLanguage(Version version, Language language);
+    void deleteByVersionAndLanguage(Version version, Language language);
 }
