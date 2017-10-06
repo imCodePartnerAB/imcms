@@ -10,6 +10,7 @@ import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.util.Value;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +33,7 @@ public class ImageRepositoryTest {
 
     private static final int DOC_ID = 1001;
     private static final int VERSION_INDEX = 0;
+    private static final int IMAGE_INDEX = 1;
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
@@ -60,19 +62,8 @@ public class ImageRepositoryTest {
 
     @Test
     public void findByVersionAndLanguageWhereLoopEntryRefIsNull() {
-        final Image imageEng = new Image();
-        imageEng.setIndex(1);
-        imageEng.setLanguage(english);
-        imageEng.setVersion(version);
-        imageEng.setLoopEntryRef(null);
-        imageRepository.save(imageEng);
-
-        final Image imageSwe = new Image();
-        imageSwe.setIndex(1);
-        imageSwe.setLanguage(swedish);
-        imageSwe.setVersion(version);
-        imageSwe.setLoopEntryRef(null);
-        imageRepository.save(imageSwe);
+        final Image imageEng = generateImage(IMAGE_INDEX, english, version, null);
+        final Image imageSwe = generateImage(IMAGE_INDEX, swedish, version, null);
 
         List<Image> images = imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, english);
 
@@ -88,21 +79,12 @@ public class ImageRepositoryTest {
     @Test
     public void findByVersionAndLanguageWhereLoopEntryRefIsNotNull() {
         final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(new LoopEntryDTO(1)));
+        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+
         loopDataInitializer.createData(loopDTO);
 
-        final Image imageEng = new Image();
-        imageEng.setIndex(1);
-        imageEng.setLanguage(english);
-        imageEng.setVersion(version);
-        imageEng.setLoopEntryRef(new LoopEntryRef(1, 1));
-        imageRepository.save(imageEng);
-
-        final Image imageSwe = new Image();
-        imageSwe.setIndex(1);
-        imageSwe.setLanguage(swedish);
-        imageSwe.setVersion(version);
-        imageSwe.setLoopEntryRef(new LoopEntryRef(1, 1));
-        imageRepository.save(imageSwe);
+        final Image imageEng = generateImage(IMAGE_INDEX, english, version, loopEntryRef);
+        final Image imageSwe = generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
 
         List<Image> images = imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, english);
 
@@ -117,20 +99,8 @@ public class ImageRepositoryTest {
 
     @Test
     public void findByVersionAndIndexWhereLoopEntryRefIsNull() {
-        final Image imageSwe = new Image();
-        imageSwe.setIndex(1);
-        imageSwe.setLanguage(swedish);
-        imageSwe.setVersion(version);
-        imageSwe.setLoopEntryRef(null);
-        imageRepository.save(imageSwe);
-
-        final Image imageEng = new Image();
-        imageEng.setIndex(1);
-        imageEng.setLanguage(english);
-        imageEng.setVersion(version);
-        imageEng.setLoopEntryRef(null);
-        imageRepository.save(imageEng);
-
+        final Image imageEng = generateImage(IMAGE_INDEX, english, version, null);
+        final Image imageSwe = generateImage(IMAGE_INDEX, swedish, version, null);
         final List<Image> images = imageRepository.findByVersionAndIndexWhereLoopEntryRefIsNull(version, 1);
 
         assertTrue(images.contains(imageSwe) && images.contains(imageEng));
@@ -142,20 +112,8 @@ public class ImageRepositoryTest {
         final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
         loopDataInitializer.createData(loopDTO);
 
-        final Image imageSwe = new Image();
-        imageSwe.setIndex(1);
-        imageSwe.setLanguage(swedish);
-        imageSwe.setVersion(version);
-        imageSwe.setLoopEntryRef(loopEntryRef);
-        imageRepository.save(imageSwe);
-
-        final Image imageEng = new Image();
-        imageEng.setIndex(1);
-        imageEng.setLanguage(english);
-        imageEng.setVersion(version);
-        imageEng.setLoopEntryRef(loopEntryRef);
-        imageRepository.save(imageEng);
-
+        final Image imageEng = generateImage(IMAGE_INDEX, english, version, loopEntryRef);
+        final Image imageSwe = generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
         final List<Image> images = imageRepository.findByVersionAndIndexAndLoopEntryRef(version, 1, loopEntryRef);
 
         assertTrue(images.contains(imageSwe) && images.contains(imageEng));
@@ -163,19 +121,8 @@ public class ImageRepositoryTest {
 
     @Test
     public void findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull() {
-        final Image imageSwe = new Image();
-        imageSwe.setIndex(1);
-        imageSwe.setLanguage(swedish);
-        imageSwe.setVersion(version);
-        imageSwe.setLoopEntryRef(null);
-        imageRepository.save(imageSwe);
-
-        final Image imageEng = new Image();
-        imageEng.setIndex(1);
-        imageEng.setLanguage(english);
-        imageEng.setVersion(version);
-        imageEng.setLoopEntryRef(null);
-        imageRepository.save(imageEng);
+        final Image imageEng = generateImage(IMAGE_INDEX, english, version, null);
+        final Image imageSwe = generateImage(IMAGE_INDEX, swedish, version, null);
 
         final Image imageEngResult = imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, english, 1);
         final Image imageSweResult = imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, swedish, 1);
@@ -190,19 +137,8 @@ public class ImageRepositoryTest {
         final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
         loopDataInitializer.createData(loopDTO);
 
-        final Image imageSwe = new Image();
-        imageSwe.setIndex(1);
-        imageSwe.setLanguage(swedish);
-        imageSwe.setVersion(version);
-        imageSwe.setLoopEntryRef(loopEntryRef);
-        imageRepository.save(imageSwe);
-
-        final Image imageEng = new Image();
-        imageEng.setIndex(1);
-        imageEng.setLanguage(english);
-        imageEng.setVersion(version);
-        imageEng.setLoopEntryRef(loopEntryRef);
-        imageRepository.save(imageEng);
+        final Image imageEng = generateImage(IMAGE_INDEX, english, version, loopEntryRef);
+        final Image imageSwe = generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
 
         final Image imageEngResult = imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, english, 1, loopEntryRef);
         final Image imageSweResult = imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, swedish, 1, loopEntryRef);
@@ -213,19 +149,8 @@ public class ImageRepositoryTest {
 
     @Test
     public void findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull() {
-        final Image imageSwe = new Image();
-        imageSwe.setIndex(1);
-        imageSwe.setLanguage(swedish);
-        imageSwe.setVersion(version);
-        imageSwe.setLoopEntryRef(null);
-        imageRepository.save(imageSwe);
-
-        final Image imageEng = new Image();
-        imageEng.setIndex(1);
-        imageEng.setLanguage(english);
-        imageEng.setVersion(version);
-        imageEng.setLoopEntryRef(null);
-        imageRepository.save(imageEng);
+        final Image imageEng = generateImage(IMAGE_INDEX, english, version, null);
+        final Image imageSwe = generateImage(IMAGE_INDEX, swedish, version, null);
 
         final Integer imageEngId = imageRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, english, 1);
         final Integer imageSweId = imageRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, swedish, 1);
@@ -240,19 +165,8 @@ public class ImageRepositoryTest {
         final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
         loopDataInitializer.createData(loopDTO);
 
-        final Image imageSwe = new Image();
-        imageSwe.setIndex(1);
-        imageSwe.setLanguage(swedish);
-        imageSwe.setVersion(version);
-        imageSwe.setLoopEntryRef(loopEntryRef);
-        imageRepository.save(imageSwe);
-
-        final Image imageEng = new Image();
-        imageEng.setIndex(1);
-        imageEng.setLanguage(english);
-        imageEng.setVersion(version);
-        imageEng.setLoopEntryRef(loopEntryRef);
-        imageRepository.save(imageEng);
+        final Image imageEng = generateImage(IMAGE_INDEX, english, version, loopEntryRef);
+        final Image imageSwe = generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
 
         final Integer imageEngId = imageRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(version, english, 1, loopEntryRef);
         final Integer imageSweId = imageRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(version, swedish, 1, loopEntryRef);
@@ -268,7 +182,7 @@ public class ImageRepositoryTest {
         imageSwe.setLanguage(swedish);
         imageSwe.setVersion(version);
         imageSwe.setLoopEntryRef(null);
-        imageSwe.setGeneratedFilename("dummy");
+        imageSwe.setGeneratedFilename("dummy"); // this line is extra
         imageRepository.save(imageSwe);
 
         final List<Image> images = new ArrayList<>(imageRepository.findAllGeneratedImages());
@@ -279,21 +193,26 @@ public class ImageRepositoryTest {
 
     @Test
     public void deleteByVersionAndLanguage() {
-        final Image imageSwe = new Image();
-        imageSwe.setIndex(1);
-        imageSwe.setLanguage(swedish);
-        imageSwe.setVersion(version);
-        imageSwe.setLoopEntryRef(null);
-        imageRepository.save(imageSwe);
-
+        final Image imageEng = generateImage(IMAGE_INDEX, english, version, null);
         List<Image> images = imageRepository.findAll();
 
         assertTrue(images.size() == 1);
+        assertEquals(images.get(0), imageEng);
 
-        imageRepository.deleteByVersionAndLanguage(version, swedish);
+        imageRepository.deleteByVersionAndLanguage(version, english);
         images = imageRepository.findAll();
 
         assertTrue(images.isEmpty());
+    }
+
+    private Image generateImage(int index, Language language, Version version, LoopEntryRef loopEntryRef) {
+        return Value.with(new Image(), image -> {
+            image.setIndex(index);
+            image.setLanguage(language);
+            image.setVersion(version);
+            image.setLoopEntryRef(loopEntryRef);
+            imageRepository.save(image);
+        });
     }
 
 }
