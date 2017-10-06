@@ -22,10 +22,16 @@ public class VersionDataInitializer extends RepositoryTestDataCleaner {
     }
 
     public Version createData(int versionIndex, int docId) {
+        Version testVersion = versionRepository.findByDocIdAndNo(docId, versionIndex);
+
+        if (testVersion != null) {
+            return testVersion;
+        }
+
         final int adminUserId = 1;
         final User user = userDataInitializer.createData(adminUserId);
 
-        final Version testVersion = Value.with(new Version(), version -> {
+        testVersion = Value.with(new Version(), version -> {
             version.setNo(versionIndex);
             version.setDocId(docId);
             version.setCreatedBy(user);
