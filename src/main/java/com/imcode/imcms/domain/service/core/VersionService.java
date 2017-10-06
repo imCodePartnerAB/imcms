@@ -1,4 +1,4 @@
-package com.imcode.imcms.domain.service.api;
+package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.jpa.doc.Version;
