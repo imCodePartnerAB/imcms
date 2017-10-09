@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.document.text.TextContentFilter;
+import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.mapping.TextDocumentContentLoader;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;

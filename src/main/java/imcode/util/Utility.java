@@ -8,8 +8,7 @@ import com.imcode.imcms.db.BooleanFromRowFactory;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
-import com.imcode.imcms.document.text.TextContentFilter;
-import com.imcode.imcms.imagearchive.service.TextService;
+import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -71,13 +70,13 @@ public class Utility {
     private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
     private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
-    private static TextService textService;
+    private static TextContentFilter textContentFilter;
 
     private Utility() {
     }
 
     public static TextContentFilter getTextContentFilter() {
-        return textService.getTextContentFilter();
+        return textContentFilter;
     }
 
     /**
@@ -515,7 +514,7 @@ public class Utility {
     }
 
     @Autowired
-    public void init(TextService textService) {
-        Utility.textService = textService;
+    public void init(TextContentFilter textContentFilter) {
+        Utility.textContentFilter = textContentFilter;
     }
 }

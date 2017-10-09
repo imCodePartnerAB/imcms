@@ -1,4 +1,4 @@
-package com.imcode.imcms.document.text;
+package com.imcode.imcms.domain.component;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
  * Text content filter, based on Jsoup's tags whitelist and cleaning text feature.
  * Used to clean non-supported tags from e.g. imcms:text tag.
  * <p>
- * Created by Serhii Maksymchuk from Ubrainians for imCode
+ * @author Serhii Maksymchuk from Ubrainians for imCode
  * 29.03.17.
  */
 @Component

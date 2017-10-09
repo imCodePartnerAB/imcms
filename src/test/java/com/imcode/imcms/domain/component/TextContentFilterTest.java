@@ -1,6 +1,5 @@
-package com.imcode.imcms.mapping;
+package com.imcode.imcms.domain.component;
 
-import com.imcode.imcms.document.text.TextContentFilter;
 import com.imcode.imcms.config.TestConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,10 +10,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by Serhii Maksymchuk from Ubrainians for imCode
- * 29.03.17.
- */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
 public class TextContentFilterTest {
