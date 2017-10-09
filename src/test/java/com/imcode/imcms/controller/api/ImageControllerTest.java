@@ -3,6 +3,9 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.dto.ImageDTO;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,6 +23,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_IMAGE_INDEX = 1;
+    private static final ImageDTO TEST_IMAGE_DTO = new ImageDTO(TEST_IMAGE_INDEX, "name", "path", "format", 0, 0);
 
     @Override
     protected String controllerPath() {
@@ -33,5 +37,13 @@ public class ImageControllerTest extends AbstractControllerTest {
                 .param("index", String.valueOf(TEST_IMAGE_INDEX));
 
         performRequestBuilderExpectedOk(requestBuilder);
+    }
+
+    @Test
+    public void postLoop_When_UserIsNotAdmin_Expect_IllegalAccessException() throws Exception {
+        final UserDomainObject user = new UserDomainObject(2);
+        Imcms.setUser(user); // means current user is default user
+
+        performPostWithContentExpectException(TEST_IMAGE_DTO, IllegalAccessException.class);
     }
 }

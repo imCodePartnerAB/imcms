@@ -17,7 +17,16 @@ public class ImageController {
         return new ImageDTO();
     }
 
-    // todo: update to work with new client API
+    @PostMapping
+    public void saveImage(@RequestBody ImageDTO image) throws IllegalAccessException {
+
+        // todo: create annotation instead of copying this each time!
+        if (!Imcms.getUser().isSuperAdmin()) {
+            throw new IllegalAccessException("User do not have access to change image structure.");
+        }
+    }
+
+
     /**
      * Returns empty upper or lower image index.
      * For example, if we have images in document under indexes -3, -1, 1, 2, 10,
@@ -26,6 +35,7 @@ public class ImageController {
      * @param docId     interested document id
      * @param direction String parameter "UPPER" or "LOWER"
      */
+    // todo: update to work with new client API
     @RequestMapping("/emptyNo/{docId}/{upperOrLower}")
     public void getFreeImageNo(@PathVariable("docId") int docId,
                                @PathVariable("upperOrLower") Direction direction,
