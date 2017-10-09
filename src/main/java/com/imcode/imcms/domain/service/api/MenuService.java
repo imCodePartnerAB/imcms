@@ -55,7 +55,7 @@ public class MenuService {
     private void addTitleToMenuItem(MenuItemDTO menuItemDTO, UserDomainObject user) {
         final Version menuItemVersion = versionService.getDocumentWorkingVersion(menuItemDTO.getDocumentId());
         final CommonContent commonContent = commonContentService
-                .findByDocIdAndVersionNoAndUserDomainObject(menuItemVersion.getDocId(), menuItemVersion.getNo(), user);
+                .findByDocIdAndVersionNoAndUser(menuItemVersion.getDocId(), menuItemVersion.getNo(), user);
 
         menuItemDTO.setTitle(commonContent.getHeadline());
 

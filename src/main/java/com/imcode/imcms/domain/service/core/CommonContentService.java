@@ -16,7 +16,7 @@ public class CommonContentService {
         this.commonContentRepository = commonContentRepository;
     }
 
-    public CommonContent findByDocIdAndVersionNoAndUserDomainObject(int docId, int versionNo, UserDomainObject userDO) {
+    public CommonContent findByDocIdAndVersionNoAndUser(int docId, int versionNo, UserDomainObject userDO) {
         requireNonNull(userDO, "CommonContentService findByUser user is null.");
         return commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(docId, versionNo, userDO.getLanguageIso639_2());
     }
