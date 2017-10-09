@@ -2,6 +2,7 @@ package com.imcode.imcms.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.imagearchive.util.Utils;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
@@ -37,7 +38,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/content/image")
+@RequestMapping("/image")
 public class ImageController {
 
     private final FileController fileController;
@@ -45,6 +46,11 @@ public class ImageController {
     @Autowired
     public ImageController(FileController fileController) {
         this.fileController = fileController;
+    }
+
+    @GetMapping
+    public ImageDTO getImage(@RequestParam Integer docId, @RequestParam Integer index) {
+        return new ImageDTO();
     }
 
     @InitBinder
