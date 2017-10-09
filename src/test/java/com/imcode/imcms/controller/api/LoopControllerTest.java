@@ -24,12 +24,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.NestedServletException;
 
 import java.util.Collections;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
@@ -73,23 +69,7 @@ public class LoopControllerTest extends AbstractControllerTest {
         final UserDomainObject user = new UserDomainObject(2);
         Imcms.setUser(user); // means current user is default user
 
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(asJson(TEST_LOOP_DTO));
-
-        try {
-            performRequestBuilderExpectedOk(requestBuilder); // here exception should be thrown!!1
-            fail("Expected exception wasn't thrown!");
-
-        } catch (NestedServletException e) {
-            assertTrue(
-                    "Should be DocumentNotExistException!!",
-                    (e.getCause() instanceof IllegalAccessException)
-            );
-            return;
-        }
-
-        fail("Expected exception wasn't thrown!");
+        performPostWithContentExpectException(TEST_LOOP_DTO, IllegalAccessException.class);
     }
 
     @Test
@@ -122,25 +102,8 @@ public class LoopControllerTest extends AbstractControllerTest {
 
         final int nonExistingDocId = -13;
         final LoopDTO loopDTO = new LoopDTO(nonExistingDocId, TEST_LOOP_INDEX, Collections.emptyList());
-        final String jsonData = asJson(loopDTO);
 
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(jsonData);
-
-        try {
-            performRequestBuilderExpectedOk(requestBuilder); // here exception should be thrown!!1
-            fail("Expected exception wasn't thrown!");
-
-        } catch (NestedServletException e) {
-            assertTrue(
-                    "Should be DocumentNotExistException!!",
-                    (e.getCause() instanceof DocumentNotExistException)
-            );
-            return;
-        }
-
-        fail("Expected exception wasn't thrown!");
+        performPostWithContentExpectException(loopDTO, DocumentNotExistException.class);
     }
 
     @Test
