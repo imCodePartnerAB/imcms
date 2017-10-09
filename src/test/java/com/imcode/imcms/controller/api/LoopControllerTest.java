@@ -69,7 +69,7 @@ public class LoopControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void postLoop_When_UserIsNotAdmin_Expect_BadRequest() throws Exception {
+    public void postLoop_When_UserIsNotAdmin_Expect_IllegalAccessException() throws Exception {
         final UserDomainObject user = new UserDomainObject(2);
         Imcms.setUser(user); // means current user is default user
 
@@ -115,7 +115,7 @@ public class LoopControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void postLoop_When_UserIsAdminAndDocNotExist_Expect_Exception() throws Exception {
+    public void postLoop_When_UserIsAdminAndDocNotExist_Expect_DocumentNotExistException() throws Exception {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user); // means current user is admin now
