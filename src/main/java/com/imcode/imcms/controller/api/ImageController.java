@@ -17,6 +17,7 @@ public class ImageController {
         return new ImageDTO();
     }
 
+    // todo: update to work with new client API
     /**
      * Returns empty upper or lower image index.
      * For example, if we have images in document under indexes -3, -1, 1, 2, 10,
