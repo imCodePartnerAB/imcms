@@ -144,7 +144,7 @@
              and fully-qualified @Configuration classes -->
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>com.imcode.imcms.config.MainConfig</param-value>
+            <param-value>com.imcode.imcms.config.WebConfig</param-value>
         </init-param>
     </servlet>
 

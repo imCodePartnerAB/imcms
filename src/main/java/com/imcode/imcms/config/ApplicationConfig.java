@@ -43,16 +43,6 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public CustomEditorConfigurer customEditorConfigurer() {
-        CustomEditorConfigurer customEditorConfigurer = new CustomEditorConfigurer();
-        Map<Class<?>, Class<? extends PropertyEditor>> customEditors = new ManagedMap<>();
-        customEditors.put(File.class, FileEditor.class);
-        customEditors.put(File[].class, FileArrayEditor.class);
-        customEditorConfigurer.setCustomEditors(customEditors);
-        return customEditorConfigurer;
-    }
-
-    @Bean
     public ReloadableResourceBundleMessageSource reloadableResourceBundleMessageSource() {
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
         //TODO: Move that values to properties
