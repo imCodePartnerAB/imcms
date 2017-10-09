@@ -21,8 +21,7 @@ import java.util.Properties;
         "com.imcode.imcms.domain",
         "com.imcode.imcms.mapping",
         "com.imcode.imcms.imagearchive",
-        "imcode.util",
-        "com.imcode.imcms.document.text"
+        "imcode.util"
 })
 public class MainConfig {
 
