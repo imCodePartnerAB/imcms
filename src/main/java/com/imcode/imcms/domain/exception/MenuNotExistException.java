@@ -1,4 +1,4 @@
-package com.imcode.imcms.domain.service.exception;
+package com.imcode.imcms.domain.exception;
 
 public class MenuNotExistException extends RuntimeException {
 

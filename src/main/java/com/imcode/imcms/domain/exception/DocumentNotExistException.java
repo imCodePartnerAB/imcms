@@ -1,4 +1,4 @@
-package com.imcode.imcms.domain.service.exception;
+package com.imcode.imcms.domain.exception;
 
 /**
  * Is thrown when trying to do smth with non-existing document.

@@ -4,7 +4,7 @@ import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
-import com.imcode.imcms.domain.service.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

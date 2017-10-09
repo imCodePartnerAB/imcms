@@ -4,7 +4,7 @@ import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.service.exception.MenuNotExistException;
+import com.imcode.imcms.domain.exception.MenuNotExistException;
 import com.imcode.imcms.persistence.entity.Menu;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
