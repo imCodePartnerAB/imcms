@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping.mapper;
+package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
