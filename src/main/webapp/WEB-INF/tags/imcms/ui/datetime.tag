@@ -12,7 +12,7 @@
 if (null != timeid) { 
     %>&nbsp;<input id="${timeid}" name="${timeid}" size="5" maxlength="5" style="width: 4em;" value="<%= formattedTime %>" type="text"><%
 }
-%>&nbsp;<img src="<%= request.getContextPath() %>/imcms/jscalendar/images/img.gif" id="${dateid}_btn" style="cursor: pointer;" onmouseover="this.style.background='#000099';" onmouseout="this.style.background=''"><script type="text/javascript">
+%>&nbsp;<img src="<%= request.getContextPath() %>/js/jscalendar/images/img.gif" id="${dateid}_btn" style="cursor: pointer;" onmouseover="this.style.background='#000099';" onmouseout="this.style.background=''"><script type="text/javascript">
 Calendar.setup({
     inputField   : "${dateid}",
     <% if (null != timeid) { %>

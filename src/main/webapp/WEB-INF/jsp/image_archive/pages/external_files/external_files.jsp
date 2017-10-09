@@ -127,7 +127,7 @@
 </c:set>
 <c:set var="css">
     <c:if test="${activate}">
-        <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/imcms/jscalendar/skins/aqua/theme.css.jsp"/>
+        <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/js/jscalendar/skins/aqua/theme.css.jsp"/>
     </c:if>
     <link href="${pageContext.servletContext.contextPath}/js/jquery.uploadify-v2.1.4/uploadify.css" rel="stylesheet" type="text/css" />
 </c:set>

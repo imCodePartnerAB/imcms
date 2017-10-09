@@ -153,11 +153,11 @@
     </label>
     <div class="left">
         <form:input id="licenseDt" path="licenseDt" maxlength="10" cssStyle="width:100px;" htmlEscape="true"/>
-        <a href="#" id="licenseDtBtn"><img src="${pageContext.servletContext.contextPath}/imcms/jscalendar/images/img.gif" width="20" height="14"/></a>
+        <a href="#" id="licenseDtBtn"><img src="${pageContext.servletContext.contextPath}/js/jscalendar/images/img.gif" width="20" height="14"/></a>
         &#8211;
         <form:input id="licenseEndDt" path="licenseEndDt" maxlength="10" cssStyle="width:100px;" htmlEscape="true"/>
         <a href="#" id="licenseEndDtBtn">
-            <img src="${pageContext.servletContext.contextPath}/imcms/jscalendar/images/img.gif" width="20" height="14"/>
+            <img src="${pageContext.servletContext.contextPath}/js/jscalendar/images/img.gif" width="20" height="14"/>
         </a><br/>
         <form:errors path="license*" cssClass="red"/>
     </div>

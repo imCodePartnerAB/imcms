@@ -4,7 +4,7 @@
 <spring:message var="pageHeading" code="archive.pageHeading.addImage" htmlEscape="true"/>
 <c:set var="currentPage" value="addImage"/>
 <c:set var="css">
-    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/imcms/jscalendar/skins/aqua/theme.css.jsp"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/js/jscalendar/skins/aqua/theme.css.jsp"/>
 </c:set>
 <c:set var="javascript">
     <%@ include file="/WEB-INF/jsp/image_archive/pages/fragments/jscalendar.jsp" %>

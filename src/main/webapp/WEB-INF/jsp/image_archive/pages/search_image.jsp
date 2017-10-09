@@ -5,7 +5,7 @@
 <spring:message var="pageHeading" code="archive.pageHeading.searchImage" htmlEscape="true"/>
 <c:set var="currentPage" value="searchImage"/>
 <c:set var="css">
-    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/imcms/jscalendar/skins/aqua/theme.css.jsp"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/js/jscalendar/skins/aqua/theme.css.jsp"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/css/custom-theme/jquery-ui-1.8.16.custom.css"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/css/jquery.multiselect.css"/>
 </c:set>
@@ -172,19 +172,19 @@
             <div class="minH30">
                 <label for="licenseDt" class="left" style="width:130px;"><spring:message code="archive.searchImage.licensingPeriod" htmlEscape="true"/></label>
                 <form:input id="licenseDt" path="licenseDt" maxlength="10" cssStyle="width:95px;"/>
-                <a href="#" id="licenseDtBtn"><img src="${pageContext.servletContext.contextPath}/imcms/jscalendar/images/img.gif" width="20" height="14"/></a>
+                <a href="#" id="licenseDtBtn"><img src="${pageContext.servletContext.contextPath}/js/jscalendar/images/img.gif" width="20" height="14"/></a>
                 &#8211;
                 <form:input id="licenseEndDt" path="licenseEndDt" maxlength="10" cssStyle="width:95px;"/>
-                <a href="#" id="licenseEndDtBtn"><img src="${pageContext.servletContext.contextPath}/imcms/jscalendar/images/img.gif" width="20" height="14"/></a><br/>
+                <a href="#" id="licenseEndDtBtn"><img src="${pageContext.servletContext.contextPath}/js/jscalendar/images/img.gif" width="20" height="14"/></a><br/>
                 <form:errors path="license*" cssClass="red"/>
             </div>
             <div class="minH30" style="border-bottom: 1px solid gray;margin-bottom:15px;">
                 <label for="activeDt" class="left" style="width:130px;"><spring:message code="archive.searchImage.dateOfActivation" htmlEscape="true"/></label>
                 <form:input id="activeDt" path="activeDt" maxlength="10" cssStyle="width:95px;"/>
-                <a href="#" id="activeDtBtn"><img src="${pageContext.servletContext.contextPath}/imcms/jscalendar/images/img.gif" width="20" height="14"/></a>
+                <a href="#" id="activeDtBtn"><img src="${pageContext.servletContext.contextPath}/js/jscalendar/images/img.gif" width="20" height="14"/></a>
                 &#8211;
                 <form:input id="activeEndDt" path="activeEndDt" maxlength="10" cssStyle="width:95px;"/>
-                <a href="#" id="activeEndDtBtn"><img src="${pageContext.servletContext.contextPath}/imcms/jscalendar/images/img.gif" width="20" height="14"/></a><br/>
+                <a href="#" id="activeEndDtBtn"><img src="${pageContext.servletContext.contextPath}/js/jscalendar/images/img.gif" width="20" height="14"/></a><br/>
                 <form:errors path="active*" cssClass="red"/>
             </div>
         </div>
