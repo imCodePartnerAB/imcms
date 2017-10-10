@@ -13,8 +13,7 @@ import java.util.Properties;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static com.imcode.imcms.util.mapping.MappingUtils.mapMenuItemDtoListToMenuItem;
+import java.util.stream.IntStream;
 
 @Configuration
 public class MappingConfig {
@@ -70,10 +69,22 @@ public class MappingConfig {
                 final MenuItem menuItem = new MenuItem();
                 menuItem.setId(menuItemDTO.getId());
                 menuItem.setDocumentId(menuItemDTO.getDocumentId());
-                menuItem.setChildren(mapMenuItemDtoListToMenuItem(menuItemDTO.getChildren(), this));
+                final List<MenuItem> children = menuItemDtoListToMenuItemList(this).apply(menuItemDTO.getChildren());
+                menuItem.setChildren(children);
                 return menuItem;
             }
         };
+    }
+
+    @Bean
+    public Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList(Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem) {
+        return menuItemDtoList -> IntStream.range(0, menuItemDtoList.size())
+                .mapToObj(i -> {
+                    final MenuItem menuItem = menuItemDtoToMenuItem.apply(menuItemDtoList.get(i));
+                    menuItem.setSortOrder(i + 1);
+                    return menuItem;
+                })
+                .collect(Collectors.toList());
     }
 
     @Bean
