@@ -21,8 +21,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.imcode.imcms.util.mapping.MappingUtils.mapMenuItemDtoListToMenuItem;
-
 @Service
 public class MenuService {
 
@@ -32,17 +30,20 @@ public class MenuService {
     private final CommonContentService commonContentService;
     private final Function<MenuItem, MenuItemDTO> menuItemToDto;
     private final Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem;
+    private final Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList;
 
     public MenuService(MenuRepository menuRepository,
                        VersionService versionService,
                        CommonContentService commonContentService,
                        Function<MenuItem, MenuItemDTO> menuItemToDto,
-                       Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem) {
+                       Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem,
+                       Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList) {
         this.menuRepository = menuRepository;
         this.versionService = versionService;
         this.commonContentService = commonContentService;
         this.menuItemToDto = menuItemToDto;
         this.menuItemDtoToMenuItem = menuItemDtoToMenuItem;
+        this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
     }
 
     public List<MenuItemDTO> getMenuItemsOf(int menuNo, int docId) {
@@ -67,8 +68,7 @@ public class MenuService {
             menu = deleteAllMenuItemsAndFlush(menu);
         }
 
-        final List<MenuItemDTO> menuItems = menuDTO.getMenuItems();
-        menu.setMenuItems(mapMenuItemDtoListToMenuItem(menuItems, menuItemDtoToMenuItem));
+        menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
         menuRepository.saveAndFlush(menu);
     }
