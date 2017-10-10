@@ -21,7 +21,7 @@ public class Menu extends VersionedContent {
     @NotNull
     private Integer no;
 
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "menu_id")
     @Where(clause = "menu_id is not null")
     @OrderBy("sortOrder")

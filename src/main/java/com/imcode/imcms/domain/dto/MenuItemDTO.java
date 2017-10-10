@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.dto;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,6 +17,6 @@ public class MenuItemDTO implements Serializable {
 
     private Integer documentId;
 
-    private List<MenuItemDTO> children;
+    private List<MenuItemDTO> children = new ArrayList<>();
 
 }
