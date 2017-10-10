@@ -14,8 +14,10 @@ import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -26,30 +28,56 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final VersionService versionService;
     private final CommonContentService commonContentService;
-    private final Function<MenuItem, MenuItemDTO> mapper;
+    private final Function<MenuItem, MenuItemDTO> menuItemToDto;
+    private final Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem;
 
     public MenuService(MenuRepository menuRepository,
                        VersionService versionService,
                        CommonContentService commonContentService,
-                       Function<MenuItem, MenuItemDTO> mapper) {
+                       Function<MenuItem, MenuItemDTO> menuItemToDto,
+                       Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem) {
         this.menuRepository = menuRepository;
         this.versionService = versionService;
         this.commonContentService = commonContentService;
-        this.mapper = mapper;
+        this.menuItemToDto = menuItemToDto;
+        this.menuItemDtoToMenuItem = menuItemDtoToMenuItem;
     }
 
     public List<MenuItemDTO> getMenuItemsOf(int menuNo, int docId) {
-        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
+        final Menu menu = getMenu(menuNo, docId);
         final UserDomainObject user = Imcms.getUser();
-        final Menu menu = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, workingVersion);
 
         return Optional.ofNullable(menu)
                 .orElseThrow(() -> new MenuNotExistException(menuNo, docId))
                 .getMenuItems()
                 .stream()
-                .map(mapper)
+                .map(menuItemToDto)
                 .peek(menuItemDTO -> addTitleToMenuItem(menuItemDTO, user))
                 .collect(Collectors.toList());
+    }
+
+    public void saveMenuItems(int menuNo, int docId, List<MenuItemDTO> menuItems) {
+        Menu menu = Optional.ofNullable(getMenu(menuNo, docId))
+                .orElseThrow(() -> new MenuNotExistException(menuNo, docId));
+
+        if (!menu.getMenuItems().isEmpty()) {
+            for (Iterator<MenuItem> iterator = menu.getMenuItems().iterator(); iterator.hasNext(); ) {
+                MenuItem projectEntity = iterator.next();
+                projectEntity.setMenu(null);
+                iterator.remove();
+            }
+            menu = menuRepository.saveAndFlush(menu);
+        }
+
+        final AtomicInteger counter = new AtomicInteger(1);
+        final List<MenuItem> menuItemsNew = menuItems.stream()
+                .map(menuItemDtoToMenuItem)
+                .peek(menuItem -> menuItem.setSortOrder(counter.getAndIncrement()))
+                .collect(Collectors.toList());
+
+        menu.setMenuItems(menuItemsNew);
+
+        menuRepository.saveAndFlush(menu);
     }
 
     private void addTitleToMenuItem(MenuItemDTO menuItemDTO, UserDomainObject user) {
@@ -61,6 +89,11 @@ public class MenuService {
 
         menuItemDTO.getChildren()
                 .forEach(childMenuItemDTO -> addTitleToMenuItem(childMenuItemDTO, user));
+    }
+
+    private Menu getMenu(int menuNo, int docId) {
+        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
+        return menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, workingVersion);
     }
 
 }

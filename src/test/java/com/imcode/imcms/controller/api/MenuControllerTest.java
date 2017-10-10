@@ -50,7 +50,7 @@ public class MenuControllerTest extends AbstractControllerTest {
         user.setLanguageIso639_2("en");
         Imcms.setUser(user);
         final Menu menu = menuDataInitializer.createData(true);
-        final String expectedMenuItemDtos = asJson(menuDataInitializer.getMenuItemDTOs());
+        final String expectedMenuItemDtos = asJson(menuDataInitializer.getMenuItemDtoList());
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("menuId", String.valueOf(menu.getNo()))

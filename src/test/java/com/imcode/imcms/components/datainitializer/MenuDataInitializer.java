@@ -40,12 +40,24 @@ public class MenuDataInitializer extends RepositoryCleaner {
         return savedMenu;
     }
 
-    public List<MenuItemDTO> getMenuItemDTOs() {
+    public List<MenuItemDTO> getMenuItemDtoList() {
         return menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(savedMenu.getNo(), savedMenu.getVersion())
                 .getMenuItems()
                 .stream()
                 .map(this::mapMenuItems)
                 .collect(Collectors.toList());
+    }
+
+    public List<MenuItemDTO> getMenuItemDtoListWithoutIds() {
+        return getMenuItemDtoList().stream()
+                .peek(this::setNullMenuItemId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void cleanRepositories() {
+        versionDataInitializer.cleanRepositories();
+        cleanRepositories(menuRepository);
     }
 
     private MenuItemDTO mapMenuItems(MenuItem menuItem) {
@@ -57,12 +69,6 @@ public class MenuDataInitializer extends RepositoryCleaner {
                 .map(this::mapMenuItems)
                 .collect(Collectors.toList()));
         return menuItemDTO;
-    }
-
-    @Override
-    public void cleanRepositories() {
-        versionDataInitializer.cleanRepositories();
-        cleanRepositories(menuRepository);
     }
 
     private void addMenuItemsTo(Menu menu) {
@@ -90,10 +96,15 @@ public class MenuDataInitializer extends RepositoryCleaner {
         menuRepository.saveAndFlush(menu);
     }
 
-    public MenuItem createMenuItem(int sortOrder) {
+    private MenuItem createMenuItem(int sortOrder) {
         final MenuItem menuItem = new MenuItem();
         menuItem.setSortOrder(sortOrder);
         menuItem.setDocumentId(1001);
         return menuItem;
+    }
+
+    private void setNullMenuItemId(MenuItemDTO menuItemDTO) {
+        menuItemDTO.setId(null);
+        menuItemDTO.getChildren().forEach(this::setNullMenuItemId);
     }
 }

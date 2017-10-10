@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -57,6 +58,24 @@ public class MappingConfig {
                         .map(this)
                         .collect(Collectors.toList()));
                 return menuItemDTO;
+            }
+        };
+    }
+
+    @Bean
+    public Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem() {
+        return new Function<MenuItemDTO, MenuItem>() {
+            @Override
+            public MenuItem apply(MenuItemDTO menuItemDTO) {
+                final MenuItem menuItem = new MenuItem();
+                menuItem.setId(menuItemDTO.getId());
+                menuItem.setDocumentId(menuItemDTO.getDocumentId());
+                final AtomicInteger counter = new AtomicInteger(1);
+                menuItem.setChildren(menuItemDTO.getChildren().stream()
+                        .map(this)
+                        .peek(menuItemChild -> menuItemChild.setSortOrder(counter.getAndIncrement()))
+                        .collect(Collectors.toList()));
+                return menuItem;
             }
         };
     }
