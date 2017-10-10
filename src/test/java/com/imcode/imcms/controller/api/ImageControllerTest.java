@@ -7,6 +7,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,16 @@ public class ImageControllerTest extends AbstractControllerTest {
         return "/image";
     }
 
+    @Before
+    public void setUp() throws Exception {
+        commonContentDataInitializer.cleanRepositories();
+        commonContentDataInitializer.createData(TEST_DOC_ID, TEST_VERSION_INDEX);
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("en"); // user lang should exist in common content
+        Imcms.setUser(user);
+    }
+
     @Test
     public void controllerGetRequest_Expect_Ok() throws Exception {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
@@ -47,13 +58,6 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Test
     public void controllerGetRequest_When_ImageNotExist_Expect_OkAndEmptyDTO() throws Exception {
-        commonContentDataInitializer.cleanRepositories();
-        commonContentDataInitializer.createData(TEST_DOC_ID, TEST_VERSION_INDEX);
-
-        final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("en"); // user lang should exist in common content
-        Imcms.setUser(user);
-
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(TEST_DOC_ID))
                 .param("index", String.valueOf(TEST_IMAGE_INDEX));
