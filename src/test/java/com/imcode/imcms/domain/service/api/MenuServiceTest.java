@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.MenuNotExistException;
 import com.imcode.imcms.persistence.entity.Menu;
@@ -62,15 +63,26 @@ public class MenuServiceTest {
         final Menu menu = menuDataInitializer.createData(true);
         final List<MenuItemDTO> menuItemBefore = menuDataInitializer.getMenuItemDtoList();
 
-        menuService.saveMenuItems(menu.getNo(), menu.getVersion().getDocId(), menuDataInitializer.getMenuItemDtoListWithoutIds());
+        final MenuDTO menuDTO = menuDtoFrom(menu.getNo(), menu.getVersion().getDocId(), menuDataInitializer.getMenuItemDtoListWithoutIds());
+        menuService.saveMenuItems(menuDTO);
 
         final List<MenuItemDTO> menuItemAfter = menuDataInitializer.getMenuItemDtoList();
+        assertEquals(menuItemBefore.size(), menuItemAfter.size());
         assertNotEquals(menuItemBefore, menuItemAfter);
     }
 
     @Test(expected = MenuNotExistException.class)
     public void saveMenuItems_When_MenuDoesntExist_Expect_MenuNotExistExceptions() {
         versionDataInitializer.createData(0, 1001);
-        menuService.saveMenuItems(0, 1001, new ArrayList<>());
+        menuService.saveMenuItems(menuDtoFrom(0, 1001, new ArrayList<>()));
     }
+
+    private MenuDTO menuDtoFrom(int menuId, int docId, List<MenuItemDTO> menuItems) {
+        final MenuDTO menuDTO = new MenuDTO();
+        menuDTO.setMenuId(menuId);
+        menuDTO.setDocId(docId);
+        menuDTO.setMenuItems(menuItems);
+        return menuDTO;
+    }
+
 }

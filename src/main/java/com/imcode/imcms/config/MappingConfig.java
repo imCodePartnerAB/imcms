@@ -10,10 +10,11 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.imcode.imcms.util.mapping.MappingUtils.mapMenuItemDtoListToMenuItem;
 
 @Configuration
 public class MappingConfig {
@@ -69,11 +70,7 @@ public class MappingConfig {
                 final MenuItem menuItem = new MenuItem();
                 menuItem.setId(menuItemDTO.getId());
                 menuItem.setDocumentId(menuItemDTO.getDocumentId());
-                final AtomicInteger counter = new AtomicInteger(1);
-                menuItem.setChildren(menuItemDTO.getChildren().stream()
-                        .map(this)
-                        .peek(menuItemChild -> menuItemChild.setSortOrder(counter.getAndIncrement()))
-                        .collect(Collectors.toList()));
+                menuItem.setChildren(mapMenuItemDtoListToMenuItem(menuItemDTO.getChildren(), this));
                 return menuItem;
             }
         };

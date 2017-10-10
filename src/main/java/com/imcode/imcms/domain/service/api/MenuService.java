@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.MenuNotExistException;
 import com.imcode.imcms.domain.service.core.CommonContentService;
@@ -17,9 +18,10 @@ import org.springframework.stereotype.Service;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.imcode.imcms.util.mapping.MappingUtils.mapMenuItemDtoListToMenuItem;
 
 @Service
 public class MenuService {
@@ -56,28 +58,28 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
-    public void saveMenuItems(int menuNo, int docId, List<MenuItemDTO> menuItems) {
-        Menu menu = Optional.ofNullable(getMenu(menuNo, docId))
-                .orElseThrow(() -> new MenuNotExistException(menuNo, docId));
+    public void saveMenuItems(MenuDTO menuDTO) {
+
+        Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuId(), menuDTO.getDocId()))
+                .orElseThrow(() -> new MenuNotExistException(menuDTO.getMenuId(), menuDTO.getDocId()));
 
         if (!menu.getMenuItems().isEmpty()) {
-            for (Iterator<MenuItem> iterator = menu.getMenuItems().iterator(); iterator.hasNext(); ) {
-                MenuItem projectEntity = iterator.next();
-                projectEntity.setMenu(null);
-                iterator.remove();
-            }
-            menu = menuRepository.saveAndFlush(menu);
+            menu = deleteAllMenuItemsAndFlush(menu);
         }
 
-        final AtomicInteger counter = new AtomicInteger(1);
-        final List<MenuItem> menuItemsNew = menuItems.stream()
-                .map(menuItemDtoToMenuItem)
-                .peek(menuItem -> menuItem.setSortOrder(counter.getAndIncrement()))
-                .collect(Collectors.toList());
-
-        menu.setMenuItems(menuItemsNew);
+        final List<MenuItemDTO> menuItems = menuDTO.getMenuItems();
+        menu.setMenuItems(mapMenuItemDtoListToMenuItem(menuItems, menuItemDtoToMenuItem));
 
         menuRepository.saveAndFlush(menu);
+    }
+
+    private Menu deleteAllMenuItemsAndFlush(Menu menu) {
+        for (Iterator<MenuItem> iterator = menu.getMenuItems().iterator(); iterator.hasNext(); ) {
+            MenuItem projectEntity = iterator.next();
+            projectEntity.setMenu(null);
+            iterator.remove();
+        }
+        return menuRepository.saveAndFlush(menu);
     }
 
     private void addTitleToMenuItem(MenuItemDTO menuItemDTO, UserDomainObject user) {
