@@ -1,11 +1,9 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.components.cleaner.RepositoryTestDataCleaner;
-import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
+import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
-import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import org.junit.Before;
@@ -16,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.List;
 
@@ -32,6 +29,7 @@ public class CommonContentRepositoryTest {
     private static final int VERSION_NO = 0;
     private static final String ENG_CODE = "en";
     private static final String SWE_CODE = "sv";
+
     @Inject
     private LanguageRepository languageRepository;
 
@@ -39,32 +37,12 @@ public class CommonContentRepositoryTest {
     private CommonContentRepository commonContentRepository;
 
     @Autowired
-    private VersionDataInitializer versionDataInitializer;
-    @Autowired
-    private VersionRepository versionRepository;
-    private RepositoryTestDataCleaner testDataCleaner;
-
-    @PostConstruct
-    public void init() {
-        testDataCleaner = new RepositoryTestDataCleaner(commonContentRepository, versionRepository);
-    }
+    private CommonContentDataInitializer commonContentDataInitializer;
 
     @Before
     public void recreateCommonContents() {
-        testDataCleaner.cleanRepositories();
-
-        Language en = languageRepository.findByCode(ENG_CODE);
-        Language se = languageRepository.findByCode(SWE_CODE);
-        // both langs should be already created
-
-        versionDataInitializer.createData(VERSION_NO, DOC_ID);
-
-        commonContentRepository.saveAndFlush(new CommonContent(
-                DOC_ID, en, "headline_en", "menuText_en", "menuImageUrl_en", true, VERSION_NO
-        ));
-        commonContentRepository.saveAndFlush(new CommonContent(
-                DOC_ID, se, "headline_se", "menuText_se", "menuImageUrl_se", true, VERSION_NO
-        ));
+        commonContentDataInitializer.cleanRepositories();
+        commonContentDataInitializer.createData(DOC_ID, VERSION_NO);
     }
 
     @Test
@@ -85,9 +63,9 @@ public class CommonContentRepositoryTest {
 
     @Test
     public void testFindByDocIdAndDocLanguageCode() throws Exception {
-        CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(DOC_ID, VERSION_NO, SWE_CODE);
+        CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(DOC_ID, VERSION_NO, ENG_CODE);
 
         assertNotNull(commonContent);
-        assertEquals("headline_se", commonContent.getHeadline());
+        assertEquals("headline_en", commonContent.getHeadline());
     }
 }
