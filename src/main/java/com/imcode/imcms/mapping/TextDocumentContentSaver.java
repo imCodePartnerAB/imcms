@@ -390,7 +390,7 @@ public class TextDocumentContentSaver {
         image.setAlternateText(imageDO.getAlternateText());
         image.setBorder(imageDO.getBorder());
         image.setCropRegion(cropRegion);
-        image.setFormat(imageDO.getFormat() == null ? 0 : imageDO.getFormat().getOrdinal());
+        image.setFormat(imageDO.getFormat());
         image.setGeneratedFilename(imageDO.getGeneratedFilename());
         image.setHeight(imageDO.getHeight());
         image.setHorizontalSpace(imageDO.getHorizontalSpace());

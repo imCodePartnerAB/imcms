@@ -34,26 +34,29 @@ public class LoopService {
 
     public LoopDTO getLoop(int loopIndex, int docId) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(docId);
-        final Loop loop = getOrCreateLoop(documentWorkingVersion, loopIndex);
-        return loopToDtoMapper.apply(loop);
-    }
+        final Loop loop = loopRepository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
 
-    private Loop getOrCreateLoop(Version documentWorkingVersion, int loopIndex) {
-        return Optional.ofNullable(loopRepository.findByVersionAndIndex(documentWorkingVersion, loopIndex))
-                .orElseGet(() -> createLoop(documentWorkingVersion, loopIndex));
+        return Optional.ofNullable(loop)
+                .map(loopToDtoMapper)
+                .orElse(LoopDTO.empty(docId, loopIndex));
     }
 
     public void saveLoop(LoopDTO loopDTO) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopDTO.getDocId());
         final Loop loopForSave = loopDtoToLoop.apply(loopDTO, documentWorkingVersion);
-        final Loop prevLoop = getOrCreateLoop(documentWorkingVersion, loopDTO.getIndex());
+        final Integer loopId = getLoopId(documentWorkingVersion, loopDTO.getIndex());
 
-        loopForSave.setId(prevLoop.getId());
+        loopForSave.setId(loopId);
         loopRepository.save(loopForSave);
     }
 
-    private Loop createLoop(Version version, Integer loopIndex) {
-        final Loop loop = Loop.emptyLoop(version, loopIndex);
-        return loopRepository.save(loop);
+    private Integer getLoopId(Version version, Integer loopIndex) {
+        final Loop loop = loopRepository.findByVersionAndIndex(version, loopIndex);
+
+        if (loop == null) {
+            return null;
+        }
+
+        return loop.getId();
     }
 }

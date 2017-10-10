@@ -11,6 +11,7 @@ import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.util.Value;
+import imcode.util.image.Format;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -182,6 +183,7 @@ public class ImageRepositoryTest {
         imageSwe.setLanguage(swedish);
         imageSwe.setVersion(version);
         imageSwe.setLoopEntryRef(null);
+        imageSwe.setFormat(Format.JPEG);
         imageSwe.setGeneratedFilename("dummy"); // this line is extra
         imageRepository.save(imageSwe);
 
@@ -211,6 +213,7 @@ public class ImageRepositoryTest {
             image.setLanguage(language);
             image.setVersion(version);
             image.setLoopEntryRef(loopEntryRef);
+            image.setFormat(Format.JPEG);
             imageRepository.save(image);
         });
     }

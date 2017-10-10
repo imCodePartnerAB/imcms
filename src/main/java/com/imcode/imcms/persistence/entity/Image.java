@@ -3,12 +3,11 @@ package com.imcode.imcms.persistence.entity;
 import com.imcode.imcms.mapping.jpa.doc.content.VersionedI18nContent;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.ImageCropRegion;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
+import imcode.util.image.Format;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "imcms_text_doc_images")
@@ -52,8 +51,9 @@ public class Image extends VersionedI18nContent {
 
     private int type;
 
-    @Column(name = "format", nullable = false, columnDefinition = "smallint")
-    private int format;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Format format;
 
     private ImageCropRegion cropRegion = new ImageCropRegion();
 
