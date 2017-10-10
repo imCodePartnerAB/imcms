@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -17,4 +18,8 @@ public class LoopDTO implements Serializable {
     private Integer docId;
     private Integer index;
     private List<LoopEntryDTO> entries;
+
+    public static LoopDTO empty(int docId, int index) {
+        return new LoopDTO(docId, index, Collections.emptyList());
+    }
 }
