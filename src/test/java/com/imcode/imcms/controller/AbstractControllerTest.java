@@ -54,6 +54,11 @@ public abstract class AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(contentObject));
 
+        performRequestBuilderExpectException(expectedExceptionClass, requestBuilder);
+    }
+
+    protected <T> void performRequestBuilderExpectException(Class<T> expectedExceptionClass,
+                                                            MockHttpServletRequestBuilder requestBuilder) throws Exception {
         try {
             performRequestBuilderExpectedOk(requestBuilder); // here exception should be thrown!!1
 

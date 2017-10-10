@@ -5,6 +5,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Image;
@@ -82,6 +83,16 @@ public class ImageControllerTest extends AbstractControllerTest {
                 .param("index", String.valueOf(TEST_IMAGE_INDEX));
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(TEST_IMAGE_DTO));
+    }
+
+    @Test
+    public void controllerGetRequest_When_DocumentNotExist_Expect_Exception() throws Exception {
+        final int nonExistingDocId = 0;
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", String.valueOf(nonExistingDocId))
+                .param("index", String.valueOf(TEST_IMAGE_INDEX));
+
+        performRequestBuilderExpectException(DocumentNotExistException.class, requestBuilder);
     }
 
     @Test
