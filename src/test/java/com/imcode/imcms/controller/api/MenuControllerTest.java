@@ -5,6 +5,7 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.exception.MenuNotExistException;
 import com.imcode.imcms.persistence.entity.Menu;
 import imcode.server.Imcms;
@@ -13,6 +14,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -61,17 +63,60 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     public void getMenuItems_When_MenuMissing_Expect_Exception() throws Exception {
-        versionDataInitializer.createData(0, 1001);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("menuId", "0")
+                .param("menuId", "1")
                 .param("docId", "1001");
+        expectException(requestBuilder);
+    }
+
+    @Test
+    public void postMenu_When_MenuExistWithMenuItems_Expect_Ok() throws Exception {
+        final Menu menu = menuDataInitializer.createData(true);
+
+        final MenuDTO menuDTO = new MenuDTO();
+        menuDTO.setMenuId(menu.getNo());
+        menuDTO.setDocId(menu.getVersion().getDocId());
+        menuDTO.setMenuItems(menuDataInitializer.getMenuItemDtoList());
+
+        final String jsonData = asJson(menuDTO);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonData);
+
+        performRequestBuilderExpectedOk(requestBuilder);
+    }
+
+    @Test
+    public void postMenu_When_MenuMissing_Expect_Exception() throws Exception {
+        final Menu menu = menuDataInitializer.createData(true);
+
+        final MenuDTO menuDTO = new MenuDTO();
+        menuDTO.setMenuId(1);
+        menuDTO.setDocId(menu.getVersion().getDocId());
+        menuDTO.setMenuItems(menuDataInitializer.getMenuItemDtoList());
+
+        menuDataInitializer.cleanRepositories();
+
+        final String jsonData = asJson(menuDTO);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonData);
+
+        expectException(requestBuilder);
+    }
+
+    private void expectException(MockHttpServletRequestBuilder requestBuilder) throws Exception {
+        versionDataInitializer.createData(0, 1001);
         try {
             performRequestBuilderExpectedOk(requestBuilder);
             fail("NestedServletException isn't fired");
         } catch (NestedServletException e) {
             assertTrue(e.getCause() instanceof MenuNotExistException);
-            assertEquals(e.getCause().getMessage(),
-                    String.format("Menu with no = %d and documentId = %d does not exist!", 0, 1001));
+            assertEquals(String.format("Menu with no = %d and documentId = %d does not exist!", 1, 1001),
+                    e.getCause().getMessage());
         }
     }
+
 }
