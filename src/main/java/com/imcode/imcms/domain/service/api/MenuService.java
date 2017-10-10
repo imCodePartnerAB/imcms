@@ -2,7 +2,6 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.exception.MenuNotExistException;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.doc.Version;
@@ -29,20 +28,17 @@ public class MenuService {
     private final VersionService versionService;
     private final CommonContentService commonContentService;
     private final Function<MenuItem, MenuItemDTO> menuItemToDto;
-    private final Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem;
     private final Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList;
 
     public MenuService(MenuRepository menuRepository,
                        VersionService versionService,
                        CommonContentService commonContentService,
                        Function<MenuItem, MenuItemDTO> menuItemToDto,
-                       Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem,
                        Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList) {
         this.menuRepository = menuRepository;
         this.versionService = versionService;
         this.commonContentService = commonContentService;
         this.menuItemToDto = menuItemToDto;
-        this.menuItemDtoToMenuItem = menuItemDtoToMenuItem;
         this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
     }
 
@@ -51,7 +47,7 @@ public class MenuService {
         final UserDomainObject user = Imcms.getUser();
 
         return Optional.ofNullable(menu)
-                .orElseThrow(() -> new MenuNotExistException(menuNo, docId))
+                .orElseGet(Menu::new)
                 .getMenuItems()
                 .stream()
                 .map(menuItemToDto)
@@ -59,10 +55,10 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
-    public void saveMenuItems(MenuDTO menuDTO) {
+    public void saveFrom(MenuDTO menuDTO) {
 
         Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuId(), menuDTO.getDocId()))
-                .orElseThrow(() -> new MenuNotExistException(menuDTO.getMenuId(), menuDTO.getDocId()));
+                .orElseGet(() -> createMenu(menuDTO));
 
         if (!menu.getMenuItems().isEmpty()) {
             menu = deleteAllMenuItemsAndFlush(menu);
@@ -71,6 +67,14 @@ public class MenuService {
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
         menuRepository.saveAndFlush(menu);
+    }
+
+    private Menu createMenu(MenuDTO menuDTO) {
+        final Version workingVersion = versionService.getDocumentWorkingVersion(menuDTO.getDocId());
+        final Menu menu = new Menu();
+        menu.setNo(menuDTO.getMenuId());
+        menu.setVersion(workingVersion);
+        return menuRepository.saveAndFlush(menu);
     }
 
     private Menu deleteAllMenuItemsAndFlush(Menu menu) {

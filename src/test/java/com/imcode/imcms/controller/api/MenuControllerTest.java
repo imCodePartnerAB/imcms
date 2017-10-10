@@ -102,7 +102,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonData);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+        performRequestBuilderExpectedOk(requestBuilder);
     }
 
 }
