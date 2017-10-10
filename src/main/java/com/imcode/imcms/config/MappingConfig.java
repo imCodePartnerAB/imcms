@@ -4,13 +4,12 @@ import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.Value;
-import imcode.server.Imcms;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -107,15 +106,15 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<Image, ImageDTO> imageToImageDTO() {
+    public Function<Image, ImageDTO> imageToImageDTO(Properties imcmsProperties) {
         return image -> Value.with(new ImageDTO(), dto -> {
             dto.setIndex(image.getIndex());
 
             final String name = image.getName();
             dto.setName(name);
 
-            final File imagePath = Imcms.getServices().getConfig().getImagePath();
-            final String path = imagePath + "generated/" + image.getGeneratedFilename();
+            final String path = (image.getGeneratedFilename() == null)
+                    ? "" : imcmsProperties.getProperty("ImagePath") + "generated/" + image.getGeneratedFilename();
 
             dto.setPath(path);
             dto.setFormat(name.contains(".") ? name.substring(name.lastIndexOf('.')) : "");

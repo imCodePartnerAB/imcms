@@ -5,6 +5,11 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.repository.ImageRepository;
+import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.Before;
@@ -18,10 +23,12 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.function.Function;
+
+@Transactional
+@WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
-@WebAppConfiguration
-@Transactional
 public class ImageControllerTest extends AbstractControllerTest {
 
     private static final int TEST_DOC_ID = 1001;
@@ -31,6 +38,18 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
+
+    @Autowired
+    private ImageRepository imageRepository;
+
+    @Autowired
+    private LanguageRepository languageRepository;
+
+    @Autowired
+    private VersionRepository versionRepository;
+
+    @Autowired
+    private Function<Image, ImageDTO> imageToImageDTO;
 
     @Override
     protected String controllerPath() {
@@ -66,7 +85,25 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void postLoop_When_UserIsNotAdmin_Expect_IllegalAccessException() throws Exception {
+    public void controllerGetRequest_When_ImageExist_Expect_OkAndEqualContent() throws Exception {
+        final Image image = Value.with(new Image(), img -> {
+            img.setIndex(TEST_IMAGE_INDEX);
+            img.setLanguage(languageRepository.findByCode("en"));
+            img.setVersion(versionRepository.findWorking(TEST_DOC_ID));
+        });
+        imageRepository.save(image);
+
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", String.valueOf(TEST_DOC_ID))
+                .param("index", String.valueOf(TEST_IMAGE_INDEX));
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(imageDTO));
+    }
+
+    @Test
+    public void postImage_When_UserIsNotAdmin_Expect_IllegalAccessException() throws Exception {
         final UserDomainObject user = new UserDomainObject(2);
         Imcms.setUser(user); // means current user is default user
 
