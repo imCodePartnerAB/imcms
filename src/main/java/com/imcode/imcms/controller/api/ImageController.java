@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.service.api.ImageService;
 import com.imcode.imcms.imagearchive.util.Utils;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -12,9 +13,15 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/image")
 public class ImageController {
 
+    private final ImageService imageService;
+
+    public ImageController(ImageService imageService) {
+        this.imageService = imageService;
+    }
+
     @GetMapping
     public ImageDTO getImage(@RequestParam Integer docId, @RequestParam Integer index) {
-        return new ImageDTO();
+        return imageService.getImage(docId, index);
     }
 
     @PostMapping
