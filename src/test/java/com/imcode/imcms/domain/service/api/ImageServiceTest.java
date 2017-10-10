@@ -11,6 +11,7 @@ import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import imcode.util.image.Format;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,6 +90,7 @@ public class ImageServiceTest {
             img.setIndex(TEST_IMAGE_INDEX);
             img.setLanguage(languageRepository.findByCode("en"));
             img.setVersion(versionRepository.findWorking(TEST_DOC_ID));
+            img.setFormat(Format.JPEG);
         });
         imageRepository.save(image);
 

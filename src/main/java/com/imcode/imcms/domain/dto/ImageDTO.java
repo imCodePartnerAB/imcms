@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import imcode.util.image.Format;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ public class ImageDTO {
         this.index = index;
         this.name = "";
         this.path = "";
-        this.format = "";
+        this.format = Format.JPEG.name();
         this.width = 0;
         this.height = 0;
     }

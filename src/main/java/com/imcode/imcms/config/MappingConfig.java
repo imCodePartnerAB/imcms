@@ -125,7 +125,7 @@ public class MappingConfig {
                     ? "" : imcmsProperties.getProperty("ImagePath") + "generated/" + image.getGeneratedFilename();
 
             dto.setPath(path);
-            dto.setFormat(name.contains(".") ? name.substring(name.lastIndexOf('.')) : "");
+            dto.setFormat(image.getFormat().name());
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
         });
