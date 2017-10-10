@@ -13,6 +13,7 @@ import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,6 +66,11 @@ public class ImageControllerTest extends AbstractControllerTest {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("en"); // user lang should exist in common content
         Imcms.setUser(user);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        Imcms.removeUser();
     }
 
     @Test
