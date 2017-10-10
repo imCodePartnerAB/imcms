@@ -131,7 +131,7 @@
             <imcms:text label="label test 2" no="4" formats="text"/>
         </div>
         <div class="wrapper">
-            <imcms:contentLoop no="1">
+            <imcms:contentLoop index="1">
                 <imcms:loop>
                     <div class="figure">
                         <imcms:image no="1" document="${currentDocument.id}" style="max-width:100px;"/>
