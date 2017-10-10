@@ -1,19 +1,15 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
+import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
+import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
-import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.repository.ImageRepository;
-import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import imcode.util.image.Format;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,19 +36,13 @@ public class ImageControllerTest extends AbstractControllerTest {
     private static final ImageDTO TEST_IMAGE_DTO = new ImageDTO(TEST_IMAGE_INDEX);
 
     @Autowired
-    private CommonContentDataInitializer commonContentDataInitializer;
-
-    @Autowired
-    private ImageRepository imageRepository;
-
-    @Autowired
-    private LanguageRepository languageRepository;
-
-    @Autowired
-    private VersionRepository versionRepository;
+    private VersionDataInitializer versionDataInitializer;
 
     @Autowired
     private Function<Image, ImageDTO> imageToImageDTO;
+
+    @Autowired
+    private ImageDataInitializer imageDataInitializer;
 
     @Override
     protected String controllerPath() {
@@ -61,8 +51,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        commonContentDataInitializer.cleanRepositories();
-        commonContentDataInitializer.createData(TEST_DOC_ID, TEST_VERSION_INDEX);
+        versionDataInitializer.createData(TEST_VERSION_INDEX, TEST_DOC_ID);
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("en"); // user lang should exist in common content
@@ -104,16 +93,8 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Test
     public void controllerGetRequest_When_ImageExist_Expect_OkAndEqualContent() throws Exception {
-        final Image image = Value.with(new Image(), img -> {
-            img.setIndex(TEST_IMAGE_INDEX);
-            img.setLanguage(languageRepository.findByCode("en"));
-            img.setVersion(versionRepository.findWorking(TEST_DOC_ID));
-            img.setFormat(Format.JPEG);
-        });
-        imageRepository.save(image);
-
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
-
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(TEST_DOC_ID))
                 .param("index", String.valueOf(TEST_IMAGE_INDEX));

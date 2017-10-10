@@ -1,17 +1,13 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
+import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
+import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
-import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.repository.ImageRepository;
-import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import imcode.util.image.Format;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,29 +29,23 @@ public class ImageServiceTest {
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_IMAGE_INDEX = 1;
     private static final ImageDTO TEST_IMAGE_DTO = new ImageDTO(TEST_IMAGE_INDEX);
+    private static final int VERSION_INDEX = 0;
 
     @Autowired
     private ImageService imageService;
 
     @Autowired
-    private CommonContentDataInitializer commonContentDataInitializer;
-
-    @Autowired
-    private LanguageRepository languageRepository;
-
-    @Autowired
-    private ImageRepository imageRepository;
-
-    @Autowired
-    private VersionRepository versionRepository;
+    private VersionDataInitializer versionDataInitializer;
 
     @Autowired
     private Function<Image, ImageDTO> imageToImageDTO;
 
+    @Autowired
+    private ImageDataInitializer imageDataInitializer;
+
     @Before
     public void setUp() throws Exception {
-        commonContentDataInitializer.cleanRepositories();
-        commonContentDataInitializer.createData(TEST_DOC_ID, 0);
+        versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("en"); // user lang should exist in common content
@@ -75,10 +65,6 @@ public class ImageServiceTest {
 
     @Test
     public void getImage_When_NotExist_Expect_EmptyDTO() {
-        final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("en");
-        Imcms.setUser(user);
-
         final ImageDTO image = imageService.getImage(TEST_DOC_ID, TEST_IMAGE_INDEX);
 
         assertEquals(image, TEST_IMAGE_DTO);
@@ -86,14 +72,7 @@ public class ImageServiceTest {
 
     @Test
     public void getImage_When_ImageExist_Expect_EqualResult() {
-        final Image image = Value.with(new Image(), img -> {
-            img.setIndex(TEST_IMAGE_INDEX);
-            img.setLanguage(languageRepository.findByCode("en"));
-            img.setVersion(versionRepository.findWorking(TEST_DOC_ID));
-            img.setFormat(Format.JPEG);
-        });
-        imageRepository.save(image);
-
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
         final ImageDTO resultImage = imageService.getImage(TEST_DOC_ID, TEST_IMAGE_INDEX);
 
