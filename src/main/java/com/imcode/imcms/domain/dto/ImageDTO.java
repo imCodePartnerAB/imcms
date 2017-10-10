@@ -9,15 +9,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ImageDTO {
+
     private Integer index;
+    private Integer docId;
+    private String langCode;
     private String name;
     private String path;
     private String format;
     private Integer width;
     private Integer height;
 
-    public ImageDTO(Integer index) {
+    public ImageDTO(Integer index, Integer docId) {
         this.index = index;
+        this.docId = docId;
         this.name = "";
         this.path = "";
         this.format = Format.JPEG.name();

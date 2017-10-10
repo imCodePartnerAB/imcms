@@ -33,7 +33,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_IMAGE_INDEX = 1;
     private static final int TEST_VERSION_INDEX = 0;
-    private static final ImageDTO TEST_IMAGE_DTO = new ImageDTO(TEST_IMAGE_INDEX);
+    private static final ImageDTO TEST_IMAGE_DTO = new ImageDTO(TEST_IMAGE_INDEX, TEST_DOC_ID);
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;

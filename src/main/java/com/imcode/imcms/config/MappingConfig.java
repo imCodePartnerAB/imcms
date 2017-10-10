@@ -124,6 +124,8 @@ public class MappingConfig {
             final String path = (image.getGeneratedFilename() == null)
                     ? "" : imcmsProperties.getProperty("ImagePath") + "generated/" + image.getGeneratedFilename();
 
+            dto.setDocId(image.getVersion().getDocId());
+            dto.setLangCode(image.getLanguage().getCode());
             dto.setPath(path);
             dto.setFormat(image.getFormat().name());
             dto.setHeight(image.getHeight());

@@ -46,8 +46,9 @@ public class ImageService {
                 .getLanguage();
 
         final Image image = imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index);
+
         return Optional.ofNullable(image)
                 .map(imageToImageDTO)
-                .orElse(new ImageDTO(index));
+                .orElse(new ImageDTO(index, docId));
     }
 }
