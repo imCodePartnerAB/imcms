@@ -14,4 +14,13 @@ public class ImageDTO {
     private String format;
     private Integer width;
     private Integer height;
+
+    public ImageDTO(Integer index) {
+        this.index = index;
+        this.name = "";
+        this.path = "";
+        this.format = "";
+        this.width = 0;
+        this.height = 0;
+    }
 }
