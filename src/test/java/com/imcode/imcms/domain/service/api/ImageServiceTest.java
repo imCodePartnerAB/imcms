@@ -5,10 +5,8 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
@@ -93,10 +91,8 @@ public class ImageServiceTest {
 
     @Test
     public void getImage_When_LoopEntryRefIsNotNull_Expect_EqualResult() {
-        final Language language = languageRepository.findByCode("en");
-        final Version version = versionRepository.findWorking(TEST_DOC_ID);
         final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
-        final Image image = imageDataInitializer.generateImage(TEST_IMAGE_INDEX, language, version, loopEntryRef);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
         final ImageDTO resultImage = imageService.getImage(imageDTO);
 
@@ -117,10 +113,8 @@ public class ImageServiceTest {
 
     @Test
     public void saveImage_When_LoopEntryRefIsNotNull_Expect_EqualResult() {
-        final Language language = languageRepository.findByCode("en");
-        final Version version = versionRepository.findWorking(TEST_DOC_ID);
         final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
-        final Image image = imageDataInitializer.generateImage(TEST_IMAGE_INDEX, language, version, loopEntryRef);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);

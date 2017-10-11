@@ -34,6 +34,13 @@ public class ImageDataInitializer extends RepositoryTestDataCleaner {
         return generateImage(imageIndex, language, version, null);
     }
 
+    public Image createData(int imageIndex, int docId, int versionIndex, LoopEntryRef loopEntryRef) {
+        final Version version = versionDataInitializer.createData(versionIndex, docId);
+        final Language language = languageRepository.findByCode("en");
+
+        return generateImage(imageIndex, language, version, loopEntryRef);
+    }
+
     public Image generateImage(int index, Language language, Version version, LoopEntryRef loopEntryRef) {
         return Value.with(new Image(), image -> {
             image.setIndex(index);
