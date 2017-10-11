@@ -65,7 +65,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void controllerGetRequest_Expect_Ok() throws Exception {
+    public void getImage_Expect_Ok() throws Exception {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(TEST_DOC_ID))
                 .param("index", String.valueOf(TEST_IMAGE_INDEX));
@@ -74,7 +74,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void controllerGetRequest_When_ImageNotExist_Expect_OkAndEmptyDTO() throws Exception {
+    public void getImage_When_ImageNotExist_Expect_OkAndEmptyDTO() throws Exception {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(TEST_DOC_ID))
                 .param("index", String.valueOf(TEST_IMAGE_INDEX));
@@ -83,7 +83,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void controllerGetRequest_When_DocumentNotExist_Expect_Exception() throws Exception {
+    public void getImage_When_DocumentNotExist_Expect_Exception() throws Exception {
         final int nonExistingDocId = 0;
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(nonExistingDocId))
@@ -93,7 +93,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void controllerGetRequest_When_ImageExist_Expect_OkAndEqualContent() throws Exception {
+    public void getImage_When_ImageExist_Expect_OkAndEqualContent() throws Exception {
         final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
@@ -104,7 +104,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void controllerGetRequest_When_LoopEntryRefIsNotNull_Expect_OkAndEqualContent() throws Exception {
+    public void getImage_When_LoopEntryRefIsNotNull_Expect_OkAndEqualContent() throws Exception {
         final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
         final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
