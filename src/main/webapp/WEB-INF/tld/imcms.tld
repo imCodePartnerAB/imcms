@@ -8,70 +8,6 @@
     <short-name>imcms</short-name>
     <uri>imcms</uri>
 
-    <!--<tag>-->
-        <!--<name>loop</name>-->
-        <!--<tag-class>com.imcode.imcms.servlet.tags.LoopTag</tag-class>-->
-        <!--<body-content>JSP</body-content>-->
-        <!--<variable>-->
-            <!--<name-given>loopitem</name-given>-->
-            <!--<variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>-->
-            <!--<scope>NESTED</scope>-->
-        <!--</variable>-->
-        <!--<attribute>-->
-            <!--<name>no</name>-->
-            <!--<required>true</required>-->
-            <!--<rtexprvalue>true</rtexprvalue>-->
-        <!--</attribute>-->
-        <!--<attribute>-->
-            <!--<name>label</name>-->
-            <!--<rtexprvalue>true</rtexprvalue>-->
-        <!--</attribute>-->
-        <!--<attribute>-->
-            <!--<name>pre</name>-->
-            <!--<rtexprvalue>true</rtexprvalue>-->
-        <!--</attribute>-->
-        <!--<attribute>-->
-            <!--<name>post</name>-->
-            <!--<rtexprvalue>true</rtexprvalue>-->
-        <!--</attribute>-->
-    <!--</tag>-->
-
-    <!--<tag>-->
-        <!--<name>loopentry</name>-->
-        <!--<tag-class>com.imcode.imcms.servlet.tags.LoopEntryTag</tag-class>-->
-        <!--<body-content>JSP</body-content>-->
-        <!--<variable>-->
-            <!--<name-given>loopitem</name-given>-->
-            <!--<variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>-->
-            <!--<scope>NESTED</scope>-->
-        <!--</variable>-->
-    <!--</tag>-->
-
-    <!--<tag>-->
-        <!--<name>loopitem</name>-->
-        <!--<tag-class>com.imcode.imcms.servlet.tags.LoopItemTag</tag-class>-->
-        <!--<body-content>JSP</body-content>-->
-        <!--<variable>-->
-            <!--<name-given>loopitem</name-given>-->
-            <!--<variable-class>com.imcode.imcms.api.TextDocument.LoopItem</variable-class>-->
-            <!--<scope>NESTED</scope>-->
-        <!--</variable>-->
-    <!--</tag>-->
-
-    <!-- old contextpath tag, remove after new one implementation -->
-    <!--<tag>-->
-    <!--<name>contextpath</name>-->
-    <!--<tag-class>com.imcode.imcms.servlet.tags.ContextPathTag</tag-class>-->
-    <!--<body-content>empty</body-content>-->
-    <!--</tag>-->
-
-    <!-- old admin tag, remove after new one implementation -->
-    <!--<tag>-->
-    <!--<name>admin</name>-->
-    <!--<tag-class>com.imcode.imcms.servlet.tags.AdminTag</tag-class>-->
-    <!--<body-content>empty</body-content>-->
-    <!--</tag>-->
-
     <!-- old text tag, remove after new one implementation -->
     <!--<tag>-->
     <!--<name>text</name>-->
@@ -134,60 +70,6 @@
     <!--</attribute>-->
     <!--</tag>-->
 
-    <!-- old image tag, remove after new one implementation -->
-    <!--<tag>-->
-    <!--<name>image</name>-->
-    <!--<tag-class>com.imcode.imcms.servlet.tags.ImageTag</tag-class>-->
-    <!--<body-content>empty</body-content>-->
-    <!--<attribute>-->
-    <!--<name>no</name>-->
-    <!--<required>true</required>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>document</name>-->
-    <!--<required>false</required>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>version</name>-->
-    <!--<required>false</required>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>id</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>label</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>styleClass</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>style</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>usemap</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>mode</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>pre</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>post</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--</tag>-->
-
     <tag>
         <name>include</name>
         <tag-class>com.imcode.imcms.servlet.tags.IncludeTag</tag-class>
@@ -226,88 +108,6 @@
         </attribute>
     </tag>
 
-    <!--<tag>-->
-    <!--<name>menu</name>-->
-    <!--<tag-class>com.imcode.imcms.servlet.tags.MenuTag</tag-class>-->
-    <!--<body-content>JSP</body-content>-->
-    <!--<variable>-->
-    <!--<name-given>menuitem</name-given>-->
-    <!--<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>-->
-    <!--<scope>NESTED</scope>-->
-    <!--</variable>-->
-    <!--<attribute>-->
-    <!--<name>id</name>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>no</name>-->
-    <!--<required>true</required>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>docId</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>label</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>pre</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--<attribute>-->
-    <!--<name>post</name>-->
-    <!--<rtexprvalue>true</rtexprvalue>-->
-    <!--</attribute>-->
-    <!--</tag>-->
-
-    <!--<tag>-->
-    <!--<name>menuloop</name>-->
-    <!--<tag-class>com.imcode.imcms.servlet.tags.MenuLoopTag</tag-class>-->
-    <!--<body-content>JSP</body-content>-->
-    <!--<variable>-->
-    <!--<name-given>menuitem</name-given>-->
-    <!--<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>-->
-    <!--<scope>NESTED</scope>-->
-    <!--</variable>-->
-    <!--<variable>-->
-    <!--<name-given>hasChildren</name-given>-->
-    <!--<variable-class>java.lang.Boolean</variable-class>-->
-    <!--<scope>NESTED</scope>-->
-    <!--</variable>-->
-    <!--</tag>-->
-
-    <!--<tag>-->
-    <!--<name>menuitem</name>-->
-    <!--<tag-class>com.imcode.imcms.servlet.tags.MenuItemTag</tag-class>-->
-    <!--<body-content>JSP</body-content>-->
-    <!--<variable>-->
-    <!--<name-given>menuitem</name-given>-->
-    <!--<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>-->
-    <!--<scope>NESTED</scope>-->
-    <!--</variable>-->
-    <!--</tag>-->
-
-    <!--<tag>-->
-    <!--<name>menuitemhide</name>-->
-    <!--<tag-class>com.imcode.imcms.servlet.tags.MenuItemHideTag</tag-class>-->
-    <!--<body-content>JSP</body-content>-->
-    <!--<variable>-->
-    <!--<name-given>menuitem</name-given>-->
-    <!--<variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>-->
-    <!--<scope>NESTED</scope>-->
-    <!--</variable>-->
-    <!--</tag>-->
-
-    <!--<tag>-->
-    <!--<name>menuitemlink</name>-->
-    <!--<tag-class>com.imcode.imcms.servlet.tags.MenuItemLinkTag</tag-class>-->
-    <!--<body-content>JSP</body-content>-->
-    <!--<attribute>-->
-    <!--<name>classes</name>-->
-    <!--<required>false</required>-->
-    <!--</attribute>-->
-    <!--</tag>-->
     <tag>
         <name>login</name>
         <tag-class>com.imcode.imcms.servlet.tags.LoginTag</tag-class>
@@ -570,22 +370,6 @@
         <name>getDocument</name>
         <function-class>com.imcode.imcms.web.tag.Functions</function-class>
         <function-signature>com.imcode.imcms.api.TextDocument getDocument(java.lang.String,
-            javax.servlet.jsp.PageContext)
-        </function-signature>
-    </function>
-
-    <function>
-        <name>canEditDocument</name>
-        <function-class>com.imcode.imcms.web.tag.Functions</function-class>
-        <function-signature>boolean canEditDocument(imcode.server.document.DocumentDomainObject,
-            javax.servlet.jsp.PageContext)
-        </function-signature>
-    </function>
-
-    <function>
-        <name>canEditDocumentInformation</name>
-        <function-class>com.imcode.imcms.web.tag.Functions</function-class>
-        <function-signature>boolean canEditDocumentInformation(imcode.server.document.DocumentDomainObject,
             javax.servlet.jsp.PageContext)
         </function-signature>
     </function>
