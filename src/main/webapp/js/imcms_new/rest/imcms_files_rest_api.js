@@ -12,21 +12,21 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
         files: [
             {
                 name: "sample1",
-                path: "img/choose_img/img1.png",
+                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                 format: "jpg",
                 uploaded: "15.02.2017",
                 resolution: "635x120",
                 size: "37kB"
             }, {
                 name: "sample3",
-                path: "img/choose_img/img3.png",
+                path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                 format: "bmp",
                 uploaded: "17.02.2017",
                 resolution: "635x120",
                 size: "34kB"
             }, {
                 name: "sample4",
-                path: "img/choose_img/img4.png",
+                path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                 format: "gif",
                 uploaded: "18.02.2017",
                 resolution: "64x64",
@@ -40,21 +40,21 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                 files: [
                     {
                         name: "sample1",
-                        path: "img/choose_img/img1.png",
+                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                         format: "jpg",
                         uploaded: "15.02.2017",
                         resolution: "635x120",
                         size: "37kB"
                     }, {
                         name: "sample2",
-                        path: "img/choose_img/img2.png",
+                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                         format: "png",
                         uploaded: "16.02.2017",
                         resolution: "635x120",
                         size: "35kB"
                     }, {
                         name: "sample4",
-                        path: "img/choose_img/img4.png",
+                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                         format: "gif",
                         uploaded: "18.02.2017",
                         resolution: "64x64",
@@ -68,14 +68,14 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                 files: [
                     {
                         name: "sample3",
-                        path: "img/choose_img/img3.png",
+                        path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                         format: "bmp",
                         uploaded: "17.02.2017",
                         resolution: "635x120",
                         size: "34kB"
                     }, {
                         name: "sample4",
-                        path: "img/choose_img/img4.png",
+                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                         format: "gif",
                         uploaded: "18.02.2017",
                         resolution: "64x64",
@@ -89,21 +89,21 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: "img/choose_img/img1.png",
+                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                 format: "jpg",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
                                 size: "37kB"
                             }, {
                                 name: "sample2",
-                                path: "img/choose_img/img2.png",
+                                path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                                 format: "png",
                                 uploaded: "16.02.2017",
                                 resolution: "635x120",
                                 size: "35kB"
                             }, {
                                 name: "sample3",
-                                path: "img/choose_img/img3.png",
+                                path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                                 format: "bmp",
                                 uploaded: "17.02.2017",
                                 resolution: "635x120",
@@ -117,21 +117,21 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample1",
-                                        path: "img/choose_img/img1.png",
+                                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                         format: "jpg",
                                         uploaded: "15.02.2017",
                                         resolution: "635x120",
                                         size: "37kB"
                                     }, {
                                         name: "sample2",
-                                        path: "img/choose_img/img2.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                                         format: "png",
                                         uploaded: "16.02.2017",
                                         resolution: "635x120",
                                         size: "35kB"
                                     }, {
                                         name: "sample4",
-                                        path: "img/choose_img/img4.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                                         format: "gif",
                                         uploaded: "18.02.2017",
                                         resolution: "64x64",
@@ -145,28 +145,28 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample1",
-                                        path: "img/choose_img/img1.png",
+                                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                         format: "jpg",
                                         uploaded: "15.02.2017",
                                         resolution: "635x120",
                                         size: "37kB"
                                     }, {
                                         name: "sample2",
-                                        path: "img/choose_img/img2.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                                         format: "png",
                                         uploaded: "16.02.2017",
                                         resolution: "635x120",
                                         size: "35kB"
                                     }, {
                                         name: "sample3",
-                                        path: "img/choose_img/img3.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                                         format: "bmp",
                                         uploaded: "17.02.2017",
                                         resolution: "635x120",
                                         size: "34kB"
                                     }, {
                                         name: "sample4",
-                                        path: "img/choose_img/img4.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                                         format: "gif",
                                         uploaded: "18.02.2017",
                                         resolution: "64x64",
@@ -179,21 +179,21 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                     files: [
                                         {
                                             name: "sample1",
-                                            path: "img/choose_img/img1.png",
+                                            path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                             format: "jpg",
                                             uploaded: "15.02.2017",
                                             resolution: "635x120",
                                             size: "37kB"
                                         }, {
                                             name: "sample2",
-                                            path: "img/choose_img/img2.png",
+                                            path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                                             format: "png",
                                             uploaded: "16.02.2017",
                                             resolution: "635x120",
                                             size: "35kB"
                                         }, {
                                             name: "sample3",
-                                            path: "img/choose_img/img3.png",
+                                            path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                                             format: "bmp",
                                             uploaded: "17.02.2017",
                                             resolution: "635x120",
@@ -212,21 +212,21 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                 files: [
                     {
                         name: "sample2",
-                        path: "img/choose_img/img2.png",
+                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                         format: "png",
                         uploaded: "16.02.2017",
                         resolution: "635x120",
                         size: "35kB"
                     }, {
                         name: "sample3",
-                        path: "img/choose_img/img3.png",
+                        path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                         format: "bmp",
                         uploaded: "17.02.2017",
                         resolution: "635x120",
                         size: "34kB"
                     }, {
                         name: "sample4",
-                        path: "img/choose_img/img4.png",
+                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                         format: "gif",
                         uploaded: "18.02.2017",
                         resolution: "64x64",
@@ -240,14 +240,14 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: "img/choose_img/img1.png",
+                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                 format: "jpg",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
                                 size: "37kB"
                             }, {
                                 name: "sample4",
-                                path: "img/choose_img/img4.png",
+                                path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                                 format: "gif",
                                 uploaded: "18.02.2017",
                                 resolution: "64x64",
@@ -261,7 +261,7 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample1",
-                                        path: "img/choose_img/img1.png",
+                                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                         format: "jpg",
                                         uploaded: "15.02.2017",
                                         resolution: "635x120",
@@ -275,28 +275,28 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample1",
-                                        path: "img/choose_img/img1.png",
+                                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                         format: "jpg",
                                         uploaded: "15.02.2017",
                                         resolution: "635x120",
                                         size: "37kB"
                                     }, {
                                         name: "sample2",
-                                        path: "img/choose_img/img2.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                                         format: "png",
                                         uploaded: "16.02.2017",
                                         resolution: "635x120",
                                         size: "35kB"
                                     }, {
                                         name: "sample3",
-                                        path: "img/choose_img/img3.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                                         format: "bmp",
                                         uploaded: "17.02.2017",
                                         resolution: "635x120",
                                         size: "34kB"
                                     }, {
                                         name: "sample4",
-                                        path: "img/choose_img/img4.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                                         format: "gif",
                                         uploaded: "18.02.2017",
                                         resolution: "64x64",
@@ -309,14 +309,14 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                     files: [
                                         {
                                             name: "sample2",
-                                            path: "img/choose_img/img2.png",
+                                            path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                                             format: "png",
                                             uploaded: "16.02.2017",
                                             resolution: "635x120",
                                             size: "35kB"
                                         }, {
                                             name: "sample3",
-                                            path: "img/choose_img/img3.png",
+                                            path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                                             format: "bmp",
                                             uploaded: "17.02.2017",
                                             resolution: "635x120",
@@ -333,21 +333,21 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: "img/choose_img/img1.png",
+                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                 format: "jpg",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
                                 size: "37kB"
                             }, {
                                 name: "sample3",
-                                path: "img/choose_img/img3.png",
+                                path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                                 format: "bmp",
                                 uploaded: "17.02.2017",
                                 resolution: "635x120",
                                 size: "34kB"
                             }, {
                                 name: "sample4",
-                                path: "img/choose_img/img4.png",
+                                path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                                 format: "gif",
                                 uploaded: "18.02.2017",
                                 resolution: "64x64",
@@ -363,14 +363,14 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                 files: [
                     {
                         name: "sample1",
-                        path: "img/choose_img/img1.png",
+                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                         format: "jpg",
                         uploaded: "15.02.2017",
                         resolution: "635x120",
                         size: "37kB"
                     }, {
                         name: "sample4",
-                        path: "img/choose_img/img4.png",
+                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                         format: "gif",
                         uploaded: "18.02.2017",
                         resolution: "64x64",
@@ -384,14 +384,14 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: "img/choose_img/img1.png",
+                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                 format: "jpg",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
                                 size: "37kB"
                             }, {
                                 name: "sample2",
-                                path: "img/choose_img/img2.png",
+                                path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                                 format: "png",
                                 uploaded: "16.02.2017",
                                 resolution: "635x120",
@@ -405,21 +405,21 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample2",
-                                        path: "img/choose_img/img2.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                                         format: "png",
                                         uploaded: "16.02.2017",
                                         resolution: "635x120",
                                         size: "35kB"
                                     }, {
                                         name: "sample3",
-                                        path: "img/choose_img/img3.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                                         format: "bmp",
                                         uploaded: "17.02.2017",
                                         resolution: "635x120",
                                         size: "34kB"
                                     }, {
                                         name: "sample4",
-                                        path: "img/choose_img/img4.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                                         format: "gif",
                                         uploaded: "18.02.2017",
                                         resolution: "64x64",
@@ -433,14 +433,14 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample2",
-                                        path: "img/choose_img/img2.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                                         format: "png",
                                         uploaded: "16.02.2017",
                                         resolution: "635x120",
                                         size: "35kB"
                                     }, {
                                         name: "sample4",
-                                        path: "img/choose_img/img4.png",
+                                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                                         format: "gif",
                                         uploaded: "18.02.2017",
                                         resolution: "64x64",
@@ -453,28 +453,28 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                     files: [
                                         {
                                             name: "sample1",
-                                            path: "img/choose_img/img1.png",
+                                            path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                             format: "jpg",
                                             uploaded: "15.02.2017",
                                             resolution: "635x120",
                                             size: "37kB"
                                         }, {
                                             name: "sample2",
-                                            path: "img/choose_img/img2.png",
+                                            path: Imcms.contextPath + "/images_new/choose_img/img2.png",
                                             format: "png",
                                             uploaded: "16.02.2017",
                                             resolution: "635x120",
                                             size: "35kB"
                                         }, {
                                             name: "sample3",
-                                            path: "img/choose_img/img3.png",
+                                            path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                                             format: "bmp",
                                             uploaded: "17.02.2017",
                                             resolution: "635x120",
                                             size: "34kB"
                                         }, {
                                             name: "sample4",
-                                            path: "img/choose_img/img4.png",
+                                            path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                                             format: "gif",
                                             uploaded: "18.02.2017",
                                             resolution: "64x64",
@@ -491,7 +491,7 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: "img/choose_img/img1.png",
+                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                 format: "jpg",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
@@ -505,21 +505,21 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: "img/choose_img/img1.png",
+                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
                                 format: "jpg",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
                                 size: "37kB"
                             }, {
                                 name: "sample3",
-                                path: "img/choose_img/img3.png",
+                                path: Imcms.contextPath + "/images_new/choose_img/img3.png",
                                 format: "bmp",
                                 uploaded: "17.02.2017",
                                 resolution: "635x120",
                                 size: "34kB"
                             }, {
                                 name: "sample4",
-                                path: "img/choose_img/img4.png",
+                                path: Imcms.contextPath + "/images_new/choose_img/img4.png",
                                 format: "gif",
                                 uploaded: "18.02.2017",
                                 resolution: "64x64",
