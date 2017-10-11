@@ -59,13 +59,14 @@ public class ImageServiceTest {
 
     @Test(expected = DocumentNotExistException.class)
     public void getImage_When_DocumentNotExist_Expect_Exception() {
-        int nonExistingDocId = 0;
-        imageService.getImage(nonExistingDocId, TEST_IMAGE_INDEX);// should throw exception
+        final int nonExistingDocId = 0;
+        final ImageDTO imageDTO = new ImageDTO(TEST_IMAGE_INDEX, nonExistingDocId);
+        imageService.getImage(imageDTO);// should throw exception
     }
 
     @Test
     public void getImage_When_NotExist_Expect_EmptyDTO() {
-        final ImageDTO image = imageService.getImage(TEST_DOC_ID, TEST_IMAGE_INDEX);
+        final ImageDTO image = imageService.getImage(TEST_IMAGE_DTO);
 
         assertEquals(image, TEST_IMAGE_DTO);
     }
@@ -74,7 +75,7 @@ public class ImageServiceTest {
     public void getImage_When_ImageExist_Expect_EqualResult() {
         final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
-        final ImageDTO resultImage = imageService.getImage(TEST_DOC_ID, TEST_IMAGE_INDEX);
+        final ImageDTO resultImage = imageService.getImage(TEST_IMAGE_DTO);
 
         assertEquals(imageDTO, resultImage);
     }

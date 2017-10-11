@@ -20,8 +20,8 @@ public class ImageController {
     }
 
     @GetMapping
-    public ImageDTO getImage(@RequestParam Integer docId, @RequestParam Integer index) {
-        return imageService.getImage(docId, index);
+    public ImageDTO getImage(@ModelAttribute ImageDTO imageDTO) {
+        return imageService.getImage(imageDTO);
     }
 
     @PostMapping
