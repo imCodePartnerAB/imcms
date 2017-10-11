@@ -63,8 +63,11 @@ public abstract class AbstractControllerTest {
             performRequestBuilderExpectedOk(requestBuilder); // here exception should be thrown!!1
 
         } catch (NestedServletException e) {
-            final String message = "Should be " + expectedExceptionClass.getName() + "!!";
-            assertTrue(message, e.getCause().getClass().equals(expectedExceptionClass));
+            final Class<? extends Throwable> exceptionClass = e.getCause().getClass();
+            final String message = "Should be " + expectedExceptionClass.getName() + "!! Received: "
+                    + exceptionClass.getName();
+
+            assertTrue(message, exceptionClass.equals(expectedExceptionClass));
             return;
         }
 
