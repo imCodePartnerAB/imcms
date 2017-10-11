@@ -353,6 +353,11 @@ Imcms.define("imcms-image-content-builder",
             }).buildBlockStructure("<div>");
         }
 
+        function selectImage() {
+            $(".image-chosen").removeClass("image-chosen");
+            $(this).addClass("image-chosen");
+        }
+
         function buildImage(imageFile) {
             return new BEM({
                 block: "imcms-choose-img-wrap",
@@ -363,7 +368,10 @@ Imcms.define("imcms-image-content-builder",
                     }),
                     "description": buildImageDescription(imageFile)
                 }
-            }).buildBlockStructure("<div>", {style: "display: none"});
+            }).buildBlockStructure("<div>", {
+                style: "display: none",
+                click: selectImage
+            });
         }
 
         function buildImages(folder) {

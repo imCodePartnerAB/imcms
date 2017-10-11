@@ -51,6 +51,7 @@
     text-align: left;
 }
 
+.image-chosen,
 .imcms-choose-img-wrap:hover {
     background-color: #fff;
     border-radius: 5px;
@@ -61,6 +62,7 @@
     padding: 7px;
 }
 
+.image-chosen .imcms-choose-img,
 .imcms-choose-img-wrap:hover .imcms-choose-img {
     background-color: #fff;
 }
