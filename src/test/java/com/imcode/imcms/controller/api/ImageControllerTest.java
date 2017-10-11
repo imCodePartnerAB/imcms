@@ -10,6 +10,7 @@ import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import imcode.server.Imcms;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +25,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.function.Function;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 @Transactional
 @WebAppConfiguration
@@ -56,6 +60,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("en"); // user lang should exist in common content
+        user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user);
     }
 
@@ -123,5 +128,68 @@ public class ImageControllerTest extends AbstractControllerTest {
         Imcms.setUser(user); // means current user is default user
 
         performPostWithContentExpectException(TEST_IMAGE_DTO, IllegalAccessException.class);
+    }
+
+    @Test
+    public void postImage_When_DocNotExist_Expect_Exception() throws Exception {
+        final int nonExistingDocId = 0;
+        final ImageDTO imageDTO = new ImageDTO(TEST_IMAGE_INDEX, nonExistingDocId);
+
+        performPostWithContentExpectException(imageDTO, DocumentNotExistException.class);
+    }
+
+    @Test
+    public void postImage_When_LoopEntryRefIsNull_Expect_Ok() throws Exception {
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, null);
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+        performPostWithContentExpectOk(imageDTO);
+    }
+
+    @Test
+    public void postImage_When_LoopEntryRefIsNotNull_Expect_Ok() throws Exception {
+        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef);
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+        performPostWithContentExpectOk(imageDTO);
+    }
+
+    @Test
+    public void postImage_When_DataChanged_Expect_CorrectSave() throws Exception {
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, null);
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+        final MockHttpServletRequestBuilder getImageReqBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", String.valueOf(imageDTO.getDocId()))
+                .param("index", String.valueOf(imageDTO.getIndex()));
+
+        final String imageJson = performRequestBuilderExpectedOkAndContentJsonUtf8(getImageReqBuilder)
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        final ImageDTO imageDtoResult = fromJson(imageJson, ImageDTO.class);
+
+        assertEquals(imageDTO, imageDtoResult);
+
+        imageDtoResult.setWidth(100);
+
+        assertNotEquals(imageDTO, imageDtoResult);
+        performPostWithContentExpectOk(imageDtoResult);
+
+        final String imageChangedJson = performRequestBuilderExpectedOkAndContentJsonUtf8(getImageReqBuilder)
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        final ImageDTO imageDtoChangedResult = fromJson(imageChangedJson, ImageDTO.class);
+
+        assertEquals(imageDtoResult, imageDtoChangedResult);
+        assertNotEquals(imageDTO, imageDtoChangedResult);
+
+        imageDTO.setWidth(100);
+
+        assertEquals(imageDTO, imageDtoChangedResult);
     }
 }

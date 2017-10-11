@@ -31,6 +31,8 @@ public class ImageController {
         if (!Imcms.getUser().isSuperAdmin()) {
             throw new IllegalAccessException("User do not have access to change image structure.");
         }
+
+        imageService.saveImage(image);
     }
 
 

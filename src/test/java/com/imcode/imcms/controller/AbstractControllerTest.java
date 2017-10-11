@@ -10,6 +10,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.util.NestedServletException;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,12 +50,14 @@ public abstract class AbstractControllerTest {
         return objectMapper.writeValueAsString(object);
     }
 
+    protected <T> T fromJson(String json, Class<T> resultClass) throws IOException {
+        return objectMapper.readValue(json, resultClass);
+    }
+
     protected <T> void performPostWithContentExpectException(Object contentObject,
                                                              Class<T> expectedExceptionClass) throws Exception {
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(asJson(contentObject));
 
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(contentObject);
         performRequestBuilderExpectException(expectedExceptionClass, requestBuilder);
     }
 
@@ -72,6 +76,17 @@ public abstract class AbstractControllerTest {
         }
 
         fail("Expected exception wasn't thrown!");
+    }
+
+    protected void performPostWithContentExpectOk(Object content) throws Exception {
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(content);
+        performRequestBuilderExpectedOk(requestBuilder);
+    }
+
+    private MockHttpServletRequestBuilder getPostRequestBuilderWithContent(Object content) throws Exception {
+        return MockMvcRequestBuilders.post(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJson(content));
     }
 
 }
