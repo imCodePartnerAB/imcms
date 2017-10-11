@@ -8,6 +8,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
@@ -98,6 +99,20 @@ public class ImageControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(TEST_DOC_ID))
                 .param("index", String.valueOf(TEST_IMAGE_INDEX));
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(imageDTO));
+    }
+
+    @Test
+    public void controllerGetRequest_When_LoopEntryRefIsNotNull_Expect_OkAndEqualContent() throws Exception {
+        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef);
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", String.valueOf(imageDTO.getDocId()))
+                .param("index", String.valueOf(imageDTO.getIndex()))
+                .param("loopEntryRef.loopIndex", String.valueOf(loopEntryRef.getLoopIndex()))
+                .param("loopEntryRef.loopEntryIndex", String.valueOf(loopEntryRef.getLoopEntryIndex()));
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(imageDTO));
     }
