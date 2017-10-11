@@ -23,7 +23,7 @@
         <div class="wrapper">
             <div class="menu">
                 <!-- Example of ImCMS menu tag -->
-                <imcms:menu no='1' docId="1001" label="Example">
+                <imcms:menu index='1' document="1001" label="Example">
                     <ul>
                         <imcms:menuLoop>
                             <li>

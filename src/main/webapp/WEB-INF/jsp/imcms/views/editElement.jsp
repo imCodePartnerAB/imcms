@@ -40,7 +40,7 @@
             </c:if>
             <c:if test="${menuNo ne null}">
                 <div id="tagWrap" class="hidden">
-                    <imcms:menu no='${menuNo}' docId="${document.id}"/>
+                    <imcms:menu index='${menuNo}' document="${document.id}"/>
                 </div>
                 <script>Imcms.SingleEdit.Editor.init()</script>
             </c:if>

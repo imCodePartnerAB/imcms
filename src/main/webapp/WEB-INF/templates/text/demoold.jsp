@@ -231,7 +231,7 @@
                         <imcms:text no='2' label='<br/>Text' pre='<div class="text">' post='</div>'/>
                         <div>
                             <span>Demo menu</span>
-                            <imcms:menu no='1' docId="1001" label='<br/><br/>Meny (punktlista)'>
+                            <imcms:menu index='1' document="1001" label='<br/><br/>Meny (punktlista)'>
                                 <ul>
                                     <imcms:menuloop>
                                         <imcms:menuitem>
