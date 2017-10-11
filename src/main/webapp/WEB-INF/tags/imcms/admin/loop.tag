@@ -3,14 +3,18 @@
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="loop" type="com.imcode.imcms.domain.dto.LoopDTO"--%>
+<%--@elvariable id="loopService" type="com.imcode.imcms.domain.service.api.LoopService"--%>
+<%--@elvariable id="loopIndex" type="java.lang.Integer"--%>
 
 <%@ variable name-given="entryIndex" scope="NESTED" variable-class="java.lang.Integer" %>
 <%@ variable name-given="loopItem" scope="NESTED" variable-class="com.imcode.imcms.domain.dto.LoopEntryDTO" %>
+<%@ variable name-given="loopEntryRef" scope="NESTED" variable-class="com.imcode.imcms.domain.dto.LoopEntryRefDTO" %>
 
 <c:forEach var="loopEntry" items="${loop.entries}" varStatus="status">
     <c:if test="${loopEntry.enabled}">
         <c:set var="loopItem" value="${loopEntry}" scope="request"/>
         <c:set var="entryIndex" value="${loopItem.index}" scope="request"/>
+        <c:set var="loopEntryRef" value="${loopService.buildLoopEntryRef(loopIndex, entryIndex)}" scope="request"/>
 
         <jsp:doBody/>
 

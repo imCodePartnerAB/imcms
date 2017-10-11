@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Loop;
@@ -58,5 +59,9 @@ public class LoopService {
         }
 
         return loop.getId();
+    }
+
+    public LoopEntryRefDTO buildLoopEntryRef(int loopIndex, int entryIndex) {
+        return new LoopEntryRefDTO(loopIndex, entryIndex);
     }
 }
