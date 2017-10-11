@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class VersionService {
@@ -22,7 +23,15 @@ public class VersionService {
     }
 
     public Version getDocumentWorkingVersion(int docId) {
-        return Optional.ofNullable(versionRepository.findWorking(docId)).orElseThrow(DocumentNotExistException::new);
+        return getVersion(docId, versionRepository::findWorking);
+    }
+
+    public Version getLatestVersion(int docId) {
+        return getVersion(docId, versionRepository::findLatest);
+    }
+
+    private Version getVersion(int docId, Function<Integer, Version> versionReceiver) {
+        return Optional.ofNullable(versionReceiver.apply(docId)).orElseThrow(DocumentNotExistException::new);
     }
 
     @Transactional
