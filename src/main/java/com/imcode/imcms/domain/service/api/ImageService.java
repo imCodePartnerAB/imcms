@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.LanguageService;
 import com.imcode.imcms.domain.service.core.VersionService;
@@ -25,6 +26,7 @@ public class ImageService {
     private final VersionService versionService;
     private final CommonContentService commonContentService;
     private final LanguageService languageService;
+    private final Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef;
     private final TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage;
     private final Function<Image, ImageDTO> imageToImageDTO;
 
@@ -32,6 +34,7 @@ public class ImageService {
                         VersionService versionService,
                         CommonContentService commonContentService,
                         LanguageService languageService,
+                        Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
                         TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage,
                         Function<Image, ImageDTO> imageToImageDTO) {
 
@@ -39,6 +42,7 @@ public class ImageService {
         this.versionService = versionService;
         this.commonContentService = commonContentService;
         this.languageService = languageService;
+        this.loopEntryRefDtoToLoopEntryRef = loopEntryRefDtoToLoopEntryRef;
         this.imageDtoToImage = imageDtoToImage;
         this.imageToImageDTO = imageToImageDTO;
     }
@@ -51,11 +55,11 @@ public class ImageService {
         return getImage(dataHolder.getDocId(), dataHolder.getIndex(), dataHolder.getLoopEntryRef());
     }
 
-    public ImageDTO getImage(int docId, int index, LoopEntryRef loopEntryRef) {
+    public ImageDTO getImage(int docId, int index, LoopEntryRefDTO loopEntryRef) {
         return getImage(docId, index, loopEntryRef, versionService::getDocumentWorkingVersion);
     }
 
-    public ImageDTO getPublicImage(int docId, int index, LoopEntryRef loopEntryRef) {
+    public ImageDTO getPublicImage(int docId, int index, LoopEntryRefDTO loopEntryRef) {
         return getImage(docId, index, loopEntryRef, versionService::getLatestVersion);
     }
 
@@ -69,9 +73,10 @@ public class ImageService {
         imageRepository.save(image);
     }
 
-    private ImageDTO getImage(int docId, int index, LoopEntryRef loopEntryRef, Function<Integer, Version> versionReceiver) {
+    private ImageDTO getImage(int docId, int index, LoopEntryRefDTO loopEntryRefDTO, Function<Integer, Version> versionReceiver) {
         final Version version = versionReceiver.apply(docId);
         final int versionIndex = version.getNo();
+        final LoopEntryRef loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
         final UserDomainObject user = Imcms.getUser();
         final Language language = commonContentService.findByDocIdAndVersionNoAndUser(docId, versionIndex, user)
                 .getLanguage();
@@ -86,7 +91,8 @@ public class ImageService {
     }
 
     private Integer getImageId(ImageDTO imageDTO, Version version, Language language) {
-        final LoopEntryRef loopEntryRef = imageDTO.getLoopEntryRef();
+        final LoopEntryRefDTO loopEntryRefDTO = imageDTO.getLoopEntryRef();
+        final LoopEntryRef loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
         final Integer index = imageDTO.getIndex();
 
         final Image image = (loopEntryRef == null)

@@ -116,7 +116,19 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<Image, ImageDTO> imageToImageDTO(Properties imcmsProperties) {
+    public Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO() {
+        return loopEntryRef -> (loopEntryRef == null) ? null
+                : new LoopEntryRefDTO(loopEntryRef.getLoopIndex(), loopEntryRef.getLoopEntryIndex());
+    }
+
+    @Bean
+    public Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef() {
+        return loopEntryRefDTO -> (loopEntryRefDTO == null) ? null
+                : new LoopEntryRef(loopEntryRefDTO.getLoopIndex(), loopEntryRefDTO.getLoopEntryIndex());
+    }
+
+    @Bean
+    public Function<Image, ImageDTO> imageToImageDTO(Properties imcmsProperties, Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO) {
         return image -> Value.with(new ImageDTO(), dto -> {
             dto.setIndex(image.getIndex());
 
@@ -132,19 +144,19 @@ public class MappingConfig {
             dto.setFormat(image.getFormat().name());
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
-            dto.setLoopEntryRef(image.getLoopEntryRef());
+            dto.setLoopEntryRef(loopEntryRefToDTO.apply(image.getLoopEntryRef()));
         });
     }
 
     @Bean
-    public TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage() {
+    public TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage(Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef) {
         return (imageDTO, version, language) -> Value.with(new Image(), image -> {
             image.setIndex(imageDTO.getIndex());
             image.setVersion(version);
             image.setLanguage(language);
             image.setHeight(imageDTO.getHeight());
             image.setWidth(imageDTO.getWidth());
-            image.setLoopEntryRef(imageDTO.getLoopEntryRef());
+            image.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(imageDTO.getLoopEntryRef()));
             image.setFormat(Format.valueOf(imageDTO.getFormat()));
         });
     }
