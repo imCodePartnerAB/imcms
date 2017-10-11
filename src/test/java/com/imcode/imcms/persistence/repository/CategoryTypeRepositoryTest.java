@@ -28,7 +28,7 @@ public class CategoryTypeRepositoryTest {
 
     @Before
     public void initData() {
-        categoryDataInitializer.init(4);
+        categoryDataInitializer.createData(4);
     }
 
     @Test

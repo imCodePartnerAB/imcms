@@ -1,14 +1,16 @@
 package com.imcode.imcms.components.datainitializer;
 
-import com.imcode.imcms.components.cleaner.RepositoryTestDataCleaner;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Component
-public class CommonContentDataInitializer extends RepositoryTestDataCleaner {
+public class CommonContentDataInitializer extends AbstractTestDataInitializer<Integer, List<CommonContent>> {
     private static final String ENG_CODE = "en";
     private static final String SWE_CODE = "sv";
 
@@ -31,18 +33,21 @@ public class CommonContentDataInitializer extends RepositoryTestDataCleaner {
         versionDataInitializer.cleanRepositories();
     }
 
-    public void createData(int docId, int versionIndex) {
+    @Override
+    public List<CommonContent> createData(Integer docId, Integer versionIndex) {
         Language en = languageRepository.findByCode(ENG_CODE);
         Language se = languageRepository.findByCode(SWE_CODE);
         // both langs should be already created
 
         versionDataInitializer.createData(versionIndex, docId);
 
-        commonContentRepository.saveAndFlush(new CommonContent(
-                docId, en, "headline_en", "menuText_en", "menuImageUrl_en", true, versionIndex
-        ));
-        commonContentRepository.saveAndFlush(new CommonContent(
-                docId, se, "headline_se", "menuText_se", "menuImageUrl_se", true, versionIndex
-        ));
+        return Arrays.asList(
+                commonContentRepository.saveAndFlush(new CommonContent(
+                        docId, en, "headline_en", "menuText_en", "menuImageUrl_en", true, versionIndex
+                )),
+                commonContentRepository.saveAndFlush(new CommonContent(
+                        docId, se, "headline_se", "menuText_se", "menuImageUrl_se", true, versionIndex
+                ))
+        );
     }
 }

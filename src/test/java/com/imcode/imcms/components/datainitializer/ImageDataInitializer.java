@@ -1,6 +1,5 @@
 package com.imcode.imcms.components.datainitializer;
 
-import com.imcode.imcms.components.cleaner.RepositoryTestDataCleaner;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.Language;
@@ -12,7 +11,7 @@ import imcode.util.image.Format;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ImageDataInitializer extends RepositoryTestDataCleaner {
+public class ImageDataInitializer extends AbstractTestDataInitializer<Integer, Image> {
 
     private final LanguageRepository languageRepository;
     private final ImageRepository imageRepository;
@@ -27,7 +26,8 @@ public class ImageDataInitializer extends RepositoryTestDataCleaner {
         this.versionDataInitializer = versionDataInitializer;
     }
 
-    public Image createData(int imageIndex, int docId, int versionIndex) {
+    @Override
+    public Image createData(Integer imageIndex, Integer docId, Integer versionIndex) {
         final Version version = versionDataInitializer.createData(versionIndex, docId);
         final Language language = languageRepository.findByCode("en");
 

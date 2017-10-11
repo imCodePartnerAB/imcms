@@ -29,7 +29,7 @@ public class CategoryRepositoryTest {
 
     @Before
     public void setUp() {
-        categoryDataInitializer.init(2);
+        categoryDataInitializer.createData(2);
     }
 
     @Test
