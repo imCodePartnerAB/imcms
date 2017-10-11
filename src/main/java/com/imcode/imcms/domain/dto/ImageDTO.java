@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import imcode.util.image.Format;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class ImageDTO {
     private String format;
     private Integer width;
     private Integer height;
+    private LoopEntryRef loopEntryRef;
 
     public ImageDTO(Integer index, Integer docId) {
         this.index = index;
