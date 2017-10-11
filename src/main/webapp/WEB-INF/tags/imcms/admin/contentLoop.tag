@@ -8,7 +8,7 @@
 <%@ attribute name="post"%>
 
 <%@ variable name-given="loop" scope="NESTED" variable-class="com.imcode.imcms.domain.dto.LoopDTO" %>
-<%@ variable name-given="loopNo" scope="NESTED" variable-class="java.lang.Integer" %>
+<%@ variable name-given="loopIndex" scope="NESTED" variable-class="java.lang.Integer" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="loop" type="com.imcode.imcms.domain.dto.LoopDTO"--%>
@@ -18,7 +18,7 @@
 
 <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 <c:set var="loop" value="${loopService.getLoop(index, targetDocId)}" scope="request"/>
-<c:set var="loopNo" value="${index}" scope="request"/>
+<c:set var="loopIndex" value="${index}" scope="request"/>
 
 <c:set var="loopContent" value=""/>
 <c:if test="${loop.entries.size() gt 0}">
@@ -26,7 +26,7 @@
 </c:if>
 
 <c:remove var="loop"/>
-<c:remove var="loopNo"/>
+<c:remove var="loopIndex"/>
 
 <c:if test="${isEditMode}">
     <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}" data-index="${index}">
