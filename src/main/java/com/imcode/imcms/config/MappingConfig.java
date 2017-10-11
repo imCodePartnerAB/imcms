@@ -1,9 +1,12 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.mapping.jpa.doc.Language;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.Value;
+import com.imcode.imcms.util.function.TernaryFunction;
+import imcode.util.image.Format;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -130,6 +133,18 @@ public class MappingConfig {
             dto.setFormat(image.getFormat().name());
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
+        });
+    }
+
+    @Bean
+    public TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage() {
+        return (imageDTO, version, language) -> Value.with(new Image(), image -> {
+            image.setIndex(imageDTO.getIndex());
+            image.setVersion(version);
+            image.setLanguage(language);
+            image.setHeight(imageDTO.getHeight());
+            image.setWidth(imageDTO.getWidth());
+            image.setFormat(Format.valueOf(imageDTO.getFormat()));
         });
     }
 }
