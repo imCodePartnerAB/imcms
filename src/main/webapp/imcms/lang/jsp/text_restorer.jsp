@@ -1,27 +1,25 @@
 <%@ page
-	
-	import="java.text.DateFormat,
-	        java.text.SimpleDateFormat,
-	        java.util.Date,
-	        java.util.Calendar,
-	        java.sql.ResultSet,
-	        java.sql.Connection,
-	        java.sql.PreparedStatement,
-	        org.apache.commons.lang3.StringUtils,
+
+        import="com.imcode.imcms.api.*,
+	        imcode.server.Imcms,
 	        imcode.server.document.textdocument.TextDomainObject,
 	        imcode.util.Parser,
-	        java.util.Locale,
-	        com.imcode.imcms.api.*,
-	       org.apache.commons.lang3.StringEscapeUtils,
-	        java.net.URLEncoder"
-	
-	contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"
+	        org.apache.commons.lang3.StringEscapeUtils,
+	        org.apache.commons.lang3.StringUtils,
+	        java.net.URLEncoder,
+	        java.sql.Connection,
+	        java.sql.PreparedStatement,
+	        java.sql.ResultSet,
+	        java.text.DateFormat,
+	        java.text.SimpleDateFormat,
+	       java.util.Calendar,
+	        java.util.Date"
+
+        contentType="text/html; charset=UTF-8"
+        pageEncoding="UTF-8"
 	
 %>
-<%@ page import="imcode.server.Imcms" %>
-<%@ page import="com.imcode.imcms.mapping.jpa.doc.Language" %>
-<%@ page import="com.imcode.imcms.mapping.jpa.doc.*" %>
+<%@ page import="java.util.Locale" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"
 %><%!
 

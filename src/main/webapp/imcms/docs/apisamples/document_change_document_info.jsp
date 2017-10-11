@@ -1,16 +1,11 @@
 <%@ page import="com.imcode.imcms.api.*,
-                 java.util.*" errorPage="error.jsp" %>
-<%@ page import="com.imcode.imcms.mapping.jpa.doc.Language" %>
-<%@ page import="com.imcode.imcms.mapping.jpa.doc.*" %>
-<%@ page import="com.imcode.imcms.api.Category" %>
-<%@ page import="com.imcode.imcms.api.Language" %>
-<%@ page import="com.imcode.imcms.api.CategoryType" %>
+                 java.util.Date" errorPage="error.jsp" %>
 <%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
-    com.imcode.imcms.mapping.jpa.doc.Language language = DocumentLanguages.getCurrentLanguage();
+    com.imcode.imcms.persistence.entity.Language language = DocumentLanguages.getCurrentLanguage();
 
     document.setHeadline(language, "Test headline text");
     document.setMenuText(language, "Test menu text");

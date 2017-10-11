@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc.content;
 
-import com.imcode.imcms.mapping.jpa.doc.Language;
+import com.imcode.imcms.persistence.entity.Language;
 
 import javax.persistence.*;
 import java.util.Objects;

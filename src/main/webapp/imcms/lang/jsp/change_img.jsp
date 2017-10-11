@@ -1,26 +1,18 @@
 <%@ page
-	
-	import="java.util.List,
-	        java.util.Map,
-	        com.imcode.imcms.mapping.jpa.doc.Language,
-	        java.util.Collection,
-	        com.imcode.imcms.flow.Page,
+
+        import="com.imcode.imcms.flow.Page,
 	        com.imcode.imcms.servlet.admin.ImageEditPage,
 	        com.imcode.util.ImageSize,
-	        imcode.server.document.FileDocumentDomainObject,
-	        imcode.server.document.textdocument.FileDocumentImageSource,
 	        imcode.server.document.textdocument.ImageDomainObject,
-	        imcode.server.document.textdocument.ImageSource,
 	        imcode.server.user.UserDomainObject,
-	        imcode.util.Html,
 	        imcode.util.ImcmsImageUtils,
 	        imcode.util.Utility,
 	        org.apache.commons.lang3.StringEscapeUtils,
-	       org.apache.commons.lang3.StringUtils,
+	        org.apache.commons.lang3.StringUtils,
 	        java.util.Properties"
-	
-	contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"
+
+        contentType="text/html; charset=UTF-8"
+        pageEncoding="UTF-8"
 	
 %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
@@ -79,8 +71,8 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImagesContainer().getIm
 			if (!hasDocumentLayers && f.imageref && f.imageref.value == "") f.image_align.selectedIndex = 0;
 			changeLinkType(1) ;
 		}
-		        
-		var defValues = new Array("meta_id","http://") ;
+
+        var defValues = ["meta_id", "http://"];
 		
 		function changeLinkType(idx) {<%
 			if (imageEditPage.isLinkable()) { %>

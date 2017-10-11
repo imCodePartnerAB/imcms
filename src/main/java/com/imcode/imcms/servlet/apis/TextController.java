@@ -8,6 +8,7 @@ import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextHistory;
+import com.imcode.imcms.persistence.entity.Language;
 import com.jcabi.w3c.Defect;
 import com.jcabi.w3c.ValidationResponse;
 import com.jcabi.w3c.ValidatorBuilder;
@@ -67,7 +68,7 @@ public class TextController {
      *
      * @param docId           {@link imcode.server.document.DocumentDomainObject} id
      * @param textNo          text id
-     * @param locale          Content language. For more information about languages see {@link com.imcode.imcms.mapping.jpa.doc.Language} and {@link imcode.server.LanguageMapper}
+     * @param locale          Content language. For more information about languages see {@link Language} and {@link imcode.server.LanguageMapper}
      * @param loopEntryRefStr {@link com.imcode.imcms.mapping.container.LoopEntryRef} represented in text form
      * @return List of textHistory entities
      * @see TextDocumentContentLoader#getTextHistory(DocRef, int)
@@ -114,7 +115,7 @@ public class TextController {
      * Save passed text into database. Also passed text saved into {@link TextHistory} table
      *
      * @param content      Content to save
-     * @param locale       Content language. For more information about languages see {@link com.imcode.imcms.mapping.jpa.doc.Language} and {@link imcode.server.LanguageMapper}
+     * @param locale       Content language. For more information about languages see {@link Language} and {@link imcode.server.LanguageMapper}
      * @param docId        {@link imcode.server.document.DocumentDomainObject} id
      * @param textNo       text id
      * @param loopEntryRef {@link com.imcode.imcms.mapping.container.LoopEntryRef} represented in text form
