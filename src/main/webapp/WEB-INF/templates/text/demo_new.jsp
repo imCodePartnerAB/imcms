@@ -5,8 +5,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 
-<imcms:contextPath/>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

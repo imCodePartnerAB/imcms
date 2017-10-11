@@ -66,6 +66,7 @@ public class ViewDocumentController {
 
         mav.addObject("currentDocument", textDocument);
         mav.addObject("isEditMode", isEditMode);
+        mav.addObject("contextPath", request.getContextPath());
 
         return mav;
     }

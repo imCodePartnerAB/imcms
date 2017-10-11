@@ -1,6 +1,5 @@
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ tag body-content="empty" %>
-<imcms:contextPath/>
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
