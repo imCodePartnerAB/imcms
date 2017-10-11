@@ -1,6 +1,5 @@
 package com.imcode.imcms.components.datainitializer;
 
-import com.imcode.imcms.components.cleaner.RepositoryCleaner;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Menu;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class MenuDataInitializer extends RepositoryCleaner {
+public class MenuDataInitializer extends AbstractTestDataInitializer<Boolean, Menu> {
 
     private final MenuRepository menuRepository;
     private final VersionDataInitializer versionDataInitializer;
@@ -27,7 +26,8 @@ public class MenuDataInitializer extends RepositoryCleaner {
         this.versionDataInitializer = versionDataInitializer;
     }
 
-    public Menu createData(boolean withMenuItems) {
+    @Override
+    public Menu createData(Boolean withMenuItems) {
         cleanRepositories();
         final Menu menu = new Menu();
         final Version version = versionDataInitializer.createData(0, 1001);

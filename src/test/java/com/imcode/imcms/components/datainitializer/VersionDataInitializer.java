@@ -1,6 +1,5 @@
 package com.imcode.imcms.components.datainitializer;
 
-import com.imcode.imcms.components.cleaner.RepositoryTestDataCleaner;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class VersionDataInitializer extends RepositoryTestDataCleaner {
+public class VersionDataInitializer extends AbstractTestDataInitializer<Integer, Version> {
     private final VersionRepository versionRepository;
     private final UserDataInitializer userDataInitializer;
 
@@ -23,7 +22,8 @@ public class VersionDataInitializer extends RepositoryTestDataCleaner {
         this.userDataInitializer = userDataInitializer;
     }
 
-    public Version createData(int versionIndex, int docId) {
+    @Override
+    public Version createData(Integer versionIndex, Integer docId) {
         Version testVersion = versionRepository.findByDocIdAndNo(docId, versionIndex);
 
         if (testVersion != null) {

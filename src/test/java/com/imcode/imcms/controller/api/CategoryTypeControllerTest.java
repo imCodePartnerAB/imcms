@@ -31,7 +31,7 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
 
     @Test
     public void getAllExpectedOkAndJsonContentEqualsCategoryTypeDtoAsJsonTest() throws Exception {
-        categoryDataInitializer.init(4);
+        categoryDataInitializer.createData(4);
         final String expectedCategories = asJson(categoryDataInitializer.getCategoryTypesAsDTO());
         getAllExpectedOkAndJsonContentEquals(expectedCategories);
     }

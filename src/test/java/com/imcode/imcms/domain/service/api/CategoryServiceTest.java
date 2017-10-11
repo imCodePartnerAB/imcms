@@ -28,7 +28,7 @@ public class CategoryServiceTest {
 
     @Before
     public void setUp() {
-        categoryDataInitilizer.init(4);
+        categoryDataInitilizer.createData(4);
     }
 
     @Test
