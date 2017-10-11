@@ -132,6 +132,7 @@ public class MappingConfig {
             dto.setFormat(image.getFormat().name());
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
+            dto.setLoopEntryRef(image.getLoopEntryRef());
         });
     }
 
@@ -143,6 +144,7 @@ public class MappingConfig {
             image.setLanguage(language);
             image.setHeight(imageDTO.getHeight());
             image.setWidth(imageDTO.getWidth());
+            image.setLoopEntryRef(imageDTO.getLoopEntryRef());
             image.setFormat(Format.valueOf(imageDTO.getFormat()));
         });
     }
