@@ -20,5 +20,6 @@
 
         <c:remove var="loopItem"/>
         <c:remove var="entryIndex"/>
+        <c:remove var="loopEntryRef"/>
     </c:if>
 </c:forEach>
