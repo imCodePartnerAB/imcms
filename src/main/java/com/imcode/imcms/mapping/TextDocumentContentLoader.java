@@ -9,6 +9,7 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.LoopRepository;

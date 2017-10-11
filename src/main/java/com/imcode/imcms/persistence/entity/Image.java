@@ -2,7 +2,6 @@ package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.mapping.jpa.doc.content.VersionedI18nContent;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.ImageCropRegion;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import imcode.util.image.Format;
 import lombok.Getter;
 import lombok.Setter;
