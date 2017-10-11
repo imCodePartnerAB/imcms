@@ -44,7 +44,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExists_Expect_MenuItemsDtosJson() throws Exception {
         final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("en");
+        user.setLanguageIso639_2("eng");
         Imcms.setUser(user);
         final Menu menu = menuDataInitializer.createData(true);
         final String expectedMenuItemDtos = asJson(menuDataInitializer.getMenuItemDtoList());

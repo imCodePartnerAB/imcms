@@ -41,7 +41,7 @@ public class MenuServiceTest {
     @Test
     public void getMenuItemsOf_When_MenuNoAndDocId_Expect_ResultEqualsExpectedMenuItems() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("en");
+        user.setLanguageIso639_2("eng");
         Imcms.setUser(user);
         final Menu menu = menuDataInitializer.createData(true);
 

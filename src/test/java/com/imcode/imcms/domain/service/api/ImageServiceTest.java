@@ -49,7 +49,7 @@ public class ImageServiceTest {
         versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
 
         final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("en"); // user lang should exist in common content
+        user.setLanguageIso639_2("eng"); // user lang should exist in common content
         Imcms.setUser(user);
     }
 

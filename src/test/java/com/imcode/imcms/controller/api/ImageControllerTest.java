@@ -59,7 +59,7 @@ public class ImageControllerTest extends AbstractControllerTest {
         versionDataInitializer.createData(TEST_VERSION_INDEX, TEST_DOC_ID);
 
         final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("en"); // user lang should exist in common content
+        user.setLanguageIso639_2("eng"); // user lang should exist in common content
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user);
     }
