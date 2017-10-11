@@ -116,7 +116,7 @@ public class LoopControllerTest extends AbstractControllerTest {
         final Version workingVersion = versionRepository.findWorking(TEST_DOC_ID);
         final Loop shouldNotExist = loopRepository.findByVersionAndIndex(workingVersion, nonExistingLoopIndex);
 
-        if (shouldNotExist != null) { // this should newer happen, but...
+        if (shouldNotExist != null) { // this should never happen, but...
             loopRepository.delete(shouldNotExist);
         }
 
