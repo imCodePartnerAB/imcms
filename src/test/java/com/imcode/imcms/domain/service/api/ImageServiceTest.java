@@ -5,7 +5,13 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.mapping.jpa.doc.Version;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LoopEntryRef;
+import com.imcode.imcms.persistence.repository.LanguageRepository;
+import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
@@ -41,7 +47,16 @@ public class ImageServiceTest {
     private Function<Image, ImageDTO> imageToImageDTO;
 
     @Autowired
+    private TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage;
+
+    @Autowired
     private ImageDataInitializer imageDataInitializer;
+
+    @Autowired
+    private LanguageRepository languageRepository;
+
+    @Autowired
+    private VersionRepository versionRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -78,5 +93,34 @@ public class ImageServiceTest {
         final ImageDTO resultImage = imageService.getImage(TEST_IMAGE_DTO);
 
         assertEquals(imageDTO, resultImage);
+    }
+
+    @Test
+    public void saveImage_When_LoopEntryRefIsNull_Expect_EqualResult() {
+        final Language language = languageRepository.findByCode("en");
+        final Version version = versionRepository.findWorking(TEST_DOC_ID);
+        final Image image = imageDataInitializer.generateImage(TEST_IMAGE_INDEX, language, version, null);
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+        imageService.saveImage(imageDTO);
+
+        final ImageDTO result = imageService.getImage(TEST_IMAGE_DTO);
+
+        assertEquals(result, imageDTO);
+    }
+
+    @Test
+    public void saveImage_When_LoopEntryRefIsNotNull_Expect_EqualResult() {
+        final Language language = languageRepository.findByCode("en");
+        final Version version = versionRepository.findWorking(TEST_DOC_ID);
+        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final Image image = imageDataInitializer.generateImage(TEST_IMAGE_INDEX, language, version, loopEntryRef);
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+        imageService.saveImage(imageDTO);
+
+        final ImageDTO result = imageService.getImage(imageDTO);
+
+        assertEquals(result, imageDTO);
     }
 }

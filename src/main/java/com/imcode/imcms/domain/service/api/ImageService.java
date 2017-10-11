@@ -65,4 +65,29 @@ public class ImageService {
                 .map(imageToImageDTO)
                 .orElse(new ImageDTO(index, docId));
     }
+
+    public void saveImage(ImageDTO imageDTO) {
+        final Version version = versionService.getDocumentWorkingVersion(imageDTO.getDocId());
+        final Language language = languageService.findByCode(imageDTO.getLangCode());
+        final Integer imageId = getImageId(imageDTO, version, language);
+        final Image image = imageDtoToImage.apply(imageDTO, version, language);
+
+        image.setId(imageId);
+        imageRepository.save(image);
+    }
+
+    private Integer getImageId(ImageDTO imageDTO, Version version, Language language) {
+        final LoopEntryRef loopEntryRef = imageDTO.getLoopEntryRef();
+        final Integer index = imageDTO.getIndex();
+
+        final Image image = (loopEntryRef == null)
+                ? imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
+                : imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
+
+        if (image == null) {
+            return null;
+        }
+
+        return image.getId();
+    }
 }
