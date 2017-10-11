@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.*;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
@@ -17,6 +18,7 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,9 @@ public class DocumentSaver {
 
     @Inject
     private VersionRepository versionRepository;
+
+    @Autowired
+    private VersionService versionService;
 
     @Inject
     private LanguageRepository languageRepository;
@@ -136,7 +141,6 @@ public class DocumentSaver {
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
-    @Transactional
     public DocumentVersion makeDocumentVersion(List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -231,7 +235,7 @@ public class DocumentSaver {
                 DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS,
                 Integer.toString(newDocId)
         );
-        int versionNo = versionRepository.create(newDocId, user.getId()).getNo();
+        int versionNo = versionService.create(newDocId, user.getId()).getNo();
 
         saveContent(user, docs, meta, versionNo, firstDoc);
 
@@ -321,15 +325,14 @@ public class DocumentSaver {
                 String.valueOf(newDocId)
         );
 
-        Version version = versionRepository.create(newDocId, user.getId());
+        Version version = versionService.create(newDocId, user.getId());
         doc.setVersionNo(version.getNo());
         doc.setId(newDocId);
 
         doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
 
         if (doc instanceof TextDocumentDomainObject
-                && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields))
-        {
+                && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
             Map<DocumentLanguage, TextDomainObject> texts1 = new HashMap<>();
             Map<DocumentLanguage, TextDomainObject> texts2 = new HashMap<>();
 

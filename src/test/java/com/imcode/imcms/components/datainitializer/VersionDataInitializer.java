@@ -14,6 +14,8 @@ public class VersionDataInitializer extends RepositoryTestDataCleaner {
     private final VersionRepository versionRepository;
     private final UserDataInitializer userDataInitializer;
 
+    private User user;
+
     public VersionDataInitializer(VersionRepository versionRepository,
                                   UserDataInitializer userDataInitializer) {
         super(versionRepository);
@@ -29,7 +31,7 @@ public class VersionDataInitializer extends RepositoryTestDataCleaner {
         }
 
         final int adminUserId = 1;
-        final User user = userDataInitializer.createData(adminUserId);
+        user = userDataInitializer.createData(adminUserId);
 
         testVersion = Value.with(new Version(), version -> {
             version.setNo(versionIndex);
@@ -42,5 +44,9 @@ public class VersionDataInitializer extends RepositoryTestDataCleaner {
         versionRepository.saveAndFlush(testVersion);
 
         return testVersion;
+    }
+
+    public User getUser() {
+        return user;
     }
 }

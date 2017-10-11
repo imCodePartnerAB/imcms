@@ -3,9 +3,11 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
+import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,9 @@ public class DocumentVersionMapper {
 
     @Inject
     private VersionRepository versionRepository;
+
+    @Autowired
+    private VersionService versionService;
 
     public DocumentVersion get(VersionRef versionRef) {
         return toApiObject(versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo()));
@@ -64,7 +69,7 @@ public class DocumentVersionMapper {
      * @return new document version.
      */
     public DocumentVersion create(int docId, int userId) {
-        return toApiObject(versionRepository.create(docId, userId));
+        return toApiObject(versionService.create(docId, userId));
     }
 
 
