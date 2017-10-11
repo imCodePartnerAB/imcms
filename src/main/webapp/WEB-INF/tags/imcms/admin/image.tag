@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
-<%@ attribute name="no" required="true" %>
+<%@ attribute name="no" required="false" %><%-- old index name --%>
+<%@ attribute name="index" required="false" %>
 <%@ attribute name="document" required="false" %>
 <%@ attribute name="style" required="false" %>
 <%@ attribute name="pre" required="false" %>
@@ -8,23 +9,29 @@
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
-<%--@elvariable id="targetDoc" type="com.imcode.imcms.api.TextDocument"--%>
+<%--@elvariable id="imageService" type="com.imcode.imcms.domain.service.api.ImageService"--%>
+<%--@elvariable id="image" type="com.imcode.imcms.domain.dto.ImageDTO"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
-<%--@elvariable id="loopEntryRef" type="com.imcode.imcms.mapping.container.LoopEntryRef"--%>
-<%--@elvariable id="image" type="com.imcode.imcms.api.Image"--%>
+<%--@elvariable id="loopEntryRef" type="com.imcode.imcms.domain.dto.LoopEntryRefDTO"--%>
 
-<c:set var="targetDoc" value="${empty document ? currentDocument : (imcms:getDocument(document, pageContext))}"/>
+<c:if test="${empty index}">
+    <c:set var="index" value="${no}"/><%-- old attribute "no" support --%>
+</c:if>
+
+<c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
 <c:set var="imageContent">
-    <c:set var="image" value="${loopEntryRef eq null ? targetDoc.getImage(no) : targetDoc.getLoopImage(loopEntryRef.loopNo, loopEntryRef.entryNo, no)}"/>
-    <c:set var="imgPath" value="${image.getSrc(pageContext.request.contextPath)}"/>
-    <c:set var="imgPath"
-           value="${empty imgPath ? pageContext.request.contextPath.concat('/imcms/eng/images/admin/ico_image.gif') : imgPath}"/>
-    ${pre}<img src="${imgPath}"${empty style ? '' : ' style=\"'.concat(style).concat('\"')}/>${post}
+    <c:set var="image" value="${isEditMode
+     ? imageService.getImage(targetDocId, index, loopEntryRef)
+     : imageService.getPublicImage(targetDocId, index, loopEntryRef)}"/>
+    <c:set var="imgPath" value="${image.path}"/>
+    <c:set var="imgPath" value="${empty imgPath ? '/imcms/eng/images/admin/ico_image.gif' : imgPath}"/>
+    <c:set var="style" value="${empty style ? '' : ' style=\"'.concat(style).concat('\"')}"/>
+    ${pre}<img src="${contextPath}${imgPath}"${style}/>${post}
 </c:set>
 
 <c:if test="${isEditMode}">
-    <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDoc.id}" data-index="${no}">
+    <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}" data-index="${no}">
         <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
         <div class="imcms-editor-area__control-wrap">
             <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
