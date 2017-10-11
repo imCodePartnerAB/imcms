@@ -13,13 +13,6 @@ public abstract class AbstractTestDataInitializer<IN, R> {
         cleanRepositories(jpaRepositories);
     }
 
-    public void cleanRepositories(JpaRepository... jpaRepositories) {
-        for (JpaRepository jpaRepository : jpaRepositories) {
-            jpaRepository.deleteAll();
-            jpaRepository.flush();
-        }
-    }
-
     protected R createData(IN in) {
         throw new UnsupportedOperationException();
     }
@@ -34,6 +27,13 @@ public abstract class AbstractTestDataInitializer<IN, R> {
 
     protected R createData() {
         throw new UnsupportedOperationException();
+    }
+
+    private void cleanRepositories(JpaRepository... jpaRepositories) {
+        for (JpaRepository jpaRepository : jpaRepositories) {
+            jpaRepository.deleteAll();
+            jpaRepository.flush();
+        }
     }
 
 }
