@@ -11,7 +11,6 @@ import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
-import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
@@ -45,9 +44,6 @@ public class ImageServiceTest {
 
     @Autowired
     private Function<Image, ImageDTO> imageToImageDTO;
-
-    @Autowired
-    private TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage;
 
     @Autowired
     private ImageDataInitializer imageDataInitializer;
@@ -87,7 +83,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void getImage_When_ImageExist_Expect_EqualResult() {
+    public void getImage_When_LoopEntryRefIsNull_Expect_EqualResult() {
         final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
         final ImageDTO resultImage = imageService.getImage(TEST_IMAGE_DTO);
@@ -96,10 +92,20 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void saveImage_When_LoopEntryRefIsNull_Expect_EqualResult() {
+    public void getImage_When_LoopEntryRefIsNotNull_Expect_EqualResult() {
         final Language language = languageRepository.findByCode("en");
         final Version version = versionRepository.findWorking(TEST_DOC_ID);
-        final Image image = imageDataInitializer.generateImage(TEST_IMAGE_INDEX, language, version, null);
+        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final Image image = imageDataInitializer.generateImage(TEST_IMAGE_INDEX, language, version, loopEntryRef);
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO resultImage = imageService.getImage(imageDTO);
+
+        assertEquals(imageDTO, resultImage);
+    }
+
+    @Test
+    public void saveImage_When_LoopEntryRefIsNull_Expect_EqualResult() {
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
