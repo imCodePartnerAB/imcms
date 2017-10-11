@@ -2,7 +2,6 @@ package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Text;

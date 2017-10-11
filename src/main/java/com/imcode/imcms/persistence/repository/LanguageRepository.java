@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping.jpa.doc;
+package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.persistence.entity.Language;
 import org.springframework.data.jpa.repository.JpaRepository;

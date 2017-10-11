@@ -1,10 +1,10 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.components.cleaner.RepositoryTestDataCleaner;
-import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.repository.ImageRepository;
+import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.util.Value;
 import imcode.util.image.Format;
 import org.springframework.stereotype.Component;

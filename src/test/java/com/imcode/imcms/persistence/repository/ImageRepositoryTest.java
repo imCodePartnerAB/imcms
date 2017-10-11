@@ -5,7 +5,6 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
-import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Image;
