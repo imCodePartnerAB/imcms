@@ -47,10 +47,11 @@ public class ImageService {
         return imageRepository.findAllGeneratedImages();
     }
 
-    public ImageDTO getImage(ImageDTO imageDTO) {
-        final Integer docId = imageDTO.getDocId();
-        final Integer index = imageDTO.getIndex();
-        final LoopEntryRef loopEntryRef = imageDTO.getLoopEntryRef();
+    public ImageDTO getImage(ImageDTO dataHolder) {
+        return getImage(dataHolder.getDocId(), dataHolder.getIndex(), dataHolder.getLoopEntryRef());
+    }
+
+    public ImageDTO getImage(int docId, int index, LoopEntryRef loopEntryRef) {
         final Version version = versionService.getDocumentWorkingVersion(docId);
         final int versionIndex = version.getNo();
         final UserDomainObject user = Imcms.getUser();

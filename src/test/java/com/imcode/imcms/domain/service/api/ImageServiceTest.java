@@ -5,10 +5,8 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
-import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
@@ -45,12 +43,6 @@ public class ImageServiceTest {
 
     @Autowired
     private ImageDataInitializer imageDataInitializer;
-
-    @Autowired
-    private LanguageRepository languageRepository;
-
-    @Autowired
-    private VersionRepository versionRepository;
 
     @Before
     public void setUp() throws Exception {
