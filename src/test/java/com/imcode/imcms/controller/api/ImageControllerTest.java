@@ -164,11 +164,7 @@ public class ImageControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(imageDTO.getDocId()))
                 .param("index", String.valueOf(imageDTO.getIndex()));
 
-        final String imageJson = performRequestBuilderExpectedOkAndContentJsonUtf8(getImageReqBuilder)
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
+        final String imageJson = getJsonResponse(getImageReqBuilder);
         final ImageDTO imageDtoResult = fromJson(imageJson, ImageDTO.class);
 
         assertEquals(imageDTO, imageDtoResult);
@@ -178,11 +174,7 @@ public class ImageControllerTest extends AbstractControllerTest {
         assertNotEquals(imageDTO, imageDtoResult);
         performPostWithContentExpectOk(imageDtoResult);
 
-        final String imageChangedJson = performRequestBuilderExpectedOkAndContentJsonUtf8(getImageReqBuilder)
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
+        final String imageChangedJson = getJsonResponse(getImageReqBuilder);
         final ImageDTO imageDtoChangedResult = fromJson(imageChangedJson, ImageDTO.class);
 
         assertEquals(imageDtoResult, imageDtoChangedResult);

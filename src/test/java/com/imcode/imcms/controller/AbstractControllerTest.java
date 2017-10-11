@@ -32,9 +32,11 @@ public abstract class AbstractControllerTest {
         return mockMvc.perform(builder).andExpect(status().isOk());
     }
 
-    protected ResultActions performRequestBuilderExpectedOkAndContentJsonUtf8(MockHttpServletRequestBuilder builder) throws Exception {
-        return performRequestBuilderExpectedOk(builder)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+    protected String getJsonResponse(MockHttpServletRequestBuilder builder) throws Exception {
+        return performRequestBuilderExpectedOkAndContentJsonUtf8(builder)
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
     }
 
     protected void performRequestBuilderExpectedOkAndJsonContentEquals(MockHttpServletRequestBuilder builder,
@@ -81,6 +83,11 @@ public abstract class AbstractControllerTest {
     protected void performPostWithContentExpectOk(Object content) throws Exception {
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(content);
         performRequestBuilderExpectedOk(requestBuilder);
+    }
+
+    private ResultActions performRequestBuilderExpectedOkAndContentJsonUtf8(MockHttpServletRequestBuilder builder) throws Exception {
+        return performRequestBuilderExpectedOk(builder)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
     }
 
     private MockHttpServletRequestBuilder getPostRequestBuilderWithContent(Object content) throws Exception {

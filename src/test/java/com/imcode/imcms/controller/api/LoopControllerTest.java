@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -47,6 +46,10 @@ public class LoopControllerTest extends AbstractControllerTest {
     @Before
     public void createData() {
         loopDataInitializer.createData(TEST_LOOP_DTO);
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
     }
 
     @Override
@@ -74,32 +77,11 @@ public class LoopControllerTest extends AbstractControllerTest {
 
     @Test
     public void postLoop_When_UserIsAdmin_Expect_Ok() throws Exception {
-        final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
-        Imcms.setUser(user); // means current user is admin now
-
-        final MockHttpServletRequestBuilder getLoopReqBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("index", String.valueOf(TEST_LOOP_INDEX))
-                .param("docId", String.valueOf(TEST_DOC_ID));
-
-        final String loopJson = performRequestBuilderExpectedOkAndContentJsonUtf8(getLoopReqBuilder)
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(loopJson);
-
-        performRequestBuilderExpectedOk(requestBuilder);
+        performPostWithContentExpectOk(TEST_LOOP_DTO);
     }
 
     @Test
     public void postLoop_When_UserIsAdminAndDocNotExist_Expect_DocumentNotExistException() throws Exception {
-        final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
-        Imcms.setUser(user); // means current user is admin now
-
         final int nonExistingDocId = -13;
         final LoopDTO loopDTO = new LoopDTO(nonExistingDocId, TEST_LOOP_INDEX, Collections.emptyList());
 
@@ -108,10 +90,6 @@ public class LoopControllerTest extends AbstractControllerTest {
 
     @Test
     public void postLoop_When_UserIsAdminAndLoopNotExist_Expect_Ok() throws Exception {
-        final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
-        Imcms.setUser(user); // means current user is admin now
-
         final int nonExistingLoopIndex = 666;
         final Version workingVersion = versionRepository.findWorking(TEST_DOC_ID);
         final Loop shouldNotExist = loopRepository.findByVersionAndIndex(workingVersion, nonExistingLoopIndex);
@@ -121,12 +99,6 @@ public class LoopControllerTest extends AbstractControllerTest {
         }
 
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, nonExistingLoopIndex, Collections.emptyList());
-        final String jsonData = asJson(loopDTO);
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(jsonData);
-
-        performRequestBuilderExpectedOk(requestBuilder);
+        performPostWithContentExpectOk(loopDTO);
     }
 }

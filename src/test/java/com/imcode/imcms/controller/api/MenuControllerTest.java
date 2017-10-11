@@ -13,7 +13,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -63,6 +62,7 @@ public class MenuControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("menuId", "1")
                 .param("docId", "1001");
+
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
     }
 
@@ -75,13 +75,7 @@ public class MenuControllerTest extends AbstractControllerTest {
         menuDTO.setDocId(menu.getVersion().getDocId());
         menuDTO.setMenuItems(menuDataInitializer.getMenuItemDtoList());
 
-        final String jsonData = asJson(menuDTO);
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(jsonData);
-
-        performRequestBuilderExpectedOk(requestBuilder);
+        performPostWithContentExpectOk(menuDTO);
     }
 
     @Test
@@ -96,13 +90,7 @@ public class MenuControllerTest extends AbstractControllerTest {
         menuDataInitializer.cleanRepositories();
         versionDataInitializer.createData(0, 1001);
 
-        final String jsonData = asJson(menuDTO);
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(jsonData);
-
-        performRequestBuilderExpectedOk(requestBuilder);
+        performPostWithContentExpectOk(menuDTO);
     }
 
 }
