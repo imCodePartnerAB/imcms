@@ -15,28 +15,40 @@ Imcms.define("imcms-image-rest-api", ["imcms-rest-api"], function (rest) {
                     path: "img/choose_img/img3.png",
                     format: "PNG",
                     width: 32,
-                    height: 29
+                    height: 29,
+                    docId: 1001,
+                    langCode: "en",
+                    loopEntryRef: null
                 }, {
                     index: 1,
                     name: "demo1",
                     path: "demo/img/demo1.jpg",
                     format: "JPG",
                     width: 5509,
-                    height: 3673
+                    height: 3673,
+                    docId: 1001,
+                    langCode: "en",
+                    loopEntryRef: null
                 }, {
                     index: 2,
                     name: "img2",
                     path: "img/choose_img/img2.png",
                     format: "PNG",
                     width: 147,
-                    height: 146
+                    height: 146,
+                    docId: 1001,
+                    langCode: "en",
+                    loopEntryRef: null
                 }, {
                     index: 3,
                     name: "img4",
                     path: "img/choose_img/img4.png",
                     format: "PNG",
                     width: 102,
-                    height: 146
+                    height: 146,
+                    docId: 1001,
+                    langCode: "en",
+                    loopEntryRef: null
                 }
             ]
         };
