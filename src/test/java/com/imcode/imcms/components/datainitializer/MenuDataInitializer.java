@@ -22,6 +22,7 @@ public class MenuDataInitializer extends AbstractTestDataInitializer<Boolean, Me
 
     public MenuDataInitializer(@Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
                                VersionDataInitializer versionDataInitializer) {
+        super(menuRepository);
         this.menuRepository = menuRepository;
         this.versionDataInitializer = versionDataInitializer;
     }
@@ -57,7 +58,7 @@ public class MenuDataInitializer extends AbstractTestDataInitializer<Boolean, Me
     @Override
     public void cleanRepositories() {
         versionDataInitializer.cleanRepositories();
-        cleanRepositories(menuRepository);
+        super.cleanRepositories();
     }
 
     private MenuItemDTO mapMenuItems(MenuItem menuItem) {
