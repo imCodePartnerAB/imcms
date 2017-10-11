@@ -11,12 +11,12 @@ import javax.persistence.LockModeType;
 import java.util.List;
 
 @Repository
-public interface VersionRepository extends JpaRepository<Version, Integer>, VersionRepositoryCustom {
+public interface VersionRepository extends JpaRepository<Version, Integer> {
 
     @Query("SELECT v FROM Version v WHERE v.docId = ?1 ORDER BY v.no")
     List<Version> findByDocId(int docId);
 
-//    @Query("SELECT v FROM Version v WHERE v.docId = ?1 AND v.no = ?2")
+    //    @Query("SELECT v FROM Version v WHERE v.docId = ?1 AND v.no = ?2")
     Version findByDocIdAndNo(int docId, int no);
 
     @Query("SELECT v FROM Version v WHERE v.no = 0 AND v.docId = ?1")
