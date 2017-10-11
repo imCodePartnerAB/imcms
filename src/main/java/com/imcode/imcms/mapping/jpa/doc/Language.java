@@ -1,16 +1,21 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Objects;
 
 @Entity
 @Table(name = "imcms_languages")
-@NamedQuery(name = "Language.findByCode",
-        query = "SELECT l FROM Language l WHERE l.code = ?1")
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Language implements Serializable, Cloneable {
+
+    private static final long serialVersionUID = -7712182762931242124L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,41 +35,12 @@ public class Language implements Serializable, Cloneable {
     @Column(nullable = false, columnDefinition = "tinyint")
     private boolean enabled;
 
-    public Language() {
-    }
-
     public Language(String code, String name, String nativeName) {
         this(null, code, name, nativeName, true);
     }
 
     public Language(String code, String name, String nativeName, boolean enabled) {
         this(null, code, name, nativeName, enabled);
-    }
-
-    public Language(Integer id, String code, String name, String nativeName, boolean enabled) {
-        this.id = id;
-        this.code = code;
-        this.name = name;
-        this.nativeName = nativeName;
-        this.enabled = enabled;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o == this || (o instanceof Language && equals((Language) o));
-    }
-
-    private boolean equals(Language that) {
-        return Objects.equals(id, that.id)
-                && Objects.equals(code, that.code)
-                && Objects.equals(name, that.name)
-                && Objects.equals(enabled, that.enabled)
-                && Objects.equals(nativeName, that.nativeName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, code, name, nativeName, enabled);
     }
 
     @Override
@@ -74,45 +50,5 @@ public class Language implements Serializable, Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getNativeName() {
-        return nativeName;
-    }
-
-    public void setNativeName(String nativeName) {
-        this.nativeName = nativeName;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 }
