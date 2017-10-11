@@ -52,7 +52,25 @@ public class ImageService {
     }
 
     public ImageDTO getImage(int docId, int index, LoopEntryRef loopEntryRef) {
-        final Version version = versionService.getDocumentWorkingVersion(docId);
+        return getImage(docId, index, loopEntryRef, versionService::getDocumentWorkingVersion);
+    }
+
+    public ImageDTO getPublicImage(int docId, int index, LoopEntryRef loopEntryRef) {
+        return getImage(docId, index, loopEntryRef, versionService::getLatestVersion);
+    }
+
+    public void saveImage(ImageDTO imageDTO) {
+        final Version version = versionService.getDocumentWorkingVersion(imageDTO.getDocId());
+        final Language language = languageService.findByCode(imageDTO.getLangCode());
+        final Integer imageId = getImageId(imageDTO, version, language);
+        final Image image = imageDtoToImage.apply(imageDTO, version, language);
+
+        image.setId(imageId);
+        imageRepository.save(image);
+    }
+
+    private ImageDTO getImage(int docId, int index, LoopEntryRef loopEntryRef, Function<Integer, Version> versionReceiver) {
+        final Version version = versionReceiver.apply(docId);
         final int versionIndex = version.getNo();
         final UserDomainObject user = Imcms.getUser();
         final Language language = commonContentService.findByDocIdAndVersionNoAndUser(docId, versionIndex, user)
@@ -65,16 +83,6 @@ public class ImageService {
         return Optional.ofNullable(image)
                 .map(imageToImageDTO)
                 .orElse(new ImageDTO(index, docId));
-    }
-
-    public void saveImage(ImageDTO imageDTO) {
-        final Version version = versionService.getDocumentWorkingVersion(imageDTO.getDocId());
-        final Language language = languageService.findByCode(imageDTO.getLangCode());
-        final Integer imageId = getImageId(imageDTO, version, language);
-        final Image image = imageDtoToImage.apply(imageDTO, version, language);
-
-        image.setId(imageId);
-        imageRepository.save(image);
     }
 
     private Integer getImageId(ImageDTO imageDTO, Version version, Language language) {
