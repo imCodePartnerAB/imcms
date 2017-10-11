@@ -3,6 +3,8 @@
 <%@ attribute name="no" required="true" %>
 <%@ attribute name="document" required="false" %>
 <%@ attribute name="style" required="false" %>
+<%@ attribute name="pre" required="false" %>
+<%@ attribute name="post" required="false" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
@@ -18,7 +20,7 @@
     <c:set var="imgPath" value="${image.getSrc(pageContext.request.contextPath)}"/>
     <c:set var="imgPath"
            value="${empty imgPath ? pageContext.request.contextPath.concat('/imcms/eng/images/admin/ico_image.gif') : imgPath}"/>
-    <img src="${imgPath}"${empty style ? '' : ' style=\"'.concat(style).concat('\"')}/>
+    ${pre}<img src="${imgPath}"${empty style ? '' : ' style=\"'.concat(style).concat('\"')}/>${post}
 </c:set>
 
 <c:if test="${isEditMode}">
