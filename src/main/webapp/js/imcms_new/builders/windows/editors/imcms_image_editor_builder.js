@@ -10,7 +10,8 @@ Imcms.define("imcms-image-editor-builder",
     function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $) {
         var $rightSidePanel, $bottomPanel, $editableImageArea;
 
-        var imageDataContainers = {};
+        var imageDataContainers = {},
+            imageData = {};
 
         function buildBodyHead() {
             function showHidePanel(panelOpts) {
@@ -356,15 +357,17 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function buildImageLangFlags() {
+                imageData.langCode = "en"; // by default
+
                 return components.flags.flagsContainer("<div>", [
                     components.flags.eng("<div>", true, {
                         click: function () {
-                            // todo: implement!!!
+                            imageData.langCode = "en";
                         }
                     }),
                     components.flags.swe("<div>", false, {
                         click: function () {
-                            // todo: implement!!!
+                            imageData.langCode = "sv";
                         }
                     })
                 ]);
@@ -590,8 +593,9 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function saveAndClose() {
-                // fixme: just closing for now, should be save and close
-                imageWindowBuilder.closeWindow();
+                imageRestApi.create(imageData)
+                    .success(imageWindowBuilder.closeWindow.bind(imageWindowBuilder))
+                    .error(console.error.bind(console));
             }
 
             function buildFooter() {
@@ -637,7 +641,7 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function fillLeftSideData(imageData) {
-            imageDataContainers.$image.removeAttr("style").attr("src", imageData.path);
+            imageDataContainers.$image.removeAttr("style").attr("src", Imcms.contextPath + imageData.path);
 
             // fixes to prevent stupid little scroll because of borders
             var angleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) || 0;
@@ -660,7 +664,7 @@ Imcms.define("imcms-image-editor-builder",
                 top: angleBorderSize
             });
 
-            imageDataContainers.$cropImg.attr("src", imageData.path);
+            imageDataContainers.$cropImg.attr("src", Imcms.contextPath + imageData.path);
 
             // todo: receive correct crop area
             imageDataContainers.$cropArea.css({
@@ -680,16 +684,18 @@ Imcms.define("imcms-image-editor-builder",
             });
         }
 
-        function fillData(imageData) {
-            if (!imageData) {
+        function fillData(image) {
+            if (!image) {
                 return;
             }
 
-            fillBodyHeadData(imageData);
-            fillLeftSideData(imageData);
+            $.extend(imageData, image);
+            fillBodyHeadData(image);
+            fillLeftSideData(image);
         }
 
         function loadData(opts) {
+            $.extend(imageData, opts);
             imageRestApi.read(opts).done(fillData);
         }
 
