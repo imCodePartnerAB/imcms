@@ -13,6 +13,7 @@ public class ImageDTO {
     private String langCode;
     private String name;
     private String path;
+    private String url;
     private String format;
     private Integer width;
     private Integer height;
@@ -25,6 +26,7 @@ public class ImageDTO {
         this.docId = docId;
         this.name = "";
         this.path = "";
+        this.url = "";
         this.generatedFilePath = "";
         this.generatedFileName = "";
         this.format = Format.JPEG.name();

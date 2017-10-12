@@ -128,7 +128,8 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<Image, ImageDTO> imageToImageDTO(Properties imcmsProperties, Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO) {
+    public Function<Image, ImageDTO> imageToImageDTO(Properties imcmsProperties,
+                                                     Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO) {
         return image -> Value.with(new ImageDTO(), dto -> {
             dto.setIndex(image.getIndex());
 
@@ -140,7 +141,12 @@ public class MappingConfig {
 
             dto.setDocId(image.getVersion().getDocId());
             dto.setLangCode(image.getLanguage().getCode());
-            dto.setPath(image.getUrl());
+
+            final String path = (image.getUrl() == null)
+                    ? "" : imcmsProperties.getProperty("ImagePath") + image.getUrl();
+
+            dto.setPath(path);
+            dto.setUrl(image.getUrl());
             dto.setGeneratedFilePath(generatedFilePath);
             dto.setGeneratedFileName(image.getGeneratedFilename());
             dto.setFormat(image.getFormat().name());
@@ -158,7 +164,7 @@ public class MappingConfig {
             image.setLanguage(language);
             image.setHeight(imageDTO.getHeight());
             image.setWidth(imageDTO.getWidth());
-            image.setUrl(imageDTO.getPath());
+            image.setUrl(imageDTO.getUrl());
             image.setGeneratedFilename(imageDTO.getGeneratedFileName());
             image.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(imageDTO.getLoopEntryRef()));
             image.setFormat(Format.valueOf(imageDTO.getFormat()));
