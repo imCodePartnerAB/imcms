@@ -236,16 +236,6 @@
     </tag>
 
     <tag>
-        <name>imageArchive</name>
-        <tag-class>com.imcode.imcms.imagearchive.tag.ImageArchiveTag</tag-class>
-        <body-content>scriptless</body-content>
-        <attribute>
-            <name>styleClass</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-    </tag>
-    <tag>
         <name>search</name>
         <tag-class>com.imcode.imcms.servlet.tags.SearchTag</tag-class>
         <body-content>JSP</body-content>
