@@ -277,6 +277,7 @@ Imcms.define("imcms-image-cropper", [], function () {
 
         removeCroppingListeners();
         setElementWidthHeight($cropImg, originImageWidth, originImageHeight);
+        setElementTopLeft($cropImg, 0, 0);
 
         croppingAreaParams = {
             height: $croppingArea.height(),
