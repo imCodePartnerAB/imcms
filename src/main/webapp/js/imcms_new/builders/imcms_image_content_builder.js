@@ -14,7 +14,7 @@ Imcms.define("imcms-image-content-builder",
         var FOLDER_CREATION_BLOCK_ID = "imcms-folder-create-block";
         var ROOT_FOLDER_LEVEL = 0;
 
-        var $foldersContainer, $imagesContainer;
+        var $foldersContainer, $imagesContainer, selectedImage;
 
         var viewModel = {
             root: {},
@@ -353,9 +353,10 @@ Imcms.define("imcms-image-content-builder",
             }).buildBlockStructure("<div>");
         }
 
-        function selectImage() {
+        function selectImage(imageFile) {
             $(".image-chosen").removeClass("image-chosen");
             $(this).addClass("image-chosen");
+            selectedImage = imageFile;
         }
 
         function buildImage(imageFile) {
@@ -370,7 +371,9 @@ Imcms.define("imcms-image-content-builder",
                 }
             }).buildBlockStructure("<div>", {
                 style: "display: none",
-                click: selectImage
+                click: function () {
+                    selectImage.call(this, imageFile);
+                }
             });
         }
 
@@ -399,6 +402,9 @@ Imcms.define("imcms-image-content-builder",
         }
 
         return {
+            getSelectedImage: function () {
+                return selectedImage;
+            },
             loadAndBuildContent: function (options) {
                 $foldersContainer = options.foldersContainer;
                 $imagesContainer = options.imagesContainer;

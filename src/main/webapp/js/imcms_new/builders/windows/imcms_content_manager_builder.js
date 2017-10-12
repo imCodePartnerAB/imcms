@@ -13,6 +13,7 @@ Imcms.define("imcms-content-manager-builder",
             var $showHideFoldersButton;
 
             function saveAndCloseWindow() {
+                showImageStrategy.call(showImageStrategy, imageContentBuilder.getSelectedImage());
                 contentManagerWindowBuilder.closeWindow(); // fixme: just closing now, should be save and close
             }
 
@@ -118,8 +119,11 @@ Imcms.define("imcms-content-manager-builder",
             clearDataStrategy: clearData
         });
 
+        var showImageStrategy;
+
         return {
-            build: function () {
+            build: function (imageEditorShowImageStrategy) {
+                showImageStrategy = imageEditorShowImageStrategy;
                 contentManagerWindowBuilder.buildWindow.applyAsync(arguments, contentManagerWindowBuilder);
             }
         };
