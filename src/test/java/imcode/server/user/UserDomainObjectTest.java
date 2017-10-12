@@ -1,16 +1,10 @@
-package com.imcode.imcms.domain.service.core;
+package imcode.server.user;
 
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.jpa.doc.Meta;
-import com.imcode.imcms.mapping.jpa.doc.MetaRepository;
-import imcode.server.user.RoleId;
-import imcode.server.user.UserDomainObject;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.HashMap;
 
@@ -18,19 +12,9 @@ import static imcode.server.document.DocumentPermissionSetTypeDomainObject.FULL;
 import static imcode.server.document.DocumentPermissionSetTypeDomainObject.NONE;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MetaServiceTest {
 
-    private static final int META_ID_EXISTED = 1;
-    private static final int META_ID_NOT_EXISTED = 0;
-
-    @Mock
-    private MetaRepository metaRepository;
-
-    @InjectMocks
-    private MetaService metaService;
+public class UserDomainObjectTest {
 
     private UserDomainObject user;
     private Meta meta;
@@ -38,7 +22,7 @@ public class MetaServiceTest {
     @Before
     public void setUp() throws Exception {
         meta = new Meta();
-        meta.setId(META_ID_EXISTED);
+        meta.setId(0);
 
         final HashMap<Integer, Integer> roleRights = new HashMap<>();
 
@@ -48,18 +32,26 @@ public class MetaServiceTest {
 
         meta.setRoleIdToPermissionSetIdMap(roleRights);
 
-        given(metaRepository.findOne(META_ID_EXISTED)).willReturn(meta);
-        given(metaRepository.findOne(META_ID_NOT_EXISTED)).willReturn(null);
-
         user = new UserDomainObject();
+    }
+
+    @Test
+    public void testUserAlwaysHasUsersRole() {
+        assertTrue(user.hasRoleId(RoleId.USERS));
+        assertTrue(ArrayUtils.contains(user.getRoleIds(), RoleId.USERS));
+        user.removeRoleId(RoleId.USERS);
+        assertTrue(user.hasRoleId(RoleId.USERS));
+        assertTrue(ArrayUtils.contains(user.getRoleIds(), RoleId.USERS));
+        user.setRoleIds(new RoleId[0]);
+        assertTrue(user.hasRoleId(RoleId.USERS));
+        assertTrue(ArrayUtils.contains(user.getRoleIds(), RoleId.USERS));
     }
 
     @Test
     public void hasUserAccessToDoc_When_MetaLinkedForUnauthorizedUsersAndUserNotHasRights_Expect_True() {
         meta.setLinkedForUnauthorizedUsers(true);
 
-
-        assertTrue(metaService.hasUserAccessToDoc(META_ID_EXISTED, user));
+        assertTrue(user.hasUserAccessToDoc(meta));
     }
 
     @Test
@@ -69,18 +61,18 @@ public class MetaServiceTest {
         user.addRoleId(RoleId.USERS);
         user.addRoleId(RoleId.USERADMIN);
 
-        assertTrue(metaService.hasUserAccessToDoc(META_ID_EXISTED, user));
+        assertTrue(user.hasUserAccessToDoc(meta));
     }
 
     @Test
     public void hasUserAccessToDoc_When_MetaNotLinkedForUnauthorizedUsersAndUserNotHasRights_Expect_False() {
         meta.setLinkedForUnauthorizedUsers(false);
-        assertFalse(metaService.hasUserAccessToDoc(META_ID_EXISTED, user));
+        assertFalse(user.hasUserAccessToDoc(meta));
     }
 
     @Test(expected = DocumentNotExistException.class)
-    public void hasUserAccessToDoc_When_DocNotExist_Expect_DocumentNotExistException() {
-        assertTrue(metaService.hasUserAccessToDoc(META_ID_NOT_EXISTED, user));
+    public void hasUserAccessToDoc_When_DocIsNull_Expect_DocumentNotExistException() {
+        assertTrue(user.hasUserAccessToDoc(null));
     }
 
 }

@@ -25,12 +25,12 @@
             <imcms:menuLoop>
                 <div class="imcms-demo-menu__menu-item imcms-demo-menu-item${hasChildren?' imcms-demo-menu__menu-item--parent':''}${isCurrent?' imcms-demo-menu__menu-item--active':''}">
                     <imcms:menuItemLink
-                            classes="imcms-demo-menu-item__text">${menuItem.document.headline}</imcms:menuItemLink>
+                            classes="imcms-demo-menu-item__text">${menuItem.title}</imcms:menuItemLink>
                     <imcms:menuLoop>
                         <div class="imcms-demo-menu__menu-items imcms-demo-menu__menu-items--child">
                             <div class="imcms-demo-menu__menu-item">
                                 <imcms:menuItemLink
-                                        classes="imcms-demo-menu-item__text">${menuItem.document.headline}</imcms:menuItemLink>
+                                        classes="imcms-demo-menu-item__text">${menuItem.title}</imcms:menuItemLink>
                             </div>
                         </div>
                     </imcms:menuLoop>
