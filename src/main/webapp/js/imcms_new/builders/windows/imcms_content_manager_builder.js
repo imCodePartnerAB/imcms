@@ -14,7 +14,7 @@ Imcms.define("imcms-content-manager-builder",
 
             function saveAndCloseWindow() {
                 showImageStrategy.call(showImageStrategy, imageContentBuilder.getSelectedImage());
-                contentManagerWindowBuilder.closeWindow(); // fixme: just closing now, should be save and close
+                contentManagerWindowBuilder.closeWindow();
             }
 
             function buildHead() {
