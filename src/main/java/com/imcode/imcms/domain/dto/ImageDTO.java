@@ -17,14 +17,19 @@ public class ImageDTO {
     private Integer width;
     private Integer height;
     private LoopEntryRefDTO loopEntryRef;
+    private String generatedFilePath;
+    private String generatedFileName;
 
     public ImageDTO(Integer index, Integer docId) {
         this.index = index;
         this.docId = docId;
         this.name = "";
         this.path = "";
+        this.generatedFilePath = "";
+        this.generatedFileName = "";
         this.format = Format.JPEG.name();
         this.width = 0;
         this.height = 0;
+        this.langCode = "en";
     }
 }

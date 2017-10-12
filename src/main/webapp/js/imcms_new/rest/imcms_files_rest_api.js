@@ -12,8 +12,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
         files: [
             {
                 name: "sample1",
-                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                format: "jpg",
+                path: "/images_new/image_editor/img1.jpg",
+                format: "JPEG",
                 uploaded: "15.02.2017",
                 resolution: "635x120",
                 size: "37kB",
@@ -21,8 +21,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                 height: 3673
             }, {
                 name: "sample3",
-                path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                format: "bmp",
+                path: "/images_new/choose_img/img3.png",
+                format: "BMP",
                 uploaded: "17.02.2017",
                 resolution: "635x120",
                 size: "34kB",
@@ -30,8 +30,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                 height: 29
             }, {
                 name: "sample4",
-                path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                format: "gif",
+                path: "/images_new/choose_img/img4.png",
+                format: "GIF",
                 uploaded: "18.02.2017",
                 resolution: "64x64",
                 size: "16kB",
@@ -46,8 +46,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                 files: [
                     {
                         name: "sample1",
-                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                        format: "jpg",
+                        path: "/images_new/image_editor/img1.jpg",
+                        format: "JPEG",
                         uploaded: "15.02.2017",
                         resolution: "635x120",
                         size: "37kB",
@@ -55,8 +55,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         height: 3673
                     }, {
                         name: "sample2",
-                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                        format: "png",
+                        path: "/images_new/choose_img/img2.png",
+                        format: "PNG",
                         uploaded: "16.02.2017",
                         resolution: "635x120",
                         size: "35kB",
@@ -64,8 +64,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         height: 146
                     }, {
                         name: "sample4",
-                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                        format: "gif",
+                        path: "/images_new/choose_img/img4.png",
+                        format: "GIF",
                         uploaded: "18.02.2017",
                         resolution: "64x64",
                         size: "16kB",
@@ -80,8 +80,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                 files: [
                     {
                         name: "sample3",
-                        path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                        format: "bmp",
+                        path: "/images_new/choose_img/img3.png",
+                        format: "BMP",
                         uploaded: "17.02.2017",
                         resolution: "635x120",
                         size: "34kB",
@@ -89,8 +89,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         height: 29
                     }, {
                         name: "sample4",
-                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                        format: "gif",
+                        path: "/images_new/choose_img/img4.png",
+                        format: "GIF",
                         uploaded: "18.02.2017",
                         resolution: "64x64",
                         size: "16kB",
@@ -105,8 +105,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                format: "jpg",
+                                path: "/images_new/image_editor/img1.jpg",
+                                format: "JPEG",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
                                 size: "37kB",
@@ -114,8 +114,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 height: 3673
                             }, {
                                 name: "sample2",
-                                path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                                format: "png",
+                                path: "/images_new/choose_img/img2.png",
+                                format: "PNG",
                                 uploaded: "16.02.2017",
                                 resolution: "635x120",
                                 size: "35kB",
@@ -123,8 +123,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 height: 146
                             }, {
                                 name: "sample3",
-                                path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                                format: "bmp",
+                                path: "/images_new/choose_img/img3.png",
+                                format: "BMP",
                                 uploaded: "17.02.2017",
                                 resolution: "635x120",
                                 size: "34kB",
@@ -139,8 +139,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample1",
-                                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                        format: "jpg",
+                                        path: "/images_new/image_editor/img1.jpg",
+                                        format: "JPEG",
                                         uploaded: "15.02.2017",
                                         resolution: "635x120",
                                         size: "37kB",
@@ -148,8 +148,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                         height: 3673
                                     }, {
                                         name: "sample2",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                                        format: "png",
+                                        path: "/images_new/choose_img/img2.png",
+                                        format: "PNG",
                                         uploaded: "16.02.2017",
                                         resolution: "635x120",
                                         size: "35kB",
@@ -157,8 +157,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                         height: 146
                                     }, {
                                         name: "sample4",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                                        format: "gif",
+                                        path: "/images_new/choose_img/img4.png",
+                                        format: "GIF",
                                         uploaded: "18.02.2017",
                                         resolution: "64x64",
                                         size: "16kB",
@@ -173,8 +173,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample1",
-                                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                        format: "jpg",
+                                        path: "/images_new/image_editor/img1.jpg",
+                                        format: "JPEG",
                                         uploaded: "15.02.2017",
                                         resolution: "635x120",
                                         size: "37kB",
@@ -182,8 +182,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                         height: 3673
                                     }, {
                                         name: "sample2",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                                        format: "png",
+                                        path: "/images_new/choose_img/img2.png",
+                                        format: "PNG",
                                         uploaded: "16.02.2017",
                                         resolution: "635x120",
                                         size: "35kB",
@@ -191,8 +191,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                         height: 146
                                     }, {
                                         name: "sample3",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                                        format: "bmp",
+                                        path: "/images_new/choose_img/img3.png",
+                                        format: "BMP",
                                         uploaded: "17.02.2017",
                                         resolution: "635x120",
                                         size: "34kB",
@@ -200,8 +200,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                         height: 29
                                     }, {
                                         name: "sample4",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                                        format: "gif",
+                                        path: "/images_new/choose_img/img4.png",
+                                        format: "GIF",
                                         uploaded: "18.02.2017",
                                         resolution: "64x64",
                                         size: "16kB",
@@ -215,8 +215,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                     files: [
                                         {
                                             name: "sample1",
-                                            path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                            format: "jpg",
+                                            path: "/images_new/image_editor/img1.jpg",
+                                            format: "JPEG",
                                             uploaded: "15.02.2017",
                                             resolution: "635x120",
                                             size: "37kB",
@@ -224,8 +224,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                             height: 3673
                                         }, {
                                             name: "sample2",
-                                            path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                                            format: "png",
+                                            path: "/images_new/choose_img/img2.png",
+                                            format: "PNG",
                                             uploaded: "16.02.2017",
                                             resolution: "635x120",
                                             size: "35kB",
@@ -233,8 +233,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                             height: 146
                                         }, {
                                             name: "sample3",
-                                            path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                                            format: "bmp",
+                                            path: "/images_new/choose_img/img3.png",
+                                            format: "BMP",
                                             uploaded: "17.02.2017",
                                             resolution: "635x120",
                                             size: "34kB",
@@ -254,8 +254,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                 files: [
                     {
                         name: "sample2",
-                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                        format: "png",
+                        path: "/images_new/choose_img/img2.png",
+                        format: "PNG",
                         uploaded: "16.02.2017",
                         resolution: "635x120",
                         size: "35kB",
@@ -263,8 +263,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         height: 146
                     }, {
                         name: "sample3",
-                        path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                        format: "bmp",
+                        path: "/images_new/choose_img/img3.png",
+                        format: "BMP",
                         uploaded: "17.02.2017",
                         resolution: "635x120",
                         size: "34kB",
@@ -272,8 +272,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         height: 29
                     }, {
                         name: "sample4",
-                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                        format: "gif",
+                        path: "/images_new/choose_img/img4.png",
+                        format: "GIF",
                         uploaded: "18.02.2017",
                         resolution: "64x64",
                         size: "16kB",
@@ -288,8 +288,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                format: "jpg",
+                                path: "/images_new/image_editor/img1.jpg",
+                                format: "JPEG",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
                                 size: "37kB",
@@ -297,8 +297,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 height: 3673
                             }, {
                                 name: "sample4",
-                                path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                                format: "gif",
+                                path: "/images_new/choose_img/img4.png",
+                                format: "GIF",
                                 uploaded: "18.02.2017",
                                 resolution: "64x64",
                                 size: "16kB",
@@ -313,8 +313,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample1",
-                                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                        format: "jpg",
+                                        path: "/images_new/image_editor/img1.jpg",
+                                        format: "JPEG",
                                         uploaded: "15.02.2017",
                                         resolution: "635x120",
                                         size: "37kB",
@@ -329,8 +329,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample1",
-                                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                        format: "jpg",
+                                        path: "/images_new/image_editor/img1.jpg",
+                                        format: "JPEG",
                                         uploaded: "15.02.2017",
                                         resolution: "635x120",
                                         size: "37kB",
@@ -338,8 +338,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                         height: 3673
                                     }, {
                                         name: "sample2",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                                        format: "png",
+                                        path: "/images_new/choose_img/img2.png",
+                                        format: "PNG",
                                         uploaded: "16.02.2017",
                                         resolution: "635x120",
                                         size: "35kB",
@@ -347,8 +347,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                         height: 146
                                     }, {
                                         name: "sample3",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                                        format: "bmp",
+                                        path: "/images_new/choose_img/img3.png",
+                                        format: "BMP",
                                         uploaded: "17.02.2017",
                                         resolution: "635x120",
                                         size: "34kB",
@@ -356,8 +356,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                         height: 29
                                     }, {
                                         name: "sample4",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                                        format: "gif",
+                                        path: "/images_new/choose_img/img4.png",
+                                        format: "GIF",
                                         uploaded: "18.02.2017",
                                         resolution: "64x64",
                                         size: "16kB",
@@ -371,8 +371,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                     files: [
                                         {
                                             name: "sample2",
-                                            path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                                            format: "png",
+                                            path: "/images_new/choose_img/img2.png",
+                                            format: "PNG",
                                             uploaded: "16.02.2017",
                                             resolution: "635x120",
                                             size: "35kB",
@@ -380,8 +380,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                             height: 146
                                         }, {
                                             name: "sample3",
-                                            path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                                            format: "bmp",
+                                            path: "/images_new/choose_img/img3.png",
+                                            format: "BMP",
                                             uploaded: "17.02.2017",
                                             resolution: "635x120",
                                             size: "34kB",
@@ -399,8 +399,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                format: "jpg",
+                                path: "/images_new/image_editor/img1.jpg",
+                                format: "JPEG",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
                                 size: "37kB",
@@ -408,8 +408,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 height: 3673
                             }, {
                                 name: "sample3",
-                                path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                                format: "bmp",
+                                path: "/images_new/choose_img/img3.png",
+                                format: "BMP",
                                 uploaded: "17.02.2017",
                                 resolution: "635x120",
                                 size: "34kB",
@@ -417,8 +417,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 height: 29
                             }, {
                                 name: "sample4",
-                                path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                                format: "gif",
+                                path: "/images_new/choose_img/img4.png",
+                                format: "GIF",
                                 uploaded: "18.02.2017",
                                 resolution: "64x64",
                                 size: "16kB",
@@ -435,8 +435,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                 files: [
                     {
                         name: "sample1",
-                        path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                        format: "jpg",
+                        path: "/images_new/image_editor/img1.jpg",
+                        format: "JPEG",
                         uploaded: "15.02.2017",
                         resolution: "635x120",
                         size: "37kB",
@@ -444,8 +444,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         height: 3673
                     }, {
                         name: "sample4",
-                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                        format: "gif",
+                        path: "/images_new/choose_img/img4.png",
+                        format: "GIF",
                         uploaded: "18.02.2017",
                         resolution: "64x64",
                         size: "16kB",
@@ -460,8 +460,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                format: "jpg",
+                                path: "/images_new/image_editor/img1.jpg",
+                                format: "JPEG",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
                                 size: "37kB",
@@ -469,8 +469,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 height: 3673
                             }, {
                                 name: "sample2",
-                                path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                                format: "png",
+                                path: "/images_new/choose_img/img2.png",
+                                format: "PNG",
                                 uploaded: "16.02.2017",
                                 resolution: "635x120",
                                 size: "35kB",
@@ -485,8 +485,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample2",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                                        format: "png",
+                                        path: "/images_new/choose_img/img2.png",
+                                        format: "PNG",
                                         uploaded: "16.02.2017",
                                         resolution: "635x120",
                                         size: "35kB",
@@ -494,8 +494,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                         height: 146
                                     }, {
                                         name: "sample3",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                                        format: "bmp",
+                                        path: "/images_new/choose_img/img3.png",
+                                        format: "BMP",
                                         uploaded: "17.02.2017",
                                         resolution: "635x120",
                                         size: "34kB",
@@ -503,8 +503,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                         height: 29
                                     }, {
                                         name: "sample4",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                                        format: "gif",
+                                        path: "/images_new/choose_img/img4.png",
+                                        format: "GIF",
                                         uploaded: "18.02.2017",
                                         resolution: "64x64",
                                         size: "16kB",
@@ -519,8 +519,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 files: [
                                     {
                                         name: "sample2",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                                        format: "png",
+                                        path: "/images_new/choose_img/img2.png",
+                                        format: "PNG",
                                         uploaded: "16.02.2017",
                                         resolution: "635x120",
                                         size: "35kB",
@@ -528,8 +528,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                         height: 146
                                     }, {
                                         name: "sample4",
-                                        path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                                        format: "gif",
+                                        path: "/images_new/choose_img/img4.png",
+                                        format: "GIF",
                                         uploaded: "18.02.2017",
                                         resolution: "64x64",
                                         size: "16kB",
@@ -543,8 +543,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                     files: [
                                         {
                                             name: "sample1",
-                                            path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                            format: "jpg",
+                                            path: "/images_new/image_editor/img1.jpg",
+                                            format: "JPEG",
                                             uploaded: "15.02.2017",
                                             resolution: "635x120",
                                             size: "37kB",
@@ -552,8 +552,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                             height: 3673
                                         }, {
                                             name: "sample2",
-                                            path: Imcms.contextPath + "/images_new/choose_img/img2.png",
-                                            format: "png",
+                                            path: "/images_new/choose_img/img2.png",
+                                            format: "PNG",
                                             uploaded: "16.02.2017",
                                             resolution: "635x120",
                                             size: "35kB",
@@ -561,8 +561,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                             height: 146
                                         }, {
                                             name: "sample3",
-                                            path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                                            format: "bmp",
+                                            path: "/images_new/choose_img/img3.png",
+                                            format: "BMP",
                                             uploaded: "17.02.2017",
                                             resolution: "635x120",
                                             size: "34kB",
@@ -570,8 +570,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                             height: 29
                                         }, {
                                             name: "sample4",
-                                            path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                                            format: "gif",
+                                            path: "/images_new/choose_img/img4.png",
+                                            format: "GIF",
                                             uploaded: "18.02.2017",
                                             resolution: "64x64",
                                             size: "16kB",
@@ -589,8 +589,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                format: "jpg",
+                                path: "/images_new/image_editor/img1.jpg",
+                                format: "JPEG",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
                                 size: "37kB",
@@ -605,8 +605,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                         files: [
                             {
                                 name: "sample1",
-                                path: Imcms.contextPath + "/images_new/image_editor/img1.jpg",
-                                format: "jpg",
+                                path: "/images_new/image_editor/img1.jpg",
+                                format: "JPEG",
                                 uploaded: "15.02.2017",
                                 resolution: "635x120",
                                 size: "37kB",
@@ -614,8 +614,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 height: 3673
                             }, {
                                 name: "sample3",
-                                path: Imcms.contextPath + "/images_new/choose_img/img3.png",
-                                format: "bmp",
+                                path: "/images_new/choose_img/img3.png",
+                                format: "BMP",
                                 uploaded: "17.02.2017",
                                 resolution: "635x120",
                                 size: "34kB",
@@ -623,8 +623,8 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                                 height: 29
                             }, {
                                 name: "sample4",
-                                path: Imcms.contextPath + "/images_new/choose_img/img4.png",
-                                format: "gif",
+                                path: "/images_new/choose_img/img4.png",
+                                format: "GIF",
                                 uploaded: "18.02.2017",
                                 resolution: "64x64",
                                 size: "16kB",

@@ -153,8 +153,8 @@ Function.prototype.applyAsync = function (args, context) {
         }
 
         var onLoad = function () {
-            registerFunction && registerFunction.call();
-            setTimeout(runModuleLoader);
+            registerFunction && registerFunction.applyAsync();
+            runModuleLoader.applyAsync();
         };
 
         getScript(dependency.path, onLoad);
@@ -231,7 +231,7 @@ Function.prototype.applyAsync = function (args, context) {
             if (ajaxRequest.status === 200) {
                 console.info('script ' + url + " loaded successfully.");
                 var response = eval(ajaxRequest.responseText);
-                callback && callback(response);
+                callback && callback.applyAsync([response]);
 
             } else {
                 console.error('Script get request error: ' + ajaxRequest.status + ' for url: ' + url);
@@ -248,7 +248,7 @@ Function.prototype.applyAsync = function (args, context) {
 
         var onLoad = function () {
             console.info('module ' + url + " loaded successfully.");
-            callback && callback.call();
+            callback && callback.applyAsync();
         };
 
         if (script.readyState) {  // IE support
@@ -318,7 +318,7 @@ Function.prototype.applyAsync = function (args, context) {
      */
     function define() {
         var resolvedArgs = resolveDefineArgs.apply(null, arguments);
-        defineModule.apply(null, resolvedArgs);
+        defineModule.applyAsync(resolvedArgs);
     }
 
     define.amd = {};
@@ -333,7 +333,7 @@ Function.prototype.applyAsync = function (args, context) {
      * @param {function} factory which return is this defined module in result
      */
     Imcms.define = function (id, dependencies, factory) {
-        define.apply(null, arguments);
+        define.applyAsync(arguments);
     };
     /**
      * AMD require function.
@@ -343,7 +343,7 @@ Function.prototype.applyAsync = function (args, context) {
      */
     Imcms.require = function (id, onLoad) {
         registerRequires(id, onLoad);
-        setTimeout(runModuleLoader);
+        runModuleLoader.applyAsync();
     };
 
     function addToDependencyTree(id, dependencies) {
@@ -363,7 +363,7 @@ Function.prototype.applyAsync = function (args, context) {
             if (id) { // register only not anonymous modules
                 registerModule(id, module);
             }
-            setTimeout(runModuleLoader);
+            runModuleLoader.applyAsync();
         };
 
         Imcms.require(dependencies, onDependenciesLoad);
@@ -426,11 +426,11 @@ Function.prototype.applyAsync = function (args, context) {
             }
         }
 
-        setTimeout(function () {
+        (function () {
             notSuccessRequiresBuffer.forEach(function (require) {
                 Imcms.requiresQueue.push(require);
             });
-        });
+        }).applyAsync();
     }
 
     function getMainScriptPath() {

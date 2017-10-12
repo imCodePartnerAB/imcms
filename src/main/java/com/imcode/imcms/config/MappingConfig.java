@@ -135,12 +135,14 @@ public class MappingConfig {
             final String name = image.getName();
             dto.setName(name);
 
-            final String path = (image.getGeneratedFilename() == null)
+            final String generatedFilePath = (image.getGeneratedFilename() == null)
                     ? "" : imcmsProperties.getProperty("ImagePath") + "generated/" + image.getGeneratedFilename();
 
             dto.setDocId(image.getVersion().getDocId());
             dto.setLangCode(image.getLanguage().getCode());
-            dto.setPath(path);
+            dto.setPath(image.getUrl());
+            dto.setGeneratedFilePath(generatedFilePath);
+            dto.setGeneratedFileName(image.getGeneratedFilename());
             dto.setFormat(image.getFormat().name());
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
@@ -156,6 +158,8 @@ public class MappingConfig {
             image.setLanguage(language);
             image.setHeight(imageDTO.getHeight());
             image.setWidth(imageDTO.getWidth());
+            image.setUrl(imageDTO.getPath());
+            image.setGeneratedFilename(imageDTO.getGeneratedFileName());
             image.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(imageDTO.getLoopEntryRef()));
             image.setFormat(Format.valueOf(imageDTO.getFormat()));
         });

@@ -275,6 +275,20 @@ Imcms.define("imcms-image-cropper", [], function () {
         var originImageWidth = $originImg.width();
         var originImageHeight = $originImg.height();
 
+        if (!originImageWidth || !originImageHeight) {
+            return;
+        }
+
+        [
+            angles.$topLeft,
+            angles.$topRight,
+            angles.$bottomRight,
+            angles.$bottomLeft
+
+        ].forEach(function ($angle) {
+            $angle.css("display", "block");
+        });
+
         removeCroppingListeners();
         setElementWidthHeight($cropImg, originImageWidth, originImageHeight);
         setElementTopLeft($cropImg, 0, 0);
