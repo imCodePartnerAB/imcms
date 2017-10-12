@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.core.CommonContentService;
+import com.imcode.imcms.domain.service.core.MetaService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
@@ -27,32 +28,26 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final VersionService versionService;
     private final CommonContentService commonContentService;
+    private final MetaService metaService;
     private final Function<MenuItem, MenuItemDTO> menuItemToDto;
     private final Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList;
 
     public MenuService(MenuRepository menuRepository,
                        VersionService versionService,
                        CommonContentService commonContentService,
+                       MetaService metaService,
                        Function<MenuItem, MenuItemDTO> menuItemToDto,
                        Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList) {
         this.menuRepository = menuRepository;
         this.versionService = versionService;
         this.commonContentService = commonContentService;
+        this.metaService = metaService;
         this.menuItemToDto = menuItemToDto;
         this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
     }
 
     public List<MenuItemDTO> getMenuItemsOf(int menuNo, int docId) {
-        final Menu menu = getMenu(menuNo, docId);
-        final UserDomainObject user = Imcms.getUser();
-
-        return Optional.ofNullable(menu)
-                .orElseGet(Menu::new)
-                .getMenuItems()
-                .stream()
-                .map(menuItemToDto)
-                .peek(menuItemDTO -> addTitleToMenuItem(menuItemDTO, user))
-                .collect(Collectors.toList());
+        return getMenuItemsOf(menuNo, docId, MenuItemsStatus.ALL);
     }
 
     public void saveFrom(MenuDTO menuDTO) {
@@ -67,6 +62,26 @@ public class MenuService {
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
         menuRepository.saveAndFlush(menu);
+    }
+
+    public List<MenuItemDTO> getPublicMenuItemsOf(int menuNo, int docId) {
+        return getMenuItemsOf(menuNo, docId, MenuItemsStatus.PUBLIC);
+    }
+
+    private List<MenuItemDTO> getMenuItemsOf(int menuNo, int docId, MenuItemsStatus status) {
+        final Version version = getVersion(docId, status);
+
+        final Menu menu = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, version);
+        final UserDomainObject user = Imcms.getUser();
+
+        return Optional.ofNullable(menu)
+                .orElseGet(Menu::new)
+                .getMenuItems()
+                .stream()
+                .map(menuItemToDto)
+                .peek(menuItemDTO -> addTitleToMenuItem(menuItemDTO, user, status))
+                .filter(menuItemDTO -> (status == MenuItemsStatus.ALL) || isMenuItemVisibleToUser(menuItemDTO, user))
+                .collect(Collectors.toList());
     }
 
     private Menu createMenu(MenuDTO menuDTO) {
@@ -86,20 +101,44 @@ public class MenuService {
         return menuRepository.saveAndFlush(menu);
     }
 
-    private void addTitleToMenuItem(MenuItemDTO menuItemDTO, UserDomainObject user) {
-        final Version menuItemVersion = versionService.getDocumentWorkingVersion(menuItemDTO.getDocumentId());
+    private void addTitleToMenuItem(MenuItemDTO menuItemDTO, UserDomainObject user, MenuItemsStatus status) {
+        final Version menuItemVersion = getVersion(menuItemDTO.getDocumentId(), status);
         final CommonContent commonContent = commonContentService
                 .findByDocIdAndVersionNoAndUser(menuItemVersion.getDocId(), menuItemVersion.getNo(), user);
 
         menuItemDTO.setTitle(commonContent.getHeadline());
 
         menuItemDTO.getChildren()
-                .forEach(childMenuItemDTO -> addTitleToMenuItem(childMenuItemDTO, user));
+                .forEach(childMenuItemDTO -> addTitleToMenuItem(childMenuItemDTO, user, status));
+    }
+
+    private Version getVersion(int docId, MenuItemsStatus status) {
+        return status == MenuItemsStatus.ALL
+                ? versionService.getDocumentWorkingVersion(docId)
+                : versionService.getLatestVersion(docId);
+    }
+
+    private boolean isMenuItemVisibleToUser(MenuItemDTO menuItemDTO, UserDomainObject user) {
+        final boolean hasAccess = metaService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user);
+
+        if (hasAccess) {
+            final List<MenuItemDTO> children = menuItemDTO.getChildren().stream()
+                    .filter(menuItem -> isMenuItemVisibleToUser(menuItem, user))
+                    .collect(Collectors.toList());
+            menuItemDTO.setChildren(children);
+        }
+
+        return hasAccess;
     }
 
     private Menu getMenu(int menuNo, int docId) {
         final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
         return menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, workingVersion);
+    }
+
+    private enum MenuItemsStatus {
+        PUBLIC,
+        ALL
     }
 
 }
