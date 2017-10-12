@@ -2,16 +2,22 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.service.api.ImageService;
-import com.imcode.imcms.imagearchive.util.Utils;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import org.apache.log4j.Logger;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/image")
 public class ImageController {
+
+    public static final Logger LOG = Logger.getLogger(ImageController.class);
 
     private final ImageService imageService;
 
@@ -35,6 +41,23 @@ public class ImageController {
         imageService.saveImage(image);
     }
 
+    // fixme: moved from another class, should not be used at all!!!1
+    private static void writeJSON(Object object, HttpServletResponse response) {
+        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+        MediaType jsonMimeType = MediaType.parseMediaType("application/json");
+
+        if (jsonConverter.canWrite(object.getClass(), jsonMimeType)) {
+            try {
+                jsonConverter.write(object, jsonMimeType, new ServletServerHttpResponse(response));
+            } catch (IOException e) {
+                LOG.fatal(e.getMessage(), e);
+            }
+        }
+    }
+
+    private boolean isIndexOccupied(TextDocumentDomainObject document, Integer result) {
+        return (document.getImage(result).getGeneratedFilename() != null);
+    }
 
     /**
      * Returns empty upper or lower image index.
@@ -83,11 +106,7 @@ public class ImageController {
             result = null;
         }
 
-        Utils.writeJSON(result, response);
-    }
-
-    private boolean isIndexOccupied(TextDocumentDomainObject document, Integer result) {
-        return (document.getImage(result).getGeneratedFilename() != null);
+        writeJSON(result, response);
     }
 
     private enum Direction {
