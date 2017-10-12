@@ -328,7 +328,7 @@ Imcms.define("imcms-image-editor-builder",
             function buildSelectImageBtnContainer() {
                 var $selectImageBtn = components.buttons.neutralButton({
                     text: "Select Image",
-                    click: contentManager.build
+                    click: contentManager.build.bind(contentManager, fillData)
                 });
                 return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
             }
@@ -629,7 +629,7 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function fillLeftSideData(imageData) {
-            imageDataContainers.$image.attr("src", imageData.path);
+            imageDataContainers.$image.removeAttr("style").attr("src", imageData.path);
 
             // fixes to prevent stupid little scroll because of borders
             var angleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) || 0;
@@ -673,6 +673,10 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function fillData(imageData) {
+            if (!imageData) {
+                return;
+            }
+
             fillBodyHeadData(imageData);
             fillLeftSideData(imageData);
         }
