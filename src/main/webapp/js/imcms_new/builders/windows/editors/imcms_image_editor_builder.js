@@ -144,10 +144,18 @@ Imcms.define("imcms-image-editor-builder",
                     .append(imageDataContainers.$cropImg);
 
                 imageDataContainers.angles = {
-                    $topLeft: editableImgAreaBEM.buildElement("angle", "<div>", {}, ["top-left"]),
-                    $topRight: editableImgAreaBEM.buildElement("angle", "<div>", {}, ["top-right"]),
-                    $bottomLeft: editableImgAreaBEM.buildElement("angle", "<div>", {}, ["bottom-left"]),
-                    $bottomRight: editableImgAreaBEM.buildElement("angle", "<div>", {}, ["bottom-right"])
+                    $topLeft: editableImgAreaBEM.buildElement("angle", "<div>", {
+                        style: "display: none;"
+                    }, ["top-left"]),
+                    $topRight: editableImgAreaBEM.buildElement("angle", "<div>", {
+                        style: "display: none;"
+                    }, ["top-right"]),
+                    $bottomLeft: editableImgAreaBEM.buildElement("angle", "<div>", {
+                        style: "display: none;"
+                    }, ["bottom-left"]),
+                    $bottomRight: editableImgAreaBEM.buildElement("angle", "<div>", {
+                        style: "display: none;"
+                    }, ["bottom-right"])
                 };
 
                 return editableImgAreaBEM.buildBlock("<div>", [
