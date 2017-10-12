@@ -82,7 +82,9 @@ public class MenuServiceTest {
                 ? menuService.getMenuItemsOf(menu.getNo(), menu.getVersion().getDocId())
                 : menuService.getPublicMenuItemsOf(menu.getNo(), menu.getVersion().getDocId());
 
-        assertEquals(menuDataInitializer.getMenuItemDtoList(), menuItemDtosOfMenu);
+        assertEquals(menuDataInitializer.getMenuItemDtoList().size(), menuItemDtosOfMenu.size());
+        assertEquals(menuDataInitializer.getMenuItemDtoList().get(0).getChildren().size(), menuItemDtosOfMenu.get(0).getChildren().size());
+        assertEquals(menuDataInitializer.getMenuItemDtoList().get(0).getChildren().get(0).getChildren().size(), menuItemDtosOfMenu.get(0).getChildren().get(0).getChildren().size());
     }
 
     private void getMenuItemsOf_When_MenuDoesntExist_Expect_EmptyList(boolean isAll) {

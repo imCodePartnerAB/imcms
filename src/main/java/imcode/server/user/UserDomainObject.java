@@ -1,8 +1,10 @@
 package imcode.server.user;
 
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.DocumentMeta;
+import com.imcode.imcms.mapping.jpa.doc.Meta;
 import imcode.server.Imcms;
 import imcode.server.document.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -773,6 +775,24 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public boolean hasAdminPanelForDocument(DocumentDomainObject document) {
         return !(null == document || !(canEdit(document) || isUserAdminAndCanEditAtLeastOneRole() || canAccessAdminPages()));
+    }
+
+    public boolean hasUserAccessToDoc(Meta meta) {
+        if (meta == null) throw new DocumentNotExistException();
+
+        if (meta.getLinkedForUnauthorizedUsers()) {
+            return true;
+        }
+
+        final Map<Integer, Integer> docPermissions = meta.getRoleIdToPermissionSetIdMap();
+
+        return Arrays.stream(getRoleIds())
+                .map(RoleId::getRoleId)
+                .map(docPermissions::get)
+                .filter(Objects::nonNull)
+                .map(DocumentPermissionSetTypeDomainObject::fromInt)
+                .anyMatch(documentPermissionSetTypeDomainObject
+                        -> documentPermissionSetTypeDomainObject.isAtLeastAsPrivilegedAs(DocumentPermissionSetTypeDomainObject.READ));
     }
 
     /**

@@ -48,7 +48,7 @@ public class WebConfig {
         viewResolver.setViewClass(JstlView.class);
         viewResolver.setPrefix(prefix);
         viewResolver.setSuffix(".jsp");
-        viewResolver.setExposedContextBeanNames("loopService", "imageService");
+        viewResolver.setExposedContextBeanNames("loopService", "imageService", "menuService");
         return viewResolver;
     }
 

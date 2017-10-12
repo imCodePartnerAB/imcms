@@ -2,7 +2,7 @@
 <%@ taglib prefix="imcms" uri="imcms" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
-<%--@elvariable id="menuItems" type="java.util.Collection<imcode.server.document.textdocument.MenuItemDomainObject.TreeMenuItemDomainObject>"--%>
+<%--@elvariable id="menuItems" type="java.util.Collection<com.imcode.imcms.domain.dto.MenuItemDTO>"--%>
 <%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
 
 <c:forEach var="treeMenuItem" items="${menuItems}">
@@ -10,14 +10,14 @@
 
     <%-- this done for nested menuLoop tags to pick up child documents --%>
     <%@ variable name-given="menuItems" scope="NESTED" variable-class="java.util.Collection" %>
-    <c:set var="menuItems" value="${treeMenuItem.subMenuItems}" scope="request"/>
+    <c:set var="menuItems" value="${treeMenuItem.children}" scope="request"/>
 
     <%@ variable name-given="hasChildren" scope="NESTED" variable-class="java.lang.Boolean" %>
     <c:set var="hasChildren" value="${menuItems.size() gt 0}" scope="request"/>
 
     <%@ variable name-given="menuItem" scope="NESTED"
-                 variable-class="imcode.server.document.textdocument.MenuItemDomainObject" %>
-    <c:set var="menuItem" value="${treeMenuItem.menuItem}" scope="request"/>
+                 variable-class="com.imcode.imcms.domain.dto.MenuItemDTO" %>
+    <c:set var="menuItem" value="${treeMenuItem}" scope="request"/>
 
     <%@ variable name-given="isCurrent" scope="NESTED" variable-class="java.lang.Boolean" %>
     <c:set var="isCurrent" value="${menuItem.documentId eq currentDocument.id}" scope="request"/>
