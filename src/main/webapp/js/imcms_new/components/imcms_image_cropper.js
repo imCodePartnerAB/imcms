@@ -275,6 +275,7 @@ Imcms.define("imcms-image-cropper", [], function () {
         var originImageWidth = $originImg.width();
         var originImageHeight = $originImg.height();
 
+        removeCroppingListeners();
         setElementWidthHeight($cropImg, originImageWidth, originImageHeight);
 
         croppingAreaParams = {
@@ -398,6 +399,12 @@ Imcms.define("imcms-image-cropper", [], function () {
         });
     }
 
+    function removeCroppingListeners() {
+        removeEventListeners($croppingArea, ["mousedown", "mouseup"]);
+        removeEventListeners(angles.$bottomRight, ["mousedown", "mouseup"]);
+        removeEventListeners($imageEditor, ["mousemove", "mouseup", "dragstart"]);
+    }
+
     function destroy() {
         moveCropArea(0, 0);
 
@@ -413,9 +420,7 @@ Imcms.define("imcms-image-cropper", [], function () {
             $element.removeAttr("style");
         });
 
-        removeEventListeners($croppingArea, ["mousedown", "mouseup"]);
-        removeEventListeners(angles.$bottomRight, ["mousedown", "mouseup"]);
-        removeEventListeners($imageEditor, ["mousemove", "mouseup", "dragstart"]);
+        removeCroppingListeners();
     }
 
     return {
