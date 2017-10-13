@@ -43,5 +43,9 @@ public class NullImageSource extends ImageSource {
     public ImageInfo getImageInfo() {
         return new ImageInfo();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof NullImageSource);
+    }
 }
- 
