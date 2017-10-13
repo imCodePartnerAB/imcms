@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
-import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.Resize;
 import lombok.EqualsAndHashCode;
@@ -13,8 +12,6 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.text.Normalizer;
-import java.util.UUID;
 
 @Setter
 @Getter
@@ -34,7 +31,6 @@ public class ImageDomainObject extends ImageData implements Cloneable {
     public static final String TARGET_PARENT = "_parent";
     public static final String TARGET_SELF = "_self";
 
-    private static final int GEN_FILE_LENGTH = 255;
     private static final long serialVersionUID = -2674121677885916016L;
 
     private volatile int border;
@@ -216,46 +212,6 @@ public class ImageDomainObject extends ImageData implements Cloneable {
         String imagesUrl = Imcms.getServices().getConfig().getImageUrl();
 
         return imagesUrl + "generated/" + getGeneratedFilename();
-    }
-
-    public void generateFilename() {
-        String suffix = "_" + UUID.randomUUID().toString();
-
-        Format fmt = getFormat();
-        if (fmt != null) {
-            suffix += "." + fmt.getExtension();
-        }
-
-        int maxlength = GEN_FILE_LENGTH - suffix.length();
-
-        String filename = source.getNameWithoutExt();
-
-        if (filename.length() > maxlength) {
-            filename = filename.substring(0, maxlength);
-        }
-
-        filename = Normalizer.normalize(filename, Normalizer.Form.NFC);
-
-        String[][] specialCharacterReplacements = {
-                {"\u00e5", "a"},// å
-                {"\u00c5", "A"},
-                {"\u00e4", "a"},// ä
-                {"\u00c4", "A"},
-                {"\u00f6", "o"},// ö
-                {"\u00d6", "O"},
-                {"\u00e9", "e"},// é
-                {"\u00c9", "E"},
-                {"\u00f8", "o"},// ø
-                {"\u00d8", "O"},
-                {"\u00e6", "ae"},// æ
-                {"\u00c6", "AE"},
-                {"\u0020", "_"} // space
-        };
-        for (String[] replacement : specialCharacterReplacements) {
-            filename = filename.replace(replacement[0], replacement[1]);
-        }
-
-        generatedFilename = filename + suffix;
     }
 
     public long getSize() {
