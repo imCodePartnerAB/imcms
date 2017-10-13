@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.api.UserService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;

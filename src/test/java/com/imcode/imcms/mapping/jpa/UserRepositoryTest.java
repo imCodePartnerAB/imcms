@@ -18,14 +18,6 @@ public class UserRepositoryTest {
     UserRepository repository;
 
     @Test
-    public void testFindAll() throws Exception {
-        repository.findAll(true, true);
-        repository.findAll(true, false);
-        repository.findAll(false, false);
-        repository.findAll(false, true);
-    }
-
-    @Test
     public void testFindByLogin() throws Exception {
         repository.findByLogin("admin");
     }
@@ -53,11 +45,5 @@ public class UserRepositoryTest {
     @Test
     public void testFindByPasswordResetId() throws Exception {
         repository.findByPasswordResetId("0");
-    }
-
-    @Test
-    public void findByNamePrefix() throws Exception {
-        repository.findByNamePrefix("prefix", true);
-        repository.findByNamePrefix("prefix", false);
     }
 }

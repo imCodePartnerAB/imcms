@@ -7,6 +7,7 @@ import com.imcode.db.commands.*;
 import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
+import com.imcode.imcms.domain.service.api.UserService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.servlet.LoginPasswordManager;
@@ -39,6 +40,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String TABLE__USERADMIN_ROLE_CROSSREF = "useradmin_role_crossref";
 
     private final ImcmsServices services;
+    private final UserService userService;
 
     private UserRepository userRepository;
 
@@ -51,6 +53,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         this.services = services;
         this.loginPasswordManager = userLoginPasswordManager;
         this.userRepository = services.getManagedBean(UserRepository.class);
+        this.userService = services.getManagedBean(UserService.class);
     }
 
     /**
@@ -461,7 +464,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public UserDomainObject[] getUsers(boolean includeUserExtern, boolean includeInactiveUsers) {
-        return userRepository.findAll(includeUserExtern, includeInactiveUsers).stream()
+        return userService.findAll(includeUserExtern, includeInactiveUsers).stream()
                 .map(this::toDomainObject)
                 .toArray(UserDomainObject[]::new);
     }
@@ -614,7 +617,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public UserDomainObject[] findUsersByNamePrefix(String namePrefix, boolean includeInactiveUsers) {
-        return userRepository.findByNamePrefix(namePrefix, includeInactiveUsers).stream()
+        return userService.findByNamePrefix(namePrefix, includeInactiveUsers).stream()
                 .map(this::toDomainObject)
                 .toArray(UserDomainObject[]::new);
     }

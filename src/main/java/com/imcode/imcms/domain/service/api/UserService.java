@@ -1,4 +1,9 @@
-package com.imcode.imcms.mapping.jpa;
+package com.imcode.imcms.domain.service.api;
+
+import com.imcode.imcms.domain.exception.UserNotExistsException;
+import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.mapping.jpa.UserRepository;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -8,12 +13,25 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
-class UserRepositoryImpl implements UserRepositoryCustom {
+import static java.util.Optional.ofNullable;
+
+@Service
+public class UserService {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Override
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public User getUser(int id) {
+        return ofNullable(userRepository.findById(id))
+                .orElseThrow(() -> new UserNotExistsException(id));
+    }
+
     public List<User> findAll(boolean includeExternal, boolean includeInactive) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> c = cb.createQuery(User.class);
@@ -34,8 +52,6 @@ class UserRepositoryImpl implements UserRepositoryCustom {
         return entityManager.createQuery(c).getResultList();
     }
 
-
-    @Override
     public List<User> findByNamePrefix(String prefix, boolean includeInactive) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> c = cb.createQuery(User.class);
@@ -63,4 +79,5 @@ class UserRepositoryImpl implements UserRepositoryCustom {
 
         return entityManager.createQuery(c).getResultList();
     }
+
 }
