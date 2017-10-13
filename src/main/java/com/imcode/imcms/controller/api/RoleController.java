@@ -19,7 +19,7 @@ public class RoleController {
     }
 
     @GetMapping
-    protected List<RoleDTO> getRoles() {
+    public List<RoleDTO> getRoles() {
         return roleService.getAll();
     }
 
