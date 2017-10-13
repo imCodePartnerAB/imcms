@@ -42,7 +42,7 @@ public class ImageController {
     }
 
     // fixme: moved from another class, should not be used at all!!!1
-    private static void writeJSON(Object object, HttpServletResponse response) {
+    private void writeJSON(Object object, HttpServletResponse response) {
         MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
         MediaType jsonMimeType = MediaType.parseMediaType("application/json");
 
