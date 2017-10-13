@@ -1,7 +1,6 @@
 package imcode.server.document.textdocument;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
@@ -15,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.text.Normalizer;
-import java.util.Objects;
 import java.util.UUID;
 
 @Setter
@@ -38,25 +36,16 @@ public class ImageDomainObject extends ImageData implements Cloneable {
 
     private static final int GEN_FILE_LENGTH = 255;
     private static final long serialVersionUID = -2674121677885916016L;
-    private volatile ImageSource source = new NullImageSource();
 
     private volatile int border;
-
     private volatile String align = "";
-
     private volatile String alternateText = "";
-
     private volatile String lowResolutionUrl = "";
-
     private volatile int verticalSpace;
-
     private volatile int horizontalSpace;
     private volatile String target = "";
-
     private volatile String linkUrl = "";
-
     private volatile String name = "";
-
     private volatile Long archiveImageId;
 
 
@@ -207,10 +196,6 @@ public class ImageDomainObject extends ImageData implements Cloneable {
         setHeight(0);
     }
 
-    public boolean isEmpty() {
-        return source.isEmpty();
-    }
-
     public String getUrlPath(String contextPath) {
         String urlPathRelativeToContextPath = getUrlPathRelativeToContextPath();
         if (StringUtils.isBlank(urlPathRelativeToContextPath)) {
@@ -282,18 +267,6 @@ public class ImageDomainObject extends ImageData implements Cloneable {
         } catch (IOException e) {
             return 0;
         }
-    }
-
-    public ImageSource getSource() {
-        if (isEmpty()) {
-            return new NullImageSource();
-        }
-        return source;
-    }
-
-    @JsonDeserialize(as = ImagesPathRelativePathImageSource.class)
-    public void setSource(ImageSource source) {
-        this.source = Objects.requireNonNull(source, "image source can not be null");
     }
 
     @Override

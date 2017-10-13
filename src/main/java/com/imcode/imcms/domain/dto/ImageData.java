@@ -2,8 +2,11 @@ package com.imcode.imcms.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
+import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.image.Format;
 import imcode.util.image.Resize;
 import lombok.*;
@@ -12,6 +15,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -19,11 +23,13 @@ import java.util.Map;
 public abstract class ImageData implements Serializable {
 
     private static final long serialVersionUID = -3077752704023867257L;
+
     protected volatile int width;
     protected volatile int height;
+    protected volatile Format format;
     protected volatile String generatedFilename;
     protected volatile CropRegion cropRegion = new CropRegion();
-    protected volatile Format format;
+    protected volatile ImageSource source = new NullImageSource();
 
     private volatile Resize resize;
     private volatile RotateDirection rotateDirection = RotateDirection.NORTH;
@@ -35,8 +41,22 @@ public abstract class ImageData implements Serializable {
         return new File(basePath, "generated/" + getGeneratedFilename());
     }
 
+    public boolean isEmpty() {
+        return source.isEmpty();
+    }
+
     @JsonIgnore
-    public abstract ImageSource getSource();
+    public ImageSource getSource() {
+        if (isEmpty()) {
+            return new NullImageSource();
+        }
+        return source;
+    }
+
+    @JsonDeserialize(as = ImagesPathRelativePathImageSource.class)
+    public void setSource(ImageSource source) {
+        this.source = Objects.requireNonNull(source, "image source can not be null");
+    }
 
     public enum RotateDirection {
         NORTH(0, -90, 90),
