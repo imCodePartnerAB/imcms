@@ -3,7 +3,6 @@ package com.imcode.imcms.domain.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import imcode.server.Imcms;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.NullImageSource;
@@ -11,7 +10,6 @@ import imcode.util.image.Format;
 import imcode.util.image.Resize;
 import lombok.*;
 
-import java.io.File;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.HashMap;
@@ -37,13 +35,6 @@ public abstract class ImageData implements Serializable {
 
     private volatile Resize resize;
     private volatile RotateDirection rotateDirection = RotateDirection.NORTH;
-
-    @JsonIgnore
-    public File getGeneratedFile() {
-        File basePath = Imcms.getServices().getConfig().getImagePath();
-
-        return new File(basePath, "generated/" + getGeneratedFilename());
-    }
 
     public boolean isEmpty() {
         return source.isEmpty();

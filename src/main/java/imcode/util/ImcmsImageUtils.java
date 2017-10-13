@@ -22,7 +22,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.text.StringEscapeUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.Date;
@@ -30,12 +33,14 @@ import java.util.Objects;
 import java.util.Properties;
 
 //fixme: image no + image in a loop
+@Component
 public class ImcmsImageUtils {
     private static final Log log = LogFactory.getLog(ImcmsImageUtils.class);
 
+    private static File imagesPath;
 
-    private ImcmsImageUtils() {
-    }
+    @Value("${ImagePath}")
+    private File imgPath;
 
     public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
         return getImageHtmlTag(image, request, attributes, false);
@@ -174,7 +179,7 @@ public class ImcmsImageUtils {
             return getImageHandlingUrl(metaId, image, contextPath);
         }
 
-        File generatedFile = image.getGeneratedFile();
+        File generatedFile = new File(imagesPath, "generated/" + image.getGeneratedFilename());
 
         if (!generatedFile.exists()) {
             generateImage(image, false);
@@ -375,7 +380,7 @@ public class ImcmsImageUtils {
     }
 
     public static void generateImage(ImageData image, boolean overwrite) {
-        File genFile = image.getGeneratedFile();
+        File genFile = new File(imagesPath, "generated/" + image.getGeneratedFilename());
 
         if (!overwrite && genFile.exists()) {
             return;
@@ -546,5 +551,10 @@ public class ImcmsImageUtils {
             default:
                 return new NullImageSource();
         }
+    }
+
+    @PostConstruct
+    public void init() {
+        ImcmsImageUtils.imagesPath = imgPath;
     }
 }
