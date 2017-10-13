@@ -11,6 +11,7 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 public class ImageDTO extends ImageData {
 
+    private static final long serialVersionUID = -3103155597832120014L;
     private Integer index;
     private Integer docId;
     private String langCode;

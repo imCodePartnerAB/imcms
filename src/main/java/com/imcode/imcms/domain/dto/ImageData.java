@@ -16,8 +16,9 @@ import java.util.Map;
 @Getter
 @Setter
 @EqualsAndHashCode
-public abstract class ImageData {
+public abstract class ImageData implements Serializable {
 
+    private static final long serialVersionUID = -3077752704023867257L;
     protected volatile int width;
     protected volatile int height;
     protected volatile String generatedFilename;

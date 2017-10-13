@@ -14,7 +14,6 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.Objects;
 import java.util.UUID;
@@ -23,7 +22,7 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ImageDomainObject extends ImageData implements Serializable, Cloneable {
+public class ImageDomainObject extends ImageData implements Cloneable {
 
     public static final int IMAGE_NAME_LENGTH = 40;
     public static final String ALIGN_NONE = "";
