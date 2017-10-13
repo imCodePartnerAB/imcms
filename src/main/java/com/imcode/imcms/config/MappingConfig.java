@@ -3,14 +3,13 @@ package com.imcode.imcms.config;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.*;
-import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -137,46 +136,47 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<Image, ImageDTO> imageToImageDTO(Properties imcmsProperties,
+    public Function<Image, ImageDTO> imageToImageDTO(@Value("${ImageUrl}") String imagesPath,
                                                      Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO) {
-        return image -> Value.with(new ImageDTO(), dto -> {
+        return image -> {
+            final ImageDTO dto = new ImageDTO();
             dto.setIndex(image.getIndex());
 
             final String name = image.getName();
             dto.setName(name);
 
             final String generatedFilePath = (image.getGeneratedFilename() == null)
-                    ? "" : imcmsProperties.getProperty("ImagePath") + "generated/" + image.getGeneratedFilename();
+                    ? "" : imagesPath + "generated/" + image.getGeneratedFilename();
 
             dto.setDocId(image.getVersion().getDocId());
             dto.setLangCode(image.getLanguage().getCode());
-
-            final String path = (image.getUrl() == null)
-                    ? "" : imcmsProperties.getProperty("ImagePath") + image.getUrl();
-
-            dto.setPath(path);
-            dto.setUrl(image.getUrl());
+            dto.setPath(image.getUrl());
             dto.setGeneratedFilePath(generatedFilePath);
             dto.setGeneratedFilename(image.getGeneratedFilename());
             dto.setFormat(image.getFormat());
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
             dto.setLoopEntryRef(loopEntryRefToDTO.apply(image.getLoopEntryRef()));
-        });
+
+            return dto;
+        };
     }
 
     @Bean
     public TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage(Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef) {
-        return (imageDTO, version, language) -> Value.with(new Image(), image -> {
+        return (imageDTO, version, language) -> {
+            final Image image = new Image();
             image.setIndex(imageDTO.getIndex());
             image.setVersion(version);
             image.setLanguage(language);
             image.setHeight(imageDTO.getHeight());
             image.setWidth(imageDTO.getWidth());
-            image.setUrl(imageDTO.getUrl());
+            image.setUrl(imageDTO.getPath());
             image.setGeneratedFilename(imageDTO.getGeneratedFilename());
             image.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(imageDTO.getLoopEntryRef()));
             image.setFormat(imageDTO.getFormat());
-        });
+
+            return image;
+        };
     }
 }
