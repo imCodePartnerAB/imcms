@@ -11,8 +11,6 @@ import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
-import imcode.server.Imcms;
-import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -75,11 +73,8 @@ public class ImageService {
 
     private ImageDTO getImage(int docId, int index, LoopEntryRefDTO loopEntryRefDTO, Function<Integer, Version> versionReceiver) {
         final Version version = versionReceiver.apply(docId);
-        final int versionIndex = version.getNo();
         final LoopEntryRef loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
-        final UserDomainObject user = Imcms.getUser();
-        final Language language = commonContentService.findByDocIdAndVersionNoAndUser(docId, versionIndex, user)
-                .getLanguage();
+        final Language language = languageService.getCurrentUserLanguage();
 
         final Image image = (loopEntryRef == null)
                 ? imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
