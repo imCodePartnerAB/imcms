@@ -76,7 +76,7 @@ public class MenuService {
     }
 
     private Menu getMenu(int menuNo, int docId) {
-        final Version workingVersion = getVersion(docId, versionService::getDocumentWorkingVersion);
+        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
         return menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, workingVersion);
     }
 
@@ -89,7 +89,7 @@ public class MenuService {
     }
 
     private List<MenuItemDTO> getMenuItemsOf(int menuNo, int docId, MenuItemsStatus status) {
-        final Version version = getVersion(docId, status.equals(MenuItemsStatus.ALL)
+        final Version version = versionService.getVersion(docId, status.equals(MenuItemsStatus.ALL)
                 ? versionService::getDocumentWorkingVersion : versionService::getLatestVersion);
 
         final Menu menu = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, version);
@@ -144,7 +144,7 @@ public class MenuService {
     }
 
     private void addTitleToMenuItem(MenuItemDTO menuItemDTO, UserDomainObject user) {
-        final Version latestVersion = getVersion(menuItemDTO.getDocumentId(), versionService::getLatestVersion);
+        final Version latestVersion = versionService.getLatestVersion(menuItemDTO.getDocumentId());
         final CommonContent commonContent = commonContentService
                 .getOrCreate(latestVersion.getDocId(), latestVersion.getNo(), user);
 
@@ -152,10 +152,6 @@ public class MenuService {
 
         menuItemDTO.getChildren()
                 .forEach(childMenuItemDTO -> addTitleToMenuItem(childMenuItemDTO, user));
-    }
-
-    private Version getVersion(int docId, Function<Integer, Version> getVersionFunction) {
-        return getVersionFunction.apply(docId);
     }
 
     private enum MenuItemsStatus {

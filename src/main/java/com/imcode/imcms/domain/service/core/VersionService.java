@@ -30,7 +30,7 @@ public class VersionService {
         return getVersion(docId, versionRepository::findLatest);
     }
 
-    private Version getVersion(int docId, Function<Integer, Version> versionReceiver) {
+    public Version getVersion(int docId, Function<Integer, Version> versionReceiver) {
         return Optional.ofNullable(versionReceiver.apply(docId)).orElseThrow(DocumentNotExistException::new);
     }
 
