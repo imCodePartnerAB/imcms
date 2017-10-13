@@ -21,9 +21,9 @@ public class CommonContentService {
      * Gets common content for working or published versions.
      * If common content of non working version is null. it creates new common content based on working.
      *
-     * @param docId
-     * @param versionNo
-     * @param userDO
+     * @param docId of document version
+     * @param versionNo version no
+     * @param userDO user to get language
      * @return common content of docId, versionNo and user language.
      */
     public CommonContent getOrCreate(int docId, int versionNo, UserDomainObject userDO) {
@@ -32,12 +32,12 @@ public class CommonContentService {
         if (commonContent != null) {
             return commonContent;
         } else if (versionNo == WORKING_VERSION_INDEX) {
-            throw new IllegalStateException("Common content for working version should exist!");
+            throw new IllegalStateException("Common content for working version should always exist!");
         }
-        return getCommonContent(docId, code, versionNo);
+        return createFromWorkingVersion(docId, code, versionNo);
     }
 
-    private CommonContent getCommonContent(int docId, String code, int versionNo) {
+    private CommonContent createFromWorkingVersion(int docId, String code, int versionNo) {
         final CommonContent commonContent = commonContentRepository
                 .findByDocIdAndVersionNoAndLanguageCode(docId, WORKING_VERSION_INDEX, code);
         commonContent.setId(null);
