@@ -31,7 +31,7 @@ public class VersionDataInitializer extends AbstractTestDataInitializer<Integer,
         }
 
         final int adminUserId = 1;
-        user = userDataInitializer.createData(adminUserId);
+        user = userDataInitializer.createData(adminUserId).get(0);
 
         testVersion = Value.with(new Version(), version -> {
             version.setNo(versionIndex);
