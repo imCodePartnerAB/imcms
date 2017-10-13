@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.util.image.Format;
 import lombok.*;
@@ -9,6 +10,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ImageDTO extends ImageData {
 
     private static final long serialVersionUID = -3103155597832120014L;
