@@ -1,8 +1,11 @@
-package com.imcode.imcms.domain.service.api;
+package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.config.WebTestConfig;
+import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.UserDTO;
+import com.imcode.imcms.domain.service.api.UserService;
 import com.imcode.imcms.mapping.jpa.User;
 import imcode.server.user.RoleId;
 import org.junit.After;
@@ -12,18 +15,17 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfig.class)
-public class UserServiceTest {
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@WebAppConfiguration
+public class UserControllerTest extends AbstractControllerTest {
 
     @Autowired
     private UserService userService;
@@ -37,6 +39,11 @@ public class UserServiceTest {
     private List<User> users;
 
     private List<UserDTO> expectedUsers;
+
+    @Override
+    public String controllerPath() {
+        return "/users";
+    }
 
     @Before
     public void createUsers() {
@@ -66,22 +73,9 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getAdminUsersTest() {
-        assertEquals(expectedUsers, userService.getAdminUsers());
-    }
-
-    @Test
-    public void testFindAll() throws Exception {
-        assertNotNull(userService.findAll(true, true));
-        assertNotNull(userService.findAll(true, false));
-        assertNotNull(userService.findAll(false, false));
-        assertNotNull(userService.findAll(false, true));
-    }
-
-    @Test
-    public void findByNamePrefix() throws Exception {
-        assertNotNull(userService.findByNamePrefix("prefix", true));
-        assertNotNull(userService.findByNamePrefix("prefix", false));
+    public void getAdminUsersTest() throws Exception {
+        final String usersJson = asJson(expectedUsers);
+        getAllExpectedOkAndJsonContentEquals(usersJson);
     }
 
 }
