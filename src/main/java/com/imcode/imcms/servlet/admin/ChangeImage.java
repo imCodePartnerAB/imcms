@@ -41,10 +41,11 @@ import java.util.Optional;
  */
 public class ChangeImage extends HttpServlet {
 
-    public static final String REQUEST_PARAMETER__IMAGE_INDEX = "img";
-    public static final String REQUEST_PARAMETER__LABEL = "label";
-    public static final String REQUEST_PARAMETER__WIDTH = "width";
-    public static final String REQUEST_PARAMETER__HEIGHT = "height";
+    private static final String REQUEST_PARAMETER__IMAGE_INDEX = "img";
+    private static final String REQUEST_PARAMETER__LABEL = "label";
+    private static final String REQUEST_PARAMETER__WIDTH = "width";
+    private static final String REQUEST_PARAMETER__HEIGHT = "height";
+    private static final long serialVersionUID = 4713380871970497522L;
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final ImcmsServices imcref = Imcms.getServices();
@@ -106,7 +107,7 @@ public class ChangeImage extends HttpServlet {
 
                     ImcmsImageUtils.generateImage(editImage, false);
 
-                } else if (shareImages) {
+                } else {
                     // share the same generated filename
                     editImage.setGeneratedFilename(firstGeneratedFilename);
                 }
@@ -138,7 +139,8 @@ public class ChangeImage extends HttpServlet {
         }
 
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
-        ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true, forcedWidth, forcedHeight);
+        final String label = StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL));
+        ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, label, imageCommand, returnCommand, true, forcedWidth, forcedHeight);
 
         TextDocImagesContainer container = TextDocImagesContainer.of(document.getVersionRef(), loopEntryRef, imageIndex, images);
 

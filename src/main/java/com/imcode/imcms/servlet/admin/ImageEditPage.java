@@ -6,7 +6,6 @@ import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 import com.imcode.imcms.servlet.admin.ImageCropPage.CropResult;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
@@ -19,7 +18,6 @@ import imcode.util.image.ImageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,10 +32,8 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__PREVIEW_BUTTON = "show_img";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
     public static final String REQUEST_PARAMETER__DELETE_BUTTON = "delete";
-    public static final String REQUEST_PARAMETER__DOCUMENT_ID = "documentId";
     public static final String REQUEST_PARAMETER__IMAGE_URL = "imageref";
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ok";
-    public static final String REQUEST_PARAMETER__TARGET = "target";
     public static final String REQUEST_PARAMETER__IMAGE_HEIGHT = "image_height";
     public static final String REQUEST_PARAMETER__IMAGE_WIDTH = "image_width";
     public static final String REQUEST_PARAMETER__IMAGE_BORDER = "image_border";
@@ -49,7 +45,6 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
     public static final String REQUEST_PARAMETER__LINK_URL = "imageref_link";
     public static final String REQUEST_PARAMETER__FORMAT = "format";
-    public static final String REQUEST_PARAMETER__FORMAT_EXTENSION = "format_ext";
     public static final String REQUEST_PARAMETER__CROP_X1 = "crop_x1";
     public static final String REQUEST_PARAMETER__CROP_Y1 = "crop_y1";
     public static final String REQUEST_PARAMETER__CROP_X2 = "crop_x2";
@@ -57,16 +52,19 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__ROTATE_ANGLE = "rotate_angle";
     public static final String REQUEST_PARAMETER__I18N_CODE = "i18nCode";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON = "goToImageArchive";
-    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE = "image_archive";
-    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID = "archive_img_id";
-    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME = "archive_img_nm";
-    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME = "archive_file_nm";
-    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT = "archive_img_alt_text";
-    public static final Format[] ALLOWED_FORMATS = new Format[]{Format.GIF, Format.JPEG, Format.PNG};
-    public static final String REQUEST_PARAMETER__LINK_TARGET = REQUEST_PARAMETER__TARGET;
     public static final String REQUEST_PARAMETER__SHARE_IMAGE = "share_image";
+    static final Format[] ALLOWED_FORMATS = new Format[]{Format.GIF, Format.JPEG, Format.PNG};
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
     static final LocalizedMessage ERROR_MESSAGE__FILE_NOT_IMAGE = new LocalizedMessage("error/servlet/images/file_not_image");
+    private static final String REQUEST_PARAMETER__TARGET = "target";
+    public static final String REQUEST_PARAMETER__LINK_TARGET = REQUEST_PARAMETER__TARGET;
+    private static final String REQUEST_PARAMETER__FORMAT_EXTENSION = "format_ext";
+    private static final String REQUEST_PARAMETER__IMAGE_ARCHIVE = "image_archive";
+    private static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID = "archive_img_id";
+    private static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME = "archive_img_nm";
+    private static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME = "archive_file_nm";
+    private static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT = "archive_img_alt_text";
+    private static final long serialVersionUID = 4058898601460492131L;
     private final Handler<ImageEditResult> imageCommand;
     private final LocalizedMessage heading;
     private TextDocumentDomainObject document;
@@ -88,11 +86,9 @@ public class ImageEditPage extends OkCancelPage {
     private TextDocImagesContainer imagesContainer;
     private TextDocImagesContainer origImagesContainer;
 
-    public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image,
-                         LocalizedMessage heading, String label, ServletContext servletContext,
-                         Handler<ImageEditResult> imageCommand,
-                         DispatchCommand returnCommand, boolean linkable,
-                         int forcedWidth, int forcedHeight) {
+    ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image, LocalizedMessage heading, String label,
+                  Handler<ImageEditResult> imageCommand, DispatchCommand returnCommand, boolean linkable,
+                  int forcedWidth, int forcedHeight) {
         super(returnCommand, returnCommand);
         this.document = document;
         this.image = image;
@@ -126,7 +122,7 @@ public class ImageEditPage extends OkCancelPage {
         return fromRequest(request);
     }
 
-    public static String getTargetFromRequest(HttpServletRequest request, String parameterName) {
+    private static String getTargetFromRequest(HttpServletRequest request, String parameterName) {
         String[] possibleTargets = request.getParameterValues(parameterName);
         String target = null;
         if (null != possibleTargets) {
@@ -186,11 +182,9 @@ public class ImageEditPage extends OkCancelPage {
         String altText = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ALT_TEXT));
 
         ImageSource source = null;
-//        String urlPath = null;
         if (fileName != null) {
             fileName = fileName.replaceAll("/|\\\\", "");
             source = new ImageArchiveImageSource(fileName);
-//            urlPath = source.getUrlPathRelativeToContextPath();
         }
 
         Long archiveImageId = null;
@@ -209,8 +203,6 @@ public class ImageEditPage extends OkCancelPage {
             }
 
             if (fileName != null) {
-                //fixme - remove ?
-                //img.setUrl(urlPath);
                 setNewSourceAndClearProps(img, source);
             }
             if (imageName != null) {
@@ -225,6 +217,7 @@ public class ImageEditPage extends OkCancelPage {
         }
 
         constrainImageFormat(lang);
+        // fixme: something wrong here!
         image = imagesContainer.getImages().get(0);
     }
 
@@ -269,9 +262,6 @@ public class ImageEditPage extends OkCancelPage {
 
         image.setSource(imageSource);
 
-//        ImageInfo imageInfo = image.getImageInfo();
-//        image.setFormat((imageInfo != null ? imageInfo.getFormat() : null));
-
         Format format;
         if (req.getParameter(REQUEST_PARAMETER__FORMAT_EXTENSION) != null) {
             format = Format.findFormatByExtension(req.getParameter(REQUEST_PARAMETER__FORMAT_EXTENSION));
@@ -289,6 +279,7 @@ public class ImageEditPage extends OkCancelPage {
 
         clearArchivePropertiesIfNullSource(image);
 
+        // fixme: something wrong here!
         ImageDomainObject firstImage = imagesContainer.getImages().get(0);
 
         for (Map.Entry<DocumentLanguage, ImageDomainObject> entry : imagesContainer.getImages().entrySet()) {
@@ -353,9 +344,6 @@ public class ImageEditPage extends OkCancelPage {
 
     protected void dispatchOther(HttpServletRequest request,
                                  HttpServletResponse response) throws IOException, ServletException {
-//        UserDomainObject user = Utility.getLoggedOnUser(request);
-//        ImcmsServices imcref = Imcms.getServices();
-//        DocumentMapper documentMapper = imcref.getDocumentMapper();
 
         if (null != request.getParameter(REQUEST_PARAMETER__DELETE_BUTTON)) {
             NullImageSource source = new NullImageSource();
@@ -365,6 +353,7 @@ public class ImageEditPage extends OkCancelPage {
                 image.setAlternateText(null);
             }
 
+            // fixme: something wrong here!
             image = imagesContainer.getImages().get(0);
 
             forward(request, response);
@@ -462,6 +451,7 @@ public class ImageEditPage extends OkCancelPage {
             }
 
             constrainImageFormat(i18nCode);
+            // fixme: something wrong here!
             image = imagesContainer.getImages().get(0);
 
             forward(request1, response1);
@@ -469,13 +459,13 @@ public class ImageEditPage extends OkCancelPage {
         imageBrowser.forward(request, response);
     }
 
-    public void setNewSourceAndClearProps(ImageDomainObject img, ImageSource imageSource) {
+    private void setNewSourceAndClearProps(ImageDomainObject img, ImageSource imageSource) {
         img.setSource(imageSource);
         img.setCropRegion(new CropRegion());
         img.setRotateDirection(RotateDirection.NORTH);
     }
 
-    public ImageDomainObject getImageByLangCode(String langCode) {
+    private ImageDomainObject getImageByLangCode(String langCode) {
         for (Map.Entry<DocumentLanguage, ImageDomainObject> entry : imagesContainer.getImages().entrySet()) {
             if (entry.getKey().getCode().equals(langCode)) {
                 return entry.getValue();
@@ -526,10 +516,6 @@ public class ImageEditPage extends OkCancelPage {
         return heading;
     }
 
-    public boolean canAddImageFiles(UserDomainObject user) {
-        return user.canCreateDocumentOfTypeIdFromParent(DocumentTypeDomainObject.FILE_ID, document);
-    }
-
     public boolean isLinkable() {
         return linkable;
     }
@@ -548,7 +534,7 @@ public class ImageEditPage extends OkCancelPage {
     /**
      * Sets images and resets shareImages flag.
      */
-    public void setImagesContainer(TextDocImagesContainer imagesContainer) {
+    void setImagesContainer(TextDocImagesContainer imagesContainer) {
         Map<DocumentLanguage, ImageDomainObject> origImages = new HashMap<>();
 
         for (Map.Entry<DocumentLanguage, ImageDomainObject> entry : imagesContainer.getImages().entrySet()) {
@@ -558,7 +544,7 @@ public class ImageEditPage extends OkCancelPage {
             origImages.put(entry.getKey(), img);
         }
 
-        boolean mayShareImages = imagesContainer != null && origImages.size() > 1;
+        boolean mayShareImages = origImages.size() > 1;
 
         if (mayShareImages) {
             Iterator<ImageDomainObject> iterator = imagesContainer.getImages().values().iterator();
@@ -584,33 +570,6 @@ public class ImageEditPage extends OkCancelPage {
         this.origImagesContainer = new TextDocImagesContainer(imagesContainer.getVersionRef(), imagesContainer.getLoopEntryRef(), imagesContainer.getImageNo(), origImages);
     }
 
-    /**
-     * Returns if all images shares same image source.
-     */
-    public boolean getImagesSharesSameSource() {
-        boolean same = imagesContainer.getImages().size() > 0;
-        String path = null;
-
-        for (ImageDomainObject image : imagesContainer.getImages().values()) {
-            ImageSource source = image.getSource();
-            String newPath = source.getUrlPathRelativeToContextPath();
-
-            if (image.getSource() instanceof NullImageSource) {
-                same = false;
-                break;
-            }
-
-            if (path != null && !path.equals(newPath)) {
-                same = false;
-                break;
-            }
-
-            path = newPath;
-        }
-
-        return same;
-    }
-
     public String getLangCodes() {
         String[] codes = new String[imagesContainer.getImages().size()];
 
@@ -626,24 +585,12 @@ public class ImageEditPage extends OkCancelPage {
         return shareImages;
     }
 
-    public void setShareImages(boolean shareImages) {
-        this.shareImages = shareImages;
-    }
-
     public int getForcedHeight() {
         return forcedHeight;
     }
 
-    public void setForcedHeight(int forcedHeight) {
-        this.forcedHeight = forcedHeight;
-    }
-
     public int getForcedWidth() {
         return forcedWidth;
-    }
-
-    public void setForcedWidth(int forcedWidth) {
-        this.forcedWidth = forcedWidth;
     }
 
     public TextDocumentDomainObject getDocument() {

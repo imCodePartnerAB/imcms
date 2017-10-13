@@ -119,10 +119,10 @@ public class ImcmsImageUtils {
                     .append(image.getVerticalSpace()).append("px ")
                     .append(image.getHorizontalSpace()).append("px;");
 
-            if (StringUtils.isNotBlank(image.getAlign()) && "left".equals(image.getAlign())) {
+            if (StringUtils.isNotBlank(image.getAlign()) && ImageDomainObject.ALIGN_LEFT.equals(image.getAlign())) {
                 styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml4(image.getAlign())).append(";");
             }
-            if (StringUtils.isNotBlank(image.getAlign()) && "right".equals(image.getAlign())) {
+            if (StringUtils.isNotBlank(image.getAlign()) && ImageDomainObject.ALIGN_RIGHT.equals(image.getAlign())) {
                 styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml4(image.getAlign())).append(";");
             }
             if (StringUtils.isNotBlank(image.getAlign()) && !"none".equals(image.getAlign())) {

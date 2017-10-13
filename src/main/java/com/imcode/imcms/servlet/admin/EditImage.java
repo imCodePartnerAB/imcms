@@ -8,7 +8,6 @@ import com.imcode.imcms.mapping.container.VersionRef;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.util.ImcmsImageUtils;
-import imcode.util.Utility;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.servlet.ServletException;
@@ -58,7 +57,7 @@ public class EditImage extends HttpServlet {
         ImageDomainObject image = new ImageDomainObject();
 
         //fixme - provide no, language and optionally loop entry
-        ImageEditPage imageEditPage = new ImageEditPage(null, image, null, "", getServletContext(), imageCommand, returnCommand, false, 0, 0);
+        ImageEditPage imageEditPage = new ImageEditPage(null, image, null, "", imageCommand, returnCommand, false, 0, 0);
 
         //fixme: language
         // Page should contain at least one image to edit.
