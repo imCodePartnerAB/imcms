@@ -73,12 +73,8 @@ public class ImageService {
 
     private ImageDTO getImage(int docId, int index, LoopEntryRefDTO loopEntryRefDTO, Function<Integer, Version> versionReceiver) {
         final Version version = versionReceiver.apply(docId);
-        final LoopEntryRef loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
         final Language language = languageService.getCurrentUserLanguage();
-
-        final Image image = (loopEntryRef == null)
-                ? imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
-                : imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
+        final Image image = getImage(index, version, language, loopEntryRefDTO);
 
         return Optional.ofNullable(image)
                 .map(imageToImageDTO)
@@ -86,18 +82,22 @@ public class ImageService {
     }
 
     private Integer getImageId(ImageDTO imageDTO, Version version, Language language) {
-        final LoopEntryRefDTO loopEntryRefDTO = imageDTO.getLoopEntryRef();
-        final LoopEntryRef loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
         final Integer index = imageDTO.getIndex();
-
-        final Image image = (loopEntryRef == null)
-                ? imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
-                : imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
+        final LoopEntryRefDTO loopEntryRefDTO = imageDTO.getLoopEntryRef();
+        final Image image = getImage(index, version, language, loopEntryRefDTO);
 
         if (image == null) {
             return null;
         }
 
         return image.getId();
+    }
+
+    private Image getImage(int index, Version version, Language language, LoopEntryRefDTO loopEntryRefDTO) {
+        final LoopEntryRef loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
+
+        return (loopEntryRef == null)
+                ? imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
+                : imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
     }
 }
