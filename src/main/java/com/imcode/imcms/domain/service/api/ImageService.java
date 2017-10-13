@@ -2,7 +2,6 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
-import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.LanguageService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.doc.Version;
@@ -22,7 +21,6 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
     private final VersionService versionService;
-    private final CommonContentService commonContentService;
     private final LanguageService languageService;
     private final Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef;
     private final TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage;
@@ -30,7 +28,6 @@ public class ImageService {
 
     public ImageService(ImageRepository imageRepository,
                         VersionService versionService,
-                        CommonContentService commonContentService,
                         LanguageService languageService,
                         Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
                         TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage,
@@ -38,7 +35,6 @@ public class ImageService {
 
         this.imageRepository = imageRepository;
         this.versionService = versionService;
-        this.commonContentService = commonContentService;
         this.languageService = languageService;
         this.loopEntryRefDtoToLoopEntryRef = loopEntryRefDtoToLoopEntryRef;
         this.imageDtoToImage = imageDtoToImage;
