@@ -31,7 +31,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "WHERE u_roles.user_id = u.user_id AND (u_roles.role_id = ?1 OR u_roles.role_id = ?2) " +
             "GROUP BY u.user_id",
             nativeQuery = true)
-    List<User> findSuperAdminsAndAdminsUsers(int superAdminRoleId, int userAdminRoleId);
+    List<User> findSuperAdminsAndUserAdmins(int superAdminRoleId, int userAdminRoleId);
 
     @Transactional
     @Query("UPDATE User u SET u.sessionId = ?1 WHERE u.id = ?2")

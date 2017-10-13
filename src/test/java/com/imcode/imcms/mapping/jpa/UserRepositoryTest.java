@@ -90,8 +90,8 @@ public class UserRepositoryTest {
      * We have predefined super admin user in the database, so we add 1 to actual admin users size.
      */
     @Test
-    public void findSuperAdminsAndAdminsUsersTest() {
-        final List<User> admins = repository.findSuperAdminsAndAdminsUsers(Role.SUPERADMIN_ID, RoleId.USERADMIN_ID);
+    public void findSuperAdminsAndUserAdminsTest() {
+        final List<User> admins = repository.findSuperAdminsAndUserAdmins(Role.SUPERADMIN_ID, RoleId.USERADMIN_ID);
         Assert.assertEquals(9 + 1, admins.size());
     }
 }
