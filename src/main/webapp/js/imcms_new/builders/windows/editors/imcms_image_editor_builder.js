@@ -641,50 +641,56 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function fillLeftSideData(imageData) {
-            imageDataContainers.$image.removeAttr("style").attr("src", Imcms.contextPath + "/" + imageData.path);
+            imageDataContainers.$image.attr("src", Imcms.contextPath + "/" + imageData.path);
 
-            // fixes to prevent stupid little scroll because of borders
-            var angleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) || 0;
-            var imageWidth = imageDataContainers.$image.width();
-            var imageHeight = imageDataContainers.$image.height();
+            setTimeout(function () { // to let image src load
+                imageDataContainers.$image.removeAttr("style");
+                // fixes to prevent stupid little scroll because of borders
+                var angleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) || 0;
+                var imageWidth = imageDataContainers.$image.width();
+                var imageHeight = imageDataContainers.$image.height();
 
-            imageDataContainers.$shadow.css({
-                width: "100%",
-                height: "100%"
-            });
+                imageDataContainers.$shadow.css({
+                    width: "100%",
+                    height: "100%"
+                });
 
-            if (imageDataContainers.$shadow.height() < imageHeight) {
-                imageDataContainers.$shadow.height(imageHeight);
-            }
+                if (imageDataContainers.$shadow.height() < imageHeight) {
+                    imageDataContainers.$shadow.height(imageHeight);
+                }
 
-            imageDataContainers.$image.width(imageWidth - angleBorderSize * 2);
-            imageDataContainers.$image.height(imageHeight - angleBorderSize * 2);
-            imageDataContainers.$image.css({
-                left: angleBorderSize,
-                top: angleBorderSize
-            });
+                console.log(imageWidth, imageHeight);
 
-            imageDataContainers.$cropImg.attr("src", Imcms.contextPath + "/" + imageData.path);
+                imageDataContainers.$image.width(imageWidth - angleBorderSize * 2);
+                imageDataContainers.$image.height(imageHeight - angleBorderSize * 2);
+                imageDataContainers.$image.css({
+                    left: angleBorderSize,
+                    top: angleBorderSize
+                });
 
-            // todo: receive correct crop area
-            imageDataContainers.$cropArea.css({
-                width: imageDataContainers.$image.width(),
-                height: imageDataContainers.$image.height(),
-                left: angleBorderSize,
-                top: angleBorderSize
-            });
+                imageDataContainers.$cropImg.attr("src", Imcms.contextPath + "/" + imageData.path);
 
-            imageCropper.initImageCropper({
-                $imageEditor: imageWindowBuilder.$editor,
-                $croppingArea: imageDataContainers.$cropArea,
-                $cropImg: imageDataContainers.$cropImg,
-                $originImg: imageDataContainers.$image,
-                angles: imageDataContainers.angles,
-                borderWidth: angleBorderSize
-            });
+                // todo: receive correct crop area
+                imageDataContainers.$cropArea.css({
+                    width: imageDataContainers.$image.width(),
+                    height: imageDataContainers.$image.height(),
+                    left: angleBorderSize,
+                    top: angleBorderSize
+                });
+
+                imageCropper.initImageCropper({
+                    $imageEditor: imageWindowBuilder.$editor,
+                    $croppingArea: imageDataContainers.$cropArea,
+                    $cropImg: imageDataContainers.$cropImg,
+                    $originImg: imageDataContainers.$image,
+                    angles: imageDataContainers.angles,
+                    borderWidth: angleBorderSize
+                });
+            }, 200);
         }
 
         function fillData(image) {
+            console.log(image);
             if (!image) {
                 return;
             }
