@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 @Transactional(Transactional.TxType.SUPPORTS)
-public interface UserRepository extends JpaRepository<User, Integer>, UserRepositoryCustom {
+public interface UserRepository extends JpaRepository<User, Integer> {
 
     User findByLogin(String login);
 
