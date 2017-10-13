@@ -1,8 +1,10 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
+import imcode.server.user.RoleId;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -12,6 +14,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 
@@ -22,9 +26,12 @@ public class UserService {
     private EntityManager entityManager;
 
     private final UserRepository userRepository;
+    private final Function<User, UserDTO> userToUserDTO;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       Function<User, UserDTO> userToUserDTO) {
         this.userRepository = userRepository;
+        this.userToUserDTO = userToUserDTO;
     }
 
     public User getUser(int id) {
@@ -32,6 +39,18 @@ public class UserService {
                 .orElseThrow(() -> new UserNotExistsException(id));
     }
 
+    public User getUser(String login) {
+        return ofNullable(userRepository.findByLogin(login))
+                .orElseThrow(() -> new UserNotExistsException(login));
+    }
+
+    public List<UserDTO> getAdminUsers() {
+        return userRepository.findUsersWithRoleIds(RoleId.USERADMIN_ID, RoleId.SUPERADMIN_ID).stream()
+                .map(userToUserDTO)
+                .collect(Collectors.toList());
+    }
+
+    // TODO: 13.10.17 Was moved. Rewrite to human code.
     public List<User> findAll(boolean includeExternal, boolean includeInactive) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> c = cb.createQuery(User.class);
@@ -52,6 +71,7 @@ public class UserService {
         return entityManager.createQuery(c).getResultList();
     }
 
+    // TODO: 13.10.17 Was moved. Rewrite to human code.
     public List<User> findByNamePrefix(String prefix, boolean includeInactive) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> c = cb.createQuery(User.class);

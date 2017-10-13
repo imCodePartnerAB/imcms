@@ -1,6 +1,7 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
@@ -40,6 +41,11 @@ public class MappingConfig {
     @Bean
     public Function<Template, TemplateDTO> templateToTemplateDTO() {
         return template -> new TemplateDTO(template.getId(), template.getName(), template.isHidden());
+    }
+
+    @Bean
+    public Function<User, UserDTO> userToUserDTO() {
+        return user -> new UserDTO(user.getId(), user.getLogin());
     }
 
     @Bean

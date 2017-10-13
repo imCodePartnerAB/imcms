@@ -9,4 +9,8 @@ public class UserNotExistsException extends RuntimeException {
         super(format("User with id = %d does not exist!", id));
     }
 
+    public UserNotExistsException(String login) {
+        super(format("User with login = %s does not exist!", login));
+    }
+
 }
