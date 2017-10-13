@@ -39,6 +39,11 @@ public class MappingConfig {
     }
 
     @Bean
+    public Function<Template, TemplateDTO> templateToTemplateDTO() {
+        return template -> new TemplateDTO(template.getId(), template.getName(), template.isHidden());
+    }
+
+    @Bean
     public BiFunction<LoopDTO, Version, Loop> loopDtoToLoop(Function<LoopEntryDTO, LoopEntry> loopEntryDtoToEntry) {
         return (loopDTO, version) -> {
             final List<LoopEntry> entries = Objects.requireNonNull(loopDTO)
