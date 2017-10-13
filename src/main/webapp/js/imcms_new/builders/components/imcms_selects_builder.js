@@ -119,7 +119,7 @@ Imcms.define("imcms-selects-builder",
                     onOptionSelected.call(selectCandidate);
                     return resultImcmsSelect;
                 } else {
-                    throw new Error("Select is empty, nothing to choose");
+                    console.error("Select is empty, nothing to choose");
                 }
             }
         }

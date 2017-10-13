@@ -3,7 +3,6 @@
 
 <%@ attribute name="index" required="true" type="java.lang.Integer" %>
 <%@ attribute name="document" required="false" type="java.lang.String" %>
-<%@ attribute name="label" required="false" type="java.lang.String" %>
 <%@ attribute name="pre" required="false" type="java.lang.String" %>
 <%@ attribute name="post" required="false" type="java.lang.String" %>
 
