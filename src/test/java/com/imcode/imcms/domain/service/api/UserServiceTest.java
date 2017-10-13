@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
-public class UserRepositoryTest {
+public class UserServiceTest {
 
     @Autowired
     private UserService userService;
