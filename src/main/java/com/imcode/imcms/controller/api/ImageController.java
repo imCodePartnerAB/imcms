@@ -41,24 +41,6 @@ public class ImageController {
         imageService.saveImage(image);
     }
 
-    // fixme: moved from another class, should not be used at all!!!1
-    private void writeJSON(Object object, HttpServletResponse response) {
-        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
-        MediaType jsonMimeType = MediaType.parseMediaType("application/json");
-
-        if (jsonConverter.canWrite(object.getClass(), jsonMimeType)) {
-            try {
-                jsonConverter.write(object, jsonMimeType, new ServletServerHttpResponse(response));
-            } catch (IOException e) {
-                LOG.fatal(e.getMessage(), e);
-            }
-        }
-    }
-
-    private boolean isIndexOccupied(TextDocumentDomainObject document, Integer result) {
-        return (document.getImage(result).getGeneratedFilename() != null);
-    }
-
     /**
      * Returns empty upper or lower image index.
      * For example, if we have images in document under indexes -3, -1, 1, 2, 10,
@@ -107,6 +89,24 @@ public class ImageController {
         }
 
         writeJSON(result, response);
+    }
+
+    // fixme: moved from another class, should not be used at all!!!1
+    private void writeJSON(Object object, HttpServletResponse response) {
+        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+        MediaType jsonMimeType = MediaType.parseMediaType("application/json");
+
+        if (jsonConverter.canWrite(object.getClass(), jsonMimeType)) {
+            try {
+                jsonConverter.write(object, jsonMimeType, new ServletServerHttpResponse(response));
+            } catch (IOException e) {
+                LOG.fatal(e.getMessage(), e);
+            }
+        }
+    }
+
+    private boolean isIndexOccupied(TextDocumentDomainObject document, Integer result) {
+        return (document.getImage(result).getGeneratedFilename() != null);
     }
 
     private enum Direction {
