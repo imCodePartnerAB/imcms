@@ -1,6 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.domain.dto.ImageData.CropRegion;
+import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.mapping.container.TextDocImagesContainer;
@@ -8,8 +10,6 @@ import com.imcode.imcms.servlet.admin.ImageCropPage.CropResult;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.*;
-import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
-import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;

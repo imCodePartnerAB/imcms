@@ -1,10 +1,10 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.domain.dto.ImageData.CropRegion;
+import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
 import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
-import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.image.ImageInfo;

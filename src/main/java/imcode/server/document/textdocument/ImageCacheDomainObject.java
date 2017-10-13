@@ -1,7 +1,7 @@
 package imcode.server.document.textdocument;
 
-import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
-import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
+import com.imcode.imcms.domain.dto.ImageData.CropRegion;
+import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import imcode.util.image.Format;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;

@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.domain.dto.ImageData.CropRegion;
+import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import imcode.server.Imcms;
-import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
-import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;

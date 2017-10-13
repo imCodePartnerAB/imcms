@@ -1,5 +1,8 @@
 package imcode.util;
 
+import com.imcode.imcms.domain.dto.ImageData;
+import com.imcode.imcms.domain.dto.ImageData.CropRegion;
+import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.ImageCropRegion;
 import com.imcode.imcms.persistence.entity.Image;
@@ -9,18 +12,16 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.*;
-import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
-import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.text.StringEscapeUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -198,12 +199,12 @@ public class ImcmsImageUtils {
         return contextPath + "/imagehandling" + getImageQueryString(image, false);
     }
 
-    public static String getImageHandlingUrl(Integer metaId, ImageDomainObject image, String contextPath) {
+    private static String getImageHandlingUrl(Integer metaId, ImageDomainObject image, String contextPath) {
 
         return contextPath + "/imagehandling" + getImageQueryString(metaId, image, false);
     }
 
-    public static String getImagePreviewUrl(ImageDomainObject image, String contextPath) {
+    private static String getImagePreviewUrl(ImageDomainObject image, String contextPath) {
 
         return contextPath + "/servlet/ImagePreview" + getImageQueryString(image, true);
     }
@@ -278,11 +279,6 @@ public class ImcmsImageUtils {
             builder.append(metaId);
 
             //fixme: provide image no, language and optionally loop-entry-ref
-            Integer imageIndex = null;//image.getNo();
-            if (imageIndex != null) {
-                builder.append("&no=");
-                builder.append(imageIndex);
-            }
         }
 
         if (image.getWidth() > 0) {
@@ -378,7 +374,7 @@ public class ImcmsImageUtils {
         return sourceModDate.after(generatedModDate);
     }
 
-    public static void generateImage(ImageDomainObject image, boolean overwrite) {
+    public static void generateImage(ImageData image, boolean overwrite) {
         File genFile = image.getGeneratedFile();
 
         if (!overwrite && genFile.exists()) {

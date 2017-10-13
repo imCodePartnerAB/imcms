@@ -5,7 +5,6 @@ import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
-import imcode.util.image.Format;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -148,8 +147,8 @@ public class MappingConfig {
             dto.setPath(path);
             dto.setUrl(image.getUrl());
             dto.setGeneratedFilePath(generatedFilePath);
-            dto.setGeneratedFileName(image.getGeneratedFilename());
-            dto.setFormat(image.getFormat().name());
+            dto.setGeneratedFilename(image.getGeneratedFilename());
+            dto.setFormat(image.getFormat());
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
             dto.setLoopEntryRef(loopEntryRefToDTO.apply(image.getLoopEntryRef()));
@@ -165,9 +164,9 @@ public class MappingConfig {
             image.setHeight(imageDTO.getHeight());
             image.setWidth(imageDTO.getWidth());
             image.setUrl(imageDTO.getUrl());
-            image.setGeneratedFilename(imageDTO.getGeneratedFileName());
+            image.setGeneratedFilename(imageDTO.getGeneratedFilename());
             image.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(imageDTO.getLoopEntryRef()));
-            image.setFormat(Format.valueOf(imageDTO.getFormat()));
+            image.setFormat(imageDTO.getFormat());
         });
     }
 }

@@ -1,12 +1,15 @@
 package com.imcode.imcms.domain.dto;
 
+import imcode.server.document.textdocument.ImageSource;
 import imcode.util.image.Format;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
-public class ImageDTO {
+@EqualsAndHashCode(callSuper = true)
+public class ImageDTO extends ImageData {
 
     private Integer index;
     private Integer docId;
@@ -14,12 +17,8 @@ public class ImageDTO {
     private String name;
     private String path;
     private String url;
-    private String format;
-    private Integer width;
-    private Integer height;
     private LoopEntryRefDTO loopEntryRef;
     private String generatedFilePath;
-    private String generatedFileName;
 
     public ImageDTO(Integer index, Integer docId) {
         this.index = index;
@@ -28,10 +27,15 @@ public class ImageDTO {
         this.path = "";
         this.url = "";
         this.generatedFilePath = "";
-        this.generatedFileName = "";
-        this.format = Format.JPEG.name();
+        this.generatedFilename = "";
+        this.format = Format.JPEG;
         this.width = 0;
         this.height = 0;
         this.langCode = "en";
+    }
+
+    @Override
+    public ImageSource getSource() {
+        return null;
     }
 }

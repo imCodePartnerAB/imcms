@@ -2,21 +2,28 @@ package imcode.server.document.textdocument;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.Resize;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.Normalizer;
-import java.util.*;
+import java.util.Objects;
+import java.util.UUID;
 
+@Setter
+@Getter
+@EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ImageDomainObject implements Serializable, Cloneable {
+public class ImageDomainObject extends ImageData implements Serializable, Cloneable {
 
     public static final int IMAGE_NAME_LENGTH = 40;
     public static final String ALIGN_NONE = "";
@@ -29,12 +36,10 @@ public class ImageDomainObject implements Serializable, Cloneable {
     public static final String TARGET_BLANK = "_blank";
     public static final String TARGET_PARENT = "_parent";
     public static final String TARGET_SELF = "_self";
+
     private static final int GEN_FILE_LENGTH = 255;
+    private static final long serialVersionUID = -2674121677885916016L;
     private volatile ImageSource source = new NullImageSource();
-
-    private volatile int width;
-
-    private volatile int height;
 
     private volatile int border;
 
@@ -55,23 +60,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     private volatile Long archiveImageId;
 
-    private volatile int rotateAngle = RotateDirection.NORTH.getAngle();
-
-    private volatile String generatedFilename;
-
-    private volatile int resizeOrdinal;
-
-    private volatile int format;
-
-    private volatile CropRegion cropRegion = new CropRegion();
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String image_name) {
-        this.name = image_name;
-    }
 
     public ImageSize getDisplayImageSize() {
         ImageSize realImageSize = getRealImageSize();
@@ -214,110 +202,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return null;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int image_width) {
-        this.width = image_width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int image_height) {
-        this.height = image_height;
-    }
-
-    public int getBorder() {
-        return border;
-    }
-
-    public void setBorder(int image_border) {
-        this.border = image_border;
-    }
-
-    public String getAlign() {
-        return align;
-    }
-
-    public void setAlign(String image_align) {
-        this.align = image_align;
-    }
-
-    public String getAlternateText() {
-        return alternateText;
-    }
-
-    public void setAlternateText(String alt_text) {
-        this.alternateText = alt_text;
-    }
-
-    public String getLowResolutionUrl() {
-        return lowResolutionUrl;
-    }
-
-    public void setLowResolutionUrl(String low_scr) {
-        this.lowResolutionUrl = low_scr;
-    }
-
-    public int getVerticalSpace() {
-        return verticalSpace;
-    }
-
-    public void setVerticalSpace(int v_space) {
-        this.verticalSpace = v_space;
-    }
-
-    public int getHorizontalSpace() {
-        return horizontalSpace;
-    }
-
-    public void setHorizontalSpace(int h_space) {
-        this.horizontalSpace = h_space;
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    public String getLinkUrl() {
-        return linkUrl;
-    }
-
-    public void setLinkUrl(String image_ref_link) {
-        this.linkUrl = image_ref_link;
-    }
-
-    public RotateDirection getRotateDirection() {
-        return RotateDirection.getByAngle(rotateAngle);
-    }
-
-    public void setRotateDirection(RotateDirection rotateDirection) {
-        this.rotateAngle = rotateDirection.getAngle();
-    }
-
-    public Long getArchiveImageId() {
-        return archiveImageId;
-    }
-
-    public void setArchiveImageId(Long archiveImageId) {
-        this.archiveImageId = archiveImageId;
-    }
-
-    public Format getFormat() {
-        return Format.findFormat(format);
-    }
-
-    public void setFormat(Format format) {
-        this.format = format != null ? format.getOrdinal() : 0;
-    }
-
     public void setSourceAndClearSize(ImageSource source) {
         setSource(source);
         setWidth(0);
@@ -340,28 +224,14 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return source.getUrlPathRelativeToContextPath();
     }
 
-    public File getGeneratedFile() {
-        File basePath = Imcms.getServices().getConfig().getImagePath();
-
-        return new File(basePath, "generated/" + getGeneratedFilename());
-    }
-
     public String getGeneratedUrlPath(String contextPath) {
         return contextPath + getGeneratedUrlPathRelativeToContextPath();
     }
 
-    public String getGeneratedUrlPathRelativeToContextPath() {
+    private String getGeneratedUrlPathRelativeToContextPath() {
         String imagesUrl = Imcms.getServices().getConfig().getImageUrl();
 
         return imagesUrl + "generated/" + getGeneratedFilename();
-    }
-
-    public String getGeneratedFilename() {
-        return generatedFilename;
-    }
-
-    public void setGeneratedFilename(String generatedFilename) {
-        this.generatedFilename = generatedFilename;
     }
 
     public void generateFilename() {
@@ -404,14 +274,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
         generatedFilename = filename + suffix;
     }
 
-    public Resize getResize() {
-        return Resize.getByOrdinal(resizeOrdinal);
-    }
-
-    public void setResize(Resize resize) {
-        this.resizeOrdinal = resize == null ? 0 : resize.getOrdinal();
-    }
-
     public long getSize() {
         if (isEmpty()) {
             return 0;
@@ -435,60 +297,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
         this.source = Objects.requireNonNull(source, "image source can not be null");
     }
 
-    public CropRegion getCropRegion() {
-        return cropRegion;
-    }
-
-    public void setCropRegion(CropRegion cropRegion) {
-        this.cropRegion = cropRegion;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj == this || (obj instanceof ImageDomainObject && equals((ImageDomainObject) obj));
-    }
-
-    private boolean equals(ImageDomainObject that) {
-        return Objects.equals(source.toStorageString(), that.getSource().toStorageString())
-                && Objects.equals(width, that.getWidth())
-                && Objects.equals(height, that.getHeight())
-                && Objects.equals(border, that.getBorder())
-                && Objects.equals(align, that.getAlign())
-                && Objects.equals(alternateText, that.getAlternateText())
-                && Objects.equals(lowResolutionUrl, that.getLowResolutionUrl())
-                && Objects.equals(verticalSpace, that.getVerticalSpace())
-                && Objects.equals(horizontalSpace, that.getHorizontalSpace())
-                && Objects.equals(target, that.getTarget())
-                && Objects.equals(linkUrl, that.getLinkUrl())
-                && Objects.equals(name, that.getName())
-                && Objects.equals(cropRegion, that.getCropRegion())
-                && Objects.equals(getFormat(), that.getFormat())
-                && Objects.equals(getRotateDirection(), that.getRotateDirection())
-                && Objects.equals(getResize(), that.getResize());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                source.toStorageString(),
-                width,
-                height,
-                border,
-                align,
-                alternateText,
-                lowResolutionUrl,
-                verticalSpace,
-                horizontalSpace,
-                target,
-                linkUrl,
-                name,
-                cropRegion,
-                getFormat(),
-                getRotateDirection(),
-                getResize()
-        );
-    }
-
     @Override
     public ImageDomainObject clone() {
         try {
@@ -498,163 +306,4 @@ public class ImageDomainObject implements Serializable, Cloneable {
         }
     }
 
-    public enum RotateDirection {
-        NORTH(0, -90, 90),
-        EAST(90, 0, 180),
-        SOUTH(180, 90, -90),
-        WEST(-90, 180, 0);
-
-        private static final Map<Integer, RotateDirection> ANGLE_MAP = new HashMap<>(RotateDirection.values().length);
-
-        static {
-            for (RotateDirection direction : RotateDirection.values()) {
-                ANGLE_MAP.put(direction.getAngle(), direction);
-            }
-        }
-
-        private final int angle;
-        private final int leftAngle;
-        private final int rightAngle;
-
-        private RotateDirection(int angle, int leftAngle, int rightAngle) {
-            this.angle = angle;
-            this.leftAngle = leftAngle;
-            this.rightAngle = rightAngle;
-        }
-
-        public static RotateDirection getByAngle(int angle) {
-            return ANGLE_MAP.get(angle);
-        }
-
-        public static RotateDirection getByAngleDefaultIfNull(int angle) {
-            RotateDirection direction = getByAngle(angle);
-
-            return (direction != null ? direction : RotateDirection.NORTH);
-        }
-
-        public int getAngle() {
-            return angle;
-        }
-
-        public RotateDirection getLeftDirection() {
-            return getByAngle(leftAngle);
-        }
-
-        public RotateDirection getRightDirection() {
-            return getByAngle(rightAngle);
-        }
-
-        public boolean isDefault() {
-            return this == RotateDirection.NORTH;
-        }
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class CropRegion implements Serializable {
-        private static final long serialVersionUID = -586488435877347784L;
-
-        private volatile int cropX1;
-        private volatile int cropY1;
-        private volatile int cropX2;
-        private volatile int cropY2;
-
-        private volatile boolean valid;
-
-        public CropRegion() {
-            cropX1 = -1;
-            cropY1 = -1;
-            cropX2 = -1;
-            cropY2 = -1;
-        }
-
-        public CropRegion(int cropX1, int cropY1, int cropX2, int cropY2) {
-            if (cropX1 > cropX2) {
-                this.cropX1 = cropX2;
-                this.cropX2 = cropX1;
-            } else {
-                this.cropX1 = cropX1;
-                this.cropX2 = cropX2;
-            }
-
-            if (cropY1 > cropY2) {
-                this.cropY1 = cropY2;
-                this.cropY2 = cropY1;
-            } else {
-                this.cropY1 = cropY1;
-                this.cropY2 = cropY2;
-            }
-
-            updateValid();
-        }
-
-        public void updateValid() {
-            valid = (cropX1 >= 0 && cropY1 >= 0 && cropX2 >= 0 && cropY2 >= 0
-                    && cropX1 != cropX2 && cropY1 != cropY2);
-        }
-
-        public boolean isValid() {
-            return valid;
-        }
-
-        public int getCropX1() {
-            return cropX1;
-        }
-
-        public void setCropX1(int cropX1) {
-            this.cropX1 = cropX1;
-        }
-
-        public int getCropY1() {
-            return cropY1;
-        }
-
-        public void setCropY1(int cropY1) {
-            this.cropY1 = cropY1;
-        }
-
-        public int getCropX2() {
-            return cropX2;
-        }
-
-        public void setCropX2(int cropX2) {
-            this.cropX2 = cropX2;
-        }
-
-        public int getCropY2() {
-            return cropY2;
-        }
-
-        public void setCropY2(int cropY2) {
-            this.cropY2 = cropY2;
-        }
-
-        public int getWidth() {
-            return isValid() ? cropX2 - cropX1 : 0;
-        }
-
-        public int getHeight() {
-            return isValid() ? cropY2 - cropY1 : 0;
-        }
-
-
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(new int[]{cropX1, cropX2, cropY1, cropY2});
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            return this == object || (object instanceof CropRegion && equals((CropRegion) object));
-        }
-
-        private boolean equals(CropRegion cropRegion) {
-            return cropX1 == cropRegion.cropX1 && cropY1 == cropRegion.cropY1 &&
-                    cropX2 == cropRegion.cropX2 && cropY2 == cropRegion.cropY2;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s(%d, %d, %d, %d)", CropRegion.class.getName(), cropX1, cropY1, cropX2, cropY2);
-        }
-    }
 }
