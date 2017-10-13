@@ -34,6 +34,11 @@ public class MappingConfig {
     }
 
     @Bean
+    public Function<Role, RoleDTO> roleToRoleDTO() {
+        return role -> new RoleDTO(role.getId(), role.getName());
+    }
+
+    @Bean
     public BiFunction<LoopDTO, Version, Loop> loopDtoToLoop(Function<LoopEntryDTO, LoopEntry> loopEntryDtoToEntry) {
         return (loopDTO, version) -> {
             final List<LoopEntry> entries = Objects.requireNonNull(loopDTO)

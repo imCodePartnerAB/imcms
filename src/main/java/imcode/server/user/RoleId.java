@@ -48,7 +48,7 @@ public class RoleId implements Serializable {
             case 1:
                 return "Useradmin";
             case 2:
-                return "User";
+                return "Users";
         }
         return "";
     }
