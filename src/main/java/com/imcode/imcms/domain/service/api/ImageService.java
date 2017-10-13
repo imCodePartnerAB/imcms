@@ -111,11 +111,11 @@ public class ImageService {
             if (StringUtils.isNotBlank(imagePath)) {
                 imageSource = new ImagesPathRelativePathImageSource(imagePath);
             }
-        }
 
-        imageDTO.setSource(imageSource);
-        imageDTO.generateFilename();
-        ImcmsImageUtils.generateImage(imageDTO, true);
+            imageDTO.setSource(imageSource);
+            imageDTO.generateFilename();
+            ImcmsImageUtils.generateImage(imageDTO, true);
+        }
 
         return imageDtoToImage.apply(imageDTO, version, language);
     }
