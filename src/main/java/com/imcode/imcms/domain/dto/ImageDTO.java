@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import imcode.server.document.textdocument.ImageSource;
 import imcode.util.image.Format;
 import lombok.*;
 
@@ -35,10 +34,5 @@ public class ImageDTO extends ImageData {
         this.width = 0;
         this.height = 0;
         this.langCode = "en";
-    }
-
-    @Override
-    public ImageSource getSource() {
-        return null;
     }
 }
