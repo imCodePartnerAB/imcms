@@ -2,6 +2,7 @@ package com.imcode.imcms.controller.core;
 
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.api.TextDocumentViewing;
+import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.parser.ParserParameters;
 import imcode.util.Utility;
@@ -65,6 +66,7 @@ public class ViewDocumentController {
         mav.setViewName(viewName);
 
         mav.addObject("currentDocument", textDocument);
+        mav.addObject("isAdmin", Imcms.getUser().isAdmin());
         mav.addObject("isEditMode", isEditMode);
         mav.addObject("contextPath", request.getContextPath());
 

@@ -867,6 +867,10 @@ public class UserDomainObject implements Cloneable, Serializable {
         this.passwordReset = new PasswordReset(resetId, time);
     }
 
+    public boolean isAdmin() {
+        return isSuperAdmin() || isUserAdmin();
+    }
+
     /**
      * @since 4.0.7
      */
