@@ -36,6 +36,7 @@ public abstract class ImageData implements Serializable {
     private volatile Resize resize;
     private volatile RotateDirection rotateDirection = RotateDirection.NORTH;
 
+    @JsonIgnore
     public boolean isEmpty() {
         return source.isEmpty();
     }
