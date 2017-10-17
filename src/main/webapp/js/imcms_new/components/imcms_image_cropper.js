@@ -5,7 +5,7 @@
 Imcms.define("imcms-image-cropper", [], function () {
 
     var $croppingArea, $imageEditor, $cropImg, croppingAreaParams, angleBorderSize, imageCoords, angleParams,
-        $originImg, angles;
+        $originImg, angles, imageData;
 
     function moveCropImage(newTop, newLeft) {
         var cropImgTop = -newTop + angleBorderSize,
@@ -262,6 +262,7 @@ Imcms.define("imcms-image-cropper", [], function () {
             isResizing = false
         ;
 
+        imageData = imageCropComponents.imageData;
         angleBorderSize = imageCropComponents.borderWidth;
         $originImg = imageCropComponents.$originImg;
         angles = imageCropComponents.angles;
@@ -401,6 +402,11 @@ Imcms.define("imcms-image-cropper", [], function () {
                 moveCropArea(newTop, newLeft);
                 setCroppingAnglesTopLeft(newTop, newLeft);
             }
+
+            imageData.cropRegion.cropX1 = parseInt($croppingArea.css("left"));
+            imageData.cropRegion.cropY1 = parseInt($croppingArea.css("top"));
+            imageData.cropRegion.cropX2 = parseInt($croppingArea.css("left")) + $croppingArea.width();
+            imageData.cropRegion.cropY2 = parseInt($croppingArea.css("top")) + $croppingArea.height();
         });
 
         $imageEditor.on("dragstart", function () {

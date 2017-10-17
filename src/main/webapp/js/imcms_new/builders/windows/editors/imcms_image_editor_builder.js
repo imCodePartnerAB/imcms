@@ -665,6 +665,7 @@ Imcms.define("imcms-image-editor-builder",
                 });
 
                 imageCropper.initImageCropper({
+                    imageData: imageData,
                     $imageEditor: imageWindowBuilder.$editor,
                     $croppingArea: imageDataContainers.$cropArea,
                     $cropImg: imageDataContainers.$cropImg,
