@@ -12,6 +12,8 @@ import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathFactory;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,13 +24,13 @@ public final class Schema {
     private final Version version;
     private final Init init;
     private final Set<Diff> diffs;
-    private final String scriptsDir;
+    private final URI scriptsDir;
 
-    private Schema(Version version, Init init, Set<Diff> diffs) {
-        this(version, init, diffs, "");
+    private Schema(Version version, Init init, Set<Diff> diffs) throws URISyntaxException {
+        this(version, init, diffs, new URI(""));
     }
 
-    private Schema(Version version, Init init, Set<Diff> diffs, String scriptsDir) {
+    private Schema(Version version, Init init, Set<Diff> diffs, URI scriptsDir) {
         Validate.isTrue(diffs.size() == diffs.stream().map(Diff::getFrom).distinct().count(),
                 "diffs from version value must be distinct: %s", diffs);
 
@@ -129,12 +131,12 @@ public final class Schema {
         return init;
     }
 
-    String getScriptsDir() {
+    URI getScriptsDir() {
         return scriptsDir;
     }
 
-    public Schema setScriptsDir(String newScriptsDir) {
-        return new Schema(version, init, diffs, newScriptsDir.trim());
+    public Schema setScriptsDir(URI newScriptsDir) {
+        return new Schema(version, init, diffs, newScriptsDir);
     }
 
     @Override
