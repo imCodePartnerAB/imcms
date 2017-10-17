@@ -144,7 +144,6 @@ public abstract class ImageData implements Serializable {
 
     @Data
     @NoArgsConstructor
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CropRegion implements Serializable {
         private static final long serialVersionUID = -586488435877347784L;
 
@@ -175,15 +174,18 @@ public abstract class ImageData implements Serializable {
             updateValid();
         }
 
+        @JsonIgnore
         public void updateValid() {
             valid = (cropX1 >= 0 && cropY1 >= 0 && cropX2 >= 0 && cropY2 >= 0
                     && cropX1 != cropX2 && cropY1 != cropY2);
         }
 
+        @JsonIgnore
         public int getWidth() {
             return valid ? cropX2 - cropX1 : 0;
         }
 
+        @JsonIgnore
         public int getHeight() {
             return valid ? cropY2 - cropY1 : 0;
         }
