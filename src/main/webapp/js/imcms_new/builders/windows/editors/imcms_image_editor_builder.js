@@ -140,23 +140,17 @@ Imcms.define("imcms-image-editor-builder",
 
                 imageDataContainers.$image = editableImgAreaBEM.buildElement("img", "<img>");
                 imageDataContainers.$shadow = editableImgAreaBEM.buildElement("layout", "<div>");
-                imageDataContainers.$cropImg = $("<img>", {"class": "imcms-crop-area__crop-img"});
                 imageDataContainers.$cropArea = editableImgAreaBEM.buildElement("crop-area", "<div>")
-                    .append(imageDataContainers.$cropImg);
+                    .append(imageDataContainers.$cropImg = $("<img>", {"class": "imcms-crop-area__crop-img"}));
 
+                var angleAttributes = {
+                    style: "display: none;"
+                };
                 imageDataContainers.angles = {
-                    $topLeft: editableImgAreaBEM.buildElement("angle", "<div>", {
-                        style: "display: none;"
-                    }, ["top-left"]),
-                    $topRight: editableImgAreaBEM.buildElement("angle", "<div>", {
-                        style: "display: none;"
-                    }, ["top-right"]),
-                    $bottomLeft: editableImgAreaBEM.buildElement("angle", "<div>", {
-                        style: "display: none;"
-                    }, ["bottom-left"]),
-                    $bottomRight: editableImgAreaBEM.buildElement("angle", "<div>", {
-                        style: "display: none;"
-                    }, ["bottom-right"])
+                    $topLeft: editableImgAreaBEM.buildElement("angle", "<div>", angleAttributes, ["top-left"]),
+                    $topRight: editableImgAreaBEM.buildElement("angle", "<div>", angleAttributes, ["top-right"]),
+                    $bottomLeft: editableImgAreaBEM.buildElement("angle", "<div>", angleAttributes, ["bottom-left"]),
+                    $bottomRight: editableImgAreaBEM.buildElement("angle", "<div>", angleAttributes, ["bottom-right"])
                 };
 
                 return editableImgAreaBEM.buildBlock("<div>", [
@@ -171,14 +165,6 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function buildEditSizeControls() {
-                var editSizeBEM = new BEM({
-                    block: "imcms-edit-size",
-                    elements: {
-                        "number": "",
-                        "button": ""
-                    }
-                });
-
                 var $title = components.texts.titleText("<div>", "Display size");
 
                 var $heightControlInput = components.texts.textNumber("<div>", {
@@ -202,12 +188,15 @@ Imcms.define("imcms-image-editor-builder",
                     error: "Error text"
                 });
 
-                return editSizeBEM.buildBlock("<div>", [
-                    {"title": $title},
-                    {"number": $heightControlInput},
-                    {"button": $proportionsBtn},
-                    {"number": $widthControlInput}
-                ]);
+                return new BEM({
+                    block: "imcms-edit-size",
+                    elements: [
+                        {"title": $title},
+                        {"number": $heightControlInput},
+                        {"button": $proportionsBtn},
+                        {"number": $widthControlInput}
+                    ]
+                }).buildBlockStructure("<div>");
             }
 
             function resizeImage(newWidth, newHeight) {
@@ -324,7 +313,6 @@ Imcms.define("imcms-image-editor-builder",
                     }
                 }).buildBlockStructure("<div>");
             }
-
 
             $editableImageArea = buildEditableImageArea();
             $bottomPanel = buildBottomPanel();
@@ -659,8 +647,6 @@ Imcms.define("imcms-image-editor-builder",
                     imageDataContainers.$shadow.height(imageHeight);
                 }
 
-                console.log(imageWidth, imageHeight);
-
                 imageDataContainers.$image.width(imageWidth - angleBorderSize * 2);
                 imageDataContainers.$image.height(imageHeight - angleBorderSize * 2);
                 imageDataContainers.$image.css({
@@ -690,7 +676,6 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function fillData(image) {
-            console.log(image);
             if (!image) {
                 return;
             }
