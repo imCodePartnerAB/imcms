@@ -3,22 +3,18 @@
  * 01.09.17
  */
 Imcms.define("imcms-text-editor-initializer",
-    ["tinyMCE", "imcms-uuid-generator", "jquery"],
-    function (tinyMCE, uuidGenerator, $) {
-        // stupid way to get contextPath! todo: receive from server
-        var relativePath = window.location.pathname;
-        var contextPath = ((relativePath.lastIndexOf("/") === 0) ? "" : "/" + relativePath.split("/")[1]);
-
+    ["tinyMCE", "imcms-uuid-generator", "jquery", "imcms"],
+    function (tinyMCE, uuidGenerator, $, imcms) {
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
         var inlineEditorConfig = {
-            skin_url: contextPath + '/js/libs/tinymce/skins/white',
+            skin_url: imcms.contextPath + '/js/libs/tinymce/skins/white',
             cache_suffix: '?v=0.0.1',
             branding: false,
             skin: 'white',
             inline: true,
             toolbar_items_size: 'small',
-            content_css: contextPath + '/css_new/imcms-text_editor.css',
+            content_css: imcms.contextPath + '/css_new/imcms-text_editor.css',
             plugins: ['autolink link image lists hr code fullscreen save table contextmenu'],
             toolbar: 'code | bold italic underline | bullist numlist | hr |' +
             ' alignleft aligncenter alignright alignjustify | link image | fullscreen | save',
