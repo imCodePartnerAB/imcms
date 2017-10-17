@@ -20,6 +20,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -77,13 +78,12 @@ public class DBConfig {
     }
 
     private void runSqlDiffs(DataSource dataSource) throws IOException {
-        final String sqlResourcesPath = sqlDiffsResource
-                .getURL()
-                .getPath();
+        final URI sqlResourcesURI = sqlDiffsResource
+                .getURI();
 
         final InputStream schemaXmlInputStream = schemaXmlResource.getInputStream();
         final Schema schema = Schema.fromInputStream(schemaXmlInputStream)
-                .setScriptsDir(sqlResourcesPath);
+                .setScriptsDir(sqlResourcesURI);
 
         new DB(dataSource).prepare(schema);
     }
