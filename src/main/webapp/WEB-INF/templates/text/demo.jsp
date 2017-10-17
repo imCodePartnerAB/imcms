@@ -1,161 +1,96 @@
-<%@ page pageEncoding="UTF-8" %>
-
-<%@taglib prefix="imcms" uri="imcms" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%--
+  Created by Serhii from Ubrainians for Imcode
+  Date: 15.09.17
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="imcms" uri="imcms" %>
 
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
 <head>
-    <base href="${contextPath}">
-    <title>${currentDocument.headline} - Powered by imCMS from imCode Partner AB</title>
-    <meta charset="utf-8"/>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/imcms/css/template/demo.css"/>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>imcms v2</title>
+    <!--style files-->
+    <link rel="stylesheet" href="${contextPath}/demo/css/demo.css">
 </head>
 <body>
-<div class="container">
-    <section class="header">
-        <div class="wrapper">
-            <div class="menu">
-                <!-- Example of ImCMS menu tag -->
-                <imcms:menu index='1' document="1001" label="Example">
-                    <ul>
-                        <imcms:menuLoop>
-                            <li>
-                                <imcms:menuItemLink>
-                                    ${menuItem.document.headline}
-                                </imcms:menuItemLink>
-                                <!-- sub menu definition -->
-                                <imcms:menuLoop>
-                                    <div>
-                                        <imcms:menuItemLink>
-                                            ${menuItem.document.headline}
-                                        </imcms:menuItemLink>
-                                    </div>
-                                </imcms:menuLoop>
-                            </li>
-                        </imcms:menuLoop>
-                    </ul>
-                </imcms:menu>
-            </div>
-            <div class="auth">
-                <c:choose>
-                    <c:when test="${not user.defaultUser}">
-                        <div class="info">
-                            <div class="user-name">${user.loginName}</div>
-                            <div class="sign-out">
-                                <imcms:logout>
-                                    Sign Out
-                                </imcms:logout>
+
+<div class="imcms-info-msg">Move your mouse up!</div>
+<div class="imcms-info-msg">Implemented admin panel buttons: "Public", "Edit", "Page Info" and "Document"</div>
+
+<div class="imcms-demo-page">
+    <imcms:menu index='1'>
+        <div class="imcms-demo-page__menu imcms-demo-menu">
+            <imcms:menuLoop>
+                <div class="imcms-demo-menu__menu-item imcms-demo-menu-item${hasChildren?' imcms-demo-menu__menu-item--parent':''}${isCurrent?' imcms-demo-menu__menu-item--active':''}">
+                    <imcms:menuItemLink
+                            classes="imcms-demo-menu-item__text">${menuItem.title}</imcms:menuItemLink>
+                    <imcms:menuLoop>
+                        <div class="imcms-demo-menu__menu-items imcms-demo-menu__menu-items--child">
+                            <div class="imcms-demo-menu__menu-item">
+                                <imcms:menuItemLink
+                                        classes="imcms-demo-menu-item__text">${menuItem.title}</imcms:menuItemLink>
                             </div>
                         </div>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="tabs">
-                            <section>
-                                <div class="tab" selected data-item="1">Sign In</div>
-                                <div class="page" data-item="1" selected>
-                                    <h1>Sign In</h1>
-                                    <imcms:login>
-                                        <div class="field">
-                                            <label>Login</label>
-                                            <imcms:loginname attributes="placeholder='Enter your login'"/>
-                                        </div>
-                                        <div class="field">
-                                            <label>Password</label>
-                                            <imcms:loginpassword/>
-                                        </div>
-                                        <input type="hidden" name="login" value="login"/>
+                    </imcms:menuLoop>
+                </div>
+            </imcms:menuLoop>
+        </div>
+    </imcms:menu>
+    <div class="imcms-demo-page__content imcms-demo-content">
+        <div class="imcms-demo-content__title">Start page</div>
+        <imcms:contentLoop index="1">
+            <imcms:loop>
+                <div class="imcms-demo-content__loop-content demo-loop-content">
+                    <div class="demo-loop-content__image">Lorem ipsum dolor sit amet, consectetur adipiscing</div>
+                    <div class="demo-loop-content__text-area demo-loop-texts">
+                        <div class="demo-loop-texts__text-area demo-text-area demo-text-area--left">
+                            <p>Title Name 1</p>
 
-                                        <div class="field">
-                                            <button class="positive" type="submit">Login</button>
-                                        </div>
-                                    </imcms:login>
-                                </div>
-                            </section>
-                            <section>
-                                <div class="tab" data-item="2">Sign Up</div>
-                                <div class="page" data-item="2">
-                                    <h1>Sign Up</h1>
-                                    <imcms:registration>
-                                        <div class="field">
-                                            <label>Login</label>
-                                            <imcms:registrationlogin/>
-                                        </div>
-                                        <div class="field">
-                                            <label>Email</label>
-                                            <imcms:registrationemail/>
-                                        </div>
-                                        <div class="field">
-                                            <label>First Name</label>
-                                            <imcms:registrationname/>
-                                        </div>
-                                        <div class="field">
-                                            <label>Last Name</label>
-                                            <imcms:registrationsurname/>
-                                        </div>
-                                        <div class="field">
-                                            <label>Password</label>
-                                            <imcms:registrationpassword1/>
-                                        </div>
-                                        <div class="field">
-                                            <label>Repeat password</label>
-                                            <imcms:registrationpassword2/>
-                                        </div>
-                                        <div class="field">
-                                            <button class="positive" type="submit">Register</button>
-                                        </div>
-                                    </imcms:registration>
-                                </div>
-                            </section>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ultrices dui ac mauris
+                            facilisis ornare. Morbi congue mauris non eros ultrices porta. Suspendisse sed consequat
+                            elit. Proin placerat augue tortor, nec gravida odio tempor a. Duis facilisis erat in
+                            maximus sagittis. Suspendisse potenti. Vivamus rutrum facilisis elit, non ultricies
+                            nulla tincidunt in. Suspendisse commodo tincidunt varius. Duis tincidunt, augue aliquet
+                            tristique scelerisque, mi felis vehicula dui, a rhoncus mi mauris in neque. Maecenas non
+                            elit non lacus blandit volutpat iaculis ac lacus. Sed sed mollis eros. Praesent bibendum
+                            egestas mauris loopEntryid tincidunt. Nulla lectus massa, tempor vel interdum non,
+                            sollicitudin
+                            vitae nunc. Vestibulum nec sapien sit amet orci rutrum iaculis. Quisque sit amet aliquam
+                            lorem.
                         </div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-        </div>
-    </section>
-    <section class="content">
-        <div class="wrapper">
-            <h1>${currentDocument.headline}</h1>
+                        <div class="demo-loop-texts__text-area demo-text-area demo-text-area--right">
+                            <p>Title Name 2</p>
 
-            <imcms:text label="test label" no="1" document="${currentDocument.id}"/>
-
-            <h2>Learn more</h2>
-
-            <imcms:text no="2" document="1001" mode="read" pre=""/>
-            <imcms:text label="label test 2" no="4" formats="text"/>
-        </div>
-        <div class="wrapper">
-            <imcms:contentLoop index="1">
-                <imcms:loop>
-                    <div class="figure">
-                        <imcms:image no="1" document="${currentDocument.id}" style="max-width:100px;"/>
-                        <div class="description">
-                            <imcms:text no="1" document="${currentDocument.id}" label="loop_1" formats="CLEANHTML"/>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ultrices dui ac mauris
+                            facilisis ornare. Morbi congue mauris non eros ultrices porta. Suspendisse sed consequat
+                            elit. Proin placerat augue tortor, nec gravida odio tempor a. Duis facilisis erat in
+                            maximus sagittis. Suspendisse potenti. Vivamus rutrum facilisis elit, non ultricies
+                            nulla tincidunt in. Suspendisse commodo tincidunt varius. Duis tincidunt, augue aliquet
+                            tristique scelerisque, mi felis vehicula dui, a rhoncus mi mauris in neque.
                         </div>
                     </div>
-                </imcms:loop>
-            </imcms:contentLoop>
-        </div>
-    </section>
-
-    <section class="footer-placeholder">
-        <section class="footer">
-            <div class="wrapper">
-                <div class="additional">
-                    <imcms:text no="3" document="1001" label="label test once more"
-                                placeholder="<i>now empty text field can be filled with attr `placeholder`</i>"/>
                 </div>
-                <div class="logo">
-                    <imcms:image no="1" document="1001"/>
-                </div>
+            </imcms:loop>
+        </imcms:contentLoop>
+        <div class="imcms-demo-content__images-texts-demo demo-row">
+            <div class="demo-row__column demo-element">
+                <imcms:image no="1"/>
+                <imcms:text no="1" label="Demo text 1"/>
             </div>
-        </section>
-    </section>
-    <imcms:admin/>
+            <div class="demo-row__column demo-element">
+                <imcms:image no="2"/>
+                <imcms:text no="2" label="Demo text 2"/>
+            </div>
+            <div class="demo-row__column demo-element">
+                <imcms:image no="3"/>
+                <imcms:text no="3" label="Demo text 3"/>
+            </div>
+        </div>
+    </div>
 </div>
+
 </body>
+<imcms:admin/>
 </html>
