@@ -110,14 +110,12 @@ Imcms.define("imcms-admin-panel-builder",
         }
 
         function buildFlags() {
-            return componentsBuilder.flags.flagsContainer("<div>", [
-                componentsBuilder.flags.eng("<div>", true, {
-                    click: getNotImplementedButtonClick("flags click")
-                }),
-                componentsBuilder.flags.swe("<div>", false, {
-                    click: getNotImplementedButtonClick("flags click")
-                })
-            ]);
+            return componentsBuilder.flags.flagsContainer(function (language) {
+                return ["<a>", {
+                    text: language.code,
+                    href: imcms.contextPath + "/api/viewDoc/" + imcms.document.id + "?language-code=" + language.code
+                }];
+            });
         }
 
         function createAdminPanel(opts) {

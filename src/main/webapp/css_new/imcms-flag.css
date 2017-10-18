@@ -4,8 +4,8 @@
     cursor: pointer;
     opacity: 0.5;
     outline: none;
-    display: block;
-    padding: 0;
+    display: inline-block;
+    padding: 0 0 0 40px;
     position: relative;
     width: 29px;
     height: 17px;
@@ -13,6 +13,13 @@
     -moz-transition: all .3s;
     -o-transition: all .3s;
     transition: all .3s;
+    text-transform: uppercase;
+    color: #2e3f47;
+    font-size: 15px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 600;
+    line-height: 100%;
+    text-align: center;
 }
 
 .imcms-flag--en {
@@ -20,36 +27,13 @@
     background-size: 29px 17px;
 }
 
-.imcms-flag--sw {
+.imcms-flag--sv {
     background: url("../images_new/icon_flag_sw_active.png") no-repeat left top;
     background-size: 29px 17px;
 }
 
 .imcms-flag--active {
     opacity: 1;
-}
-
-.imcms-flag:after {
-    color: #2e3f47;
-    font-size: 15px;
-    font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 600;
-    line-height: 100%;
-    text-align: center;
-    text-transform: uppercase;
-    position: absolute;
-    right: -30px;
-    top: 0;
-}
-
-.imcms-flag--en:after {
-    content: "EN";
-    display: none;
-}
-
-.imcms-flag--sw:after {
-    content: "SW";
-    display: none;
 }
 
 /*

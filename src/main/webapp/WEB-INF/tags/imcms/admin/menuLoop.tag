@@ -3,7 +3,7 @@
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="menuItems" type="java.util.Collection<com.imcode.imcms.domain.dto.MenuItemDTO>"--%>
-<%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
+<%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
 
 <c:forEach var="treeMenuItem" items="${menuItems}">
     <c:set var="treeMenuItem" value="${treeMenuItem}" scope="request"/>

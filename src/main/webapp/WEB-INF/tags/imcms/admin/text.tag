@@ -12,14 +12,15 @@
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
-<%--@elvariable id="targetDoc" type="com.imcode.imcms.api.TextDocument"--%>
+<%--@elvariable id="targetDoc" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
 <%--@elvariable id="loopEntryRef" type="com.imcode.imcms.domain.dto.LoopEntryRefDTO"--%>
 <%--@elvariable id="textField" type="com.imcode.imcms.api.TextDocument.TextField"--%>
 
-<c:set var="targetDoc" value="${empty document ? currentDocument : (imcms:getDocument(document, pageContext))}"/>
+<c:set var="targetDoc"
+       value="${empty document ? currentDocument : (imcms:getTextDocumentDomainObject(document, pageContext))}"/>
 <c:set var="textField"
-       value="${loopEntryRef eq null ? targetDoc.getTextField(no) : targetDoc.getLoopTextField(loopEntryRef.loopIndex, loopEntryRef.loopEntryIndex, no)}"/>
+       value="${loopEntryRef eq null ? targetDoc.getText(no) : targetDoc.getText(loopEntryRef)}"/>
 <c:set var="textContent" value="${pre}${textField.text}${post}"/>
 
 <c:if test="${isEditMode}">

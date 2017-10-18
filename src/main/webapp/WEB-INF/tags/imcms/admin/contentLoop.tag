@@ -12,7 +12,7 @@
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="loop" type="com.imcode.imcms.domain.dto.LoopDTO"--%>
-<%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
+<%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
 <%--@elvariable id="loopService" type="com.imcode.imcms.domain.service.api.LoopService"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
 

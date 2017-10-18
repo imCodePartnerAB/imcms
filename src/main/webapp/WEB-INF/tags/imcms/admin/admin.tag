@@ -3,7 +3,7 @@
 <%@ tag body-content="empty" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
-<%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
+<%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
 <%--@elvariable id="isAdmin" type="boolean"--%>
 

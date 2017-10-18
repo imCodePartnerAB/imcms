@@ -8,7 +8,7 @@
 <%@ attribute name="post" required="false" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
-<%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
+<%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
 <%--@elvariable id="imageService" type="com.imcode.imcms.domain.service.api.ImageService"--%>
 <%--@elvariable id="image" type="com.imcode.imcms.domain.dto.ImageDTO"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>

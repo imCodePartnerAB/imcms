@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 24.07.17.
  */
-Imcms.define("imcms-flags-builder", ["imcms-bem-builder", "jquery"], function (bemBuilder, $) {
+Imcms.define("imcms-flags-builder", ["imcms-bem-builder", "imcms-languages-rest-api", "imcms", "jquery"], function (bemBuilder, languagesRestApi, imcms, $) {
     var FLAGS_CLASS = "imcms-flag",
         FLAG_ACTIVE_CLASS = FLAGS_CLASS + "--" + "active"
     ;
@@ -38,23 +38,35 @@ Imcms.define("imcms-flags-builder", ["imcms-bem-builder", "jquery"], function (b
         }
     }
 
-    function buildFlag(tag, attributes, modifiers, isActive) {
+    function buildFlag(tag, attributes, isActive, language) {
+        var modifiers = [language.code];
         if (isActive) {
             modifiers.push("active");
         }
 
+        attributes = attributes || {};
+        attributes.title = language.name + "/" + language.nativeName;
+
         return flagsBEM.buildElement("flag", tag, attributes, modifiers).click(onFlagClick);
     }
 
+    function mapLanguagesToFlags(languages, flagBuilderDataProducer) {
+        return languages.map(function (language) {
+            var flagBuilderData = flagBuilderDataProducer(language),
+                isActive = language.code === imcms.language.code;
+
+            return buildFlag.apply(null, flagBuilderData.concat([isActive, language]));
+        });
+    }
+
     return {
-        eng: function (tag, isActive, attributes) {
-            return buildFlag(tag, attributes, ["en"], isActive);
-        },
-        swe: function (tag, isActive, attributes) {
-            return buildFlag(tag, attributes, ["sw"], isActive);
-        },
-        flagsContainer: function (tag, elements, attributes) {
-            return flagsBEM.buildBlock(tag, elements, attributes, "flag");
+        flagsContainer: function (flagBuilderDataProducer) {
+            var $result = flagsBEM.buildBlock("<div>", [], "flag");
+            languagesRestApi.read().done(function (languages) {
+                var flags = mapLanguagesToFlags(languages, flagBuilderDataProducer);
+                $result.append(flags);
+            });
+            return $result;
         }
     }
 });

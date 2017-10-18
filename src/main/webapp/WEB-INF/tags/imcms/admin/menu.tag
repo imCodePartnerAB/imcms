@@ -9,13 +9,13 @@
 <%@ variable name-given="menuItems" scope="NESTED" variable-class="java.util.Collection" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
-<%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
+<%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
 <%--@elvariable id="targetDocId" type="java.lang.Integer"--%>
 <%--@elvariable id="menuService" type="com.imcode.imcms.domain.service.api.MenuService"--%>
 
 <c:set var="targetDocId"
-       value="${empty document ? currentDocument.id : (imcms:getDocument(document, pageContext).id)}"/>
+       value="${empty document ? currentDocument.id : document}"/>
 <c:set var="menuItems" value="${menuService.getPublicMenuItemsOf(index, targetDocId)}" scope="request"/>
 <c:set var="menuContent">${pre}<jsp:doBody/>${post}</c:set>
 <c:remove var="menuItems"/>

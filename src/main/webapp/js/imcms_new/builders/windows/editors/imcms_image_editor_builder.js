@@ -347,18 +347,13 @@ Imcms.define("imcms-image-editor-builder",
             function buildImageLangFlags() {
                 imageData.langCode = "en"; // by default
 
-                return components.flags.flagsContainer("<div>", [
-                    components.flags.eng("<div>", true, {
+                return components.flags.flagsContainer(function (language) {
+                    return ["<div>", {
                         click: function () {
-                            imageData.langCode = "en";
+                            imageData.langCode = language.code;
                         }
-                    }),
-                    components.flags.swe("<div>", false, {
-                        click: function () {
-                            imageData.langCode = "sv";
-                        }
-                    })
-                ]);
+                    }];
+                });
             }
 
             function buildAllLanguagesCheckbox() {
