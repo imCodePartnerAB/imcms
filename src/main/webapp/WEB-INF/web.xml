@@ -195,10 +195,6 @@
     <!--
     fixme: remove???
     -->
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.ChangeImage</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.ChangeImage</servlet-class>
-    </servlet>
 
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher</servlet-name>
@@ -223,11 +219,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.EditImage</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.EditImage</servlet-class>
     </servlet>
 
     <servlet>
@@ -456,11 +447,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.ChangeImage</servlet-name>
-        <url-pattern>/servlet/ChangeImage</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher</servlet-name>
         <url-pattern>/servlet/DocumentPageFlowDispatcher</url-pattern>
     </servlet-mapping>
@@ -483,11 +469,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.GetDoc</servlet-name>
         <url-pattern>/GetDoc</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.EditImage</servlet-name>
-        <url-pattern>/servlet/EditImage</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -5,7 +5,7 @@
 Imcms.define("imcms-image-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder", "imcms-content-manager-builder",
-        "imcms-image-rest-api", "imcms-image-cropper", "jquery"
+        "imcms-images-rest-api", "imcms-image-cropper", "jquery"
     ],
     function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $) {
         var $rightSidePanel, $bottomPanel, $editableImageArea;
@@ -665,6 +665,7 @@ Imcms.define("imcms-image-editor-builder",
                 });
 
                 imageCropper.initImageCropper({
+                    imageData: imageData,
                     $imageEditor: imageWindowBuilder.$editor,
                     $croppingArea: imageDataContainers.$cropArea,
                     $cropImg: imageDataContainers.$cropImg,

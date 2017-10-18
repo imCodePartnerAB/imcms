@@ -152,6 +152,7 @@ public abstract class ImageData implements Serializable {
         private volatile int cropX2 = -1;
         private volatile int cropY2 = -1;
 
+        @JsonIgnore
         private volatile boolean valid;
 
         public CropRegion(int cropX1, int cropY1, int cropX2, int cropY2) {
@@ -172,6 +173,12 @@ public abstract class ImageData implements Serializable {
             }
 
             updateValid();
+        }
+
+        @JsonIgnore
+        public boolean isValid() {
+            updateValid();
+            return valid;
         }
 
         @JsonIgnore

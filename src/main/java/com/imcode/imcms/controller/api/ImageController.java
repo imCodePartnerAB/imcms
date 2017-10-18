@@ -3,18 +3,11 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.service.api.ImageService;
 import imcode.server.Imcms;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import org.apache.log4j.Logger;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/images")
 public class ImageController {
 
     public static final Logger LOG = Logger.getLogger(ImageController.class);
@@ -39,77 +32,5 @@ public class ImageController {
         }
 
         imageService.saveImage(image);
-    }
-
-    /**
-     * Returns empty upper or lower image index.
-     * For example, if we have images in document under indexes -3, -1, 1, 2, 10,
-     * calling this method for lower indexes we will get -2, for upper it will be 3.
-     *
-     * @param docId     interested document id
-     * @param direction String parameter "UPPER" or "LOWER"
-     */
-    // todo: update to work with new client API
-    @RequestMapping("/emptyNo/{docId}/{upperOrLower}")
-    public void getFreeImageNo(@PathVariable("docId") int docId,
-                               @PathVariable("upperOrLower") Direction direction,
-                               HttpServletResponse response) {
-
-        final TextDocumentDomainObject document = Imcms.getServices()
-                .getDocumentMapper()
-                .getWorkingDocument(docId);
-
-        Integer result = null;
-
-        if (document != null) {
-
-            switch (direction) {
-                case LOWER: {
-                    result = -1;
-
-                    while ((result > Integer.MIN_VALUE) && (isIndexOccupied(document, result))) {
-                        result--;
-                    }
-                    break;
-                }
-
-                case UPPER: {
-                    result = 1;
-
-                    while ((result < Integer.MAX_VALUE) && (isIndexOccupied(document, result))) {
-                        result++;
-                    }
-                    break;
-                }
-            }
-        }
-
-        if ((result != null) && (result.equals(Integer.MAX_VALUE) || result.equals(Integer.MIN_VALUE))) {
-            result = null;
-        }
-
-        writeJSON(result, response);
-    }
-
-    // fixme: moved from another class, should not be used at all!!!1
-    private void writeJSON(Object object, HttpServletResponse response) {
-        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
-        MediaType jsonMimeType = MediaType.parseMediaType("application/json");
-
-        if (jsonConverter.canWrite(object.getClass(), jsonMimeType)) {
-            try {
-                jsonConverter.write(object, jsonMimeType, new ServletServerHttpResponse(response));
-            } catch (IOException e) {
-                LOG.fatal(e.getMessage(), e);
-            }
-        }
-    }
-
-    private boolean isIndexOccupied(TextDocumentDomainObject document, Integer result) {
-        return (document.getImage(result).getGeneratedFilename() != null);
-    }
-
-    private enum Direction {
-        UPPER, LOWER
     }
 }
