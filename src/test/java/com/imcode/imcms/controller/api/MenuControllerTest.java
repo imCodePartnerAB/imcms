@@ -38,7 +38,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Override
     protected String controllerPath() {
-        return "/menu";
+        return "/menus";
     }
 
     @Test

@@ -106,7 +106,7 @@ Imcms.config = {
         "imcms-templates-rest-api": "rest/imcms_templates_rest_api.js",
         "imcms-category-types-rest-api": "rest/imcms_category_types_rest_api.js",
         "imcms-loop-rest-api": "rest/imcms_loop_rest_api.js",
-        "imcms-menu-rest-api": "rest/imcms_menu_rest_api.js",
+        "imcms-menus-rest-api": "rest/imcms_menus_rest_api.js",
         "imcms-image-rest-api": "rest/imcms_image_rest_api.js"
     }
 };
