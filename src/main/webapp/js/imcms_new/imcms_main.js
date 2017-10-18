@@ -106,8 +106,8 @@ Imcms.config = {
         "imcms-templates-rest-api": "rest/imcms_templates_rest_api.js",
         "imcms-category-types-rest-api": "rest/imcms_category_types_rest_api.js",
         "imcms-loops-rest-api": "rest/imcms_loops_rest_api.js",
-        "imcms-menu-rest-api": "rest/imcms_menu_rest_api.js",
-        "imcms-images-rest-api": "rest/imcms_images_rest_api.js"
+        "imcms-menus-rest-api": "rest/imcms_menus_rest_api.js",
+        "imcms-image-rest-api": "rest/imcms_image_rest_api.js"
     }
 };
 if (Imcms.browserInfo.isIE10) {
