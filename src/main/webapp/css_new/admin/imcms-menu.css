@@ -69,6 +69,10 @@
     margin: 5px auto;
 }
 
+.imcms-menu__item--versioning-off {
+    display: none;
+}
+
 .imcms-menu__item--admin {
     background-image: url("../../images_new/admin_panel/icon_admin.png");
 }

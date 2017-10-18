@@ -50,7 +50,8 @@ Imcms.define("imcms-admin-panel-builder",
                 return panelButtonsBEM.buildBlockElement("item", buttonData.tag, attributes, buttonData.modifiers);
             }
 
-            var buttons = [
+            var versionedContentModifier = imcms.isVersioningAllowed ? undefined : "versioning-off",
+                buttons = [
                 {
                     name: 'public',
                     tag: '<a>',
@@ -68,13 +69,13 @@ Imcms.define("imcms-admin-panel-builder",
                     tag: "<li>",
                     content: "preview",
                     onClick: getNotImplementedButtonClick("preview click"),
-                    modifiers: ["preview"]
+                        modifiers: ["preview", versionedContentModifier]
                 }, {
                     name: 'publish_offline',
                     tag: "<li>",
                     content: "publish offline",
                     onClick: getNotImplementedButtonClick("publish offline version click"),
-                    modifiers: ["publish-of"]
+                        modifiers: ["publish-of", versionedContentModifier]
                 }, {
                     name: 'page_info',
                     tag: "<li>",
@@ -89,16 +90,16 @@ Imcms.define("imcms-admin-panel-builder",
                     modifiers: ["document"]
                 }, {
                     name: 'admin',
-                    tag: "<li>",
+                        tag: "<a>",
+                        href: imcms.contextPath + "/servlet/AdminManager",
                     content: "admin",
-                    onClick: getNotImplementedButtonClick("admin click"),
                     modifiers: ["admin"]
                 }, {
                     name: 'logout',
-                    tag: "<li>",
+                        tag: "<a>",
+                        href: imcms.contextPath + "/servlet/LogOut",
                     content: componentsBuilder.buttons.positiveButton({
-                        text: "log out",
-                        click: getNotImplementedButtonClick("logout click")
+                        text: "log out"
                     }),
                     modifiers: ["logout"]
                 }
