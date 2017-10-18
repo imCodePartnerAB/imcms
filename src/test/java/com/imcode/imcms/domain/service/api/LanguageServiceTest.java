@@ -1,4 +1,4 @@
-package com.imcode.imcms.domain.service.core;
+package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.config.TestConfig;
