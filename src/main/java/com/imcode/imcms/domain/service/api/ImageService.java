@@ -86,18 +86,6 @@ public class ImageService {
                 .orElse(new ImageDTO(index, docId));
     }
 
-    private Integer getImageId(ImageDTO imageDTO, Version version, Language language) {
-        final Integer index = imageDTO.getIndex();
-        final LoopEntryRefDTO loopEntryRefDTO = imageDTO.getLoopEntryRef();
-        final Image image = getImage(index, version, language, loopEntryRefDTO);
-
-        if (image == null) {
-            return null;
-        }
-
-        return image.getId();
-    }
-
     private Image generateImage(ImageDTO imageDTO, Version version, Language language) {
         ImageSource imageSource = new NullImageSource();
         String imagePath = imageDTO.getPath();
@@ -126,5 +114,17 @@ public class ImageService {
         return (loopEntryRef == null)
                 ? imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
                 : imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
+    }
+
+    private Integer getImageId(ImageDTO imageDTO, Version version, Language language) {
+        final Integer index = imageDTO.getIndex();
+        final LoopEntryRefDTO loopEntryRefDTO = imageDTO.getLoopEntryRef();
+        final Image image = getImage(index, version, language, loopEntryRefDTO);
+
+        if (image == null) {
+            return null;
+        }
+
+        return image.getId();
     }
 }
