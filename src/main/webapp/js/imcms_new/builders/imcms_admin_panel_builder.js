@@ -66,9 +66,9 @@ Imcms.define("imcms-admin-panel-builder",
                     modifiers: ["edit"]
                 }, {
                     name: 'preview',
-                    tag: "<li>",
+                        tag: "<a>",
+                        href: imcms.contextPath + '/api/viewDoc/' + imcms.document.id + "?working-preview=true",
                     content: "preview",
-                    onClick: getNotImplementedButtonClick("preview click"),
                         modifiers: ["preview", versionedContentModifier]
                 }, {
                     name: 'publish_offline',
