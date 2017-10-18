@@ -73,7 +73,7 @@ Imcms.config = {
         "imcms-modal-window-builder": "builders/windows/imcms_modal_window_builder.js",
         "imcms-content-manager-builder": "builders/windows/imcms_content_manager_builder.js",
         "imcms-page-info-builder": "builders/windows/imcms_page_info_builder.js",
-        // <page_info_tabs>
+        //  <page_info_tabs>
         "imcms-page-info-tabs-builder": "builders/windows/page_info_tabs/imcms_page_info_tabs_builder.js",
         "imcms-page-info-tabs-linker": "builders/windows/page_info_tabs/imcms_page_info_tabs_linker.js",
         "imcms-appearance-tab-builder": "builders/windows/page_info_tabs/imcms_appearance_tab_builder.js",
@@ -84,12 +84,13 @@ Imcms.config = {
         "imcms-permissions-tab-builder": "builders/windows/page_info_tabs/imcms_permissions_tab_builder.js",
         "imcms-templates-tab-builder": "builders/windows/page_info_tabs/imcms_templates_tab_builder.js",
         "imcms-status-tab-builder": "builders/windows/page_info_tabs/imcms_status_tab_builder.js",
-        // </page_info_tabs>
-        // editors
+        //  </page_info_tabs>
+        //  <editors>
         "imcms-menu-editor-builder": "builders/windows/editors/imcms_menu_editor_builder.js",
         "imcms-document-editor-builder": "builders/windows/editors/imcms_document_editor_builder.js",
         "imcms-image-editor-builder": "builders/windows/editors/imcms_image_editor_builder.js",
         "imcms-loop-editor-builder": "builders/windows/editors/imcms_loop_editor_builder.js",
+        //  </editors>
         // </windows>
         // other builders
         "imcms-bem-builder": "builders/imcms_bem_builder.js",
