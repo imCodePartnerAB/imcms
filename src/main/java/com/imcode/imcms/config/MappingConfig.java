@@ -5,6 +5,7 @@ import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +47,16 @@ public class MappingConfig {
     @Bean
     public Function<User, UserDTO> userToUserDTO() {
         return user -> new UserDTO(user.getId(), user.getLogin());
+    }
+
+
+    @Bean
+    public Function<Language, LanguageDTO> languageToLanguageDTO() {
+        return language -> {
+            final LanguageDTO languageDTO = new LanguageDTO();
+            BeanUtils.copyProperties(language, languageDTO);
+            return languageDTO;
+        };
     }
 
     @Bean
