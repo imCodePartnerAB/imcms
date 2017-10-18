@@ -54,7 +54,7 @@ public class LoopControllerTest extends AbstractControllerTest {
 
     @Override
     protected String controllerPath() {
-        return "/loop";
+        return "/loops";
     }
 
     @Test

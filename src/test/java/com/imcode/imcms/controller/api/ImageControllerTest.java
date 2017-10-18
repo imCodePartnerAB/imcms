@@ -51,7 +51,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Override
     protected String controllerPath() {
-        return "/image";
+        return "/images";
     }
 
     @Before
