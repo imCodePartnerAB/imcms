@@ -2,10 +2,13 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.*;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.HtmlDocumentDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.kerberos.KerberosLoginResult;
 import imcode.server.kerberos.KerberosLoginStatus;
-import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.io.IOUtils;
@@ -218,16 +221,9 @@ public class GetDoc extends HttpServlet {
 
             // Log to accesslog
             TRACK_LOG.info(documentRequest);
-        } else {
+        } else if (document instanceof TextDocumentDomainObject) {
             Utility.setDefaultHtmlContentType(res);
-            user.setTemplateGroup(null);
-            ParserParameters paramsToParser = new ParserParameters(documentRequest);
-
-            paramsToParser.setTemplate(req.getParameter("template"));
-            paramsToParser.setParameter(req.getParameter("param"));
-            // Log to accesslog
-            TRACK_LOG.info(documentRequest);
-            imcref.parsePage(paramsToParser, res.getWriter());
+            req.getRequestDispatcher("/api/viewDoc/" + document.getId()).forward(req, res);
         }
     }
 
