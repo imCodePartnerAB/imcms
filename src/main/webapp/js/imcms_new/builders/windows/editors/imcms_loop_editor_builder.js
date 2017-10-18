@@ -45,7 +45,7 @@ Imcms.define("imcms-loop-editor-builder",
                     .sort(function (a, b) {
                         return (a - b);
                     })
-                    .pop();
+                    .pop() || 0;
             }
 
             function onCreateNewClicked() {
