@@ -6,7 +6,7 @@ import imcode.server.Imcms;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/loop")
+@RequestMapping("/loops")
 public class LoopController {
 
     private final LoopService loopService;

@@ -4,7 +4,7 @@
  */
 Imcms.define("imcms-loop-editor-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-loop-rest-api", "imcms-window-builder",
+        "imcms-bem-builder", "imcms-components-builder", "imcms-loops-rest-api", "imcms-window-builder",
         "imcms-controls-builder", "jquery"
     ],
     function (BEM, components, loopREST, WindowBuilder, controls, $) {
