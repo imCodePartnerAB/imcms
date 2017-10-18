@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/images")
 public class ImageController {
 
     public static final Logger LOG = Logger.getLogger(ImageController.class);
