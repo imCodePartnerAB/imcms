@@ -8,7 +8,6 @@ import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
@@ -34,7 +33,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.beans.PropertyDescriptor;
@@ -69,8 +67,6 @@ public class DefaultImcmsServices implements ImcmsServices {
     private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper;
     private DocumentMapper documentMapper;
     private TemplateMapper templateMapper;
-    @Autowired
-    private ImageCacheMapper imageCacheMapper;
     private KeyStore keyStore;
     private KerberosLoginService kerberosLoginService;
     private Map<String, VelocityEngine> velocityEngines = new TreeMap<>();
@@ -102,7 +98,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         initAuthenticatorsAndUserAndRoleMappers(props);
         initDocumentMapper();
         initTemplateMapper();
-        initImageCacheMapper();
 
         kerberosLoginService = new KerberosLoginService(config);
     }
@@ -248,7 +243,6 @@ public class DefaultImcmsServices implements ImcmsServices {
     private void initDocumentMapper() {
         documentMapper = getManagedBean(DocumentMapper.class);
         documentMapper.init(this, getDatabase(), null);
-        //documentMapper = new DocumentMapper(this, this.getDatabase());
 
         DocumentIndex documentIndexService = new LoggingDocumentIndex(database,
                 new PhaseQueryFixingDocumentIndex(DocumentIndexFactory.create(this)));
@@ -258,10 +252,6 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     private void initTemplateMapper() {
         templateMapper = new TemplateMapper(this);
-    }
-
-    private void initImageCacheMapper() {
-        imageCacheMapper = getManagedBean(ImageCacheMapper.class);
     }
 
     private void initAuthenticatorsAndUserAndRoleMappers(Properties props) {
@@ -726,10 +716,6 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     public CategoryMapper getCategoryMapper() {
         return documentMapper.getCategoryMapper();
-    }
-
-    public ImageCacheMapper getImageCacheMapper() {
-        return imageCacheMapper;
     }
 
     public LanguageMapper getLanguageMapper() {

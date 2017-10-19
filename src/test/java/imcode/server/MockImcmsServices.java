@@ -6,7 +6,6 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.document.TemplateMapper;
 import imcode.server.kerberos.KerberosLoginService;
@@ -138,10 +137,6 @@ public class MockImcmsServices implements ImcmsServices {
 
     public void setLanguageMapper(LanguageMapper languageMapper) {
         this.languageMapper = languageMapper;
-    }
-
-    public ImageCacheMapper getImageCacheMapper() {
-        return null;
     }
 
     public CachingFileLoader getFileCache() {

@@ -6,7 +6,9 @@ import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.flow.DocumentPageFlow;
-import com.imcode.imcms.mapping.container.*;
+import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.mapping.container.TextDocTextContainer;
+import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.NativeQueries;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
@@ -76,25 +78,10 @@ public class DocumentMapper implements DocumentGetter {
      */
     @Deprecated
     public DocumentMapper(ImcmsServices services, Database database) {
-        this.imcmsServices = services;
-        this.database = database;
-
-        Config config = services.getConfig();
-        int documentCacheMaxSize = config.getDocumentCacheMaxSize();
-
-        documentLoader = services.getManagedBean(DocumentLoader.class);
-        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, services.getDocumentLanguages(), documentCacheMaxSize);
-
-        nativeQueries = services.getManagedBean(NativeQueries.class);
-        categoryMapper = services.getManagedBean(CategoryMapper.class);
-
-        documentSaver = services.getManagedBean(DocumentSaver.class);
-        documentSaver.setDocumentMapper(this);
-
-        documentContentMapper = services.getManagedBean(DocumentContentMapper.class);
+        throw new UnsupportedOperationException("Use com.imcode.imcms.mapping.DocumentMapper#init() method instead");
     }
 
-    static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
+    private static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
         File filePath = Imcms.getServices().getConfig().getFilePath();
         File[] filesToDelete = filePath.listFiles(fileFilter);
         Stream.of(filesToDelete).forEach(File::delete);
@@ -133,11 +120,6 @@ public class DocumentMapper implements DocumentGetter {
      * Creates new Document which inherits parent doc's meta excluding keywords and properties.
      * <p>
      * Doc's CommonContent and content (texts, images, urls, files, etc) are not inherited.
-     *
-     * @param documentTypeId
-     * @param parentDoc
-     * @param user
-     * @return
      */
     public DocumentDomainObject createDocumentOfTypeFromParent(
             int documentTypeId,
@@ -193,13 +175,9 @@ public class DocumentMapper implements DocumentGetter {
      * According to specification only doc of type {@link imcode.server.document.textdocument.TextDocumentDomainObject}
      * can be used as parent (of a 'profile').
      * NB! for some (undocumented) reason a doc of any type might be used as a parent.
-     *
-     * @param newTextDocument
-     * @param user
-     * @param parent
      */
-    void setTemplateForNewTextDocument(TextDocumentDomainObject newTextDocument, UserDomainObject user,
-                                       DocumentDomainObject parent) {
+    private void setTemplateForNewTextDocument(TextDocumentDomainObject newTextDocument, UserDomainObject user,
+                                               DocumentDomainObject parent) {
         DocumentPermissionSetTypeDomainObject documentPermissionSetType = user.getDocumentPermissionSetTypeFor(parent);
         String templateName = null;
 
@@ -218,11 +196,11 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    void makeDocumentLookNew(DocumentDomainObject document, UserDomainObject user) {
+    private void makeDocumentLookNew(DocumentDomainObject document, UserDomainObject user) {
         makeDocumentLookNew(document.getMeta(), user);
     }
 
-    void makeDocumentLookNew(DocumentMeta documentMeta, UserDomainObject user) {
+    private void makeDocumentLookNew(DocumentMeta documentMeta, UserDomainObject user) {
         Date now = new Date();
 
         documentMeta.setCreatorId(user.getId());
@@ -240,18 +218,14 @@ public class DocumentMapper implements DocumentGetter {
         return getDocumentReference(document.getId());
     }
 
-    public DocumentReference getDocumentReference(int childId) {
+    private DocumentReference getDocumentReference(int childId) {
         return new GetterDocumentReference(childId, this);
     }
 
     /**
      * Saves doc as new.
      *
-     * @param doc
-     * @param user
      * @return saved document.
-     * @throws DocumentSaveException
-     * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @see #createDocumentOfTypeFromParent(int, imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
      * @see imcode.server.document.DocumentDomainObject#fromDocumentTypeId(int)
      */
@@ -277,19 +251,12 @@ public class DocumentMapper implements DocumentGetter {
      * To workaround this limitation and provide backward compatibility with legacy API,
      * appearances are passed in a separate parameter and doc's appearance is ignored.
      *
-     * @param doc
-     * @param appearances
-     * @param user
-     * @param saveOpts
-     * @param <T>
      * @return saved document
-     * @throws DocumentSaveException
-     * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances,
-                                                              EnumSet<SaveOpts> saveOpts,
-                                                              UserDomainObject user)
+    private <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances,
+                                                               EnumSet<SaveOpts> saveOpts,
+                                                               UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         if (appearances.isEmpty()) {
@@ -314,13 +281,6 @@ public class DocumentMapper implements DocumentGetter {
      * To workaround this limitation and provide backward compatibility with legacy API,
      * i18nMeta-s are passed in a separate parameter and doc's i18nMeta is ignored.
      *
-     * @param doc
-     * @param appearances
-     * @param user
-     * @param <T>
-     * @return
-     * @throws DocumentSaveException
-     * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances, UserDomainObject user)
@@ -358,21 +318,6 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     /**
-     * Saves document menu.
-     *
-     * @since 6.0
-     */
-    public void saveTextDocMenu(TextDocMenuContainer container, UserDomainObject user)
-            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
-
-        try {
-            documentSaver.saveMenu(container, user);
-        } finally {
-            invalidateDocument(container.getDocId());
-        }
-    }
-
-    /**
      * Creates next document version.
      * <p>
      * Saves document's working version copy as next document version.
@@ -380,7 +325,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return new document version.
      * @since 6.0
      */
-    public DocumentVersion makeDocumentVersion(int docId, UserDomainObject user)
+    DocumentVersion makeDocumentVersion(int docId, UserDomainObject user)
             throws DocumentSaveException {
 
         List<DocumentDomainObject> docs = new LinkedList<>();
@@ -408,7 +353,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void changeDocumentDefaultVersion(int docId, int newDocDefaultVersionNo, UserDomainObject publisher)
+    void changeDocumentDefaultVersion(int docId, int newDocDefaultVersionNo, UserDomainObject publisher)
             throws DocumentSaveException, NoPermissionToEditDocumentException {
         try {
             documentSaver.changeDocumentDefaultVersion(docId, newDocDefaultVersionNo, publisher);
@@ -421,7 +366,7 @@ public class DocumentMapper implements DocumentGetter {
         invalidateDocument(document.getId());
     }
 
-    public void invalidateDocument(int docId) {
+    private void invalidateDocument(int docId) {
         documentLoaderCachingProxy.removeDocFromCache(docId);
         documentIndex.indexDocument(docId);
     }
@@ -443,16 +388,9 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void deleteDocument(DocumentDomainObject document) {
-        if (document instanceof TextDocumentDomainObject) {
-            TextDocumentDomainObject textDoc = (TextDocumentDomainObject) document;
-
-            imcmsServices.getImageCacheMapper().deleteDocumentImagesCache(textDoc.getImages());
-        }
-
         documentSaver.getDocRepository().deleteDocument(document.getId());
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
-
         documentLoaderCachingProxy.removeDocFromCache(document.getId());
     }
 
@@ -500,18 +438,6 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * @param documentIdentity document id or alias.
-     * @return working version of a document or null if document can not be found.
-     */
-    public <T extends DocumentDomainObject> T getWorkingDocument(String documentIdentity) {
-        Integer documentId = toDocumentId(documentIdentity);
-
-        return documentId == null
-                ? null
-                : getWorkingDocument(documentId);
-    }
-
-    /**
-     * @param documentIdentity document id or alias.
      * @return latest version of a document or null if document can not be found.
      */
     public DocumentDomainObject getDocument(String documentIdentity) {
@@ -526,7 +452,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param documentIdentity document id or alias
      * @return document id or null if there is no document with such identity.
      */
-    public Integer toDocumentId(String documentIdentity) {
+    private Integer toDocumentId(String documentIdentity) {
         if (documentIdentity == null) {
             return null;
         }
@@ -555,8 +481,6 @@ public class DocumentMapper implements DocumentGetter {
      * @param doc  existing doc.
      * @param user the user
      * @return working version of new saved document in source document's language.
-     * @throws imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException
-     * @throws DocumentSaveException
      */
     public <T extends DocumentDomainObject> T copyDocument(T doc, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
@@ -576,7 +500,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return copied doc id.
      * @since 6.0
      */
-    public int copyDocumentsWithCommonMetaAndVersion(VersionRef versionRef, UserDomainObject user)
+    private int copyDocumentsWithCommonMetaAndVersion(VersionRef versionRef, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         // todo: put into resource file.
@@ -681,7 +605,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return working document
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T getWorkingDocument(int docId, String docLanguageCode) {
+    private <T extends DocumentDomainObject> T getWorkingDocument(int docId, String docLanguageCode) {
         return documentLoaderCachingProxy.getWorkingDoc(docId, docLanguageCode);
     }
 
@@ -717,7 +641,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return custom document
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef) {
+    <T extends DocumentDomainObject> T getCustomDocument(DocRef docRef) {
         if (!Imcms.isVersioningAllowed()) {
             // force version changing to working
             docRef = DocRef.of(docRef.getId(), DocumentVersion.WORKING_VERSION_NO, docRef.getLanguageCode());
@@ -729,11 +653,6 @@ public class DocumentMapper implements DocumentGetter {
         return categoryMapper;
     }
 
-    @SuppressWarnings("unused")
-    public void setCategoryMapper(CategoryMapper categoryMapper) {
-        this.categoryMapper = categoryMapper;
-    }
-
     public Database getDatabase() {
         return database;
     }
@@ -743,8 +662,6 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     /**
-     * @param documentMeta
-     * @param date
      * @since 6.0
      */
     void setCreatedAndModifiedDatetimes(DocumentMeta documentMeta, Date date) {
@@ -768,39 +685,6 @@ public class DocumentMapper implements DocumentGetter {
             documentSaver.saveText(container, user);
         } finally {
             invalidateDocument(container.getDocId());
-        }
-    }
-
-    /**
-     * Saves images and non-saved enclosing content loop if any.
-     * <p>
-     * Non saved content loop might be added to the document by ContentLoopTag2.
-     *
-     * @see com.imcode.imcms.servlet.tags.LoopTag
-     * @since 6.0
-     */
-    public synchronized void saveTextDocImages(TextDocImagesContainer container, UserDomainObject user)
-            throws NoPermissionInternalException, DocumentSaveException {
-        try {
-            documentSaver.saveImages(container, user);
-        } finally {
-            invalidateDocument(container.getDocId());
-        }
-    }
-
-    /**
-     * Saves images and non-saved enclosing content loop if any.
-     * <p>
-     * Non saved content loop might be added to the document by ContentLoopTag2.
-     *
-     * @see com.imcode.imcms.servlet.tags.LoopTag
-     * @since 6.0
-     */
-    public synchronized void saveTextDocImage(TextDocImageContainer container, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        try {
-            documentSaver.saveImage(container, user);
-        } finally {
-            invalidateDocument(container.getDocRef().getId());
         }
     }
 
@@ -850,37 +734,10 @@ public class DocumentMapper implements DocumentGetter {
      * @return document with needed version and language or null
      * @since 6.0
      */
-    public <T extends DocumentDomainObject> T getVersionedDocument(int docId, String langCode, ServletRequest request) {
+    private <T extends DocumentDomainObject> T getVersionedDocument(int docId, String langCode, ServletRequest request) {
         return (isWorkingDocumentVersion(request))
                 ? getWorkingDocument(docId, langCode)
                 : getDefaultDocument(docId, langCode);
-    }
-
-    /**
-     * Get document version by document id or alias and parameters in request
-     *
-     * @param documentIdentity document id or alias
-     * @return document with needed version or null
-     * @since 6.0
-     */
-    public <T extends DocumentDomainObject> T getVersionedDocument(String documentIdentity, ServletRequest request) {
-        Integer documentId = toDocumentId(documentIdentity);
-
-        return (documentId != null)
-                ? getVersionedDocument(documentId, request)
-                : null;
-    }
-
-    /**
-     * Get document version by document id and parameters in request
-     *
-     * @return document with needed version or null
-     * @since 6.0
-     */
-    public <T extends DocumentDomainObject> T getVersionedDocument(int docId, ServletRequest request) {
-        return (isWorkingDocumentVersion(request))
-                ? getWorkingDocument(docId)
-                : getDocument(docId);
     }
 
     /**
@@ -889,7 +746,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return true if requesting a working version
      * @since 6.0
      */
-    public boolean isWorkingDocumentVersion(ServletRequest request) {
+    private boolean isWorkingDocumentVersion(ServletRequest request) {
         return ("" + PERM_EDIT_TEXT_DOCUMENT_TEXTS).equals(request.getParameter("flags"))
                 || BooleanUtils.toBoolean(request.getParameter(REQUEST_PARAM__WORKING_PREVIEW))
                 || ((HttpServletRequest) request).getRequestURI().contains(SINGLE_EDITOR_VIEW);
@@ -904,90 +761,6 @@ public class DocumentMapper implements DocumentGetter {
 
     public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId, int versionNo) {
         return documentContentMapper.getCommonContents(docId, versionNo);
-    }
-
-    @SuppressWarnings("unused")
-    public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {
-        List<String[]> result = nativeQueries.getAllMimeTypesWithDescriptions(user.getLanguageIso639_2());
-
-        String[][] mimeTypes = new String[result.size()][];
-
-        for (int i = 0; i < mimeTypes.length; i++) {
-            mimeTypes[i] = result.get(i);
-        }
-
-        return mimeTypes;
-    }
-
-    @SuppressWarnings("unused")
-    public String[] getAllMimeTypes() {
-        List<String> allMimeTypes = nativeQueries.getAllMimeTypes();
-        return allMimeTypes.toArray(new String[allMimeTypes.size()]);
-    }
-
-    @SuppressWarnings("unused")
-    public List<Integer> getParentDocsIds(DocumentDomainObject doc) {
-        return menuRepository.getParentDocsIds(doc.getId(), doc.getVersionNo());
-    }
-
-    @SuppressWarnings("unused")
-    public IntRange getDocumentIdRange() {
-        Integer[] minMaxPair = documentSaver.getDocRepository().getMinMaxDocumentIds();
-
-        return minMaxPair[0] == null ? null : new IntRange(minMaxPair[0], minMaxPair[1]);
-    }
-
-    @SuppressWarnings("unused")
-    public <T extends DocumentDomainObject> T getCustomDocumentInDefaultLanguage(DocRef docRef) {
-        return getCustomDocument(
-                DocRef.builder(docRef)
-                        .languageCode(imcmsServices.getDocumentLanguages().getDefault().getCode())
-                        .build()
-        );
-    }
-
-    @SuppressWarnings("unused")
-    public <T extends DocumentDomainObject> List<T> findDocumentsByHeadline(String term) {
-        List<Integer> ids = getAllDocumentIds();
-        List<T> result = new ArrayList<>();
-        term = term.toLowerCase();
-        for (Integer id : ids) {
-            T document = getDocument(id);
-            if (term.isEmpty() || document.getHeadline().toLowerCase().contains(term))
-                result.add(document);
-        }
-        return result;
-    }
-
-    @SuppressWarnings("unused")
-    public DocumentLoaderCachingProxy getDocumentLoaderCachingProxy() {
-        return documentLoaderCachingProxy;
-    }
-
-    /**
-     * Saves text and non-saved enclosing content loop the text may refer.
-     * Updates doc's last modified datetime.
-     * <p>
-     * Non saved enclosing content loop might be added to the doc by ContentLoopTag2.
-     *
-     * @param container - texts being saved
-     * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
-     * @see com.imcode.imcms.servlet.tags.LoopTag
-     */
-    @SuppressWarnings("unused")
-    public synchronized void saveTextDocTexts(TextDocTextsContainer container, UserDomainObject user)
-            throws NoPermissionInternalException, DocumentSaveException {
-        try {
-            documentSaver.saveTexts(container, user);
-        } finally {
-            invalidateDocument(container.getDocId());
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @Deprecated
-    void setCreatedAndModifiedDatetimes(DocumentDomainObject document, Date date) {
-        setCreatedAndModifiedDatetimes(document.getMeta(), date);
     }
 
     /**
@@ -1018,24 +791,13 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     /**
-     * Makes a version from a working/draft version.
-     */
-    @SuppressWarnings("unused")
-    public static class MakeDocumentVersionCommand extends DocumentPageFlow.SaveDocumentCommand {
-
-        @Override
-        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-            Imcms.getServices().getDocumentMapper().makeDocumentVersion(document.getId(), user);
-        }
-    }
-
-    /**
      * Sets default document version.
      *
      * @since 6.0
      */
     public static class SetDefaultDocumentVersionCommand extends DocumentPageFlow.SaveDocumentCommand {
 
+        private static final long serialVersionUID = 7423525552360211171L;
         private Integer docVersionNo;
 
         public SetDefaultDocumentVersionCommand(Integer docVersionNo) {
@@ -1055,6 +817,8 @@ public class DocumentMapper implements DocumentGetter {
      */
     public static class PublishWorkingVersionCommand extends DocumentPageFlow.SaveDocumentCommand {
 
+        private static final long serialVersionUID = -8230649834443025925L;
+
         @Override
         public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
             final DocumentMapper mapper = Imcms.getServices().getDocumentMapper();
@@ -1067,7 +831,7 @@ public class DocumentMapper implements DocumentGetter {
 
         protected final FileDocumentDomainObject fileDocument;
 
-        protected FileDocumentFileFilter(FileDocumentDomainObject fileDocument) {
+        FileDocumentFileFilter(FileDocumentDomainObject fileDocument) {
             this.fileDocument = fileDocument;
         }
 
