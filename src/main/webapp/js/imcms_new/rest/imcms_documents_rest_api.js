@@ -42,24 +42,23 @@ Imcms.define("imcms-documents-rest-api", ["imcms-rest-api"], function (rest) {
         title: "Start page",
         alias: "start-page",
         type: "text",
-        show_in: "_blank",
-        languages: {
-            "eng": {
+        target: "_blank",
+        languages: [
+            {
                 name: "English",
                 enabled: true,
                 code: "eng",
                 title: "Title text",
-                menu_text: "Menu text"
-
+                menuText: "Menu text"
             },
-            "swe": {
+            {
                 name: "Swedish",
                 enabled: true,
                 code: "swe",
                 title: "Titeltext",
-                menu_text: "Menytext"
+                menuText: "Menytext"
             }
-        },
+        ],
         status: 1,
         published: {
             by: "james_cameron",

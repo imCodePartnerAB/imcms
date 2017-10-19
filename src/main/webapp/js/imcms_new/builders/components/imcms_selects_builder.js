@@ -106,7 +106,7 @@ Imcms.define("imcms-selects-builder",
                     $selectedValInput.val(value);
                     return resultImcmsSelect;
                 } else {
-                    throw new Error("Value '" + value + "' for select doesn't exist");
+                    console.error("Value '" + value + "' for select doesn't exist");
                 }
             }
         }
