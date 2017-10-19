@@ -1,20 +1,16 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.core.CommonContentService;
-import com.imcode.imcms.domain.service.core.MetaService;
-import com.imcode.imcms.domain.service.core.PropertyService;
 import com.imcode.imcms.domain.service.core.VersionService;
-import com.imcode.imcms.mapping.jpa.doc.Meta;
-import com.imcode.imcms.mapping.jpa.doc.Property;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -32,23 +28,20 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final VersionService versionService;
     private final CommonContentService commonContentService;
-    private final MetaService metaService;
-    private final PropertyService propertyService;
+    private final DocumentService documentService;
     private final Function<MenuItem, MenuItemDTO> menuItemToDto;
     private final Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList;
 
     public MenuService(MenuRepository menuRepository,
                        VersionService versionService,
                        CommonContentService commonContentService,
-                       MetaService metaService,
-                       PropertyService propertyService,
+                       DocumentService documentService,
                        Function<MenuItem, MenuItemDTO> menuItemToDto,
                        Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList) {
         this.menuRepository = menuRepository;
         this.versionService = versionService;
         this.commonContentService = commonContentService;
-        this.metaService = metaService;
-        this.propertyService = propertyService;
+        this.documentService = documentService;
         this.menuItemToDto = menuItemToDto;
         this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
     }
@@ -113,9 +106,9 @@ public class MenuService {
      * @return
      */
     private boolean isMenuItemVisibleToUser(MenuItemDTO menuItemDTO, UserDomainObject user) {
-        final Meta meta = metaService.getOne(menuItemDTO.getDocumentId());
+        final DocumentDTO documentDTO = documentService.get(menuItemDTO.getDocumentId());
 
-        final boolean hasAccess = user.hasUserAccessToDoc(meta);
+        final boolean hasAccess = documentService.hasUserAccessToDoc(documentDTO.getId(), user);
 
         if (hasAccess) {
             final List<MenuItemDTO> children = menuItemDTO.getChildren().stream()
@@ -124,12 +117,10 @@ public class MenuService {
             menuItemDTO.setChildren(children);
         }
 
-        final Property propertyAlias = propertyService.findByDocIdAndName(menuItemDTO.getDocumentId(), DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+        final String link = "/" + (documentDTO.getAlias() == null ? documentDTO.getId() : documentDTO.getAlias());
 
-        final String alias = "/" + (propertyAlias == null ? menuItemDTO.getDocumentId() : propertyAlias.getValue());
-
-        menuItemDTO.setTarget(meta.getTarget());
-        menuItemDTO.setLink(alias);
+        menuItemDTO.setTarget(documentDTO.getTarget());
+        menuItemDTO.setLink(link);
 
         return hasAccess;
     }

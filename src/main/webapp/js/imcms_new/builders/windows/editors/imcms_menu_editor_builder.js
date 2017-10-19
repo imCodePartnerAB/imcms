@@ -110,8 +110,8 @@ Imcms.define("imcms-menu-editor-builder",
                     elements.btn = $("<div>", {click: showHideSubmenu});
                 }
 
-                elements.info = components.texts.titleText("<div>", menuElementTree.id + " - " + menuElementTree.title);
-                elements.controls = buildMenuItemControls(menuElementTree.id);
+                elements.info = components.texts.titleText("<div>", menuElementTree.documentId + " - " + menuElementTree.title);
+                elements.controls = buildMenuItemControls(menuElementTree.documentId);
 
                 return new BEM({
                     block: "imcms-menu-item",
