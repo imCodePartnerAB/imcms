@@ -157,17 +157,16 @@ public class MappingConfig {
                                                      Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO) {
         return image -> {
             final ImageDTO dto = new ImageDTO();
-            dto.setIndex(image.getIndex());
 
-            final String name = image.getName();
-            dto.setName(name);
+            dto.setIndex(image.getIndex());
+            dto.setName(image.getName());
+            dto.setDocId(image.getVersion().getDocId());
+            dto.setLangCode(image.getLanguage().getCode());
+            dto.setPath(image.getUrl());
 
             final String generatedFilePath = (image.getGeneratedFilename() == null)
                     ? "" : imagesPath + "generated/" + image.getGeneratedFilename();
 
-            dto.setDocId(image.getVersion().getDocId());
-            dto.setLangCode(image.getLanguage().getCode());
-            dto.setPath(image.getUrl());
             dto.setGeneratedFilePath(generatedFilePath);
             dto.setGeneratedFilename(image.getGeneratedFilename());
             dto.setFormat(image.getFormat());
@@ -189,6 +188,7 @@ public class MappingConfig {
             image.setHeight(imageDTO.getHeight());
             image.setWidth(imageDTO.getWidth());
             image.setUrl(imageDTO.getPath());
+            image.setName(imageDTO.getName());
             image.setGeneratedFilename(imageDTO.getGeneratedFilename());
             image.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(imageDTO.getLoopEntryRef()));
             image.setFormat(imageDTO.getFormat());

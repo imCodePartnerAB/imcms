@@ -217,11 +217,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.EditLink</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.EditLink</servlet-class>
     </servlet>
@@ -324,21 +319,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.ImageHandling</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.ImageHandling</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.RebuildImageCache</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.RebuildImageCache</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.ImagePreview</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.ImagePreview</servlet-class>
     </servlet>
 
     <servlet>
@@ -477,11 +457,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-name>
-        <url-pattern>/servlet/ImageBrowse</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.LogOut</servlet-name>
         <url-pattern>/servlet/LogOut</url-pattern>
     </servlet-mapping>
@@ -588,23 +563,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.ImageHandling</servlet-name>
-        <url-pattern>/imagehandling/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.ImagePreview</servlet-name>
-        <url-pattern>/servlet/ImagePreview</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.AjaxServlet</servlet-name>
         <url-pattern>/servlet/AjaxServlet</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.RebuildImageCache</servlet-name>
-        <url-pattern>/servlet/RebuildImageCache</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

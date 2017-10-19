@@ -3,10 +3,6 @@ package com.imcode.imcms.api;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.util.ImcmsImageUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Properties;
 
 public class Image {
 
@@ -26,18 +22,6 @@ public class Image {
 
     public void setName(String name) {    // html imagetag name
         internalImage.setName(name);
-    }
-
-    public String getSrcRelativeToContextPath() { // image srcurl,  relative imageurl
-        return internalImage.getUrlPathRelativeToContextPath();
-    }
-
-    public String getLowSrc() {
-        return internalImage.getLowResolutionUrl();
-    }
-
-    public void setLowSrc(String low_src) {
-        internalImage.setLowResolutionUrl(low_src);
     }
 
     public int getWidth() {
@@ -100,16 +84,8 @@ public class Image {
         return internalImage.getLinkUrl();
     }
 
-    public void setLinkHref(String link_href) {
-        internalImage.setLinkUrl(link_href);
-    }
-
     public String getLinkTarget() {  // use target_name if target = _other
         return internalImage.getTarget();
-    }
-
-    public void setLinkTarget(String target) {
-        internalImage.setTarget(target);
     }
 
     public void setSrc(String src) {   // image srcurl,  relative imageurl
@@ -131,17 +107,5 @@ public class Image {
 
     public String getSrc(String contextPath) { // image srcurl relative webapp ( /imcms/images/theimage.gif )
         return internalImage.getUrlPath(contextPath);
-    }
-
-    public String toHtmlUrl(String contextPath) {
-        return StringEscapeUtils.escapeHtml4(ImcmsImageUtils.getImageUrl(internalImage, contextPath));
-    }
-
-    public String toHtmlTag(HttpServletRequest request, Properties attributes, boolean absolute) {
-        return ImcmsImageUtils.getImageHtmlTag(internalImage, request, attributes, absolute);
-    }
-
-    public String toHtmlTag(HttpServletRequest request, Properties attributes) {
-        return toHtmlTag(request, attributes, false);
     }
 }

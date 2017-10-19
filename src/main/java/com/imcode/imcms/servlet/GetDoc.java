@@ -114,7 +114,6 @@ public class GetDoc extends HttpServlet {
         }
 
         DocumentRequest documentRequest = new DocumentRequest(imcref, user, document, referringDocument, req, res);
-        documentRequest.setEmphasize(req.getParameterValues("emp"));
 
         Cookie[] cookies = req.getCookies();
         HashMap cookieHash = new HashMap();
