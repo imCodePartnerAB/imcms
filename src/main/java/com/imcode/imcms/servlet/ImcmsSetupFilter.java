@@ -8,7 +8,6 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
@@ -66,7 +65,7 @@ public class ImcmsSetupFilter implements Filter {
                         .orElse(Optional.ofNullable(dls.getForHost(request.getServerName()))
                                 .orElse(defaultLanguage)));
 
-        docGetterCallback.setLanguage(preferredLanguage, dls.isDefault(preferredLanguage));
+        docGetterCallback.setLanguage(preferredLanguage);
 
         Integer docId = Ints.tryParse(StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)));
         String versionStr = StringUtils.trimToNull(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION));

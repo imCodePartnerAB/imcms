@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -55,4 +56,19 @@ public class VersionService {
         return version;
     }
 
+    public Version findByDocIdAndNo(int docId, int no) {
+        return versionRepository.findByDocIdAndNo(docId, no);
+    }
+
+    public List<Version> findByDocId(int docId) {
+        return versionRepository.findByDocId(docId);
+    }
+
+    public Version findDefault(int docId) {
+        return versionRepository.findDefault(docId);
+    }
+
+    public Version findWorking(int docId) {
+        return versionRepository.findWorking(docId);
+    }
 }

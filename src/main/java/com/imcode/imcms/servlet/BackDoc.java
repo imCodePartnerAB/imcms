@@ -5,7 +5,6 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentTypeDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -47,7 +46,7 @@ public class BackDoc extends HttpServlet {
             redirectToDocumentId(req, res, lastTextDocument.getId());
         } else {
             DocumentLanguages dls = imcref.getDocumentLanguages();
-            Imcms.getUser().getDocGetterCallback().setLanguage(dls.getDefault(), true);
+            Imcms.getUser().getDocGetterCallback().setLanguage(dls.getDefault());
             redirectToDocumentId(req, res, imcref.getSystemData().getStartDocument());
         }
     }

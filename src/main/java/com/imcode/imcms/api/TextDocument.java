@@ -1,8 +1,8 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.DocumentGetter;
-import com.imcode.imcms.mapping.container.LoopEntryRef;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class TextDocument extends Document {
 
     public final static int TYPE_ID = DocumentTypeDomainObject.TEXT_ID;
+    private static final long serialVersionUID = -8289218319353617986L;
 
     TextDocument(TextDocumentDomainObject textDocument,
                  ContentManagementSystem contentManagementSystem) {
@@ -298,28 +299,6 @@ public class TextDocument extends Document {
         }
     }
 
-    public static class LoopItem {
-        LoopEntryRef loopEntryRef;
-        TextDocumentDomainObject doc;
-
-        public LoopItem(Entry<Integer, Boolean> entry, int no, TextDocumentDomainObject doc) {
-            this.loopEntryRef = new LoopEntryRef(no, entry.getKey());
-            this.doc = doc;
-        }
-
-        public String toString() {
-            return "D" + this.doc.getId() + "-L" + this.loopEntryRef.getLoopNo() + "-E" + this.loopEntryRef.getEntryNo();
-        }
-
-        public LoopEntryRef getLoopEntryRef() {
-            return loopEntryRef;
-        }
-
-        public TextDocumentDomainObject getDoc() {
-            return doc;
-        }
-    }
-
     public static class MenuItem {
         MenuItemDomainObject internalMenuItem;
         Document child;
@@ -340,44 +319,15 @@ public class TextDocument extends Document {
             return child;
         }
 
-        public Integer getSortKey() {
-            return internalMenuItem.getSortKey();
-        }
-
-        public void setSortKey(Integer sortKey) {
-            internalMenuItem.setSortKey(sortKey);
-        }
-
         public TreeKey getTreeKey() {
             return new TreeKey(internalMenuItem.getTreeSortKey());
-        }
-
-        public void setTreeKey(TreeKey treeKey) {
-            internalMenuItem.setTreeSortKey(treeKey.internalTreeSortKey);
         }
 
         public static class TreeKey {
             TreeSortKeyDomainObject internalTreeSortKey;
 
-            public TreeKey(TreeSortKeyDomainObject internalTreeSortKey) {
+            TreeKey(TreeSortKeyDomainObject internalTreeSortKey) {
                 this.internalTreeSortKey = internalTreeSortKey;
-            }
-
-            public TreeKey(String treeSortKey) {
-                internalTreeSortKey = new TreeSortKeyDomainObject(treeSortKey);
-            }
-
-            public int getLevelCount() {
-                return internalTreeSortKey.getLevelCount();
-            }
-
-            /**
-             * @param level The level in this three key that you want the sort number from.
-             *              If the tree key is 1.3.5 then the level key on level 2 is 3.
-             * @return the key on the level requested. Throws a NoSuchElementException() if there is none.
-             */
-            public int getLevelKey(int level) {
-                return internalTreeSortKey.getLevelKey(level - 1);
             }
 
             public String toString() {
@@ -387,27 +337,6 @@ public class TextDocument extends Document {
     }
 
     public static class Menu {
-        /**
-         * Menu sorted by headline.
-         */
-        public final static int SORT_BY_HEADLINE = MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE;
-        /**
-         * Menu sorted by 'manual' order.
-         */
-        public final static int SORT_BY_MANUAL_ORDER_DESCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED;
-        /**
-         * Menu sorted by datetime.
-         */
-        public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED;
-        /**
-         * Menu sorted by tree sort order.
-         */
-        public final static int SORT_BY_TREE_ORDER_ASCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
-        /**
-         * Menu sorted by tree sort order.
-         */
-        public final static int SORT_BY_PUBLISHED_DATETIME_DESCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED;
-
         private final TextDocumentDomainObject internalTextDocument;
         private final int menuIndex;
         private final ContentManagementSystem contentManagementSystem;
@@ -419,55 +348,19 @@ public class TextDocument extends Document {
         }
 
         /**
-         * Add a internalTextDocument to the menu.
-         *
-         * @param documentToAdd the document to add
-         */
-        public void addDocument(Document documentToAdd) {
-            DocumentReference documentReference = new DirectDocumentReference(documentToAdd.getInternal());
-            internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(documentReference));
-        }
-
-        /**
-         * Remove a internalTextDocument from the menu.
-         *
-         * @param documentToRemove the document to remove
-         */
-        public void removeDocument(Document documentToRemove) {
-            internalTextDocument.getMenu(menuIndex).removeMenuItemByDocumentId(documentToRemove.getId());
-        }
-
-        public int getSortOrder() {
-            return internalTextDocument.getMenu(menuIndex).getSortOrder();
-        }
-
-        /**
-         * @param sortOrder One of {@link #SORT_BY_HEADLINE}, {@link #SORT_BY_MANUAL_ORDER_DESCENDING},
-         *                  {@link #SORT_BY_MODIFIED_DATETIME_DESCENDING}
-         */
-        public void setSortOrder(int sortOrder) {
-            internalTextDocument.getMenu(menuIndex).setSortOrder(sortOrder);
-        }
-
-        /**
          * @return The visible menuitems in this menu.
          * @since 2.0
          */
         public MenuItem[] getVisibleMenuItems() {
             final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
-            DocumentPredicate documentPredicate = new DocumentPredicate() {
-                public boolean evaluateDocument(DocumentDomainObject document) {
-                    return user.canSeeDocumentInMenus(document);
-                }
-            };
-            return getMenuItems(documentPredicate);
+            return getMenuItems(user::canSeeDocumentInMenus);
         }
 
         /**
          * @return the documents returned by {@link #getVisibleMenuItems()}.
          * @since 2.0
          */
-        public Document[] getVisibleDocuments() {
+        Document[] getVisibleDocuments() {
             MenuItem[] menuItems = getVisibleMenuItems();
             return getDocumentsFromMenuItems(menuItems);
         }
@@ -477,23 +370,7 @@ public class TextDocument extends Document {
          */
         public MenuItem[] getMenuItems() {
             final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
-            return getMenuItems(new DocumentPredicate() {
-                public boolean evaluateDocument(DocumentDomainObject document) {
-                    return user.canSeeDocumentInMenus(document) || user.canEdit(document);
-                }
-            });
-        }
-
-        /**
-         * @return The menuitems in this menu that the user can see or edit, including archived documents.
-         */
-        public MenuItem[] getPublishedMenuItems() {
-            final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
-            return getMenuItems(new DocumentPredicate() {
-                public boolean evaluateDocument(DocumentDomainObject document) {
-                    return document.isPublished() && user.canSeeDocumentWhenEditingMenus(document);
-                }
-            });
+            return getMenuItems(document -> user.canSeeDocumentInMenus(document) || user.canEdit(document));
         }
 
         /**
@@ -504,12 +381,12 @@ public class TextDocument extends Document {
             return getDocumentsFromMenuItems(menuItems);
         }
 
-        private MenuItem[] getMenuItems(DocumentPredicate documentPredicate) {
+        private MenuItem[] getMenuItems(Predicate<DocumentDomainObject> documentPredicate) {
             MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu(menuIndex).getMenuItems();
             List<MenuItem> menuItems = new ArrayList<>(menuItemsDomainObjects.length);
             for (MenuItemDomainObject menuItemDomainObject : menuItemsDomainObjects) {
                 DocumentDomainObject document = menuItemDomainObject.getDocument();
-                if (documentPredicate.evaluateDocument(document)) {
+                if (documentPredicate.test(document)) {
                     menuItems.add(new MenuItem(menuItemDomainObject, document, contentManagementSystem));
                 }
             }

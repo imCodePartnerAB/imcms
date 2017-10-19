@@ -2,7 +2,7 @@
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  com.imcode.imcms.servlet.superadmin.ListDocuments,
                  imcode.server.Imcms,
-                 imcode.server.document.DocumentComparator,
+                 imcode.server.document.DocumentComparators,
                  imcode.server.document.DocumentDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  imcode.server.user.UserDomainObject,
@@ -82,7 +82,7 @@ if (null != formData.documentsIterator) { %>
 	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br><%
 		if (documentMenuPairsContainingDocument.length > 0 ) {
 			String backUrl = "ListDocuments?" + ObjectUtils.defaultIfNull(request.getQueryString(),"") ;
-			String escapedBackUrl = URLEncoder.encode(backUrl); %>
+            String escapedBackUrl = URLEncoder.encode(backUrl, Imcms.UTF_8_ENCODING); %>
 	<a href="<%= request.getContextPath() %>/servlet/DocumentReferences?<%= DocumentReferences.REQUEST_PARAMETER__RETURNURL %>=<%= escapedBackUrl %>&<%= DocumentReferences.REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID %>=<%= document.getId() %>"><%
 		} %><%= documentMenuPairsContainingDocument.length %> <? webapp/imcms/lang/jsp/parent_count_unit ?><%
 		if (documentMenuPairsContainingDocument.length > 0 ) {
@@ -94,7 +94,7 @@ if (null != formData.documentsIterator) { %>
 			List childDocuments = documentMapper.getDocuments(textDocument.getChildDocumentIds());
 			if (!childDocuments.isEmpty()) { %>
 	<table border="0" cellpadding="2" cellspacing="0"><%
-				Collections.sort(childDocuments, DocumentComparator.ID) ;
+        Collections.sort(childDocuments, DocumentComparators.ID);
 				for ( Iterator iterator = childDocuments.iterator(); iterator.hasNext(); ) {
 					DocumentDomainObject childDocument = (DocumentDomainObject)iterator.next(); %>
   <tr valign="top">

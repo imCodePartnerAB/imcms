@@ -2,8 +2,9 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.mapping.jpa.doc.*;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
+import com.imcode.imcms.mapping.jpa.doc.Meta;
+import com.imcode.imcms.mapping.jpa.doc.MetaRepository;
+import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.*;
 import imcode.server.user.RoleId;
@@ -25,29 +26,25 @@ public class DocumentLoader {
      */
     public final static int PERM_CREATE_DOCUMENT = 8;
 
-    @Inject
-    private DocRepository docRepository;
+    private final PropertyRepository propertyRepository;
+    private final MetaRepository metaRepository;
+
+    private final DocumentLanguageMapper languageMapper;
+    private final DocumentContentMapper contentMapper;
+    private final DocumentContentInitializingVisitor documentContentInitializingVisitor;
 
     @Inject
-    private PropertyRepository propertyRepository;
-
-    @Inject
-    private VersionRepository versionRepository;
-
-    @Inject
-    private MetaRepository metaRepository;
-
-    @Inject
-    private CommonContentRepository commonContentRepository;
-
-    @Inject
-    private DocumentLanguageMapper languageMapper;
-
-    @Inject
-    private DocumentContentMapper contentMapper;
-
-    @Inject
-    private DocumentContentInitializingVisitor documentContentInitializingVisitor;
+    public DocumentLoader(PropertyRepository propertyRepository,
+                          MetaRepository metaRepository,
+                          DocumentLanguageMapper languageMapper,
+                          DocumentContentMapper contentMapper,
+                          DocumentContentInitializingVisitor documentContentInitializingVisitor) {
+        this.propertyRepository = propertyRepository;
+        this.metaRepository = metaRepository;
+        this.languageMapper = languageMapper;
+        this.contentMapper = contentMapper;
+        this.documentContentInitializingVisitor = documentContentInitializingVisitor;
+    }
 
     /**
      * Loads document's meta.
@@ -168,7 +165,7 @@ public class DocumentLoader {
         metaDO.setDocumentType(meta.getDocumentType().ordinal());
 
         Set<DocumentLanguage> apiLanguages = meta.getEnabledLanguages().stream()
-                .map(jpaLanguage -> languageMapper.toApiObject(jpaLanguage))
+                .map(languageMapper::toApiObject)
                 .collect(Collectors.toSet());
 
         metaDO.setEnabledLanguages(apiLanguages);
@@ -178,9 +175,6 @@ public class DocumentLoader {
         metaDO.setLinkedForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
         metaDO.setModifiedDatetime(meta.getModifiedDatetime());
         metaDO.setActualModifiedDatetime(meta.getModifiedDatetime());
-        //m.setPermissionSets(entity.getPermissionSets)
-        //m.setPermissionSetsForNew(entity.getPermissionSetExForNew)
-        //m.setPermissionSetsForNewDocuments(entity.getPermissionSetsForNewDocuments)
         metaDO.setProperties(meta.getProperties());
         metaDO.setPublicationEndDatetime(meta.getPublicationEndDatetime());
         metaDO.setDepublisherId(meta.getDepublisherId());
@@ -188,7 +182,6 @@ public class DocumentLoader {
         metaDO.setPublicationStatus(publicationStatusFromInt(meta.getPublicationStatus().ordinal()));
         metaDO.setPublisherId(meta.getPublisherId());
         metaDO.setRestrictedOneMorePrivilegedThanRestrictedTwo(meta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
-        //m.setRoleIdToDocumentPermissionSetTypeMappings()
         metaDO.setSearchDisabled(meta.isSearchDisabled());
         metaDO.setTarget(meta.getTarget());
 
@@ -199,62 +192,8 @@ public class DocumentLoader {
         return metaDO;
     }
 
-    public PropertyRepository getPropertyRepository() {
+    PropertyRepository getPropertyRepository() {
         return propertyRepository;
     }
 
-    @SuppressWarnings("unused")
-    public void setPropertyRepository(PropertyRepository propertyRepository) {
-        this.propertyRepository = propertyRepository;
-    }
-
-    public VersionRepository getVersionRepository() {
-        return versionRepository;
-    }
-
-    /////////////// unused /////////////////
-
-    public void setVersionRepository(VersionRepository versionRepository) {
-        this.versionRepository = versionRepository;
-    }
-
-    @SuppressWarnings("unused")
-    public DocRepository getDocRepository() {
-        return docRepository;
-    }
-
-    @SuppressWarnings("unused")
-    public void setDocRepository(DocRepository docRepository) {
-        this.docRepository = docRepository;
-    }
-
-    @SuppressWarnings("unused")
-    public MetaRepository getMetaRepository() {
-        return metaRepository;
-    }
-
-    @SuppressWarnings("unused")
-    public void setMetaRepository(MetaRepository metaRepository) {
-        this.metaRepository = metaRepository;
-    }
-
-    @SuppressWarnings("unused")
-    public CommonContentRepository getCommonContentRepository() {
-        return commonContentRepository;
-    }
-
-    @SuppressWarnings("unused")
-    public void setCommonContentRepository(CommonContentRepository commonContentRepository) {
-        this.commonContentRepository = commonContentRepository;
-    }
-
-    @SuppressWarnings("unused")
-    public DocumentContentInitializingVisitor getDocumentContentInitializingVisitor() {
-        return documentContentInitializingVisitor;
-    }
-
-    @SuppressWarnings("unused")
-    public void setDocumentContentInitializingVisitor(DocumentContentInitializingVisitor documentContentInitializingVisitor) {
-        this.documentContentInitializingVisitor = documentContentInitializingVisitor;
-    }
 }

@@ -37,7 +37,7 @@ public enum DocumentPermissionSetTypeDomainObject implements Serializable {
 
     private final int id;
 
-    private DocumentPermissionSetTypeDomainObject(int id) {
+    DocumentPermissionSetTypeDomainObject(int id) {
         this.id = id;
     }
 

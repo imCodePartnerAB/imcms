@@ -7,7 +7,6 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.*;
 import imcode.util.Html;
-import imcode.util.ToStringPairTransformer;
 import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
@@ -102,10 +101,10 @@ public class AdminRoles extends HttpServlet {
 
         final Object[] parameters = new String[0];
         String[] rolesArr = imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
-        List rolesV = Arrays.asList(rolesArr);
+        List<String> rolesV = Arrays.asList(rolesArr);
 
         Map<String, String> vm = new HashMap<>();
-        String opt = Html.createOptionList(rolesV, Arrays.asList(new String[]{""}));
+        String opt = Html.createOptionList(rolesV, "");
         vm.put("ROLES_MENU", opt);
 
         sendHtml(req, res, vm, HTML_ADMIN_ROLES);
@@ -131,7 +130,7 @@ public class AdminRoles extends HttpServlet {
                 // Lets get all ROLES from DB
                 final Object[] parameters = new String[0];
                 String[] rolesArr = imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
-                List rolesV = Arrays.asList(rolesArr);
+                List<String> rolesV = Arrays.asList(rolesArr);
 
 
                 // Lets generate the html page
@@ -325,13 +324,13 @@ public class AdminRoles extends HttpServlet {
                 String roleIdStr = params.getProperty("ROLE_ID");
                 int roleId = Integer.parseInt(roleIdStr);
                 RoleDomainObject role = userAndRoleMapper.getRoleById(roleId);
-                List affectedDocuments = imcref.getDocumentMapper().getDocumentsWithPermissionsForRole(role);
+                List<DocumentDomainObject> affectedDocuments = imcref.getDocumentMapper().getDocumentsWithPermissionsForRole(role);
                 int affectedDocumentsCount = affectedDocuments.size();
                 if (affectedDocuments.size() > 50) {
                     affectedDocuments = affectedDocuments.subList(0, 50);
                 }
 
-                List affectedUsers = Arrays.asList(userAndRoleMapper.getAllUsersWithRole(role));
+                List<UserDomainObject> affectedUsers = Arrays.asList(userAndRoleMapper.getAllUsersWithRole(role));
                 if (affectedUsers.size() > 50) {
                     affectedUsers = affectedUsers.subList(0, 50);
                 }
@@ -339,20 +338,10 @@ public class AdminRoles extends HttpServlet {
                 if (!affectedUsers.isEmpty() || !affectedDocuments.isEmpty()) {
 
                     // Lets generate the affected users & metaid warning html page
-                    String opt = Html.createOptionList(affectedDocuments, new ToStringPairTransformer() {
-                        public String[] transformToStringPair(Object input) {
-                            DocumentDomainObject d = (DocumentDomainObject) input;
-                            return new String[]{"" + d.getId(), "" + d.getId()};
-                        }
-                    });
-                    String users = Html.createOptionList(affectedUsers, new ToStringPairTransformer() {
-                        public String[] transformToStringPair(Object input) {
-                            UserDomainObject user = (UserDomainObject) input;
-                            return new String[]{"" + user.getId(),
-                                    user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName()
-                                            + ")"};
-                        }
-                    });
+                    String opt = Html.createOptionList(affectedDocuments, doc -> new String[]{"" + doc.getId(), "" + doc.getId()});
+                    String users = Html.createOptionList(affectedUsers, user1 -> new String[]{"" + user1.getId(),
+                            user1.getLastName() + ", " + user1.getFirstName() + " (" + user1.getLoginName()
+                                    + ")"});
                     Map<String, String> vm = new HashMap<>();
                     vm.put("META_ID_LIST", opt);
                     vm.put("USER_ID_LIST", users);

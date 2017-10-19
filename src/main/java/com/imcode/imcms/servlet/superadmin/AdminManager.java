@@ -11,7 +11,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.util.ChainableReversibleNullComparator;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentComparator;
+import imcode.server.document.DocumentComparators;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.document.NoPermissionToCreateDocumentException;
@@ -61,29 +61,29 @@ public class AdminManager extends HttpServlet {
 
     public static ChainableReversibleNullComparator getComparator(String sortorder) {
 
-        ChainableReversibleNullComparator comparator = DocumentComparator.MODIFIED_DATETIME.reversed();
+        ChainableReversibleNullComparator comparator = DocumentComparators.MODIFIED_DATETIME.reversed();
         if ("MODR".equals(sortorder)) {
-            comparator = DocumentComparator.MODIFIED_DATETIME;
+            comparator = DocumentComparators.MODIFIED_DATETIME;
         } else if ("PUBS".equals(sortorder)) {
-            comparator = DocumentComparator.PUBLICATION_START_DATETIME.reversed();
+            comparator = DocumentComparators.PUBLICATION_START_DATETIME.reversed();
         } else if ("PUBSR".equals(sortorder)) {
-            comparator = DocumentComparator.PUBLICATION_START_DATETIME;
+            comparator = DocumentComparators.PUBLICATION_START_DATETIME;
         } else if ("PUBE".equals(sortorder)) {
-            comparator = DocumentComparator.PUBLICATION_END_DATETIME.reversed().nullsLast();
+            comparator = DocumentComparators.PUBLICATION_END_DATETIME.reversed().nullsLast();
         } else if ("PUBER".equals(sortorder)) {
-            comparator = DocumentComparator.PUBLICATION_END_DATETIME.nullsLast();
+            comparator = DocumentComparators.PUBLICATION_END_DATETIME.nullsLast();
         } else if ("ARC".equals(sortorder)) {
-            comparator = DocumentComparator.ARCHIVED_DATETIME.reversed().nullsLast();
+            comparator = DocumentComparators.ARCHIVED_DATETIME.reversed().nullsLast();
         } else if ("ARCR".equals(sortorder)) {
-            comparator = DocumentComparator.ARCHIVED_DATETIME.nullsLast();
+            comparator = DocumentComparators.ARCHIVED_DATETIME.nullsLast();
         } else if ("HEADL".equals(sortorder)) {
-            comparator = DocumentComparator.HEADLINE;
+            comparator = DocumentComparators.HEADLINE;
         } else if ("HEADLR".equals(sortorder)) {
-            comparator = DocumentComparator.HEADLINE.reversed();
+            comparator = DocumentComparators.HEADLINE.reversed();
         } else if ("ID".equals(sortorder)) {
-            comparator = DocumentComparator.ID;
+            comparator = DocumentComparators.ID;
         } else if ("IDR".equals(sortorder)) {
-            comparator = DocumentComparator.ID.reversed();
+            comparator = DocumentComparators.ID.reversed();
         }
         return comparator;
     }
@@ -179,7 +179,7 @@ public class AdminManager extends HttpServlet {
 // todo: fix deprecated objects by search(SolrQuery s, DocumentDomainObject o)
         Query query = new TermQuery(new Term(DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId() + ""));
 
-        List<DocumentDomainObject> documentsFound = Collections.<DocumentDomainObject>emptyList();
+        List<DocumentDomainObject> documentsFound = Collections.emptyList();
         if (tabToShow.equals(PARAMETER_VALUE__SHOW_RECENT) || tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS)
                 || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY))
         {

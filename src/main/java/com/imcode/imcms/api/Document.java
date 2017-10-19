@@ -2,7 +2,6 @@ package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.jpa.doc.Meta;
-import com.imcode.util.ChainableReversibleNullComparator;
 import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleGetter;
@@ -18,26 +17,9 @@ import java.util.Set;
 public class Document implements Serializable {
 
     private final static Logger log = Logger.getLogger(Document.class.getName());
+    private static final long serialVersionUID = -6934849355968513148L;
     private final DocumentDomainObject internalDocument;
     ContentManagementSystem contentManagementSystem;
-
-//	/**
-//	 * @deprecated Use {@link Document.PublicationStatus#NEW} instead.
-//	 */
-//	@Deprecated
-//	public static final int STATUS_NEW = 0;
-
-//	/**
-//	 * @deprecated Use {@link Document.PublicationStatus#DISAPPROVED} instead.
-//	 */
-//	@Deprecated
-//	public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
-//
-//	/**
-//	 * @deprecated Use {@link Document.PublicationStatus#APPROVED} instead.
-//	 */
-//	@Deprecated
-//	public static final int STATUS_PUBLICATION_APPROVED = 2;
 
     protected Document(DocumentDomainObject document, ContentManagementSystem contentManagementSystem) {
         this.internalDocument = document;
@@ -381,6 +363,7 @@ public class Document implements Serializable {
         public static final PublicationStatus DISAPPROVED = new PublicationStatus(STATUS_PUBLICATION_DISAPPROVED);
         private static final int STATUS_PUBLICATION_APPROVED = 2;
         public static final PublicationStatus APPROVED = new PublicationStatus(STATUS_PUBLICATION_APPROVED);
+        private static final long serialVersionUID = -7360962799114550616L;
         private final int status;
 
         private PublicationStatus(int status) {
@@ -424,85 +407,5 @@ public class Document implements Serializable {
             return Meta.PublicationStatus.values()[status];
         }
     }
-
-    public abstract static class Comparator extends ChainableReversibleNullComparator {
-
-        public final static Comparator ID = new Comparator() {
-            protected int compareDocuments(Document d1, Document d2) {
-                return d1.getId() - d2.getId();
-            }
-        };
-        @SuppressWarnings("unused")
-        public final static Comparator HEADLINE = new Comparator() {
-            protected int compareDocuments(Document d1, Document d2) {
-                return d1.getHeadline().compareToIgnoreCase(d2.getHeadline());
-            }
-        };
-        @SuppressWarnings("unused")
-        public final static Comparator CREATED_DATETIME = new Comparator() {
-            protected int compareDocuments(Document d1, Document d2) {
-                return d1.getCreatedDatetime().compareTo(d2.getCreatedDatetime());
-            }
-        };
-        @SuppressWarnings("unused")
-        public final static Comparator MODIFIED_DATETIME = new Comparator() {
-            protected int compareDocuments(Document d1, Document d2) {
-                return d1.getModifiedDatetime().compareTo(d2.getModifiedDatetime());
-            }
-        };
-        @SuppressWarnings("unused")
-        public final static Comparator PUBLICATION_START_DATETIME = new Comparator() {
-            protected int compareDocuments(Document document1, Document document2) {
-                return document1.getPublicationStartDatetime().compareTo(document2.getPublicationStartDatetime());
-            }
-        };
-        @SuppressWarnings("unused")
-        public final static Comparator PUBLICATION_END_DATETIME = new Comparator() {
-            protected int compareDocuments(Document document1, Document document2) {
-                return document1.getPublicationEndDatetime().compareTo(document2.getPublicationEndDatetime());
-            }
-        };
-        @SuppressWarnings("unused")
-        public final static Comparator ARCHIVED_DATETIME = new Comparator() {
-            protected int compareDocuments(Document document1, Document document2) {
-                return document1.getArchivedDatetime().compareTo(document2.getArchivedDatetime());
-            }
-        };
-
-        public int compare(Object o1, Object o2) {
-            final Document d1 = (Document) o1;
-            final Document d2 = (Document) o2;
-            try {
-                return compareDocuments(d1, d2);
-            } catch (NullPointerException npe) {
-                NullPointerException nullPointerException = new NullPointerException("Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your Comparator.");
-                nullPointerException.initCause(npe);
-                throw nullPointerException;
-            }
-        }
-
-        protected abstract int compareDocuments(Document d1, Document d2);
-    }
-
-    @SuppressWarnings("unused")
-    public static class LifeCyclePhase implements Serializable {
-        public static final LifeCyclePhase NEW = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.NEW);
-        public static final LifeCyclePhase DISAPPROVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.DISAPPROVED);
-        public static final LifeCyclePhase PUBLISHED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.PUBLISHED);
-        public static final LifeCyclePhase UNPUBLISHED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.UNPUBLISHED);
-        public static final LifeCyclePhase ARCHIVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.ARCHIVED);
-        public static final LifeCyclePhase APPROVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.APPROVED);
-
-        private imcode.server.document.LifeCyclePhase phase;
-
-        private LifeCyclePhase(imcode.server.document.LifeCyclePhase phase) {
-            this.phase = phase;
-        }
-
-        public String toString() {
-            return phase.toString();
-        }
-    }
-
 
 }

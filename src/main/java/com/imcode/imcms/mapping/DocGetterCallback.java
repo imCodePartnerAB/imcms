@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 public class DocGetterCallback implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(DocGetterCallback.class);
+    private static final long serialVersionUID = 2496394918087427549L;
     private volatile DocumentLanguage language;
-    private volatile boolean isDefaultLanguage;
     private UserDomainObject user;
     private Map<Integer, Callback> callbacks = new ConcurrentHashMap<>();
     private Callback workingDocCallback = (docId, docMapper) -> {
@@ -116,11 +116,6 @@ public class DocGetterCallback implements Serializable {
 
     public void setLanguage(DocumentLanguage language) {
         this.language = language;
-    }
-
-    public void setLanguage(DocumentLanguage language, boolean isDefaultLanguage) {
-        this.language = language;
-        this.isDefaultLanguage = isDefaultLanguage;
     }
 
     private interface Callback extends Serializable {

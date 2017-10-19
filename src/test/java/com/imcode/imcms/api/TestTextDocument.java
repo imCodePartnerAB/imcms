@@ -16,23 +16,18 @@ import java.util.Date;
 
 public class TestTextDocument extends TestCase {
 
-    TextDocument.Menu menu;
+    private TextDocument.Menu menu;
     private UserDomainObject internalUser;
-    private TextDocumentDomainObject textDocumentDO;
     private TextDocumentDomainObject otherTextDocumentDO;
     private RoleId readRole;
     private RoleId editRole;
-    private TextDocument textDocument;
-    private MockContentManagementSystem contentManagementSystem;
-    private TextDocument otherTextDocument;
-    private MockImcmsServices imcmsServices;
 
     protected void setUp() throws Exception {
         super.setUp();
         internalUser = new UserDomainObject();
         readRole = new RoleId(3);
         editRole = new RoleId(4);
-        textDocumentDO = new TextDocumentDomainObject();
+        TextDocumentDomainObject textDocumentDO = new TextDocumentDomainObject();
         textDocumentDO.setId(1001);
         textDocumentDO.setDocumentPermissionSetTypeForRoleId(readRole, DocumentPermissionSetTypeDomainObject.READ);
         textDocumentDO.setDocumentPermissionSetTypeForRoleId(editRole, DocumentPermissionSetTypeDomainObject.FULL);
@@ -43,13 +38,11 @@ public class TestTextDocument extends TestCase {
         DocumentReference documentReference = new DirectDocumentReference(otherTextDocumentDO);
         MenuDomainObject menuDO = textDocumentDO.getMenu(menuIndex);
         menuDO.addMenuItem(new MenuItemDomainObject(documentReference));
-        contentManagementSystem = new MockContentManagementSystem();
+        MockContentManagementSystem contentManagementSystem = new MockContentManagementSystem();
 
-        imcmsServices = new MockImcmsServices();
-        contentManagementSystem.setInternal(imcmsServices);
+        contentManagementSystem.setInternal(new MockImcmsServices());
         contentManagementSystem.setCurrentUser(new User(internalUser));
-        textDocument = new TextDocument(this.textDocumentDO, contentManagementSystem);
-        otherTextDocument = new TextDocument(otherTextDocumentDO, contentManagementSystem);
+        TextDocument textDocument = new TextDocument(textDocumentDO, contentManagementSystem);
         this.menu = new TextDocument.Menu(textDocument, menuIndex);
     }
 
@@ -62,13 +55,6 @@ public class TestTextDocument extends TestCase {
         otherTextDocumentDO.setDocumentPermissionSetTypeForRoleId(editRole, DocumentPermissionSetTypeDomainObject.FULL);
         assertGettersReturnDocuments();
     }
-
-//    public void testMenuGetVisible() {
-//        internalUser.addRoleId(readRole);
-//        otherTextDocumentDO.setDocumentPermissionSetTypeForRoleId(readRole, DocumentPermissionSetTypeDomainObject.READ);
-//        publish(otherTextDocumentDO);
-//        assertGetVisibleReturnDocuments();
-//    }
 
     public void testMenuGetVisibleWithArchived() {
         internalUser.addRoleId(readRole);
@@ -103,21 +89,10 @@ public class TestTextDocument extends TestCase {
         assertGetVisibleDoNotReturnDocuments();
     }
 
-//    public void testMenuGetVisibleWithPublished() {
-//        publish(otherTextDocumentDO);
-//        assertGetVisibleDoNotReturnDocuments();
-//    }
-
     public void testMenuGetVisibleWithVisibleInMenusForUnauthorizedUsers() {
         otherTextDocumentDO.setLinkedForUnauthorizedUsers(true);
         assertGetVisibleDoNotReturnDocuments();
     }
-
-//    public void testMenuGetVisibleWithPublishedAndVisibleInMenusForUnauthorizedUsers() {
-//        publish(otherTextDocumentDO);
-//        otherTextDocumentDO.setLinkedForUnauthorizedUsers(true);
-//        assertGetVisibleReturnDocuments();
-//    }
 
     private void assertGettersDoNotReturnDocuments() {
         assertFalse(menu.getDocuments().length > 0);
@@ -129,32 +104,9 @@ public class TestTextDocument extends TestCase {
         assertTrue(menu.getMenuItems().length > 0);
     }
 
-    private void assertGetVisibleReturnDocuments() {
-        assertTrue(menu.getVisibleDocuments().length > 0);
-        assertTrue(menu.getVisibleMenuItems().length > 0);
-    }
-
     private void assertGetVisibleDoNotReturnDocuments() {
         assertFalse(menu.getVisibleDocuments().length > 0);
         assertFalse(menu.getVisibleMenuItems().length > 0);
-    }
-
-//    public void testAddRemoveDocument() throws DocumentAlreadyInMenuException {
-//        menu.addDocument(otherTextDocument);
-//        assertEquals(0, menu.getDocuments().length);
-//        otherTextDocumentDO.setDocumentPermissionSetTypeForRoleId(readRole, DocumentPermissionSetTypeDomainObject.READ);
-//        assertEquals(0, menu.getDocuments().length);
-//        internalUser.addRoleId(readRole);
-//        assertEquals(0, menu.getDocuments().length);
-//        publish(otherTextDocument);
-//        assertEquals(1, menu.getDocuments().length);
-//        assertEquals(otherTextDocument, menu.getDocuments()[0]);
-//        menu.removeDocument(otherTextDocument);
-//        assertEquals(0, menu.getDocuments().length);
-//    }
-
-    private void publish(Document document) {
-        publish(document.getInternal());
     }
 
     private void publish(DocumentDomainObject document) {

@@ -3,7 +3,7 @@ package imcode.server.document;
 import com.imcode.util.ChainableReversibleNullComparator;
 import org.apache.commons.lang.NullArgumentException;
 
-public abstract class DocumentComparator extends ChainableReversibleNullComparator {
+public class DocumentComparators {
 
     public final static DocumentComparator ID = new DocumentComparator("ID") {
         protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
@@ -35,31 +35,35 @@ public abstract class DocumentComparator extends ChainableReversibleNullComparat
             return d1.getPublicationEndDatetime().compareTo(d2.getPublicationEndDatetime());
         }
     };
-    private final String name;
 
-    protected DocumentComparator(String name) {
-        this.name = name;
-    }
+    public abstract static class DocumentComparator extends ChainableReversibleNullComparator {
+        private static final long serialVersionUID = 1781489936968170084L;
+        private final String name;
 
-    public String toString() {
-        return name;
-    }
-
-    public int compare(Object o1, Object o2) {
-        if (null == o1 || null == o2) {
-            throw new NullArgumentException("o1 and o2");
+        private DocumentComparator(String name) {
+            this.name = name;
         }
-        final DocumentDomainObject d1 = (DocumentDomainObject) o1;
-        final DocumentDomainObject d2 = (DocumentDomainObject) o2;
-        try {
-            return compareDocuments(d1, d2);
-        } catch (NullPointerException npe) {
-            NullPointerException nullPointerException = new NullPointerException("Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your Comparator.");
-            nullPointerException.initCause(npe);
-            throw nullPointerException;
-        }
-    }
 
-    protected abstract int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2);
+        public String toString() {
+            return name;
+        }
+
+        public int compare(Object o1, Object o2) {
+            if (null == o1 || null == o2) {
+                throw new NullArgumentException("o1 and o2");
+            }
+            final DocumentDomainObject d1 = (DocumentDomainObject) o1;
+            final DocumentDomainObject d2 = (DocumentDomainObject) o2;
+            try {
+                return compareDocuments(d1, d2);
+            } catch (NullPointerException npe) {
+                NullPointerException nullPointerException = new NullPointerException("Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your Comparator.");
+                nullPointerException.initCause(npe);
+                throw nullPointerException;
+            }
+        }
+
+        protected abstract int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2);
+    }
 
 }

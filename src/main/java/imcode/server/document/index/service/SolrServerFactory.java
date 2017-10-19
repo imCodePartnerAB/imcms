@@ -47,27 +47,4 @@ public class SolrServerFactory {
         return new EmbeddedSolrServer(coreContainer, DEFAULT_CORE_NAME);
     }
 
-
-    //  def createEmbeddedSolrServer(solrHome: String, dataDirPath: String, recreateDataDir: Boolean): EmbeddedSolrServer = {
-    //    val dataDir: File = new File(dataDirPath) match {
-    //      case dir if dir.isAbsolute => dir
-    //      case _ => new File(solrHome, s"$DEFAULT_CORE_NAME/$dataDirPath")
-    //    }
-    //
-    //    if (recreateDataDir && dataDir.exists() && !FileUtils.deleteQuietly(dataDir)) {
-    //      val msg =s"Unable to delete SOLr data dir $dataDir."
-    //      logger.fatal(msg)
-    //      sys.error(msg)
-    //    }
-    //
-    //    new CoreContainer(solrHome) |>> { _.load() } |> { coreContainer =>
-    //      new CoreDescriptor(coreContainer, DEFAULT_CORE_NAME, DEFAULT_CORE_NAME) |>> { coreDescriptor =>
-    //        coreDescriptor.setDataDir(dataDir.getPath)
-    //      } |> coreContainer.create |> { core =>
-    //        coreContainer.register(core, false)
-    //      }
-    //
-    //      new EmbeddedSolrServer(coreContainer, DEFAULT_CORE_NAME)
-    //    }
-    //  }
 }

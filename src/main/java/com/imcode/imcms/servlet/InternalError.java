@@ -12,6 +12,7 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -38,8 +39,8 @@ import static org.apache.commons.lang3.StringUtils.defaultString;
 public class InternalError extends HttpServlet {
 
     private final static Logger LOGGER = Logger.getLogger(InternalError.class);
-    private final String ERROR_500_VIEW_URL = "/imcms/500.jsp";
-    private final String DEFAULT_RESPONSE = "N/A";
+    private final static String ERROR_500_VIEW_URL = "/imcms/500.jsp";
+    private final static String DEFAULT_RESPONSE = "N/A";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -70,7 +71,7 @@ public class InternalError extends HttpServlet {
         setInfo(request, exceptionInfo, requestInfo);
 
         String errorLoggerUrl = ofNullable(serverProperties.getProperty("ErrorLoggerUrl"))
-                .map(url -> !url.isEmpty() ? url : Imcms.ERROR_LOGGER_URL)
+                .filter(url -> !url.isEmpty())
                 .orElse(Imcms.ERROR_LOGGER_URL);
 
         String jdbcUrl = serverProperties.getProperty("JdbcUrl");
@@ -170,9 +171,9 @@ public class InternalError extends HttpServlet {
         HttpClientBuilder builder = HttpClientBuilder.create();
 
         SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (x509Certificates, str) -> true).build();
-        builder.setSslcontext(sslContext);
+        builder.setSSLContext(sslContext);
 
-        HostnameVerifier hostnameVerifier = SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+        HostnameVerifier hostnameVerifier = NoopHostnameVerifier.INSTANCE;
 
         SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()

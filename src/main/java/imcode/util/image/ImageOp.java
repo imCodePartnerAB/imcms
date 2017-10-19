@@ -22,7 +22,7 @@ public class ImageOp {
     private static final Pattern WIDTH_PATTERN = Pattern.compile("width:'([^']+)'");
     private static final Pattern HEIGHT_PATTERN = Pattern.compile("height:'([^']+)'");
 
-    private List<String> args = new ArrayList<String>();
+    private List<String> args = new ArrayList<>();
     private byte[] inputData;
     private InputStream dataStream;
     private Format outputFormat;
@@ -32,12 +32,11 @@ public class ImageOp {
         args.add(addQuotes(getApplicationPath(Imcms.getServices().getConfig(), "convert")));
     }
 
-    private static final String getApplicationPath(Config config, String appName) {
+    private static String getApplicationPath(Config config, String appName) {
         String magickPath = config.getImageMagickPath();
 
         if (magickPath != null
                 && !"".equals(magickPath)
-                && !magickPath.equals(Imcms.getPath())
                 && SystemUtils.IS_OS_WINDOWS)
         {
             return new File(magickPath, appName).getAbsolutePath();
@@ -46,7 +45,7 @@ public class ImageOp {
         return appName;
     }
 
-    private static final String addQuotes(String input) {
+    private static String addQuotes(String input) {
         if (PLATFORM_WINDOWS) {
             return "\"" + input + "\"";
         }
@@ -268,7 +267,7 @@ public class ImageOp {
             size = width.toString();
         }
         if (height != null) {
-            size += String.format("x%d", height.intValue());
+            size += String.format("x%d", height);
         }
 
         size += type.getModifier();
@@ -336,7 +335,7 @@ public class ImageOp {
             out = outputFile.getAbsolutePath();
         }
 
-        List<String> arguments = new ArrayList<String>(args);
+        List<String> arguments = new ArrayList<>(args);
         arguments.add(addQuotes(out));
 
         try {

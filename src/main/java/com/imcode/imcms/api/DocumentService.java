@@ -243,55 +243,6 @@ public class DocumentService {
         getCategoryMapper().saveCategory(category.getInternal());
     }
 
-    ///////////////////// unused
-
-    /**
-     * @param documentIdString The unique id or name of the document requested, can be either the int value also known as "meta_id"
-     *                         or the document name also known as "alias".
-     * @return The document
-     * @throws NoPermissionException If the current user doesn't have the rights to read this document.
-     */
-    public UrlDocument getUrlDocument(String documentIdString) throws NoPermissionException {
-        return (UrlDocument) getDocument(documentIdString);
-    }
-
-    /**
-     * @param documentId The id number of the document requested, also known as "meta_id"
-     * @return The document
-     * @throws NoPermissionException If the current user doesn't have the rights to read this document.
-     */
-    public UrlDocument getUrlDocument(int documentId) throws NoPermissionException {
-        return (UrlDocument) getDocument(documentId);
-    }
-
-    public Category getCategory(int categoryId) {
-        final CategoryDomainObject category = getCategoryMapper().getCategoryById(categoryId);
-        if (null != category) {
-            return new Category(category);
-        } else {
-            return null;
-        }
-    }
-
-    public CategoryType getCategoryType(int categoryTypeId) {
-        final CategoryTypeDomainObject categoryType = getCategoryMapper().getCategoryTypeById(categoryTypeId);
-        return returnCategoryTypeAPIObjectOrNull(categoryType);
-    }
-
-    public SearchQuery parseLuceneSearchQuery(String query) throws BadQueryException {
-        return new LuceneParsedQuery(query);
-    }
-
-    public org.w3c.dom.Document getXmlDomForDocument(Document document) {
-        XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder(contentManagementSystem.getCurrentUser().getInternal());
-        xmlDocumentBuilder.addDocument(document.getInternal());
-        return xmlDocumentBuilder.getXmlDocument();
-    }
-
-    public void deleteDocument(Document document) throws NoPermissionException {
-        documentMapper.deleteDocument(document.getInternal());
-    }
-
     static class ApiWrappingDocumentVisitor extends DocumentVisitor {
 
         private ContentManagementSystem contentManagementSystem;

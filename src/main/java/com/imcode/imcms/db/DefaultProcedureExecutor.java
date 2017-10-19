@@ -3,7 +3,7 @@ package com.imcode.imcms.db;
 import com.imcode.db.Database;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
 import imcode.util.CachingFileLoader;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
@@ -35,7 +35,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure(procedure, parameters);
         String body = procedure.getBody();
         logProcedureCall(procedureName, body, parametersAtCorrectIndices);
-        return (Integer) database.execute(new SqlUpdateDatabaseCommand(body, parametersAtCorrectIndices));
+        return (Integer) database.execute(new SqlUpdateCommand(body, parametersAtCorrectIndices));
     }
 
     private void logProcedureCall(String procedureName, String body, Object[] parametersAtCorrectIndices) {
@@ -76,7 +76,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         return procedure;
     }
 
-    Procedure prepareProcedure(String procedureContents, String procedureName) {
+    private Procedure prepareProcedure(String procedureContents, String procedureName) {
         Pattern headerPattern = Pattern.compile("CREATE\\s+PROCEDURE\\s+\\S+\\s+(.*)\\bAS\\s+", Pattern.CASE_INSENSITIVE
                 | Pattern.DOTALL);
         Matcher headerMatcher = headerPattern.matcher(procedureContents);
@@ -151,7 +151,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
             this.parameterIndices = parameterIndices;
         }
 
-        public int[] getParameterIndices() {
+        int[] getParameterIndices() {
             return parameterIndices;
         }
 

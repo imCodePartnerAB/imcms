@@ -6,13 +6,11 @@ import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.Version;
-import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,19 +18,20 @@ import java.util.List;
 @Transactional
 public class DocumentVersionMapper {
 
-    @Inject
-    private VersionRepository versionRepository;
+    private final VersionService versionService;
 
     @Autowired
-    private VersionService versionService;
+    public DocumentVersionMapper(VersionService versionService) {
+        this.versionService = versionService;
+    }
 
     public DocumentVersion get(VersionRef versionRef) {
-        return toApiObject(versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo()));
+        return toApiObject(versionService.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo()));
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<DocumentVersion> getAll(int docId) {
-        List<Version> versions = versionRepository.findByDocId(docId);
+        List<Version> versions = versionService.findByDocId(docId);
         List<DocumentVersion> result = new LinkedList<>();
         for (Version version : versions) {
             result.add(toApiObject(version));
@@ -43,12 +42,12 @@ public class DocumentVersionMapper {
 
     @Transactional(propagation = Propagation.SUPPORTS)
     public DocumentVersion getDefault(int docId) {
-        return toApiObject(versionRepository.findDefault(docId));
+        return toApiObject(versionService.findDefault(docId));
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
     public DocumentVersion getWorking(int docId) {
-        return toApiObject(versionRepository.findWorking(docId));
+        return toApiObject(versionService.findWorking(docId));
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)

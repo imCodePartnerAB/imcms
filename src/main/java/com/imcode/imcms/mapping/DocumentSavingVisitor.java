@@ -4,7 +4,6 @@ import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -18,19 +17,12 @@ import imcode.server.user.UserDomainObject;
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     /**
-     * Current version of a document.
-     */
-    private DocumentDomainObject oldDocument;
-
-    /**
      * An user performing save operation.
      */
     private UserDomainObject savingUser;
 
-    public DocumentSavingVisitor(DocumentDomainObject documentInDatabase,
-                                 ImcmsServices services, UserDomainObject user) {
+    public DocumentSavingVisitor(ImcmsServices services, UserDomainObject user) {
         super(services);
-        oldDocument = documentInDatabase;
         savingUser = user;
     }
 
@@ -60,11 +52,4 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         textDocumentContentSaver.updateContent(document, savingUser);
     }
 
-    public UserDomainObject getSavingUser() {
-        return savingUser;
-    }
-
-    public void setSavingUser(UserDomainObject savingUser) {
-        this.savingUser = savingUser;
-    }
 }

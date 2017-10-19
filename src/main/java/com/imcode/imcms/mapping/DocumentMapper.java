@@ -53,21 +53,13 @@ public class DocumentMapper implements DocumentGetter {
      * Document loader caching proxy. Intercepts calls to DocumentLoader.
      */
     private DocumentLoaderCachingProxy documentLoaderCachingProxy;
-    @Inject
     private NativeQueries nativeQueries;
-    @Inject
     private DocumentLoader documentLoader;
-    @Inject
     private DocumentSaver documentSaver;
-    @Inject
     private CategoryMapper categoryMapper;
-    @Inject
     private DocumentContentMapper documentContentMapper;
-    @Inject
     private DocumentVersionMapper documentVersionMapper;
-    @Inject
     private MenuRepository menuRepository;
-    @Inject
     private PropertyRepository propertyRepository;
 
     public DocumentMapper() {
@@ -79,6 +71,21 @@ public class DocumentMapper implements DocumentGetter {
     @Deprecated
     public DocumentMapper(ImcmsServices services, Database database) {
         throw new UnsupportedOperationException("Use com.imcode.imcms.mapping.DocumentMapper#init() method instead");
+    }
+
+    @Inject
+    public DocumentMapper(NativeQueries nativeQueries, DocumentLoader documentLoader, DocumentSaver documentSaver,
+                          CategoryMapper categoryMapper, DocumentContentMapper documentContentMapper,
+                          DocumentVersionMapper documentVersionMapper, MenuRepository menuRepository,
+                          PropertyRepository propertyRepository) {
+        this.nativeQueries = nativeQueries;
+        this.documentLoader = documentLoader;
+        this.documentSaver = documentSaver;
+        this.categoryMapper = categoryMapper;
+        this.documentContentMapper = documentContentMapper;
+        this.documentVersionMapper = documentVersionMapper;
+        this.menuRepository = menuRepository;
+        this.propertyRepository = propertyRepository;
     }
 
     private static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {

@@ -28,7 +28,7 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
     private TextDocumentContentInitializer textDocumentContentInitializer;
 
     @Inject
-    private DocRepository metaRepository;
+    private DocRepository docRepository;
 
     /**
      * Initializes file document.
@@ -38,7 +38,7 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
      * ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
     public void visitFileDocument(FileDocumentDomainObject doc) {
-        Collection<FileDocFile> fileDocItems = metaRepository.getFileDocContent(doc.getRef());
+        Collection<FileDocFile> fileDocItems = docRepository.getFileDocContent(doc.getRef());
 
         for (FileDocFile item : fileDocItems) {
             String fileId = item.getFileId();
@@ -71,32 +71,16 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
 
     public void visitHtmlDocument(HtmlDocumentDomainObject doc) {
-        HtmlDocContent html = metaRepository.getHtmlDocContent(doc.getRef());
+        HtmlDocContent html = docRepository.getHtmlDocContent(doc.getRef());
         doc.setHtml(html.getHtml());
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject doc) {
-        UrlDocContent reference = metaRepository.getUrlDocContent(doc.getRef());
+        UrlDocContent reference = docRepository.getUrlDocContent(doc.getRef());
         doc.setUrl(reference.getUrl());
     }
 
     public void visitTextDocument(TextDocumentDomainObject document) {
         textDocumentContentInitializer.initialize(document);
-    }
-
-    public DocRepository getMetaRepository() {
-        return metaRepository;
-    }
-
-    public void setMetaRepository(DocRepository metaRepository) {
-        this.metaRepository = metaRepository;
-    }
-
-    public TextDocumentContentInitializer getTextDocumentContentInitializer() {
-        return textDocumentContentInitializer;
-    }
-
-    public void setTextDocumentContentInitializer(TextDocumentContentInitializer textDocumentContentInitializer) {
-        this.textDocumentContentInitializer = textDocumentContentInitializer;
     }
 }

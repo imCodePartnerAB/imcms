@@ -11,7 +11,7 @@ import java.util.Map;
 class DublinCoreTermsMapFactory {
 
     public Map<NameSpace, Map<String, String>> getNameSpaceStrings(DublinCoreTerms dublinCoreTerms) {
-        Format iso8601Format = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT;
+        Format iso8601Format = DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT;
         return ArrayUtils.toMap(new Object[][]{
                 {DublinCoreTerms.DUBLIN_CORE_ELEMENTS_NAME_SPACE, ArrayUtils.toMap(new Object[][]{
                         {"creator", null != dublinCoreTerms.getCreator() ? dublinCoreTerms.getCreator().getName() : null},

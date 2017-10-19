@@ -32,26 +32,34 @@ import java.util.Map;
 @Transactional
 public class TextDocumentContentSaver {
 
+    private final VersionRepository versionRepository;
+    private final TextRepository textRepository;
+    private final TextHistoryRepository textHistoryRepository;
+    private final ImageRepository imageRepository;
+    private final MenuRepository menuRepository;
+    private final TemplateNamesRepository templateNamesRepository;
+    private final LoopRepository loopRepository;
+    private final LanguageRepository languageRepository;
+    private final IncludeRepository includeRepository;
+    private final UserRepository userRepository;
+
     @Inject
-    private VersionRepository versionRepository;
-    @Inject
-    private TextRepository textRepository;
-    @Inject
-    private TextHistoryRepository textHistoryRepository;
-    @Inject
-    private ImageRepository imageRepository;
-    @Inject
-    private MenuRepository menuRepository;
-    @Inject
-    private TemplateNamesRepository templateNamesRepository;
-    @Inject
-    private LoopRepository loopRepository;
-    @Inject
-    private LanguageRepository languageRepository;
-    @Inject
-    private IncludeRepository includeRepository;
-    @Inject
-    private UserRepository userRepository;
+    public TextDocumentContentSaver(VersionRepository versionRepository, TextRepository textRepository,
+                                    TextHistoryRepository textHistoryRepository, ImageRepository imageRepository,
+                                    MenuRepository menuRepository, TemplateNamesRepository templateNamesRepository,
+                                    LoopRepository loopRepository, LanguageRepository languageRepository,
+                                    IncludeRepository includeRepository, UserRepository userRepository) {
+        this.versionRepository = versionRepository;
+        this.textRepository = textRepository;
+        this.textHistoryRepository = textHistoryRepository;
+        this.imageRepository = imageRepository;
+        this.menuRepository = menuRepository;
+        this.templateNamesRepository = templateNamesRepository;
+        this.loopRepository = loopRepository;
+        this.languageRepository = languageRepository;
+        this.includeRepository = includeRepository;
+        this.userRepository = userRepository;
+    }
 
     /**
      * Saves new document content.

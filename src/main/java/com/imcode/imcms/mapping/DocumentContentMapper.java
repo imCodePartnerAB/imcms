@@ -21,14 +21,17 @@ import java.util.Map;
 @Transactional
 public class DocumentContentMapper {
 
-    @Inject
-    private CommonContentRepository commonContentRepository;
+    private final CommonContentRepository commonContentRepository;
+    private final LanguageRepository languageRepository;
+    private final DocumentLanguageMapper languageMapper;
 
     @Inject
-    private LanguageRepository languageRepository;
-
-    @Inject
-    private DocumentLanguageMapper languageMapper;
+    public DocumentContentMapper(CommonContentRepository commonContentRepository, LanguageRepository languageRepository,
+                                 DocumentLanguageMapper languageMapper) {
+        this.commonContentRepository = commonContentRepository;
+        this.languageRepository = languageRepository;
+        this.languageMapper = languageMapper;
+    }
 
     /**
      * @deprecated use {@link #getCommonContents(int, int)}

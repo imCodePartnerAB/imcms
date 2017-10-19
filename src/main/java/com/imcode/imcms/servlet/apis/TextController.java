@@ -55,8 +55,12 @@ public class TextController {
 
     private ImcmsServices imcmsServices;
 
+    private final TextContentFilter textContentFilter;
+
     @Autowired
-    private TextContentFilter textContentFilter;
+    public TextController(TextContentFilter textContentFilter) {
+        this.textContentFilter = textContentFilter;
+    }
 
     @PostConstruct
     public void init() {

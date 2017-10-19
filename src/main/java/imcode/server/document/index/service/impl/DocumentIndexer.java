@@ -13,9 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-/**
- *
- */
 // todo: ??? Truncate date fields to minute ???
 public class DocumentIndexer {
 
@@ -24,9 +21,6 @@ public class DocumentIndexer {
     private DocumentMapper documentMapper;
     private CategoryMapper categoryMapper;
     private DocumentContentIndexer contentIndexer;
-
-    public DocumentIndexer() {
-    }
 
     public DocumentIndexer(DocumentMapper documentMapper, CategoryMapper categoryMapper, DocumentContentIndexer contentIndexer) {
         this.documentMapper = documentMapper;
@@ -117,12 +111,11 @@ public class DocumentIndexer {
 
         doc.getKeywords().forEach(documentKeyword -> indexDoc.addField(DocumentIndex.FIELD__KEYWORD, documentKeyword));
 
-        List parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument(doc);
+        List<Integer[]> parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument(doc);
 
-        parentDocumentAndMenuIds.forEach(it -> {
-                    Object[] tuple = (Object[]) it;
-                    int parentId = (int) tuple[0];
-                    int menuId = (int) tuple[1];
+        parentDocumentAndMenuIds.forEach(tuple -> {
+            int parentId = tuple[0];
+            int menuId = tuple[1];
                     indexDoc.addField(DocumentIndex.FIELD__PARENT_ID, parentId);
                     indexDoc.addField(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId);
                 }

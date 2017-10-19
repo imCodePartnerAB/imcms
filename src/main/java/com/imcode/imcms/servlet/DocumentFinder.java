@@ -54,6 +54,7 @@ public class DocumentFinder extends WebComponent {
         ImcmsServices service = Imcms.getServices();
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
         final BooleanQuery booleanQuery = new BooleanQuery();
+
         if (null != page.getQuery()) {
             booleanQuery.add(page.getQuery(), Occur.MUST);
         }

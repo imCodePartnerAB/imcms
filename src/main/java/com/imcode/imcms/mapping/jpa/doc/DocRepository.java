@@ -23,26 +23,27 @@ import java.util.stream.Stream;
 @Transactional
 public class DocRepository {
 
-    @Inject
-    private MetaRepository metaRepository;
-
-    @Inject
-    private PropertyRepository propertyRepository;
-
-    @Inject
-    private HtmlDocContentRepository htmlDocContentRepository;
-
-    @Inject
-    private UrlDocContentRepository urlDocContentRepository;
-
-    @Inject
-    private FileDocFileRepository fileDocFileRepository;
+    private final MetaRepository metaRepository;
+    private final PropertyRepository propertyRepository;
+    private final HtmlDocContentRepository htmlDocContentRepository;
+    private final UrlDocContentRepository urlDocContentRepository;
+    private final FileDocFileRepository fileDocFileRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     private Logger logger = Logger.getLogger(getClass());
 
+    @Inject
+    public DocRepository(MetaRepository metaRepository, PropertyRepository propertyRepository,
+                         HtmlDocContentRepository htmlDocContentRepository,
+                         UrlDocContentRepository urlDocContentRepository, FileDocFileRepository fileDocFileRepository) {
+        this.metaRepository = metaRepository;
+        this.propertyRepository = propertyRepository;
+        this.htmlDocContentRepository = htmlDocContentRepository;
+        this.urlDocContentRepository = urlDocContentRepository;
+        this.fileDocFileRepository = fileDocFileRepository;
+    }
 
     public void touch(VersionRef docIdentity, UserDomainObject user) {
         touch(docIdentity, user, new Date());
@@ -66,7 +67,6 @@ public class DocRepository {
                 .executeUpdate();
     }
 
-
     public void insertPropertyIfNotExists(int docId, String name, String value) {
         Property property = propertyRepository.findByDocIdAndName(docId, name);
 
@@ -79,7 +79,6 @@ public class DocRepository {
             property.setValue(value);
         }
     }
-
 
     public void deleteHtmlDocContent(DocRef docIdentity) {
         htmlDocContentRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
@@ -99,7 +98,6 @@ public class DocRepository {
         return entityManager.merge(fileDocItem);
     }
 
-
     public void deleteFileDocContent(DocRef docIdentity) {
         List<FileDocFile> fileDocFile = fileDocFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
 
@@ -114,7 +112,6 @@ public class DocRepository {
         entityManager.createQuery(query).executeUpdate();
     }
 
-
     public HtmlDocContent getHtmlDocContent(DocRef docIdentity) {
         return htmlDocContentRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
@@ -124,7 +121,6 @@ public class DocRepository {
         return entityManager.merge(content);
     }
 
-
     public UrlDocContent getUrlDocContent(DocRef docIdentity) {
         return urlDocContentRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
@@ -133,7 +129,6 @@ public class DocRepository {
     public UrlDocContent saveUrlDocContent(UrlDocContent reference) {
         return entityManager.merge(reference);
     }
-
 
     public void deleteDocument(int docId) {
         Stream.of(
@@ -171,21 +166,17 @@ public class DocRepository {
         ).forEach(query -> entityManager.createNativeQuery(query).setParameter(1, docId).executeUpdate());
     }
 
-
     public List<Integer> getAllDocumentIds() {
         return metaRepository.findAllIds();
     }
-
 
     public List<Integer> getDocumentIdsInRange(int min, int max) {
         return metaRepository.findIdsBetween(min, max);
     }
 
-
     public Integer getMaxDocumentId() {
         return metaRepository.findMaxId();
     }
-
 
     public Integer getMinDocumentId() {
         return metaRepository.findMinId();

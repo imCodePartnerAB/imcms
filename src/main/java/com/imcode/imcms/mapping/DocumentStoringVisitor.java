@@ -5,7 +5,6 @@ import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.FileDocFile;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
@@ -34,18 +33,16 @@ class DocumentStoringVisitor extends DocumentVisitor {
     private static final int FILE_BUFFER_LENGTH = 2048;
     private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
     protected ImcmsServices services;
-    protected DocRepository docRepository;
     protected VersionRepository versionRepository;
     protected LanguageRepository languageRepository;
-    protected CommonContentRepository commonContentRepository;
-    protected TextDocumentContentSaver textDocumentContentSaver;
+    DocRepository docRepository;
+    TextDocumentContentSaver textDocumentContentSaver;
 
-    public DocumentStoringVisitor(ImcmsServices services) {
+    DocumentStoringVisitor(ImcmsServices services) {
         this.services = services;
         this.docRepository = services.getManagedBean(DocRepository.class);
         this.versionRepository = services.getManagedBean(VersionRepository.class);
         this.languageRepository = services.getManagedBean(LanguageRepository.class);
-        this.commonContentRepository = services.getManagedBean(CommonContentRepository.class);
         this.textDocumentContentSaver = services.getManagedBean(TextDocumentContentSaver.class);
     }
 
@@ -72,7 +69,6 @@ class DocumentStoringVisitor extends DocumentVisitor {
      * 1002_3.xxx - 1002 is a doc id, 3 is a version no and xxx is fileId.
      * 1002_2 - 1002 is a doc id, 2 is a version no and fileId is blank.
      *
-     * @param fileId
      * @return FileDocumentFile filename
      */
     public static String getFilenameForFileDocumentFile(VersionRef versionRef, String fileId) {
@@ -94,9 +90,6 @@ class DocumentStoringVisitor extends DocumentVisitor {
 
     /**
      * Saves (possibly rewrites) file if its InputStreamSource has been changed.
-     *
-     * @param fileDocumentFile
-     * @param fileId
      */
     protected void saveFileDocumentFile(VersionRef versionRef, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
                                         String fileId) {
@@ -140,8 +133,6 @@ class DocumentStoringVisitor extends DocumentVisitor {
 
     /**
      * Saves or updates file document
-     *
-     * @param fileDocument
      */
     public void visitFileDocument(FileDocumentDomainObject fileDocument) {
         docRepository.deleteFileDocContent(fileDocument.getRef());
@@ -180,7 +171,7 @@ class DocumentStoringVisitor extends DocumentVisitor {
         if (extensions.length() > length) {
             return truncatedFilename;
         }
-        String basename = StringUtils.chomp(filename, extensions);
+        String basename = StringUtils.removeEnd(filename, extensions);
         String truncatedBasename = StringUtils.substring(basename, 0, length - extensions.length());
         truncatedFilename = truncatedBasename + extensions;
         return truncatedFilename;

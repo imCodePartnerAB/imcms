@@ -60,7 +60,7 @@
         <td class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/16 ?> </td>
         <td>
             <select name="<%= UserBrowser.REQUEST_PARAMETER__ROLE_ID %>" size="5" multiple >
-            <%= Html.createOptionList(Arrays.asList(allRoles), userBrowserPage.getSelectedRoles(), new UserEditorPage.RoleToStringPairTransformer()) %>
+                <%= Html.createOptionList(Arrays.asList(allRoles), Arrays.asList(userBrowserPage.getSelectedRoles()), new UserEditorPage.RoleToStringPairTransformer()) %>
 		    </select>
         </td>
     </tr>

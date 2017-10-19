@@ -7,6 +7,7 @@ import com.imcode.imcms.mapping.container.DocRef;
 import imcode.server.document.DocumentDomainObject;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.PersistenceConfiguration;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public class DocumentLoaderCachingProxy {
         CacheConfiguration cc = new CacheConfiguration();
 
         cc.setMaxEntriesLocalHeap(size);
-        cc.setOverflowToDisk(false);
+        cc.persistence(new PersistenceConfiguration().strategy(PersistenceConfiguration.Strategy.LOCALTEMPSWAP));
         cc.setEternal(true);
         cc.setName(DocumentLoaderCachingProxy.class.getCanonicalName() + "." + name);
 

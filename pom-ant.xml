@@ -47,7 +47,6 @@
         <property name="swfpattern" value="**/*.swf"/>
 
         <property name="docs" value="${build.webapp.imcms.dir}/docs"/>
-        <property name="apisamples" value="${docs}/apisamples"/>
         <property name="apidocs" value="${docs}/api"/>
 
         <dependset>
@@ -104,13 +103,6 @@
         </antcall>
 
         <mkdir dir="${demotemplates}"/>
-
-        <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable">
-            <fileset dir="${apisamples}">
-                <include name="*.jsp"/>
-            </fileset>
-            <mapper type="glob" from="*" to="*.txt"/>
-        </copy>
 
         <copy todir="${docs}">
             <fileset dir="docs"/>

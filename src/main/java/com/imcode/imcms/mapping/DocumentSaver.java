@@ -19,7 +19,6 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,43 +34,38 @@ import java.util.stream.Stream;
 public class DocumentSaver {
 
     private DocumentMapper documentMapper;
-
-    @Inject
-    private DocRepository docRepository;
-
-    @Inject
-    private VersionRepository versionRepository;
-
-    @Autowired
-    private VersionService versionService;
-
-    @Inject
-    private LanguageRepository languageRepository;
-
-    @Inject
-    private CommonContentRepository commonContentRepository;
-
-    @Inject
-    private MetaRepository metaRepository;
-
-    @Inject
-    private TextDocumentContentSaver textDocumentContentSaver;
-
-    @Inject
-    private DocumentContentMapper documentContentMapper;
-
-    @Inject
-    private DocumentVersionMapper versionMapper;
-
-    @Inject
-    private PropertyRepository propertyRepository;
-
+    private final DocRepository docRepository;
+    private final VersionRepository versionRepository;
+    private final VersionService versionService;
+    private final LanguageRepository languageRepository;
+    private final CommonContentRepository commonContentRepository;
+    private final MetaRepository metaRepository;
+    private final TextDocumentContentSaver textDocumentContentSaver;
+    private final DocumentContentMapper documentContentMapper;
+    private final DocumentVersionMapper versionMapper;
+    private final PropertyRepository propertyRepository;
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
+
+    @Inject
+    public DocumentSaver(DocRepository docRepository, VersionRepository versionRepository,
+                         VersionService versionService, LanguageRepository languageRepository,
+                         CommonContentRepository commonContentRepository, MetaRepository metaRepository,
+                         TextDocumentContentSaver textDocumentContentSaver, DocumentContentMapper documentContentMapper,
+                         DocumentVersionMapper versionMapper, PropertyRepository propertyRepository) {
+        this.docRepository = docRepository;
+        this.versionRepository = versionRepository;
+        this.versionService = versionService;
+        this.languageRepository = languageRepository;
+        this.commonContentRepository = commonContentRepository;
+        this.metaRepository = metaRepository;
+        this.textDocumentContentSaver = textDocumentContentSaver;
+        this.documentContentMapper = documentContentMapper;
+        this.versionMapper = versionMapper;
+        this.propertyRepository = propertyRepository;
+    }
 
     /**
      * Updates doc's last modified date time if it was not set explicitly.
-     *
-     * @param doc
      */
     public void updateModifiedDtIfNotSetExplicitly(DocumentDomainObject doc) {
         Date explicitlyModifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getActualModifiedDatetime());
@@ -170,12 +164,7 @@ public class DocumentSaver {
             documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, doc, user, oldDoc);
         }
 
-        DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(
-                oldDoc,
-                documentMapper.getImcmsServices(),
-                user
-        );
-
+        DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(documentMapper.getImcmsServices(), user);
         metaRepository.saveAndFlush(jpaMeta);
 
         commonContents.forEach((language, dcc) -> {
@@ -205,13 +194,6 @@ public class DocumentSaver {
         docRepository.touch(doc.getVersionRef(), user, doc.getModifiedDatetime());
     }
 
-    /**
-     * @param docs
-     * @param user
-     * @return
-     * @throws NoPermissionToAddDocumentToMenuException
-     * @throws DocumentSaveException
-     */
     @Transactional
     public int saveNewDocsWithCommonMetaAndVersion(List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
@@ -270,15 +252,6 @@ public class DocumentSaver {
      * -Otherwise custom (lim1 and lim2) perms are replaced with permissions set for new document
      * <p/>
      * If user is a super-admin or has full permissions on a new document then
-     *
-     * @param doc
-     * @param dccMap
-     * @param saveOpts
-     * @param user
-     * @param <T>
-     * @return
-     * @throws NoPermissionToAddDocumentToMenuException
-     * @throws DocumentSaveException
      */
     @Transactional
     public <T extends DocumentDomainObject> int saveNewDocument(T doc,
@@ -333,7 +306,8 @@ public class DocumentSaver {
         doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
 
         if (doc instanceof TextDocumentDomainObject
-                && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields)) {
+                && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields))
+        {
             Map<DocumentLanguage, TextDomainObject> texts1 = new HashMap<>();
             Map<DocumentLanguage, TextDomainObject> texts2 = new HashMap<>();
 
@@ -358,10 +332,6 @@ public class DocumentSaver {
 
     /**
      * Various non security checks.
-     *
-     * @param document
-     * @throws NoPermissionInternalException
-     * @throws DocumentSaveException
      */
     private void checkDocumentForSave(DocumentDomainObject document)
             throws NoPermissionInternalException, DocumentSaveException {
@@ -464,9 +434,6 @@ public class DocumentSaver {
         meta.setLinkableByOtherUsers(metaDO.getLinkableByOtherUsers());
         meta.setLinkedForUnauthorizedUsers(metaDO.getLinkedForUnauthorizedUsers());
         meta.setModifiedDatetime(metaDO.getModifiedDatetime());
-        //e.setPermissionSets(m.getPermissionSets)
-        //e.setPermissionSetsForNew(m.getPermissionSetExForNew)
-        //e.setPermissionSetsForNewDocuments(m.getPermissionSetsForNewDocuments)
         meta.setProperties(metaDO.getProperties());
         meta.setPublicationEndDatetime(metaDO.getPublicationEndDatetime());
         meta.setDepublisherId(metaDO.getDepublisherId());
@@ -503,15 +470,8 @@ public class DocumentSaver {
         return docRepository;
     }
 
-    public void setDocRepository(DocRepository docRepository) {
-        this.docRepository = docRepository;
-    }
-
     public VersionRepository getVersionRepository() {
         return versionRepository;
     }
 
-    public void setVersionRepository(VersionRepository versionRepository) {
-        this.versionRepository = versionRepository;
-    }
 }

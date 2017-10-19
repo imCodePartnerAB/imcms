@@ -7,7 +7,7 @@ public enum Color {
 
     private final String color;
 
-    private Color(String color) {
+    Color(String color) {
         this.color = color;
     }
 

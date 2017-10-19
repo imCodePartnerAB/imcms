@@ -19,19 +19,16 @@ import java.util.*;
 @Transactional(rollbackFor = Throwable.class)
 public class CategoryMapper {
 
-    /*
-    static final String SQL__GET_DOCUMENT_CATEGORIES = "SELECT meta_id, category_id"
-                                                       + " FROM document_categories"
-                                                       + " WHERE meta_id ";
-  */
+    private static int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
 
-    private int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
+    private final CategoryRepository categoryRepository;
+    private final CategoryTypeRepository categoryTypeRepository;
 
     @Inject
-    private CategoryRepository categoryRepository;
-
-    @Inject
-    private CategoryTypeRepository categoryTypeRepository;
+    public CategoryMapper(CategoryRepository categoryRepository, CategoryTypeRepository categoryTypeRepository) {
+        this.categoryRepository = categoryRepository;
+        this.categoryTypeRepository = categoryTypeRepository;
+    }
 
 
     public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
@@ -129,8 +126,7 @@ public class CategoryMapper {
     void checkMaxDocumentCategoriesOfType(DocumentDomainObject document)
             throws MaxCategoryDomainObjectsOfTypeExceededException {
         CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
-        for (int i = 0; i < categoryTypes.length; i++) {
-            CategoryTypeDomainObject categoryType = categoryTypes[i];
+        for (CategoryTypeDomainObject categoryType : categoryTypes) {
             int maxChoices = categoryType.getMaxChoices();
             Set documentCategoriesOfType = getCategoriesOfType(categoryType, document.getCategoryIds());
             if (UNLIMITED_MAX_CATEGORY_CHOICES != maxChoices && documentCategoriesOfType.size() > maxChoices) {
@@ -182,9 +178,7 @@ public class CategoryMapper {
     public Set<CategoryDomainObject> getCategoriesOfType(CategoryTypeDomainObject categoryType, Set<Integer> categoryIds) {
         Set<CategoryDomainObject> categoryDomainObjectSet = getCategories(categoryIds);
 
-        for (Iterator<CategoryDomainObject> i = categoryDomainObjectSet.iterator(); i.hasNext(); ) {
-            if (!i.next().getType().equals(categoryType)) i.remove();
-        }
+        categoryDomainObjectSet.removeIf(categoryDomainObject -> !categoryDomainObject.getType().equals(categoryType));
 
         return categoryDomainObjectSet;
     }

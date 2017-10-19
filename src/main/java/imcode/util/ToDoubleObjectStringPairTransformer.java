@@ -1,9 +1,11 @@
 package imcode.util;
 
-public class ToDoubleObjectStringPairTransformer extends ToStringPairTransformer {
+import java.util.function.Function;
 
-    protected String[] transformToStringPair(Object object) {
-        return new String[]{"" + object, "" + object};
+public class ToDoubleObjectStringPairTransformer implements Function<Integer, String[]> {
+
+    public String[] apply(Integer number) {
+        return new String[]{String.valueOf(number), String.valueOf(number)};
     }
 
 }

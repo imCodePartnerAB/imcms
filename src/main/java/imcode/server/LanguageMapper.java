@@ -200,7 +200,7 @@ public class LanguageMapper {
 
     public String createLanguagesOptionList(UserDomainObject user,
                                             String documentLanguage) {
-        List languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage(user);
+        List<String> languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage(user);
         return Html.createOptionList(languageKeysAndNamesInUsersLanguage, documentLanguage);
     }
 

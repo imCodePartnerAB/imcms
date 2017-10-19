@@ -21,13 +21,15 @@ import java.util.Objects;
 @Transactional
 public class DocumentLanguageMapper {
 
+    private final LanguageRepository languageRepository;
+    private final SystemPropertyRepository systemRepository;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
-    private LanguageRepository languageRepository;
-
-    @Inject
-    private SystemPropertyRepository systemRepository;
+    public DocumentLanguageMapper(LanguageRepository languageRepository, SystemPropertyRepository systemRepository) {
+        this.languageRepository = languageRepository;
+        this.systemRepository = systemRepository;
+    }
 
     public List<DocumentLanguage> getAll() {
         return Lists.transform(languageRepository.findAll(), this::toApiObject);

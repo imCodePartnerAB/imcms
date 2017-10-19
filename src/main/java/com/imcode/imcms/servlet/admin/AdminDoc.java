@@ -173,11 +173,11 @@ public class AdminDoc extends HttpServlet {
         } else if (document instanceof FileDocumentDomainObject && ImcmsConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags) {
             pageFlow = new EditDocPageFlow(document);
         } else if (ImcmsConstants.DISPATCH_FLAG__PUBLISH == flags) {
-            pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.PublishWorkingVersionCommand(), user);
+            pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.PublishWorkingVersionCommand());
         } else if (ImcmsConstants.DISPATCH_FLAG__SET_DEFAULT_VERSION == flags) {
             try {
                 Integer no = Integer.parseInt(req.getParameter("no"));
-                pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.SetDefaultDocumentVersionCommand(no), user);
+                pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.SetDefaultDocumentVersionCommand(no));
             } catch (Exception e) {
                 throw new AssertionError(e);
             }
