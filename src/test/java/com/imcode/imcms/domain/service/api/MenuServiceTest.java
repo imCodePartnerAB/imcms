@@ -53,13 +53,13 @@ public class MenuServiceTest {
     }
 
     @Test
-    public void saveFrom_When_MenuWithItems_Expect_SameSizeButResultsNotEquals() {
-        saveFrom_Expect_SameSizeButResultsNotEquals(true);
+    public void saveFrom_When_MenuWithItems_Expect_SameSizeAndResultsEquals() {
+        saveFrom_Expect_SameSizeAndResultsEquals(true);
     }
 
     @Test
-    public void saveFrom_When_MenuDoesntExist_Expect_SameSizeButResultsNotEquals() {
-        saveFrom_Expect_SameSizeButResultsNotEquals(false);
+    public void saveFrom_When_MenuDoesntExist_Expect_SameSizeAndResultsEquals() {
+        saveFrom_Expect_SameSizeAndResultsEquals(false);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class MenuServiceTest {
         assertTrue(menuItems.isEmpty());
     }
 
-    private void saveFrom_Expect_SameSizeButResultsNotEquals(boolean menuExist) {
+    private void saveFrom_Expect_SameSizeAndResultsEquals(boolean menuExist) {
         final Menu menu = menuDataInitializer.createData(true);
         final List<MenuItemDTO> menuItemBefore = menuDataInitializer.getMenuItemDtoList();
 
