@@ -18,7 +18,13 @@ Imcms.define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
                 resolution: "635x120",
                 size: "37kB",
                 width: 5509,
-                height: 3673
+                height: 3673,
+                cropRegion: {
+                    cropX1: -1,
+                    cropY1: -1,
+                    cropX2: -1,
+                    cropY2: -1
+                }
             }, {
                 name: "sample3",
                 path: "/images/img3.png",
