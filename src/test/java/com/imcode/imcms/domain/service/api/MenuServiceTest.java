@@ -17,7 +17,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -57,7 +58,7 @@ public class MenuServiceTest {
     }
 
     @Test
-    public void saveFrom_When_MenuDoesntExist_Expect_EmptyList() {
+    public void saveFrom_When_MenuDoesntExist_Expect_SameSizeButResultsNotEquals() {
         saveFrom_Expect_SameSizeButResultsNotEquals(false);
     }
 
@@ -99,7 +100,7 @@ public class MenuServiceTest {
         final Menu menu = menuDataInitializer.createData(true);
         final List<MenuItemDTO> menuItemBefore = menuDataInitializer.getMenuItemDtoList();
 
-        final MenuDTO menuDTO = menuDtoFrom(menu.getNo(), menu.getVersion().getDocId(), menuDataInitializer.getMenuItemDtoListWithoutIds());
+        final MenuDTO menuDTO = menuDtoFrom(menu.getNo(), menu.getVersion().getDocId(), menuDataInitializer.getMenuItemDtoList());
 
         if (!menuExist) {
             menuDataInitializer.cleanRepositories();
@@ -110,7 +111,7 @@ public class MenuServiceTest {
 
         final List<MenuItemDTO> menuItemAfter = menuDataInitializer.getMenuItemDtoList();
         assertEquals(menuItemBefore.size(), menuItemAfter.size());
-        assertNotEquals(menuItemBefore, menuItemAfter);
+        assertEquals(menuItemBefore, menuItemAfter);
     }
 
     private MenuDTO menuDtoFrom(int menuId, int docId, List<MenuItemDTO> menuItems) {

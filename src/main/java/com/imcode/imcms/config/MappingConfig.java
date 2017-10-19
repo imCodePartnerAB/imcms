@@ -1,10 +1,16 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.service.core.CommonContentService;
+import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.mapping.jpa.doc.Meta;
 import com.imcode.imcms.mapping.jpa.doc.Version;
+import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
+import imcode.server.Imcms;
+import imcode.server.document.DocumentDomainObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -78,7 +84,6 @@ public class MappingConfig {
             @Override
             public MenuItemDTO apply(MenuItem menuItem) {
                 final MenuItemDTO menuItemDTO = new MenuItemDTO();
-                menuItemDTO.setId(menuItem.getId());
                 menuItemDTO.setDocumentId(menuItem.getDocumentId());
                 menuItemDTO.setChildren(menuItem.getChildren().stream()
                         .map(this)
@@ -94,7 +99,6 @@ public class MappingConfig {
             @Override
             public MenuItem apply(MenuItemDTO menuItemDTO) {
                 final MenuItem menuItem = new MenuItem();
-                menuItem.setId(menuItemDTO.getId());
                 menuItem.setDocumentId(menuItemDTO.getDocumentId());
                 final List<MenuItem> children = menuItemDtoListToMenuItemList(this).apply(menuItemDTO.getChildren());
                 menuItem.setChildren(children);
@@ -194,6 +198,24 @@ public class MappingConfig {
             image.setFormat(imageDTO.getFormat());
 
             return image;
+        };
+    }
+
+    @Bean
+    public Function<Meta, DocumentDTO> documentMapping(VersionService versionService,
+                                                       CommonContentService commonContentService) {
+        return (meta) -> {
+            final DocumentDTO dto = new DocumentDTO();
+            dto.setId(meta.getId());
+            dto.setTarget(meta.getTarget());
+            dto.setAlias(meta.getProperties().get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
+
+            final Version latestVersion = versionService.getLatestVersion(meta.getId());
+            final CommonContent commonContent = commonContentService
+                    .getOrCreate(meta.getId(), latestVersion.getNo(), Imcms.getUser());
+            dto.setTitle(commonContent.getHeadline());
+
+            return dto;
         };
     }
 }

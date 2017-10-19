@@ -165,7 +165,7 @@ public class DocumentLoader {
         metaDO.setCreatorId(meta.getCreatorId());
         metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());
         metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(meta.getDisabledLanguageShowMode().name()));
-        metaDO.setDocumentType(meta.getDocumentType());
+        metaDO.setDocumentType(meta.getDocumentType().ordinal());
 
         Set<DocumentLanguage> apiLanguages = meta.getEnabledLanguages().stream()
                 .map(jpaLanguage -> languageMapper.toApiObject(jpaLanguage))
@@ -185,11 +185,11 @@ public class DocumentLoader {
         metaDO.setPublicationEndDatetime(meta.getPublicationEndDatetime());
         metaDO.setDepublisherId(meta.getDepublisherId());
         metaDO.setPublicationStartDatetime(meta.getPublicationStartDatetime());
-        metaDO.setPublicationStatus(publicationStatusFromInt(meta.getPublicationStatusInt()));
+        metaDO.setPublicationStatus(publicationStatusFromInt(meta.getPublicationStatus().ordinal()));
         metaDO.setPublisherId(meta.getPublisherId());
         metaDO.setRestrictedOneMorePrivilegedThanRestrictedTwo(meta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
         //m.setRoleIdToDocumentPermissionSetTypeMappings()
-        metaDO.setSearchDisabled(meta.getSearchDisabled());
+        metaDO.setSearchDisabled(meta.isSearchDisabled());
         metaDO.setTarget(meta.getTarget());
 
         initRoleIdToPermissionSetIdMap(metaDO, meta);

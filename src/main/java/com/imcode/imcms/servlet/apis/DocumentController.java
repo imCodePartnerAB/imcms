@@ -9,6 +9,7 @@ import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
 import imcode.server.Imcms;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
@@ -68,8 +69,10 @@ public class DocumentController {
         DocumentDomainObject documentDomainObject = Imcms.getServices().getDocumentMapper().getWorkingDocument(id);
         DocumentEntity result;
 
-        switch (documentDomainObject.getDocumentTypeId()) {
-            case DocumentTypeDomainObject.URL_ID: {
+        final DocumentType documentType = DocumentType.values()[documentDomainObject.getDocumentTypeId()];
+
+        switch (documentType) {
+            case URL: {
                 result = new UrlDocumentEntity();
 
                 if (!isPrototype) {
@@ -77,7 +80,7 @@ public class DocumentController {
                 }
             }
             break;
-            case DocumentTypeDomainObject.FILE_ID: {
+            case FILE: {
                 result = new FileDocumentEntity();
 
                 if (!isPrototype) {
@@ -85,7 +88,7 @@ public class DocumentController {
                 }
             }
             break;
-            case DocumentTypeDomainObject.TEXT_ID:
+            case TEXT:
             default: {
                 result = new TextDocumentEntity();
                 asTextEntity((TextDocumentEntity) result, (TextDocumentDomainObject) documentDomainObject);
@@ -217,23 +220,24 @@ public class DocumentController {
             DocumentDomainObject docDomainObject;
             DocumentMapper docMapper = Imcms.getServices().getDocumentMapper();
             DocumentEntity docEntity;
+            final DocumentType documentType = DocumentType.values()[type];
 
-            switch (type) {
-                case DocumentTypeDomainObject.URL_ID: {
+            switch (documentType) {
+                case URL: {
                     docEntity = newMapper(data, new TypeReference<UrlDocumentEntity>() {
                     });
                     docDomainObject = createOrGetDoc(type, parentDocumentId, docEntity.id, docMapper);
                     asUrlDocument((UrlDocumentDomainObject) docDomainObject, (UrlDocumentEntity) docEntity);
                 }
                 break;
-                case DocumentTypeDomainObject.FILE_ID: {
+                case FILE: {
                     docEntity = newMapper(data, new TypeReference<FileDocumentEntity>() {
                     });
                     docDomainObject = createOrGetDoc(type, parentDocumentId, docEntity.id, docMapper);
                     asFileDocument((FileDocumentDomainObject) docDomainObject, (FileDocumentEntity) docEntity, files);
                 }
                 break;
-                case DocumentTypeDomainObject.TEXT_ID:
+                case TEXT:
                 default: {
                     int id = TextDocument.TYPE_ID;
                     docEntity = newMapper(data, new TypeReference<TextDocumentEntity>() {

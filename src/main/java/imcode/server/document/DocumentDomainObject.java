@@ -10,6 +10,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -66,17 +67,19 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public static <T extends DocumentDomainObject> T fromDocumentTypeId(int documentTypeId) {
         DocumentDomainObject document;
 
-        switch (documentTypeId) {
-            case DocumentTypeDomainObject.TEXT_ID:
+        final DocumentType documentType = DocumentType.values()[documentTypeId];
+
+        switch (documentType) {
+            case TEXT:
                 document = new TextDocumentDomainObject();
                 break;
-            case DocumentTypeDomainObject.URL_ID:
+            case URL:
                 document = new UrlDocumentDomainObject();
                 break;
-            case DocumentTypeDomainObject.FILE_ID:
+            case FILE:
                 document = new FileDocumentDomainObject();
                 break;
-            case DocumentTypeDomainObject.HTML_ID:
+            case HTML:
                 document = new HtmlDocumentDomainObject();
                 break;
             default:
