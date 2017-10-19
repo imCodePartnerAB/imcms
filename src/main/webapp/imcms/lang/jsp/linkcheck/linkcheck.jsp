@@ -7,7 +7,8 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.Html,
                  imcode.util.Utility,
-                 org.apache.commons.lang3.StringEscapeUtils"%><%@ page import="java.util.Iterator"%>
+                 org.apache.commons.text.StringEscapeUtils" %>
+<%@ page import="java.util.Iterator" %>
 <%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%><%
 
 LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
@@ -53,7 +54,7 @@ String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 
 if (doCheckLinks) {
 	UserDomainObject user = Utility.getLoggedOnUser( request ) ;
-	Iterator linksIterator = (Iterator)linkCheckPage.getLinksIterator() ;
+    Iterator linksIterator = linkCheckPage.getLinksIterator();
 	while ( linksIterator.hasNext() ) { %>
 <table border="0" cellspacing="2" cellpadding="2" width="100%">
 <tr>

@@ -1,36 +1,34 @@
 <%@ page
 
-	import="com.imcode.imcms.api.*,
+        import="com.imcode.imcms.api.ContentManagementSystem,
+	        com.imcode.imcms.api.DatabaseService,
+	        com.imcode.imcms.api.Document,
+	        com.imcode.imcms.mapping.DocumentMapper,
+	        imcode.server.Imcms,
+	        imcode.server.ImcmsServices,
+	        imcode.server.document.NoPermissionToEditDocumentException,
+	        imcode.server.document.TextDocumentPermissionSetDomainObject,
+	        imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException,
+	        imcode.server.document.textdocument.TextDocumentDomainObject,
+	        imcode.server.document.textdocument.TextDocumentDomainObject.LoopItemRef,
+	        imcode.server.document.textdocument.TextDomainObject,
+	        imcode.server.user.UserDomainObject,
+	        imcode.util.Utility,
+	        org.apache.commons.lang3.StringUtils,
+	        org.apache.commons.text.StringEscapeUtils,
+	        org.json.simple.JSONObject,
+	        java.net.URLEncoder,
 	        java.sql.Connection,
 	        java.sql.PreparedStatement,
 	        java.sql.ResultSet,
 	        java.text.SimpleDateFormat,
 	        java.util.Date,
-	        org.apache.commons.lang3.StringUtils,
-	        org.json.simple.JSONObject,
-	        imcode.server.ImcmsServices,
-	        imcode.server.Imcms,
-	        imcode.server.user.UserDomainObject,
-	        imcode.util.Utility,
-	        com.imcode.imcms.mapping.DocumentMapper,
-	        imcode.server.document.textdocument.TextDocumentDomainObject,
-	        imcode.server.document.TextDocumentPermissionSetDomainObject,
-	        imcode.server.document.textdocument.TextDomainObject,
-	        imcode.server.document.NoPermissionToEditDocumentException,
-	        imcode.util.ShouldHaveCheckedPermissionsEarlierException,
-	        imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException,
-	        imcode.server.document.ConcurrentDocumentModificationException,
-	        com.imcode.imcms.mapping.DocumentSaveException,
-	        imcode.util.ShouldNotBeThrownException,
-	        org.apache.commons.lang3.StringEscapeUtils,
-	        java.net.URLEncoder"
+	        java.util.Optional"
 
-	contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"
+        contentType="text/html; charset=UTF-8"
+        pageEncoding="UTF-8"
 
 %>
-<%@ page import="java.util.Optional" %>
-<%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject.LoopItemRef" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%
 

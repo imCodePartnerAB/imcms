@@ -1,4 +1,6 @@
-<%@ tag import="org.apache.commons.lang3.StringEscapeUtils"%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ tag import="org.apache.commons.text.StringEscapeUtils" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@attribute name="name" required="true" %>
 <%@attribute name="target" required="true" %>
 <table border="0" cellspacing="0" cellpadding="0" id="${name}">

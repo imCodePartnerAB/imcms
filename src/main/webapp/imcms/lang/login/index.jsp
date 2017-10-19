@@ -1,5 +1,8 @@
-<%@ page import="com.imcode.imcms.servlet.VerifyUser"%><%@ page import="imcode.server.user.UserDomainObject"%><%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage"%>
-<%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
+<%@ page import="com.imcode.imcms.servlet.VerifyUser" %>
+<%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage" %>
+<%@ page import="imcode.server.user.UserDomainObject" %>
+<%@ page import="imcode.util.Utility" %>
+<%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
 <vel:velocity>

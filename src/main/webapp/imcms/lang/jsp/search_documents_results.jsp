@@ -1,15 +1,16 @@
-<%@ page import="com.imcode.imcms.servlet.DocumentFinder,
-                 imcode.server.document.DocumentDomainObject,
+<%@ page import="com.imcode.imcms.flow.Page,
+                 com.imcode.imcms.servlet.DocumentFinder,
                  com.imcode.imcms.servlet.SearchDocumentsPage,
+                 imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject,
-                 imcode.util.Utility,
                  imcode.util.Html,
-                 com.imcode.imcms.flow.Page"
-        contentType="text/html; charset=UTF-8" %><%@ page import="java.util.List"%>
-<%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
-<%@ page import="org.apache.commons.lang3.ObjectUtils"%>
+                 imcode.util.Utility"
+         contentType="text/html; charset=UTF-8" %>
+<%@ page import="org.apache.commons.lang3.ObjectUtils" %>
+<%@ page import="org.apache.commons.text.StringEscapeUtils" %>
+<%@ page import="java.util.List" %>
 <%
-    SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage)Page.fromRequest(request);
+    SearchDocumentsPage searchDocumentsPage = Page.fromRequest(request);
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     List documentsFound = searchDocumentsPage.getDocumentsFound() ;
     DocumentFinder documentFinder = searchDocumentsPage.getDocumentFinder() ;

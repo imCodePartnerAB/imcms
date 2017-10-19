@@ -12,7 +12,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
@@ -98,7 +98,7 @@ public class Html {
      * @deprecated
      */
     public static String createOptionList(List data, String selected) {
-        return createOptionList(data, Arrays.asList(new String[]{selected}));
+        return createOptionList(data, Arrays.asList(selected));
     }
 
     public static String createOptionListOfCategoriesOfTypeForDocument(CategoryMapper categoryMapper,
@@ -141,7 +141,7 @@ public class Html {
                 return new String[]{"" + category.getId(), category.getName()};
             }
         };
-        String categoryOptionList = createOptionList(categories, Arrays.asList(new String[]{}), categoryToStringPairTransformer);
+        String categoryOptionList = createOptionList(categories, Arrays.asList(), categoryToStringPairTransformer);
 
         if (1 == categoryType.getMaxChoices()) {
             categoryOptionList = "<option></option>" + categoryOptionList;

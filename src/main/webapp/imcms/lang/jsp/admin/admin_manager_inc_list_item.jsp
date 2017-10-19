@@ -1,10 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8"
-        import="org.apache.commons.lang3.StringEscapeUtils,
-                 imcode.server.document.DocumentDomainObject,
-                 imcode.util.Utility,
+         import="imcode.server.document.DocumentDomainObject,
+                 imcode.server.user.UserDomainObject,
                  imcode.util.Html,
-                 imcode.server.user.UserDomainObject"%>
-<%@ page import="org.apache.commons.lang3.ObjectUtils"%>
+                 imcode.util.Utility,
+                 org.apache.commons.lang3.ObjectUtils" %>
+<%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request"/>
 <%

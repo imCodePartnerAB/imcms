@@ -17,8 +17,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.functors.NotPredicate;
 import org.apache.commons.collections4.functors.NullPredicate;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;

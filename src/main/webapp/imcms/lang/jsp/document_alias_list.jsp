@@ -1,18 +1,18 @@
 <%@ page import="com.imcode.imcms.api.ContentManagementSystem,
                  com.imcode.imcms.api.UserService,
+                 com.imcode.imcms.flow.OkCancelPage,
                  com.imcode.imcms.mapping.DocumentMapper,
                  com.imcode.imcms.servlet.admin.ListDocumentAliasPage,
                  imcode.server.Imcms,
                  imcode.server.document.DocumentDomainObject,
-                 imcode.server.user.UserDomainObject,
-                 imcode.util.Html"%>
+                 imcode.server.user.UserDomainObject" %>
+<%@ page import="imcode.util.Html" %>
 <%@ page import="imcode.util.Utility"%>
-<%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
+<%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.Map"%>
-<%@ page import="com.imcode.imcms.flow.OkCancelPage"%>
 <%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
-<%  ListDocumentAliasPage listDocumentAliasPage = (ListDocumentAliasPage) ListDocumentAliasPage.fromRequest(request) ;
+<% ListDocumentAliasPage listDocumentAliasPage = ListDocumentAliasPage.fromRequest(request);
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     UserService userService = imcmsSystem.getUserService();
     DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();

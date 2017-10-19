@@ -1,6 +1,6 @@
 <%-- todo: delete this page and remove all references
 <%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject,
-                 org.apache.commons.lang3.StringEscapeUtils,
+                 org.apache.commons.text.StringEscapeUtils,
                  com.imcode.imcms.servlet.admin.AdminDoc,
                  imcode.server.ImcmsConstants,
                  imcode.server.user.UserDomainObject,

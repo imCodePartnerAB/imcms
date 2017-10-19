@@ -1,16 +1,20 @@
-<%@ page import="com.imcode.imcms.servlet.superadmin.ListDocuments,
-                 imcode.server.document.DocumentDomainObject,
+<%@ page import="com.imcode.imcms.mapping.DocumentMapper,
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
-                 org.apache.commons.lang3.StringEscapeUtils,
+                 com.imcode.imcms.servlet.superadmin.ListDocuments,
                  imcode.server.Imcms,
-                 imcode.util.Utility,
-                 imcode.server.user.UserDomainObject,
+                 imcode.server.document.DocumentComparator,
+                 imcode.server.document.DocumentDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
-                 java.util.*,
-                 java.net.URLEncoder,
-                org.apache.commons.lang3.ObjectUtils,
+                 imcode.server.user.UserDomainObject,
                  imcode.util.Html,
-                 imcode.server.document.DocumentComparator"%><%@ page import="com.imcode.imcms.mapping.DocumentMapper"%>
+                 imcode.util.Utility,
+                org.apache.commons.lang3.ObjectUtils,
+                 org.apache.commons.text.StringEscapeUtils,
+                 java.net.URLEncoder" %>
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
 <%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <% ListDocuments.FormData formData = (ListDocuments.FormData)request.getAttribute( ListDocuments.REQUEST_ATTRIBUTE__FORM_DATA ) ;%>
 <vel:velocity>

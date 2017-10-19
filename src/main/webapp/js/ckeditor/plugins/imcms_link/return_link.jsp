@@ -1,7 +1,7 @@
 <%@ page
 
 		import="com.imcode.imcms.servlet.admin.EditLink,
-				org.apache.commons.lang3.StringEscapeUtils"
+				org.apache.commons.text.StringEscapeUtils"
 
 		pageEncoding="UTF-8"
 

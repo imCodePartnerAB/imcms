@@ -6,8 +6,8 @@
 				com.imcode.imcms.servlet.AjaxServlet,
 				com.imcode.imcms.servlet.admin.EditLink,
 				com.imcode.imcms.servlet.admin.LinkEditPage,
-				org.apache.commons.lang3.StringEscapeUtils,
-				org.apache.commons.lang3.StringUtils"
+				org.apache.commons.lang3.StringUtils,
+				org.apache.commons.text.StringEscapeUtils"
 
 		contentType="text/html; charset=UTF-8"
 		pageEncoding="UTF-8"

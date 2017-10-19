@@ -10,8 +10,8 @@ import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -341,8 +341,7 @@ public class FileAdmin extends HttpServlet {
             try {
                 parameterFileItem.write(file);
             } catch (Exception e) {
-                IOException ioException = new IOException("Failed to write file.");
-                ioException.initCause(e);
+                IOException ioException = new IOException("Failed to write file.", e);
                 throw ioException;
             }
             if (!file.equals(uniqueFile)) {

@@ -1,8 +1,5 @@
-<%@ page import="org.apache.commons.lang3.StringEscapeUtils,
-                 imcode.util.jscalendar.JSCalendar,
-                 com.imcode.imcms.servlet.superadmin.AdminCounter,
-                 com.imcode.imcms.servlet.SearchDocumentsPage,
-                 imcode.util.Utility"%>
+<%@ page import="com.imcode.imcms.servlet.superadmin.AdminCounter,
+                 imcode.util.jscalendar.JSCalendar" %>
 <%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <%
     AdminCounter.AdminSessionCounterPage adminSessionCounterPage = (AdminCounter.AdminSessionCounterPage)request.getAttribute(AdminCounter.AdminSessionCounterPage.REQUEST_ATTRIBUTE__PAGE);;

@@ -1,7 +1,11 @@
-<%@ page import="com.imcode.imcms.api.*,
-                 imcode.server.document.textdocument.TextDomainObject,
-                 java.util.*,
-                 org.apache.commons.lang3.StringEscapeUtils" errorPage="error.jsp" %><%!
+<%@ page import="com.imcode.imcms.api.ContentManagementSystem,
+                 com.imcode.imcms.api.DocumentService,
+                 com.imcode.imcms.api.TextDocument,
+                 org.apache.commons.text.StringEscapeUtils" errorPage="error.jsp" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.SortedMap" %>
+<%!
     int documentId = 1001 ;
     int textFieldIndex = 1 ;
 %>

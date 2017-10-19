@@ -1,11 +1,14 @@
-<%@ page import="com.imcode.imcms.flow.OkCancelPage"%><%@ page  import="com.imcode.imcms.flow.Page"%>
+<%@ page import="com.imcode.imcms.flow.OkCancelPage" %>
+<%@ page import="com.imcode.imcms.flow.Page" %>
 <%@ page import="com.imcode.imcms.servlet.superadmin.UserEditorPage"%><%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage"%>
-<%@ page import="imcode.server.user.UserDomainObject"%><%@  page import="imcode.util.DateConstants"%>
-<%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
-<%@ page import="java.text.SimpleDateFormat, imcode.server.Imcms"%>
+<%@ page import="imcode.server.Imcms" %>
+<%@  page import="imcode.server.user.UserDomainObject" %>
+<%@ page import="imcode.util.DateConstants" %>
+<%@ page import="imcode.util.Utility" %>
+<%@ page import="org.apache.commons.text.StringEscapeUtils, java.text.SimpleDateFormat" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%
-    UserEditorPage userEditorPage = (UserEditorPage) Page.fromRequest(request);
+    UserEditorPage userEditorPage = Page.fromRequest(request);
     UserDomainObject editedUser = userEditorPage.getEditedUser() ;
 		try {
 			if (editedUser != null && (editedUser.getLanguageIso639_2() == null || editedUser.getLanguageIso639_2().equals(""))) {
@@ -27,20 +30,20 @@
 function evalPrepareAdd() {
 	// Lets check that those fields which are mandatory
 	var valFieldsOk = true;
-	if( document.forms[0].login_name.value == "" ) valFieldsOk = false
+    if (document.forms[0].login_name.value == "") valFieldsOk = false;
 
 	if(!valFieldsOk) {
-		var msg = "<? templates/sv/AdminUserResp.htm/2/1 ?>"
-		alert(msg)
+        var msg = "<? templates/sv/AdminUserResp.htm/2/1 ?>";
+        alert(msg);
 		return false
 	}
 
 	if(document.forms[0].password1.value != document.forms[0].password2.value){
-		var msg = "<? templates/sv/AdminUserResp.htm/2/2 ?>"
-		document.forms[0].password1.value = ""
-		document.forms[0].password2.value = ""
-		document.forms[0].password1.focus()
-		alert(msg)
+        var msg = "<? templates/sv/AdminUserResp.htm/2/2 ?>";
+        document.forms[0].password1.value = "";
+        document.forms[0].password2.value = "";
+        document.forms[0].password1.focus();
+        alert(msg);
 		return false
 	}
 
