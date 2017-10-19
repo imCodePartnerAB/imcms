@@ -6,20 +6,16 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexFactory;
 import imcode.server.kerberos.KerberosLoginService;
-import imcode.server.parser.ParserParameters;
-import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
 import imcode.util.CachingFileLoader;
 import imcode.util.DateConstants;
@@ -42,10 +38,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.beans.PropertyDescriptor;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.text.Collator;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -64,7 +62,6 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     private final Database database;
     private final LocalizedMessageProvider localizedMessageProvider;
-    private TextDocumentParser textDocParser;
     private Config config;
     private SystemData sysData;
     private CachingFileLoader fileLoader;
@@ -82,22 +79,13 @@ public class DefaultImcmsServices implements ImcmsServices {
     private DocumentLanguages documentLanguages;
     private ApplicationContext applicationContext;
 
-    @SuppressWarnings("unused")
-    /**
-     * Constructor for unit testing.
-     */
-    public DefaultImcmsServices() {
-        database = null;
-        localizedMessageProvider = null;
-    }
-
     /**
      * Constructs an DefaultImcmsServices object.
      */
-    public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
-                                CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
-                                ApplicationContext applicationContext,
-                                DocumentLanguages documentLanguages) {
+    DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
+                         CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
+                         ApplicationContext applicationContext,
+                         DocumentLanguages documentLanguages) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
@@ -115,7 +103,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         initDocumentMapper();
         initTemplateMapper();
         initImageCacheMapper();
-        initTextDocParser();
 
         kerberosLoginService = new KerberosLoginService(config);
     }
@@ -214,10 +201,6 @@ public class DefaultImcmsServices implements ImcmsServices {
                 log.error("Failed to load keystore from path " + keyStoreFile, e);
             }
         }
-    }
-
-    private void initTextDocParser() {
-        textDocParser = new TextDocumentParser(this);
     }
 
     private void initSysData() {
@@ -418,12 +401,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         setSessionCounterInDb(value);
     }
 
-    public String getSessionCounterDateAsString() {
-        DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
-
-        return dateFormat.format(getSessionCounterDate());
-    }
-
     public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
         UserDomainObject user = imcmsAuthenticatorAndUserAndRoleMapper.getUserByIpAddress(remoteAddr);
         if (null == user) {
@@ -514,11 +491,6 @@ public class DefaultImcmsServices implements ImcmsServices {
 
         return (Authenticator) chooseInstance(EXTERNAL_AUTHENTICATOR_LDAP,
                 externalAuthenticatorName, authenticatorPropertiesSubset);
-    }
-
-    public void parsePage(ParserParameters paramsToParse, Writer writer)
-            throws IOException {
-        textDocParser.parsePage(paramsToParse, writer);
     }
 
     public void updateMainLog(String event) {
@@ -668,14 +640,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         setSessionCounterDateInDb(date);
     }
 
-    /**
-     * get doctype
-     */
-    public int getDocType(int meta_id) {
-        DocumentDomainObject document = documentMapper.getDocument(meta_id);
-        return Optional.ofNullable(document).map(DocumentDomainObject::getDocumentTypeId).orElse(0);
-    }
-
     private SystemData getSystemDataFromDb() {
 
         SystemData sd = new SystemData();
@@ -756,27 +720,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.sysData = sd;
     }
 
-    /**
-     * Returns an array with with all the documenttypes stored in the database
-     * the array consists of pairs of id:, value. Suitable for parsing into select boxes etc.
-     */
-    public String[][] getAllDocumentTypes(String langPrefixStr) {
-        final Object[] parameters = new String[]{langPrefixStr};
-        return getProcedureExecutor().executeProcedure("GetDocTypes", parameters, new StringArrayArrayResultSetHandler());
-    }
-
-    public File getIncludePath() {
-        return config.getIncludePath();
-    }
-
-    public Collator getDefaultLanguageCollator() {
-        try {
-            return Collator.getInstance(new Locale(LanguageMapper.convert639_2to639_1(config.getDefaultLanguage())));
-        } catch (LanguageMapper.LanguageNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public Database getDatabase() {
         return database;
     }
@@ -813,19 +756,9 @@ public class DefaultImcmsServices implements ImcmsServices {
         return documentLanguages;
     }
 
-    @SuppressWarnings("unused")
-    public void setDocumentLanguages(DocumentLanguages documentLanguages) {
-        this.documentLanguages = documentLanguages;
-    }
-
     @Override
     public <T> T getManagedBean(Class<T> requiredType) {
         return applicationContext.getBean(requiredType);
-    }
-
-    @Override
-    public <T> T getManagedBean(String name, Class<T> requiredType) {
-        return applicationContext.getBean(name, requiredType);
     }
 
     private static class WebappRelativeFileConverter implements Converter {

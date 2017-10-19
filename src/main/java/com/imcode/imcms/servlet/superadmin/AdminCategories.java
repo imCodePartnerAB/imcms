@@ -3,7 +3,6 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.admin.ImageBrowser;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -160,10 +159,7 @@ public class AdminCategories extends HttpServlet {
 
         boolean nameIsUnique = true;
 
-        if (req.getParameter(PARAMETER__BROWSE_FOR_IMAGE) != null) {
-            setCategoryFromRequest(category, req, categoryMapper);
-            forwardToImageBrowse(formBean, req, res);
-        } else if (req.getParameter(PARAMETER__CATEGORY_SAVE) != null) {
+        if (req.getParameter(PARAMETER__CATEGORY_SAVE) != null) {
             boolean nameWasChanged = !req.getParameter(PARAMETER__OLD_NAME).toLowerCase().equals(req.getParameter(PARAMETER__NAME).toLowerCase());
             CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest(req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, categoryMapper);
             if (nameWasChanged) {
@@ -203,9 +199,7 @@ public class AdminCategories extends HttpServlet {
         adminCategoriesPage.setCategoryToEdit(newCategory);
         adminCategoriesPage.setCategoryTypeToEdit(categoryTypeToAddTo);
 
-        if (req.getParameter(PARAMETER__BROWSE_FOR_IMAGE) != null) {
-            forwardToImageBrowse(adminCategoriesPage, req, res);
-        } else if (null != req.getParameter(PARAMETER__ADD_CATEGORY_BUTTON) && StringUtils.isNotBlank(newCategory.getName())) {
+        if (null != req.getParameter(PARAMETER__ADD_CATEGORY_BUTTON) && StringUtils.isNotBlank(newCategory.getName())) {
             try {
                 categoryMapper.addCategory(newCategory);
             } catch (CategoryAlreadyExistsException ignored) {
@@ -264,21 +258,6 @@ public class AdminCategories extends HttpServlet {
         adminCategoriesPage.setCategoryTypeToEdit(categoryTypeToEdit);
         adminCategoriesPage.setCategoryToEdit(categoryToEdit);
         adminCategoriesPage.setDocumentsOfOneCategory(documentsOfOneCategory);
-    }
-
-    private void forwardToImageBrowse(final AdminCategoriesPage adminCategoriesPage, HttpServletRequest request,
-                                      HttpServletResponse response) throws ServletException, IOException {
-        ImageBrowser imageBrowser = new ImageBrowser();
-        imageBrowser.setSelectImageUrlCommand(new ImageBrowser.SelectImageUrlCommand() {
-            public void selectImageUrl(String imageUrl, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-                if (null != imageUrl) {
-                    imageUrl = "../images/" + imageUrl;
-                }
-                adminCategoriesPage.getCategoryToEdit().setImageUrl(imageUrl);
-                forward(adminCategoriesPage, Utility.getLoggedOnUser(request), request, response);
-            }
-        });
-        imageBrowser.forward(request, response);
     }
 
     private void viewCategory(CategoryTypeDomainObject categoryTypeToEdit, CategoryDomainObject categoryToEdit,
