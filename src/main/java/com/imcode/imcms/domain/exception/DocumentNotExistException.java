@@ -16,4 +16,9 @@ public class DocumentNotExistException extends RuntimeException {
     public DocumentNotExistException(String docId) {
         super(String.format("Document with id = %s does not exist!", docId));
     }
+
+    public DocumentNotExistException(int docId) {
+        this(String.valueOf(docId));
+    }
+
 }

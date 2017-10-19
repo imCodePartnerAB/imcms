@@ -5,6 +5,7 @@ import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.*;
+import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import com.imcode.imcms.persistence.entity.Language;
@@ -450,7 +451,7 @@ public class DocumentSaver {
         meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(
                 metaDO.getDisabledLanguageShowMode().name()
         ));
-        meta.setDocumentType(metaDO.getDocumentType());
+        meta.setDocumentType(DocumentType.values()[metaDO.getDocumentType()]);
 
         Set<Language> enabledLanguages = metaDO.getEnabledLanguages()
                 .stream()
@@ -470,7 +471,7 @@ public class DocumentSaver {
         meta.setPublicationEndDatetime(metaDO.getPublicationEndDatetime());
         meta.setDepublisherId(metaDO.getDepublisherId());
         meta.setPublicationStartDatetime(metaDO.getPublicationStartDatetime());
-        meta.setPublicationStatusInt(metaDO.getPublicationStatus().asInt());
+        meta.setPublicationStatus(metaDO.getPublicationStatus().asEnum());
         meta.setPublisherId(metaDO.getPublisherId());
         meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(
                 metaDO.getRestrictedOneMorePrivilegedThanRestrictedTwo()

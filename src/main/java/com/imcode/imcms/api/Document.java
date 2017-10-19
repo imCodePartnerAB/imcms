@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.jpa.doc.Meta;
 import com.imcode.util.ChainableReversibleNullComparator;
 import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
@@ -417,6 +418,10 @@ public class Document implements Serializable {
 
         public int asInt() {
             return status;
+        }
+
+        public Meta.PublicationStatus asEnum() {
+            return Meta.PublicationStatus.values()[status];
         }
     }
 

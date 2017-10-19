@@ -49,12 +49,6 @@ public class MenuDataInitializer extends AbstractTestDataInitializer<Boolean, Me
                 .collect(Collectors.toList());
     }
 
-    public List<MenuItemDTO> getMenuItemDtoListWithoutIds() {
-        return getMenuItemDtoList().stream()
-                .peek(this::setNullMenuItemId)
-                .collect(Collectors.toList());
-    }
-
     @Override
     public void cleanRepositories() {
         versionDataInitializer.cleanRepositories();
@@ -63,7 +57,6 @@ public class MenuDataInitializer extends AbstractTestDataInitializer<Boolean, Me
 
     private MenuItemDTO mapMenuItems(MenuItem menuItem) {
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
-        menuItemDTO.setId(menuItem.getId());
         menuItemDTO.setDocumentId(menuItem.getDocumentId());
         menuItemDTO.setTitle("Start page");
         menuItemDTO.setChildren(menuItem.getChildren().stream()
@@ -104,8 +97,4 @@ public class MenuDataInitializer extends AbstractTestDataInitializer<Boolean, Me
         return menuItem;
     }
 
-    private void setNullMenuItemId(MenuItemDTO menuItemDTO) {
-        menuItemDTO.setId(null);
-        menuItemDTO.getChildren().forEach(this::setNullMenuItemId);
-    }
 }
