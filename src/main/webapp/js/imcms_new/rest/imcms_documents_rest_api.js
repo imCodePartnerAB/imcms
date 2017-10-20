@@ -59,7 +59,7 @@ Imcms.define("imcms-documents-rest-api", ["imcms-rest-api"], function (rest) {
                 menuText: "Menytext"
             }
         ],
-        status: 1,
+        publicationStatus: 1,
         published: {
             by: "james_cameron",
             date: currentDate,
@@ -70,7 +70,7 @@ Imcms.define("imcms-documents-rest-api", ["imcms-rest-api"], function (rest) {
             date: currentDate,
             time: currentTime
         },
-        publication_end: {
+        publicationEnd: {
             by: "alan_taylor",
             date: currentDate,
             time: currentTime
@@ -86,12 +86,14 @@ Imcms.define("imcms-documents-rest-api", ["imcms-rest-api"], function (rest) {
             time: currentTime
         },
         publisher: 2,
-        if_requested_lang_missing_doc_opts: "DO_NOT_SHOW",
-        currentVersion: 24,
-        currentVersionDate: currentDate,
-        currentVersionTime: currentTime,
+        disabledLanguageShowMode: "DO_NOT_SHOW",
+        currentVersion: {
+            id: 24,
+            date: currentDate,
+            time: currentTime
+        },
         keywords: ["test", "keyword 1", "document"],
-        disable_search: true,
+        searchDisabled: true,
         categories: [
             {
                 id: 1
@@ -125,21 +127,21 @@ Imcms.define("imcms-documents-rest-api", ["imcms-rest-api"], function (rest) {
             {
                 id: 1,
                 name: "Useradmin",
-                permission_name: "VIEW"
+                permission: "VIEW"
             },
             {
                 id: 2,
                 name: "Users",
-                permission_name: "EDIT"
+                permission: "EDIT"
             },
             {
                 id: 3,
                 name: "Test role",
-                permission_name: "RESTRICTED_1"
+                permission: "RESTRICTED_1"
             }
         ],
         template: 2,
-        child_template: 3
+        childTemplate: 3
     }, {
         id: 1002,
         title: "Second page",

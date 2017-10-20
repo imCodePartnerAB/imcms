@@ -47,7 +47,7 @@ Imcms.define("imcms-templates-tab-builder",
                 var templatesTab = this.data;
 
                 templatesTab.$templateSelect.selectValue(document.template);
-                templatesTab.$defaultChildTemplateSelect.selectValue(document.child_template);
+                templatesTab.$defaultChildTemplateSelect.selectValue(document.childTemplate);
             },
             clearTabData: function () {
                 var templatesTab = this.data;

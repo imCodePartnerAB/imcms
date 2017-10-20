@@ -30,7 +30,7 @@ Imcms.define("imcms-access-tab-builder",
                 return rolesBEM.makeBlockElement("column", components.radios.imcmsRadio("<div>", {
                     name: radioName,
                     value: roleName,
-                    checked: roleName === role.permission_name ? "checked" : undefined
+                    checked: roleName === role.permission ? "checked" : undefined
                 }));
             }
 
