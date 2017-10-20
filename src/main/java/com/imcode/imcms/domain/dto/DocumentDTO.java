@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.mapping.jpa.doc.Meta.DisabledLanguageShowMode;
+import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +19,7 @@ public class DocumentDTO implements Serializable {
 
     private String title;
 
-    private String type;
+    private DocumentType type;
 
     private String target;
 
