@@ -61,6 +61,7 @@ Imcms.define("imcms-documents-rest-api", ["imcms-rest-api"], function (rest) {
         ],
         publicationStatus: 1,
         published: {
+            id: 2,
             by: "james_cameron",
             date: currentDate,
             time: currentTime
@@ -85,7 +86,6 @@ Imcms.define("imcms-documents-rest-api", ["imcms-rest-api"], function (rest) {
             date: currentDate,
             time: currentTime
         },
-        publisher: 2,
         disabledLanguageShowMode: "DO_NOT_SHOW",
         currentVersion: {
             id: 24,

@@ -38,8 +38,6 @@ public class DocumentDTO implements Serializable {
 
     private AuditDTO created;
 
-    private int publisher;
-
     private DisabledLanguageShowMode disabledLanguageShowMode;
 
     private AuditDTO currentVersion;

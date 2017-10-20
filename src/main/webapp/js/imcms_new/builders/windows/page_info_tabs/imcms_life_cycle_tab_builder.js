@@ -231,7 +231,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
                     setStatusInfoRowDataFromDocument(rowName, document);
                 });
 
-                tabData.$publisherSelect.selectValue(document.publisher);
+                tabData.$publisherSelect.selectValue(document.published.id);
 
                 components.radios.group(tabData.$showDefaultLang, tabData.$doNotShow)
                     .checkAmongGroup(document.disabledLanguageShowMode);
