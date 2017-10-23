@@ -6,7 +6,6 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.mapping.jpa.User.PasswordReset;
 import imcode.server.user.RoleId;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +16,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 
@@ -92,6 +94,28 @@ public class UserRepositoryTest {
     @Test
     public void findUsersWithRoleIdsTest() {
         final List<User> admins = repository.findUsersWithRoleIds(Role.SUPERADMIN_ID, RoleId.USERADMIN_ID);
-        Assert.assertEquals(9 + 1, admins.size());
+        assertEquals(9 + 1, admins.size());
     }
+
+    @Test
+    public void findByIdIn() throws Exception {
+
+        final List<User> users = this.users.subList(0, 4);
+
+        final Set<Integer> usersIds = users.stream()
+                .map(User::getId)
+                .collect(Collectors.toSet());
+
+        final List<User> usersByIds = repository.findByIdIn(usersIds);
+
+        assertEquals(users.size(), usersByIds.size());
+
+        for (int i = 0; i < usersByIds.size(); i++) {
+            final User expected = users.get(i);
+            final User actual = usersByIds.get(i);
+            assertEquals(expected.getId(), actual.getId());
+            assertEquals(expected.getLogin(), actual.getLogin());
+        }
+    }
+
 }
