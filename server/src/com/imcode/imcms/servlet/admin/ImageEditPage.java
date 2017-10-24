@@ -347,7 +347,7 @@ public class ImageEditPage extends OkCancelPage {
     
     private void goToImageArchive(HttpServletRequest request, HttpServletResponse response) throws IOException {
     	int port = request.getServerPort();
-        final String protocol = (request.isSecure() ? "http" : "https") + "://";
+        final String protocol = request.getScheme() + "://";
 
         StringBuilder builder = new StringBuilder();
     	builder.append(protocol);
