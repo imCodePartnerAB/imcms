@@ -347,9 +347,10 @@ public class ImageEditPage extends OkCancelPage {
     
     private void goToImageArchive(HttpServletRequest request, HttpServletResponse response) throws IOException {
     	int port = request.getServerPort();
-    	
-    	StringBuilder builder = new StringBuilder();
-    	builder.append("http://");
+        final String protocol = (request.isSecure() ? "http" : "https") + "://";
+
+        StringBuilder builder = new StringBuilder();
+    	builder.append(protocol);
     	builder.append(request.getServerName());
     	
     	if (port != 80) {
@@ -364,7 +365,7 @@ public class ImageEditPage extends OkCancelPage {
     	builder.append(REQUEST_PARAMETER__IMAGE_ARCHIVE);
     	builder.append("=yes&");
     	
-    	String imageArchiveUrl = String.format("http://%s?returnTo=%s", Imcms.getServices().getConfig().getImageArchiveUrl(), 
+    	String imageArchiveUrl = String.format(protocol + "%s?returnTo=%s", Imcms.getServices().getConfig().getImageArchiveUrl(),
     			Utility.encodeUrl(builder.toString()));
     	
     	response.sendRedirect(imageArchiveUrl);
