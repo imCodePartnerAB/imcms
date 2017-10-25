@@ -42,7 +42,6 @@ import static imcode.util.DateConstants.*;
  * @see RestController
  */
 @SuppressWarnings("unused")
-@RestController
 @RequestMapping("/document")
 public class DocumentController {
 

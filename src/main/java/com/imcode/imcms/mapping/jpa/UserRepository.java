@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 @Transactional(Transactional.TxType.SUPPORTS)
@@ -25,6 +26,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findByEmailUnique(String email);
 
     User findById(int id);
+
+    List<User> findByIdIn(Set<Integer> id);
 
     User findByPasswordResetId(String resetId);
 

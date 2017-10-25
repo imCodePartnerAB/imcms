@@ -11,6 +11,7 @@ import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.index.DocumentStoredFields;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -55,6 +56,18 @@ public class MappingConfig {
         return user -> new UserDTO(user.getId(), user.getLogin());
     }
 
+    @Bean
+    public Function<DocumentStoredFields, DocumentDTO> documentStoredFieldToDocumentDto() {
+        return documentFields -> {
+            final DocumentDTO documentDTO = new DocumentDTO();
+            documentDTO.setId(documentFields.id());
+            documentDTO.setAlias(documentFields.alias());
+            documentDTO.setTitle(documentFields.headline());
+            documentDTO.setTarget(null);
+            documentDTO.setType(Meta.DocumentType.values()[documentFields.documentType()]);
+            return documentDTO;
+        };
+    }
 
     @Bean
     public Function<Language, LanguageDTO> languageToLanguageDTO() {

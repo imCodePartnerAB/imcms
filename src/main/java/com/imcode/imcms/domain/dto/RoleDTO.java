@@ -17,4 +17,18 @@ public class RoleDTO implements Serializable {
 
     private String name;
 
+    private Permission permission;
+
+    public RoleDTO(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public enum Permission {
+        VIEW,
+        EDIT,
+        RESTRICTED_1,
+        RESTRICTED_2
+    }
+
 }

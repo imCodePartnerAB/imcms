@@ -31,7 +31,7 @@ Imcms.define("imcms-keywords-tab-builder",
 
                 document.keywords.forEach(keywordsTab.$keywordsBox.addKeyword);
 
-                keywordsTab.$searchDisableCheckbox.setChecked(document.disable_search);
+                keywordsTab.$searchDisableCheckbox.setChecked(document.searchDisabled);
 
             },
             clearTabData: function () {

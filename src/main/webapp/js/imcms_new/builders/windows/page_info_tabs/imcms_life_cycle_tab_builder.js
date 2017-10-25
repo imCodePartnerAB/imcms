@@ -207,7 +207,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
         var statusRowsNames = [
             "published",
             "archived",
-            "publication_end"
+            "publicationEnd"
         ];
 
         return {
@@ -225,19 +225,19 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 ], index);
             },
             fillTabDataFromDocument: function (document) {
-                tabData.$docStatusSelect.selectValue(document.status);
+                tabData.$docStatusSelect.selectValue(document.publicationStatus);
 
                 statusRowsNames.forEach(function (rowName) {
                     setStatusInfoRowDataFromDocument(rowName, document);
                 });
 
-                tabData.$publisherSelect.selectValue(document.publisher);
+                tabData.$publisherSelect.selectValue(document.published.id);
 
                 components.radios.group(tabData.$showDefaultLang, tabData.$doNotShow)
-                    .checkAmongGroup(document.if_requested_lang_missing_doc_opts);
+                    .checkAmongGroup(document.disabledLanguageShowMode);
 
-                tabData.$currentVersionNumber.setValue(document.currentVersion);
-                tabData.$docVersionSaveDateTime.setDate(document.currentVersionDate).setTime(document.currentVersionTime);
+                tabData.$currentVersionNumber.setValue(document.currentVersion.id);
+                tabData.$docVersionSaveDateTime.setDate(document.currentVersion.date).setTime(document.currentVersion.time);
             },
             clearTabData: function () {
                 var emptyString = '';

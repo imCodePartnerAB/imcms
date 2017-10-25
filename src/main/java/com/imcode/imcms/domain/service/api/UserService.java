@@ -14,6 +14,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,10 @@ public class UserService {
     public User getUser(int id) {
         return ofNullable(userRepository.findById(id))
                 .orElseThrow(() -> new UserNotExistsException(id));
+    }
+
+    public List<User> getUsers(Set<Integer> ids) {
+        return userRepository.findByIdIn(ids);
     }
 
     public User getUser(String login) {
