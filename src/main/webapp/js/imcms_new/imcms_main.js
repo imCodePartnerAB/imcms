@@ -126,7 +126,6 @@ Function.prototype.applyAsync = function (args, context) {
 };
 (function () {
     function registerModule(id, module) {
-        console.log("%c Registering module " + id, "color: blue;");
         if (Imcms.modules[id]) {
             console.error("Module already registered! " + id);
             return;
@@ -137,6 +136,7 @@ Function.prototype.applyAsync = function (args, context) {
         }
 
         Imcms.modules[id] = module;
+        console.log("%c Module " + id + " registered.", "color: blue;");
     }
 
     function getModule(id) {
@@ -147,8 +147,9 @@ Function.prototype.applyAsync = function (args, context) {
         return Imcms.config.dependencies[id];
     }
 
-    function loadScript(dependency) {
+    function loadScript(dependency, id) {
         var registerFunction;
+        dependency.id = id;
 
         if (dependency.moduleName) {
             registerFunction = registerModule.bindArgs(dependency.moduleName, true);
@@ -159,7 +160,7 @@ Function.prototype.applyAsync = function (args, context) {
             runModuleLoader.applyAsync();
         };
 
-        getScript(dependency.path, onLoad);
+        getScript(dependency, onLoad);
     }
 
     function loadDependencyById(id) {
@@ -188,9 +189,12 @@ Function.prototype.applyAsync = function (args, context) {
                 break;
             case "object":
                 loader = loadScript;
+                break;
+            default:
+                throw "Dependency type not resolved: " + dependency;
         }
 
-        loader(dependency);
+        loader(dependency, id);
     }
 
     function createXMLHttpRequest() {
@@ -218,10 +222,12 @@ Function.prototype.applyAsync = function (args, context) {
         return xhr;
     }
 
-    function getScript(url, callback, async) {
+    function getScript(dependency, callback, async) {
         if (async === undefined) {
             async = true;
         }
+
+        var url = dependency.path;
         var ajaxRequest = createXMLHttpRequest();
         ajaxRequest.open("GET", url, async);
         ajaxRequest.overrideMimeType && ajaxRequest.overrideMimeType('application/javascript');
@@ -231,7 +237,7 @@ Function.prototype.applyAsync = function (args, context) {
             }
 
             if (ajaxRequest.status === 200) {
-                console.info('%c script ' + url + " loaded.", "color: green;");
+                console.info('%c Script ' + dependency.id + " loaded.", "color: green;");
                 var response = eval(ajaxRequest.responseText);
                 callback && callback.applyAsync([response]);
 
@@ -242,15 +248,14 @@ Function.prototype.applyAsync = function (args, context) {
         ajaxRequest.send(null);
     }
 
-    function appendScript(url, callback) {
+    function appendScript(url, id) {
         var script = document.createElement("script");
         script.type = "text/javascript";
         script.async = true;
         script.setAttribute("data-loader", "imcms");
 
         var onLoad = function () {
-            console.info('%c module ' + url + " loaded.", "color: green;");
-            callback && callback.applyAsync();
+            console.info('%c Module ' + id + " loaded.", "color: green;");
         };
 
         if (script.readyState) {  // IE support
@@ -457,5 +462,5 @@ Function.prototype.applyAsync = function (args, context) {
     }
 
     var mainScriptPath = getMainScriptPath();
-    appendScript(mainScriptPath);
+    appendScript(mainScriptPath, "imcms-main");
 })();
