@@ -104,7 +104,246 @@ public class DefaultImcmsServices implements ImcmsServices {
         initTemplateMapper();
     }
 
-    private static Object chooseInstance(String strToCompare, String mapperName, Properties propertiesSubset) {
+    public synchronized int getSessionCounter() {
+        return getSessionCounterFromDb();
+    }
+
+    /**
+     * Set session counter.
+     */
+    public synchronized void setSessionCounter(int value) {
+        setSessionCounterInDb(value);
+    }
+
+    public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
+        UserDomainObject user = imcmsAuthenticatorAndUserAndRoleMapper.getUserByIpAddress(remoteAddr);
+        if (null == user) {
+            user = imcmsAuthenticatorAndUserAndRoleMapper.getDefaultUser();
+        }
+        UserDomainObject result = null;
+        if (!user.isActive()) {
+            logUserDeactivated(user);
+        } else {
+            result = user;
+            logUserLoggedIn(user);
+        }
+        return result;
+    }
+
+    public LocalizedMessageProvider getLocalizedMessageProvider() {
+        return localizedMessageProvider;
+    }
+
+    public UserDomainObject verifyUser(String login, String password) {
+        NDC.push("verifyUser");
+        try {
+            UserDomainObject result = null;
+
+            boolean userAuthenticates = externalizedImcmsAuthAndMapper.authenticate(login, password);
+            UserDomainObject user = externalizedImcmsAuthAndMapper.getUser(login);
+            if (null == user) {
+                mainLog.info("->User '" + login + "' failed to log in: User not found.");
+            } else if (!user.isActive()) {
+                logUserDeactivated(user);
+            } else if (!userAuthenticates) {
+                mainLog.info("->User '" + login + "' failed to log in: Wrong password.");
+            } else {
+                result = user;
+                logUserLoggedIn(user);
+            }
+            return result;
+        } finally {
+            NDC.pop();
+        }
+    }
+
+    public UserDomainObject verifyUser(String clientPrincipalName) {
+        String login = clientPrincipalName.substring(0, clientPrincipalName.lastIndexOf('@'));
+
+        NDC.push("verifyUser");
+        try {
+            UserDomainObject result = null;
+
+            UserDomainObject user = externalizedImcmsAuthAndMapper.getUser(login);
+            if (null == user) {
+                mainLog.info("->User '" + login + "' failed to log in: User not found.");
+            } else if (!user.isActive()) {
+                logUserDeactivated(user);
+            } else {
+                result = user;
+                logUserLoggedIn(user);
+            }
+            return result;
+        } finally {
+            NDC.pop();
+        }
+    }
+
+    public void incrementSessionCounter() {
+        getDatabase().execute(new SqlUpdateCommand("UPDATE sys_data SET value = value + 1 WHERE type_id = 1", new Object[]{}));
+    }
+
+    public void updateMainLog(String event) {
+        mainLog.info(event);
+    }
+
+    public DocumentMapper getDocumentMapper() {
+        return documentMapper;
+    }
+
+    public void setDocumentMapper(DocumentMapper documentMapper) {
+        this.documentMapper = documentMapper;
+    }
+
+    public TemplateMapper getTemplateMapper() {
+        return templateMapper;
+    }
+
+    public SMTP getSMTP() {
+        return new SMTP(config.getSmtpServer(), config.getSmtpPort());
+    }
+
+    public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
+        return imcmsAuthenticatorAndUserAndRoleMapper;
+    }
+
+    /**
+     * Parse doc replace variables with data , use template
+     */
+    public String getAdminTemplate(String adminTemplateName, UserDomainObject user,
+                                   List<String> tagsWithReplacements) {
+        return getTemplateFromDirectory(adminTemplateName, user, tagsWithReplacements, "admin");
+    }
+
+    /**
+     * Parse doc replace variables with data , use template
+     */
+    public String getTemplateFromDirectory(String adminTemplateName, UserDomainObject user, List<String> variables,
+                                           String directory) {
+        if (null == user) {
+            throw new NullArgumentException("user");
+        }
+        String langPrefix = user.getLanguageIso639_2();
+        return getTemplate(langPrefix + "/" + directory + "/"
+                + adminTemplateName, user, variables);
+    }
+
+    public VelocityEngine getVelocityEngine(UserDomainObject user) {
+        try {
+            String languageIso639_2 = user.getLanguageIso639_2();
+            VelocityEngine velocityEngine = velocityEngines.get(languageIso639_2);
+            if (velocityEngine == null) {
+                velocityEngine = createVelocityEngine(languageIso639_2);
+                velocityEngines.put(languageIso639_2, velocityEngine);
+            }
+            return velocityEngine;
+        } catch (Exception e) {
+            throw new UnhandledException(e);
+        }
+    }
+
+    public VelocityContext getVelocityContext(UserDomainObject user) {
+        VelocityContext context = new VelocityContext();
+        // todo: FIXME: This method needs an HttpServletRequest in, to get the context path from
+        context.put("contextPath", user.getCurrentContextPath());
+        context.put("language", user.getLanguageIso639_2());
+        return context;
+    }
+
+    public Config getConfig() {
+        return config;
+    }
+
+    public File getRealContextPath() {
+        return Imcms.getPath();
+    }
+
+    public KeyStore getKeyStore() {
+        return keyStore;
+    }
+
+    /**
+     * Get session counter date.
+     */
+    public Date getSessionCounterDate() {
+        return getSessionCounterDateFromDb();
+    }
+
+    /**
+     * Set session counter date.
+     */
+    public void setSessionCounterDate(Date date) {
+        setSessionCounterDateInDb(date);
+    }
+
+    public SystemData getSystemData() {
+        return sysData;
+    }
+
+    public void setSystemData(SystemData sd) {
+        String[] sqlParams;
+
+        sqlParams = new String[]{"" + sd.getStartDocument()};
+        getProcedureExecutor().executeUpdateProcedure("StartDocSet", sqlParams);
+
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[]{
+                sd.getServerMaster()}));
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[]{
+                sd.getServerMasterAddress()}));
+
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 6", new Object[]{
+                sd.getWebMaster()}));
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[]{
+                sd.getWebMasterAddress()}));
+
+        sqlParams = new String[]{sd.getSystemMessage()};
+        getProcedureExecutor().executeUpdateProcedure("SystemMessageSet", sqlParams);
+
+        /* Update the local copy last, so we stay aware of any database errors */
+        this.sysData = sd;
+    }
+
+    public Database getDatabase() {
+        return database;
+    }
+
+    public CategoryMapper getCategoryMapper() {
+        return documentMapper.getCategoryMapper();
+    }
+
+    public LanguageMapper getLanguageMapper() {
+        return this.languageMapper;
+    }
+
+    public CachingFileLoader getFileCache() {
+        return fileLoader;
+    }
+
+    public RoleGetter getRoleGetter() {
+        return imcmsAuthenticatorAndUserAndRoleMapper;
+    }
+
+    public ProcedureExecutor getProcedureExecutor() {
+        return procedureExecutor;
+    }
+
+    public KerberosLoginService getKerberosLoginService() {
+        return kerberosLoginService;
+    }
+
+    public DocumentLanguages getDocumentLanguages() {
+        return documentLanguages;
+    }
+
+    public <T> T getManagedBean(Class<T> requiredType) {
+        return applicationContext.getBean(requiredType);
+    }
+
+    public DatabaseService getDatabaseService() {
+        return databaseService;
+    }
+
+    private Object chooseInstance(String strToCompare, String mapperName, Properties propertiesSubset) {
         try {
             if (null == mapperName) {
                 return null;
@@ -346,81 +585,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
-    public synchronized int getSessionCounter() {
-        return getSessionCounterFromDb();
-    }
-
-    /**
-     * Set session counter.
-     */
-    public synchronized void setSessionCounter(int value) {
-        setSessionCounterInDb(value);
-    }
-
-    public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
-        UserDomainObject user = imcmsAuthenticatorAndUserAndRoleMapper.getUserByIpAddress(remoteAddr);
-        if (null == user) {
-            user = imcmsAuthenticatorAndUserAndRoleMapper.getDefaultUser();
-        }
-        UserDomainObject result = null;
-        if (!user.isActive()) {
-            logUserDeactivated(user);
-        } else {
-            result = user;
-            logUserLoggedIn(user);
-        }
-        return result;
-    }
-
-    public LocalizedMessageProvider getLocalizedMessageProvider() {
-        return localizedMessageProvider;
-    }
-
-    public UserDomainObject verifyUser(String login, String password) {
-        NDC.push("verifyUser");
-        try {
-            UserDomainObject result = null;
-
-            boolean userAuthenticates = externalizedImcmsAuthAndMapper.authenticate(login, password);
-            UserDomainObject user = externalizedImcmsAuthAndMapper.getUser(login);
-            if (null == user) {
-                mainLog.info("->User '" + login + "' failed to log in: User not found.");
-            } else if (!user.isActive()) {
-                logUserDeactivated(user);
-            } else if (!userAuthenticates) {
-                mainLog.info("->User '" + login + "' failed to log in: Wrong password.");
-            } else {
-                result = user;
-                logUserLoggedIn(user);
-            }
-            return result;
-        } finally {
-            NDC.pop();
-        }
-    }
-
-    public UserDomainObject verifyUser(String clientPrincipalName) {
-        String login = clientPrincipalName.substring(0, clientPrincipalName.lastIndexOf('@'));
-
-        NDC.push("verifyUser");
-        try {
-            UserDomainObject result = null;
-
-            UserDomainObject user = externalizedImcmsAuthAndMapper.getUser(login);
-            if (null == user) {
-                mainLog.info("->User '" + login + "' failed to log in: User not found.");
-            } else if (!user.isActive()) {
-                logUserDeactivated(user);
-            } else {
-                result = user;
-                logUserLoggedIn(user);
-            }
-            return result;
-        } finally {
-            NDC.pop();
-        }
-    }
-
     private void logUserDeactivated(UserDomainObject user) {
         mainLog.info("->User '" + user.getLoginName() + "' failed to log in: User deactivated.");
     }
@@ -429,10 +593,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         if (!user.isDefaultUser()) {
             mainLog.info("->User '" + user.getLoginName() + "' successfully logged in.");
         }
-    }
-
-    public void incrementSessionCounter() {
-        getDatabase().execute(new SqlUpdateCommand("UPDATE sys_data SET value = value + 1 WHERE type_id = 1", new Object[]{}));
     }
 
     private UserAndRoleRegistry initExternalUserAndRoleMapper(String externalUserAndRoleMapperName,
@@ -447,51 +607,6 @@ public class DefaultImcmsServices implements ImcmsServices {
 
         return (Authenticator) chooseInstance(EXTERNAL_AUTHENTICATOR_LDAP,
                 externalAuthenticatorName, authenticatorPropertiesSubset);
-    }
-
-    public void updateMainLog(String event) {
-        mainLog.info(event);
-    }
-
-    public DocumentMapper getDocumentMapper() {
-        return documentMapper;
-    }
-
-    public void setDocumentMapper(DocumentMapper documentMapper) {
-        this.documentMapper = documentMapper;
-    }
-
-    public TemplateMapper getTemplateMapper() {
-        return templateMapper;
-    }
-
-    public SMTP getSMTP() {
-        return new SMTP(config.getSmtpServer(), config.getSmtpPort());
-    }
-
-    public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
-        return imcmsAuthenticatorAndUserAndRoleMapper;
-    }
-
-    /**
-     * Parse doc replace variables with data , use template
-     */
-    public String getAdminTemplate(String adminTemplateName, UserDomainObject user,
-                                   List<String> tagsWithReplacements) {
-        return getTemplateFromDirectory(adminTemplateName, user, tagsWithReplacements, "admin");
-    }
-
-    /**
-     * Parse doc replace variables with data , use template
-     */
-    public String getTemplateFromDirectory(String adminTemplateName, UserDomainObject user, List<String> variables,
-                                           String directory) {
-        if (null == user) {
-            throw new NullArgumentException("user");
-        }
-        String langPrefix = user.getLanguageIso639_2();
-        return getTemplate(langPrefix + "/" + directory + "/"
-                + adminTemplateName, user, variables);
     }
 
     private String getTemplate(String path, UserDomainObject user, List<String> variables) {
@@ -537,40 +652,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         return velocity;
     }
 
-    public VelocityEngine getVelocityEngine(UserDomainObject user) {
-        try {
-            String languageIso639_2 = user.getLanguageIso639_2();
-            VelocityEngine velocityEngine = velocityEngines.get(languageIso639_2);
-            if (velocityEngine == null) {
-                velocityEngine = createVelocityEngine(languageIso639_2);
-                velocityEngines.put(languageIso639_2, velocityEngine);
-            }
-            return velocityEngine;
-        } catch (Exception e) {
-            throw new UnhandledException(e);
-        }
-    }
-
-    public VelocityContext getVelocityContext(UserDomainObject user) {
-        VelocityContext context = new VelocityContext();
-        // todo: FIXME: This method needs an HttpServletRequest in, to get the context path from
-        context.put("contextPath", user.getCurrentContextPath());
-        context.put("language", user.getLanguageIso639_2());
-        return context;
-    }
-
-    public Config getConfig() {
-        return config;
-    }
-
-    public File getRealContextPath() {
-        return Imcms.getPath();
-    }
-
-    public KeyStore getKeyStore() {
-        return keyStore;
-    }
-
     private void setSessionCounterInDb(int value) {
         final Object[] parameters = new String[]{""
                 + value};
@@ -581,20 +662,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
         final Object[] parameters = new String[]{dateFormat.format(date)};
         getProcedureExecutor().executeUpdateProcedure("SetSessionCounterDate", parameters);
-    }
-
-    /**
-     * Get session counter date.
-     */
-    public Date getSessionCounterDate() {
-        return getSessionCounterDateFromDb();
-    }
-
-    /**
-     * Set session counter date.
-     */
-    public void setSessionCounterDate(Date date) {
-        setSessionCounterDateInDb(date);
     }
 
     private SystemData getSystemDataFromDb() {
@@ -648,72 +715,5 @@ public class DefaultImcmsServices implements ImcmsServices {
         }
 
         return sd;
-    }
-
-    public SystemData getSystemData() {
-        return sysData;
-    }
-
-    public void setSystemData(SystemData sd) {
-        String[] sqlParams;
-
-        sqlParams = new String[]{"" + sd.getStartDocument()};
-        getProcedureExecutor().executeUpdateProcedure("StartDocSet", sqlParams);
-
-        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[]{
-                sd.getServerMaster()}));
-        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[]{
-                sd.getServerMasterAddress()}));
-
-        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 6", new Object[]{
-                sd.getWebMaster()}));
-        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[]{
-                sd.getWebMasterAddress()}));
-
-        sqlParams = new String[]{sd.getSystemMessage()};
-        getProcedureExecutor().executeUpdateProcedure("SystemMessageSet", sqlParams);
-
-        /* Update the local copy last, so we stay aware of any database errors */
-        this.sysData = sd;
-    }
-
-    public Database getDatabase() {
-        return database;
-    }
-
-    public CategoryMapper getCategoryMapper() {
-        return documentMapper.getCategoryMapper();
-    }
-
-    public LanguageMapper getLanguageMapper() {
-        return this.languageMapper;
-    }
-
-    public CachingFileLoader getFileCache() {
-        return fileLoader;
-    }
-
-    public RoleGetter getRoleGetter() {
-        return imcmsAuthenticatorAndUserAndRoleMapper;
-    }
-
-    public ProcedureExecutor getProcedureExecutor() {
-        return procedureExecutor;
-    }
-
-    public KerberosLoginService getKerberosLoginService() {
-        return kerberosLoginService;
-    }
-
-    public DocumentLanguages getDocumentLanguages() {
-        return documentLanguages;
-    }
-
-    public <T> T getManagedBean(Class<T> requiredType) {
-        return applicationContext.getBean(requiredType);
-    }
-
-    public DatabaseService getDatabaseService() {
-        return databaseService;
     }
 }
