@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
 @Data
 @Embeddable
 @NoArgsConstructor
-public class ImageCropRegion {
+public class ImageCropRegion implements ImageCropRegionDataHolder {
 
     @Column(name = "crop_x1", nullable = false)
     private int cropX1;
@@ -25,6 +25,15 @@ public class ImageCropRegion {
         this.cropY1 = cropY1;
         this.cropX2 = cropX2;
         this.cropY2 = cropY2;
+    }
+
+    public static ImageCropRegion of(ImageCropRegionDataHolder cropRegionDataHolder) {
+        return new ImageCropRegion(
+                cropRegionDataHolder.getCropX1(),
+                cropRegionDataHolder.getCropY1(),
+                cropRegionDataHolder.getCropX2(),
+                cropRegionDataHolder.getCropY2()
+        );
     }
 
 }

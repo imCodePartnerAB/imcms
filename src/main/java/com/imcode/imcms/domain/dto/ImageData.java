@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.imcode.imcms.persistence.entity.ImageCropRegionDataHolder;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.NullImageSource;
@@ -145,7 +146,7 @@ public abstract class ImageData implements Serializable {
     @Data
     @NoArgsConstructor
     @EqualsAndHashCode
-    public static class CropRegion implements Serializable {
+    public static class CropRegion implements Serializable, ImageCropRegionDataHolder {
         private static final long serialVersionUID = -586488435877347784L;
 
         private volatile int cropX1 = -1;
@@ -174,6 +175,16 @@ public abstract class ImageData implements Serializable {
             }
 
             updateValid();
+        }
+
+        @JsonIgnore
+        public static CropRegion of(ImageCropRegionDataHolder cropRegionDataHolder) {
+            return new CropRegion(
+                    cropRegionDataHolder.getCropX1(),
+                    cropRegionDataHolder.getCropY1(),
+                    cropRegionDataHolder.getCropX2(),
+                    cropRegionDataHolder.getCropY2()
+            );
         }
 
         @JsonIgnore
