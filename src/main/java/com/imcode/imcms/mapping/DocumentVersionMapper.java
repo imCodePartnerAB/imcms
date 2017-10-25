@@ -5,7 +5,7 @@ import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.container.VersionRef;
-import com.imcode.imcms.mapping.jpa.doc.Version;
+import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

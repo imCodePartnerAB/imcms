@@ -1,9 +1,9 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

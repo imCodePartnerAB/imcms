@@ -9,6 +9,7 @@ import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
 import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
 import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;

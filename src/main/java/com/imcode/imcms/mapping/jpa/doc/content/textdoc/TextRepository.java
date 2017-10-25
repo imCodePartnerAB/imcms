@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
+import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

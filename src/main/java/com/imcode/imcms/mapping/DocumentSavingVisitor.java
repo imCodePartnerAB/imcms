@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
+import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.HtmlDocumentDomainObject;

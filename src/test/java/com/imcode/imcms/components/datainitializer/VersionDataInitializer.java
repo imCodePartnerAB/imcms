@@ -1,8 +1,8 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.mapping.jpa.User;
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.Value;
 import org.springframework.stereotype.Component;
 

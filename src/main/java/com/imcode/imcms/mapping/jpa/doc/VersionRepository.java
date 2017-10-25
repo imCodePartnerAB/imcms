@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
+import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;

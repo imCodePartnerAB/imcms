@@ -2,7 +2,7 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.mapping.jpa.doc.Version;
+import com.imcode.imcms.persistence.entity.Version;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

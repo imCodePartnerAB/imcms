@@ -1,8 +1,8 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Loop;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;
 import org.springframework.stereotype.Component;
 

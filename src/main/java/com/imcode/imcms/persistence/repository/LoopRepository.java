@@ -1,7 +1,7 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Loop;
+import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
