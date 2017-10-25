@@ -78,10 +78,6 @@ public class Imcms {
      */
     private static synchronized void start() throws StartupException {
         try {
-            if (path == null) {
-                throw new IllegalStateException("Imcms path is not set.");
-            }
-
             users = new InheritableThreadLocal<>();
             services.init();
 
@@ -102,6 +98,9 @@ public class Imcms {
         return path;
     }
 
+    /**
+     * Two-phase start invoking, one from Servlet Filter, another by Spring using @PostConstruct
+     */
     public static void invokeStart() {
         if (startInvoked) {
             start();
@@ -118,10 +117,6 @@ public class Imcms {
 
     public static Properties getServerProperties() {
         return properties;
-    }
-
-    private void setPath(File path) {
-        Imcms.path = path;
     }
 
     public synchronized void restartCms() {
@@ -152,12 +147,6 @@ public class Imcms {
         users.set(user);
     }
 
-    private static String getSolrHome() {
-        if (path == null) throw new IllegalStateException("Application path is not set.");
-
-        return new File(path.getAbsolutePath(), DEFAULT_SQLR_HOME).getAbsolutePath();
-    }
-
     /**
      * Returns is document versioning feature are turned on in server properties or not
      */
@@ -178,7 +167,7 @@ public class Imcms {
 
     private void setRootPath(String path) {
         PropertyManager.setRoot(path);
-        setPath(new File(path));
+        Imcms.path = new File(path);
     }
 
     public static class StartupException extends RuntimeException {
