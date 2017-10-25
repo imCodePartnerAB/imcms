@@ -71,10 +71,10 @@ public class TextDocumentContentSaver {
         User user = findUser(userDomainObject);
 
         // loops must be created before loop items (texts and images)
-        createLoops(doc, version);
+//        createLoops(doc, version);
         saveTexts(doc, version, language, user, SaveMode.CREATE);
         saveImages(doc, version, language, SaveMode.CREATE);
-        saveMenus(doc, version, SaveMode.CREATE);
+//        saveMenus(doc, version, SaveMode.CREATE);
 
         saveTemplateNames(doc.getId(), doc.getTemplateNames());
         saveIncludes(doc.getId(), doc.getIncludesMap());
@@ -84,8 +84,8 @@ public class TextDocumentContentSaver {
         VersionRef versionRef = doc.getVersionRef();
         Version version = findVersion(versionRef);
 
-        createLoops(doc, version);
-        saveMenus(doc, version, SaveMode.CREATE);
+//        createLoops(doc, version);
+//        saveMenus(doc, version, SaveMode.CREATE);
         saveTemplateNames(doc.getId(), doc.getTemplateNames());
         saveIncludes(doc.getId(), doc.getIncludesMap());
     }
@@ -120,34 +120,10 @@ public class TextDocumentContentSaver {
         createLoops(doc, version);*/
         saveTexts(doc, version, language, user, SaveMode.UPDATE);
         saveImages(doc, version, language, SaveMode.UPDATE);
-        saveMenus(doc, version, SaveMode.UPDATE);
+//        saveMenus(doc, version, SaveMode.UPDATE);
 
         saveTemplateNames(doc.getId(), doc.getTemplateNames());
         saveIncludes(doc.getId(), doc.getIncludesMap());
-    }
-
-    private void createLoops(TextDocumentDomainObject textDocument, Version version) {
-        textDocument.getLoops().forEach((index, loopDO) -> {
-            Loop loop = new Loop();
-            List<LoopEntry> items = new LinkedList<>();
-
-            loopDO.getEntries().forEach((entryIndex, enabled) -> items.add(new LoopEntry(entryIndex, enabled)));
-
-            loop.setVersion(version);
-            loop.setIndex(index);
-            loop.setEntries(items);
-
-            loopRepository.save(loop);
-        });
-    }
-
-    public void saveLoop(TextDocLoopContainer container) {
-        Version version = findVersion(container);
-        Integer id = loopRepository.findIdByVersionAndIndex(version, container.getLoopNo());
-        Loop loop = toJpaObject(container);
-        loop.setId(id);
-
-        loopRepository.save(loop);
     }
 
     /**
@@ -249,13 +225,6 @@ public class TextDocumentContentSaver {
         menu.setItems(menuItems);
 
         return menu;
-    }
-
-    private void saveMenus(TextDocumentDomainObject doc, Version version, SaveMode saveMode) {
-        doc.getMenus().forEach((menuNo, menuDO) -> {
-            Menu menu = toJpaObject(menuDO, version, menuNo);
-            saveMenu(menu, saveMode);
-        });
     }
 
     private void saveMenu(Menu menu, SaveMode saveMode) {
