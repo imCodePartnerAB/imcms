@@ -126,7 +126,7 @@ Function.prototype.applyAsync = function (args, context) {
 };
 (function () {
     function registerModule(id, module) {
-        console.log("Registering module " + id);
+        console.log("%c Registering module " + id, "color: blue;");
         if (Imcms.modules[id]) {
             console.error("Module already registered! " + id);
             return;
@@ -231,7 +231,7 @@ Function.prototype.applyAsync = function (args, context) {
             }
 
             if (ajaxRequest.status === 200) {
-                console.info('script ' + url + " loaded successfully.");
+                console.info('%c script ' + url + " loaded.", "color: green;");
                 var response = eval(ajaxRequest.responseText);
                 callback && callback.applyAsync([response]);
 
@@ -249,7 +249,7 @@ Function.prototype.applyAsync = function (args, context) {
         script.setAttribute("data-loader", "imcms");
 
         var onLoad = function () {
-            console.info('module ' + url + " loaded successfully.");
+            console.info('%c module ' + url + " loaded.", "color: green;");
             callback && callback.applyAsync();
         };
 
@@ -290,8 +290,7 @@ Function.prototype.applyAsync = function (args, context) {
                     break;
 
                 default :
-                    console.error("Something wrong!");
-                    console.error(arguments);
+                    throw "Can't resolve first argument for 'define'!";
             }
             switch (resolvedArgs[1] && resolvedArgs[1].constructor) {
                 case Array : // dependencies are presented, nothing to change
@@ -304,8 +303,7 @@ Function.prototype.applyAsync = function (args, context) {
                     break;
 
                 default :
-                    console.error("Something wrong!");
-                    console.error(arguments);
+                    throw "Can't resolve second argument for 'define'!";
             }
         } catch (e) {
             console.error(e);
@@ -454,7 +452,7 @@ Function.prototype.applyAsync = function (args, context) {
         }
 
         var mainScriptPath = imcmsMainScripts[0].attributes["data-main"].value;
-        console.info("Founded entry point " + mainScriptPath);
+        console.info("%c Founded entry point " + mainScriptPath, "color: blue;");
         return mainScriptPath;
     }
 
