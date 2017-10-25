@@ -27,7 +27,7 @@ public class TemplateDataInitializer extends AbstractTestDataInitializer<Integer
     public List<TemplateDTO> createData(Integer howMuch) {
         return IntStream.range(0, howMuch)
                 .mapToObj(i -> Value.with(new Template(), template -> {
-                    template.setName("");
+                    template.setName("template" + i);
                     template.setHidden(Math.random() < 0.5);
                 }))
                 .map(templateRepository::saveAndFlush)
