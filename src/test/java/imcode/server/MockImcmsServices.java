@@ -2,6 +2,7 @@ package imcode.server;
 
 import com.imcode.db.Database;
 import com.imcode.db.mock.MockDatabase;
+import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -184,6 +185,11 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public DocumentLanguages getDocumentLanguages() {
+        return null;
+    }
+
+    @Override
+    public DatabaseService getDatabaseService() {
         return null;
     }
 }

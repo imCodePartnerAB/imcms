@@ -4,13 +4,11 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.PropertyManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
-import javax.sql.DataSource;
 import java.io.File;
 import java.util.Properties;
 
@@ -52,17 +50,11 @@ public class Imcms {
      */
     private static boolean isVersioningAllowed;
 
-    private static DataSource dataSource;
-
     private static boolean startInvoked;
 
     @Autowired
-    public Imcms(ServletContext servletContext,
-                 @Qualifier("dataSourceWithAutoCommit") DataSource dataSource,
-                 ImcmsServices imcmsServices,
-                 Properties imcmsProperties) {
+    public Imcms(ServletContext servletContext, ImcmsServices imcmsServices, Properties imcmsProperties) {
 
-        Imcms.dataSource = dataSource;
         Imcms.services = imcmsServices;
         Imcms.properties = imcmsProperties;
 
@@ -104,10 +96,6 @@ public class Imcms {
             logger.error(msg, e);
             throw new StartupException(msg, e);
         }
-    }
-
-    public static DataSource getApiDataSource() {
-        return dataSource;
     }
 
     public static File getPath() {

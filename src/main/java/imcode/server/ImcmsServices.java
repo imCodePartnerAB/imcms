@@ -1,6 +1,7 @@
 package imcode.server;
 
 import com.imcode.db.Database;
+import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -94,4 +95,6 @@ public interface ImcmsServices {
     <T> T getManagedBean(Class<T> requiredType);
 
     void init();
+
+    DatabaseService getDatabaseService();
 }

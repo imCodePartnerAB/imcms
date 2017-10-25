@@ -2,10 +2,12 @@ package com.imcode.imcms.config;
 
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
+import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.Schema;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,6 +66,11 @@ public class DBConfig {
         basicDataSource.setDefaultAutoCommit(true);
 
         return basicDataSource;
+    }
+
+    @Bean
+    public DatabaseService databaseService(@Qualifier("dataSourceWithAutoCommit") DataSource dataSource) {
+        return new DatabaseService(dataSource);
     }
 
     @Bean

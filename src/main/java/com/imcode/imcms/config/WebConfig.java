@@ -1,6 +1,7 @@
 package com.imcode.imcms.config;
 
 import com.imcode.db.Database;
+import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
@@ -18,7 +19,6 @@ import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,7 +31,6 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import javax.servlet.ServletContext;
-import javax.sql.DataSource;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.util.Properties;
@@ -121,7 +120,8 @@ public class WebConfig {
     @Bean
     public ImcmsServices createServices(Properties imcmsProperties, Database database, DocumentLanguages languages,
                                         LocalizedMessageProvider localizedMessageProvider, Config config,
-                                        ApplicationContext applicationContext, CachingFileLoader fileLoader) {
+                                        ApplicationContext applicationContext, CachingFileLoader fileLoader,
+                                        DatabaseService databaseService) {
 
         return new DefaultImcmsServices(
                 database,
@@ -130,16 +130,16 @@ public class WebConfig {
                 fileLoader,
                 applicationContext,
                 config,
-                languages);
+                languages,
+                databaseService);
     }
 
     @Bean
     public Imcms imcms(ServletContext servletContext,
-                       @Qualifier("dataSourceWithAutoCommit") DataSource dataSource,
                        ImcmsServices imcmsServices,
                        Properties imcmsProperties) {
 
-        return new Imcms(servletContext, dataSource, imcmsServices, imcmsProperties);
+        return new Imcms(servletContext, imcmsServices, imcmsProperties);
     }
 
     @Bean

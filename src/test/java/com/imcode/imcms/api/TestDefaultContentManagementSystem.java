@@ -11,7 +11,7 @@ public class TestDefaultContentManagementSystem extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         MockImcmsServices mockImcmsServices = new MockImcmsServices();
-        contentManagementSystem = new ContentManagementSystem(mockImcmsServices, new UserDomainObject());
+        contentManagementSystem = ContentManagementSystem.create(mockImcmsServices, new UserDomainObject());
     }
 
     public void testClonedCurrentUser() {

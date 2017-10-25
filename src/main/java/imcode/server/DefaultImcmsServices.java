@@ -3,6 +3,7 @@ package imcode.server;
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
@@ -71,12 +72,14 @@ public class DefaultImcmsServices implements ImcmsServices {
     private DocumentLanguages documentLanguages;
     private ApplicationContext applicationContext;
 
+    private DatabaseService databaseService;
+
     /**
      * Constructs an DefaultImcmsServices object.
      */
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, ApplicationContext applicationContext, Config config,
-                                DocumentLanguages documentLanguages) {
+                                DocumentLanguages documentLanguages, DatabaseService databaseService) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.fileLoader = fileLoader;
@@ -85,6 +88,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.config = config;
         this.properties = props;
 
+        this.databaseService = databaseService;
         this.procedureExecutor = new DefaultProcedureExecutor(database, fileLoader);
         this.languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
         this.kerberosLoginService = new KerberosLoginService(config);
@@ -705,10 +709,11 @@ public class DefaultImcmsServices implements ImcmsServices {
         return documentLanguages;
     }
 
-    @Override
     public <T> T getManagedBean(Class<T> requiredType) {
         return applicationContext.getBean(requiredType);
     }
 
-
+    public DatabaseService getDatabaseService() {
+        return databaseService;
+    }
 }

@@ -8,7 +8,6 @@ import imcode.util.Utility;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.sql.DataSource;
 import java.security.KeyStore;
 
 public class ContentManagementSystem implements Cloneable {
@@ -18,10 +17,9 @@ public class ContentManagementSystem implements Cloneable {
     private UserService userService;
     private DocumentService documentService;
     private TemplateService templateService;
-    private DatabaseService databaseService;
     private MailService mailService;
 
-    ContentManagementSystem(ImcmsServices service, UserDomainObject accessor) {
+    protected ContentManagementSystem(ImcmsServices service, UserDomainObject accessor) {
         this.service = service;
         currentUser = accessor;
     }
@@ -32,7 +30,7 @@ public class ContentManagementSystem implements Cloneable {
     public static ContentManagementSystem getContentManagementSystem(String userName, String password) {
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = imcref.verifyUser(userName, password);
-        return ContentManagementSystem.create(imcref, user, Imcms.getApiDataSource());
+        return ContentManagementSystem.create(imcref, user);
     }
 
     /**
@@ -69,18 +67,16 @@ public class ContentManagementSystem implements Cloneable {
         return Utility.getContentManagementSystemFromRequest(request);
     }
 
-    public static ContentManagementSystem create(ImcmsServices service, UserDomainObject accessor,
-                                                 DataSource apiDataSource) {
+    public static ContentManagementSystem create(ImcmsServices service, UserDomainObject accessor) {
         ContentManagementSystem contentManagementSystem = new ContentManagementSystem(service, accessor);
-        contentManagementSystem.init(apiDataSource);
+        contentManagementSystem.init();
         return contentManagementSystem;
     }
 
-    private void init(DataSource apiDataSource) {
+    private void init() {
         userService = new UserService(this);
         documentService = new DocumentService(this);
         templateService = new TemplateService(this);
-        databaseService = new DatabaseService(apiDataSource);
         mailService = new MailService(service.getSMTP());
     }
 
@@ -103,7 +99,7 @@ public class ContentManagementSystem implements Cloneable {
     }
 
     public DatabaseService getDatabaseService() {
-        return databaseService;
+        return service.getDatabaseService();
     }
 
     public TemplateService getTemplateService() {
@@ -124,7 +120,7 @@ public class ContentManagementSystem implements Cloneable {
         if (!Utility.classIsSignedByCertificatesInKeyStore(clazz, keyStore)) {
             throw new NoPermissionException("Class " + clazz.getName() + " is not signed by certificates in keystore.");
         }
-        ContentManagementSystem cms = create(service, currentUser.clone(), Imcms.getApiDataSource());
+        ContentManagementSystem cms = create(service, currentUser.clone());
         cms.currentUser.addRoleId(RoleId.SUPERADMIN);
         runnable.runWith(cms);
         cms.currentUser = null;
