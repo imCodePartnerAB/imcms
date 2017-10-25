@@ -39,9 +39,9 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
         mailService = new MailService(service.getSMTP());
     }
 
-    protected Object clone() throws CloneNotSupportedException {
+    protected DefaultContentManagementSystem clone() throws CloneNotSupportedException {
         DefaultContentManagementSystem clone = (DefaultContentManagementSystem) super.clone();
-        clone.currentUser = (UserDomainObject) currentUser.clone();
+        clone.currentUser = currentUser.clone();
         return clone;
     }
 
@@ -79,7 +79,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
         if (!Utility.classIsSignedByCertificatesInKeyStore(clazz, keyStore)) {
             throw new NoPermissionException("Class " + clazz.getName() + " is not signed by certificates in keystore.");
         }
-        DefaultContentManagementSystem cms = create(service, (UserDomainObject) currentUser.clone(), Imcms.getApiDataSource());
+        DefaultContentManagementSystem cms = create(service, currentUser.clone(), Imcms.getApiDataSource());
         cms.currentUser.addRoleId(RoleId.SUPERADMIN);
         runnable.runWith(cms);
         cms.currentUser = null;
