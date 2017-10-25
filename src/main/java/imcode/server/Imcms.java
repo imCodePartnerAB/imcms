@@ -84,7 +84,7 @@ public class Imcms {
      * <p>
      * Path and ApplicationContext must be set.
      */
-    public static synchronized void start() throws StartupException {
+    private static synchronized void start() throws StartupException {
         try {
             if (path == null) {
                 throw new IllegalStateException("Imcms path is not set.");
