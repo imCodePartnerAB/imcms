@@ -5,10 +5,10 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Properties;
 
 /**
  * Text content filter, based on Jsoup's tags whitelist and cleaning text feature.
@@ -22,16 +22,16 @@ public class TextContentFilter {
 
     private static final String[] WHITE_LIST_ATTRIBUTES = {"class", "data-no", "data-meta", "data-cke-saved-src", "src"};
     private final Whitelist htmlTagsWhitelist = Whitelist.none().addAttributes("img", WHITE_LIST_ATTRIBUTES);
-    private final Environment environment;
+    private final Properties imcmsProperties;
 
     @Autowired
-    public TextContentFilter(Environment environment) {
-        this.environment = environment;
+    public TextContentFilter(Properties imcmsProperties) {
+        this.imcmsProperties = imcmsProperties;
     }
 
     @PostConstruct
     public void init() {
-        final String[] whiteListTags = environment.getProperty("text.editor.html.tags.whitelist").split(";");
+        final String[] whiteListTags = imcmsProperties.getProperty("text.editor.html.tags.whitelist").split(";");
         addHtmlTagsToWhiteList(whiteListTags);
     }
 
