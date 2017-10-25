@@ -1,7 +1,7 @@
 package imcode.server.document.textdocument;
 
 import com.imcode.util.ImageSize;
-import imcode.server.Imcms;
+import imcode.util.ImcmsImageUtils;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
 
@@ -42,7 +42,7 @@ public abstract class ImageSource extends AbstractFileSource {
     }
 
     ImageInfo getNonCachedImageInfo() throws IOException {
-        return ImageOp.getImageInfo(Imcms.getServices().getConfig(), getInputStreamSource().getInputStream());
+        return ImageOp.getImageInfo(ImcmsImageUtils.imageMagickPath, getInputStreamSource().getInputStream());
     }
 }
 

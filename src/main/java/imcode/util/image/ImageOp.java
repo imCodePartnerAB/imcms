@@ -1,7 +1,5 @@
 package imcode.util.image;
 
-import imcode.server.Config;
-import imcode.server.Imcms;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
@@ -27,19 +25,16 @@ public class ImageOp {
     private InputStream dataStream;
     private Format outputFormat;
 
-
-    public ImageOp() {
-        args.add(addQuotes(getApplicationPath(Imcms.getServices().getConfig(), "convert")));
+    public ImageOp(String imageMagickPath) {
+        args.add(addQuotes(getApplicationPath(imageMagickPath, "convert")));
     }
 
-    private static String getApplicationPath(Config config, String appName) {
-        String magickPath = config.getImageMagickPath();
-
-        if (magickPath != null
-                && !"".equals(magickPath)
+    private static String getApplicationPath(String imageMagickPath, String appName) {
+        if (imageMagickPath != null
+                && !"".equals(imageMagickPath)
                 && SystemUtils.IS_OS_WINDOWS)
         {
-            return new File(magickPath, appName).getAbsolutePath();
+            return new File(imageMagickPath, appName).getAbsolutePath();
         }
 
         return appName;
@@ -53,9 +48,9 @@ public class ImageOp {
         return input;
     }
 
-    public static ImageInfo getImageInfo(Config config, InputStream inputStream) {
+    public static ImageInfo getImageInfo(String imageMagickPath, InputStream inputStream) {
         try {
-            Process process = new ProcessBuilder(getIdentifyProcessArgs(config, "-[0]")).start();
+            Process process = new ProcessBuilder(getIdentifyProcessArgs(imageMagickPath, "-[0]")).start();
             StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
             StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
             errorHandler.start();
@@ -81,30 +76,10 @@ public class ImageOp {
         return null;
     }
 
-    public static ImageInfo getImageInfo(File file) {
-        try {
-            Config config = Imcms.getServices().getConfig();
-
-            String fileToIdentify = addQuotes(file.getAbsolutePath() + "[0]");
-            Process process = new ProcessBuilder(getIdentifyProcessArgs(config, fileToIdentify)).start();
-
-            StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
-            StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
-            errorHandler.start();
-            inputHandler.start();
-            inputHandler.join();
-
-            return processImageInfo(inputHandler);
-        } catch (Exception ex) {
-            log.fatal(ex.getMessage(), ex);
-        }
-        return null;
-    }
-
-    private static String[] getIdentifyProcessArgs(Config config, String... arguments) {
+    private static String[] getIdentifyProcessArgs(String imageMagickPath, String... arguments) {
         String[] args = new String[4 + arguments.length];
 
-        args[0] = addQuotes(getApplicationPath(config, "identify"));
+        args[0] = addQuotes(getApplicationPath(imageMagickPath, "identify"));
 
         args[1] = "-quiet";
         args[2] = "-format";

@@ -33,9 +33,13 @@ public class ImcmsImageUtils {
     private static final Log log = LogFactory.getLog(ImcmsImageUtils.class);
 
     public static File imagesPath;
+    public static String imageMagickPath;
 
     @Value("${ImagePath}")
     private File imgPath;
+
+    @Value("${ImageMagickPath}")
+    private String imgMagickPath;
 
     public static ImageSource createImageSourceFromString(String imageUrl) {
         ImageSource imageSource = new NullImageSource();
@@ -126,7 +130,7 @@ public class ImcmsImageUtils {
     public static boolean generateImage(File imageFile, File destFile, Format format, int width, int height,
                                         Resize resize, CropRegion cropRegion, RotateDirection rotateDir) {
 
-        ImageOp operation = new ImageOp().input(imageFile);
+        ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
 
 
         if (rotateDir != RotateDirection.NORTH) {
@@ -221,5 +225,6 @@ public class ImcmsImageUtils {
     @PostConstruct
     public void init() {
         ImcmsImageUtils.imagesPath = imgPath;
+        ImcmsImageUtils.imageMagickPath = imgMagickPath;
     }
 }
