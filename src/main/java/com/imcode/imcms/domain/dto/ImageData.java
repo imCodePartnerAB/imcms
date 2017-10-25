@@ -12,11 +12,7 @@ import imcode.util.image.Resize;
 import lombok.*;
 
 import java.io.Serializable;
-import java.text.Normalizer;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -25,7 +21,6 @@ import java.util.UUID;
 public abstract class ImageData implements Serializable {
 
     private static final long serialVersionUID = -3077752704023867257L;
-    private static final int GEN_FILE_LENGTH = 255;
 
     protected volatile int width;
     protected volatile int height;
@@ -55,89 +50,17 @@ public abstract class ImageData implements Serializable {
         this.source = Objects.requireNonNull(source, "image source can not be null");
     }
 
-    public void generateFilename() {
-        String suffix = "_" + UUID.randomUUID().toString();
-
-        Format fmt = getFormat();
-        if (fmt != null) {
-            suffix += "." + fmt.getExtension();
-        }
-
-        int maxlength = GEN_FILE_LENGTH - suffix.length();
-
-        String filename = source.getNameWithoutExt();
-
-        if (filename.length() > maxlength) {
-            filename = filename.substring(0, maxlength);
-        }
-
-        filename = Normalizer.normalize(filename, Normalizer.Form.NFC);
-
-        String[][] specialCharacterReplacements = {
-                {"\u00e5", "a"},// å
-                {"\u00c5", "A"},
-                {"\u00e4", "a"},// ä
-                {"\u00c4", "A"},
-                {"\u00f6", "o"},// ö
-                {"\u00d6", "O"},
-                {"\u00e9", "e"},// é
-                {"\u00c9", "E"},
-                {"\u00f8", "o"},// ø
-                {"\u00d8", "O"},
-                {"\u00e6", "ae"},// æ
-                {"\u00c6", "AE"},
-                {"\u0020", "_"} // space
-        };
-        for (String[] replacement : specialCharacterReplacements) {
-            filename = filename.replace(replacement[0], replacement[1]);
-        }
-
-        generatedFilename = filename + suffix;
-    }
-
+    @Getter
+    @AllArgsConstructor
     public enum RotateDirection {
-        NORTH(0, -90, 90),
-        EAST(90, 0, 180),
-        SOUTH(180, 90, -90),
-        WEST(-90, 180, 0);
+        NORTH(0),
+        EAST(90),
+        SOUTH(180),
+        WEST(-90);
 
-        private static final Map<Integer, RotateDirection> ANGLE_MAP = new HashMap<>(RotateDirection.values().length);
-
-        static {
-            for (RotateDirection direction : RotateDirection.values()) {
-                ANGLE_MAP.put(direction.getAngle(), direction);
-            }
-        }
-
-        @Getter
         private final int angle;
-        private final int leftAngle;
-        private final int rightAngle;
 
-        RotateDirection(int angle, int leftAngle, int rightAngle) {
-            this.angle = angle;
-            this.leftAngle = leftAngle;
-            this.rightAngle = rightAngle;
-        }
-
-        public static RotateDirection getByAngle(int angle) {
-            return ANGLE_MAP.get(angle);
-        }
-
-        public static RotateDirection getByAngleDefaultIfNull(int angle) {
-            RotateDirection direction = getByAngle(angle);
-
-            return (direction != null ? direction : RotateDirection.NORTH);
-        }
-
-        public RotateDirection getLeftDirection() {
-            return getByAngle(leftAngle);
-        }
-
-        public RotateDirection getRightDirection() {
-            return getByAngle(rightAngle);
-        }
-
+        @JsonIgnore
         public boolean isDefault() {
             return this == RotateDirection.NORTH;
         }

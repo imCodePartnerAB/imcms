@@ -25,21 +25,82 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.text.Normalizer;
 import java.util.Objects;
+import java.util.UUID;
 
 //fixme: image no + image in a loop
 @Component
 public class ImcmsImageUtils {
+
     private static final Log log = LogFactory.getLog(ImcmsImageUtils.class);
+    private static final int GEN_FILE_LENGTH = 255;
 
     public static File imagesPath;
+    private static String imagesUrl;
     public static String imageMagickPath;
 
     @Value("${ImagePath}")
     private File imgPath;
 
+    @Value("${ImageUrl}")
+    private String imgUrl;
+
     @Value("${ImageMagickPath}")
     private String imgMagickPath;
+
+    public static String generateImageFileName(ImageData imageData) {
+        String suffix = "_" + UUID.randomUUID().toString();
+
+        Format fmt = imageData.getFormat();
+        if (fmt != null) {
+            suffix += "." + fmt.getExtension();
+        }
+
+        final int maxLength = GEN_FILE_LENGTH - suffix.length();
+
+        String filename = imageData.getSource().getNameWithoutExt();
+
+        if (filename.length() > maxLength) {
+            filename = filename.substring(0, maxLength);
+        }
+
+        filename = Normalizer.normalize(filename, Normalizer.Form.NFC);
+
+        String[][] specialCharacterReplacements = {
+                {"\u00e5", "a"},// å
+                {"\u00c5", "A"},
+                {"\u00e4", "a"},// ä
+                {"\u00c4", "A"},
+                {"\u00f6", "o"},// ö
+                {"\u00d6", "O"},
+                {"\u00e9", "e"},// é
+                {"\u00c9", "E"},
+                {"\u00f8", "o"},// ø
+                {"\u00d8", "O"},
+                {"\u00e6", "ae"},// æ
+                {"\u00c6", "AE"},
+                {"\u0020", "_"} // space
+        };
+        for (String[] replacement : specialCharacterReplacements) {
+            filename = filename.replace(replacement[0], replacement[1]);
+        }
+
+        return filename + suffix;
+    }
+
+    public static ImageSource getImageSource(String imagePath) {
+        ImageSource imageSource = new NullImageSource();
+
+        if (imagePath.startsWith(imagesUrl)) {
+            imagePath = imagePath.substring(imagesUrl.length());
+        }
+
+        if (StringUtils.isNotBlank(imagePath)) {
+            imageSource = new ImagesPathRelativePathImageSource(imagePath);
+        }
+        return imageSource;
+    }
 
     public static ImageSource createImageSourceFromString(String imageUrl) {
         ImageSource imageSource = new NullImageSource();
@@ -127,8 +188,8 @@ public class ImcmsImageUtils {
         }
     }
 
-    public static boolean generateImage(File imageFile, File destFile, Format format, int width, int height,
-                                        Resize resize, CropRegion cropRegion, RotateDirection rotateDir) {
+    private static void generateImage(File imageFile, File destFile, Format format, int width, int height,
+                                      Resize resize, CropRegion cropRegion, RotateDirection rotateDir) {
 
         ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
 
@@ -160,7 +221,7 @@ public class ImcmsImageUtils {
             operation.outputFormat(format);
         }
 
-        return operation.processToFile(destFile);
+        operation.processToFile(destFile);
     }
 
     public static ImageDomainObject toDomainObject(Image image) {
@@ -225,6 +286,7 @@ public class ImcmsImageUtils {
     @PostConstruct
     public void init() {
         ImcmsImageUtils.imagesPath = imgPath;
+        ImcmsImageUtils.imagesUrl = imgUrl;
         ImcmsImageUtils.imageMagickPath = imgMagickPath;
     }
 }
