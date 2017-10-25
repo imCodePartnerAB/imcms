@@ -64,11 +64,4 @@ public class DocumentStoredFields {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_END_DATETIME);
     }
 
-    public int parentsCount() {
-        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__PARENTS_COUNT);
-    }
-
-    public int childrenCount() {
-        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__CHILDREN_COUNT);
-    }
 }
