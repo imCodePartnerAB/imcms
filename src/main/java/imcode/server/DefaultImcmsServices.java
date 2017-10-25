@@ -5,6 +5,7 @@ import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -73,6 +74,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     private ApplicationContext applicationContext;
 
     private DatabaseService databaseService;
+    private MailService mailService;
 
     /**
      * Constructs an DefaultImcmsServices object.
@@ -87,8 +89,9 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.documentLanguages = documentLanguages;
         this.config = config;
         this.properties = props;
-
         this.databaseService = databaseService;
+
+        this.mailService = new MailService(new SMTP(config.getSmtpServer(), config.getSmtpPort()));
         this.procedureExecutor = new DefaultProcedureExecutor(database, fileLoader);
         this.languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
         this.kerberosLoginService = new KerberosLoginService(config);
@@ -341,6 +344,11 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     public DatabaseService getDatabaseService() {
         return databaseService;
+    }
+
+    @Override
+    public MailService getMailService() {
+        return mailService;
     }
 
     private Object chooseInstance(String strToCompare, String mapperName, Properties propertiesSubset) {

@@ -22,11 +22,6 @@ public class Imcms {
 
     public static final String ERROR_LOGGER_URL = "https://errors.imcode.com/ErrorLogger";
 
-    /**
-     * Default Embedded SOLr home directory relative to deployment path
-     */
-    private static final String DEFAULT_SQLR_HOME = "WEB-INF/solr";
-
     private static final Logger logger = Logger.getLogger(Imcms.class);
     private static final String DOCUMENT_VERSIONING_PROPERTY = "document.versioning";
     private static Properties properties;

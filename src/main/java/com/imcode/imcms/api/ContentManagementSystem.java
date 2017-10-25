@@ -17,7 +17,6 @@ public class ContentManagementSystem implements Cloneable {
     private UserService userService;
     private DocumentService documentService;
     private TemplateService templateService;
-    private MailService mailService;
 
     protected ContentManagementSystem(ImcmsServices service, UserDomainObject accessor) {
         this.service = service;
@@ -77,7 +76,6 @@ public class ContentManagementSystem implements Cloneable {
         userService = new UserService(this);
         documentService = new DocumentService(this);
         templateService = new TemplateService(this);
-        mailService = new MailService(service.getSMTP());
     }
 
     protected ContentManagementSystem clone() throws CloneNotSupportedException {
@@ -107,7 +105,7 @@ public class ContentManagementSystem implements Cloneable {
     }
 
     public MailService getMailService() {
-        return mailService;
+        return service.getMailService();
     }
 
     ImcmsServices getInternal() {

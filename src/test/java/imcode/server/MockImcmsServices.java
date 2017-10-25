@@ -4,6 +4,7 @@ import com.imcode.db.Database;
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -14,7 +15,6 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
-import imcode.util.net.SMTP;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -27,7 +27,6 @@ public class MockImcmsServices implements ImcmsServices {
 
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
     private Database database = new MockDatabase();
-    private KeyStore keyStore;
     private LanguageMapper languageMapper = new LanguageMapper(null, null);
     private RoleGetter roleGetter;
     private ProcedureExecutor procedureExecutor;
@@ -108,10 +107,6 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public SMTP getSMTP() {
-        return null;
-    }
-
     public VelocityEngine getVelocityEngine(UserDomainObject user) {
         return null;
     }
@@ -173,11 +168,7 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public KeyStore getKeyStore() {
-        return keyStore;
-    }
-
-    public void setKeyStore(KeyStore keyStore) {
-        this.keyStore = keyStore;
+        return null;
     }
 
     public KerberosLoginService getKerberosLoginService() {
@@ -190,6 +181,11 @@ public class MockImcmsServices implements ImcmsServices {
 
     @Override
     public DatabaseService getDatabaseService() {
+        return null;
+    }
+
+    @Override
+    public MailService getMailService() {
         return null;
     }
 }

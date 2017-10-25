@@ -3,6 +3,7 @@ package imcode.server;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -13,7 +14,6 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
-import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
@@ -62,8 +62,6 @@ public interface ImcmsServices {
 
     TemplateMapper getTemplateMapper();
 
-    SMTP getSMTP();
-
     VelocityEngine getVelocityEngine(UserDomainObject user);
 
     VelocityContext getVelocityContext(UserDomainObject user);
@@ -97,4 +95,6 @@ public interface ImcmsServices {
     void init();
 
     DatabaseService getDatabaseService();
+
+    MailService getMailService();
 }

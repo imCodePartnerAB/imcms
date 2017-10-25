@@ -6,7 +6,7 @@ public class MailService {
 
     private SMTP smtp;
 
-    MailService(SMTP smtp) {
+    public MailService(SMTP smtp) {
         this.smtp = smtp;
     }
 
