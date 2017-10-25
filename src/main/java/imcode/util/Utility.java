@@ -26,6 +26,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
@@ -34,6 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.*;
 import javax.servlet.jsp.PageContext;
+import javax.sql.DataSource;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -71,6 +73,7 @@ public class Utility {
     private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
     private static TextContentFilter textContentFilter;
+    private static DataSource dataSource;
 
     private Utility() {
     }
@@ -387,7 +390,7 @@ public class Utility {
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {
         NDC.push("initRequestWithApi");
         ImcmsServices service = Imcms.getServices();
-        ContentManagementSystem imcmsSystem = DefaultContentManagementSystem.create(service, currentUser, Imcms.getApiDataSource());
+        ContentManagementSystem imcmsSystem = DefaultContentManagementSystem.create(service, currentUser, dataSource);
         request.setAttribute(CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE, imcmsSystem);
         NDC.pop();
         return imcmsSystem;
@@ -514,7 +517,9 @@ public class Utility {
     }
 
     @Autowired
-    public void init(TextContentFilter textContentFilter) {
+    public void init(TextContentFilter textContentFilter,
+                     @Qualifier("dataSourceWithAutoCommit") DataSource dataSource) {
         Utility.textContentFilter = textContentFilter;
+        Utility.dataSource = dataSource;
     }
 }
