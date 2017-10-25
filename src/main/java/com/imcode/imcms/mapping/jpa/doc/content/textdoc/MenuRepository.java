@@ -22,7 +22,7 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
     Integer findIdByVersionAndNo(Version version, int no);
 
     @Query("SELECT m.version.docId, m.no FROM Menu m JOIN m.items i WHERE KEY(i) = ?1 AND m.version.no = ?2")
-    List<Integer[]> getParentDocumentAndMenuIdsForDocument(int linkedDocId, int versionNo);
+    List<Object[]> getParentDocumentAndMenuIdsForDocument(int linkedDocId, int versionNo);
 
     @Query("SELECT m.version.docId, m.no FROM Menu m JOIN m.items i WHERE KEY(i) = ?1 AND m.version.no = ?2 ORDER BY m.version.docId, m.no")
     List<Integer[]> getDocumentMenuPairsContainingDocument(int linkedDocId, int versionNo);
