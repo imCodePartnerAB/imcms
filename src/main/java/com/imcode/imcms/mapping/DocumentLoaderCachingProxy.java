@@ -5,13 +5,12 @@ import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.mapping.container.DocRef;
 import imcode.server.document.DocumentDomainObject;
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.function.Supplier;
 
 public class DocumentLoaderCachingProxy {
 
@@ -25,7 +24,7 @@ public class DocumentLoaderCachingProxy {
     private final CacheWrapper<DocCacheKey, DocumentDomainObject> defaultDocs;
     private final CacheWrapper<String, Integer> aliasesToIds;
     private final CacheWrapper<Integer, String> idsToAliases;
-    private final CacheManager cacheManager = CacheManager.create();
+//    private final CacheManager cacheManager = CacheManager.create();
 
     public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper, DocumentLoader loader, DocumentLanguages documentLanguages, int size) {
         this.versionMapper = versionMapper;
@@ -33,15 +32,22 @@ public class DocumentLoaderCachingProxy {
         this.documentLanguages = documentLanguages;
         this.size = size;
 
-        metas = CacheWrapper.of(cacheConfiguration("meats"));
-        versionInfos = CacheWrapper.of(cacheConfiguration("versionInfos"));
-        workingDocs = CacheWrapper.of(cacheConfiguration("workingDocs"));
-        defaultDocs = CacheWrapper.of(cacheConfiguration("defaultDocs"));
-        aliasesToIds = CacheWrapper.of(cacheConfiguration("aliasesToIds"));
-        idsToAliases = CacheWrapper.of(cacheConfiguration("idsToAliases"));
+//        metas = CacheWrapper.of(cacheConfiguration("meats"));
+//        versionInfos = CacheWrapper.of(cacheConfiguration("versionInfos"));
+//        workingDocs = CacheWrapper.of(cacheConfiguration("workingDocs"));
+//        defaultDocs = CacheWrapper.of(cacheConfiguration("defaultDocs"));
+//        aliasesToIds = CacheWrapper.of(cacheConfiguration("aliasesToIds"));
+//        idsToAliases = CacheWrapper.of(cacheConfiguration("idsToAliases"));
 
-        Stream.of(metas, versionInfos, workingDocs, defaultDocs, aliasesToIds, idsToAliases)
-                .forEach(cacheWrapper -> cacheManager.addCache(cacheWrapper.cache()));
+//        Stream.of(metas, versionInfos, workingDocs, defaultDocs, aliasesToIds, idsToAliases)
+//                .forEach(cacheWrapper -> cacheManager.addCache(cacheWrapper.cache()));
+
+        metas = createFakeCacheWrapper();
+        versionInfos = createFakeCacheWrapper();
+        workingDocs = createFakeCacheWrapper();
+        defaultDocs = createFakeCacheWrapper();
+        aliasesToIds = createFakeCacheWrapper();
+        idsToAliases = createFakeCacheWrapper();
     }
 
     private CacheConfiguration cacheConfiguration(String name) {
@@ -168,6 +174,28 @@ public class DocumentLoaderCachingProxy {
             idsToAliases.remove(docId);
             aliasesToIds.remove(alias);
         });
+    }
+
+    /**
+     * Cache no more used for some time, so fake cache wrapper instantiated instead
+     */
+    private <K, V> CacheWrapper<K, V> createFakeCacheWrapper() {
+        return new CacheWrapper<K, V>(null) {
+            @Override
+            public V getOrPut(K key, Supplier<V> valueSupplier) {
+                return valueSupplier.get();
+            }
+
+            @Override
+            public boolean remove(K key) {
+                return true;
+            }
+
+            @Override
+            public V get(K key) {
+                return null;
+            }
+        };
     }
 
     private static class DocCacheKey {
