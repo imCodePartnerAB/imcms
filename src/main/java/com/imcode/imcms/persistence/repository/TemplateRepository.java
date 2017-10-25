@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TemplateRepository extends JpaRepository<Template, Integer> {
+
+    Template findByName(String name);
+
 }

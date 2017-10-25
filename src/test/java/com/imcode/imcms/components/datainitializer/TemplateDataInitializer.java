@@ -35,4 +35,14 @@ public class TemplateDataInitializer extends AbstractTestDataInitializer<Integer
                 .collect(Collectors.toList());
     }
 
+    public TemplateDTO createData(final String name) {
+        return Value.apply(new Template(), template -> {
+            template.setName(name);
+            template.setHidden(Math.random() < 0.5);
+
+            templateRepository.saveAndFlush(template);
+            return templateToTemplateDTO.apply(template);
+        });
+    }
+
 }
