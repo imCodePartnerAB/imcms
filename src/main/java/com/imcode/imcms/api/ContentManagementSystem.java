@@ -75,7 +75,7 @@ public class ContentManagementSystem implements Cloneable {
     private void init() {
         userService = new UserService(this);
         documentService = new DocumentService(this);
-        templateService = new TemplateService(this);
+        templateService = new TemplateService(service.getTemplateMapper());
     }
 
     protected ContentManagementSystem clone() throws CloneNotSupportedException {

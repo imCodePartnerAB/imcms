@@ -53,53 +53,47 @@ public class TemplateMapper {
         return allTemplates;
     }
 
+    public static File getTemplateDirectory() {
+        return new File(Imcms.getPath(), "WEB-INF/templates/text");
+    }
+
     public String createHtmlOptionListOfTemplateGroups(TemplateGroupDomainObject selectedTemplateGroup) {
-        TemplateGroupDomainObject[] templateGroups = services.getTemplateMapper().getAllTemplateGroups();
+        final TemplateGroupDomainObject[] templateGroups = getAllTemplateGroups();
         return createHtmlOptionListOfTemplateGroups(Arrays.asList(templateGroups), selectedTemplateGroup);
     }
 
     public String createHtmlOptionListOfTemplateGroups(Collection<TemplateGroupDomainObject> templateGroups,
                                                        TemplateGroupDomainObject selectedTemplateGroup) {
-        String temps = "";
+        StringBuilder temps = new StringBuilder();
         for (TemplateGroupDomainObject templateGroup : templateGroups) {
             boolean selected = null != selectedTemplateGroup && selectedTemplateGroup.equals(templateGroup);
-            temps += "<option value=\"" + templateGroup.getId() + "\"" + (selected ? " selected" : "") + ">"
-                    + templateGroup.getName() + "</option>";
+            temps.append("<option value=\"")
+                    .append(templateGroup.getId())
+                    .append("\"")
+                    .append(selected ? " selected" : "")
+                    .append(">")
+                    .append(templateGroup.getName())
+                    .append("</option>");
         }
-        return temps;
+        return temps.toString();
     }
 
     public String createHtmlOptionListOfTemplates(Iterable<TemplateDomainObject> templates,
                                                   TemplateDomainObject selectedTemplate) throws IOException {
-        String temps = "";
+        StringBuilder temps = new StringBuilder();
         for (TemplateDomainObject template : templates) {
 
             boolean selected = selectedTemplate != null && selectedTemplate.equals(template);
-            temps += "<option value=\""
-                    + StringEscapeUtils.escapeHtml4(template.getNameAdmin())
-                    + "\""
-                    + (selected ? " selected" : "")
-                    + ">"
-                    + StringEscapeUtils.escapeHtml4(template.getNameAdmin()) + "</option>";
+            final String templateName = StringEscapeUtils.escapeHtml4(template.getNameAdmin());
+            temps.append("<option value=\"")
+                    .append(templateName)
+                    .append("\"")
+                    .append(selected ? " selected" : "")
+                    .append(">")
+                    .append(templateName)
+                    .append("</option>");
         }
-        return temps;
-    }
-
-    public String createHtmlOptionListOfTemplatesWithDocumentCount(UserDomainObject user) {
-        String htmlStr = "";
-        TemplateMapper templateMapper = services.getTemplateMapper();
-        List<TemplateDomainObject> templates = templateMapper.getAllTemplates();
-        for (TemplateDomainObject template : templates) {
-            List<String> tags = new ArrayList<>();
-            tags.add("#template_name#");
-            tags.add(StringEscapeUtils.escapeHtml4(template.getNameAdmin()));
-            tags.add("#docs#");
-            tags.add("" + templateMapper.getCountOfDocumentsUsingTemplate(template));
-            tags.add("#template_id#");
-            tags.add(StringEscapeUtils.escapeHtml4(template.getNameAdmin()));
-            htmlStr += services.getAdminTemplate("template_list_row.html", user, tags);
-        }
-        return htmlStr;
+        return temps.toString();
     }
 
     /**
@@ -295,8 +289,20 @@ public class TemplateMapper {
         }
     }
 
-    public File getTemplateDirectory() {
-        return new File(Imcms.getPath(), "WEB-INF/templates/text");
+    public String createHtmlOptionListOfTemplatesWithDocumentCount(UserDomainObject user) {
+        String htmlStr = "";
+        List<TemplateDomainObject> templates = getAllTemplates();
+        for (TemplateDomainObject template : templates) {
+            List<String> tags = new ArrayList<>();
+            tags.add("#template_name#");
+            tags.add(StringEscapeUtils.escapeHtml4(template.getNameAdmin()));
+            tags.add("#docs#");
+            tags.add("" + getCountOfDocumentsUsingTemplate(template));
+            tags.add("#template_id#");
+            tags.add(StringEscapeUtils.escapeHtml4(template.getNameAdmin()));
+            htmlStr += services.getAdminTemplate("template_list_row.html", user, tags);
+        }
+        return htmlStr;
     }
 
     public void renameTemplateGroup(TemplateGroupDomainObject templateGroup, String newName) {
