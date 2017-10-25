@@ -1,5 +1,7 @@
 package com.imcode.imcms.config;
 
+import com.imcode.db.DataSourceDatabase;
+import com.imcode.db.Database;
 import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.Schema;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -88,17 +90,6 @@ public class DBConfig {
         new DB(dataSource).prepare(schema);
     }
 
-    private Map<String, String> createHibernateJpaProperties() {
-        final HashMap<String, String> properties = new HashMap<>();
-        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
-        properties.put("hibernate.format_sql", "true");
-        properties.put("hibernate.use_sql_comments", "true");
-        properties.put("hibernate.show_sql", "false");
-        properties.put("hibernate.hbm2ddl.auto", imcmsProperties.getProperty("hbm2ddl.auto"));
-
-        return properties;
-    }
-
     @Bean
     public JpaTransactionManager transactionManager(EntityManagerFactory emf) {
         final JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
@@ -111,6 +102,11 @@ public class DBConfig {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
+    @Bean
+    public Database createDatabase(DataSource dataSource) {
+        return new DataSourceDatabase(dataSource);
+    }
+
     private void setImcmsDataSourceProperties(BasicDataSource basicDataSource) {
         basicDataSource.setDriverClassName(imcmsProperties.getProperty("JdbcDriver"));
         basicDataSource.setUrl(imcmsProperties.getProperty("JdbcUrl"));
@@ -121,5 +117,16 @@ public class DBConfig {
         basicDataSource.setDefaultAutoCommit(false);
         basicDataSource.setMaxTotal(20);
         basicDataSource.setMaxTotal(Integer.parseInt(imcmsProperties.getProperty("MaxConnectionCount")));
+    }
+
+    private Map<String, String> createHibernateJpaProperties() {
+        final HashMap<String, String> properties = new HashMap<>();
+        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
+        properties.put("hibernate.format_sql", "true");
+        properties.put("hibernate.use_sql_comments", "true");
+        properties.put("hibernate.show_sql", "false");
+        properties.put("hibernate.hbm2ddl.auto", imcmsProperties.getProperty("hbm2ddl.auto"));
+
+        return properties;
     }
 }
