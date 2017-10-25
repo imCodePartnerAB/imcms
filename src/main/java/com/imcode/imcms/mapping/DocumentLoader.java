@@ -8,9 +8,9 @@ import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.*;
 import imcode.server.user.RoleId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,25 +26,17 @@ public class DocumentLoader {
      */
     public final static int PERM_CREATE_DOCUMENT = 8;
 
-    private final PropertyRepository propertyRepository;
-    private final MetaRepository metaRepository;
+    @Autowired
+    private PropertyRepository propertyRepository;
+    @Autowired
+    private MetaRepository metaRepository;
 
-    private final DocumentLanguageMapper languageMapper;
-    private final DocumentContentMapper contentMapper;
-    private final DocumentContentInitializingVisitor documentContentInitializingVisitor;
-
-    @Inject
-    public DocumentLoader(PropertyRepository propertyRepository,
-                          MetaRepository metaRepository,
-                          DocumentLanguageMapper languageMapper,
-                          DocumentContentMapper contentMapper,
-                          DocumentContentInitializingVisitor documentContentInitializingVisitor) {
-        this.propertyRepository = propertyRepository;
-        this.metaRepository = metaRepository;
-        this.languageMapper = languageMapper;
-        this.contentMapper = contentMapper;
-        this.documentContentInitializingVisitor = documentContentInitializingVisitor;
-    }
+    @Autowired
+    private DocumentLanguageMapper languageMapper;
+    @Autowired
+    private DocumentContentMapper contentMapper;
+    @Autowired
+    private DocumentContentInitializingVisitor documentContentInitializingVisitor;
 
     /**
      * Loads document's meta.
