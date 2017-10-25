@@ -22,6 +22,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
 import java.util.*;
+import java.util.concurrent.Executors;
 
 public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegistry, Authenticator, RoleGetter {
 
@@ -754,11 +755,13 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
      */
     public void encryptUnencryptedUsersLoginPasswords() {
         if (services.getConfig().isLoginPasswordEncryptionEnabled()) {
-            for (UserDomainObject user : getAllUsers()) {
-                if (!user.isImcmsExternal() && !user.isPasswordEncrypted() && StringUtils.isNotBlank(user.getPassword())) {
-                    saveUser(user);
+            Executors.newSingleThreadExecutor().submit(() -> {
+                for (UserDomainObject user : getAllUsers()) {
+                    if (!user.isImcmsExternal() && !user.isPasswordEncrypted() && StringUtils.isNotBlank(user.getPassword())) {
+                        saveUser(user);
+                    }
                 }
-            }
+            });
         }
     }
 }
