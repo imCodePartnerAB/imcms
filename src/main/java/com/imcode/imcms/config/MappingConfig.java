@@ -1,6 +1,7 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.dto.ImageData.CropRegion;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.User;
@@ -182,8 +183,19 @@ public class MappingConfig {
     }
 
     @Bean
+    public Function<ImageCropRegion, CropRegion> imageCropRegionToCropRegionDTO() {
+        return CropRegion::of;
+    }
+
+    @Bean
+    public Function<CropRegion, ImageCropRegion> cropRegionDtoToImageCropRegion() {
+        return ImageCropRegion::of;
+    }
+
+    @Bean
     public Function<Image, ImageDTO> imageToImageDTO(@Value("${ImageUrl}") String imagesPath,
-                                                     Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO) {
+                                                     Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO,
+                                                     Function<ImageCropRegion, CropRegion> imageCropRegionToCropRegionDTO) {
         return image -> {
             final ImageDTO dto = new ImageDTO();
 
@@ -202,13 +214,18 @@ public class MappingConfig {
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
             dto.setLoopEntryRef(loopEntryRefToDTO.apply(image.getLoopEntryRef()));
+            dto.setCropRegion(imageCropRegionToCropRegionDTO.apply(image.getCropRegion()));
 
             return dto;
         };
     }
 
     @Bean
-    public TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage(Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef) {
+    public TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage(
+            Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
+            Function<CropRegion, ImageCropRegion> cropRegionDtoToImageCropRegion
+    ) {
+
         return (imageDTO, version, language) -> {
             final Image image = new Image();
             image.setIndex(imageDTO.getIndex());
@@ -221,6 +238,7 @@ public class MappingConfig {
             image.setGeneratedFilename(imageDTO.getGeneratedFilename());
             image.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(imageDTO.getLoopEntryRef()));
             image.setFormat(imageDTO.getFormat());
+            image.setCropRegion(cropRegionDtoToImageCropRegion.apply(imageDTO.getCropRegion()));
 
             return image;
         };
