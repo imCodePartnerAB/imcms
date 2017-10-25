@@ -17,5 +17,4 @@ package object imcms {
   /** Zero based index */
   type Index = JInteger
 
-  implicit def stringAsI18nMessageKey(string: String) = new I18nMessage(string)
 }

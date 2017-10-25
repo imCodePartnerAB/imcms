@@ -1,7 +1,6 @@
 package imcode.util;
 
 import com.imcode.db.handlers.SingleObjectHandler;
-import com.imcode.imcms.I18nMessage$;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
 import com.imcode.imcms.db.BooleanFromRowFactory;
@@ -51,7 +50,6 @@ import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
-import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -476,25 +474,6 @@ public class Utility {
 
             throw new RuntimeException(ex.getMessage(), ex);
         }
-    }
-
-    /**
-     * Pass through to {@link com.imcode.imcms.I18nMessage$#i(String)}.
-     *
-     * @param key a localisation key
-     * @return a localised message for the {@code key}
-     */
-    public static String i(String key) {
-        return I18nMessage$.MODULE$.i(key);
-    }
-
-    /**
-     * @param key  a localisation key
-     * @param args format paramaters for the localisation message
-     * @return a localised message for the {@code key} formatted with the parameters {@code args}
-     */
-    public static String f(String key, Object... args) {
-        return new MessageFormat(i(key)).format(args);
     }
 
     @SuppressWarnings("unchecked")
