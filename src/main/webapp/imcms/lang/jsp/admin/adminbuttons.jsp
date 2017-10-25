@@ -1,20 +1,20 @@
 <%@ page
-	
-	contentType="text/html; charset=UTF-8"
-	
-	import="imcode.server.document.DocumentDomainObject,
+
+        contentType="text/html; charset=UTF-8"
+
+        import="com.imcode.imcms.api.DocumentLanguage,
+	        com.imcode.imcms.api.DocumentVersion,
+	        com.imcode.imcms.api.DocumentVersionInfo,
+	        com.imcode.imcms.mapping.DocumentMapper,
+	        imcode.server.Imcms,
+	        imcode.server.ImcmsConstants,
+	        imcode.server.document.DocumentDomainObject,
 	        imcode.server.document.DocumentPermissionSetDomainObject,
 	        imcode.server.document.TextDocumentPermissionSetDomainObject,
 	        imcode.server.document.textdocument.TextDocumentDomainObject,
 	        imcode.server.user.UserDomainObject,
 	        imcode.util.Html,
-	        imcode.util.Utility,
-	        imcode.server.Imcms,
-	        org.apache.oro.text.perl.Perl5Util,
-	        org.apache.commons.lang3.StringUtils,
-	        java.util.List,
-	        com.imcode.imcms.mapping.DocumentMapper,
-	        java.util.Set"
+	        imcode.util.Utility"
 	
 %><%@ taglib uri="imcmsvelocity" prefix="vel"
 %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
@@ -69,11 +69,11 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 
 %>
 <%@page import="org.apache.commons.collections.iterators.ReverseListIterator"%>
-<%@page import="java.util.Iterator"%>
-<%@ page import="imcode.server.ImcmsConstants" %>
-<%@ page import="com.imcode.imcms.api.DocumentVersionInfo" %>
-<%@ page import="com.imcode.imcms.api.DocumentLanguage" %>
-<%@ page import="com.imcode.imcms.api.DocumentVersion" %>
+<%@page import="org.apache.commons.lang3.StringUtils" %>
+<%@ page import="org.apache.oro.text.perl.Perl5Util" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Set" %>
 <vel:velocity>
 <style type="text/css">
 /*<![CDATA[*/
@@ -341,13 +341,4 @@ if (sFlags != null && sFlags.equals("1")) {
             %> title="<? templates/sv/adminbuttons/adminbuttons.html/2003 ?>" id="admBtnHelp" border="0" /></a></td>
 </tr>
 </table></div>
-<script type="text/javascript">
-//<![CDATA[
-function openHelpW(helpDocName){
-	<%--window.open("@documentationurl@/Help?name=" + helpDocName + "&lang=$language","help");--%>
-    <%-- IMCMS-94: replaced without arguments since we have new documentation--%>
-    window.open('@documentationurl@');
-}
-//]]>
-</script>
 </vel:velocity>

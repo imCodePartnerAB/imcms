@@ -133,11 +133,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.Help</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.Help</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-class>
     </servlet>
@@ -229,11 +224,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.MenuRss</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.MenuRss</servlet-class>
     </servlet>
 
     <servlet>
@@ -362,11 +352,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.Help</servlet-name>
-        <url-pattern>/Help/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>RD</servlet-name>
         <url-pattern>/RD/*</url-pattern>
     </servlet-mapping>
@@ -464,11 +449,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-name>
         <url-pattern>/servlet/ListDocuments</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.MenuRss</servlet-name>
-        <url-pattern>/servlet/MenuRss</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
