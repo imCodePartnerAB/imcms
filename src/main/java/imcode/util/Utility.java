@@ -2,7 +2,6 @@ package imcode.util;
 
 import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.DefaultContentManagementSystem;
 import com.imcode.imcms.db.BooleanFromRowFactory;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
@@ -388,7 +387,7 @@ public class Utility {
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {
         NDC.push("initRequestWithApi");
         ImcmsServices service = Imcms.getServices();
-        ContentManagementSystem imcmsSystem = DefaultContentManagementSystem.create(service, currentUser, dataSource);
+        ContentManagementSystem imcmsSystem = ContentManagementSystem.create(service, currentUser, dataSource);
         request.setAttribute(CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE, imcmsSystem);
         NDC.pop();
         return imcmsSystem;

@@ -8,6 +8,10 @@ public class MockContentManagementSystem extends ContentManagementSystem {
     private ImcmsServices imcmsServices;
     private User currentUser;
 
+    MockContentManagementSystem() {
+        super(null, null);
+    }
+
     public UserService getUserService() {
         return null;  // TODO
     }
