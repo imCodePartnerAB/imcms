@@ -22,7 +22,6 @@ public class TextDocumentContentInitializer {
         initTexts(document);
         initImages(document);
         initMenus(document);
-        initIncludes(document);
         initTemplateNames(document);
     }
 
@@ -34,11 +33,6 @@ public class TextDocumentContentInitializer {
         for (Map.Entry<TextDocumentDomainObject.LoopItemRef, TextDomainObject> e : contentLoader.getLoopTexts(document.getRef()).entrySet()) {
             document.setText(e.getKey(), e.getValue());
         }
-    }
-
-
-    public void initIncludes(TextDocumentDomainObject document) {
-        document.setIncludesMap(contentLoader.getIncludes(document.getId()));
     }
 
 

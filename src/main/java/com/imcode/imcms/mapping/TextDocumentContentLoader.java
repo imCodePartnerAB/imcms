@@ -38,7 +38,6 @@ public class TextDocumentContentLoader {
     private final ImageRepository imageRepository;
     private final TemplateNamesRepository templateNamesRepository;
     private final LanguageRepository languageRepository;
-    private final IncludeRepository includeRepository;
     private final DocumentLanguageMapper languageMapper;
     private final MenuService menuService;
     private final LoopService loopService;
@@ -51,7 +50,6 @@ public class TextDocumentContentLoader {
                                      TemplateNamesRepository templateNamesRepository,
                                      MenuService menuService,
                                      LanguageRepository languageRepository,
-                                     IncludeRepository includeRepository,
                                      DocumentLanguageMapper languageMapper,
                                      LoopService loopService) {
 
@@ -62,7 +60,6 @@ public class TextDocumentContentLoader {
         this.templateNamesRepository = templateNamesRepository;
         this.menuService = menuService;
         this.languageRepository = languageRepository;
-        this.includeRepository = includeRepository;
         this.languageMapper = languageMapper;
         this.loopService = loopService;
     }
@@ -250,12 +247,6 @@ public class TextDocumentContentLoader {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
         return menuService.findAllByVersion(version).stream().collect(toMap(MenuDTO::getMenuId, menu -> menu));
-    }
-
-    public Map<Integer, Integer> getIncludes(int docId) {
-        return includeRepository.findByDocId(docId)
-                .stream()
-                .collect(toMap(Include::getNo, Include::getIncludedDocumentId));
     }
 
     private TextDomainObject toDomainObject(Text jpaText) {

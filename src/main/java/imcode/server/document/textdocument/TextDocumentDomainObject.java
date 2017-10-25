@@ -75,7 +75,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         clone.images = cloneImages();
         clone.loopImages = cloneLoopImages();
-        clone.includesMap = cloneIncludesMap();
         clone.menus = cloneMenusMap();
         clone.templateNames = cloneTemplateNames();
         clone.texts = cloneTexts();
@@ -103,10 +102,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         }
 
         return childDocuments;
-    }
-
-    public Integer getIncludedDocumentId(int includeIndex) {
-        return includesMap.get(includeIndex);
     }
 
     /**
@@ -190,14 +185,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         loopTexts.put(loopItemRef, text);
     }
 
-    public Map<Integer, Integer> getIncludesMap() {
-        return Collections.unmodifiableMap(includesMap);
-    }
-
-    public void setIncludesMap(Map<Integer, Integer> includesMap) {
-        this.includesMap = new ConcurrentHashMap<>(includesMap);
-    }
-
     public String getTemplateName() {
         return templateNames.getTemplateName();
     }
@@ -224,10 +211,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void setDefaultTemplateId(String defaultTemplateId) {
         templateNames.setDefaultTemplateName(defaultTemplateId);
-    }
-
-    public void removeInclude(int includeIndex) {
-        includesMap.remove(includeIndex);
     }
 
     public String getDefaultTemplateNameForRestricted1() {
@@ -347,10 +330,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     private TemplateNames cloneTemplateNames() {
         return templateNames.clone();
-    }
-
-    private ConcurrentHashMap<Integer, Integer> cloneIncludesMap() {
-        return new ConcurrentHashMap<>(includesMap);
     }
 
     private ConcurrentHashMap<Integer, LoopDTO> cloneLoopsMap() {

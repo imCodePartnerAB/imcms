@@ -247,11 +247,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveInclude</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInPage</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.SaveInPage</servlet-class>
     </servlet>
@@ -474,12 +469,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.Restart</servlet-name>
         <url-pattern>/servlet/Restart</url-pattern>
-    </servlet-mapping>
-
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
-        <url-pattern>/servlet/SaveInclude</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

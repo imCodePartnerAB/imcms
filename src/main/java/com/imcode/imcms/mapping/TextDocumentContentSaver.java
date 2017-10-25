@@ -4,9 +4,9 @@ import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Menu;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuItem;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.repository.ImageRepository;
@@ -39,7 +39,6 @@ public class TextDocumentContentSaver {
     private final TemplateNamesRepository templateNamesRepository;
     private final LoopRepository loopRepository;
     private final LanguageRepository languageRepository;
-    private final IncludeRepository includeRepository;
     private final UserRepository userRepository;
 
     @Inject
@@ -47,7 +46,7 @@ public class TextDocumentContentSaver {
                                     TextHistoryRepository textHistoryRepository, ImageRepository imageRepository,
                                     MenuRepository menuRepository, TemplateNamesRepository templateNamesRepository,
                                     LoopRepository loopRepository, LanguageRepository languageRepository,
-                                    IncludeRepository includeRepository, UserRepository userRepository) {
+                                    UserRepository userRepository) {
         this.versionRepository = versionRepository;
         this.textRepository = textRepository;
         this.textHistoryRepository = textHistoryRepository;
@@ -56,7 +55,6 @@ public class TextDocumentContentSaver {
         this.templateNamesRepository = templateNamesRepository;
         this.loopRepository = loopRepository;
         this.languageRepository = languageRepository;
-        this.includeRepository = includeRepository;
         this.userRepository = userRepository;
     }
 
@@ -76,7 +74,6 @@ public class TextDocumentContentSaver {
 //        saveMenus(doc, version, SaveMode.CREATE);
 
         saveTemplateNames(doc.getId(), doc.getTemplateNames());
-        saveIncludes(doc.getId(), doc.getIncludesMap());
     }
 
     public void createCommonContent(TextDocumentDomainObject doc) {
@@ -86,7 +83,6 @@ public class TextDocumentContentSaver {
 //        createLoops(doc, version);
 //        saveMenus(doc, version, SaveMode.CREATE);
         saveTemplateNames(doc.getId(), doc.getTemplateNames());
-        saveIncludes(doc.getId(), doc.getIncludesMap());
     }
 
     public void createI18nContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
@@ -122,7 +118,6 @@ public class TextDocumentContentSaver {
 //        saveMenus(doc, version, SaveMode.UPDATE);
 
         saveTemplateNames(doc.getId(), doc.getTemplateNames());
-        saveIncludes(doc.getId(), doc.getIncludesMap());
     }
 
     /**
@@ -182,20 +177,6 @@ public class TextDocumentContentSaver {
         templateNames.setTemplateName(templateNamesDO.getTemplateName());
 
         templateNamesRepository.save(templateNames);
-    }
-
-    private void saveIncludes(int docId, Map<Integer, Integer> includes) {
-        includeRepository.deleteByDocId(docId);
-
-        includes.forEach((no, includedDocId) -> {
-            Include include = new Include();
-            include.setId(null);
-            include.setDocId(docId);
-            include.setNo(no);
-            include.setIncludedDocumentId(includedDocId);
-
-            includeRepository.save(include);
-        });
     }
 
     public void saveMenu(TextDocMenuContainer container) {

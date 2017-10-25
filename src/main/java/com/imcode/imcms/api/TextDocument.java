@@ -3,7 +3,6 @@ package com.imcode.imcms.api;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.mapping.DocumentGetter;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -56,24 +55,6 @@ public class TextDocument extends Document {
         Map<Integer, ImageDomainObject> imagesMap = getInternalTextDocument().getImages();
 
         return filterAndConvertValues(imagesMap, predicate, fromDomainToApiTransformer);
-    }
-
-    /**
-     * @return A SortedMap that contains the index of the include as keys, and instances of Document as values. Only the
-     * includes that has a document is returned.
-     */
-    public SortedMap<Integer, Document> getIncludes() {
-        Predicate<Entry<?, Integer>> predicate = entry -> null != entry.getValue();
-        final DocumentGetter documentGetter = getDocumentGetter();
-
-        Function<Integer, Document> fromDomainToApiTransformer =
-                tempMetaId -> DocumentService.wrapDocumentDomainObject(
-                        documentGetter.getDocument(tempMetaId), contentManagementSystem
-                );
-
-        Map<Integer, Integer> includeMap = getInternalTextDocument().getIncludesMap();
-
-        return filterAndConvertValues(includeMap, predicate, fromDomainToApiTransformer);
     }
 
     private DocumentGetter getDocumentGetter() {
@@ -144,25 +125,6 @@ public class TextDocument extends Document {
         getInternalTextDocument().setTemplateName(template.getInternal().getName());
         if (null != templateGroup) {
             getInternalTextDocument().setTemplateGroupId(templateGroup.getId());
-        }
-    }
-
-    public Document getInclude(int includeIndexInDocument) {
-        Integer includedDocumentId = getInternalTextDocument().getIncludedDocumentId(includeIndexInDocument);
-        if (null != includedDocumentId) {
-            DocumentDomainObject includedDocument = getDocumentGetter().getDocument(includedDocumentId);
-            if (null != includedDocument) {
-                return DocumentService.wrapDocumentDomainObject(includedDocument, contentManagementSystem);
-            }
-        }
-        return null;
-    }
-
-    public void setInclude(int includeIndexInDocument, TextDocument documentToBeIncluded) {
-        if (null == documentToBeIncluded) {
-            getInternalTextDocument().removeInclude(includeIndexInDocument);
-        } else {
-            getInternalTextDocument().setInclude(includeIndexInDocument, documentToBeIncluded.getId());
         }
     }
 
