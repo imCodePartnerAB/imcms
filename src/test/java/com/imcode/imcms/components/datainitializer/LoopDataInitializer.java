@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 
 @Component
 public class LoopDataInitializer extends AbstractTestDataInitializer<LoopDTO, Loop> {
-    private static final int TEST_VERSION_NO = 0;
+    public static final int TEST_VERSION_NO = 0;
 
     private final LoopRepository loopRepository;
     private final BiFunction<LoopDTO, Version, Loop> loopDtoToLoop;

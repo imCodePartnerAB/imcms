@@ -5,6 +5,8 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.mapping.jpa.doc.Version;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,11 +16,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static com.imcode.imcms.components.datainitializer.LoopDataInitializer.TEST_VERSION_NO;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -35,6 +38,9 @@ public class LoopServiceTest {
 
     @Autowired
     private LoopService loopService;
+
+    @Autowired
+    private VersionRepository versionRepository;
 
     @Before
     public void saveData() {
@@ -88,5 +94,22 @@ public class LoopServiceTest {
         final LoopDTO savedLoop = loopService.getLoop(loopDTO.getIndex(), loopDTO.getDocId());
 
         assertEquals(savedLoop, loopDTO);
+    }
+
+    @Test
+    public void getLoopsByVersion() {
+        final LoopDTO loopDTO1 = new LoopDTO(TEST_DOC_ID, 10, Collections.emptyList());
+        loopService.saveLoop(loopDTO1);
+        final LoopDTO loopDTO2 = new LoopDTO(TEST_DOC_ID, 20, Collections.emptyList());
+        loopService.saveLoop(loopDTO2);
+        final LoopDTO loopDTO3 = new LoopDTO(TEST_DOC_ID, 30, Collections.emptyList());
+        loopService.saveLoop(loopDTO3);
+
+        final Collection<LoopDTO> loopDTOS = Arrays.asList(TEST_LOOP_DTO, loopDTO1, loopDTO2, loopDTO3);
+        final Version version = versionRepository.findByDocIdAndNo(TEST_DOC_ID, TEST_VERSION_NO);
+        final Collection<LoopDTO> allByVersion = loopService.findAllByVersion(version);
+
+        assertEquals(loopDTOS.size(), allByVersion.size());
+        assertTrue(allByVersion.containsAll(loopDTOS));
     }
 }

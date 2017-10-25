@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
@@ -63,5 +65,9 @@ public class LoopService {
 
     public LoopEntryRefDTO buildLoopEntryRef(int loopIndex, int entryIndex) {
         return new LoopEntryRefDTO(loopIndex, entryIndex);
+    }
+
+    public Collection<LoopDTO> findAllByVersion(Version version) {
+        return loopRepository.findByVersion(version).stream().map(loopToDtoMapper).collect(Collectors.toSet());
     }
 }
