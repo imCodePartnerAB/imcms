@@ -1,6 +1,5 @@
 package com.imcode.imcms.persistence.entity;
 
-import com.imcode.imcms.mapping.jpa.doc.content.VersionedContent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

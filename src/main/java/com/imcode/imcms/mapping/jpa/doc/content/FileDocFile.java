@@ -3,6 +3,8 @@
  */
 package com.imcode.imcms.mapping.jpa.doc.content;
 
+import com.imcode.imcms.persistence.entity.VersionedContent;
+
 import javax.persistence.*;
 
 //ORDER BY default_variant DESC, variant_name

@@ -1,6 +1,5 @@
-package com.imcode.imcms.mapping.jpa.doc.content;
+package com.imcode.imcms.persistence.entity;
 
-import com.imcode.imcms.persistence.entity.Version;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

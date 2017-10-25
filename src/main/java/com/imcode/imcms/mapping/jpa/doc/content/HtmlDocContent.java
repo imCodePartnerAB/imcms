@@ -1,5 +1,7 @@
 package com.imcode.imcms.mapping.jpa.doc.content;
 
+import com.imcode.imcms.persistence.entity.VersionedContent;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;

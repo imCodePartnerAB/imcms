@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
 
-import com.imcode.imcms.mapping.jpa.doc.content.VersionedContent;
+import com.imcode.imcms.persistence.entity.VersionedContent;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
