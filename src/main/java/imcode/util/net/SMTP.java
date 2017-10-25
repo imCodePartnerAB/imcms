@@ -3,8 +3,6 @@ package imcode.util.net;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.util.PropertyManager;
 import imcode.util.Utility;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.Email;
@@ -17,7 +15,9 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * class SMTP - Provides methods for sending mail.
@@ -79,8 +79,7 @@ public class SMTP {
             }
 
             mail.setAuthenticator(new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
+                public PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(accountMail, accountMailPassword);
                 }
             });
@@ -112,9 +111,21 @@ public class SMTP {
             setBody(body);
         }
 
+        private static Collection<InternetAddress> stringsToInternetAddresses(String[] addresses) {
+            return Stream.of(addresses).map(Mail::stringToInternetAddress).collect(Collectors.toList());
+        }
+
+        private static InternetAddress stringToInternetAddress(String input) {
+            try {
+                return new InternetAddress(input, false);
+            } catch (AddressException e) {
+                throw new UnhandledException(e);
+            }
+        }
+
         public void setBccAddresses(String[] bccAddresses) {
             try {
-                mail.setBcc(CollectionUtils.collect(Arrays.asList(bccAddresses), new StringToInternetAddressTransformer()));
+                mail.setBcc(stringsToInternetAddresses(bccAddresses));
             } catch (EmailException e) {
                 throw new UnhandledException(e);
             }
@@ -142,7 +153,7 @@ public class SMTP {
 
         public void setCcAddresses(String[] ccAddresses) {
             try {
-                mail.setCc(CollectionUtils.collect(Arrays.asList(ccAddresses), new StringToInternetAddressTransformer()));
+                mail.setCc(stringsToInternetAddresses(ccAddresses));
             } catch (EmailException e) {
                 throw new UnhandledException(e);
             }
@@ -154,7 +165,7 @@ public class SMTP {
 
         public void setToAddresses(String[] toAddresses) {
             try {
-                mail.setTo(CollectionUtils.collect(Arrays.asList(toAddresses), new StringToInternetAddressTransformer()));
+                mail.setTo(stringsToInternetAddresses(toAddresses));
             } catch (EmailException e) {
                 throw new UnhandledException(e);
             }
@@ -172,17 +183,6 @@ public class SMTP {
 
         private HtmlEmail getMail() {
             return mail;
-        }
-
-        private static class StringToInternetAddressTransformer implements Transformer {
-
-            public Object transform(Object input) {
-                try {
-                    return new InternetAddress((String) input, false);
-                } catch (AddressException e) {
-                    throw new UnhandledException(e);
-                }
-            }
         }
     }
 }
