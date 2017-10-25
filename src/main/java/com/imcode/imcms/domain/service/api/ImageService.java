@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
@@ -47,10 +48,6 @@ public class ImageService {
         this.loopEntryRefDtoToLoopEntryRef = loopEntryRefDtoToLoopEntryRef;
         this.imageDtoToImage = imageDtoToImage;
         this.imageToImageDTO = imageToImageDTO;
-    }
-
-    public Collection<Image> getAllGeneratedImages() {
-        return imageRepository.findAllGeneratedImages();
     }
 
     public ImageDTO getImage(ImageDTO dataHolder) {
@@ -125,5 +122,16 @@ public class ImageService {
         }
 
         return image.getId();
+    }
+
+    private Collection<Image> getAllGeneratedImages() {
+        return imageRepository.findAllGeneratedImages();
+    }
+
+    @PostConstruct
+    private void regenerateImages() { // If generated images was cleared before start up
+        getAllGeneratedImages().forEach((img) -> ImcmsImageUtils.generateImage(
+                ImcmsImageUtils.toDomainObject(img), false)
+        );
     }
 }
