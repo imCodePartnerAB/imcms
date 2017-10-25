@@ -5,6 +5,7 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.persistence.entity.Menu;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -15,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -35,6 +39,9 @@ public class MenuServiceTest {
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
+
+    @Autowired
+    private Function<Menu, MenuDTO> menuToMenuDTO;
 
     @After
     public void cleanUpData() {
@@ -71,6 +78,24 @@ public class MenuServiceTest {
     @Test
     public void getPublicMenuItemsOf_When_MenuDoesntExist_Expect_EmptyList() {
         getMenuItemsOf_When_MenuDoesntExist_Expect_EmptyList(false);
+    }
+
+    @Test
+    public void getMenuByVersion_When_MenuWithoutItems_Expect_SameSizeAndResultsEquals() {
+        menuDataInitializer.cleanRepositories();
+
+        final Set<Version> versions = new HashSet<>();
+        final List<MenuDTO> menuDTOS = IntStream.range(0, 4)
+                .mapToObj(menuIndex -> {
+                    final Menu menu = menuDataInitializer.createData(false, menuIndex);
+                    versions.add(menu.getVersion());
+                    return menuToMenuDTO.apply(menu);
+                })
+                .collect(Collectors.toList());
+
+        final Collection<MenuDTO> allByVersion = menuService.findAllByVersion(new ArrayList<>(versions).get(0));
+        assertEquals(menuDTOS.size(), allByVersion.size());
+        assertTrue(allByVersion.containsAll(menuDTOS));
     }
 
     private void getMenuItemsOf_When_MenuNoAndDocId_Expect_ResultEqualsExpectedMenuItems(boolean isAll) {

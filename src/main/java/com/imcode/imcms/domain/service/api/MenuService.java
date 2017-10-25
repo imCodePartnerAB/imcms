@@ -15,6 +15,7 @@ import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -31,19 +32,23 @@ public class MenuService {
     private final DocumentService documentService;
     private final Function<MenuItem, MenuItemDTO> menuItemToDto;
     private final Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList;
+    private final Function<Menu, MenuDTO> menuToMenuDTO;
 
     public MenuService(MenuRepository menuRepository,
                        VersionService versionService,
                        CommonContentService commonContentService,
                        DocumentService documentService,
                        Function<MenuItem, MenuItemDTO> menuItemToDto,
-                       Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList) {
+                       Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList,
+                       Function<Menu, MenuDTO> menuToMenuDTO) {
+
         this.menuRepository = menuRepository;
         this.versionService = versionService;
         this.commonContentService = commonContentService;
         this.documentService = documentService;
         this.menuItemToDto = menuItemToDto;
         this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
+        this.menuToMenuDTO = menuToMenuDTO;
     }
 
     public List<MenuItemDTO> getMenuItemsOf(int menuNo, int docId) {
@@ -66,6 +71,10 @@ public class MenuService {
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
         menuRepository.saveAndFlush(menu);
+    }
+
+    public Collection<MenuDTO> findAllByVersion(Version version) {
+        return menuRepository.findByVersion(version).stream().map(menuToMenuDTO).collect(Collectors.toList());
     }
 
     private Menu getMenu(int menuNo, int docId) {

@@ -30,10 +30,14 @@ public class MenuDataInitializer extends AbstractTestDataInitializer<Boolean, Me
     @Override
     public Menu createData(Boolean withMenuItems) {
         cleanRepositories();
+        return createData(withMenuItems, 1);
+    }
+
+    public Menu createData(Boolean withMenuItems, int menuIndex) {
         final Menu menu = new Menu();
         final Version version = versionDataInitializer.createData(0, 1001);
         menu.setVersion(version);
-        menu.setNo(1);
+        menu.setNo(menuIndex);
         savedMenu = menuRepository.saveAndFlush(menu);
         if (withMenuItems) {
             addMenuItemsTo(savedMenu);
