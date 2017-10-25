@@ -4,7 +4,6 @@ import com.imcode.imcms.util.Value;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -14,9 +13,7 @@ import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class DocumentContentIndexer {
 
@@ -68,20 +65,9 @@ public class DocumentContentIndexer {
         });
 
         doc.getLoopImages().forEach((loopItemRef, imageDO) -> {
-            int no = loopItemRef.getItemNo();
             Optional.ofNullable(StringUtils.trimToNull(imageDO.getLinkUrl())).ifPresent(imageLinkUrl ->
                     indexDoc.addField(DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl));
         });
-
-        Set<Integer> childrenIds = doc.getMenus().values().stream()
-                .flatMap(menu -> menu.getMenuItemsUnsorted().stream().map(MenuItemDomainObject::getDocumentId))
-                .collect(Collectors.toSet());
-
-
-        indexDoc.addField(DocumentIndex.FIELD__HAS_CHILDREN, !childrenIds.isEmpty());
-        indexDoc.addField(DocumentIndex.FIELD__CHILDREN_COUNT, childrenIds.size());
-
-        childrenIds.forEach(id -> indexDoc.addField(DocumentIndex.FIELD__CHILD_ID, id));
 
         return indexDoc;
     }
