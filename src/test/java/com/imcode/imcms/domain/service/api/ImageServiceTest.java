@@ -4,11 +4,15 @@ import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
+import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import imcode.util.ImcmsImageUtils;
+import imcode.util.image.Format;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,9 +22,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.function.Function;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -114,5 +119,56 @@ public class ImageServiceTest {
         final ImageDTO result = imageService.getImage(imageDTO);
 
         assertEquals(result, imageDTO);
+    }
+
+    @Test
+    public void saveImage_When_ImageFileExists_Expect_GeneratedFileExists() {
+        final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
+            img.setIndex(TEST_IMAGE_INDEX);
+            img.setDocId(TEST_DOC_ID);
+            img.setPath("img1.jpg");
+            img.setFormat(Format.JPEG);
+            img.setLangCode("en");
+            img.setName("img1");
+            img.setWidth(100);
+            img.setHeight(100);
+        });
+
+        imageService.saveImage(imageDTO);
+
+        final ImageDTO result = imageService.getImage(imageDTO);
+
+        assertNotNull(result);
+
+        final File croppedImage = new File(ImcmsImageUtils.imagesPath, "generated/" + result.getGeneratedFilename());
+
+        assertTrue(croppedImage.exists());
+        assertTrue(croppedImage.delete());
+    }
+
+    @Test
+    public void saveImage_When_CroppingIsNotDefault_Expect_EqualCropping() {
+        final ImageData.CropRegion cropRegion = new ImageData.CropRegion(10, 10, 20, 20);
+        final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
+            img.setIndex(TEST_IMAGE_INDEX);
+            img.setDocId(TEST_DOC_ID);
+            img.setPath("img1.jpg");
+            img.setFormat(Format.JPEG);
+            img.setLangCode("en");
+            img.setName("img1");
+            img.setWidth(100);
+            img.setHeight(100);
+            img.setCropRegion(cropRegion);
+        });
+
+        imageService.saveImage(imageDTO);
+
+        final ImageDTO result = imageService.getImage(imageDTO);
+
+        assertNotNull(result);
+
+        final File croppedImage = new File(ImcmsImageUtils.imagesPath, "generated/" + result.getGeneratedFilename());
+        assertEquals(result.getCropRegion(), cropRegion);
+        assertTrue(croppedImage.delete());
     }
 }
