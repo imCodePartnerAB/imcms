@@ -1,15 +1,20 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.mapping.DocumentGetter;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
-import imcode.server.document.textdocument.*;
-import imcode.server.user.UserDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -161,23 +166,8 @@ public class TextDocument extends Document {
         }
     }
 
-    /**
-     * Get the menu with the given index in the owner.
-     *
-     * @param menuIndexInDocument the index of the menu in the owner.
-     * @return the menu with the given index in the owner.
-     */
-    public Menu getMenu(int menuIndexInDocument) {
-        return new Menu(this, menuIndexInDocument);
-    }
-
-    public SortedMap<Integer, Menu> getMenus() {
-        Map<Integer, MenuDomainObject> internalMenus = getInternalTextDocument().getMenus();
-        SortedMap<Integer, Menu> menus = new TreeMap<>();
-        for (Integer menuIndex : internalMenus.keySet()) {
-            menus.put(menuIndex, new Menu(this, menuIndex));
-        }
-        return menus;
+    public SortedMap<Integer, MenuDTO> getMenus() {
+        return new TreeMap<>(getInternalTextDocument().getMenus());
     }
 
     public void setImage(int imageIndex, Image image) {
@@ -189,7 +179,7 @@ public class TextDocument extends Document {
         return contentManagementSystem;
     }
 
-    public Loop getLoop(int no) {
+    public LoopDTO getLoop(int no) {
         return getInternal().getLoop(no);
     }
 
@@ -297,110 +287,5 @@ public class TextDocument extends Document {
                 return type;
             }
         }
-    }
-
-    public static class MenuItem {
-        MenuItemDomainObject internalMenuItem;
-        Document child;
-
-        public MenuItem(MenuItemDomainObject internalMenuItem, ContentManagementSystem contentManagementSystem) {
-            this.internalMenuItem = internalMenuItem;
-            DocumentService.ApiWrappingDocumentVisitor visitor = new DocumentService.ApiWrappingDocumentVisitor(contentManagementSystem);
-            internalMenuItem.getDocument().accept(visitor);
-            child = visitor.getDocument();
-        }
-
-        public MenuItem(MenuItemDomainObject menuItem, DocumentDomainObject document, ContentManagementSystem contentManagementSystem) {
-            this.internalMenuItem = menuItem;
-            this.child = new Document(document, contentManagementSystem);
-        }
-
-        public Document getDocument() {
-            return child;
-        }
-
-        public TreeKey getTreeKey() {
-            return new TreeKey(internalMenuItem.getTreeSortKey());
-        }
-
-        public static class TreeKey {
-            TreeSortKeyDomainObject internalTreeSortKey;
-
-            TreeKey(TreeSortKeyDomainObject internalTreeSortKey) {
-                this.internalTreeSortKey = internalTreeSortKey;
-            }
-
-            public String toString() {
-                return internalTreeSortKey.toString();
-            }
-        }
-    }
-
-    public static class Menu {
-        private final TextDocumentDomainObject internalTextDocument;
-        private final int menuIndex;
-        private final ContentManagementSystem contentManagementSystem;
-
-        Menu(TextDocument document, int menuIndex) {
-            internalTextDocument = document.getInternalTextDocument();
-            this.menuIndex = menuIndex;
-            contentManagementSystem = document.getContentManagementSystem();
-        }
-
-        /**
-         * @return The visible menuitems in this menu.
-         * @since 2.0
-         */
-        public MenuItem[] getVisibleMenuItems() {
-            final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
-            return getMenuItems(user::canSeeDocumentInMenus);
-        }
-
-        /**
-         * @return the documents returned by {@link #getVisibleMenuItems()}.
-         * @since 2.0
-         */
-        Document[] getVisibleDocuments() {
-            MenuItem[] menuItems = getVisibleMenuItems();
-            return getDocumentsFromMenuItems(menuItems);
-        }
-
-        /**
-         * @return The menuitems in this menu that the user can see or edit, excluding archived documents.
-         */
-        public MenuItem[] getMenuItems() {
-            final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
-            return getMenuItems(document -> user.canSeeDocumentInMenus(document) || user.canEdit(document));
-        }
-
-        /**
-         * @return the documents returned by {@link #getMenuItems()}.
-         */
-        public Document[] getDocuments() {
-            MenuItem[] menuItems = getMenuItems();
-            return getDocumentsFromMenuItems(menuItems);
-        }
-
-        private MenuItem[] getMenuItems(Predicate<DocumentDomainObject> documentPredicate) {
-            MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu(menuIndex).getMenuItems();
-            List<MenuItem> menuItems = new ArrayList<>(menuItemsDomainObjects.length);
-            for (MenuItemDomainObject menuItemDomainObject : menuItemsDomainObjects) {
-                DocumentDomainObject document = menuItemDomainObject.getDocument();
-                if (documentPredicate.test(document)) {
-                    menuItems.add(new MenuItem(menuItemDomainObject, document, contentManagementSystem));
-                }
-            }
-            return menuItems.toArray(new MenuItem[menuItems.size()]);
-        }
-
-        private Document[] getDocumentsFromMenuItems(MenuItem[] menuItems) {
-            Document[] documents = new Document[menuItems.length];
-            for (int i = 0; i < menuItems.length; i++) {
-                MenuItem menuItem = menuItems[i];
-                documents[i] = menuItem.getDocument();
-            }
-            return documents;
-        }
-
     }
 }

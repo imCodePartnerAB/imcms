@@ -2,7 +2,10 @@ package imcode.server.document.textdocument;
 
 import com.google.common.base.Strings;
 import com.google.common.primitives.Ints;
-import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.dto.LoopEntryDTO;
+import com.imcode.imcms.domain.dto.MenuDTO;
+import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
@@ -12,6 +15,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
@@ -44,7 +48,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * <p/>
      * Map index is a menu's no in this document.
      */
-    private volatile ConcurrentHashMap<Integer, MenuDomainObject> menus = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<Integer, MenuDTO> menus = new ConcurrentHashMap<>();
     /**
      * Template names.
      */
@@ -54,7 +58,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * <p/>
      * Map key is a content's no in this document.
      */
-    private volatile ConcurrentHashMap<Integer, Loop> loops = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<Integer, LoopDTO> loops = new ConcurrentHashMap<>();
 
     public TextDocumentDomainObject() {
         this(ID_NEW);
@@ -92,8 +96,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public Set<Integer> getChildDocumentIds() {
         Set<Integer> childDocuments = new HashSet<>();
 
-        for (MenuDomainObject menu : getMenus().values()) {
-            for (MenuItemDomainObject menuItem : menu.getMenuItems()) {
+        for (MenuDTO menu : getMenus().values()) {
+            for (MenuItemDTO menuItem : menu.getMenuItems()) {
                 childDocuments.add(menuItem.getDocumentId());
             }
         }
@@ -109,11 +113,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Returns menu.
      * If menu does not exists creates and adds menu to this document.
      */
-    public MenuDomainObject getMenu(int menuNo) {
-        MenuDomainObject menu = menus.get(menuNo);
+    public MenuDTO getMenu(int menuNo) {
+        MenuDTO menu = menus.get(menuNo);
 
         if (menu == null) {
-            setMenu(menuNo, new MenuDomainObject());
+            setMenu(menuNo, new MenuDTO());
             menu = menus.get(menuNo);
         }
 
@@ -162,13 +166,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         includesMap.put(includeIndex, includedDocumentId);
     }
 
-    private void setMenu(int no, MenuDomainObject menu) {
-        MenuDomainObject newMenu = menu.clone();
-        MenuDomainObject oldMenu = menus.get(no);
-
-        if (oldMenu != null) newMenu.setSortOrder(oldMenu.getSortOrder());
-
-        menus.put(no, newMenu);
+    private void setMenu(int no, MenuDTO menu) {
+        menus.put(no, menu);
     }
 
     /**
@@ -292,17 +291,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         loopImages.remove(loopItemRef);
     }
 
-    private ConcurrentHashMap<Integer, MenuDomainObject> cloneMenusMap() {
-        ConcurrentHashMap<Integer, MenuDomainObject> menusClone = new ConcurrentHashMap<>();
-
-        for (Map.Entry<Integer, MenuDomainObject> entry : menus.entrySet()) {
-            MenuDomainObject menu = entry.getValue();
-            MenuDomainObject menuClone = menu.clone();
-
-            menusClone.put(entry.getKey(), menuClone);
-        }
-
-        return menusClone;
+    private ConcurrentHashMap<Integer, MenuDTO> cloneMenusMap() {
+        return new ConcurrentHashMap<>(menus);
     }
 
 
@@ -363,7 +353,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return new ConcurrentHashMap<>(includesMap);
     }
 
-    private ConcurrentHashMap<Integer, Loop> cloneLoopsMap() {
+    private ConcurrentHashMap<Integer, LoopDTO> cloneLoopsMap() {
         return new ConcurrentHashMap<>(loops);
     }
 
@@ -375,24 +365,24 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         this.templateNames = templateNames;
     }
 
-    public Map<Integer, MenuDomainObject> getMenus() {
+    public Map<Integer, MenuDTO> getMenus() {
         return Collections.unmodifiableMap(menus);
     }
 
-    public void setMenus(Map<Integer, MenuDomainObject> menus) {
+    public void setMenus(Map<Integer, MenuDTO> menus) {
         this.menus = new ConcurrentHashMap<>(menus);
     }
 
-    public Map<Integer, Loop> getLoops() {
+    public Map<Integer, LoopDTO> getLoops() {
         return Collections.unmodifiableMap(loops);
     }
 
-    public void setLoops(Map<Integer, Loop> loops) {
+    public void setLoops(Map<Integer, LoopDTO> loops) {
         this.loops = new ConcurrentHashMap<>(loops);
         updateLoopsContent();
     }
 
-    public Loop getLoop(int loopIndex) {
+    public LoopDTO getLoop(int loopIndex) {
         return loops.get(loopIndex);
     }
 
@@ -400,8 +390,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         loops.forEach(this::updateLoopContent);
     }
 
-    private void updateLoopContent(Integer loopNo, Loop loop) {
-        Set<Integer> entriesNo = loop.getEntries().keySet();
+    private void updateLoopContent(Integer loopNo, LoopDTO loop) {
+        Set<Integer> entriesNo = loop.getEntries().stream().map(LoopEntryDTO::getIndex).collect(Collectors.toSet());
         loopTexts.keySet().stream()
                 .filter(loopItemRef -> (loopItemRef.getLoopNo() == loopNo) && (!entriesNo.contains(loopItemRef.getEntryNo())))
                 .forEach(loopItemRef -> loopTexts.remove(loopItemRef));
