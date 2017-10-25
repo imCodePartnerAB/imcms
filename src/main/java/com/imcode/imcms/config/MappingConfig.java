@@ -107,6 +107,18 @@ public class MappingConfig {
     }
 
     @Bean
+    public Function<Menu, MenuDTO> menuToMenuDTO(Function<MenuItem, MenuItemDTO> menuItemToMenuItemDTO) {
+        return menu -> {
+            final MenuDTO menuDTO = new MenuDTO();
+            menuDTO.setDocId(menu.getVersion().getDocId());
+            menuDTO.setMenuId(menu.getNo());
+            menuDTO.setMenuItems(menu.getMenuItems().stream().map(menuItemToMenuItemDTO).collect(Collectors.toList()));
+
+            return menuDTO;
+        };
+    }
+
+    @Bean
     public Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem() {
         return new Function<MenuItemDTO, MenuItem>() {
             @Override
