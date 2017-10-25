@@ -3,27 +3,23 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
+import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.UserDomainObject;
+import org.springframework.stereotype.Component;
 
 /**
  * Updates existing document content.
  *
  * @see com.imcode.imcms.mapping.DocumentSaver
  */
+@Component
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
-    /**
-     * An user performing save operation.
-     */
-    private UserDomainObject savingUser;
-
-    public DocumentSavingVisitor(ImcmsServices services, UserDomainObject user) {
+    public DocumentSavingVisitor(ImcmsServices services) {
         super(services);
-        savingUser = user;
     }
 
     // todo: check and (if needs) prepare like #visitUrlDocument()
@@ -49,7 +45,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction
     public void visitTextDocument(TextDocumentDomainObject document) {
-        textDocumentContentSaver.updateContent(document, savingUser);
+        textDocumentContentSaver.updateContent(document, Imcms.getUser());
     }
 
 }

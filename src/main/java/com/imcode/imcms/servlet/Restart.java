@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -21,7 +20,7 @@ public class Restart extends HttpServlet {
             return;
         }
 
-        Imcms.restartCms();
+//        Imcms.restartCms();
         res.getOutputStream().println("Restart complete.");
     }
 }

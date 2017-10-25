@@ -14,7 +14,7 @@ import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
@@ -91,12 +91,11 @@ public class ImcmsSetupFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        ServletContext servletContext = filterConfig.getServletContext();
-        Imcms.setRootPath(servletContext.getRealPath("/"));
-        Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+
         try {
             logger.info("Starting CMS.");
-            Imcms.start();
+            Imcms.invokeStart();
             filterDelegate = this::doFilterNormally;
         } catch (Exception e) {
             logger.error("Error starting CMS.", e);
@@ -106,12 +105,7 @@ public class ImcmsSetupFilter implements Filter {
 
     @Override
     public void destroy() {
-        try {
-            logger.info("Stopping CMS.");
-            Imcms.stop();
-        } catch (Exception e) {
-            logger.error("Error stopping CMS.", e);
-        }
+        logger.info("Stopping CMS.");
     }
 
     /**

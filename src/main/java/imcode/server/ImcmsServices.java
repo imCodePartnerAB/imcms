@@ -93,4 +93,5 @@ public interface ImcmsServices {
 
     <T> T getManagedBean(Class<T> requiredType);
 
+    void init();
 }

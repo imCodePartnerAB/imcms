@@ -1,32 +1,20 @@
 package imcode.server;
 
-import com.google.common.collect.Maps;
-import com.imcode.db.DataSourceDatabase;
-import com.imcode.db.Database;
-import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.DocumentLanguageException;
-import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.db.DefaultProcedureExecutor;
-import com.imcode.imcms.domain.service.api.ImageService;
-import com.imcode.imcms.mapping.DocumentLanguageMapper;
-import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
-import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
-import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.user.UserDomainObject;
-import imcode.util.CachingFileLoader;
-import imcode.util.ImcmsImageUtils;
 import imcode.util.PropertyManager;
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import java.io.File;
-import java.util.*;
+import java.util.Properties;
 
-/**
- * Singleton registry.
- */
+@Component
 public class Imcms {
 
     public static final String ASCII_ENCODING = "US-ASCII";
@@ -43,6 +31,7 @@ public class Imcms {
 
     private static final Logger logger = Logger.getLogger(Imcms.class);
     private static final String DOCUMENT_VERSIONING_PROPERTY = "document.versioning";
+    private static Properties properties;
     /**
      * imCMS deployment (real context) path.
      */
@@ -51,10 +40,6 @@ public class Imcms {
      * Core services.
      */
     private static volatile ImcmsServices services;
-    /**
-     * Spring-framework application context.
-     */
-    private static volatile ApplicationContext applicationContext;
     /**
      * Users associated with servlet requests.
      *
@@ -67,7 +52,24 @@ public class Imcms {
      */
     private static boolean isVersioningAllowed;
 
-    private Imcms() {
+    private static DataSource dataSource;
+
+    private static boolean startInvoked;
+
+    @Autowired
+    public Imcms(ServletContext servletContext,
+                 @Qualifier("dataSourceWithAutoCommit") DataSource dataSource,
+                 ImcmsServices imcmsServices,
+                 Properties imcmsProperties) {
+
+        Imcms.dataSource = dataSource;
+        Imcms.services = imcmsServices;
+        Imcms.properties = imcmsProperties;
+
+        final String versioningProperty = imcmsProperties.getProperty(DOCUMENT_VERSIONING_PROPERTY, "true");
+        Imcms.isVersioningAllowed = Boolean.parseBoolean(versioningProperty);
+
+        setRootPath(servletContext.getRealPath("/"));
     }
 
     /**
@@ -88,19 +90,15 @@ public class Imcms {
                 throw new IllegalStateException("Imcms path is not set.");
             }
 
-            if (applicationContext == null) {
-                throw new IllegalStateException("Spring application context is not set.");
-            }
-
             users = new InheritableThreadLocal<>();
-            services = createServices();
+            services.init();
 
             if (services.getDocumentMapper().getDocumentIndex().getService().rebuildIfEmpty().isDefined()) {
                 logger.info("Document index is empty, initiated index rebuild.");
             }
-            // this method should not be here!!!!!!11!
-            //If generated images was cleared before start up
-            regenerateImages();
+
+            startInvoked = false;
+
         } catch (Exception e) {
             String msg = "Application could not be started. Please see the log file in WEB-INF/logs/ for details.";
             logger.error(msg, e);
@@ -108,66 +106,39 @@ public class Imcms {
         }
     }
 
-    public static void setRootPath(String path) {
-        PropertyManager.setRoot(path);
-        setPath(new File(path));
+    public static DataSource getApiDataSource() {
+        return dataSource;
     }
 
     public static File getPath() {
         return path;
     }
 
-    public static void setPath(File path) {
-        Imcms.path = path;
+    public static void invokeStart() {
+        if (startInvoked) {
+            start();
+
+        } else {
+            startInvoked = true;
+        }
     }
 
-    private static ImcmsServices createServices() throws Exception {
-        Properties serverProperties = getServerProperties();
-
-        final String versioningProperty = serverProperties.getProperty(DOCUMENT_VERSIONING_PROPERTY, "true");
-        isVersioningAllowed = Boolean.parseBoolean(versioningProperty);
-
-        logger.debug("Creating main DataSource.");
-        Database database = new DataSourceDatabase(getApiDataSource());
-        LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
-
-        final CachingFileLoader fileLoader = new CachingFileLoader();
-        DefaultImcmsServices services = new DefaultImcmsServices(
-                database,
-                serverProperties,
-                localizedMessageProvider,
-                fileLoader,
-                new DefaultProcedureExecutor(database, fileLoader),
-                applicationContext,
-                createDocumentLanguages());
-
-        services.getImcmsAuthenticatorAndUserAndRoleMapper().encryptUnencryptedUsersLoginPasswords();
-        return services;
-    }
-
-    public static DataSource getApiDataSource() {
-        return applicationContext.getBean("dataSourceWithAutoCommit", DataSource.class);
+    @PostConstruct
+    private void init() {
+        invokeStart();
     }
 
     public static Properties getServerProperties() {
-        Properties properties = PropertyManager.getServerProperties();
-        properties.setProperty("SolrHome", getSolrHome());
         return properties;
     }
 
-    public static synchronized void restartCms() {
-        stop();
-        start();
+    private void setPath(File path) {
+        Imcms.path = path;
     }
 
-    public static synchronized void stop() {
-        PropertyManager.flush();
-
-        if (services != null) {
-            services.getDocumentMapper().getDocumentIndex().getService().shutdown();
-        }
-
-        services = null;
+    public synchronized void restartCms() {
+        stop();
+        start();
     }
 
     /**
@@ -193,90 +164,10 @@ public class Imcms {
         users.set(user);
     }
 
-    /**
-     * Creates and initializes languages.
-     * <p>
-     * Reads languages from the database.
-     * Adds a new language if there are no languages in the database.
-     * Sets default language if it is not already set.
-     * todo: use language property defined in the conf file as default.
-     */
-    private static DocumentLanguages createDocumentLanguages() {
-        logger.info("Creating document languages support.");
-
-        DocumentLanguageMapper languageMapper = applicationContext.getBean(DocumentLanguageMapper.class);
-        List<DocumentLanguage> languages = languageMapper.getAll();
-
-        if (languages.size() == 0) {
-            logger.warn("No document languages defined. Adding new (default) language.");
-            DocumentLanguage language = DocumentLanguage.builder()
-                    .code("eng")
-                    .name("English")
-                    .nativeName("English")
-                    .build();
-
-            languageMapper.save(language);
-            languageMapper.setDefault(language);
-        } else {
-            DocumentLanguage defaultLanguage = languageMapper.getDefault();
-            if (defaultLanguage == null) {
-                defaultLanguage = Optional.ofNullable(languageMapper.findByCode("eng")).orElseGet(() -> languages.get(0));
-
-                logger.warn("Default document language is not set. Setting it to " + defaultLanguage);
-
-                languageMapper.setDefault(defaultLanguage);
-            }
-        }
-
-        Map<String, DocumentLanguage> languagesByCodes = Maps.newHashMap();
-        Map<String, DocumentLanguage> languagesByHosts = Maps.newHashMap();
-
-        for (DocumentLanguage language : languages) {
-            languagesByCodes.put(language.getCode(), language);
-        }
-
-        // Read "virtual" hosts mapped to languages.
-        String prefix = "i18n.host.";
-        int prefixLength = prefix.length();
-        Properties properties = Imcms.getServerProperties();
-
-        for (Map.Entry propertyEntry : properties.entrySet()) {
-            String propName = (String) propertyEntry.getKey();
-
-            if (!propName.startsWith(prefix)) {
-                continue;
-            }
-
-            String languageCode = propName.substring(prefixLength);
-            String propertyVal = (String) propertyEntry.getValue();
-
-            logger.info("I18n configuration: language code [" + languageCode + "] mapped to host(s) [" + propertyVal + "].");
-
-            DocumentLanguage language = languagesByCodes.get(languageCode);
-
-            if (language == null) {
-                String msg = "I18n configuration error. Language with code [" + languageCode + "] is not defined in the database.";
-                logger.fatal(msg);
-                throw new DocumentLanguageException(msg);
-            }
-
-            String hosts[] = propertyVal.split("[ \\t]*,[ \\t]*");
-
-            for (String host : hosts) {
-                languagesByHosts.put(host.trim(), language);
-            }
-        }
-        return new DocumentLanguages(languages, languagesByHosts, languageMapper.getDefault());
-    }
-
     private static String getSolrHome() {
         if (path == null) throw new IllegalStateException("Application path is not set.");
 
         return new File(path.getAbsolutePath(), DEFAULT_SQLR_HOME).getAbsolutePath();
-    }
-
-    public static void setApplicationContext(ApplicationContext applicationContext) {
-        Imcms.applicationContext = applicationContext;
     }
 
     /**
@@ -286,13 +177,20 @@ public class Imcms {
         return isVersioningAllowed;
     }
 
-    /**
-     * Regenerating images according to DB(Generates last version of generated image)
-     */
-    private static void regenerateImages() {
-        // this method should not be here!!!
-        Collection<Image> allImages = applicationContext.getBean(ImageService.class).getAllGeneratedImages();
-        allImages.forEach((img) -> ImcmsImageUtils.generateImage(ImcmsImageUtils.toDomainObject(img), false));
+    @PreDestroy
+    public synchronized void stop() {
+        PropertyManager.flush();
+
+        if (services != null) {
+            services.getDocumentMapper().getDocumentIndex().getService().shutdown();
+        }
+
+        services = null;
+    }
+
+    private void setRootPath(String path) {
+        PropertyManager.setRoot(path);
+        setPath(new File(path));
     }
 
     public static class StartupException extends RuntimeException {

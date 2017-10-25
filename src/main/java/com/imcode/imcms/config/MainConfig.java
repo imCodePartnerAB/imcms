@@ -19,7 +19,6 @@ import java.util.Properties;
 })
 @ComponentScan({
         "com.imcode.imcms.domain",
-        "com.imcode.imcms.mapping",
         "imcode.util"
 })
 public class MainConfig {

@@ -1,10 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionInfo;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
@@ -14,7 +11,6 @@ import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
@@ -27,6 +23,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.oro.text.perl.Perl5Util;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -48,12 +45,12 @@ public class DocumentMapper implements DocumentGetter {
 
     private Database database;
     private DocumentIndex documentIndex;
-    private ImcmsServices imcmsServices;
     /**
      * Document loader caching proxy. Intercepts calls to DocumentLoader.
      */
     private DocumentLoaderCachingProxy documentLoaderCachingProxy;
     private NativeQueries nativeQueries;
+    @Autowired
     private DocumentLoader documentLoader;
     private DocumentSaver documentSaver;
     private CategoryMapper categoryMapper;
@@ -61,25 +58,14 @@ public class DocumentMapper implements DocumentGetter {
     private DocumentVersionMapper documentVersionMapper;
     private MenuRepository menuRepository;
     private PropertyRepository propertyRepository;
-
-    public DocumentMapper() {
-    }
-
-    /**
-     * @deprecated init should be used instead
-     */
-    @Deprecated
-    public DocumentMapper(ImcmsServices services, Database database) {
-        throw new UnsupportedOperationException("Use com.imcode.imcms.mapping.DocumentMapper#init() method instead");
-    }
+    private DocumentLanguages documentLanguages;
 
     @Inject
-    public DocumentMapper(NativeQueries nativeQueries, DocumentLoader documentLoader, DocumentSaver documentSaver,
+    public DocumentMapper(NativeQueries nativeQueries, DocumentSaver documentSaver,
                           CategoryMapper categoryMapper, DocumentContentMapper documentContentMapper,
                           DocumentVersionMapper documentVersionMapper, MenuRepository menuRepository,
                           PropertyRepository propertyRepository) {
         this.nativeQueries = nativeQueries;
-        this.documentLoader = documentLoader;
         this.documentSaver = documentSaver;
         this.categoryMapper = categoryMapper;
         this.documentContentMapper = documentContentMapper;
@@ -102,15 +88,13 @@ public class DocumentMapper implements DocumentGetter {
         deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
     }
 
-    public void init(ImcmsServices services, Database database, DocumentIndex documentIndex) {
-        this.imcmsServices = services;
+    public void init(Database database, Config config, DocumentLanguages languages) {
         this.database = database;
-        this.documentIndex = documentIndex;
+        this.documentLanguages = languages;
 
-        Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
 
-        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, services.getDocumentLanguages(), documentCacheMaxSize);
+        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, languages, documentCacheMaxSize);
 
         documentSaver.setDocumentMapper(this);
     }
@@ -242,7 +226,7 @@ public class DocumentMapper implements DocumentGetter {
         DocumentLanguage language = docClone.getLanguage();
 
         if (language == null) {
-            language = imcmsServices.getDocumentLanguages().getDefault();
+            language = documentLanguages.getDefault();
             docClone.setLanguage(language);
         }
 
@@ -337,7 +321,7 @@ public class DocumentMapper implements DocumentGetter {
 
         List<DocumentDomainObject> docs = new LinkedList<>();
 
-        for (DocumentLanguage language : imcmsServices.getDocumentLanguages().getAll()) {
+        for (DocumentLanguage language : documentLanguages.getAll()) {
             DocumentDomainObject doc = getWorkingDocument(docId, language);
             docs.add(doc);
         }
@@ -386,7 +370,7 @@ public class DocumentMapper implements DocumentGetter {
         this.documentIndex = documentIndex;
     }
 
-    public List<Integer[]> getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
+    public List<Object[]> getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
         return menuRepository.getParentDocumentAndMenuIdsForDocument(document.getId(), document.getVersionNo());
     }
 
@@ -567,7 +551,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId) {
-        return getDefaultDocument(docId, imcmsServices.getDocumentLanguages().getDefault());
+        return getDefaultDocument(docId, documentLanguages.getDefault());
     }
 
     /**
@@ -576,7 +560,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getWorkingDocument(int docId) {
-        return getWorkingDocument(docId, imcmsServices.getDocumentLanguages().getDefault());
+        return getWorkingDocument(docId, documentLanguages.getDefault());
     }
 
     /**
@@ -664,8 +648,8 @@ public class DocumentMapper implements DocumentGetter {
         return database;
     }
 
-    public ImcmsServices getImcmsServices() {
-        return imcmsServices;
+    public DocumentLanguages getDocumentLanguages() {
+        return documentLanguages;
     }
 
     /**
@@ -703,7 +687,7 @@ public class DocumentMapper implements DocumentGetter {
         UserDomainObject user = Imcms.getUser();
 
         DocumentLanguage language = user == null
-                ? imcmsServices.getDocumentLanguages().getDefault()
+                ? documentLanguages.getDefault()
                 : user.getDocGetterCallback().getLanguage();
 
         List<DocumentDomainObject> docs = new LinkedList<>();

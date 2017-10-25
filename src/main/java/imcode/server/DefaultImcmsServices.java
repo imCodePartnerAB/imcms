@@ -22,10 +22,6 @@ import imcode.util.Parser;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import imcode.util.net.SMTP;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +31,6 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.context.ApplicationContext;
 
-import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -60,6 +55,7 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     private final Database database;
     private final LocalizedMessageProvider localizedMessageProvider;
+    private final Properties properties;
     private Config config;
     private SystemData sysData;
     private CachingFileLoader fileLoader;
@@ -78,61 +74,30 @@ public class DefaultImcmsServices implements ImcmsServices {
     /**
      * Constructs an DefaultImcmsServices object.
      */
-    DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
-                         CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
-                         ApplicationContext applicationContext,
-                         DocumentLanguages documentLanguages) {
+    public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
+                                CachingFileLoader fileLoader, ApplicationContext applicationContext, Config config,
+                                DocumentLanguages documentLanguages) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
-        this.procedureExecutor = procedureExecutor;
         this.fileLoader = fileLoader;
         this.applicationContext = applicationContext;
         this.documentLanguages = documentLanguages;
+        this.config = config;
+        this.properties = props;
 
-        initConfig(props);
+        this.procedureExecutor = new DefaultProcedureExecutor(database, fileLoader);
+        this.languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
+        this.kerberosLoginService = new KerberosLoginService(config);
+    }
+
+    public void init() {
         initSso();
         initKeyStore();
         initSysData();
         initSessionCounter();
-        languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
-        initAuthenticatorsAndUserAndRoleMappers(props);
+        initAuthenticatorsAndUserAndRoleMappers(properties);
         initDocumentMapper();
         initTemplateMapper();
-
-        kerberosLoginService = new KerberosLoginService(config);
-    }
-
-    private static Config createConfigFromProperties(Properties props) {
-        Config config = new Config();
-        ConvertUtils.register(new WebappRelativeFileConverter(), File.class);
-        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(config);
-        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-            if (null == propertyDescriptor.getWriteMethod()) {
-                continue;
-            }
-            String uncapitalizedPropertyName = propertyDescriptor.getName();
-            String capitalizedPropertyName = StringUtils.capitalize(uncapitalizedPropertyName);
-            String propertyValue = props.getProperty(capitalizedPropertyName);
-            if (null != propertyValue) {
-                try {
-                    BeanUtils.setProperty(config, uncapitalizedPropertyName, propertyValue);
-                } catch (Exception e) {
-                    log.error("Failed to set property " + capitalizedPropertyName, e.getCause());
-                    continue;
-                }
-            }
-            try {
-                String setPropertyValue = BeanUtils.getProperty(config, uncapitalizedPropertyName);
-                if (null != setPropertyValue) {
-                    log.info(capitalizedPropertyName + " = " + setPropertyValue);
-                } else {
-                    log.warn(capitalizedPropertyName + " not set.");
-                }
-            } catch (Exception e) {
-                log.error(e, e);
-            }
-        }
-        return config;
     }
 
     private static Object chooseInstance(String strToCompare, String mapperName, Properties propertiesSubset) {
@@ -202,10 +167,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         sysData = getSystemDataFromDb();
     }
 
-    private void initConfig(Properties props) {
-        this.config = createConfigFromProperties(props);
-    }
-
     private void initSessionCounter() {
         int sessionCounter;
         Date sessionCounterDate;
@@ -242,7 +203,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     // todo: Search Terms Logging: Do not parse and write query term into db every time - queue and write in a separate worker
     private void initDocumentMapper() {
         documentMapper = getManagedBean(DocumentMapper.class);
-        documentMapper.init(this, getDatabase(), null);
+        documentMapper.init(database, config, documentLanguages);
 
         DocumentIndex documentIndexService = new LoggingDocumentIndex(database,
                 new PhaseQueryFixingDocumentIndex(DocumentIndexFactory.create(this)));
@@ -308,6 +269,7 @@ public class DefaultImcmsServices implements ImcmsServices {
                 new ExternalizedImcmsAuthenticatorAndUserRegistry(imcmsAuthenticatorAndUserAndRoleMapper, externalAuthenticator,
                         externalUserAndRoleRegistry, getLanguageMapper().getDefaultLanguage());
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
+        imcmsAuthenticatorAndUserAndRoleMapper.encryptUnencryptedUsersLoginPasswords();
     }
 
     /**
@@ -560,7 +522,8 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     private synchronized VelocityEngine createVelocityEngine(String languageIso639_2) throws Exception {
         VelocityEngine velocity = new VelocityEngine();
-        velocity.setProperty(VelocityEngine.FILE_RESOURCE_LOADER_PATH, config.getTemplatePath().getCanonicalPath());
+        final String templatePath = new File(Imcms.getPath(), config.getTemplatePath().getPath()).getCanonicalPath();
+        velocity.setProperty(VelocityEngine.FILE_RESOURCE_LOADER_PATH, templatePath);
         velocity.setProperty(VelocityEngine.VM_LIBRARY, languageIso639_2 + "/gui.vm");
         velocity.setProperty(VelocityEngine.VM_LIBRARY_AUTORELOAD, "true");
         velocity.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
@@ -747,10 +710,5 @@ public class DefaultImcmsServices implements ImcmsServices {
         return applicationContext.getBean(requiredType);
     }
 
-    private static class WebappRelativeFileConverter implements Converter {
-        @SuppressWarnings("unchecked")
-        public File convert(Class type, Object value) {
-            return FileUtility.getFileFromWebappRelativePath((String) value);
-        }
-    }
+
 }

@@ -44,14 +44,19 @@ public class DocumentSaver {
     private final DocumentContentMapper documentContentMapper;
     private final DocumentVersionMapper versionMapper;
     private final PropertyRepository propertyRepository;
-    private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
+    private final DocumentCreatingVisitor documentCreatingVisitor;
+    private final DocumentSavingVisitor documentSavingVisitor;
+    private final DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
 
     @Inject
     public DocumentSaver(DocRepository docRepository, VersionRepository versionRepository,
                          VersionService versionService, LanguageRepository languageRepository,
                          CommonContentRepository commonContentRepository, MetaRepository metaRepository,
                          TextDocumentContentSaver textDocumentContentSaver, DocumentContentMapper documentContentMapper,
-                         DocumentVersionMapper versionMapper, PropertyRepository propertyRepository) {
+                         DocumentVersionMapper versionMapper, PropertyRepository propertyRepository,
+                         DocumentCreatingVisitor documentCreatingVisitor,
+                         DocumentSavingVisitor documentSavingVisitor) {
+
         this.docRepository = docRepository;
         this.versionRepository = versionRepository;
         this.versionService = versionService;
@@ -62,6 +67,8 @@ public class DocumentSaver {
         this.documentContentMapper = documentContentMapper;
         this.versionMapper = versionMapper;
         this.propertyRepository = propertyRepository;
+        this.documentCreatingVisitor = documentCreatingVisitor;
+        this.documentSavingVisitor = documentSavingVisitor;
     }
 
     /**
@@ -129,13 +136,6 @@ public class DocumentSaver {
         }
     }
 
-    /**
-     * @param docs
-     * @param user
-     * @return
-     * @throws NoPermissionToAddDocumentToMenuException
-     * @throws DocumentSaveException
-     */
     public DocumentVersion makeDocumentVersion(List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -164,7 +164,6 @@ public class DocumentSaver {
             documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, doc, user, oldDoc);
         }
 
-        DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(documentMapper.getImcmsServices(), user);
         metaRepository.saveAndFlush(jpaMeta);
 
         commonContents.forEach((language, dcc) -> {
@@ -189,7 +188,7 @@ public class DocumentSaver {
             }
         });
 
-        doc.accept(savingVisitor);
+        doc.accept(documentSavingVisitor);
         updateModifiedDtIfNotSetExplicitly(doc);
         docRepository.touch(doc.getVersionRef(), user, doc.getModifiedDatetime());
     }
@@ -236,7 +235,7 @@ public class DocumentSaver {
 
         // Currently only text docs contain non-common i18n content
         if (!(firstDoc instanceof TextDocumentDomainObject)) {
-            firstDoc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+            firstDoc.accept(documentCreatingVisitor);
         } else {
             textDocumentContentSaver.createCommonContent((TextDocumentDomainObject) firstDoc);
 
@@ -303,7 +302,7 @@ public class DocumentSaver {
         doc.setVersionNo(version.getNo());
         doc.setId(newDocId);
 
-        doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+        doc.accept(documentCreatingVisitor);
 
         if (doc instanceof TextDocumentDomainObject
                 && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields))

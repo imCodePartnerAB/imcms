@@ -37,6 +37,10 @@ public class MockImcmsServices implements ImcmsServices {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public void init() {
+    }
+
     public UserDomainObject verifyUser(String login, String password) {
         return null;
     }

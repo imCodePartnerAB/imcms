@@ -20,9 +20,13 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +45,17 @@ public class InternalError extends HttpServlet {
     private final static Logger LOGGER = Logger.getLogger(InternalError.class);
     private final static String ERROR_500_VIEW_URL = "/imcms/500.jsp";
     private final static String DEFAULT_RESPONSE = "N/A";
+    private static final long serialVersionUID = 4218112557790098610L;
+
+    private Properties properties;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        final ServletContext servletContext = config.getServletContext();
+        final ApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+        this.properties = ctx.getBean("imcmsProperties", Properties.class);
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -62,19 +77,16 @@ public class InternalError extends HttpServlet {
     }
 
     private String sendError(Throwable exception, HttpServletRequest request, String userId) throws Exception {
-        Properties serverProperties = Imcms.getServerProperties();
-
         Map<String, String> exceptionInfo = parse(exception);
-
         Map<String, String> requestInfo = parse(request);
 
         setInfo(request, exceptionInfo, requestInfo);
 
-        String errorLoggerUrl = ofNullable(serverProperties.getProperty("ErrorLoggerUrl"))
+        String errorLoggerUrl = ofNullable(properties.getProperty("ErrorLoggerUrl"))
                 .filter(url -> !url.isEmpty())
                 .orElse(Imcms.ERROR_LOGGER_URL);
 
-        String jdbcUrl = serverProperties.getProperty("JdbcUrl");
+        String jdbcUrl = properties.getProperty("JdbcUrl");
         String dbName = jdbcUrl.substring(jdbcUrl.lastIndexOf("/"),
                 jdbcUrl.contains("?") ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
 

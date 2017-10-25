@@ -1,25 +1,23 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
+import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.UserDomainObject;
+import org.springframework.stereotype.Component;
 
 /**
  * Creates new document content.
  */
+@Component
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
-    private UserDomainObject currentUser;
-
-    public DocumentCreatingVisitor(ImcmsServices services, UserDomainObject currentUser) {
+    public DocumentCreatingVisitor(ImcmsServices services) {
         super(services);
-        this.currentUser = currentUser;
     }
 
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
@@ -29,9 +27,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         reference.setVersion(version);
         reference.setHtml(document.getHtml());
 
-        DocRepository repository = services.getManagedBean(DocRepository.class);
-
-        repository.saveHtmlDocContent(reference);
+        docRepository.saveHtmlDocContent(reference);
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject document) {
@@ -45,12 +41,10 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         reference.setUrlFrameName("");
         reference.setUrl(document.getUrl());
 
-        DocRepository repository = services.getManagedBean(DocRepository.class);
-
-        repository.saveUrlDocContent(reference);
+        docRepository.saveUrlDocContent(reference);
     }
 
     public void visitTextDocument(TextDocumentDomainObject document) {
-        textDocumentContentSaver.createContent(document, currentUser);
+        textDocumentContentSaver.createContent(document, Imcms.getUser());
     }
 }

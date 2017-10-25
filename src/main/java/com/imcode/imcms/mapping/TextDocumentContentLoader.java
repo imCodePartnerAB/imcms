@@ -1,7 +1,10 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.dto.MenuDTO;
+import com.imcode.imcms.domain.service.api.LoopService;
+import com.imcode.imcms.domain.service.api.MenuService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.Version;
@@ -12,11 +15,10 @@ import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
-import com.imcode.imcms.persistence.repository.LoopRepository;
-import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.util.ImcmsImageUtils;
-import org.apache.commons.collections4.map.ListOrderedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,32 +36,35 @@ public class TextDocumentContentLoader {
     private final TextRepository textRepository;
     private final TextHistoryRepository textHistoryRepository;
     private final ImageRepository imageRepository;
-    private final MenuRepository menuRepository;
     private final TemplateNamesRepository templateNamesRepository;
-    private final LoopRepository loopRepository;
     private final LanguageRepository languageRepository;
     private final IncludeRepository includeRepository;
-    private final DocumentGetter menuItemDocumentGetter;
     private final DocumentLanguageMapper languageMapper;
+    private final MenuService menuService;
+    private final LoopService loopService;
 
     @Inject
-    public TextDocumentContentLoader(VersionRepository versionRepository, TextRepository textRepository,
-                                     TextHistoryRepository textHistoryRepository, ImageRepository imageRepository,
-                                     MenuRepository menuRepository, TemplateNamesRepository templateNamesRepository,
-                                     LoopRepository loopRepository, LanguageRepository languageRepository,
-                                     IncludeRepository includeRepository, DocumentGetter menuItemDocumentGetter,
-                                     DocumentLanguageMapper languageMapper) {
+    public TextDocumentContentLoader(VersionRepository versionRepository,
+                                     TextRepository textRepository,
+                                     TextHistoryRepository textHistoryRepository,
+                                     ImageRepository imageRepository,
+                                     TemplateNamesRepository templateNamesRepository,
+                                     MenuService menuService,
+                                     LanguageRepository languageRepository,
+                                     IncludeRepository includeRepository,
+                                     DocumentLanguageMapper languageMapper,
+                                     LoopService loopService) {
+
         this.versionRepository = versionRepository;
         this.textRepository = textRepository;
         this.textHistoryRepository = textHistoryRepository;
         this.imageRepository = imageRepository;
-        this.menuRepository = menuRepository;
         this.templateNamesRepository = templateNamesRepository;
-        this.loopRepository = loopRepository;
+        this.menuService = menuService;
         this.languageRepository = languageRepository;
         this.includeRepository = includeRepository;
-        this.menuItemDocumentGetter = menuItemDocumentGetter;
         this.languageMapper = languageMapper;
+        this.loopService = loopService;
     }
 
 
@@ -234,59 +239,27 @@ public class TextDocumentContentLoader {
         );
     }
 
-
-    public Map<Integer, Loop> getLoops(VersionRef versionRef) {
+    public Map<Integer, LoopDTO> getLoops(VersionRef versionRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
-        return loopRepository.findByVersion(version).stream().collect(toMap(loop -> loop.getIndex(), this::toApiObject));
+        return loopService.findAllByVersion(version).stream().collect(toMap(LoopDTO::getIndex, loop -> loop));
     }
 
 
-    public Map<Integer, MenuDomainObject> getMenus(VersionRef versionRef) {
+    public Map<Integer, MenuDTO> getMenus(VersionRef versionRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
-        return menuRepository.findByVersion(version).stream().collect(toMap(Menu::getNo, this::toDomainObject));
+        return menuService.findAllByVersion(version).stream().collect(toMap(MenuDTO::getMenuId, menu -> menu));
     }
 
     public Map<Integer, Integer> getIncludes(int docId) {
         return includeRepository.findByDocId(docId)
-                .stream().collect(toMap(Include::getNo, Include::getIncludedDocumentId));
+                .stream()
+                .collect(toMap(Include::getNo, Include::getIncludedDocumentId));
     }
 
     private TextDomainObject toDomainObject(Text jpaText) {
-        return jpaText == null
-                ? null
-                : new TextDomainObject(jpaText.getText(), jpaText.getType().ordinal());
+        return (jpaText == null) ? null : new TextDomainObject(jpaText.getText(), jpaText.getType().ordinal());
     }
 
-    private MenuDomainObject toDomainObject(Menu menu) {
-        MenuDomainObject menuDO = new MenuDomainObject();
-
-        menuDO.setSortOrder(menu.getSortOrder());
-
-        menu.getItems().forEach((referencedDocumentId, menuItem) -> {
-            MenuItemDomainObject menuItemDO = new MenuItemDomainObject();
-            GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, menuItemDocumentGetter);
-
-            menuItemDO.setDocumentReference(gtr);
-            menuItemDO.setSortKey(menuItem.getSortKey());
-            menuItemDO.setTreeSortIndex(menuItem.getTreeSortIndex());
-            menuItemDO.setId(menuItem.getId());
-
-            menuDO.addMenuItemUnchecked(menuItemDO);
-        });
-
-        return menuDO;
-    }
-
-    private Loop toApiObject(com.imcode.imcms.persistence.entity.Loop jpaLoop) {
-        if (jpaLoop == null) {
-            return null;
-
-        } else {
-            Map<Integer, Boolean> entries = new ListOrderedMap<>();
-            jpaLoop.getEntries().forEach(entry -> entries.put(entry.getIndex(), entry.isEnabled()));
-            return new Loop(entries);
-        }
-    }
 }

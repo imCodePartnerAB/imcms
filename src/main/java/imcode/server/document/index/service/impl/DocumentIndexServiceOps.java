@@ -44,7 +44,7 @@ public class DocumentIndexServiceOps {
     }
 
     public Collection<SolrInputDocument> mkSolrInputDocs(int docId) {
-        return mkSolrInputDocs(docId, documentMapper.getImcmsServices().getDocumentLanguages().getAll());
+        return mkSolrInputDocs(docId, documentMapper.getDocumentLanguages().getAll());
     }
 
 
@@ -122,7 +122,7 @@ public class DocumentIndexServiceOps {
         logger.debug("Rebuilding index.");
 
         List<Integer> ids = documentMapper.getAllDocumentIds();
-        List<DocumentLanguage> languages = documentMapper.getImcmsServices().getDocumentLanguages().getAll();
+        List<DocumentLanguage> languages = documentMapper.getDocumentLanguages().getAll();
 
         int docsCount = ids.size();
         int docNo = 0;
