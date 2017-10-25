@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.domain.service.api.TemplateService;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.RoleId;
@@ -16,7 +17,6 @@ public class ContentManagementSystem implements Cloneable {
     volatile UserDomainObject currentUser;
     private UserService userService;
     private DocumentService documentService;
-    private TemplateService templateService;
 
     protected ContentManagementSystem(ImcmsServices service, UserDomainObject accessor) {
         this.service = service;
@@ -75,7 +75,6 @@ public class ContentManagementSystem implements Cloneable {
     private void init() {
         userService = new UserService(this);
         documentService = new DocumentService(this);
-        templateService = new TemplateService(service.getTemplateMapper());
     }
 
     protected ContentManagementSystem clone() throws CloneNotSupportedException {
@@ -101,7 +100,7 @@ public class ContentManagementSystem implements Cloneable {
     }
 
     public TemplateService getTemplateService() {
-        return templateService;
+        return service.getTemplateService();
     }
 
     public MailService getMailService() {

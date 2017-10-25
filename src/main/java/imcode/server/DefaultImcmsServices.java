@@ -8,6 +8,7 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.domain.service.api.TemplateService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.LoginPasswordManager;
@@ -74,6 +75,7 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     private DatabaseService databaseService;
     private MailService mailService;
+    private TemplateService templateService;
 
     /**
      * Constructs an DefaultImcmsServices object.
@@ -81,7 +83,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, ApplicationContext applicationContext, Config config,
                                 DocumentLanguages documentLanguages, DatabaseService databaseService,
-                                MailService mailService) {
+                                MailService mailService, TemplateService templateService) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.fileLoader = fileLoader;
@@ -90,8 +92,9 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.config = config;
         this.properties = props;
         this.databaseService = databaseService;
-
         this.mailService = mailService;
+        this.templateService = templateService;
+
         this.procedureExecutor = new DefaultProcedureExecutor(database, fileLoader);
         this.languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
         this.kerberosLoginService = new KerberosLoginService(config);
@@ -345,6 +348,11 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Override
     public MailService getMailService() {
         return mailService;
+    }
+
+    @Override
+    public TemplateService getTemplateService() {
+        return templateService;
     }
 
     private Object chooseInstance(String strToCompare, String mapperName, Properties propertiesSubset) {

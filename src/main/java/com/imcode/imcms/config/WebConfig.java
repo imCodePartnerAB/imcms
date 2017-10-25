@@ -4,6 +4,7 @@ import com.imcode.db.Database;
 import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
+import com.imcode.imcms.domain.service.api.TemplateService;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
@@ -128,7 +129,8 @@ public class WebConfig {
     public ImcmsServices createServices(Properties imcmsProperties, Database database, DocumentLanguages languages,
                                         LocalizedMessageProvider localizedMessageProvider, Config config,
                                         ApplicationContext applicationContext, CachingFileLoader fileLoader,
-                                        DatabaseService databaseService, MailService mailService) {
+                                        DatabaseService databaseService, MailService mailService,
+                                        TemplateService templateService) {
 
         return new DefaultImcmsServices(
                 database,
@@ -139,7 +141,8 @@ public class WebConfig {
                 config,
                 languages,
                 databaseService,
-                mailService
+                mailService,
+                templateService
         );
     }
 

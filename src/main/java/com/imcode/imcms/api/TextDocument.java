@@ -2,6 +2,7 @@ package com.imcode.imcms.api;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
+import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.mapping.DocumentGetter;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -112,9 +113,11 @@ public class TextDocument extends Document {
         }
     }
 
-    public Template getTemplate() {
+    public TemplateDTO getTemplate() {
         String templateName = getInternalTextDocument().getTemplateName();
-        return contentManagementSystem.getTemplateService().getTemplate(templateName);
+        return contentManagementSystem.getTemplateService()
+                .getTemplate(templateName)
+                .orElse(null);
     }
 
     public void setTemplate(Template template) {
