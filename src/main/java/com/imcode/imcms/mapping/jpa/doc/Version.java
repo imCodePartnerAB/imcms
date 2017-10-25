@@ -1,21 +1,26 @@
 package com.imcode.imcms.mapping.jpa.doc;
 
-import com.google.common.base.Objects;
 import com.imcode.imcms.mapping.jpa.User;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+@Data
 @Entity
 @Table(name = "imcms_doc_versions")
+@NoArgsConstructor
 public class Version implements Cloneable, Serializable {
 
+    private static final long serialVersionUID = 9090936463043750021L;
     /**
      * @deprecated need to make composite primary key from docId and no
      */
-    @Deprecated
     @Id
+    @Deprecated
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
@@ -40,9 +45,6 @@ public class Version implements Cloneable, Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
-    public Version() {
-    }
-
     public Version(Integer docId, int no, User createdBy, Date createdDt, User modifiedBy, Date modifiedDt) {
         this.docId = docId;
         this.no = no;
@@ -59,83 +61,5 @@ public class Version implements Cloneable, Serializable {
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o == this || (o instanceof Version && (equals((Version) o)));
-    }
-
-    private boolean equals(Version that) {
-        return Objects.equal(this.id, that.id)
-                && Objects.equal(this.no, that.no)
-                && Objects.equal(this.docId, that.docId)
-                && Objects.equal(this.createdBy, that.createdBy)
-                && Objects.equal(this.createdDt, that.createdDt)
-                && Objects.equal(this.modifiedBy, that.modifiedBy)
-                && Objects.equal(this.modifiedDt, that.modifiedDt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id, no, docId, createdBy, createdDt, modifiedBy, modifiedDt);
-    }
-
-    @Deprecated
-    public Integer getId() {
-        return id;
-    }
-
-    @Deprecated
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getDocId() {
-        return docId;
-    }
-
-    public void setDocId(Integer docId) {
-        this.docId = docId;
-    }
-
-    public int getNo() {
-        return no;
-    }
-
-    public void setNo(int no) {
-        this.no = no;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreatedDt() {
-        return createdDt;
-    }
-
-    public void setCreatedDt(Date createdDt) {
-        this.createdDt = createdDt;
-    }
-
-    public User getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(User modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    public Date getModifiedDt() {
-        return modifiedDt;
-    }
-
-    public void setModifiedDt(Date modifiedDt) {
-        this.modifiedDt = modifiedDt;
     }
 }
