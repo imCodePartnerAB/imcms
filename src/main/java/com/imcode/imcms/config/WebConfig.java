@@ -3,6 +3,7 @@ package com.imcode.imcms.config;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
@@ -19,6 +20,7 @@ import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -118,10 +120,15 @@ public class WebConfig {
     }
 
     @Bean
+    public MailService mailService(@Value("${SmtpServer}") String host, @Value("${SmtpPort}") int port) {
+        return new MailService(host, port);
+    }
+
+    @Bean
     public ImcmsServices createServices(Properties imcmsProperties, Database database, DocumentLanguages languages,
                                         LocalizedMessageProvider localizedMessageProvider, Config config,
                                         ApplicationContext applicationContext, CachingFileLoader fileLoader,
-                                        DatabaseService databaseService) {
+                                        DatabaseService databaseService, MailService mailService) {
 
         return new DefaultImcmsServices(
                 database,
@@ -131,7 +138,9 @@ public class WebConfig {
                 applicationContext,
                 config,
                 languages,
-                databaseService);
+                databaseService,
+                mailService
+        );
     }
 
     @Bean

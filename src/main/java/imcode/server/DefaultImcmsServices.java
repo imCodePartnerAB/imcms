@@ -23,7 +23,6 @@ import imcode.util.DateConstants;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
-import imcode.util.net.SMTP;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +80,8 @@ public class DefaultImcmsServices implements ImcmsServices {
      */
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, ApplicationContext applicationContext, Config config,
-                                DocumentLanguages documentLanguages, DatabaseService databaseService) {
+                                DocumentLanguages documentLanguages, DatabaseService databaseService,
+                                MailService mailService) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.fileLoader = fileLoader;
@@ -91,7 +91,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.properties = props;
         this.databaseService = databaseService;
 
-        this.mailService = new MailService(new SMTP(config.getSmtpServer(), config.getSmtpPort()));
+        this.mailService = mailService;
         this.procedureExecutor = new DefaultProcedureExecutor(database, fileLoader);
         this.languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
         this.kerberosLoginService = new KerberosLoginService(config);
@@ -200,10 +200,6 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     public TemplateMapper getTemplateMapper() {
         return templateMapper;
-    }
-
-    public SMTP getSMTP() {
-        return new SMTP(config.getSmtpServer(), config.getSmtpPort());
     }
 
     public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
