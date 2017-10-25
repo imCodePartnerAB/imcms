@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -16,7 +17,7 @@ import java.util.*;
 @Table(name = "meta")
 @Data
 @NoArgsConstructor
-public class Meta {
+public class Meta implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
