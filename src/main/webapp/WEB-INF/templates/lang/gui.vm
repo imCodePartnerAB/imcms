@@ -21,32 +21,6 @@
         <!-- /gui_head -->
 #end
 
-#macro( gui_mid )
-        <!-- gui_mid -->
-        </td>
-        <td colspan="2"><img
-				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-    </tr>
-    <tr>
-        <td class="imcmsAdmBgHead" colspan="6"><img
-				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
-    </tr>
-    <tr>
-        <td height="10" class="imcmsAdmBorder"><img
-				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td class="imcmsAdmBgCont" colspan="4"><img
-				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td class="imcmsAdmBorder"><img
-				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-    </tr>
-    <tr class="imcmsAdmBgCont">
-        <td class="imcmsAdmBorder"><img
-				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td><img
-				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td colspan="2">
-        <!-- /gui_mid -->
-#end
 
 
 #macro( gui_hr $wantedcolor )
@@ -80,6 +54,6 @@
 <body onLoad="$bodyOnLoad">
 <ui:imcms_gui_outer_start/>
 	#gui_head( "$titleAndHeading" )
-	#gui_mid()
+<ui:imcms_gui_mid/>
     <!-- /gui_start_of_page -->
 #end

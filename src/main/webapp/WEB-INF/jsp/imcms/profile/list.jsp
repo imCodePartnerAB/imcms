@@ -26,7 +26,7 @@
                 </td>
             </tr>
         </table>
-        #gui_mid()
+        <ui:imcms_gui_mid/>
         #gui_heading( '<fmt:message key="profile/headline"/>' )
         <table border="0" cellspacing="0" cellpadding="2" width="100%" align="center">
             <%

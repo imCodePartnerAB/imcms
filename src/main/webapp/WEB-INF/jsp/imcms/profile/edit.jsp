@@ -26,7 +26,7 @@
                 </td>
             </tr>
         </table>
-        #gui_mid()
+        <ui:imcms_gui_mid/>
         <input type="hidden" name="<%= AdminProfiles.Parameter.PROFILE_ID %>" value="<%= profile.getId() %>"/>
         <table border="0" cellspacing="0" cellpadding="2" width="100%" align="center">
             <tr>

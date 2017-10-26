@@ -82,7 +82,7 @@ function activateUseradmin_roles(){
     <td><input type="button" value="<? templates/sv/AdminUserResp.htm/2002 ?>" title="<? templates/sv/AdminUserResp.htm/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('UserEdit')"></td>
 </tr>
 </table>
-#gui_mid()
+    <ui:imcms_gui_mid/>
 
 <table border="0" cellspacing="0" cellpadding="0" width="660" align="center">
 <tr>

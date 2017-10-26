@@ -50,7 +50,7 @@
         <input type="submit" class="imcmsFormBtnSub" name="assign_group" value="<? templates/sv/template_admin.html/2011 ?>"></td>
 </tr>
 </table>
-#gui_mid()
+<ui:imcms_gui_mid/>
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>

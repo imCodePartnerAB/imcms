@@ -323,7 +323,7 @@ function setSelectedFolders() {
             <input class="imcmsFormBtn" type="button" value="<? global/help ?>" onClick="openHelpW('FileManager'); return false;"></td>
 </tr>
 </table>
-#gui_mid()
+    <ui:imcms_gui_mid/>
 
     <table border="0" cellspacing="0" cellpadding="0" width="760" align="center">
 <tr>

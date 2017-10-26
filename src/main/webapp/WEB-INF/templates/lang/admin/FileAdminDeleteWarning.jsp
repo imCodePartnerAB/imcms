@@ -24,7 +24,7 @@
     <td><input type="button" class="imcmsFormBtn" value="<? global/help ?>" title="<? global/openthehelppage ?>" onClick="openHelpW('FileManager')"></td>
 </tr>
 </table>
-#gui_mid()
+    <ui:imcms_gui_mid/>
 
     <table border="0" cellspacing="0" cellpadding="0" width="500">
 <tr>

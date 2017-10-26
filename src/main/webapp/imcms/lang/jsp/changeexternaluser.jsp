@@ -82,7 +82,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 	<td><input type="submit" class="imcmsFormBtn" name="<%= ACTION_CANCEL %>" value="<? global/back ?>"></td>
 </tr>
 </table>
-#gui_mid()
+    <ui:imcms_gui_mid/>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <tr>
 	<td colspan="2">#gui_heading( "<? install/htdocs/sv/adminuser/changeexternaluser.jsp/2 ?>" )</td>

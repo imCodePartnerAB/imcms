@@ -39,7 +39,7 @@
 	<td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW('UserAdmin')"></td>
 </tr>
 </table>
-#gui_mid()
+        <ui:imcms_gui_mid/>
 
 <table border="0" cellspacing="0" cellpadding="0" width="600" align="center">
             <input type="hidden" name="<%= UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE %>"

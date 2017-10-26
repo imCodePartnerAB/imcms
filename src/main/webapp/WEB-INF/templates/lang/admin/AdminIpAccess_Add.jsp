@@ -14,7 +14,7 @@
 
 <ui:imcms_gui_outer_start/>
 #gui_head( "<? global/imcms_administration ?>" )
-#gui_mid()
+<ui:imcms_gui_mid/>
 
 <form method="post" action="AdminIpAccess" name="addIP">
     <table border="0" cellspacing="0" cellpadding="2" width="400">

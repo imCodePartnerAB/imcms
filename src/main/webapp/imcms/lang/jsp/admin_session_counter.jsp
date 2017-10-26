@@ -34,8 +34,7 @@
     </form>
 </table>
 
-
-#gui_mid()
+    <ui:imcms_gui_mid/>
 
 <table width="370">
     <form method="post" action="AdminCounter">

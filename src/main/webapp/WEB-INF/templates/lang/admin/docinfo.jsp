@@ -22,7 +22,7 @@
 </tr>
 </form>
 </table>
-#gui_mid()
+<ui:imcms_gui_mid/>
 
 #doc_type_description#
 <ui:imcms_gui_bottom/>

@@ -23,7 +23,7 @@
 </tr>
 </form>
 </table>
-#gui_mid()
+<ui:imcms_gui_mid/>
 
 <table border="0" cellspacing="0" cellpadding="2" width="660">
 <form method="post" action="TemplateChange">

@@ -28,7 +28,7 @@
         </td>
     </tr>
 </table>
-#gui_mid()
+    <ui:imcms_gui_mid/>
 </vel:velocity>
 <table border="0" cellspacing="0" cellpadding="0">
 <ui:labeled idref="from_date" key="webapp/imcms/lang/jsp/document_search_terms.jsp/daterange">

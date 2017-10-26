@@ -37,7 +37,7 @@
 </tr>
 </form>
 </table>
-#gui_mid()
+<ui:imcms_gui_mid/>
 <table border="0" cellspacing="0" cellpadding="2" width="310">
 <tr>
 	<td colspan="2" nowrap><span class="imcmsAdmText">

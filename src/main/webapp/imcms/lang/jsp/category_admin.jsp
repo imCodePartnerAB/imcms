@@ -103,7 +103,7 @@
         </form>
     </table>
 
-    #gui_mid()
+    <ui:imcms_gui_mid/>
 
     <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
         <form name="main" action="AdminCategories" method="post">

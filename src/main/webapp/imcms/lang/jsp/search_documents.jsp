@@ -58,7 +58,7 @@ function addScrolling() {
         <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW('MyPagesSearch')"></td>
     </tr>
 </table>
-#gui_mid()
+    <ui:imcms_gui_mid/>
 <jsp:include page="search_documents_form.jsp" />
 </form>
 

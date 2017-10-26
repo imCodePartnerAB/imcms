@@ -35,7 +35,7 @@
         <td>&nbsp;</td>
     </tr>
 </table>
-#gui_mid()
+    <ui:imcms_gui_mid/>
 </vel:velocity>
 <table border="0" cellspacing="0" cellpadding="0">
 <jsp:doBody/>

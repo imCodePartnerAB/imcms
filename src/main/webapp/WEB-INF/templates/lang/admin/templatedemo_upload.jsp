@@ -64,7 +64,7 @@ function setSize() {
 </tr>
 </form>
 </table>
-#gui_mid()
+<ui:imcms_gui_mid/>
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="TemplateAdd" enctype="multipart/form-data">
