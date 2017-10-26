@@ -10,7 +10,9 @@
                  org.apache.commons.lang3.StringUtils,
                  org.apache.commons.text.StringEscapeUtils,
                  java.util.Arrays"%>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@page contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%
     UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
     UserBrowser.UserBrowserPage userBrowserPage = (UserBrowser.UserBrowserPage)request.getAttribute( UserBrowser.REQUEST_ATTRIBUTE__FORM_DATA ) ;
@@ -145,5 +147,5 @@ function evalEditUser() {
 }
 //-->
 </script>
-#gui_end_of_page()
+        <ui:imcms_gui_end_of_page/>
 </vel:velocity>

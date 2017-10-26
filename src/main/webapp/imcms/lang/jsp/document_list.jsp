@@ -14,7 +14,9 @@
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@page contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@taglib prefix="vel" uri="imcmsvelocity" %>
 <% ListDocuments.FormData formData = (ListDocuments.FormData)request.getAttribute( ListDocuments.REQUEST_ATTRIBUTE__FORM_DATA ) ;%>
 <vel:velocity>
 
@@ -118,5 +120,5 @@ if (null != formData.documentsIterator) { %>
 </form>
 </table><%
 } %>
-#gui_end_of_page()
+    <ui:imcms_gui_end_of_page/>
 </vel:velocity>
