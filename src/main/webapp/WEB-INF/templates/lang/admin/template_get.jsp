@@ -1,10 +1,11 @@
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <html>
 <head>
 
 
-<title><? templates/sv/AdminManager_adminTask_element.htm/10 ?></title>
+    <title><? templates/sv/AdminManager_adminTask_element.htm/10 ?></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
@@ -16,37 +17,37 @@
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form action="AdminManager">
 <tr>
-	<td>
-	<input type="submit" value="<? global/back ?>" title="<? global/back ?>" class="imcmsFormBtn">
-	<input type="button" value="<? global/help ?>" title="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW('TemplateDownload')"></td>
+    <td>
+        <input type="submit" value="<? global/back ?>" title="<? global/back ?>" class="imcmsFormBtn">
+        <input type="button" value="<? global/help ?>" title="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW('TemplateDownload')"></td>
 </tr>
 </form>
 <tr>
-	<td class="imcmsAdmText"><? templates/sv/template_get.html/3 ?></td>
+    <td class="imcmsAdmText"><? templates/sv/template_get.html/3 ?></td>
 </tr>
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
 <input type="HIDDEN" name="language" value="<? templates/default_lang ?>">
 <tr>
-	<td>
-	<input type="submit" class="imcmsFormBtnSub" name="add_template" value="<? templates/sv/template_get.html/2001 ?>">
-	<input type="submit" class="imcmsFormBtnSub" name="delete_template" value="<? templates/sv/template_get.html/2002 ?>">
-	<input type="submit" class="imcmsFormBtnSub" name="rename_template" value="<? templates/sv/template_get.html/2003 ?>">
-	<input type="submit" class="imcmsFormBtnSubDisabled" name="get_template" value="<? templates/sv/template_get.html/2004 ?>" disabled="disabled">
-	<input type="submit" class="imcmsFormBtnSub" name="edit_template" value="<? templates/sv/template_get.html/2005 ?>"><br>
-	<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
-	<input type="submit" class="imcmsFormBtnSub" name="add_demotemplate" value="<? templates/sv/template_get.html/2006 ?>">
-	<input type="submit" class="imcmsFormBtnSub" name="show_templates" value="<? templates/sv/template_get.html/2007 ?>">
-		<input type="submit" class="imcmsFormBtnSub" name="change_availability_template" value="<? templates/sv/template_admin.html/2012 ?>"></td>
+    <td>
+        <input type="submit" class="imcmsFormBtnSub" name="add_template" value="<? templates/sv/template_get.html/2001 ?>">
+        <input type="submit" class="imcmsFormBtnSub" name="delete_template" value="<? templates/sv/template_get.html/2002 ?>">
+        <input type="submit" class="imcmsFormBtnSub" name="rename_template" value="<? templates/sv/template_get.html/2003 ?>">
+        <input type="submit" class="imcmsFormBtnSubDisabled" name="get_template" value="<? templates/sv/template_get.html/2004 ?>" disabled="disabled">
+        <input type="submit" class="imcmsFormBtnSub" name="edit_template" value="<? templates/sv/template_get.html/2005 ?>"><br>
+        <img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+        <input type="submit" class="imcmsFormBtnSub" name="add_demotemplate" value="<? templates/sv/template_get.html/2006 ?>">
+        <input type="submit" class="imcmsFormBtnSub" name="show_templates" value="<? templates/sv/template_get.html/2007 ?>">
+        <input type="submit" class="imcmsFormBtnSub" name="change_availability_template" value="<? templates/sv/template_admin.html/2012 ?>"></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText"><? templates/sv/template_get.html/4 ?></td>
+    <td class="imcmsAdmText"><? templates/sv/template_get.html/4 ?></td>
 </tr>
 <tr>
-	<td>
-	<input type="submit" class="imcmsFormBtnSub" name="add_group" value="<? templates/sv/template_get.html/2008 ?>">
-	<input type="submit" class="imcmsFormBtnSub" name="delete_group" value="<? templates/sv/template_get.html/2009 ?>">
-	<input type="submit" class="imcmsFormBtnSub" name="rename_group" value="<? templates/sv/template_get.html/2010 ?>">
-	<input type="submit" class="imcmsFormBtnSub" name="assign_group" value="<? templates/sv/template_get.html/2011 ?>"></td>
+    <td>
+        <input type="submit" class="imcmsFormBtnSub" name="add_group" value="<? templates/sv/template_get.html/2008 ?>">
+        <input type="submit" class="imcmsFormBtnSub" name="delete_group" value="<? templates/sv/template_get.html/2009 ?>">
+        <input type="submit" class="imcmsFormBtnSub" name="rename_group" value="<? templates/sv/template_get.html/2010 ?>">
+        <input type="submit" class="imcmsFormBtnSub" name="assign_group" value="<? templates/sv/template_get.html/2011 ?>"></td>
 </tr>
 </form>
 </table>
@@ -56,31 +57,31 @@
 <form action="TemplateChange" method="post">
 <input type="HIDDEN" name="language" value="#language#">
 <tr>
-	<td colspan="2">#gui_heading( "<? templates/sv/template_get.html/6/1 ?>" )</td>
+    <td colspan="2">#gui_heading( "<? templates/sv/template_get.html/6/1 ?>" )</td>
 </tr>
 <tr>
-	<td colspan="2">
-	<table border="0" cellpadding="0" cellspacing="0">
-	<tr>
-		<td width="80" height="24" class="imcmsAdmText" nowrap><? templates/sv/template_get.html/1001 ?> &nbsp;</td>
-		<td>
-		<select name="template">
-		#templates#
-		</select></td>
-	</tr>
-	</table></td>
+    <td colspan="2">
+        <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td width="80" height="24" class="imcmsAdmText" nowrap><? templates/sv/template_get.html/1001 ?> &nbsp;</td>
+                <td>
+                    <select name="template">
+                        #templates#
+                    </select></td>
+            </tr>
+        </table></td>
 </tr>
 <tr>
-	<td colspan="2">#gui_hr( "blue" )</td>
+    <td colspan="2">#gui_hr( "blue" )</td>
 </tr>
 <tr>
-	<td colspan="2" align="right">
-	<input type="submit" class="imcmsFormBtn" name="template_get" value="<? templates/sv/template_get.html/2014 ?>">
-	<input type="button" class="imcmsFormBtn" name="back" value="<? templates/sv/template_get.html/2015 ?>" onClick="document.location = 'TemplateAdmin';"></td>
+    <td colspan="2" align="right">
+        <input type="submit" class="imcmsFormBtn" name="template_get" value="<? templates/sv/template_get.html/2014 ?>">
+        <input type="button" class="imcmsFormBtn" name="back" value="<? templates/sv/template_get.html/2015 ?>" onClick="document.location = 'TemplateAdmin';"></td>
 </tr>
 </form>
 </table>
-#gui_bottom()
+<ui:imcms_gui_bottom/>
 #gui_outer_end()
 
 

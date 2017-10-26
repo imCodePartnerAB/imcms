@@ -11,7 +11,9 @@
 <%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.Map"%>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@page contentType="text/html; charset=UTF-8" %>
+<%@taglib prefix="vel" uri="imcmsvelocity" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <% ListDocumentAliasPage listDocumentAliasPage = ListDocumentAliasPage.fromRequest(request);
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     UserService userService = imcmsSystem.getUserService();
@@ -109,7 +111,7 @@ if (null != listDocumentAliasPage.aliasInSelectedRange) { %>
 <%}%>
 </form>
 
-#gui_bottom()
+<ui:imcms_gui_bottom/>
 #gui_outer_end()
 
 </body>

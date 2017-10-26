@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <vel:velocity>
 <html>
 <head>
@@ -43,14 +44,14 @@
 	<td align="center" class="imcmsAdmText"><? templates/login/logged_out.html/4 ?></td>
 </tr>
 </table>
-#gui_bottom()
+<ui:imcms_gui_bottom/>
 #gui_outer_end()
 
 
 <script language="JavaScript">
 <!--
 if (document.forms[1]) {
-	var f = document.forms[1]
+    var f = document.forms[1];
 	if (f.elements[0]) {
 		f.elements[0].blur();
 	}

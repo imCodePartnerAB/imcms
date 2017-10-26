@@ -1,8 +1,9 @@
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <html>
 <head>
 <title><? templates/sv/FileAdminDeleteWarning.html/1 ?></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
@@ -16,38 +17,38 @@
 <input type="HIDDEN" name="dir2" value="#dir2#">
 <input type="HIDDEN" name="source" value="#source#">
 <input type="HIDDEN" name="files" value="#files#">
-<tr> 
-	<td><input type="submit" class="imcmsFormBtn" name="no" value="<? global/back ?>"></td>
-	<td>&nbsp;</td>
-	<td><input type="button" class="imcmsFormBtn" value="<? global/help ?>" title="<? global/openthehelppage ?>" onClick="openHelpW('FileManager')"></td>
+<tr>
+    <td><input type="submit" class="imcmsFormBtn" name="no" value="<? global/back ?>"></td>
+    <td>&nbsp;</td>
+    <td><input type="button" class="imcmsFormBtn" value="<? global/help ?>" title="<? global/openthehelppage ?>" onClick="openHelpW('FileManager')"></td>
 </tr>
 </table>
 #gui_mid()
 
-<table border="0" cellspacing="0" cellpadding="0" width="500">
-<tr> 
-	<td>#gui_heading( "<? templates/sv/FileAdminDeleteWarning.html/3 ?>" )</td>
-</tr>
-<tr> 
-	<td> 
-	<select size="10" style="width:100%" readonly>
-		#filelist#
-	</select></td>
-</tr>
-<tr> 
-	<td height="20"><? templates/sv/FileAdminDeleteWarning.html/5 ?></td>
+    <table border="0" cellspacing="0" cellpadding="0" width="500">
+<tr>
+    <td>#gui_heading( "<? templates/sv/FileAdminDeleteWarning.html/3 ?>" )</td>
 </tr>
 <tr>
-	<td>#gui_hr( "blue" )</td>
+    <td>
+        <select size="10" style="width:100%" readonly>
+            #filelist#
+        </select></td>
 </tr>
-<tr> 
-	<td align="right">
-	<input class="imcmsFormBtn" style="width:70" type="submit" name="deleteok" value="<? templates/sv/FileAdminDeleteWarning.html/2001 ?>">
-	<input class="imcmsFormBtn" style="width:70" type="submit" name="no" value="<? templates/sv/FileAdminDeleteWarning.html/2002 ?>"></td>
+<tr>
+    <td height="20"><? templates/sv/FileAdminDeleteWarning.html/5 ?></td>
+</tr>
+<tr>
+    <td>#gui_hr( "blue" )</td>
+</tr>
+<tr>
+    <td align="right">
+        <input class="imcmsFormBtn" style="width:70" type="submit" name="deleteok" value="<? templates/sv/FileAdminDeleteWarning.html/2001 ?>">
+        <input class="imcmsFormBtn" style="width:70" type="submit" name="no" value="<? templates/sv/FileAdminDeleteWarning.html/2002 ?>"></td>
 </tr>
 </table>
 </form>
-#gui_bottom()
+<ui:imcms_gui_bottom/>
 #gui_outer_end()
 
 

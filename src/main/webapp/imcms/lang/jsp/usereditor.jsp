@@ -20,6 +20,7 @@
     LocalizedMessage errorMessage = userEditorPage.getErrorMessage() ;
 %><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <vel:velocity><html>
 <head>
 <title><? templates/sv/AdminUserResp.htm/1 ?></title>
@@ -275,7 +276,7 @@ function activateUseradmin_roles(){
 </tr>
 </table>
 </form>
-#gui_bottom()
+<ui:imcms_gui_bottom/>
 #gui_outer_end()
 </body>
 </html>

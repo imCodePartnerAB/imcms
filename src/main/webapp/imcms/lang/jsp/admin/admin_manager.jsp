@@ -4,6 +4,7 @@
                  java.util.Iterator,
                  java.util.List" %>
 <%@page contentType="text/html; charset=UTF-8" %><%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
     AdminManager.AdminManagerPage adminManagerPage = (AdminManager.AdminManagerPage) request.getAttribute(AdminManager.AdminManagerPage.REQUEST_ATTRIBUTE__PAGE) ;
@@ -164,7 +165,7 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 		<jsp:include page="../search_documents_results.jsp" />
 	</form><%
 } %>
-	#gui_bottom()
+    <ui:imcms_gui_bottom/>
 	#gui_outer_end()
 </vel:velocity>
 </body>

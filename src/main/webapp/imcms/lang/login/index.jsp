@@ -5,6 +5,7 @@
 <%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <vel:velocity>
 <%
     UserDomainObject user = Utility.getLoggedOnUser(request);
@@ -91,7 +92,7 @@
 	</table></td>
 </tr>
 </table>
-#gui_bottom()
+<ui:imcms_gui_bottom/>
 #gui_outer_end()
 </body>
 </html>

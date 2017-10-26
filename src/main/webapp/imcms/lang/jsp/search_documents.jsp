@@ -5,8 +5,9 @@
                  org.apache.commons.lang.StringEscapeUtils"
         contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%
-    SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage) Page.fromRequest(request) ;
+    SearchDocumentsPage searchDocumentsPage = Page.fromRequest(request);
     DocumentFinder documentFinder = searchDocumentsPage.getDocumentFinder() ;
     JSCalendar jsCalendar = searchDocumentsPage.getJSCalender(request);
 
@@ -63,7 +64,7 @@ function addScrolling() {
 
 
 <jsp:include page="search_documents_results.jsp" />
-#gui_bottom()
+    <ui:imcms_gui_bottom/>
 #gui_outer_end()
 	<div>&nbsp;</div>
 </div>

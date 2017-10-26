@@ -1,10 +1,11 @@
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <html>
 <head>
 
 
-<title><? templates/sv/docinfo.html/1 ?></title>
+    <title><? templates/sv/docinfo.html/1 ?></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 
 
 </head>
@@ -16,14 +17,14 @@
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="BackDoc">
 <tr>
-	<td><input type="submit" class="imcmsFormBtn" value="<? templates/sv/docinfo.html/2001 ?>"></td>
+    <td><input type="submit" class="imcmsFormBtn" value="<? templates/sv/docinfo.html/2001 ?>"></td>
 </tr>
 </form>
 </table>
 #gui_mid()
 
 #doc_type_description#
-#gui_bottom()
+<ui:imcms_gui_bottom/>
 #gui_outer_end()
 
 

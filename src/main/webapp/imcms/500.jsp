@@ -1,5 +1,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <vel:velocity>
     <html>
     <head>
@@ -7,14 +8,12 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/imcms/css/imcms_admin.css.jsp">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script>
-            #[[
             $( document ).ready(function() {
                 $("#hide-show-btn").click(function () {
                     var $detailDiv = $('#detail-info');
                     $detailDiv.is(':visible') ? $detailDiv.hide() : $detailDiv.show();
                 });
             });
-            ]]#
         </script>
     </head>
     <body bgcolor="#FFFFFF">
@@ -52,7 +51,6 @@
             </td>
         </tr>
     </table>
-    #[[
     <h2><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/6"/>
         ${errorId}
     </h2>
@@ -70,8 +68,7 @@
         <strong><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/13"/></strong>
         <pre>${stackTrace}</pre>
     </div>
-    ]]#
-    #gui_bottom()
+    <ui:imcms_gui_bottom/>
     #gui_outer_end()
     </body>
     </html>

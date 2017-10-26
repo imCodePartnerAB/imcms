@@ -3,7 +3,11 @@
         contentType="text/html; charset=UTF-8" %>
 <%
     List<Profile> profiles = (List<Profile>) request.getAttribute("profiles");
-    %><%@taglib prefix="vel" uri="imcmsvelocity"%><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><vel:velocity>
+%>
+<%@taglib prefix="vel" uri="imcmsvelocity" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<vel:velocity>
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
@@ -41,7 +45,7 @@
         #gui_hr( 'blue' )
         <input type="submit" name="<%= AdminProfiles.Parameter.NEW_PROFILE %>" value="<fmt:message key="profile/create"/>" class="imcmsFormBtn"/>
     </form>
-    #gui_bottom()
+    <ui:imcms_gui_bottom/>
     #gui_outer_end()
 </body>
 </html>

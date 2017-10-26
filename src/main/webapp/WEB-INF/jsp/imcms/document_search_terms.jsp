@@ -1,4 +1,8 @@
-<%@ page import="com.imcode.imcms.servlet.superadmin.AdminSearchTerms, java.util.List, java.util.Date, imcode.util.Utility, com.imcode.imcms.flow.OkCancelPage"%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %><%
+<%@ page
+        import="com.imcode.imcms.flow.OkCancelPage, com.imcode.imcms.servlet.superadmin.AdminSearchTerms, java.util.List" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%
     List<AdminSearchTerms.TermCount> termCounts = (List<AdminSearchTerms.TermCount>) request.getAttribute("termCounts");
 %><%@taglib prefix="vel" uri="imcmsvelocity"%><%@
      taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@
@@ -60,7 +64,7 @@
 %>
 
 <vel:velocity>
-#gui_bottom()
+    <ui:imcms_gui_bottom/>
 #gui_outer_end()
 </vel:velocity>
 </form>

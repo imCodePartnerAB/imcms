@@ -48,7 +48,7 @@
 </tr>
 </table>
 <vel:velocity>
-#gui_bottom()
+    <ui:imcms_gui_bottom/>
 #gui_outer_end()
 </vel:velocity>
 </form>

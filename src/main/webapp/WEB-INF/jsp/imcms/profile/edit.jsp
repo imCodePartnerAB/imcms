@@ -3,7 +3,11 @@
         contentType="text/html; charset=UTF-8" %>
 <%
     Profile profile = (Profile) request.getAttribute("profile");
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><vel:velocity>
+%>
+<%@taglib prefix="vel" uri="imcmsvelocity" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<vel:velocity>
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
@@ -36,7 +40,7 @@
         </table>
             <input type="submit" value="<fmt:message key="profile/save"/>" class="imcmsFormBtn"/>
     </form>
-    #gui_bottom()
+    <ui:imcms_gui_bottom/>
     #gui_outer_end()
 </body>
 </html>

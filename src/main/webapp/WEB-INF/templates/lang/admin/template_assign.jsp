@@ -1,3 +1,4 @@
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <html>
 <head>
 
@@ -130,7 +131,7 @@
         </tr>
     </form>
 </table>
-#gui_bottom()
+<ui:imcms_gui_bottom/>
 #gui_outer_end()
 
 
