@@ -256,7 +256,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         return config;
     }
 
-    public File getRealContextPath() {
+    private File getRealContextPath() {
         return Imcms.getPath();
     }
 
@@ -631,7 +631,7 @@ public class DefaultImcmsServices implements ImcmsServices {
                     String key = iterator.next();
                     String value = iterator.next();
                     context.put(key, value);
-                    boolean isVelocityVariable = StringUtils.isAlpha(key) || !(value != null);
+                    boolean isVelocityVariable = StringUtils.isAlpha(key) || (value == null);
                     if (!isVelocityVariable) {
                         parseDocVariables.add(key);
                         parseDocVariables.add(value);
