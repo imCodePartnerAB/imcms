@@ -25,12 +25,12 @@ import java.util.function.Function;
 public class Html {
 
     private static final Object[][] STATUS_TEMPLATE_PAIRS = {
-            {LifeCyclePhase.NEW, "status/new.frag"},
-            {LifeCyclePhase.DISAPPROVED, "status/disapproved.frag"},
-            {LifeCyclePhase.PUBLISHED, "status/published.frag"},
-            {LifeCyclePhase.UNPUBLISHED, "status/unpublished.frag"},
-            {LifeCyclePhase.ARCHIVED, "status/archived.frag"},
-            {LifeCyclePhase.APPROVED, "status/approved.frag"},
+            {LifeCyclePhase.NEW, "status/new.jsp"},
+            {LifeCyclePhase.DISAPPROVED, "status/disapproved.jsp"},
+            {LifeCyclePhase.PUBLISHED, "status/published.jsp"},
+            {LifeCyclePhase.UNPUBLISHED, "status/unpublished.jsp"},
+            {LifeCyclePhase.ARCHIVED, "status/archived.jsp"},
+            {LifeCyclePhase.APPROVED, "status/approved.jsp"},
     };
 
     private Html() {
