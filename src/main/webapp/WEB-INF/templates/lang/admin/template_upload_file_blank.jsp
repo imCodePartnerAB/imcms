@@ -1,3 +1,4 @@
+<%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <html>
 <head>
@@ -11,7 +12,7 @@
 <body bgcolor="#FFFFFF">
 
 
-#gui_outer_start()
+<ui:imcms_gui_outer_start/>
 #gui_head( "<? global/message ?>" )
 
 <table border="0" cellpadding="0" cellspacing="0">

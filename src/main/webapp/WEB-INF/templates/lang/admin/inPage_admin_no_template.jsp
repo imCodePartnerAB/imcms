@@ -1,3 +1,4 @@
+<%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <html>
 <head>
@@ -9,7 +10,7 @@
 </head>
 <body onLoad="focusField(1, 'change_group')">
 
-#gui_outer_start()
+<ui:imcms_gui_outer_start/>
 #gui_head( "<? templates/sv/FileAdminCopyOverwriteWarning.html/1 ?>" )
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="SaveInPage">

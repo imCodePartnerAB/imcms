@@ -46,7 +46,7 @@ function addScrolling() {
 
 <body bgcolor="#FFFFFF" onload="addScrolling(); document.forms[1].<%= StringEscapeUtils.escapeJavaScript(SearchDocumentsPage.REQUEST_PARAMETER__QUERY_STRING) %>.focus()">
 <div id="container">
-#gui_outer_start()
+    <ui:imcms_gui_outer_start/>
 #gui_head( "<? templates/sv/search/search_documents.html/1 ?>" )
 
 <form method="GET" action="<%= request.getContextPath() %>/servlet/SearchDocuments">

@@ -12,7 +12,7 @@
     </head>
     <body bgcolor="#FFFFFF">
 
-    #gui_outer_start()
+    <ui:imcms_gui_outer_start/>
     #gui_head( "<fmt:message key="templates/sv/no_page.html/1"/>" )
     <table border="0" cellspacing="0" cellpadding="0">
         <tr>

@@ -1,3 +1,4 @@
+<%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <html>
@@ -11,7 +12,7 @@
 
 <body>
 
-#gui_outer_start()
+<ui:imcms_gui_outer_start/>
 #gui_head( "<? global/imcms_administration ?>" )
 #gui_mid()
 

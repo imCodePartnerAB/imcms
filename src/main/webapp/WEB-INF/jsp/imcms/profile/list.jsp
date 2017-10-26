@@ -14,7 +14,7 @@
     <script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 </head>
 <body>
-    #gui_outer_start()
+<ui:imcms_gui_outer_start/>
     #gui_head( "<fmt:message key="profile/headline"/>" )
     
     <form action="<%= request.getContextPath() %>/imcms/admin/profile/list" method="POST">

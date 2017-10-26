@@ -70,7 +70,7 @@ function activateUseradmin_roles(){
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'<%= UserEditorPage.REQUEST_PARAMETER__LOGIN_NAME %>'); activateUseradmin_roles(); return true">
 
 
-#gui_outer_start()
+<ui:imcms_gui_outer_start/>
 #gui_head( "<? global/imcms_administration ?>" )
 
 <form method="post" action="$contextPath/servlet/PageDispatcher">

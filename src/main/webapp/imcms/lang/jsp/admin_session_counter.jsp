@@ -21,7 +21,7 @@
 </head>
 
 <body bgcolor="#FFFFFF">
-#gui_outer_start()
+    <ui:imcms_gui_outer_start/>
 #gui_head( "<? webapp/imcms/lang/jsp/admin_session_counter.jsp/headline ?>" )
 
 

@@ -52,7 +52,7 @@
     </head>
     <body onLoad="focusField('main','template')">
 
-    #gui_outer_start()
+    <ui:imcms_gui_outer_start/>
     #gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/17 ?>" )
 
     <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">

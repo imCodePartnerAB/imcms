@@ -1,3 +1,4 @@
+<%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <html>
 <head>
@@ -32,7 +33,7 @@ function checkForName() {
     }
 }
 
-function regExpTest(what,pattern) {
+function regExpTest(what, pattern) {
     var blnRetVal = (pattern.test(what)) ? true : false;
     return blnRetVal;
 }
@@ -52,7 +53,7 @@ function setSize() {
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(2,'file'); setSize();">
 
-#gui_outer_start()
+<ui:imcms_gui_outer_start/>
 #gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/10 ?>" )
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">

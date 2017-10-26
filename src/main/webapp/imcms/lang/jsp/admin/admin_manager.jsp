@@ -44,7 +44,7 @@
 
 
 <!--gui_outer_start -->
-#gui_outer_start()
+    <ui:imcms_gui_outer_start/>
 <!--gui_head -->
 #gui_head( "<? webapp/imcms/lang/jsp/admin/admin_manager.jsp/1 ?> - <%= adminManagerPage.getHeading().toLocalizedString( request ) %>" )
 <!-- /gui_head -->

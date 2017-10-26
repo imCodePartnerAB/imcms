@@ -32,7 +32,7 @@
 </head>
 <body bgcolor="#FFFFFF">
 
-#gui_outer_start()
+<ui:imcms_gui_outer_start/>
 #gui_head( "<? imcms/lang/jsp/document_list.jsp/title ?>" )
 
 <form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher">

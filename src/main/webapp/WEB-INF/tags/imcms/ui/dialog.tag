@@ -20,7 +20,7 @@
 <form action="<%= request.getContextPath() %>/servlet/PageDispatcher">
 <%= Page.htmlHidden(request) %>
 <vel:velocity>
-#gui_outer_start()
+    <ui:imcms_gui_outer_start/>
 #gui_head( "<fmt:message key="${titlekey}"/> " )
 <table border="0" cellspacing="0" cellpadding="0">
     <tr>

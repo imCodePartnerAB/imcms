@@ -73,7 +73,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 </head>
 <body>
 
-#gui_outer_start()
+    <ui:imcms_gui_outer_start/>
 #gui_head( "<? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?>" )
 <form method="POST" action="$contextPath/imcms/$language/jsp/changeexternaluser.jsp">
 <table border="0" cellspacing="0" cellpadding="0">

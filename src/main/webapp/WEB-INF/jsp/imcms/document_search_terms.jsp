@@ -19,7 +19,7 @@
 <body>
 <form action="<%= request.getContextPath() %>/servlet/AdminSearchTerms" method="POST">
 <vel:velocity>
-#gui_outer_start()
+    <ui:imcms_gui_outer_start/>
 #gui_head( "<fmt:message key="webapp/imcms/lang/jsp/document_search_terms.jsp/title"/>" )
 <table border="0" cellspacing="0" cellpadding="0">
     <tr>

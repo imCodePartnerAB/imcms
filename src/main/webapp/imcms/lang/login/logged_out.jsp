@@ -14,7 +14,7 @@
 </head>
 <body bgcolor="#FFFFFF">
 
-#gui_outer_start()
+<ui:imcms_gui_outer_start/>
 #gui_head( "<? templates/login/logged_out.html/2 ?>" )
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>

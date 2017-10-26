@@ -29,7 +29,7 @@
 
 </head>
 <body onLoad="focusField(0,'<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>');">
-	#gui_outer_start()
+    <ui:imcms_gui_outer_start/>
 	#gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/2 ?>" )
     <table border="0" cellspacing="0" cellpadding="0">
 <form name="argumentForm" action="UserBrowser" method="GET" target="_top">

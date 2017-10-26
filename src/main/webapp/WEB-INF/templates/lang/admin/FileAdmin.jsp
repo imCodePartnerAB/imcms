@@ -1,3 +1,4 @@
+<%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <html>
 <head>
@@ -310,7 +311,7 @@ function setSelectedFolders() {
 </head>
 <body bgcolor="#FFFFFF" onLoad="checkFileType(1,true); checkFileType(2,true); setSelectedFolders();">
 
-#gui_outer_start()
+<ui:imcms_gui_outer_start/>
 #gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/5 ?>" )
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
 <table border="0" cellspacing="0" cellpadding="0" width="100%">

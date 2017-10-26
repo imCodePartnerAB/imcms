@@ -48,14 +48,6 @@
         <!-- /gui_mid -->
 #end
 
-#macro( gui_outer_start )
-    <!-- gui_outer_start -->
-<table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable" align="center">
-<tr>
-	<td class="imcmsAdmTable">
-    <!-- /gui_outer_start -->
-#end
-
 
 #macro( gui_hr $wantedcolor )
     <!-- gui_hr $wantedcolor -->
@@ -86,7 +78,7 @@
 
 </head>
 <body onLoad="$bodyOnLoad">
-	#gui_outer_start()
+<ui:imcms_gui_outer_start/>
 	#gui_head( "$titleAndHeading" )
 	#gui_mid()
     <!-- /gui_start_of_page -->
