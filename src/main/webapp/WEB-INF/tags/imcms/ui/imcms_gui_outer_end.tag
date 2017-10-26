@@ -1,3 +1,4 @@
+<%@tag body-content="empty" %>
 <!-- gui_outer_end -->
 <td align="right" valign="top" background="${contextPath}/imcms/${language}/images/admin/imcms_admin_shadow_right.gif">
     <img src="${contextPath}/imcms/${language}/images/admin/imcms_admin_shadow_right_top.gif"

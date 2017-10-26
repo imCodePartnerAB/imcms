@@ -69,7 +69,7 @@
         <pre>${stackTrace}</pre>
     </div>
     <ui:imcms_gui_bottom/>
-    #gui_outer_end()
+    <ui:imcms_gui_outer_end/>
     </body>
     </html>
 </vel:velocity>

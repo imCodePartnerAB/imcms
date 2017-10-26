@@ -25,7 +25,7 @@
 
 #doc_type_description#
 <ui:imcms_gui_bottom/>
-#gui_outer_end()
+<ui:imcms_gui_outer_end/>
 
 
 <div align="center">#adminMode#</div>

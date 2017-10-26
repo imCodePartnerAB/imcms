@@ -46,7 +46,7 @@
         <input type="submit" name="<%= AdminProfiles.Parameter.NEW_PROFILE %>" value="<fmt:message key="profile/create"/>" class="imcmsFormBtn"/>
     </form>
     <ui:imcms_gui_bottom/>
-    #gui_outer_end()
+    <ui:imcms_gui_outer_end/>
 </body>
 </html>
 </vel:velocity>

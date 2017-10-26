@@ -41,7 +41,7 @@
             <input type="submit" value="<fmt:message key="profile/save"/>" class="imcmsFormBtn"/>
     </form>
     <ui:imcms_gui_bottom/>
-    #gui_outer_end()
+    <ui:imcms_gui_outer_end/>
 </body>
 </html>
 </vel:velocity>

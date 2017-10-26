@@ -65,7 +65,7 @@ function addScrolling() {
 
 <jsp:include page="search_documents_results.jsp" />
     <ui:imcms_gui_bottom/>
-#gui_outer_end()
+    <ui:imcms_gui_outer_end/>
 	<div>&nbsp;</div>
 </div>
 </body>
