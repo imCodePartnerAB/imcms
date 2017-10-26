@@ -197,11 +197,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.FileAdmin</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.FileAdmin</servlet-class>
     </servlet>
@@ -399,11 +394,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher</servlet-name>
         <url-pattern>/servlet/DocumentPageFlowDispatcher</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-name>
-        <url-pattern>/servlet/DocumentReferences</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

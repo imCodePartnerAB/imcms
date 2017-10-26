@@ -1,5 +1,4 @@
 <%@ page import="com.imcode.imcms.mapping.DocumentMapper,
-                 com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  com.imcode.imcms.servlet.superadmin.ListDocuments,
                  imcode.server.Imcms,
                  imcode.server.document.DocumentComparators,
@@ -83,7 +82,7 @@ if (null != formData.documentsIterator) { %>
 		if (documentMenuPairsContainingDocument.length > 0 ) {
 			String backUrl = "ListDocuments?" + ObjectUtils.defaultIfNull(request.getQueryString(),"") ;
             String escapedBackUrl = URLEncoder.encode(backUrl, Imcms.UTF_8_ENCODING); %>
-	<a href="<%= request.getContextPath() %>/servlet/DocumentReferences?<%= DocumentReferences.REQUEST_PARAMETER__RETURNURL %>=<%= escapedBackUrl %>&<%= DocumentReferences.REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID %>=<%= document.getId() %>"><%
+        <a href="<%= request.getContextPath() %>/servlet/DocumentReferences?returnurl=<%= escapedBackUrl %>&id=<%= document.getId() %>"><%
 		} %><%= documentMenuPairsContainingDocument.length %> <? webapp/imcms/lang/jsp/parent_count_unit ?><%
 		if (documentMenuPairsContainingDocument.length > 0 ) {
 			%></a><%

@@ -1,6 +1,5 @@
 <%@ page import="com.imcode.imcms.mapping.DocumentMapper,
                  com.imcode.imcms.servlet.admin.AdminDoc,
-                 com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  com.imcode.imcms.servlet.superadmin.LinkCheck,
                  imcode.server.ImcmsConstants,
                  imcode.server.document.DocumentDomainObject,
@@ -99,11 +98,8 @@ if (doCheckLinks) {
 				document.getId() %> - <%= StringEscapeUtils.escapeHtml4( document.getHeadline() ) %></a></td>
 	<td nowrap><%
 				if (documentMenuPairsContainingUrlDocument.length > 0) {
-//                    todo: remove dead reference to /servlet/DocumentReferences or whole this page if not used any more
-					%><a href="<%= request.getContextPath() %>/servlet/DocumentReferences?<%=
-					DocumentReferences.REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID %>=<%=
-					document.getId() %>&<%=
-					DocumentReferences.REQUEST_PARAMETER__RETURNURL %>=LinkCheck"><%
+    %><a href="<%= request.getContextPath() %>/servlet/DocumentReferences?id=<%=
+					document.getId() %>&returnurl=LinkCheck"><%
 				}
 				%><%= documentMenuPairsContainingUrlDocument.length %> <? webapp/imcms/lang/jsp/parent_count_unit ?><%
 				if (documentMenuPairsContainingUrlDocument.length > 0) {
