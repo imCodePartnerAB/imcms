@@ -23,12 +23,12 @@ public class AdminRoles extends HttpServlet {
 
     private final static Logger LOG = Logger.getLogger(AdminRoles.class.getName());
 
-    private final static String HTML_ADMIN_ROLES = "AdminRoles_roles.htm";
-    private final static String HTML_ADD_ROLE = "AdminRoles_Add.htm";
-    private final static String HTML_RENAME_ROLE = "AdminRoles_Rename.htm";
-    private final static String HTML_DELETE_ROLE_1 = "AdminRoles_Delete1.htm";
-    private final static String HTML_DELETE_ROLE_2 = "AdminRoles_Delete2.htm";
-    private final static String HTML_EDIT_ROLE = "AdminRoles_Edit.html";
+    private final static String HTML_ADMIN_ROLES = "AdminRoles_roles.jsp";
+    private final static String HTML_ADD_ROLE = "AdminRoles_Add.jsp";
+    private final static String HTML_RENAME_ROLE = "AdminRoles_Rename.jsp";
+    private final static String HTML_DELETE_ROLE_1 = "AdminRoles_Delete1.jsp";
+    private final static String HTML_DELETE_ROLE_2 = "AdminRoles_Delete2.jsp";
+    private final static String HTML_EDIT_ROLE = "AdminRoles_Edit.jsp";
     private final static String HTML_EDIT_ROLE_TABLE = "AdminRoles_Edit_Permissions_List.html";
     private final static String HTML_EDIT_ROLE_TABLE_ROW = "AdminRoles_Edit_Permission.html";
 

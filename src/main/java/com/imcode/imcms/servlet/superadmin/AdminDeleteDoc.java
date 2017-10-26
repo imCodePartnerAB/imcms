@@ -23,7 +23,7 @@ public class AdminDeleteDoc extends HttpServlet {
 
     private final static Logger log = Logger.getLogger(AdminDeleteDoc.class.getName());
 
-    private final static String HTML_TEMPLATE = "AdminDeleteDoc.htm";
+    private final static String HTML_TEMPLATE = "AdminDeleteDoc.jsp";
     private static final long serialVersionUID = -5257851780772885425L;
 
     /**
