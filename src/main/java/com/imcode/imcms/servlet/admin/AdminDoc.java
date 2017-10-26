@@ -86,7 +86,7 @@ public class AdminDoc extends HttpServlet {
 
                     vec.add(imcref.getAdminTemplate(adminButtonsLink, user, null));
                     Utility.setDefaultHtmlContentType(res);
-                    res.getWriter().write(imcref.getAdminTemplate("docinfo.html", user, vec));
+                    res.getWriter().write(imcref.getAdminTemplate("docinfo.jsp", user, vec));
                     return;
                 }
             }

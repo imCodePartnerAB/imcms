@@ -5,12 +5,12 @@
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
+
 </head>
 <body bgcolor="#FFFFFF">
 
 #gui_outer_start()
 #gui_head( "<? templates/sv/templategroup_delete_warning.html/1 ?>" )
-</script>
 <table border="0" cellpadding="0" cellspacing="0">
 <form>
 <tr>
@@ -27,7 +27,7 @@
 <input type="HIDDEN" name="templategroup" value="#templategroup#">
 <input type="HIDDEN" name="group_delete_cancel" value="Avbryt">
 <tr>
-	<td align="center" class="imcmsAdmText"><b><? templates/sv/templategroup_delete_documents_assigned_warning.html/1 ?></b>
+	<td align="center" class="imcmsAdmText"><? templates/sv/templategroup_delete_warning.html/4 ?>
 <blockquote>#templates#</blockquote></td>
 </tr>
 <tr>
@@ -35,6 +35,7 @@
 </tr>
 <tr>
 	<td align="right">
+	<input type="submit" class="imcmsFormBtn" name="group_delete" value="<? templates/sv/templategroup_delete_warning.html/2004 ?>">
 	<input type="submit" class="imcmsFormBtn" name="group_delete_cancel" value="<? templates/sv/templategroup_delete_warning.html/2005 ?>"></td>
 </tr>
 

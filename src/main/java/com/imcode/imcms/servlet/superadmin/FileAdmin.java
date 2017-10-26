@@ -26,8 +26,8 @@ public class FileAdmin extends HttpServlet {
 
     private final static Logger LOG = Logger.getLogger("FileAdmin");
     private static final int BUFFER_SIZE = 65536;
-    private static final String ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING = "FileAdminCopyOverwriteWarning.html";
-    private static final String ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING = "FileAdminMoveOverwriteWarning.html";
+    private static final String ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING = "FileAdminCopyOverwriteWarning.jsp";
+    private static final String ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING = "FileAdminMoveOverwriteWarning.jsp";
 
     static File findUniqueFilename(File file) {
         File uniqueFile = file;
@@ -404,7 +404,7 @@ public class FileAdmin extends HttpServlet {
         vec.add("#filename#");
         vec.add(newFilename);
         Utility.setDefaultHtmlContentType(res);
-        res.getWriter().print(imcref.getAdminTemplate("FileAdminFileExisted.html", user, vec));
+        res.getWriter().print(imcref.getAdminTemplate("FileAdminFileExisted.jsp", user, vec));
     }
 
     private void outputBlankFileError(File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
@@ -415,7 +415,7 @@ public class FileAdmin extends HttpServlet {
         vec.add("#dir2#");
         vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
         Utility.setDefaultHtmlContentType(res);
-        res.getWriter().print(imcref.getAdminTemplate("FileAdminFileBlank.html", user, vec));
+        res.getWriter().print(imcref.getAdminTemplate("FileAdminFileBlank.jsp", user, vec));
     }
 
     private void outputDeleteWarning(File[] filelist, File dir1, File dir2, File sourceDir, HttpServletResponse res,
@@ -440,7 +440,7 @@ public class FileAdmin extends HttpServlet {
         vec.add("#dir2#");
         vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
         Utility.setDefaultHtmlContentType(res);
-        res.getWriter().print(imcref.getAdminTemplate("FileAdminDeleteWarning.html", user, vec));
+        res.getWriter().print(imcref.getAdminTemplate("FileAdminDeleteWarning.jsp", user, vec));
     }
 
     private void outputBlankFilenameError(File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
@@ -451,7 +451,7 @@ public class FileAdmin extends HttpServlet {
         vec.add("#dir2#");
         vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
         Utility.setDefaultHtmlContentType(res);
-        res.getWriter().print(imcref.getAdminTemplate("FileAdminNameBlank.html", user, vec));
+        res.getWriter().print(imcref.getAdminTemplate("FileAdminNameBlank.jsp", user, vec));
     }
 
     private void moveOk(HttpServletRequest mp, File[] roots) throws IOException {
@@ -628,7 +628,7 @@ public class FileAdmin extends HttpServlet {
             vec.add("");
         }
 
-        return imcref.getAdminTemplate("FileAdmin.html", user, vec);
+        return imcref.getAdminTemplate("FileAdmin.jsp", user, vec);
     }
 
     private String getContextRelativeAbsolutePathToDirectory(File dir) throws IOException {

@@ -48,7 +48,7 @@
 <script language="JavaScript">
 <!--
 if (document.forms[1]) {
-	var f = document.forms[1]
+    var f = document.forms[1];
 	if (f.elements[0]) {
 		f.elements[0].blur();
 	}

@@ -344,9 +344,9 @@ function setSelectedFolders() {
 	</tr>
 	<tr>
 		<td align="right"><span class="imcmsAdmForm">
-		<select name="files1" id="fileSel_1" size="20" class="imcmsAdmForm" style="width:330"
-			onChange="checkFileType(1,false)"
-			onDblClick="dblClickAction(1)" multiple>
+		<select name="files1" id="fileSel_1" size="20" class="imcmsAdmForm" style="width:330px"
+                onChange="checkFileType(1,false)"
+                onDblClick="dblClickAction(1)" multiple>
 	#files1#
 		</select></span></td>
 	</tr>
@@ -415,9 +415,9 @@ function setSelectedFolders() {
 	<tr>
 		<td>
 		<span class="imcmsAdmForm">
-		<select name="files2" id="fileSel_2" size="20" class="imcmsAdmForm" style="width:330"
-			onChange="checkFileType(2,false)"
-			onDblClick="dblClickAction(2)" multiple>
+		<select name="files2" id="fileSel_2" size="20" class="imcmsAdmForm" style="width:330px"
+                onChange="checkFileType(2,false)"
+                onDblClick="dblClickAction(2)" multiple>
 	#files2#
 		</select></span></td>
 	</tr>
@@ -427,29 +427,31 @@ function setSelectedFolders() {
 	<td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="8" alt=""></td>
 </tr>
 <tr>
-  <td><input class="imcmsFormBtnSmall" height="22" style="width:90" type="submit" name="upload1" value="<? templates/sv/FileAdmin.html/2015 ?>"></td>
+    <td><input class="imcmsFormBtnSmall" height="22" style="width:90px" type="submit" name="upload1"
+               value="<? templates/sv/FileAdmin.html/2015 ?>"></td>
   <td colspan="4" align="center"><span class="imcmsAdmForm"><? templates/sv/FileAdmin.html/1003 ?>&nbsp;
     <input type="file" name="file" class="imcmsAdmForm" size="20"></span></td>
-  <td align="right"><input class="imcmsFormBtnSmall" height="22" style="width:90" type="submit" name="upload2" value="<? templates/sv/FileAdmin.html/2016 ?>"></td>
+    <td align="right"><input class="imcmsFormBtnSmall" height="22" style="width:90px" type="submit" name="upload2"
+                             value="<? templates/sv/FileAdmin.html/2016 ?>"></td>
 </tr>
 <tr>
   <td colspan="6">#gui_hr( "blue" )</td>
 </tr>
 <tr>
   <td align="left"><input
-	type="submit" name="rename1"class="imcmsFormBtnSmall" height="22" style="width:90"
-		value="<? templates/sv/FileAdmin.html/2017 ?>"><br><img
+          type="submit" name="rename1" class="imcmsFormBtnSmall" height="22" style="width:90px"
+          value="<? templates/sv/FileAdmin.html/2017 ?>"><br><img
 	src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2" alt=""><br><input
-	type="submit" name="mkdir1" class="imcmsFormBtnSmall" height="22" style="width:90"
-		value="<? templates/sv/FileAdmin.html/2018 ?>"></td>
+          type="submit" name="mkdir1" class="imcmsFormBtnSmall" height="22" style="width:90px"
+          value="<? templates/sv/FileAdmin.html/2018 ?>"></td>
   <td colspan="4" align="center"><? templates/sv/FileAdmin.html/13 ?>
 	<span class="imcmsAdmForm"><input type="text" name="name" class="imcmsAdmForm"></span></td>
   <td align="right"><input
-	type="submit" name="rename2" class="imcmsFormBtnSmall" height="22" style="width:90"
-		value="<? templates/sv/FileAdmin.html/2019 ?>"><br><img
+          type="submit" name="rename2" class="imcmsFormBtnSmall" height="22" style="width:90px"
+          value="<? templates/sv/FileAdmin.html/2019 ?>"><br><img
 	src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2" alt=""><br><input
-	type="submit" name="mkdir2" class="imcmsFormBtnSmall" height="22" style="width:90"
-		value="<? templates/sv/FileAdmin.html/2020 ?>"></td>
+          type="submit" name="mkdir2" class="imcmsFormBtnSmall" height="22" style="width:90px"
+          value="<? templates/sv/FileAdmin.html/2020 ?>"></td>
 </tr>
 <tr>
   <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="150" height="1" alt=""></td>

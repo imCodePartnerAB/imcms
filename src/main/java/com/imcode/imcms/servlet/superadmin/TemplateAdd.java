@@ -82,7 +82,7 @@ public class TemplateAdd extends HttpServlet {
             List<String> vec = new ArrayList<>();
             vec.add("#language#");
             vec.add(language);
-            String htmlStr = imcref.getAdminTemplate("template_upload_name_blank.html", user, vec);
+            String htmlStr = imcref.getAdminTemplate("template_upload_name_blank.jsp", user, vec);
             out.print(htmlStr);
             return;
         }
@@ -93,7 +93,7 @@ public class TemplateAdd extends HttpServlet {
             List<String> vec = new ArrayList<>();
             vec.add("#language#");
             vec.add(language);
-            String htmlStr = imcref.getAdminTemplate("template_upload_file_blank.html", user, vec);
+            String htmlStr = imcref.getAdminTemplate("template_upload_file_blank.jsp", user, vec);
             out.print(htmlStr);
             return;
         }
@@ -110,13 +110,13 @@ public class TemplateAdd extends HttpServlet {
             List<String> vec = new ArrayList<>();
             vec.add("#language#");
             vec.add(language);
-            htmlStr = imcref.getAdminTemplate("template_upload_error.html", user, vec);
+            htmlStr = imcref.getAdminTemplate("template_upload_error.jsp", user, vec);
         } else if (result == -1) {
             //todo: remove these code duplicates
             List<String> vec = new ArrayList<>();
             vec.add("#language#");
             vec.add(language);
-            htmlStr = imcref.getAdminTemplate("template_upload_file_exists.html", user, vec);
+            htmlStr = imcref.getAdminTemplate("template_upload_file_exists.jsp", user, vec);
         } else {
             TemplateDomainObject template = templateMapper.getTemplateByName(simpleName);
 
@@ -134,7 +134,7 @@ public class TemplateAdd extends HttpServlet {
             List<String> vec = new ArrayList<>();
             vec.add("#language#");
             vec.add(language);
-            htmlStr = imcref.getAdminTemplate("template_upload_done.html", user, vec);
+            htmlStr = imcref.getAdminTemplate("template_upload_done.jsp", user, vec);
         }
         out.print(htmlStr);
     }

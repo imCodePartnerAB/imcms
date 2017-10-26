@@ -24,21 +24,21 @@ import java.util.Collection;
 import java.util.List;
 
 public class TemplateAdmin extends HttpServlet {
-    private static final String TEMPLATE_ADMIN = "template_admin.html";
-    private static final String ADMIN_TEMPLATE_DELETE = "templategroup_delete.html";
-    private static final String ADMIN_TEMPLATE_ADD = "templategroup_add.html";
-    private static final String ADMIN_TEMPLATE_EDIT = "template_edit.html";
-    private static final String ADMIN_TEMPLATE_RENAME = "template_rename.html";
-    private static final String ADMIN_TEMPLATE_AVALIABILITY = "template_availability.html";
-    private static final String TEMPLATE_DELETE = "template_delete.html";
-    private static final String TEMPLATE_DEMO_UPLOAD = "templatedemo_upload.html";
-    private static final String TEMPLATE_UPLOAD = "template_upload.html";
-    private static final String TEMPLATE_GROUP_RENAME = "templategroup_rename.html";
-    private static final String TEMPLATE_ASSIGN = "template_assign.html";
+    private static final String TEMPLATE_ADMIN = "template_admin.jsp";
+    private static final String ADMIN_TEMPLATE_DELETE = "templategroup_delete.jsp";
+    private static final String ADMIN_TEMPLATE_ADD = "templategroup_add.jsp";
+    private static final String ADMIN_TEMPLATE_EDIT = "template_edit.jsp";
+    private static final String ADMIN_TEMPLATE_RENAME = "template_rename.jsp";
+    private static final String ADMIN_TEMPLATE_AVALIABILITY = "template_availability.jsp";
+    private static final String TEMPLATE_DELETE = "template_delete.jsp";
+    private static final String TEMPLATE_DEMO_UPLOAD = "templatedemo_upload.jsp";
+    private static final String TEMPLATE_UPLOAD = "template_upload.jsp";
+    private static final String TEMPLATE_GROUP_RENAME = "templategroup_rename.jsp";
+    private static final String TEMPLATE_ASSIGN = "template_assign.jsp";
     private static final String TEMPLATE_DOCS_ROW = "templates_docs_row.html";
-    private static final String TEMPLATE_DELETE_WARNING = "template_delete_warning.html";
-    private static final String TEMPLATE_GROUP_DELETE_WARNING = "templategroup_delete_warning.html";
-    private static final String TEMPLATE_GROUP_DELETE_DOCUMENTS_ASSIGNED_WARNING = "templategroup_delete_documents_assigned_warning.html";
+    private static final String TEMPLATE_DELETE_WARNING = "template_delete_warning.jsp";
+    private static final String TEMPLATE_GROUP_DELETE_WARNING = "templategroup_delete_warning.jsp";
+    private static final String TEMPLATE_GROUP_DELETE_DOCUMENTS_ASSIGNED_WARNING = "templategroup_delete_documents_assigned_warning.jsp";
 
     static String createDeleteTemplateGroupDialog(TemplateMapper templateMapper, ImcmsServices imcref,
                                                   UserDomainObject user) {
@@ -282,7 +282,7 @@ public class TemplateAdmin extends HttpServlet {
         List<String> vec = langTag(lang);
         vec.add("#template_list#");
         vec.add(templateList);
-        return imcref.getAdminTemplate("template_list.html", user, vec);
+        return imcref.getAdminTemplate("template_list.jsp", user, vec);
     }
 
     private String createAssignTemplateGroupDialog(String lang, TemplateMapper templateMapper,
@@ -297,7 +297,7 @@ public class TemplateAdmin extends HttpServlet {
 
     private String createDownloadTemplateDialog(String lang, ImcmsServices imcref,
                                                 TemplateMapper templateMapper, UserDomainObject user) throws IOException {
-        return imcref.getAdminTemplate("template_get.html", user, createShortTemplateDialog(lang, imcref, templateMapper));
+        return imcref.getAdminTemplate("template_get.jsp", user, createShortTemplateDialog(lang, imcref, templateMapper));
     }
 
     private String createUploadDemoTemplateDialog(String lang, TemplateMapper templateMapper,

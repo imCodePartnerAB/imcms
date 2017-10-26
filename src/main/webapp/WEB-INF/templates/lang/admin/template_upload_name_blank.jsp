@@ -11,7 +11,6 @@
 
 #gui_outer_start()
 #gui_head( "<? templates/sv/template_upload_name_blank.html/1 ?>" )
-</script>
 <table border="0" cellpadding="0" cellspacing="0">
 <form>
 <tr>

@@ -38,7 +38,7 @@ public class SaveInPage extends HttpServlet {
         DocumentMapper documentMapper = services.getDocumentMapper();
 
         int documentId = Integer.parseInt(req.getParameter("meta_id"));
-        TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentMapper.getDocument(documentId);
+        TextDocumentDomainObject textDocument = documentMapper.getDocument(documentId);
 
         TemplateMapper templateMapper = services.getTemplateMapper();
 
@@ -122,7 +122,7 @@ public class SaveInPage extends HttpServlet {
         List vec = new ArrayList();
         vec.add("#meta_id#");
         vec.add(String.valueOf(documentId));
-        String htmlStr = services.getAdminTemplate("inPage_admin_no_template.html", user, vec);
+        String htmlStr = services.getAdminTemplate("inPage_admin_no_template.jsp", user, vec);
         out.write(htmlStr);
     }
 

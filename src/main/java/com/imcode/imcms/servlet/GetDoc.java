@@ -36,7 +36,7 @@ public class GetDoc extends HttpServlet {
     public static final String REQUEST_PARAMETER__FILE_ID = "file_id";
     private final static Logger TRACK_LOG = Logger.getLogger(ImcmsConstants.ACCESS_LOG);
     private final static Logger LOG = Logger.getLogger(GetDoc.class.getName());
-    private final static String NO_ACTIVE_DOCUMENT_URL = "no_active_document.html";
+    private final static String NO_ACTIVE_DOCUMENT_URL = "no_active_document.jsp";
     private static final String HTTP_HEADER_REFERRER = "Referer";// Note, intended misspelling of "Referrer", according to the HTTP spec.
 
     /**

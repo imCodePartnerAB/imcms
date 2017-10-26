@@ -155,7 +155,7 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String createAddNameEmptyErrorDialog(ImcmsServices imcref, UserDomainObject user) {
-        return imcref.getAdminTemplate("templategroup_add_name_blank.html", user, null);
+        return imcref.getAdminTemplate("templategroup_add_name_blank.jsp", user, null);
     }
 
     private String createDocumentsUsingTemplateDialog(ImcmsServices imcref, UserDomainObject user,
@@ -169,18 +169,18 @@ public class TemplateChange extends HttpServlet {
         }
         vec2.add("#language#");
         vec2.add(lang);
-        return imcref.getAdminTemplate("template_list.html", user, vec2);
+        return imcref.getAdminTemplate("template_list.jsp", user, vec2);
     }
 
     private String createRenameNameEmptyErrorDialog(String lang, ImcmsServices imcref, UserDomainObject user) {
         List<String> vec = new ArrayList<>();
         vec.add("#language#");
         vec.add(lang);
-        return imcref.getAdminTemplate("template_rename_name_blank.html", user, vec);
+        return imcref.getAdminTemplate("template_rename_name_blank.jsp", user, vec);
     }
 
     private String createTemplateGroupExistsErrorDialog(ImcmsServices imcref, UserDomainObject user) {
-        return imcref.getAdminTemplate("templategroup_add_exists.html", user, null);
+        return imcref.getAdminTemplate("templategroup_add_exists.jsp", user, null);
     }
 
     private void deleteTemplate(HttpServletRequest req, ImcmsServices imcref) {
