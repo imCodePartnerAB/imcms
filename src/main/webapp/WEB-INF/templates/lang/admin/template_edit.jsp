@@ -73,7 +73,12 @@ function editFile() {
 <form name="TemplateEdit">
 <input type="HIDDEN" name="language" value="#language#">
 <tr>
-    <td colspan="2">#gui_heading( "<? templates/sv/template_edit.html/4 ?>" )</td>
+    <td colspan="2">
+        <c:set var="heading">
+            <fmt:message key="templates/sv/template_edit.html/4"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td colspan="2">

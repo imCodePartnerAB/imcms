@@ -1,5 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 #gui_start_of_page( "<? templates/sv/AdminRoles_Rename.htm/1 ?>" "AdminRoles" "CANCEL_ROLE" "RoleChangeName" "" )
 
 <table width="400" border="0" cellspacing="0">
@@ -7,7 +9,11 @@
 <input type="HIDDEN" name="ROLE_ID" value="#CURRENT_ROLE_ID#">
 <tr>
     <td class="imcmsAdmText">
-        #gui_heading( "<? templates/sv/AdminRoles_Rename.htm/3 ?> &nbsp; &nbsp; <i>#CURRENT_ROLE_NAME#</i>" )</td>
+        <c:set var="heading">
+            <fmt:message key="templates/sv/AdminRoles_Rename.htm/3"/> &nbsp; &nbsp; <i>#CURRENT_ROLE_NAME#</i>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td>

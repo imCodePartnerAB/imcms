@@ -35,7 +35,12 @@
 <input type="HIDDEN" name="dir1" value="#dir1#">
 <input type="HIDDEN" name="dir2" value="#dir2#">
 <tr>
-    <td>#gui_heading( "<? templates/sv/FileAdminFileExisted.html/2 ?>" )</td>
+    <td>
+        <c:set var="heading">
+            <fmt:message key="templates/sv/FileAdminFileExisted.html/2"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td><? templates/sv/FileAdminFileExisted.html/3 ?></td>

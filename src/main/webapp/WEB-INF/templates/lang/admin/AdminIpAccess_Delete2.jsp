@@ -23,7 +23,12 @@
 <form method="post" action="AdminIpAccess" name="AdminIPAccess">
     <table border="0" cellspacing="0" cellpadding="2" width="400">
         <tr>
-            <td>#gui_heading( "<? global/warning ?>" )</td>
+            <td>
+                <c:set var="heading">
+                    <fmt:message key="global/warning"/>
+                </c:set>
+                <ui:imcms_gui_heading heading="${heading}"/>
+            </td>
         </tr>
         <tr>
             <td><? templates/sv/AdminIpAccess_Delete2.htm/3 ?></td>

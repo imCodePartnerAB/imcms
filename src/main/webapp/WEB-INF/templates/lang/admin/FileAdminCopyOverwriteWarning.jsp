@@ -41,7 +41,12 @@
 <input type="HIDDEN" name="dest" value="#dest#">
 <input type="HIDDEN" name="files" value="#files#">
 <tr>
-    <td>#gui_heading( "<? templates/sv/FileAdminCopyOverwriteWarning.html/3 ?>" )</td>
+    <td>
+        <c:set var="heading">
+            <fmt:message key="templates/sv/FileAdminCopyOverwriteWarning.html/3"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td>

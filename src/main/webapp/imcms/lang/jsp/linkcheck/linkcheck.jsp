@@ -11,6 +11,8 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@taglib prefix="vel" uri="imcmsvelocity" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%
 
 LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
@@ -24,7 +26,12 @@ String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 <form method="GET" action="LinkCheck">
 <table border="0" cellspacing="0" cellpadding="2" width="100%">
 <tr>
-	<td>#gui_heading( "<? webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" )</td>
+    <td>
+        <c:set var="heading">
+            <fmt:message key="webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
 	<td>

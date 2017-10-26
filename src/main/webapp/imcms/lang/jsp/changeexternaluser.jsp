@@ -92,7 +92,12 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
     <ui:imcms_gui_mid/>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <tr>
-	<td colspan="2">#gui_heading( "<? install/htdocs/sv/adminuser/changeexternaluser.jsp/2 ?>" )</td>
+    <td colspan="2">
+        <c:set var="heading">
+            <fmt:message key="install/htdocs/sv/adminuser/changeexternaluser.jsp/2"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
 	<td colspan="2"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/3 ?><br>&nbsp;</td>

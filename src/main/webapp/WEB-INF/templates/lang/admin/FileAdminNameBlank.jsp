@@ -41,7 +41,12 @@
 <input type="HIDDEN" name="dest" value="#dest#">
 <input type="HIDDEN" name="files" value="#files#">
 <tr>
-    <td>#gui_heading( "<? templates/sv/FileAdminNameBlank.html/2 ?>")</td>
+    <td>
+        <c:set var="heading">
+            <fmt:message key="templates/sv/FileAdminNameBlank.html/2"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td><? templates/sv/FileAdminNameBlank.html/3 ?></td>

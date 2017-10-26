@@ -76,7 +76,12 @@ function setSize() {
 <input type="hidden" name="language" value="#language#">
 <input type="hidden" name="demo" value="true">
 <tr>
-    <td colspan="2">#gui_heading( "<? templates/sv/templatedemo_upload.html/6/1 ?>" )</td>
+    <td colspan="2">
+        <c:set var="heading">
+            <fmt:message key="templates/sv/templatedemo_upload.html/6/1"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td colspan="2">

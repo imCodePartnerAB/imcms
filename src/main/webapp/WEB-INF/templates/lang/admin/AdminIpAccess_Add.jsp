@@ -23,7 +23,12 @@
 <form method="post" action="AdminIpAccess" name="addIP">
     <table border="0" cellspacing="0" cellpadding="2" width="400">
         <tr>
-            <td colspan="2">#gui_heading( "<? templates/sv/AdminIpAccess_Add.htm/2 ?>" )</td>
+            <td colspan="2">
+                <c:set var="heading">
+                    <fmt:message key="templates/sv/AdminIpAccess_Add.htm/2"/>
+                </c:set>
+                <ui:imcms_gui_heading heading="${heading}"/>
+            </td>
         </tr>
         <tr>
             <td colspan="2"><? templates/sv/AdminIpAccess_Add.htm/3 ?></td>

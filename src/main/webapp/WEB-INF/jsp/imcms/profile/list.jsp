@@ -31,7 +31,10 @@
             </tr>
         </table>
         <ui:imcms_gui_mid/>
-        #gui_heading( '<fmt:message key="profile/headline"/>' )
+        <c:set var="heading">
+            <fmt:message key="profile/headline"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
         <table border="0" cellspacing="0" cellpadding="2" width="100%" align="center">
             <%
             for ( Profile profile : profiles) {

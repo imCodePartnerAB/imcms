@@ -1,9 +1,3 @@
-#macro( gui_heading $heading )
-    <!-- gui_heading -->
-<span class="imcmsAdmHeading">$heading</span><br>
-<ui:imcms_gui_hr wantedcolor="blue"/>
-    <!-- /gui_heading -->
-#end
 
 #macro( gui_start_of_page $titleAndHeading $backServlet $action $helpDocName $bodyOnLoad )
 <!-- gui_start_of_page -->

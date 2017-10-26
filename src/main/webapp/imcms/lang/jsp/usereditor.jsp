@@ -90,7 +90,12 @@ function activateUseradmin_roles(){
 
 <table border="0" cellspacing="0" cellpadding="0" width="660" align="center">
 <tr>
-	<td colspan="2">#gui_heading( "<? templates/sv/AdminUserResp.htm/5/1 ?>" )</td>
+    <td colspan="2">
+        <c:set var="heading">
+            <fmt:message key="templates/sv/AdminUserResp.htm/5/1"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
 	<td colspan="2" class="imcmsAdmText">
@@ -220,7 +225,12 @@ function activateUseradmin_roles(){
 </tr>
 <% if (loggedOnUser.canEditRolesFor(userEditorPage.getUneditedUser())) { %>
 <tr>
-	<td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/AdminUserResp_superadmin_part.htm/3/1 ?>" )</td>
+    <td colspan="2">&nbsp;<br>
+        <c:set var="heading">
+            <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr valign="top">
 	<td class="imcmsAdmText" nowrap>

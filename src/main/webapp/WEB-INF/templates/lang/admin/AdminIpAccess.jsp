@@ -1,11 +1,18 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 #gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/7 ?>" "AdminManager" "" "IPAccess" "" )
 
 <form method="post" action="AdminIpAccess" name="argumentForm">
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <tr>
-    <td>#gui_heading( "<? templates/sv/AdminIpAccess.htm/3000 ?>" )</td>
+    <td>
+        <c:set var="heading">
+            <fmt:message key="templates/sv/AdminIpAccess.htm/3000"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td><? templates/sv/AdminIpAccess.htm/3 ?><br>

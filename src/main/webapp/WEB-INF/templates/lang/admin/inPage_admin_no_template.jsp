@@ -33,7 +33,12 @@
 <form method="post" action="SaveInPage">
 <input type="HIDDEN" name="meta_id" value="#meta_id#">
 <tr>
-    <td>#gui_heading( "<? templates/sv/inPage_admin_no_template.html/2 ?>" )</td>
+    <td>
+        <c:set var="heading">
+            <fmt:message key="templates/sv/inPage_admin_no_template.html/2"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td><? templates/sv/inPage_admin_no_template.html/3 ?> </td>

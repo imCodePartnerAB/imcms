@@ -1,11 +1,18 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 #gui_start_of_page( "<? templates/sv/AdminRoles_Add.htm/1 ?>" "AdminRoles" "CANCEL_ROLE" "RoleAdd" "" )
 
 <table width="400" border="0" cellspacing="0">
 <form method="post" action="AdminRoles" name="addIP">
 <tr>
-    <td colspan="2">#gui_heading( "<? templates/sv/AdminRoles_Add.htm/1 ?>" )</td>
+    <td colspan="2">
+        <c:set var="heading">
+            <fmt:message key="templates/sv/AdminRoles_Add.htm/1"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td colspan="2" class="imcmsAdmText">

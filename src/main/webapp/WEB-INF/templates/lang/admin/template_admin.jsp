@@ -59,7 +59,12 @@
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>
-    <td>#gui_heading( "<? templates/sv/template_admin.html/6/1 ?>" )</td>
+    <td>
+        <c:set var="heading">
+            <fmt:message key="templates/sv/template_admin.html/6/1"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td height="28" class="imcmsAdmText"><? templates/sv/template_admin.html/7 ?></td>

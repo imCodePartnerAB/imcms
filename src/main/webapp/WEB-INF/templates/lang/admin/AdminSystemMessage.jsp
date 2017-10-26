@@ -1,10 +1,17 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 #gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/14 ?>" "AdminManager" "" "SystemProperties" "" )
 
 <table width="600">
     <tr>
-        <td colspan="4">#gui_heading( "<? templates/sv/AdminSystemMessage.htm/3 ?>" ) </td>
+        <td colspan="4">
+            <c:set var="heading">
+                <fmt:message key="templates/sv/AdminSystemMessage.htm/3"/>
+            </c:set>
+            <ui:imcms_gui_heading heading="${heading}"/>
+        </td>
     </tr>
     <tr>
         <form method="post" action="AdminSystemInfo">
@@ -16,7 +23,12 @@
     </tr>
     <tr><td>&nbsp;</td></tr>
     <tr>
-        <td colspan="4">#gui_heading( "<? templates/sv/AdminSystemMessage.htm/8 ?>" ) </td>
+        <td colspan="4">
+            <c:set var="heading">
+                <fmt:message key="templates/sv/AdminSystemMessage.htm/8"/>
+            </c:set>
+            <ui:imcms_gui_heading heading="${heading}"/>
+        </td>
     </tr>
     <tr>
         <form method="post" action="AdminSystemInfo">
@@ -29,7 +41,12 @@
     </tr>
     <tr><td>&nbsp;</td></tr>
     <tr>
-        <td colspan="4">#gui_heading( "<? templates/sv/AdminSystemMessage.htm/14 ?>" ) </td>
+        <td colspan="4">
+            <c:set var="heading">
+                <fmt:message key="templates/sv/AdminSystemMessage.htm/14"/>
+            </c:set>
+            <ui:imcms_gui_heading heading="${heading}"/>
+        </td>
     </tr>
     <form method="post" action="AdminSystemInfo">
         <td>
@@ -48,7 +65,12 @@
     </form>
     <tr><td>&nbsp;</td></tr>
     <tr>
-        <td colspan="4">#gui_heading( "<? templates/sv/AdminSystemMessage.htm/22 ?>" ) </td>
+        <td colspan="4">
+            <c:set var="heading">
+                <fmt:message key="templates/sv/AdminSystemMessage.htm/22"/>
+            </c:set>
+            <ui:imcms_gui_heading heading="${heading}"/>
+        </td>
     </tr>
     <form method="post" action="AdminSystemInfo">
         <tr>

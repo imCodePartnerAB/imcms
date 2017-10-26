@@ -63,7 +63,12 @@
 <form name="TemplateChange" action="TemplateChange" method="post">
 <input type="hidden" name="language" value="#language#">
 <tr>
-    <td colspan="2">#gui_heading( "<? templates/sv/template_availability.html/1/1?>" )</td>
+    <td colspan="2">
+        <c:set var="heading">
+            <fmt:message key="templates/sv/template_availability.html/1/1"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td colspan="2">

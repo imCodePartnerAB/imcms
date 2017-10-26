@@ -115,7 +115,7 @@
             <%
             %>
             <tr>
-                <td colspan="2">#gui_heading( "<%=heading%>" )</td>
+                <td colspan="2"><ui:imcms_gui_heading heading="<%=heading%>"/></td>
             </tr>
             <tr>
                 <td colspan="2">

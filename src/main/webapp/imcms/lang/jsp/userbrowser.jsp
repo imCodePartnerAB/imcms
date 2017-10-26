@@ -50,7 +50,8 @@
             <input type="hidden" name="<%= UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE %>"
                                 value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE ) %>">
     <tr>
-        <td colspan="2">#gui_heading( "<%= userFinder.getHeadline().toLocalizedString(request) %>" )</td>
+        <td colspan="2"><ui:imcms_gui_heading
+                heading="<%= userFinder.getHeadline().toLocalizedString(request) %>"/></td>
     </tr>
     <tr>
         <td width="30%" class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/10 ?></td>

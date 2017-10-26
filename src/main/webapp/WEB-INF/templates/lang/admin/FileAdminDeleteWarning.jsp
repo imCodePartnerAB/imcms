@@ -33,7 +33,12 @@
 
     <table border="0" cellspacing="0" cellpadding="0" width="500">
 <tr>
-    <td>#gui_heading( "<? templates/sv/FileAdminDeleteWarning.html/3 ?>" )</td>
+    <td>
+        <c:set var="heading">
+            <fmt:message key="templates/sv/FileAdminDeleteWarning.html/3"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
     <td>
