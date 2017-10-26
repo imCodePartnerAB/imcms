@@ -1,11 +1,10 @@
 <%@ page import="imcode.server.document.CategoryDomainObject,
                  imcode.server.document.CategoryTypeDomainObject"
          contentType="text/html; charset=UTF-8" %>
-<%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
-<vel:velocity><%
+<%
 
     AdminCategories.AdminCategoriesPage adminCategoriesPage = (AdminCategories.AdminCategoriesPage) request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
     String mode = adminCategoriesPage.getMode();
@@ -48,8 +47,8 @@
     <head>
         <title><? templates/sv/AdminManager_adminTask_element.htm/17 ?></title>
 
-        <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-        <script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+        <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
     </head>
     <body onLoad="focusField('main','template')">
@@ -529,4 +528,3 @@
     <ui:imcms_gui_outer_end/>
     </body>
     </html>
-</vel:velocity>

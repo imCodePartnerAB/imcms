@@ -58,10 +58,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      */
     private volatile String sessionId;
     private volatile boolean authenticatedByIp;
-    /**
-     * todo: FIXME - Kludge to get context path into template methods *
-     */
-    private volatile String currentContextPath;
+
     /**
      * @since 4.0.7
      */
@@ -559,15 +556,6 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public void removePhoneNumber(PhoneNumber number) {
         phoneNumbers.remove(number);
-    }
-
-    public String getCurrentContextPath() {
-        return currentContextPath;
-    }
-
-    /* FIXME: Current context path should be sent in a HttpServletRequest, not in an UserDomainObject. */
-    public void setCurrentContextPath(String currentContextPath) {
-        this.currentContextPath = currentContextPath;
     }
 
     public boolean isSuperAdminOrHasAtLeastPermissionSetIdOn(DocumentPermissionSetTypeDomainObject documentPermissionSetType, DocumentDomainObject document) {

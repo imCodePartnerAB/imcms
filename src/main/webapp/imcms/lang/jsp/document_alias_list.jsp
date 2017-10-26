@@ -11,8 +11,8 @@
 <%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.Map"%>
-<%@page contentType="text/html; charset=UTF-8" %>
-<%@taglib prefix="vel" uri="imcmsvelocity" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
+
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -22,13 +22,12 @@
     DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 	UserDomainObject user = Utility.getLoggedOnUser(request);
 	Map documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user) ;%>
-<vel:velocity>
 <html>
 <head>
 
 <title><? imcms/lang/jsp/document_list.jsp/title ?></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
 <script src="<%= request.getContextPath() %>/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
@@ -89,20 +88,23 @@ if (null != listDocumentAliasPage.aliasInSelectedRange) { %>
 	while ( aliasIter.hasNext() ) {
 		DocumentDomainObject document = documentMapper.getDocument( aliasIter.next().toString() ); %>
 <tr>
-	<td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
+    <td colspan="6"><img src="${contextPath}/imcms/${language}/images/admin/1x1_cccccc.gif" width="100%" height="1">
+    </td>
 </tr>
 <tr valign="top">
-    <td><a name="alias" href="$contextPath/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %></a></td>
-	<td align="center"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+    <td><a name="alias"
+           href="${contextPath}/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %>
+    </a></td>
+    <td align="center"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
     <%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
-	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+    <td nowrap><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
 	<%= StringEscapeUtils.escapeHtml4((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
-	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
-	<a name="<%= document.getId() %>" href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>"><%=
+    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
+        <a name="<%= document.getId() %>" href="${contextPath}/servlet/AdminDoc?meta_id=<%= document.getId() %>"><%=
 		document.getId() %> - <%= StringEscapeUtils.escapeHtml4( document.getHeadline() ) %></a></td>
-	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
 	<%= StringEscapeUtils.escapeHtml4(userService.getUser(document.getCreatorId()).getFirstName()) + " " + StringEscapeUtils.escapeHtml4(userService.getUser(document.getCreatorId()).getLastName()) %></td>
-	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
 	<%= document.getPublisherId() != null ? StringEscapeUtils.escapeHtml4(userService.getUser(document.getPublisherId()).getFirstName()) + " " + StringEscapeUtils.escapeHtml4(userService.getUser(document.getPublisherId()).getLastName()) : "" %></td>
 </tr><%
 	} %>
@@ -121,4 +123,3 @@ if (null != listDocumentAliasPage.aliasInSelectedRange) { %>
 
 </body>
 </html>
-</vel:velocity>

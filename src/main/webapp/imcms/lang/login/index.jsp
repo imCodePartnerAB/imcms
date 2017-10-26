@@ -4,11 +4,10 @@
 <%@ page import="imcode.util.Utility" %>
 <%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@taglib prefix="vel" uri="imcmsvelocity"%>
+
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<vel:velocity>
 <%
     UserDomainObject user = Utility.getLoggedOnUser(request);
 %><html>
@@ -32,9 +31,11 @@
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="button" class="imcmsFormBtn" style="width:100" value="<? templates/login/index.html/2001 ?>" onClick="top.location='<%= request.getContextPath() %>/servlet/StartDoc';"></td>
+        <td><input type="button" class="imcmsFormBtn" style="width:100px" value="<? templates/login/index.html/2001 ?>"
+                   onClick="top.location='<%= request.getContextPath() %>/servlet/StartDoc';"></td>
 		<td>&nbsp;</td>
-        <td><input type="button" class="imcmsFormBtn" style="width:115" value="<? templates/login/index.html/2002 ?>" onClick="top.location='<%= request.getContextPath() %>/servlet/PasswordReset';"></td>
+        <td><input type="button" class="imcmsFormBtn" style="width:115px" value="<? templates/login/index.html/2002 ?>"
+                   onClick="top.location='<%= request.getContextPath() %>/servlet/PasswordReset';"></td>
 		<td>&nbsp;</td>
         <td><input type="button" value="<? templates/login/index.html/2003 ?>" title="<? templates/login/index.html/2004 ?>" class="imcmsFormBtn" onClick="openHelpW('LogIn')"></td>
 	</tr>
@@ -72,12 +73,13 @@
     <tr>
 		<td><span class="imcmsAdmText"><? templates/login/index.html/5 ?></span></td>
 		<td>&nbsp;</td>
-		<td><input type="text" name="<%= VerifyUser.REQUEST_PARAMETER__USERNAME %>" size="15" style="width:180"></td>
+        <td><input type="text" name="<%= VerifyUser.REQUEST_PARAMETER__USERNAME %>" size="15" style="width:180px"></td>
 	</tr>
 	<tr>
 		<td><span class="imcmsAdmText"><? templates/login/index.html/6 ?></span></td>
 		<td>&nbsp;</td>
-		<td><input type="password" name="<%= VerifyUser.REQUEST_PARAMETER__PASSWORD %>" size="15" style="width:180"></td>
+        <td><input type="password" name="<%= VerifyUser.REQUEST_PARAMETER__PASSWORD %>" size="15" style="width:180px">
+        </td>
 	</tr>
 	<tr>
 		<td colspan="3">&nbsp;</td>
@@ -87,9 +89,11 @@
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input class="imcmsFormBtn" type="submit" value="<? templates/login/index.html/2005 ?>" style="width:80"></td>
+            <td><input class="imcmsFormBtn" type="submit" value="<? templates/login/index.html/2005 ?>"
+                       style="width:80px"></td>
 			<td>&nbsp;</td>
-			<td><input class="imcmsFormBtn" type="submit" name="<%= VerifyUser.REQUEST_PARAMETER__EDIT_USER %>" value="<? templates/login/index.html/2006 ?>" style="width:80"></td>
+            <td><input class="imcmsFormBtn" type="submit" name="<%= VerifyUser.REQUEST_PARAMETER__EDIT_USER %>"
+                       value="<? templates/login/index.html/2006 ?>" style="width:80px"></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -101,4 +105,3 @@
 <ui:imcms_gui_outer_end/>
 </body>
 </html>
-</vel:velocity>

@@ -3,10 +3,12 @@
                  imcode.util.jscalendar.JSCalendar,
                  java.util.Iterator,
                  java.util.List" %>
-<%@page contentType="text/html; charset=UTF-8" %><%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@ page contentType="text/html; charset=UTF-8" %>
+
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
     AdminManager.AdminManagerPage adminManagerPage = (AdminManager.AdminManagerPage) request.getAttribute(AdminManager.AdminManagerPage.REQUEST_ATTRIBUTE__PAGE) ;
@@ -29,16 +31,15 @@
     String tabString = getTabs(tabs, adminManagerPage.getTabName(), request ) ;
 %>
 
-<vel:velocity>
 <html>
 <head>
 
 <title><? webapp/imcms/lang/jsp/admin/admin_manager.jsp/6 ?></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts()%>
 
 </head>
@@ -173,6 +174,5 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 } %>
     <ui:imcms_gui_bottom/>
     <ui:imcms_gui_outer_end/>
-</vel:velocity>
 </body>
 </html>

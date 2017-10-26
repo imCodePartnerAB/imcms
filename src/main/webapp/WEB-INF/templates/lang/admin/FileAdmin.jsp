@@ -6,8 +6,8 @@
 <head>
 <title><? templates/sv/AdminManager_adminTask_element.htm/5 ?></title>
 
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
     <script language="JavaScript">
 <!--
@@ -16,8 +16,8 @@
  *           SETTINGS                                                *
  ******************************************************************* */
 
-var imC_PATH = "$contextPath" ;
-var JSP_PATH = "$contextPath/imcms/$language/jsp" ;
+var imC_PATH = "${contextPath}";
+var JSP_PATH = "${contextPath}/imcms/${language}/jsp";
 
 /* *******************************************************************
  *           FUNCTIONS                                               *
@@ -347,7 +347,7 @@ function setSelectedFolders() {
                         type="submit" name="change1" class="imcmsFormBtnSmall" height="22" value="<? templates/sv/FileAdmin.html/2001 ?>"></td>
             </tr>
             <tr>
-                <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2" alt=""></td>
+                <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2" alt=""></td>
             </tr>
             <tr>
                 <td align="right"><span class="imcmsAdmForm">
@@ -370,7 +370,8 @@ function setSelectedFolders() {
             </tr>
             <tr>
                 <td colspan="2" align="center" class="small">
-                    <img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6" alt=""><? templates/sv/FileAdmin.html/7 ?></td>
+                    <img src="${contextPath}/imcms/${language}/images/admin/line_hr2.gif" width="50" height="6"
+                         alt=""><? templates/sv/FileAdmin.html/7 ?></td>
             </tr>
             <tr>
                 <td align="right"><input class="imcmsFormBtnSmall" height="22" type="submit" name="move2" value="<? templates/sv/FileAdmin.html/2004 ?>"></td>
@@ -378,7 +379,8 @@ function setSelectedFolders() {
             </tr>
             <tr>
                 <td colspan="2" align="center" class="small">
-                    <img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6" alt=""><? templates/sv/FileAdmin.html/8 ?></td>
+                    <img src="${contextPath}/imcms/${language}/images/admin/line_hr2.gif" width="50" height="6"
+                         alt=""><? templates/sv/FileAdmin.html/8 ?></td>
             </tr>
             <tr>
                 <td align="right"><input class="imcmsFormBtnSmall" height="22" type="submit" name="copy2" value="&nbsp;<? templates/sv/FileAdmin.html/2006 ?>&nbsp;"></td>
@@ -386,7 +388,8 @@ function setSelectedFolders() {
             </tr>
             <tr>
                 <td colspan="2" align="center" class="small">
-                    <img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6" alt=""><? templates/sv/FileAdmin.html/1002 ?></td>
+                    <img src="${contextPath}/imcms/${language}/images/admin/line_hr2.gif" width="50" height="6"
+                         alt=""><? templates/sv/FileAdmin.html/1002 ?></td>
             </tr>
             <tr>
                 <td align="right"><input class="imcmsFormBtnSmall" height="22" type="submit" name="download1" value="&nbsp;<? templates/sv/FileAdmin.html/2008 ?>&nbsp;"></td>
@@ -394,7 +397,8 @@ function setSelectedFolders() {
             </tr>
             <tr>
                 <td colspan="2" align="center" class="small">
-                    <img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6" alt=""><? templates/sv/FileAdmin.html/9 ?></td>
+                    <img src="${contextPath}/imcms/${language}/images/admin/line_hr2.gif" width="50" height="6"
+                         alt=""><? templates/sv/FileAdmin.html/9 ?></td>
             </tr>
             <tr>
                 <td align="right"><input class="imcmsFormBtnSmall" height="22" type="button" name="preview1" value="&nbsp;<? templates/sv/FileAdmin.html/2010 ?>&nbsp;" onClick="previewFile(1)"></td>
@@ -402,7 +406,8 @@ function setSelectedFolders() {
             </tr>
             <tr>
                 <td colspan="2" align="center" class="small">
-                    <img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6" alt=""><? templates/sv/FileAdmin.html/10 ?></td>
+                    <img src="${contextPath}/imcms/${language}/images/admin/line_hr2.gif" width="50" height="6"
+                         alt=""><? templates/sv/FileAdmin.html/10 ?></td>
             </tr>
             <tr>
                 <td align="right"><input class="imcmsFormBtnSmall" height="22" type="button" name="edit1" value="&nbsp;<? templates/sv/FileAdmin.html/2012 ?>&nbsp;" onClick="editFile(1,0);"></td>
@@ -417,7 +422,7 @@ function setSelectedFolders() {
                            class="imcmsFormBtnSmall" height="22" value="<? templates/sv/FileAdmin.html/2014 ?>"></td>
             </tr>
             <tr>
-                <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2" alt=""></td>
+                <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2" alt=""></td>
             </tr>
             <tr>
                 <td>
@@ -431,7 +436,7 @@ function setSelectedFolders() {
         </table></td>
 </tr>
 <tr>
-    <td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="8" alt=""></td>
+    <td colspan="6"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="8" alt=""></td>
 </tr>
 <tr>
     <td><input class="imcmsFormBtnSmall" height="22" style="width:90px" type="submit" name="upload1"
@@ -448,7 +453,7 @@ function setSelectedFolders() {
     <td align="left"><input
             type="submit" name="rename1" class="imcmsFormBtnSmall" height="22" style="width:90px"
             value="<? templates/sv/FileAdmin.html/2017 ?>"><br><img
-            src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2" alt=""><br><input
+            src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2" alt=""><br><input
             type="submit" name="mkdir1" class="imcmsFormBtnSmall" height="22" style="width:90px"
             value="<? templates/sv/FileAdmin.html/2018 ?>"></td>
     <td colspan="4" align="center"><? templates/sv/FileAdmin.html/13 ?>
@@ -456,16 +461,16 @@ function setSelectedFolders() {
     <td align="right"><input
             type="submit" name="rename2" class="imcmsFormBtnSmall" height="22" style="width:90px"
             value="<? templates/sv/FileAdmin.html/2019 ?>"><br><img
-            src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2" alt=""><br><input
+            src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2" alt=""><br><input
             type="submit" name="mkdir2" class="imcmsFormBtnSmall" height="22" style="width:90px"
             value="<? templates/sv/FileAdmin.html/2020 ?>"></td>
 </tr>
 <tr>
-    <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="150" height="1" alt=""></td>
-    <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="180" height="1" alt=""></td>
-    <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="80" height="1" alt=""></td>
-    <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="180" height="1" alt=""></td>
-    <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="150" height="1" alt=""></td>
+    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="150" height="1" alt=""></td>
+    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="180" height="1" alt=""></td>
+    <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="80" height="1" alt=""></td>
+    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="180" height="1" alt=""></td>
+    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="150" height="1" alt=""></td>
 </tr>
 </table>
 </form>

@@ -6,11 +6,9 @@
                  java.util.*"
 %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
-<%@taglib prefix="vel" uri="imcmsvelocity"
-%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
-<vel:velocity><%!
+<%!
 
 private final static String ACTION_SAVE_USER       = "SAVE_USER" ;
 private final static String ACTION_CANCEL          = "CANCEL" ;
@@ -70,8 +68,8 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 <head>
 <title><? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body>
@@ -82,7 +80,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
     </c:set>
     <ui:imcms_gui_head heading="${heading}"/>
 
-<form method="POST" action="$contextPath/imcms/$language/jsp/changeexternaluser.jsp">
+    <form method="POST" action="${contextPath}/imcms/${language}/jsp/changeexternaluser.jsp">
 <table border="0" cellspacing="0" cellpadding="0">
 <input type="hidden" name="<%= AdminUser.USER_LOGIN_NAME_PARAMETER_NAME %>" value="<%= userLoginName %>">
 <tr>
@@ -166,7 +164,9 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 </tr>
 <tr>
 	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/18 ?></td>
-	<td><img src="$contextPath/imcms/$language/images/admin/btn_checked_<%= user.isActive() ? "1" : "0" %>.gif" width="13" height="12" alt="">&nbsp;</td>
+    <td><img src="${contextPath}/imcms/${language}/images/admin/btn_checked_<%= user.isActive() ? "1" : "0" %>.gif"
+             width="13" height="12" alt="">&nbsp;
+    </td>
 </tr>
 <tr valign="top">
 	<td nowrap><? install/htdocs/sv/adminuser/changeexternaluser.jsp/19 ?></td>
@@ -202,4 +202,3 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 </table>
 </form>
     <ui:imcms_gui_end_of_page/>
-</vel:velocity>

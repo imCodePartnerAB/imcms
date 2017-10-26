@@ -1,8 +1,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@taglib prefix="vel" uri="imcmsvelocity"%>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<vel:velocity>
     <html>
     <head>
         <title><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/1"/></title>
@@ -76,4 +74,3 @@
     <ui:imcms_gui_outer_end/>
     </body>
     </html>
-</vel:velocity>

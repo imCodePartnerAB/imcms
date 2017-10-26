@@ -14,11 +14,10 @@
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
+
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
-<%@taglib prefix="vel" uri="imcmsvelocity" %>
 <% ListDocuments.FormData formData = (ListDocuments.FormData)request.getAttribute( ListDocuments.REQUEST_ATTRIBUTE__FORM_DATA ) ;%>
-<vel:velocity>
 
     <ui:imcms_gui_start_of_page titleAndHeading="imcms/lang/jsp/document_list.jsp/title"/>
 
@@ -66,21 +65,24 @@ if (null != formData.documentsIterator) { %>
 		DocumentDomainObject document = (DocumentDomainObject)formData.documentsIterator.next();
 		DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingDocument = documentMapper.getDocumentMenuPairsContainingDocument( document ); %>
 <tr>
-	<td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
+    <td colspan="6"><img src="${contextPath}/imcms/${language}/images/admin/1x1_cccccc.gif" width="100%" height="1">
+    </td>
 </tr>
 <tr valign="top"><%String alias = document.getAlias();
                    if ( alias != null ) { %>
-    <td><a name="alias" href="$contextPath/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %></a></td>
+    <td><a name="alias"
+           href="${contextPath}/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %>
+    </a></td>
     <% }else { %>
     <td>&nbsp;</td> <%}%>
-    <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
         <%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
-	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+    <td nowrap><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
 	<%= StringEscapeUtils.escapeHtml4((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
-	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
-	<a name="<%= document.getId() %>" href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>"><%=
+    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
+        <a name="<%= document.getId() %>" href="${contextPath}/servlet/AdminDoc?meta_id=<%= document.getId() %>"><%=
 		document.getId() %> - <%= StringEscapeUtils.escapeHtml4( document.getHeadline() ) %></a></td>
-	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br><%
+    <td nowrap><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br><%
 		if (documentMenuPairsContainingDocument.length > 0 ) {
 			String backUrl = "ListDocuments?" + ObjectUtils.defaultIfNull(request.getQueryString(),"") ;
             String escapedBackUrl = URLEncoder.encode(backUrl, Imcms.UTF_8_ENCODING); %>
@@ -121,4 +123,3 @@ if (null != formData.documentsIterator) { %>
 </table><%
 } %>
     <ui:imcms_gui_end_of_page/>
-</vel:velocity>

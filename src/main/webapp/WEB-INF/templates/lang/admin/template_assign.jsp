@@ -8,8 +8,8 @@
 
     <title><? templates/sv/AdminManager_adminTask_element.htm/10 ?></title>
 
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-    <script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(2,'templategroup')">
@@ -46,7 +46,7 @@
                        value="<? templates/sv/template_assign.html/2004 ?>">
                 <input type="submit" class="imcmsFormBtnSub" name="edit_template"
                        value="<? templates/sv/template_assign.html/2005 ?>"><br>
-                <img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+                <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
                 <input type="submit" class="imcmsFormBtnSub" name="add_demotemplate"
                        value="<? templates/sv/template_assign.html/2006 ?>">
                 <input type="submit" class="imcmsFormBtnSub" name="show_templates"
@@ -120,7 +120,7 @@
                         <td align="center">
                             &nbsp;<input type="submit" class="imcmsFormBtnSmall" style="width:60" name="assign"
                                          value="<? templates/sv/template_assign.html/2015 ?>">&nbsp;<br>
-                            <img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+                            <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
                             &nbsp;<input type="submit" class="imcmsFormBtnSmall" style="width:60" name="deassign"
                                          value="<? templates/sv/template_assign.html/2016 ?>">&nbsp;</td>
                         <td>

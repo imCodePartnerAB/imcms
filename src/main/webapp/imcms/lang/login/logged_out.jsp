@@ -1,16 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@taglib prefix="vel" uri="imcmsvelocity"%>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 
-<vel:velocity>
 <html>
 <head>
 <title><? templates/login/logged_out.html/1 ?></title>
 
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
 
 
 
@@ -26,18 +24,20 @@
 <tr>
 	<td>
 	<table border="0" cellpadding="0" cellspacing="0">
-	<form action="$contextPath/servlet/StartDoc">
+        <form action="${contextPath}/servlet/StartDoc">
 	<tr>
-		<td><input type="Submit" value="<? templates/login/logged_out.html/2001 ?>" class="imcmsFormBtn" style="width:90"></td>
+        <td><input type="Submit" value="<? templates/login/logged_out.html/2001 ?>" class="imcmsFormBtn"
+                   style="width:90px"></td>
 	</tr>
 	</form>
 	</table></td>
 	<td>&nbsp;</td>
 	<td>
 	<table border="0" cellpadding="0" cellspacing="0">
-	<form action="$contextPath/login/">
+        <form action="${contextPath}/login/">
 	<tr>
-		<td><input type="Submit" value="<? templates/login/logged_out.html/2002 ?>" class="imcmsFormBtn" style="width:90"></td>
+        <td><input type="Submit" value="<? templates/login/logged_out.html/2002 ?>" class="imcmsFormBtn"
+                   style="width:90px"></td>
 	</tr>
 	</form>
 	</table></td>
@@ -67,4 +67,3 @@ if (document.forms[1]) {
 
 </body>
 </html>
-</vel:velocity>

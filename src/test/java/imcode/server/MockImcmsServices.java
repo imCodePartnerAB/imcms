@@ -17,8 +17,6 @@ import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 
 import java.security.KeyStore;
 import java.util.Date;
@@ -105,14 +103,6 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public TemplateMapper getTemplateMapper() {
-        return null;
-    }
-
-    public VelocityEngine getVelocityEngine(UserDomainObject user) {
-        return null;
-    }
-
-    public VelocityContext getVelocityContext(UserDomainObject user) {
         return null;
     }
 

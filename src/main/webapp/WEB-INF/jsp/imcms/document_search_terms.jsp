@@ -2,12 +2,12 @@
         import="com.imcode.imcms.flow.OkCancelPage, com.imcode.imcms.servlet.superadmin.AdminSearchTerms, java.util.List" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
-<%
-    List<AdminSearchTerms.TermCount> termCounts = (List<AdminSearchTerms.TermCount>) request.getAttribute("termCounts");
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><%@
-     taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@
-     taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%@
-     taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %><html>
+
+<% List<AdminSearchTerms.TermCount> termCounts = (List<AdminSearchTerms.TermCount>) request.getAttribute("termCounts"); %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<html>
 <head>
 <title><fmt:message key="webapp/imcms/lang/jsp/document_search_terms.jsp/title"/></title>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/imcms/css/imcms_admin.css.jsp">
@@ -18,7 +18,6 @@
 </head>
 <body>
 <form action="<%= request.getContextPath() %>/servlet/AdminSearchTerms" method="POST">
-<vel:velocity>
     <ui:imcms_gui_outer_start/>
     <c:set var="heading">
         <fmt:message key="webapp/imcms/lang/jsp/document_search_terms.jsp/title"/>
@@ -32,7 +31,6 @@
     </tr>
 </table>
     <ui:imcms_gui_mid/>
-</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="0">
 <ui:labeled idref="from_date" key="webapp/imcms/lang/jsp/document_search_terms.jsp/daterange">
     &nbsp;
@@ -49,9 +47,8 @@
 </table>
 <%
     if (null != termCounts) {
-        %><vel:velocity>
+%>
     <ui:imcms_gui_hr wantedcolor="blue"/>
-        </vel:velocity>
         <table border="0" width="100%">
             <tr><th><fmt:message key="webapp/imcms/lang/jsp/document_search_terms.jsp/term"/></th><th><fmt:message key="webapp/imcms/lang/jsp/document_search_terms.jsp/count"/></th></tr><%
         for ( AdminSearchTerms.TermCount termCount : termCounts ) {
@@ -66,10 +63,8 @@
     }
 %>
 
-<vel:velocity>
     <ui:imcms_gui_bottom/>
     <ui:imcms_gui_outer_end/>
-</vel:velocity>
 </form>
 </body>
 </html>

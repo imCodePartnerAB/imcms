@@ -6,8 +6,7 @@ import javax.servlet.ServletRequest;
 
 /**
  * An instance of this class is fetchable in JSPs included in text documents (with &lt;?imcms:include path="..."?&gt;)
- * via {@link #fromRequest(javax.servlet.ServletRequest)},
- * and in velocity code in text templates as <code>$viewing</code>.
+ * via {@link #fromRequest(javax.servlet.ServletRequest)}.
  *
  * @since 2.0
  */

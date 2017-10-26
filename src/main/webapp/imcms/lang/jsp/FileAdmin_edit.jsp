@@ -1,12 +1,14 @@
 <%@ page language="java"
 
-	import="imcode.util.Utility,
-	        org.apache.oro.text.perl.Perl5Util,
-	        java.io.*,
-            imcode.server.user.UserDomainObject, imcode.server.Imcms"
-    contentType="text/html; charset=UTF-8"
+         import="imcode.server.Imcms,
+                 imcode.server.user.UserDomainObject,
+                 imcode.util.Utility,
+                 org.apache.oro.text.perl.Perl5Util,
+                 java.io.*"
+         contentType="text/html; charset=UTF-8"
 
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><%
+%>
+<%
 
 request.setCharacterEncoding("UTF-8");
     
@@ -264,10 +266,8 @@ if (isHelpWin) { %>
 <head>
 <title>:: imCMS ::</title>
 
-<vel:velocity>
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
-</vel:velocity>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 <script language="JavaScript">
 <!--
@@ -600,7 +600,11 @@ function imScriptCount(imType) {
 	var re4 = /<\?imcms\:include[^\?]*?\?>/gi;
 	var re5 = /#[A-Z0-9_-]+?#/gi;
 	var re6 = /<\?imcms\:datetime[^\?]*?\?>/gi;
-	var re7 = /(<\?imcms\:[^\?]*?\?>)|(<\!--\/?IMSCRIPT-->)/gi;
+    var re7 = /(<\?imcms\:[^\?]*?\?>)|(<\!--\/?IMSCRIPT;-->
+)
+
+/
+gi;
 	var re72 = /imcms\:(text|image|menu|include|datetime)/gi; // not used - inline
 
 	var cont = document.forms.editForm.txtField.value;
@@ -709,7 +713,7 @@ function imScriptCount(imType) {
 				if (hits.length > 1) {
 					retStr += head_2_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
 				}
-				var arrTemp = new Array();
+                var arrTemp = [];
 				var iCount = 0;
 				for (var i = 0; i < hits.length; i++) {
 					hits[i] = hits[i].replace(/\s+/g, " ");

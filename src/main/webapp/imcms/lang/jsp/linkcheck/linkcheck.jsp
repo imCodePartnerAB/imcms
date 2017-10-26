@@ -8,9 +8,8 @@
                  imcode.util.Utility,
                  org.apache.commons.text.StringEscapeUtils" %>
 <%@ page import="java.util.Iterator" %>
-<%@page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
-<%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%
@@ -20,7 +19,7 @@ boolean doCheckLinks = linkCheckPage.isDoCheckLinks();
 String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 
 %>
-<vel:velocity>
+
     <ui:imcms_gui_start_of_page titleAndHeading="webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading"/>
 
 <form method="GET" action="LinkCheck">
@@ -48,7 +47,8 @@ String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 		<td><? webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/end_id ?></td>
 		<td><input type="text" name="<%= LinkCheck.REQUEST_PARAMETER__END_ID %>" size="5" value="<%= linkCheckPage.getEndId() %>"></td>
 	</tr>
-	</table><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="396" height="1"></td>
+    </table>
+        <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="396" height="1"></td>
 </tr>
 <tr>
     <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
@@ -59,7 +59,7 @@ String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 </tr>
 </table>
 </form>
-</vel:velocity><%
+<%
 
 if (doCheckLinks) {
 	UserDomainObject user = Utility.getLoggedOnUser( request ) ;
@@ -67,7 +67,7 @@ if (doCheckLinks) {
 	while ( linksIterator.hasNext() ) { %>
 <table border="0" cellspacing="2" cellpadding="2" width="100%">
 <tr>
-	<td colspan="9"><vel:velocity><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="15"></vel:velocity></td>
+    <td colspan="9"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="15"></td>
 </tr>
 <tr>
     <td><b><? global/Page_alias ?>&nbsp;</b></td>
@@ -81,7 +81,7 @@ if (doCheckLinks) {
 	<td align="center" style="width: 5em;"><b><? webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></b></td>
 </tr>
 <tr>
-    <td colspan="9"><vel:velocity><ui:imcms_gui_hr wantedcolor="cccccc"/></vel:velocity></td>
+    <td colspan="9"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
 </tr><%
 		for (int i = 0; linksIterator.hasNext() && i < 10; ++i) {
 			response.flushBuffer();
@@ -155,6 +155,4 @@ if (doCheckLinks) {
 </table><%
 	}
 } %>
-<vel:velocity>
     <ui:imcms_gui_end_of_page/>
-</vel:velocity>

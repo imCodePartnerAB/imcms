@@ -18,15 +18,16 @@
 		} catch(Exception e) {}
     UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
     LocalizedMessage errorMessage = userEditorPage.getErrorMessage() ;
-%><%@taglib prefix="vel" uri="imcmsvelocity"%>
+%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
-<vel:velocity><html>
+
+<html>
 <head>
 <title><? templates/sv/AdminUserResp.htm/1 ?></title>
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 <script language="javascript">
 <!--
 function evalPrepareAdd() {
@@ -77,7 +78,7 @@ function activateUseradmin_roles(){
 </c:set>
 <ui:imcms_gui_head heading="${heading}"/>
 
-<form method="post" action="$contextPath/servlet/PageDispatcher">
+<form method="post" action="${contextPath}/servlet/PageDispatcher">
 <%= Page.htmlHidden(request) %>
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
@@ -294,4 +295,3 @@ function activateUseradmin_roles(){
 <ui:imcms_gui_outer_end/>
 </body>
 </html>
-</vel:velocity>

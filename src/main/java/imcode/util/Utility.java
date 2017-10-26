@@ -372,10 +372,6 @@ public class Utility {
             return;
         }
         req.getSession().setAttribute(LOGGED_IN_USER, user);
-        if (null != user) {
-            // todo FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
-            user.setCurrentContextPath(req.getContextPath());
-        }
     }
 
     public static void makeUserLoggedOut(HttpServletRequest req) {

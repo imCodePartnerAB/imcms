@@ -29,8 +29,6 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
@@ -67,7 +65,6 @@ public class DefaultImcmsServices implements ImcmsServices {
     private TemplateMapper templateMapper;
     private KeyStore keyStore;
     private KerberosLoginService kerberosLoginService;
-    private Map<String, VelocityEngine> velocityEngines = new TreeMap<>();
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private DocumentLanguages documentLanguages;
@@ -226,30 +223,7 @@ public class DefaultImcmsServices implements ImcmsServices {
             throw new NullArgumentException("user");
         }
         String langPrefix = user.getLanguageIso639_2();
-        return getTemplate(langPrefix + "/" + directory + "/"
-                + adminTemplateName, user, variables);
-    }
-
-    public VelocityEngine getVelocityEngine(UserDomainObject user) {
-        try {
-            String languageIso639_2 = user.getLanguageIso639_2();
-            VelocityEngine velocityEngine = velocityEngines.get(languageIso639_2);
-            if (velocityEngine == null) {
-                velocityEngine = createVelocityEngine(languageIso639_2);
-                velocityEngines.put(languageIso639_2, velocityEngine);
-            }
-            return velocityEngine;
-        } catch (Exception e) {
-            throw new UnhandledException(e);
-        }
-    }
-
-    public VelocityContext getVelocityContext(UserDomainObject user) {
-        VelocityContext context = new VelocityContext();
-        // todo: FIXME: This method needs an HttpServletRequest in, to get the context path from
-        context.put("contextPath", user.getCurrentContextPath());
-        context.put("language", user.getLanguageIso639_2());
-        return context;
+        return getTemplate(langPrefix + "/" + directory + "/" + adminTemplateName, variables);
     }
 
     public Config getConfig() {
@@ -621,16 +595,13 @@ public class DefaultImcmsServices implements ImcmsServices {
                 externalAuthenticatorName, authenticatorPropertiesSubset);
     }
 
-    private String getTemplate(String path, UserDomainObject user, List<String> variables) {
+    private String getTemplate(String path, List<String> variables) {
         try {
-            VelocityEngine velocity = getVelocityEngine(user);
-            VelocityContext context = getVelocityContext(user);
             if (null != variables) {
                 List<String> parseDocVariables = new ArrayList<>(variables.size());
                 for (Iterator<String> iterator = variables.iterator(); iterator.hasNext(); ) {
                     String key = iterator.next();
                     String value = iterator.next();
-                    context.put(key, value);
                     boolean isVelocityVariable = StringUtils.isAlpha(key) || (value == null);
                     if (!isVelocityVariable) {
                         parseDocVariables.add(key);
@@ -640,7 +611,6 @@ public class DefaultImcmsServices implements ImcmsServices {
                 variables = parseDocVariables;
             }
             StringWriter stringWriter = new StringWriter();
-            velocity.mergeTemplate(path, Imcms.DEFAULT_ENCODING, context, stringWriter);
             String result = stringWriter.toString();
             if (null != variables) {
                 result = Parser.parseDoc(result, variables.toArray(new String[variables.size()]));
@@ -649,19 +619,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         } catch (Exception e) {
             throw new UnhandledException("getTemplate(\"" + path + "\") : " + e.getMessage(), e);
         }
-    }
-
-    private synchronized VelocityEngine createVelocityEngine(String languageIso639_2) throws Exception {
-        VelocityEngine velocity = new VelocityEngine();
-        final String templatePath = new File(Imcms.getPath(), config.getTemplatePath().getPath()).getCanonicalPath();
-        velocity.setProperty(VelocityEngine.FILE_RESOURCE_LOADER_PATH, templatePath);
-        velocity.setProperty(VelocityEngine.VM_LIBRARY, languageIso639_2 + "/gui.vm");
-        velocity.setProperty(VelocityEngine.VM_LIBRARY_AUTORELOAD, "true");
-        velocity.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
-        velocity.setProperty(VelocityEngine.INPUT_ENCODING, Imcms.DEFAULT_ENCODING);
-        velocity.setProperty("runtime.log.logsystem.log4j.category", "org.apache.velocity");
-        velocity.init();
-        return velocity;
     }
 
     private void setSessionCounterInDb(int value) {

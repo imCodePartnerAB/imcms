@@ -1,7 +1,6 @@
 <%@ page import="com.imcode.imcms.servlet.superadmin.AdminCounter,
                  imcode.util.jscalendar.JSCalendar" %>
 <%@page contentType="text/html; charset=UTF-8" %>
-<%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -11,13 +10,12 @@
     String calendarButtonTitle = "<? webapp/imcms/lang/jscalendar/show_calendar_button ?>";
 
 %>
-<vel:velocity>
 <html>
 <head>
 <title><? templates/sv/search/search_documents.html/1 ?></title>
 
-<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css.jsp" type="text/css">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" href="${contextPath}/imcms/css/imcms_admin.css.jsp" type="text/css">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts() %>
 
 </head>
@@ -62,4 +60,3 @@
 </table>
 
     <ui:imcms_gui_end_of_page/>
-</vel:velocity>

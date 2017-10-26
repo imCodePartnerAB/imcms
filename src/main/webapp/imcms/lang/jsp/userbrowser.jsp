@@ -10,9 +10,9 @@
                  org.apache.commons.lang3.StringUtils,
                  org.apache.commons.text.StringEscapeUtils,
                  java.util.Arrays"%>
-<%@page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
+
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
-<%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%
@@ -21,13 +21,12 @@
     RoleDomainObject[] allRoles = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getAllRolesExceptUsersRole();
     Utility.setDefaultHtmlContentType(response);
 %>
-<vel:velocity>
 <html>
 <head>
 <title><? templates/sv/AdminManager_adminTask_element.htm/2 ?></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body onLoad="focusField(0,'<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>');">
@@ -117,7 +116,7 @@
                 value="<%= userFinder.getSelectButtonText().toLocalizedString(request) %>"
                 style="width:10em">
 
-                <div><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"></div>
+                <div><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="3"></div>
                 <input type="submit" class="imcmsFormBtnSmall"
                        name="<%= UserBrowser.REQUEST_PARAMETER__ARCHIVE_USER_BUTTON %>"
                        value="<? templates/sv/AdminChangeUser.htm/2008 ?>"
@@ -125,7 +124,7 @@
             <%
                 UserDomainObject user = Utility.getLoggedOnUser(request);
                 if (userFinder.isUsersAddable() && (user.isSuperAdmin() || user.isUserAdminAndCanEditAtLeastOneRole())) { %>
-                    <div><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"></div>
+                <div><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="3"></div>
                     <input type="submit" class="imcmsFormBtnSmall"
                         name="<%= UserBrowser.REQUEST_PARAMETER__ADD_USER %>"
                         value="<? templates/sv/AdminChangeUser.htm/2005 ?>" style="width:10em">
@@ -154,4 +153,3 @@ function evalEditUser() {
 //-->
 </script>
         <ui:imcms_gui_end_of_page/>
-</vel:velocity>

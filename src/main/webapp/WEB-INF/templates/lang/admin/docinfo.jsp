@@ -8,7 +8,7 @@
 
     <title><? templates/sv/docinfo.html/1 ?></title>
 
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
 
 
 </head>

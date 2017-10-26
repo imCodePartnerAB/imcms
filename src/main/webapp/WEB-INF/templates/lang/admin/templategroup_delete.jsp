@@ -8,8 +8,8 @@
 
     <title><? templates/sv/AdminManager_adminTask_element.htm/10 ?></title>
 
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(2,'templategroup')">
@@ -40,7 +40,7 @@
         <input type="submit" class="imcmsFormBtnSub" name="rename_template" value="<? templates/sv/templategroup_delete.html/2003 ?>">
         <input type="submit" class="imcmsFormBtnSub" name="get_template" value="<? templates/sv/templategroup_delete.html/2004 ?>">
         <input type="submit" class="imcmsFormBtnSub" name="edit_template" value="<? templates/sv/templategroup_delete.html/2005 ?>"><br>
-        <img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+        <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
         <input type="submit" class="imcmsFormBtnSub" name="add_demotemplate" value="<? templates/sv/templategroup_delete.html/2006 ?>">
         <input type="submit" class="imcmsFormBtnSub" name="show_templates" value="<? templates/sv/templategroup_delete.html/2007 ?>">
         <input type="submit" class="imcmsFormBtnSub" name="change_availability_template" value="<? templates/sv/template_admin.html/2012 ?>"></td>

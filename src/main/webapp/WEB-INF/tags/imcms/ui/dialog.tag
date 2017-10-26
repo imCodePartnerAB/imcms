@@ -1,7 +1,6 @@
 <%@ tag import="com.imcode.imcms.flow.OkCancelPage, com.imcode.imcms.flow.Page, org.apache.log4j.Logger"%><%@
         attribute name="titlekey" required="true" %><%@
         attribute name="helpid" required="true" %><%@
-        taglib prefix="vel" uri="imcmsvelocity"%><%@
         taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@
         taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%@
         taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %><html>
@@ -19,7 +18,7 @@
 <body>
 <form action="<%= request.getContextPath() %>/servlet/PageDispatcher">
 <%= Page.htmlHidden(request) %>
-<vel:velocity>
+
     <ui:imcms_gui_outer_start/>
     <c:set var="heading">
         <fmt:message key="${titlekey}"/>
@@ -39,8 +38,8 @@
     </tr>
 </table>
     <ui:imcms_gui_mid/>
-</vel:velocity>
-<table border="0" cellspacing="0" cellpadding="0">
+
+    <table border="0" cellspacing="0" cellpadding="0">
 <jsp:doBody/>
 <ui:separator/>
 <tr>
@@ -50,10 +49,10 @@
     </td>
 </tr>
 </table>
-<vel:velocity>
+
     <ui:imcms_gui_bottom/>
     <ui:imcms_gui_outer_end/>
-</vel:velocity>
+
 </form>
 </body>
 </html>

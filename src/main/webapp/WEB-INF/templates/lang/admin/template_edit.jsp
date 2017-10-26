@@ -7,8 +7,8 @@
 
     <title><? templates/sv/AdminManager_adminTask_element.htm/10 ?></title>
 
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
     <script language="JavaScript">
 <!--
@@ -16,7 +16,7 @@ function editFile() {
     var f = document.forms.TemplateEdit;
     var sTemplateUrl  = "/WEB-INF/templates/text/" + f.template.options[f.template.selectedIndex].value ;
     var sTemplateName = f.template.options[f.template.selectedIndex].text;
-    popWinOpen(800,570,"$contextPath/imcms/$language/jsp/FileAdmin_edit.jsp?template=true&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName),"templateEdit",0,0);
+    popWinOpen(800, 570, "${contextPath}/imcms/${language}/jsp/FileAdmin_edit.jsp?template=true&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName), "templateEdit", 0, 0);
 }
 //-->
 </script>
@@ -50,7 +50,7 @@ function editFile() {
         <input type="submit" class="imcmsFormBtnSub" name="rename_template" value="<? templates/sv/template_edit.html/2003 ?>">
         <input type="submit" class="imcmsFormBtnSub" name="get_template" value="<? templates/sv/template_edit.html/2004 ?>">
         <input type="submit" class="imcmsFormBtnSubDisabled" name="edit_template" value="<? templates/sv/template_edit.html/2005 ?>" disabled="disabled"><br>
-        <img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+        <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
         <input type="submit" class="imcmsFormBtnSub" name="add_demotemplate" value="<? templates/sv/template_edit.html/2006 ?>">
         <input type="submit" class="imcmsFormBtnSub" name="show_templates" value="<? templates/sv/template_edit.html/2007 ?>">
         <input type="submit" class="imcmsFormBtnSub" name="change_availability_template" value="<? templates/sv/template_admin.html/2012 ?>"></td>

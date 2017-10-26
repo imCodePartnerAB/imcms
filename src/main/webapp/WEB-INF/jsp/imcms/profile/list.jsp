@@ -4,15 +4,14 @@
 <%
     List<Profile> profiles = (List<Profile>) request.getAttribute("profiles");
 %>
-<%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<vel:velocity>
+
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-    <script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 </head>
 <body>
 <ui:imcms_gui_outer_start/>
@@ -56,4 +55,3 @@
     <ui:imcms_gui_outer_end/>
 </body>
 </html>
-</vel:velocity>

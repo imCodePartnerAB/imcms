@@ -7,7 +7,7 @@
 <title><? templates/sv/no_active_document.html/1 ?></title>
 
 
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
 
 
 </head>
@@ -22,7 +22,7 @@
 <tr>
     <td>
         <table border="0" cellpadding="0" cellspacing="0">
-            <form action="$contextPath/servlet/StartDoc">
+            <form action="${contextPath}/servlet/StartDoc">
                 <tr>
                     <td><input type="Submit" value="<? templates/sv/no_active_document.html/3 ?>" class="imcmsFormBtn"></td>
                 </tr>
@@ -31,7 +31,7 @@
     <td>&nbsp;</td>
     <td>
         <table border="0" cellpadding="0" cellspacing="0">
-            <form action="$contextPath/servlet/BackDoc">
+            <form action="${contextPath}/servlet/BackDoc">
                 <tr>
                     <td><input type="Submit" value="<? templates/sv/no_active_document.html/4 ?>" class="imcmsFormBtn"></td>
                 </tr>

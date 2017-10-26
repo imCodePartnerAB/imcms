@@ -133,7 +133,7 @@ try {
 
 //out.print("fn.length(): " + fn.length() + "<br><br>iSize: " + iSize + "<br><br>size: " + size) ;
 
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><vel:velocity><%
+%><%
 
 /* *******************************************************************************************
  *         FRAME MAIN                                                                        *
@@ -144,8 +144,8 @@ if (frame.equalsIgnoreCase("MAIN")) { %>
 <head>
 <title><%= StringEscapeUtils.escapeHtml4(file) %></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body class="imcmsAdmBgCont" style="margin:10px">
@@ -188,8 +188,8 @@ if (isImage) {
 <head>
 <title><%= StringEscapeUtils.escapeHtml4(file) %></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 <% /*<STYLE TYPE="text/css">
 <!--
@@ -363,4 +363,3 @@ function findIt(str) {
 </html>
 <%
 } %>
-</vel:velocity>

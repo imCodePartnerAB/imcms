@@ -15,8 +15,6 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 
 import java.security.KeyStore;
 import java.util.Date;
@@ -62,10 +60,6 @@ public interface ImcmsServices {
     ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper();
 
     TemplateMapper getTemplateMapper();
-
-    VelocityEngine getVelocityEngine(UserDomainObject user);
-
-    VelocityContext getVelocityContext(UserDomainObject user);
 
     Config getConfig();
 

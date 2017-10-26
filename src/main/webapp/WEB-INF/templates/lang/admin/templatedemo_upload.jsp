@@ -8,8 +8,8 @@
 
     <title><? templates/sv/AdminManager_adminTask_element.htm/10 ?></title>
 
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
     <script language="JavaScript">
 <!--
@@ -52,7 +52,7 @@ function setSize() {
         <input type="submit" class="imcmsFormBtnSub" name="rename_template" value="<? templates/sv/templatedemo_upload.html/2003 ?>">
         <input type="submit" class="imcmsFormBtnSub" name="get_template" value="<? templates/sv/templatedemo_upload.html/2004 ?>">
         <input type="submit" class="imcmsFormBtnSub" name="edit_template" value="<? templates/sv/templatedemo_upload.html/2005 ?>"><br>
-        <img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+        <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
         <input type="submit" class="imcmsFormBtnSubDisabled" name="add_demotemplate" value="<? templates/sv/templatedemo_upload.html/2006 ?>" disabled="disabled">
         <input type="submit" class="imcmsFormBtnSub" name="show_templates" value="<? templates/sv/templatedemo_upload.html/2007 ?>">
         <input type="submit" class="imcmsFormBtnSub" name="change_availability_template" value="<? templates/sv/template_admin.html/2012 ?>"></td>
