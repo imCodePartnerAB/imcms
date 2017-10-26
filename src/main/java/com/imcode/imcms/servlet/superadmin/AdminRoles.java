@@ -29,7 +29,7 @@ public class AdminRoles extends HttpServlet {
     private final static String HTML_DELETE_ROLE_1 = "AdminRoles_Delete1.jsp";
     private final static String HTML_DELETE_ROLE_2 = "AdminRoles_Delete2.jsp";
     private final static String HTML_EDIT_ROLE = "AdminRoles_Edit.jsp";
-    private final static String HTML_EDIT_ROLE_TABLE = "AdminRoles_Edit_Permissions_List.html";
+    private final static String HTML_EDIT_ROLE_TABLE = "AdminRoles_Edit_Permissions_List.jsp";
     private final static String HTML_EDIT_ROLE_TABLE_ROW = "AdminRoles_Edit_Permission.html";
 
     public static void printErrorMessage(HttpServletRequest req, HttpServletResponse res, String header, String msg
