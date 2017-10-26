@@ -2,7 +2,8 @@
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
-#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/7 ?>" "AdminManager" "" "IPAccess" "" )
+
+<ui:imcms_gui_start_of_page titleAndHeading="templates/sv/AdminManager_adminTask_element.htm/7"/>
 
 <form method="post" action="AdminIpAccess" name="argumentForm">
 <table border="0" cellspacing="0" cellpadding="2" width="400">

@@ -1,6 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
-#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/15 ?>" "AdminManager" "" "DocumentRemove" "" )
+
+<ui:imcms_gui_start_of_page titleAndHeading="templates/sv/AdminManager_adminTask_element.htm/15"/>
 
 <form method="post" action="AdminDeleteDoc" name="DeleteDoc" onSubmit="return confirmDeleteDoc(); return false;">
 <table border="0" cellspacing="0" cellpadding="2" width="400">

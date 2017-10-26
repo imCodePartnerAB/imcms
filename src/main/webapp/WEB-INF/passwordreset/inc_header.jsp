@@ -6,13 +6,14 @@
   pageEncoding="UTF-8"
 	
 %><%@ taglib prefix="vel" uri="imcmsvelocity"
+%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui"
 %><%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%!
 
 /* Validation errors and common heading */
 
 %><vel:velocity>
-#gui_start_of_page( "<fmt:message key="passwordreset.title" />" "$contextPath/login" "<fmt:message key="global/back" />" "" "" )
-
+    <ui:imcms_gui_start_of_page titleAndHeading="passwordreset.title"/>
 <%
 List<String> errors = (List<String>)request.getAttribute(PasswordReset.REQUEST_ATTR_VALIDATION_ERRORS);
 

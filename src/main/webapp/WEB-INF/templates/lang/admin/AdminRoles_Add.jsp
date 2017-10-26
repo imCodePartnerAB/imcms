@@ -2,7 +2,8 @@
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-#gui_start_of_page( "<? templates/sv/AdminRoles_Add.htm/1 ?>" "AdminRoles" "CANCEL_ROLE" "RoleAdd" "" )
+
+<ui:imcms_gui_start_of_page titleAndHeading="templates/sv/AdminRoles_Add.htm/1"/>
 
 <table width="400" border="0" cellspacing="0">
 <form method="post" action="AdminRoles" name="addIP">

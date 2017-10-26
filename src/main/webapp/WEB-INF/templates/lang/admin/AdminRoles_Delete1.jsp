@@ -1,6 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
-#gui_start_of_page( "<? templates/sv/AdminRoles_Delete1.htm/1 ?>" "AdminRoles" "CANCEL_ROLE" "RoleDelete" "" )
+
+<ui:imcms_gui_start_of_page titleAndHeading="templates/sv/AdminRoles_Delete1.htm/1"/>
 
 <form method="post" action="AdminRoles" name="adminRoles">
     <table width="400" border="0" cellspacing="0">
