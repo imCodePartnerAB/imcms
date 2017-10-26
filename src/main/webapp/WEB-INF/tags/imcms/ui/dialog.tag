@@ -21,7 +21,10 @@
 <%= Page.htmlHidden(request) %>
 <vel:velocity>
     <ui:imcms_gui_outer_start/>
-#gui_head( "<fmt:message key="${titlekey}"/> " )
+    <c:set var="heading">
+        <fmt:message key="${titlekey}"/>
+    </c:set>
+    <ui:imcms_gui_head heading="${heading}"/>
 <table border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td>

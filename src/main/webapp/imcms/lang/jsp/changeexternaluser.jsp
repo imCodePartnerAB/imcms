@@ -7,7 +7,10 @@
 %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"
-%><vel:velocity><%!
+%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<vel:velocity><%!
 
 private final static String ACTION_SAVE_USER       = "SAVE_USER" ;
 private final static String ACTION_CANCEL          = "CANCEL" ;
@@ -74,7 +77,11 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 <body>
 
     <ui:imcms_gui_outer_start/>
-#gui_head( "<? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?>" )
+    <c:set var="heading">
+        <fmt:message key="install/htdocs/sv/adminuser/changeexternaluser.jsp/1"/>
+    </c:set>
+    <ui:imcms_gui_head heading="${heading}"/>
+
 <form method="POST" action="$contextPath/imcms/$language/jsp/changeexternaluser.jsp">
 <table border="0" cellspacing="0" cellpadding="0">
 <input type="hidden" name="<%= AdminUser.USER_LOGIN_NAME_PARAMETER_NAME %>" value="<%= userLoginName %>">

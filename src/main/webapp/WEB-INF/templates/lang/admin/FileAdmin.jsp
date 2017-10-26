@@ -1,5 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <html>
 <head>
 <title><? templates/sv/AdminManager_adminTask_element.htm/5 ?></title>
@@ -312,7 +314,10 @@ function setSelectedFolders() {
 <body bgcolor="#FFFFFF" onLoad="checkFileType(1,true); checkFileType(2,true); setSelectedFolders();">
 
 <ui:imcms_gui_outer_start/>
-#gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/5 ?>" )
+<c:set var="heading">
+    <fmt:message key="templates/sv/AdminManager_adminTask_element.htm/5"/>
+</c:set>
+<ui:imcms_gui_head heading="${heading}"/>
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
 <input type="hidden" name="dir1" value="#dir1#">

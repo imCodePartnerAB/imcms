@@ -3,6 +3,8 @@
          contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <vel:velocity><%
 
     AdminCategories.AdminCategoriesPage adminCategoriesPage = (AdminCategories.AdminCategoriesPage) request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
@@ -53,7 +55,10 @@
     <body onLoad="focusField('main','template')">
 
     <ui:imcms_gui_outer_start/>
-    #gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/17 ?>" )
+    <c:set var="heading">
+        <fmt:message key="templates/sv/AdminManager_adminTask_element.htm/17"/>
+    </c:set>
+    <ui:imcms_gui_head heading="${heading}"/>
 
     <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
         <form action="AdminManager">

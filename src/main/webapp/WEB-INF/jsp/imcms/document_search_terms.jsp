@@ -20,7 +20,10 @@
 <form action="<%= request.getContextPath() %>/servlet/AdminSearchTerms" method="POST">
 <vel:velocity>
     <ui:imcms_gui_outer_start/>
-#gui_head( "<fmt:message key="webapp/imcms/lang/jsp/document_search_terms.jsp/title"/>" )
+    <c:set var="heading">
+        <fmt:message key="webapp/imcms/lang/jsp/document_search_terms.jsp/title"/>
+    </c:set>
+    <ui:imcms_gui_head heading="${heading}"/>
 <table border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td>

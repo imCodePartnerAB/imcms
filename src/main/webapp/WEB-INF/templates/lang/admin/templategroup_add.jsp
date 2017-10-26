@@ -1,5 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
 
@@ -13,7 +15,10 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(2,'name')">
 
 <ui:imcms_gui_outer_start/>
-#gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/10 ?>" )
+<c:set var="heading">
+    <fmt:message key="templates/sv/AdminManager_adminTask_element.htm/10"/>
+</c:set>
+<ui:imcms_gui_head heading="${heading}"/>
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form action="AdminManager">

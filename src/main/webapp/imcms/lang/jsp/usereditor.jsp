@@ -21,6 +21,7 @@
 %><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <vel:velocity><html>
 <head>
 <title><? templates/sv/AdminUserResp.htm/1 ?></title>
@@ -71,7 +72,10 @@ function activateUseradmin_roles(){
 
 
 <ui:imcms_gui_outer_start/>
-#gui_head( "<? global/imcms_administration ?>" )
+<c:set var="heading">
+    <fmt:message key="global/imcms_administration"/>
+</c:set>
+<ui:imcms_gui_head heading="${heading}"/>
 
 <form method="post" action="$contextPath/servlet/PageDispatcher">
 <%= Page.htmlHidden(request) %>

@@ -6,6 +6,8 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"%>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <vel:velocity>
 <%
     UserDomainObject user = Utility.getLoggedOnUser(request);
@@ -20,7 +22,10 @@
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'name')">
 <ui:imcms_gui_outer_start/>
-#gui_head( "<? templates/login/index.html/2 ?>" )
+<c:set var="heading">
+    <fmt:message key="templates/login/index.html/2"/>
+</c:set>
+<ui:imcms_gui_head heading="${heading}"/>
 <table border="0" cellspacing="0" cellpadding="0" width="310">
 <form action="">
 <tr>

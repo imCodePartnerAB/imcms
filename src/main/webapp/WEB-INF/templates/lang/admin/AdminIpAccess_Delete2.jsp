@@ -1,6 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title><fmt:message key="templates/sv/AdminIpAccess_Delete2.htm/1"/></title>
@@ -13,7 +14,10 @@
 <body>
 
 <ui:imcms_gui_outer_start/>
-#gui_head( "<? global/imcms_administration ?>" )
+<c:set var="heading">
+    <fmt:message key="global/imcms_administration"/>
+</c:set>
+<ui:imcms_gui_head heading="${heading}"/>
 <ui:imcms_gui_mid/>
 
 <form method="post" action="AdminIpAccess" name="AdminIPAccess">

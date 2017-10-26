@@ -1,5 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <html>
 <head>
 <title><? templates/sv/FileAdminNameBlank.html/1 ?></title>
@@ -11,7 +13,10 @@
 <body onLoad="focusField(1, 'no')">
 
 <ui:imcms_gui_outer_start/>
-#gui_head( "<? templates/sv/FileAdminNameBlank.html/1 ?>" )
+<c:set var="heading">
+    <fmt:message key="templates/sv/FileAdminNameBlank.html/1"/>
+</c:set>
+<ui:imcms_gui_head heading="${heading}"/>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
 <input type="HIDDEN" name="dir1" value="#dir1#">

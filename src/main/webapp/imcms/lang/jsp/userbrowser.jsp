@@ -13,6 +13,8 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@taglib prefix="vel" uri="imcmsvelocity" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%
     UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
     UserBrowser.UserBrowserPage userBrowserPage = (UserBrowser.UserBrowserPage)request.getAttribute( UserBrowser.REQUEST_ATTRIBUTE__FORM_DATA ) ;
@@ -30,7 +32,10 @@
 </head>
 <body onLoad="focusField(0,'<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>');">
     <ui:imcms_gui_outer_start/>
-	#gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/2 ?>" )
+<c:set var="heading">
+    <fmt:message key="templates/sv/AdminManager_adminTask_element.htm/2"/>
+</c:set>
+    <ui:imcms_gui_head heading="${heading}"/>
     <table border="0" cellspacing="0" cellpadding="0">
 <form name="argumentForm" action="UserBrowser" method="GET" target="_top">
 <tr>

@@ -7,6 +7,7 @@
 <%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <vel:velocity>
 <html>
 <head>
@@ -15,7 +16,10 @@
 </head>
 <body>
 <ui:imcms_gui_outer_start/>
-    #gui_head( "<fmt:message key="profile/headline"/>" )
+<c:set var="heading">
+    <fmt:message key="profile/headline"/>
+</c:set>
+<ui:imcms_gui_head heading="${heading}"/>
     
     <form action="<%= request.getContextPath() %>/imcms/admin/profile/list" method="POST">
         <table border="0" cellspacing="0" cellpadding="2" width="400" align="center">

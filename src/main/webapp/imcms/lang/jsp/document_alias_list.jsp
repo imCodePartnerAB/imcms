@@ -14,6 +14,8 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <% ListDocumentAliasPage listDocumentAliasPage = ListDocumentAliasPage.fromRequest(request);
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     UserService userService = imcmsSystem.getUserService();
@@ -33,7 +35,10 @@
 <body bgcolor="#FFFFFF">
 
 <ui:imcms_gui_outer_start/>
-#gui_head( "<? imcms/lang/jsp/document_list.jsp/title ?>" )
+<c:set var="heading">
+    <fmt:message key="imcms/lang/jsp/document_list.jsp/title"/>
+</c:set>
+<ui:imcms_gui_head heading="${heading}"/>
 
 <form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher">
 <table border="0" cellspacing="0" cellpadding="0">

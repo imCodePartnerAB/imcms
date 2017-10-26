@@ -5,6 +5,8 @@
                  java.util.List" %>
 <%@page contentType="text/html; charset=UTF-8" %><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
     AdminManager.AdminManagerPage adminManagerPage = (AdminManager.AdminManagerPage) request.getAttribute(AdminManager.AdminManagerPage.REQUEST_ATTRIBUTE__PAGE) ;
@@ -46,7 +48,11 @@
 <!--gui_outer_start -->
     <ui:imcms_gui_outer_start/>
 <!--gui_head -->
-#gui_head( "<? webapp/imcms/lang/jsp/admin/admin_manager.jsp/1 ?> - <%= adminManagerPage.getHeading().toLocalizedString( request ) %>" )
+    <c:set var="heading">
+        <fmt:message
+                key="webapp/imcms/lang/jsp/admin/admin_manager.jsp/1"/> - <%= adminManagerPage.getHeading().toLocalizedString(request) %>
+    </c:set>
+    <ui:imcms_gui_head heading="${heading}"/>
 <!-- /gui_head -->
 		<table border="0" cellspacing="0" cellpadding="0" width="656">
         <tr>

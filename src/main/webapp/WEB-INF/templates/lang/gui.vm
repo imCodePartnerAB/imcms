@@ -53,7 +53,10 @@
 </head>
 <body onLoad="$bodyOnLoad">
 <ui:imcms_gui_outer_start/>
-	#gui_head( "$titleAndHeading" )
+<c:set var="heading">
+    <fmt:message key="$titleAndHeading"/>
+</c:set>
+<ui:imcms_gui_head heading="${heading}"/>
 <ui:imcms_gui_mid/>
     <!-- /gui_start_of_page -->
 #end
