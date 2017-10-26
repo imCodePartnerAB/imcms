@@ -16,8 +16,8 @@
  *           SETTINGS                                                *
  ******************************************************************* */
 
-var imC_PATH = "${contextPath}";
-var JSP_PATH = "${contextPath}/imcms/${language}/jsp";
+var imC_PATH = "${contextPath}"; // check behaviour of this expression language in scriptlet
+var JSP_PATH = "${contextPath}/imcms/${language}/jsp"; // check behaviour of this expression language in scriptlet
 
 /* *******************************************************************
  *           FUNCTIONS                                               *
