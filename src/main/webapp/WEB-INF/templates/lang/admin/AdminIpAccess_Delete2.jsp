@@ -29,7 +29,7 @@
             <td><? templates/sv/AdminIpAccess_Delete2.htm/3 ?></td>
         </tr>
         <tr>
-            <td>#gui_hr( "blue" )</td>
+            <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
         </tr>
         <tr>
             <td align="right">

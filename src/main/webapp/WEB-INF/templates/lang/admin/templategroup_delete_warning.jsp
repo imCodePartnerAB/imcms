@@ -38,7 +38,7 @@
 <blockquote>#templates#</blockquote></td>
 </tr>
 <tr>
-    <td>#gui_hr( "blue" )</td>
+    <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
     <td align="right">

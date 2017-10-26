@@ -42,7 +42,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td>#gui_hr( "blue" )</td>
+    <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 </table><%
 
@@ -111,7 +111,7 @@ if (null != formData.documentsIterator) { %>
 </tr><%
 	} %>
 <tr>
-	<td colspan="6">#gui_hr( "blue" )</td>
+    <td colspan="6"><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <form method="get" action="AdminManager">
 <tr>

@@ -29,7 +29,7 @@
             <td colspan="2"><? templates/sv/AdminIpAccess_Add.htm/3 ?></td>
         </tr>
         <tr>
-            <td colspan="2">#gui_hr( "cccccc" )</td>
+            <td colspan="2"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
         </tr>
         <tr>
             <td><? templates/sv/AdminIpAccess_Add.htm/4 ?></td>
@@ -44,13 +44,13 @@
             <td><input type="text" name="IP_END" size="15" maxlength="15"></td>
         </tr>
         <tr>
-            <td colspan="2">#gui_hr( "cccccc" )</td>
+            <td colspan="2"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
         </tr>
         <tr>
             <td colspan="2"><? templates/sv/AdminIpAccess_Add.htm/8 ?></td>
         </tr>
         <tr>
-            <td colspan="2">#gui_hr( "blue" )</td>
+            <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>
         </tr>
         <tr>
             <td colspan="2" align="right">

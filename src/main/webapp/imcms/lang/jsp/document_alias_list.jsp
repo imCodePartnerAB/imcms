@@ -70,7 +70,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td>#gui_hr( "blue" )</td>
+    <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 </table><%
 
@@ -107,7 +107,7 @@ if (null != listDocumentAliasPage.aliasInSelectedRange) { %>
 </tr><%
 	} %>
 <tr>
-	<td colspan="6">#gui_hr( "blue" )</td>
+    <td colspan="6"><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
 	<td colspan="6" align="right"><input type="submit" class="imcmsFormBtn" name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>" value="<? global/cancel ?>"></td>

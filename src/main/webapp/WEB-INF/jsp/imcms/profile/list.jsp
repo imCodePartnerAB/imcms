@@ -46,7 +46,7 @@
             }
             %>
         </table>
-        #gui_hr( 'blue' )
+        <ui:imcms_gui_hr wantedcolor="blue"/>
         <input type="submit" name="<%= AdminProfiles.Parameter.NEW_PROFILE %>" value="<fmt:message key="profile/create"/>" class="imcmsFormBtn"/>
     </form>
     <ui:imcms_gui_bottom/>

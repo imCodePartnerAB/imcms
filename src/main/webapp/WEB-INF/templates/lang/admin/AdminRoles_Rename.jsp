@@ -14,7 +14,7 @@
         <input type="text" name="ROLE_NAME" value="#CURRENT_ROLE_NAME#" size="40" maxlength="60"></td>
 </tr>
 <tr>
-    <td>#gui_hr( "blue" )</td>
+    <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
     <td align="right">

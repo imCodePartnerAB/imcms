@@ -45,7 +45,7 @@
     <td height="20"><? templates/sv/FileAdminDeleteWarning.html/5 ?></td>
 </tr>
 <tr>
-    <td>#gui_hr( "blue" )</td>
+    <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
     <td align="right">

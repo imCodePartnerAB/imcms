@@ -127,7 +127,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">#gui_hr( "blue" )</td>
+            <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>
         </tr>
         <tr>
             <td class="imcmsAdmText"><? templates/sv/template_assign.html/1002 ?></td>

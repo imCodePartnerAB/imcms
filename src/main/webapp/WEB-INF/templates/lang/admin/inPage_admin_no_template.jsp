@@ -39,7 +39,7 @@
     <td><? templates/sv/inPage_admin_no_template.html/3 ?> </td>
 </tr>
 <tr>
-    <td>#gui_hr( "blue" )</td>
+    <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
     <td align="right"><input type="submit" class="imcmsFormBtn" name="change_group" value="<? templates/sv/inPage_admin_no_template.html/2001 ?>"></td>

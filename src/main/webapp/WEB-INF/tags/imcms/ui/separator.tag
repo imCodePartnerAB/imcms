@@ -2,7 +2,7 @@
 <tr>
 <td colspan="2">    
 <vel:velocity>
-#gui_hr( "blue" )
+    <ui:imcms_gui_hr wantedcolor="blue"/>
 </vel:velocity>
 </td>
 </tr>

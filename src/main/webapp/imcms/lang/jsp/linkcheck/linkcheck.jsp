@@ -44,7 +44,7 @@ String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 	</table><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="396" height="1"></td>
 </tr>
 <tr>
-	<td>#gui_hr( "blue" )</td>
+    <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
 	<td align="right">
@@ -74,7 +74,7 @@ if (doCheckLinks) {
 	<td align="center" style="width: 5em;"><b><? webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></b></td>
 </tr>
 <tr>
-	<td colspan="9"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
+    <td colspan="9"><vel:velocity><ui:imcms_gui_hr wantedcolor="cccccc"/></vel:velocity></td>
 </tr><%
 		for (int i = 0; linksIterator.hasNext() && i < 10; ++i) {
 			response.flushBuffer();

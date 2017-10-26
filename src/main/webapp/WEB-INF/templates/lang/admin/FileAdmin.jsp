@@ -337,7 +337,7 @@ function setSelectedFolders() {
     <td colspan="2" align="right" class="small"><? templates/sv/FileAdmin.html/4 ?></td>
 </tr>
 <tr>
-    <td colspan="8">#gui_hr( "blue" )</td>
+    <td colspan="8"><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
     <td colspan="2">
@@ -442,7 +442,7 @@ function setSelectedFolders() {
                              value="<? templates/sv/FileAdmin.html/2016 ?>"></td>
 </tr>
 <tr>
-    <td colspan="6">#gui_hr( "blue" )</td>
+    <td colspan="6"><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
     <td align="left"><input

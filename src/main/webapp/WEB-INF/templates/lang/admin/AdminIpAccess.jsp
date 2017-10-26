@@ -22,12 +22,12 @@
                 <td><b><? templates/sv/AdminIpAccess.htm/3004 ?></b></td>
             </tr>
             <tr>
-                <td colspan="5">#gui_hr( "cccccc" )</td>
+                <td colspan="5"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
             </tr>#ALL_IP_ACCESSES#
         </table></td>
 </tr>
 <tr>
-    <td>#gui_hr( "blue" )</td>
+    <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
     <td align="right">

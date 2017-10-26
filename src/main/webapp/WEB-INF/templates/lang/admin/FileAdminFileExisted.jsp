@@ -41,7 +41,7 @@
     <td><? templates/sv/FileAdminFileExisted.html/3 ?></td>
 </tr>
 <tr>
-    <td>#gui_hr( "blue" )</td>
+    <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
     <td align="right"><input type="submit" class="imcmsFormBtn" style="width:70" name="no" value="<? templates/sv/FileAdminFileExisted.html/2001 ?>"></td>

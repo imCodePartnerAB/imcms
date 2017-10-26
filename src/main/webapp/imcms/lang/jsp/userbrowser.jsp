@@ -89,7 +89,7 @@
     </td>
     </tr>
     <tr>
-        <td colspan="2">#gui_hr( "cccccc" )</td>
+        <td colspan="2"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
     </tr>
     <tr>
         <td colspan="2" class="imcmsAdmText"><% UserDomainObject[] users = userBrowserPage.getUsers();

@@ -50,7 +50,7 @@
 <%
     if (null != termCounts) {
         %><vel:velocity>
-        #gui_hr( "blue" )
+    <ui:imcms_gui_hr wantedcolor="blue"/>
         </vel:velocity>
         <table border="0" width="100%">
             <tr><th><fmt:message key="webapp/imcms/lang/jsp/document_search_terms.jsp/term"/></th><th><fmt:message key="webapp/imcms/lang/jsp/document_search_terms.jsp/count"/></th></tr><%

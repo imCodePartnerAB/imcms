@@ -97,7 +97,7 @@ function activateUseradmin_roles(){
 	<? templates/sv/AdminUserResp.htm/6 ?></td>
 </tr>
 <tr>
-	<td colspan="2">#gui_hr( "cccccc" )</td>
+    <td colspan="2"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/8 ?></td>
@@ -158,7 +158,7 @@ function activateUseradmin_roles(){
     <td><select name="<%= UserEditorPage.REQUEST_PARAMETER__LANGUAGE %>"><%= userEditorPage.createLanguagesHtmlOptionList( loggedOnUser, editedUser ) %></select></td>
 </tr>
 <tr>
-	<td colspan="2">#gui_hr( "cccccc" )</td>
+    <td colspan="2"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/32 ?></td>
@@ -202,7 +202,7 @@ function activateUseradmin_roles(){
 	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__EMAIL %>" size="50" maxlength="50" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getEmailAddress())%>"></td>
 </tr>
 <tr>
-	<td colspan="2">#gui_hr( "blue" )</td>
+    <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp_superadmin_part.htm/2 ?></td>
@@ -253,7 +253,7 @@ function activateUseradmin_roles(){
 </tr>
 <% } %>
 <tr>
-	<td colspan="2">#gui_hr( "blue" )</td>
+    <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
 	<td colspan="2">

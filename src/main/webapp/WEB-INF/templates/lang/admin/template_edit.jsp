@@ -88,7 +88,7 @@ function editFile() {
         </table></td>
 </tr>
 <tr>
-    <td colspan="2">#gui_hr( "blue" )</td>
+    <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
     <td colspan="2" align="right">
