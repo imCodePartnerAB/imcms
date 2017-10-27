@@ -140,15 +140,15 @@ public class FileAdmin extends HttpServlet {
         } else if (mp.getParameter("rename2") != null) {
             outputHasBeenHandled = rename(files2, name, dir2, dir1, dir2, res, req);
         } else if (mp.getParameter("copy1") != null) {
-            outputHasBeenHandled = copy(files1, dir1, dir2, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = copy(files1, dir1, dir2, dir1, dir2, res, req);
         } else if (mp.getParameter("copy2") != null) {
-            outputHasBeenHandled = copy(files2, dir2, dir1, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = copy(files2, dir2, dir1, dir1, dir2, res, req);
         } else if (mp.getParameter("copyok") != null) {
             copyOk(mp, roots);
         } else if (mp.getParameter("move1") != null) {
-            outputHasBeenHandled = move(files1, dir1, dir2, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = move(files1, dir1, dir2, dir1, dir2, res, req);
         } else if (mp.getParameter("move2") != null) {
-            outputHasBeenHandled = move(files2, dir2, dir1, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = move(files2, dir2, dir1, dir1, dir2, res, req);
         } else if (mp.getParameter("moveok") != null) {
             moveOk(mp, roots);
         }
@@ -182,7 +182,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean move(String[] files, File sourceDir, File destDir, File dir1, File dir2, HttpServletResponse res,
-                         UserDomainObject user, ImcmsServices imcref) throws IOException {
+                         HttpServletRequest req) throws IOException, ServletException {
         boolean handledOutput = false;
         if (files != null && !sourceDir.equals(destDir)) {
             File[] sourceFileTree = makeFileTreeList(makeAbsoluteFileList(sourceDir, files), false);
@@ -190,7 +190,7 @@ public class FileAdmin extends HttpServlet {
             StringBuffer optionList = new StringBuffer();
             StringBuffer fileList = buildWarningOptions(relativeSourceFileTree, destDir, optionList);
             if (optionList.length() > 0) {
-                outputMoveOverwriteWarning(optionList.toString(), sourceDir, destDir, fileList.toString(), dir1, dir2, res, user, imcref);
+                outputMoveOverwriteWarning(optionList.toString(), sourceDir, destDir, fileList.toString(), dir1, dir2, res, req);
                 handledOutput = true;
             } else {
                 File[] destFiles = makeAbsoluteFileList(destDir, relativeSourceFileTree);
@@ -218,7 +218,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean copy(String[] files, File sourceDir, File destDir, File dir1, File dir2, HttpServletResponse res,
-                         UserDomainObject user, ImcmsServices imcref) throws IOException {
+                         HttpServletRequest req) throws IOException, ServletException {
         boolean handledOutput = false;
         if (files != null && !sourceDir.equals(destDir)) {
             File[] sourceFileTree = makeFileTreeList(makeAbsoluteFileList(sourceDir, files), true);
@@ -226,7 +226,7 @@ public class FileAdmin extends HttpServlet {
             StringBuffer optionList = new StringBuffer();
             StringBuffer fileList = buildWarningOptions(relativeSourceFileTree, destDir, optionList);
             if (optionList.length() > 0) {
-                ouputCopyOverwriteWarning(optionList.toString(), sourceDir, destDir, fileList.toString(), dir1, dir2, res, user, imcref);
+                outputCopyOverwriteWarning(optionList.toString(), sourceDir, destDir, fileList.toString(), dir1, dir2, res, req);
                 handledOutput = true;
             } else {
                 File[] destFileTree = makeAbsoluteFileList(destDir, relativeSourceFileTree);
@@ -363,34 +363,28 @@ public class FileAdmin extends HttpServlet {
 
     private void outputMoveOverwriteWarning(String option_list, File sourceDir, File destDir,
                                             String file_list, File dir1, File dir2, HttpServletResponse res,
-                                            UserDomainObject user, ImcmsServices imcref) throws IOException {
-        outputWarning(option_list, sourceDir, destDir, file_list, dir1, dir2, res, imcref, ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING, user);
+                                            HttpServletRequest req) throws IOException, ServletException {
+        outputWarning(option_list, sourceDir, destDir, file_list, dir1, dir2, res, req, ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING);
     }
 
-    private void ouputCopyOverwriteWarning(String option_list, File sourceDir, File destDir,
-                                           String file_list, File dir1, File dir2, HttpServletResponse res,
-                                           UserDomainObject user, ImcmsServices imcref) throws IOException {
-        outputWarning(option_list, sourceDir, destDir, file_list, dir1, dir2, res, imcref, ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING, user);
+    private void outputCopyOverwriteWarning(String option_list, File sourceDir, File destDir,
+                                            String file_list, File dir1, File dir2, HttpServletResponse res,
+                                            HttpServletRequest req) throws IOException, ServletException {
+        outputWarning(option_list, sourceDir, destDir, file_list, dir1, dir2, res, req, ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING);
     }
 
     private void outputWarning(String option_list, File sourceDir, File destDir, String file_list, File dir1, File dir2,
-                               HttpServletResponse res, ImcmsServices imcref, String template,
-                               UserDomainObject user) throws IOException {
-        List vec = new ArrayList();
-        vec.add("#filelist#");
-        vec.add(option_list);
-        vec.add("#source#");
-        vec.add(getContextRelativeAbsolutePathToDirectory(sourceDir));
-        vec.add("#dest#");
-        vec.add(getContextRelativeAbsolutePathToDirectory(destDir));
-        vec.add("#files#");
-        vec.add(file_list);
-        vec.add("#dir1#");
-        vec.add(getContextRelativeAbsolutePathToDirectory(dir1));
-        vec.add("#dir2#");
-        vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
+                               HttpServletResponse res, HttpServletRequest request, String template) throws IOException, ServletException {
+
+        request.setAttribute("filelist", option_list);
+        request.setAttribute("source", getContextRelativeAbsolutePathToDirectory(sourceDir));
+        request.setAttribute("dest", getContextRelativeAbsolutePathToDirectory(destDir));
+        request.setAttribute("files", file_list);
+        request.setAttribute("dir1", getContextRelativeAbsolutePathToDirectory(dir1));
+        request.setAttribute("dir2", getContextRelativeAbsolutePathToDirectory(dir2));
+
         Utility.setDefaultHtmlContentType(res);
-        res.getWriter().print(imcref.getAdminTemplate(template, user, vec));
+        res.getWriter().print(Utility.getAdminContents(template, request, res));
     }
 
     private void outputFileExistedAndTheOriginalWasRenamedNotice(File dir1, File dir2, String newFilename,
