@@ -67,7 +67,7 @@ public class HttpSessionUtils {
 
     public static String createUniqueNameForObject(Object object) {
         return Integer.toString(object.getClass().hashCode(), Character.MAX_RADIX)
-                + new RandomStringGenerator.Builder().withinRange('a', 'Z').build().generate(4);
+                + new RandomStringGenerator.Builder().withinRange('A', 'z').build().generate(4);
     }
 
     public static Object getSessionAttributeWithNameInRequest(HttpServletRequest request,
