@@ -12,6 +12,7 @@
 <%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 <%@ page import="java.util.Arrays" %>
 <%@ page import="java.util.Collections" %>
+<%@ page import="java.util.function.Function" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%
 	SearchDocumentsPage searchDocumentsPage = Page.fromRequest(request);
@@ -175,7 +176,12 @@
 					<%
                         Integer[] ranges = new Integer[]{5, 10, 20, 100, 1000};
 					%>
-                    <%= Html.createOptionList(Arrays.asList(ranges), Collections.singleton(documentsPerPage), number -> new String[]{String.valueOf(number), String.valueOf(number)}) %>
+                    <%= Html.createOptionList(Arrays.asList(ranges), Collections.singleton(documentsPerPage), new Function<Integer, String[]>() {
+                        @Override
+                        public String[] apply(Integer number) {
+                            return new String[]{String.valueOf(number), String.valueOf(number)};
+                        }
+                    }) %>
 				</select>
 			</td>
 		</tr>
