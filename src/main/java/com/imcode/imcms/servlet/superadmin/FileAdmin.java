@@ -71,8 +71,8 @@ public class FileAdmin extends HttpServlet {
      * Check to see if the path is a child to one of the rootpaths
      */
     private boolean isUnderRoot(File path, File[] roots) throws IOException {
-        for (int i = 0; i < roots.length; i++) {
-            if (FileUtility.directoryIsAncestorOfOrEqualTo(roots[i], path)) {
+        for (File root : roots) {
+            if (FileUtility.directoryIsAncestorOfOrEqualTo(root, path)) {
                 return true;
             }
         }
@@ -453,15 +453,13 @@ public class FileAdmin extends HttpServlet {
     }
 
     private void moveOk(HttpServletRequest mp, File[] roots) throws IOException {
-        fromSourceToDestination(mp, roots, new FromSourceFileToDestinationFileCommand() {
-            public void execute(File source, File dest) throws IOException {
-                dest.getParentFile().mkdirs();
-                if (source.isFile()) {
-                    FileUtils.copyFile(source, dest);
-                }
-                if (source.length() == dest.length()) {
-                    FileUtils.forceDelete(source);
-                }
+        fromSourceToDestination(mp, roots, (source, dest) -> {
+            dest.getParentFile().mkdirs();
+            if (source.isFile()) {
+                FileUtils.copyFile(source, dest);
+            }
+            if (source.length() == dest.length()) {
+                FileUtils.forceDelete(source);
             }
         });
     }
@@ -483,13 +481,11 @@ public class FileAdmin extends HttpServlet {
     }
 
     private void copyOk(HttpServletRequest mp, File[] roots) throws IOException {
-        fromSourceToDestination(mp, roots, new FromSourceFileToDestinationFileCommand() {
-            public void execute(File source, File destination) throws IOException {
-                if (source.isDirectory()) {
-                    destination.mkdir();
-                } else {
-                    FileUtils.copyFile(source, destination);
-                }
+        fromSourceToDestination(mp, roots, (source, destination) -> {
+            if (source.isDirectory()) {
+                destination.mkdir();
+            } else {
+                FileUtils.copyFile(source, destination);
             }
         });
     }
@@ -684,21 +680,19 @@ public class FileAdmin extends HttpServlet {
     }
 
     private Comparator getFileComparator() {
-        return new Comparator() {
-            public int compare(Object a, Object b) {
-                File filea = (File) a;
-                File fileb = (File) b;
-                //--- Sort directories before files,
-                //    otherwise alphabetical ignoring case.
-                if (filea.isDirectory() && !fileb.isDirectory()) {
-                    return -1;
-                } else if (!filea.isDirectory() && fileb.isDirectory()) {
-                    return 1;
-                } else {
-                    return filea.getName().compareToIgnoreCase(fileb.getName());
-                }
-
+        return (a, b) -> {
+            File filea = (File) a;
+            File fileb = (File) b;
+            //--- Sort directories before files,
+            //    otherwise alphabetical ignoring case.
+            if (filea.isDirectory() && !fileb.isDirectory()) {
+                return -1;
+            } else if (!filea.isDirectory() && fileb.isDirectory()) {
+                return 1;
+            } else {
+                return filea.getName().compareToIgnoreCase(fileb.getName());
             }
+
         };
     }
 
