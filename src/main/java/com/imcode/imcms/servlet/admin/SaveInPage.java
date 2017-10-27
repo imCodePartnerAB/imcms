@@ -19,9 +19,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,22 +48,20 @@ public class SaveInPage extends HttpServlet {
 
         // Check if user has write rights
         if (!textDocumentPermissionSet.getEditTemplates()
-                || null != requestedTemplateGroup && !allowedTemplateGroupIds.contains(new Integer(requestedTemplateGroup.getId())))
+                || null != requestedTemplateGroup && !allowedTemplateGroupIds.contains(requestedTemplateGroup.getId()))
         {
-            errorNoPermission(documentId, user, req, res);
+            errorNoPermission(documentId, res);
             return;
         }
 
         if (req.getParameter("update") != null) {
-            Writer out = res.getWriter();
-
-            req.getSession().setAttribute("flags", new Integer(0));
+            req.getSession().setAttribute("flags", 0);
 
             if (requestedTemplate == null) {
-                errorNoTemplateSelected(documentId, services, user, out);
+                errorNoTemplateSelected(documentId, services, req, res);
                 return;
             } else if (!templateMapper.templateGroupContains(requestedTemplateGroup, requestedTemplate)) {
-                errorNoPermission(documentId, user, req, res);
+                errorNoPermission(documentId, res);
                 return;
             }
 
@@ -108,22 +103,16 @@ public class SaveInPage extends HttpServlet {
         }
     }
 
-    private void errorNoPermission(int documentId, UserDomainObject user, HttpServletRequest req,
-                                   HttpServletResponse res
-    ) throws IOException, ServletException {
+    private void errorNoPermission(int documentId, HttpServletResponse res) throws IOException, ServletException {
         Utility.setDefaultHtmlContentType(res);
-
-        //AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
         res.sendRedirect("AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE);
     }
 
-    private void errorNoTemplateSelected(int documentId, ImcmsServices services, UserDomainObject user,
-                                         Writer out) throws IOException {
-        List vec = new ArrayList();
-        vec.add("#meta_id#");
-        vec.add(String.valueOf(documentId));
-        String htmlStr = services.getAdminTemplate("inPage_admin_no_template.jsp", user, vec);
-        out.write(htmlStr);
+    private void errorNoTemplateSelected(int documentId, ImcmsServices services, HttpServletRequest request,
+                                         HttpServletResponse response) throws IOException, ServletException {
+        request.setAttribute("meta_id", documentId);
+        String templatePath = services.getAdminTemplatePath("inPage_admin_no_template.jsp");
+        response.getWriter().write(Utility.getContents(templatePath, request, response));
     }
 
     private TemplateGroupDomainObject getRequestedTemplateGroup(HttpServletRequest req, TemplateMapper templateMapper) {

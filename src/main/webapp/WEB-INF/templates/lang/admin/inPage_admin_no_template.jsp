@@ -19,7 +19,7 @@
 <ui:imcms_gui_head heading="${heading}"/>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="SaveInPage">
-<input type="HIDDEN" name="meta_id" value="#meta_id#">
+    <input type="HIDDEN" name="meta_id" value="${meta_id}">
 <tr>
     <td><input type="submit" class="imcmsFormBtn" name="change_group" value="<? global/back ?>"></td>
     <td>&nbsp;</td>
@@ -31,7 +31,7 @@
 
 <table border="0" cellspacing="0" cellpadding="0" width="500">
 <form method="post" action="SaveInPage">
-<input type="HIDDEN" name="meta_id" value="#meta_id#">
+    <input type="HIDDEN" name="meta_id" value="${meta_id}">
 <tr>
     <td>
         <c:set var="heading">
