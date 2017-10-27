@@ -7,6 +7,7 @@ import com.imcode.imcms.mapping.DocGetterCallback;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
+import imcode.server.LanguageMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
@@ -220,6 +221,9 @@ public class ImcmsSetupFilter implements Filter {
             final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
             DocumentDomainObject document = service.getDocumentMapper()
                     .getVersionedDocument(documentIdString, langCode, request);
+
+            request.setAttribute("contextPath", request.getContextPath());
+            request.setAttribute("language", LanguageMapper.convert639_1to639_2(langCode));
 
             if (null != document) {
                 if (Utility.isTextDocument(document)) {
