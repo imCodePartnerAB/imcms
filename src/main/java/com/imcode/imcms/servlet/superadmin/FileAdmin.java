@@ -122,9 +122,9 @@ public class FileAdmin extends HttpServlet {
         } else if (mp.getParameter("mkdir2") != null) {
             outputHasBeenHandled = makeDirectory(name, dir2, dir1, dir2, res, req);
         } else if (mp.getParameter("delete1") != null) {
-            outputHasBeenHandled = delete(dir1, files1, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = delete(dir1, files1, dir1, dir2, res, req);
         } else if (mp.getParameter("delete2") != null) {
-            outputHasBeenHandled = delete(dir2, files2, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = delete(dir2, files2, dir1, dir2, res, req);
         } else if (mp.getParameter("deleteok") != null) {
             deleteOk(mp, roots);
         } else if (mp.getParameter("upload1") != null) {
@@ -299,12 +299,12 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean delete(File dir, String[] files, File dir1, File dir2, HttpServletResponse res,
-                           UserDomainObject user, ImcmsServices imcref) throws IOException {
+                           HttpServletRequest request) throws IOException, ServletException {
         boolean handledOutput = false;
         File[] farray = makeFileTreeList(makeAbsoluteFileList(dir, files), false);
         File[] filelist = makeRelativeFileList(dir, farray);
         if (filelist != null && filelist.length > 0) {
-            outputDeleteWarning(filelist, dir1, dir2, dir, res, user, imcref);
+            outputDeleteWarning(filelist, dir1, dir2, dir, res, request);
             handledOutput = true;
         }
         return handledOutput;
@@ -416,29 +416,26 @@ public class FileAdmin extends HttpServlet {
         response.getWriter().print(Utility.getAdminContents("FileAdminFileBlank.jsp", request, response));
     }
 
-    private void outputDeleteWarning(File[] filelist, File dir1, File dir2, File sourceDir, HttpServletResponse res,
-                                     UserDomainObject user, ImcmsServices imcref) throws IOException {
-        StringBuffer files = new StringBuffer();
-        StringBuffer optionlist = new StringBuffer();
-        for (int i = 0; i < filelist.length; i++) {
-            File foo = new File(sourceDir, filelist[i].getPath());
+    private void outputDeleteWarning(File[] filelist, File dir1, File dir2, File sourceDir, HttpServletResponse response,
+                                     HttpServletRequest request) throws IOException, ServletException {
+        StringBuilder files = new StringBuilder();
+        StringBuilder options = new StringBuilder();
+
+        for (File file : filelist) {
+            File foo = new File(sourceDir, file.getPath());
             String bar = createWarningFileOptionString(foo);
-            optionlist.append("<option>").append(bar).append("</option>");
-            files.append(filelist[i]).append(File.pathSeparator);
+            options.append("<option>").append(bar).append("</option>");
+            files.append(file).append(File.pathSeparator);
         }
-        List vec = new ArrayList();
-        vec.add("#filelist#");
-        vec.add(optionlist.toString());
-        vec.add("#files#");
-        vec.add(StringEscapeUtils.escapeHtml4(files.toString()));
-        vec.add("#source#");
-        vec.add(getContextRelativeAbsolutePathToDirectory(sourceDir));
-        vec.add("#dir1#");
-        vec.add(getContextRelativeAbsolutePathToDirectory(dir1));
-        vec.add("#dir2#");
-        vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
-        Utility.setDefaultHtmlContentType(res);
-        res.getWriter().print(imcref.getAdminTemplate("FileAdminDeleteWarning.jsp", user, vec));
+
+        request.setAttribute("filelist", options.toString());
+        request.setAttribute("files", StringEscapeUtils.escapeHtml4(files.toString()));
+        request.setAttribute("source", getContextRelativeAbsolutePathToDirectory(sourceDir));
+        request.setAttribute("dir1", getContextRelativeAbsolutePathToDirectory(dir1));
+        request.setAttribute("dir2", getContextRelativeAbsolutePathToDirectory(dir2));
+
+        Utility.setDefaultHtmlContentType(response);
+        response.getWriter().print(Utility.getAdminContents("FileAdminDeleteWarning.jsp", request, response));
     }
 
     private void outputBlankFilenameError(File dir1, File dir2, HttpServletResponse response,

@@ -19,10 +19,10 @@
 <ui:imcms_gui_head heading="${heading}"/>
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
 <table border="0" cellspacing="0" cellpadding="0">
-<input type="HIDDEN" name="dir1" value="#dir1#">
-<input type="HIDDEN" name="dir2" value="#dir2#">
-<input type="HIDDEN" name="source" value="#source#">
-<input type="HIDDEN" name="files" value="#files#">
+    <input type="HIDDEN" name="dir1" value="${dir1}">
+    <input type="HIDDEN" name="dir2" value="${dir2}">
+    <input type="HIDDEN" name="source" value="${source}">
+    <input type="HIDDEN" name="files" value="${files}">
 <tr>
     <td><input type="submit" class="imcmsFormBtn" name="no" value="<? global/back ?>"></td>
     <td>&nbsp;</td>
@@ -54,8 +54,10 @@
 </tr>
 <tr>
     <td align="right">
-        <input class="imcmsFormBtn" style="width:70" type="submit" name="deleteok" value="<? templates/sv/FileAdminDeleteWarning.html/2001 ?>">
-        <input class="imcmsFormBtn" style="width:70" type="submit" name="no" value="<? templates/sv/FileAdminDeleteWarning.html/2002 ?>"></td>
+        <input class="imcmsFormBtn" style="width:70px" type="submit" name="deleteok"
+               value="<? templates/sv/FileAdminDeleteWarning.html/2001 ?>">
+        <input class="imcmsFormBtn" style="width:70px" type="submit" name="no"
+               value="<? templates/sv/FileAdminDeleteWarning.html/2002 ?>"></td>
 </tr>
 </table>
 </form>
