@@ -3,6 +3,6 @@
 <%@ attribute name="heading" %>
 
 <!-- gui_heading -->
-<span class="imcmsAdmHeading">$heading</span><br>
+<span class="imcmsAdmHeading">${heading}</span><br>
 <ui:imcms_gui_hr wantedcolor="blue"/>
 <!-- /gui_heading -->
