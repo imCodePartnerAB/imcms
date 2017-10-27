@@ -35,7 +35,6 @@ public class TemplateAdmin extends HttpServlet {
     private static final String TEMPLATE_UPLOAD = "template_upload.jsp";
     private static final String TEMPLATE_GROUP_RENAME = "templategroup_rename.jsp";
     private static final String TEMPLATE_ASSIGN = "template_assign.jsp";
-    private static final String TEMPLATE_DOCS_ROW = "templates_docs_row.html";
     private static final String TEMPLATE_DELETE_WARNING = "template_delete_warning.jsp";
     private static final String TEMPLATE_GROUP_DELETE_WARNING = "templategroup_delete_warning.jsp";
     private static final String TEMPLATE_GROUP_DELETE_DOCUMENTS_ASSIGNED_WARNING = "templategroup_delete_documents_assigned_warning.jsp";
@@ -143,22 +142,18 @@ public class TemplateAdmin extends HttpServlet {
         return imcref.getAdminTemplate(TEMPLATE_ASSIGN, user, vec);
     }
 
-    static String createHtmlOptionListOfDocumentsUsingTemplate(ImcmsServices imcref, TemplateDomainObject template,
-                                                               UserDomainObject user) {
+    static String createHtmlOptionListOfDocumentsUsingTemplate(ImcmsServices imcref, TemplateDomainObject template) {
         DocumentDomainObject[] documents = imcref.getTemplateMapper().getDocumentsUsingTemplate(template);
         StringBuffer htmlOptionList = new StringBuffer();
         for (DocumentDomainObject document : documents) {
-            List<String> vec = new ArrayList<>();
-            vec.add("#meta_id#");
-            vec.add("" + document.getId());
-            vec.add("#meta_headline#");
+            final int metaId = document.getId();
 
             String[] pd = {"&", "&amp;", "<", "&lt;", ">", "&gt;", "\"", "&quot;"};
             String headline = document.getHeadline();
             headline = StringUtils.abbreviate(headline, 60);
             headline = Parser.parseDoc(headline, pd);
-            vec.add(headline);
-            htmlOptionList.append(imcref.getAdminTemplate(TEMPLATE_DOCS_ROW, user, vec));
+            htmlOptionList.append("<option value=\"").append(metaId).append("\">[").append(metaId).append("] ")
+                    .append(headline).append("</option>");
         }
         return htmlOptionList.toString();
     }
@@ -170,7 +165,7 @@ public class TemplateAdmin extends HttpServlet {
         vec.add("#template#");
         vec.add(template.getName());
         vec.add("#docs#");
-        vec.add(createHtmlOptionListOfDocumentsUsingTemplate(imcref, template, user));
+        vec.add(createHtmlOptionListOfDocumentsUsingTemplate(imcref, template));
         vec.add("#templates#");
         vec.add(templateMapper.createHtmlOptionListOfTemplates(templateMapper.getAllTemplatesExceptOne(template), null));
 

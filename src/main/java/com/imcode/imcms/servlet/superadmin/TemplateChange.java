@@ -165,7 +165,7 @@ public class TemplateChange extends HttpServlet {
         vec2.add(imcref.getTemplateMapper().createHtmlOptionListOfTemplatesWithDocumentCount(user));
         if (template != null) {
             vec2.add("#templates_docs#");
-            vec2.add(TemplateAdmin.createHtmlOptionListOfDocumentsUsingTemplate(imcref, template, user));
+            vec2.add(TemplateAdmin.createHtmlOptionListOfDocumentsUsingTemplate(imcref, template));
         }
         vec2.add("#language#");
         vec2.add(lang);
