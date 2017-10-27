@@ -24,6 +24,7 @@ import imcode.util.DateConstants;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +35,6 @@ import org.springframework.context.ApplicationContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.text.DateFormat;
@@ -610,8 +610,11 @@ public class DefaultImcmsServices implements ImcmsServices {
                 }
                 variables = parseDocVariables;
             }
-            StringWriter stringWriter = new StringWriter();
-            String result = stringWriter.toString();
+
+            final String templateFolderPath = getTemplateFolderPath();
+            final File templateFile = new File(templateFolderPath, path);
+            String result = FileUtils.readFileToString(templateFile, Imcms.DEFAULT_ENCODING);
+
             if (null != variables) {
                 result = Parser.parseDoc(result, variables.toArray(new String[variables.size()]));
             }
@@ -619,6 +622,10 @@ public class DefaultImcmsServices implements ImcmsServices {
         } catch (Exception e) {
             throw new UnhandledException("getTemplate(\"" + path + "\") : " + e.getMessage(), e);
         }
+    }
+
+    private String getTemplateFolderPath() throws IOException {
+        return new File(Imcms.getPath(), config.getTemplatePath().getPath()).getCanonicalPath();
     }
 
     private void setSessionCounterInDb(int value) {
