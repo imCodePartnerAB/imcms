@@ -34,7 +34,7 @@
 <ui:imcms_gui_outer_end/>
 
 
-<div align="center">#adminMode#</div>
+<div align="center">${adminMode}</div>
 
 </body>
 </html>

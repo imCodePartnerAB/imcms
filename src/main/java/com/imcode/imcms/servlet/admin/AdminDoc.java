@@ -27,8 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -77,16 +75,10 @@ public class AdminDoc extends HttpServlet {
         } catch (NumberFormatException ex) {
             if (flags == 0) {
                 if (doc_type != 1 && doc_type != 2) {
-                    List<String> vec = new ArrayList<>(4);
-                    vec.add("#adminMode#");
-                    vec.add(Html.getAdminButtons(user, document, req, res));
-                    vec.add("#doc_type_description#");
-
-                    final String adminButtonsLink = "adminbuttons/adminbuttons" + doc_type + "_description.html";
-
-                    vec.add(imcref.getAdminTemplate(adminButtonsLink, user, null));
                     Utility.setDefaultHtmlContentType(res);
-                    res.getWriter().write(imcref.getAdminTemplate("docinfo.jsp", user, vec));
+                    req.setAttribute("adminMode", Html.getAdminButtons(user, document, req, res));
+                    final String adminTemplatePath = imcref.getAdminTemplatePath("docinfo.jsp");
+                    res.getWriter().write(Utility.getContents(adminTemplatePath, req, res));
                     return;
                 }
             }
