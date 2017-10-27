@@ -37,6 +37,9 @@ public interface ImcmsServices {
     // set  session counter date
     void setSessionCounterDate(Date date);
 
+    // return template path
+    String getAdminTemplatePath(String adminTemplateName, String langPrefix);
+
     // parsedoc use template
     String getAdminTemplate(String adminTemplateName, UserDomainObject user, java.util.List<String> tagsWithReplacements);
 

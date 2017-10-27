@@ -206,6 +206,10 @@ public class DefaultImcmsServices implements ImcmsServices {
         return imcmsAuthenticatorAndUserAndRoleMapper;
     }
 
+    public String getAdminTemplatePath(String adminTemplateName, String langPrefix) {
+        return "/" + config.getTemplatePath().getPath() + "/" + langPrefix + "/admin/" + adminTemplateName;
+    }
+
     /**
      * Parse doc replace variables with data , use template
      */
