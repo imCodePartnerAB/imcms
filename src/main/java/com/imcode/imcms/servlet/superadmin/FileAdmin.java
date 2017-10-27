@@ -128,9 +128,9 @@ public class FileAdmin extends HttpServlet {
         } else if (mp.getParameter("deleteok") != null) {
             deleteOk(mp, roots);
         } else if (mp.getParameter("upload1") != null) {
-            outputHasBeenHandled = upload(mp, dir1, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = upload(mp, dir1, dir1, dir2, res, req, user, imcref);
         } else if (mp.getParameter("upload2") != null) {
-            outputHasBeenHandled = upload(mp, dir2, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = upload(mp, dir2, dir1, dir2, res, req, user, imcref);
         } else if (mp.getParameter("download1") != null) {
             outputHasBeenHandled = download(files1, dir1, res);
         } else if (mp.getParameter("download2") != null) {
@@ -326,11 +326,11 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean upload(MultipartHttpServletRequest mp, File destDir, File dir1, File dir2, HttpServletResponse res,
-                           UserDomainObject user, ImcmsServices imcref) throws IOException {
+                           HttpServletRequest req, UserDomainObject user, ImcmsServices imcref) throws IOException, ServletException {
         boolean handledOutput = false;
         MultipartHttpServletRequest.DataSourceFileItem parameterFileItem = mp.getParameterFileItem("file");
         if (parameterFileItem == null || parameterFileItem.getSize() < 1) {
-            outputBlankFileError(dir1, dir2, res, user, imcref);
+            outputBlankFileError(dir1, dir2, req, res);
             handledOutput = true;
             return handledOutput;
         }
@@ -407,15 +407,13 @@ public class FileAdmin extends HttpServlet {
         res.getWriter().print(imcref.getAdminTemplate("FileAdminFileExisted.jsp", user, vec));
     }
 
-    private void outputBlankFileError(File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
-                                      ImcmsServices imcref) throws IOException {
-        List vec = new ArrayList();
-        vec.add("#dir1#");
-        vec.add(getContextRelativeAbsolutePathToDirectory(dir1));
-        vec.add("#dir2#");
-        vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
-        Utility.setDefaultHtmlContentType(res);
-        res.getWriter().print(imcref.getAdminTemplate("FileAdminFileBlank.jsp", user, vec));
+    private void outputBlankFileError(File dir1, File dir2, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+
+        request.setAttribute("dir1", getContextRelativeAbsolutePathToDirectory(dir1));
+        request.setAttribute("dir2", getContextRelativeAbsolutePathToDirectory(dir2));
+        Utility.setDefaultHtmlContentType(response);
+        response.getWriter().print(Utility.getAdminContents("FileAdminFileBlank.jsp", request, response));
     }
 
     private void outputDeleteWarning(File[] filelist, File dir1, File dir2, File sourceDir, HttpServletResponse res,
