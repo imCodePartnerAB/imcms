@@ -57,9 +57,6 @@ public class AdminRoles extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
 
-        vm.put("SERVLET_URL", "");
-        vm.put("SERVLET_URL2", "");
-
         List<String> tagsAndData1 = new ArrayList<>(vm.size() * 2);
         for (Map.Entry<String, String> entry1 : vm.entrySet()) {
             tagsAndData1.add("#" + entry1.getKey() + "#");
@@ -103,11 +100,11 @@ public class AdminRoles extends HttpServlet {
         String[] rolesArr = imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
         List<String> rolesV = Arrays.asList(rolesArr);
 
-        Map<String, String> vm = new HashMap<>();
         String opt = Html.createOptionList(rolesV, "");
-        vm.put("ROLES_MENU", opt);
+        req.setAttribute("ROLES_MENU", opt);
 
-        sendHtml(req, res, vm, HTML_ADMIN_ROLES);
+        final String adminTemplatePath = imcref.getAdminTemplatePath(HTML_ADMIN_ROLES, user.getLanguageIso639_2());
+        req.getRequestDispatcher(adminTemplatePath).forward(req, res);
 
     } // End doGet
 

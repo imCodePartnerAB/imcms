@@ -25,9 +25,7 @@
             <tr valign="top">
                 <td class="imcmsAdmText" nowrap><? templates/sv/AdminRoles_roles.htm/2 ?> &nbsp;</td>
                 <td>
-                    <select name="ROLE_ID" size="10">
-                        #ROLES_MENU#
-                    </select></td>
+                    <select name="ROLE_ID" size="10">${ROLES_MENU}</select></td>
             </tr>
         </table></td>
 </tr>
