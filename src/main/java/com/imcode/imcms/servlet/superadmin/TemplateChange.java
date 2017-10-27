@@ -17,9 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 public class TemplateChange extends HttpServlet {
@@ -69,7 +67,7 @@ public class TemplateChange extends HttpServlet {
             htmlStr = TemplateAdmin.createAssignTemplatesToGroupDialog(templateMapper,
                     templateGroup, lang, request, response);
         } else if (checkNotNull("template_rename")) {
-            htmlStr = renameTemplate(request, templateMapper, lang, imcref, user, response);
+            htmlStr = renameTemplate(request, templateMapper, lang, user, response);
         } else if (checkNotNull("change_availability_template")) {
             htmlStr = changeAvailabilityTemplate(request, templateMapper, lang, user, response);
         } else if (checkNotNull("template_delete_check")) {
@@ -82,11 +80,11 @@ public class TemplateChange extends HttpServlet {
         } else if (checkNotNull("group_delete_cancel")) {
             htmlStr = TemplateAdmin.createDeleteTemplateGroupDialog(templateMapper, request, response);
         } else if (checkNotNull("group_add")) {
-            htmlStr = addTemplateGroup(request, response, imcref, user);
+            htmlStr = addTemplateGroup(request, response, imcref);
         } else if (checkNotNull("group_rename")) {
-            htmlStr = renameTemplateGroup(request, imcref, user, lang, response);
+            htmlStr = renameTemplateGroup(request, imcref, lang, response);
         } else if (checkNotNull("list_templates_docs")) {
-            htmlStr = listDocumentsUsingTemplate(request, imcref, lang, user);
+            htmlStr = listDocumentsUsingTemplate(request, imcref, lang, response, user);
         } else if (checkNotNull("show_doc")) {
             htmlStr = showDocument(request, response, imcref, lang, user);
         }
@@ -107,16 +105,15 @@ public class TemplateChange extends HttpServlet {
         return this.request.getParameter(parameter) != null;
     }
 
-    private String addTemplateGroup(HttpServletRequest request, HttpServletResponse response, ImcmsServices imcref,
-                                    UserDomainObject user) throws ServletException, IOException {
+    private String addTemplateGroup(HttpServletRequest request, HttpServletResponse response, ImcmsServices imcref) throws ServletException, IOException {
         String htmlStr;
         String name = request.getParameter("name");
         if (StringUtils.isEmpty(name)) {
-            htmlStr = createAddNameEmptyErrorDialog(imcref, user);
+            htmlStr = createAddNameEmptyErrorDialog(request, response);
         } else {
             TemplateGroupDomainObject templateGroup = imcref.getTemplateMapper().getTemplateGroupByName(name);
             if (null != templateGroup) {
-                htmlStr = createTemplateGroupExistsErrorDialog(imcref, user);
+                htmlStr = createTemplateGroupExistsErrorDialog(request, response);
             } else {
                 imcref.getTemplateMapper().createTemplateGroup(name);
                 htmlStr = TemplateAdmin.createAddGroupDialog(request, response);
@@ -155,33 +152,28 @@ public class TemplateChange extends HttpServlet {
         return TemplateAdmin.createAssignTemplatesToGroupDialog(templateMapper, templateGroup, lang, req, res);
     }
 
-    private String createAddNameEmptyErrorDialog(ImcmsServices imcref, UserDomainObject user) {
-        return imcref.getAdminTemplate("templategroup_add_name_blank.jsp", user, null);
+    private String createAddNameEmptyErrorDialog(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        return Utility.getAdminContents("templategroup_add_name_blank.jsp", request, response);
     }
 
     private String createDocumentsUsingTemplateDialog(ImcmsServices imcref, UserDomainObject user,
-                                                      TemplateDomainObject template, String lang) {
-        List<String> vec2 = new ArrayList<>();
-        vec2.add("#template_list#");
-        vec2.add(imcref.getTemplateMapper().createHtmlOptionListOfTemplatesWithDocumentCount(user));
+                                                      TemplateDomainObject template, String lang,
+                                                      HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("#template_list#", imcref.getTemplateMapper().createHtmlOptionListOfTemplatesWithDocumentCount(user));
         if (template != null) {
-            vec2.add("#templates_docs#");
-            vec2.add(TemplateAdmin.createHtmlOptionListOfDocumentsUsingTemplate(imcref, template));
+            request.setAttribute("#templates_docs#", TemplateAdmin.createHtmlOptionListOfDocumentsUsingTemplate(imcref, template));
         }
-        vec2.add("#language#");
-        vec2.add(lang);
-        return imcref.getAdminTemplate("template_list.jsp", user, vec2);
+        request.setAttribute("#language#", lang);
+        return Utility.getAdminContents("template_list.jsp", request, response);
     }
 
-    private String createRenameNameEmptyErrorDialog(String lang, ImcmsServices imcref, UserDomainObject user) {
-        List<String> vec = new ArrayList<>();
-        vec.add("#language#");
-        vec.add(lang);
-        return imcref.getAdminTemplate("template_rename_name_blank.jsp", user, vec);
+    private String createRenameNameEmptyErrorDialog(String lang, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("#language#", lang);
+        return Utility.getAdminContents("template_rename_name_blank.jsp", request, response);
     }
 
-    private String createTemplateGroupExistsErrorDialog(ImcmsServices imcref, UserDomainObject user) {
-        return imcref.getAdminTemplate("templategroup_add_exists.jsp", user, null);
+    private String createTemplateGroupExistsErrorDialog(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        return Utility.getAdminContents("templategroup_add_exists.jsp", request, response);
     }
 
     private void deleteTemplate(HttpServletRequest req, ImcmsServices imcref) {
@@ -255,20 +247,20 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String listDocumentsUsingTemplate(HttpServletRequest req, ImcmsServices imcref, String lang,
-                                              UserDomainObject user) {
+                                              HttpServletResponse res, UserDomainObject user) throws ServletException, IOException {
         String templateId = req.getParameter("template");
         TemplateDomainObject template = imcref.getTemplateMapper().getTemplateByName(templateId);
-        return createDocumentsUsingTemplateDialog(imcref, user, template, lang);
+        return createDocumentsUsingTemplateDialog(imcref, user, template, lang, req, res);
     }
 
     private String renameTemplate(HttpServletRequest req, TemplateMapper templateMapper, String lang,
-                                  ImcmsServices imcref, UserDomainObject user, HttpServletResponse res) throws IOException, ServletException {
+                                  UserDomainObject user, HttpServletResponse res) throws IOException, ServletException {
         String htmlStr;
         String template_id = req.getParameter("template");
         TemplateDomainObject template = templateMapper.getTemplateByName(template_id);
         String newNameForTemplate = req.getParameter("name");
         if (StringUtils.isEmpty(newNameForTemplate)) {
-            htmlStr = createRenameNameEmptyErrorDialog(lang, imcref, user);
+            htmlStr = createRenameNameEmptyErrorDialog(lang, req, res);
         } else {
             LocalizedMessage error = null;
             if (!templateMapper.renameTemplate(template.getName(), newNameForTemplate)) {
@@ -293,13 +285,13 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
-    private String renameTemplateGroup(HttpServletRequest req, ImcmsServices imcref, UserDomainObject user,
-                                       String lang, HttpServletResponse res) throws ServletException, IOException {
+    private String renameTemplateGroup(HttpServletRequest req, ImcmsServices imcref, String lang,
+                                       HttpServletResponse res) throws ServletException, IOException {
         String htmlStr;
         int grp_id = Integer.parseInt(req.getParameter("templategroup"));
         String name = req.getParameter("name");
         if (StringUtils.isEmpty(name)) {
-            htmlStr = createRenameNameEmptyErrorDialog(lang, imcref, user);
+            htmlStr = createRenameNameEmptyErrorDialog(lang, req, res);
         } else {
             TemplateMapper templateMapper = imcref.getTemplateMapper();
             TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById(grp_id);
@@ -310,13 +302,13 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String showDocument(HttpServletRequest req, HttpServletResponse res, ImcmsServices imcref,
-                                String lang, UserDomainObject user) throws IOException {
+                                String lang, UserDomainObject user) throws IOException, ServletException {
         String meta_id = req.getParameter("templates_doc");
         String htmlStr = null;
         if (meta_id != null) {
             res.sendRedirect("AdminDoc?meta_id=" + meta_id);
         } else {
-            htmlStr = createDocumentsUsingTemplateDialog(imcref, user, null, lang);
+            htmlStr = createDocumentsUsingTemplateDialog(imcref, user, null, lang, req, res);
         }
         return htmlStr;
     }
