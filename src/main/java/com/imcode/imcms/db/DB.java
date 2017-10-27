@@ -1,5 +1,6 @@
 package com.imcode.imcms.db;
 
+import com.imcode.imcms.persistence.components.SqlResourcePathResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ConnectionCallback;
@@ -10,14 +11,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.ProtocolException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.List;
-
-import static java.util.Collections.singletonMap;
 
 public final class DB {
 
@@ -109,8 +108,8 @@ public final class DB {
 
         jdbcTemplate.execute((ConnectionCallback<Void>) connection -> {
 
-            try (PathResolver pathResolver = new PathResolver(scriptsDirURI)) {
-                Path scriptsDirPath = pathResolver.resolveScriptsDirPath();
+            try (SqlResourcePathResolver pathResolver = new SqlResourcePathResolver(scriptsDirURI)) {
+                Path scriptsDirPath = pathResolver.resolveSqlResourcePath();
                 runScripts(scripts, scriptsDirPath, connection);
             } catch (IOException e) {
                 throw new RuntimeSqlException(e);
@@ -135,38 +134,6 @@ public final class DB {
                 scriptRunner.runScript(reader);
             }
         }
-    }
-
-    private class PathResolver implements AutoCloseable {
-
-        private final URI scriptsDirURI;
-
-        private FileSystem jarFileSystem;
-
-        private PathResolver(URI scriptsDirURI) {
-            this.scriptsDirURI = scriptsDirURI;
-        }
-
-        private Path resolveScriptsDirPath() throws IOException {
-            final String protocol = scriptsDirURI.getScheme();
-            switch (protocol) {
-                case "file":
-                    return Paths.get(scriptsDirURI);
-                case "jar":
-                    jarFileSystem = FileSystems.newFileSystem(scriptsDirURI, singletonMap("create", true));
-                    return jarFileSystem.getPath("sql");
-                default:
-                    throw new ProtocolException("Unsupported protocol - " + protocol);
-            }
-        }
-
-        @Override
-        public void close() throws IOException {
-            if (jarFileSystem != null) {
-                jarFileSystem.close();
-            }
-        }
-
     }
 
 }
