@@ -24,7 +24,7 @@ public class SqlResourcePathResolver implements AutoCloseable {
         this.sqlResourceDirectoryURI = sqlResourceDirectoryURI;
     }
 
-    public Path resolveSqlResourceSubPath(Path subPath) throws IOException {
+    public Path resolveSqlResourceSubPath(String subPath) throws IOException {
         return resolveSqlResourcePath().resolve(subPath);
     }
 
