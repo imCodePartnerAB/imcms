@@ -159,16 +159,16 @@ public class TemplateChange extends HttpServlet {
     private String createDocumentsUsingTemplateDialog(ImcmsServices imcref, UserDomainObject user,
                                                       TemplateDomainObject template, String lang,
                                                       HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("#template_list#", imcref.getTemplateMapper().createHtmlOptionListOfTemplatesWithDocumentCount(user));
+        request.setAttribute("template_list", imcref.getTemplateMapper().createHtmlOptionListOfTemplatesWithDocumentCount(user));
         if (template != null) {
-            request.setAttribute("#templates_docs#", TemplateAdmin.createHtmlOptionListOfDocumentsUsingTemplate(imcref, template));
+            request.setAttribute("templates_docs", TemplateAdmin.createHtmlOptionListOfDocumentsUsingTemplate(imcref, template));
         }
-        request.setAttribute("#language#", lang);
+        request.setAttribute("language", lang);
         return Utility.getAdminContents("template_list.jsp", request, response);
     }
 
     private String createRenameNameEmptyErrorDialog(String lang, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("#language#", lang);
+        request.setAttribute("language", lang);
         return Utility.getAdminContents("template_rename_name_blank.jsp", request, response);
     }
 
