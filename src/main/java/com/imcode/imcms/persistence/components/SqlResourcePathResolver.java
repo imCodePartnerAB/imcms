@@ -3,10 +3,7 @@ package com.imcode.imcms.persistence.components;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 import static java.util.Collections.singletonMap;
 
@@ -34,7 +31,11 @@ public class SqlResourcePathResolver implements AutoCloseable {
             case "file":
                 return Paths.get(sqlResourceDirectoryURI);
             case "jar":
-                jarFileSystem = FileSystems.newFileSystem(sqlResourceDirectoryURI, singletonMap("create", true));
+                try {
+                    jarFileSystem = FileSystems.newFileSystem(sqlResourceDirectoryURI, singletonMap("create", true));
+                } catch (FileSystemAlreadyExistsException e) {
+                    jarFileSystem = FileSystems.getFileSystem(sqlResourceDirectoryURI);
+                }
                 return jarFileSystem.getPath("sql");
             default:
                 throw new ProtocolException("Unsupported protocol - " + protocol);
