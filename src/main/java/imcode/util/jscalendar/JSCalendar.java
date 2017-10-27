@@ -3,7 +3,7 @@ package imcode.util.jscalendar;
 import javax.servlet.http.HttpServletRequest;
 
 public class JSCalendar {
-    private static final String PATH_CALENDAR = "/imcms/jscalendar/";
+    private static final String PATH_CALENDAR = "/js/jscalendar/";
     public String dateFieldId;
     public String timeFieldId;
     public String langIso639_2;
