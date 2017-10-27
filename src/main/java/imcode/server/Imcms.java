@@ -3,7 +3,6 @@ package imcode.server;
 import imcode.server.user.UserDomainObject;
 import imcode.util.PropertyManager;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -47,7 +46,6 @@ public class Imcms {
 
     private static boolean startInvoked;
 
-    @Autowired
     public Imcms(ServletContext servletContext, ImcmsServices imcmsServices, Properties imcmsProperties) {
 
         Imcms.services = imcmsServices;
@@ -105,18 +103,8 @@ public class Imcms {
         }
     }
 
-    @PostConstruct
-    private void init() {
-        invokeStart();
-    }
-
     public static Properties getServerProperties() {
         return properties;
-    }
-
-    public synchronized void restartCms() {
-        stop();
-        start();
     }
 
     /**
@@ -147,6 +135,16 @@ public class Imcms {
      */
     public static boolean isVersioningAllowed() {
         return isVersioningAllowed;
+    }
+
+    @PostConstruct
+    private void init() {
+        invokeStart();
+    }
+
+    public synchronized void restartCms() {
+        stop();
+        start();
     }
 
     @PreDestroy
