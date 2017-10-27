@@ -1,19 +1,12 @@
 package imcode.util;
 
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.admin.AdminDoc;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,13 +17,17 @@ import java.util.function.Function;
 
 public class Html {
 
-    private static final Object[][] STATUS_TEMPLATE_PAIRS = {
-            {LifeCyclePhase.NEW, "status/new.jsp"},
-            {LifeCyclePhase.DISAPPROVED, "status/disapproved.jsp"},
-            {LifeCyclePhase.PUBLISHED, "status/published.jsp"},
-            {LifeCyclePhase.UNPUBLISHED, "status/unpublished.jsp"},
-            {LifeCyclePhase.ARCHIVED, "status/archived.jsp"},
-            {LifeCyclePhase.APPROVED, "status/approved.jsp"},
+    private static final Map<LifeCyclePhase, String> LIFE_CYCLE_PHASE_TO_TEMPLATE_PAIRS = new HashMap<LifeCyclePhase, String>() {
+        private static final long serialVersionUID = -5142853270637150747L;
+
+        {
+            put(LifeCyclePhase.NEW, "status/new.jsp");
+            put(LifeCyclePhase.DISAPPROVED, "status/disapproved.jsp");
+            put(LifeCyclePhase.PUBLISHED, "status/published.jsp");
+            put(LifeCyclePhase.UNPUBLISHED, "status/unpublished.jsp");
+            put(LifeCyclePhase.ARCHIVED, "status/archived.jsp");
+            put(LifeCyclePhase.APPROVED, "status/approved.jsp");
+        }
     };
 
     private Html() {
@@ -71,69 +68,13 @@ public class Html {
         return htmlStr.toString();
     }
 
-    public static String createOptionListOfCategoriesOfTypeForDocument(CategoryMapper categoryMapper,
-                                                                       CategoryTypeDomainObject categoryType,
-                                                                       DocumentDomainObject document, HttpServletRequest request) {
-        CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType(categoryType);
-        Arrays.sort(categories);
-        Set<CategoryDomainObject> documentSelectedCategories = categoryMapper.getCategoriesOfType(categoryType, document.getCategoryIds());
-
-        Function<CategoryDomainObject, String[]> categoryToStringPairTransformer = category -> new String[]{"" + category.getId(), category.getName()};
-        String categoryOptionList = createOptionList(Arrays.asList(categories), documentSelectedCategories, categoryToStringPairTransformer);
-
-        if (1 == categoryType.getMaxChoices()) {
-            categoryOptionList = "<option>- " + (new LocalizedMessage("global/None")).toLocalizedString(request) + " -</option>" + categoryOptionList;
-        }
-        return categoryOptionList;
-    }
-
-    public static String createOptionListOfCategoriesOfTypeNotSelectedForDocument(DocumentMapper documentMapper,
-                                                                                  CategoryTypeDomainObject categoryType,
-                                                                                  DocumentDomainObject document) {
-        CategoryMapper categoryMapper = documentMapper.getCategoryMapper();
-        CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType(categoryType);
-        Set<CategoryDomainObject> documentSelectedCategories = categoryMapper.getCategoriesOfType(categoryType, document.getCategoryIds());
-        Set<CategoryDomainObject> notSelectedCategories = new HashSet<>(Arrays.asList(categories));
-        notSelectedCategories.removeAll(documentSelectedCategories);
-
-        return createOptionListOfCategories(new TreeSet<>(notSelectedCategories), categoryType);
-    }
-
-    public static String createOptionListOfCategories(Collection<CategoryDomainObject> categories, CategoryTypeDomainObject categoryType) {
-        Function<CategoryDomainObject, String[]> categoryToStringPairTransformer = category -> new String[]{"" + category.getId(), category.getName()};
-        String categoryOptionList = createOptionList(categories, categoryToStringPairTransformer);
-
-        if (1 == categoryType.getMaxChoices()) {
-            categoryOptionList = "<option></option>" + categoryOptionList;
-        }
-        return categoryOptionList;
-    }
-
-    public static String getLinkedStatusIconTemplate(DocumentDomainObject document, UserDomainObject user,
-                                                     HttpServletRequest request) {
-        String statusIconTemplate = getStatusIconTemplate(document, user);
-        if (user.canEditDocumentInformationFor(document)) {
-            statusIconTemplate = "<a href=\"" + request.getContextPath() + "/servlet/AdminDoc?meta_id="
-                    + document.getId()
-                    + "&amp;"
-                    + AdminDoc.PARAMETER__DISPATCH_FLAGS
-                    + "=1\" target=\"_blank\">" +
-                    statusIconTemplate +
-                    "</a>";
-        }
-        return statusIconTemplate;
-    }
-
-    public static String getStatusIconTemplate(DocumentDomainObject document, UserDomainObject user) {
-        LifeCyclePhase lifeCyclePhase = document.getLifeCyclePhase();
-        String statusIconTemplateName = null;
-        for (Object[] statusTemplatePair : STATUS_TEMPLATE_PAIRS) {
-            if (lifeCyclePhase.equals(statusTemplatePair[0])) {
-                statusIconTemplateName = (String) statusTemplatePair[1];
-                break;
+    public static String getStatusIconTemplatePath(LifeCyclePhase lifeCyclePhase) {
+        for (Map.Entry<LifeCyclePhase, String> statusTemplatePair : LIFE_CYCLE_PHASE_TO_TEMPLATE_PAIRS.entrySet()) {
+            if (lifeCyclePhase.equals(statusTemplatePair.getKey())) {
+                return "/WEB-INF/templates/" + Imcms.getUser().getLanguageIso639_2() + "/admin/" + statusTemplatePair.getValue();
             }
         }
-        return Imcms.getServices().getAdminTemplate(statusIconTemplateName, user, null);
+        return "";
     }
 
     public static String option(String elementValue, String content, boolean selected) {
@@ -177,11 +118,6 @@ public class Html {
         } catch (ServletException | IOException e) {
             throw new UnhandledException(e);
         }
-    }
-
-    public static String removeTags(String html) {
-        Perl5Util perl5util = new Perl5Util();
-        return perl5util.substitute("s!<.+?>!!g", html);
     }
 
     public static String createUsersOptionList(ImcmsServices imcref) {

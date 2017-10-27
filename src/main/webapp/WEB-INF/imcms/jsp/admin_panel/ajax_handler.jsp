@@ -14,7 +14,6 @@
 				imcode.server.document.textdocument.TextDocumentDomainObject,
 				imcode.server.parser.ParserParameters,
 				imcode.server.user.UserDomainObject,
-				imcode.util.Html,
 				imcode.util.Utility,
 				org.apache.commons.collections.iterators.ReverseListIterator,
 				org.apache.commons.lang3.StringUtils,
@@ -22,15 +21,16 @@
 				org.apache.oro.text.perl.Perl5Util,
 				java.util.ArrayList,
 				java.util.Iterator,
-				java.util.List"
+				java.util.List,
+				java.util.Set"
 
 		contentType="text/html; charset=UTF-8"
 		pageEncoding="UTF-8"
 
 %>
-<%@ page import="java.util.Set" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%!
 
 	private String getSubPanelStart(String cp) {
@@ -179,8 +179,7 @@
 
 	String cp = request.getContextPath();
 
-
-	if ("adminPanelHtml".equals(get)) { %>
+    if ("adminPanelHtml".equals(get)) { %>
 <div id="imcmsToolBar">
 	<div id="imcmsToolBarMain">
 		<div id="imcmsToolBarLeft">
@@ -190,7 +189,7 @@
 													 height="15" alt=""/></td>
 					<td id="imcmsToolBarMetaTd" rowspan="2">
 						<ul>
-							<li id="statusIcon"><%= Html.getLinkedStatusIconTemplate(document, user, request) %>
+                            <li id="statusIcon"><ui:statusIcon lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/>
 							</li>
 							<%
 								boolean hasManyLanguages = (languages.size() > 6);

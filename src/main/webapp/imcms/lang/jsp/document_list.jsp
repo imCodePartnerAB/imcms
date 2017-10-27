@@ -5,12 +5,11 @@
                  imcode.server.document.DocumentDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  imcode.server.user.UserDomainObject,
-                 imcode.util.Html,
                  imcode.util.Utility,
-                org.apache.commons.lang3.ObjectUtils,
-                 org.apache.commons.text.StringEscapeUtils,
-                 java.net.URLEncoder" %>
-<%@ page import="java.util.Collections" %>
+                 org.apache.commons.lang3.ObjectUtils,
+                org.apache.commons.text.StringEscapeUtils,
+                 java.net.URLEncoder,
+                 java.util.Collections" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
@@ -81,7 +80,7 @@ if (null != formData.documentsIterator) { %>
     <% }else { %>
     <td>&nbsp;</td> <%}%>
     <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
-        <%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
+        <ui:statusIcon lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/></td>
     <td nowrap><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
 	<%= StringEscapeUtils.escapeHtml4((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
     <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>

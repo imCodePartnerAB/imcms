@@ -3,12 +3,13 @@
                  com.imcode.imcms.servlet.SearchDocumentsPage,
                  imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject,
-                 imcode.util.Html,
-                 imcode.util.Utility"
+                 imcode.util.Utility,
+                 org.apache.commons.lang3.ObjectUtils"
          contentType="text/html; charset=UTF-8" %>
-<%@ page import="org.apache.commons.lang3.ObjectUtils" %>
 <%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 <%@ page import="java.util.List" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+
 <%
     SearchDocumentsPage searchDocumentsPage = Page.fromRequest(request);
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
@@ -70,7 +71,7 @@
 							if (user.canEditDocumentInformationFor(document)) {
 								%><a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%
 							}
-							%><%= Html.getStatusIconTemplate(document, user) %><%
+                            %><ui:statusIcon lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/><%
 							if (user.canEditDocumentInformationFor(document)) {
 								%></a><%
 							} %></td>

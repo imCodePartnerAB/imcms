@@ -274,4 +274,11 @@
             imcode.server.document.DocumentDomainObject)
         </function-signature>
     </function>
+
+    <function>
+        <name>getStatusIconTemplatePath</name>
+        <function-class>imcode.util.Html</function-class>
+        <function-signature>java.lang.String getStatusIconTemplatePath(imcode.server.document.LifeCyclePhase)
+        </function-signature>
+    </function>
 </taglib>

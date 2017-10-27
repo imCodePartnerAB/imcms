@@ -13,12 +13,14 @@
 	        imcode.server.document.TextDocumentPermissionSetDomainObject,
 	        imcode.server.document.textdocument.TextDocumentDomainObject,
 	        imcode.server.user.UserDomainObject,
-	        imcode.util.Html,
-	        imcode.util.Utility"
+	        imcode.util.Utility,
+	        org.apache.commons.collections.iterators.ReverseListIterator"
 	
 %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
-%><%
+%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%
 
 UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
 DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
@@ -67,50 +69,82 @@ boolean isIE7   = re.match("/(MSIE 7)/i", uAgent) ;
 boolean isGecko = re.match("/Gecko/i", uAgent) ;
 
 %>
-<%@page import="org.apache.commons.collections.iterators.ReverseListIterator"%>
 <%@page import="org.apache.commons.lang3.StringUtils" %>
-<%@ page import="org.apache.oro.text.perl.Perl5Util" %>
+<%@page import="org.apache.oro.text.perl.Perl5Util" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Set" %>
 <style type="text/css">
-/*<![CDATA[*/
-.imcms_label,
-.imcms_label:link,
-.imcms_label:visited {
-	display: inline !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	font: 10px/1em Verdana !important;
-	color: #c00000 !important;
-	text-decoration: none !important;
-	background-color: #ffffcc !important;
-}
-.imcms_label:active,
-.imcms_label:hover {
-	display: inline !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	font: 10px/1em Verdana !important;
-	color: #000099 !important;
-	text-decoration: underline !important;
-	background-color: #ffffcc !important;
-}
+    /*<![CDATA[*/
+    .imcms_label,
+    .imcms_label:link,
+    .imcms_label:visited {
+        display: inline !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font: 10px/1em Verdana !important;
+        color: #c00000 !important;
+        text-decoration: none !important;
+        background-color: #ffffcc !important;
+    }
 
-/* adminMode */
+    .imcms_label:active,
+    .imcms_label:hover {
+        display: inline !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font: 10px/1em Verdana !important;
+        color: #000099 !important;
+        text-decoration: underline !important;
+        background-color: #ffffcc !important;
+    }
 
-#adminPanelDiv    { padding: 15px 0 10px 0; }
-.adminPanelTable  { border-right: 1px solid #000000; border-bottom: 1px solid #000000; background-color: #f5f5f7; }
-.adminPanelTd1    { padding: 2px; background-color: #20568D; }
-#adminPanelTd1_1  { }
-.adminPanelLogo   { font: bold 11px Verdana,Geneva,sans-serif; color: #ddddff; letter-spacing: -1px; }
-#adminPanelTd1_2  {  }
-.adminPanelText,
-.adminPanelText SPAN { font: 11px Verdana,Geneva,sans-serif; color: #ffffff; }
-#adminPanelTd1_3  {  }
-.adminPanelTd2    { padding: 3px; height: 32px; vertical-align: top; }
-<%
-if (isIE || isIE7 || isGecko) { %>
+    /* adminMode */
+
+    #adminPanelDiv {
+        padding: 15px 0 10px 0;
+    }
+
+    .adminPanelTable {
+        border-right: 1px solid #000000;
+        border-bottom: 1px solid #000000;
+        background-color: #f5f5f7;
+    }
+
+    .adminPanelTd1 {
+        padding: 2px;
+        background-color: #20568D;
+    }
+
+    #adminPanelTd1_1 {
+    }
+
+    .adminPanelLogo {
+        font: bold 11px Verdana, Geneva, sans-serif;
+        color: #ddddff;
+        letter-spacing: -1px;
+    }
+
+    #adminPanelTd1_2 {
+    }
+
+    .adminPanelText,
+    .adminPanelText SPAN {
+        font: 11px Verdana, Geneva, sans-serif;
+        color: #ffffff;
+    }
+
+    #adminPanelTd1_3 {
+    }
+
+    .adminPanelTd2 {
+        padding: 3px;
+        height: 32px;
+        vertical-align: top;
+    }
+
+    <%
+    if (isIE || isIE7 || isGecko) { %>
 .adminPanelTd2 A:hover IMG {<%
 	if (isIE || isIE7) { %>
 	<%= "filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=0, xray=0, mirror=0, invert=0, opacity=0.5, rotation=0);" %><%
@@ -133,7 +167,8 @@ if (isIE || isIE7 || isGecko) { %>
 		<td id="adminPanelTd1_2" width="50%" align="center" nowrap>
 		<span style="font: 12px Verdana, Arial, Helvetica, sans-serif;" class="adminPanelText">
 		<span title="<? webapp/imcms/lang/jsp/admin/adminbuttons.jsp/title_id ?>"><b>Id:</b> <%= document.getId() %></span> &nbsp; <span title="<? webapp/imcms/lang/jsp/admin/adminbuttons.jsp/title_type ?>"><b><? templates/sv/adminbuttons/adminbuttons.html/1001 ?>:</b> <%= document.getDocumentTypeName().toLocalizedString( request ) %></span> &nbsp;</span></td>
-		<td id="adminPanelTd1_3" width="25%" align="right"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
+        <td id="adminPanelTd1_3" width="25%" align="right"><ui:statusIcon
+                lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/></td>
 	</tr>
 	</table></td>
 </tr>

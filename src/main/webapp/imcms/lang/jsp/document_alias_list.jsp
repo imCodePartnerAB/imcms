@@ -6,10 +6,9 @@
                  imcode.server.Imcms,
                  imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject" %>
-<%@ page import="imcode.util.Html" %>
-<%@ page import="imcode.util.Utility"%>
+<%@ page import="imcode.util.Utility" %>
 <%@ page import="org.apache.commons.text.StringEscapeUtils" %>
-<%@ page import="java.util.Iterator"%>
+<%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.Map"%>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
@@ -96,7 +95,7 @@ if (null != listDocumentAliasPage.aliasInSelectedRange) { %>
            href="${contextPath}/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %>
     </a></td>
     <td align="center"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
-    <%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
+        <ui:statusIcon lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/></td>
     <td nowrap><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
 	<%= StringEscapeUtils.escapeHtml4((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
     <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>

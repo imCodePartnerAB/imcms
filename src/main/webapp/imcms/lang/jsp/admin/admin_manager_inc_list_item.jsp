@@ -1,16 +1,16 @@
 <%@ page contentType="text/html; charset=UTF-8"
          import="imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject,
-                 imcode.util.Html,
                  imcode.util.Utility,
-                 org.apache.commons.lang3.ObjectUtils" %>
-<%@ page import="org.apache.commons.text.StringEscapeUtils" %>
+                 org.apache.commons.lang3.ObjectUtils,
+                 org.apache.commons.text.StringEscapeUtils" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request"/>
 <%
     String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
     DocumentDomainObject document = listItemBean.getDocument() ;
-    String linkedStatusIcon = Html.getLinkedStatusIconTemplate(document, Utility.getLoggedOnUser( request ), request );
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
+
 %>
 <tr valign="top"<%= listItemBean.getIndex() % 2 != 1 ? " bgcolor=\"#ffffff\"" : "" %>><%
     String alias = document.getAlias();
@@ -20,7 +20,7 @@
     </a></td>
     <% }else { %>
     <td>&nbsp;</td> <%}%>
-    <td align="center"><%= linkedStatusIcon %></td>
+    <td align="center"><ui:statusIcon lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/></td>
     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="3"><br><%
 		if (user.canEdit(document)) {
     %><a href="${contextPath}/servlet/AdminDoc?meta_id=<%= document.getId() %>"

@@ -4,10 +4,9 @@
                  imcode.server.ImcmsConstants,
                  imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject,
-                 imcode.util.Html,
                  imcode.util.Utility,
-                 org.apache.commons.text.StringEscapeUtils" %>
-<%@ page import="java.util.Iterator" %>
+                 org.apache.commons.text.StringEscapeUtils,
+                 java.util.Iterator" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -99,7 +98,8 @@ if (doCheckLinks) {
     <td><a name="alias" href="<%= request.getContextPath() + "/" + document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %></a></td>
     <% }else { %>
     <td>&nbsp;</td> <%}%>
-    <td nowrap><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td><%
+    <td nowrap><ui:statusIcon lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/></td>
+    <%
 			if (link instanceof LinkCheck.UrlDocumentLink) {
 				LinkCheck.UrlDocumentLink urlDocumentLink = (LinkCheck.UrlDocumentLink)link ;
 				DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument(); %>
