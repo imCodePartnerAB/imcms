@@ -213,11 +213,8 @@ public class DefaultImcmsServices implements ImcmsServices {
     }
 
     /**
-     * Parse doc replace variables with data , use template
-     * @deprecated use {@link DefaultImcmsServices#getAdminTemplatePath(java.lang.String)}
-     * since html replaced by jsp
+     * Parse doc replace variables with data, use only for HTML files
      */
-    @Deprecated
     public String getAdminTemplate(String adminTemplateName, UserDomainObject user,
                                    List<String> tagsWithReplacements) {
         return getTemplateFromDirectory(adminTemplateName, user, tagsWithReplacements, "admin");
