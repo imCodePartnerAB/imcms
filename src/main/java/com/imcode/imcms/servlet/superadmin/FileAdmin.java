@@ -664,10 +664,8 @@ public class FileAdmin extends HttpServlet {
                 + StringEscapeUtils.escapeHtml4(text) + "</option>";
     }
 
-    private Comparator getFileComparator() {
-        return (a, b) -> {
-            File filea = (File) a;
-            File fileb = (File) b;
+    private Comparator<File> getFileComparator() {
+        return (filea, fileb) -> {
             //--- Sort directories before files,
             //    otherwise alphabetical ignoring case.
             if (filea.isDirectory() && !fileb.isDirectory()) {
