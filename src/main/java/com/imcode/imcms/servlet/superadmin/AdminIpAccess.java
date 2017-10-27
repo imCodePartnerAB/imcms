@@ -71,7 +71,7 @@ public class AdminIpAccess extends HttpServlet {
                 vmRec.put(tags.get(i), aRecV.get(i));
             }
             vmRec.put("RECORD_COUNTER", "" + counter);
-            recs += AdminRoles.createHtml(req, vmRec, HTML_IP_SNIPPET);
+            recs += AdminRoles.createHtml(HTML_IP_SNIPPET, req, vmRec, res);
         }
 
         // Lets generate the html page

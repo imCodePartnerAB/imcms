@@ -11,14 +11,15 @@
 <form method="post" action="AdminRoles" name="editRole">
     <table width="400" border="0" cellspacing="0">
         <tr>
-            <td colspan="2" class="imcmsAdmText">&nbsp;<? templates/sv/AdminRoles_Edit.html/2 ?>: &nbsp; <b> #CURRENT_ROLE_NAME# </b>
-                <input type="HIDDEN" name="ROLE_ID" value="#CURRENT_ROLE_ID#"></td>
+            <td colspan="2" class="imcmsAdmText">&nbsp;<? templates/sv/AdminRoles_Edit.html/2 ?>: &nbsp;
+                <b> ${CURRENT_ROLE_NAME} </b>
+                <input type="HIDDEN" name="ROLE_ID" value="${CURRENT_ROLE_ID}"></td>
         </tr>
         <tr>
             <td colspan="2">&nbsp;</td>
         </tr>
         <tr>
-            <td>#ROLE_PERMISSIONS# </td>
+            <td>${ROLE_PERMISSIONS} </td>
         </tr>
         <tr>
             <td colspan="2">&nbsp;</td>

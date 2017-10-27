@@ -12,7 +12,7 @@
     <table width="400" border="0" cellspacing="0">
         <tr>
             <td colspan="2" class="imcmsAdmText"><span style='color:red'><b><? templates/sv/AdminRoles_Delete2.htm/2 ?></b></span>
-                <input type="HIDDEN" name="ROLE_ID" value="#CURRENT_ROLE_ID#"></td>
+                <input type="HIDDEN" name="ROLE_ID" value="${CURRENT_ROLE_ID}"></td>
         </tr>
         <tr>
             <td colspan="2">&nbsp;</td>

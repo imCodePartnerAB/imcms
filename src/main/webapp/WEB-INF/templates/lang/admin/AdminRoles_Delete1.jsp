@@ -16,17 +16,18 @@
         <tr>
             <td colspan="2" class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif">
                 <? templates/sv/AdminRoles_Delete1.htm/3 ?></font>
-                <input type="HIDDEN" name="ROLE_ID" value="#CURRENT_ROLE_ID#"></td>
+                <input type="HIDDEN" name="ROLE_ID" value="${CURRENT_ROLE_ID}"></td>
         </tr>
         <tr>
             <td colspan="2" class="imcmsAdmText">
                 <hr><br>
-                <font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoles_Delete1.htm/4 ?><b> #USER_COUNT#</b> )</font></td>
+                <font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoles_Delete1.htm/4 ?>
+                    <b> ${USER_COUNT}</b> )</font></td>
         </tr>
         <tr>
             <td colspan="2">
                 <select name="select2" size="4">
-                    #USER_ID_LIST#
+                    ${USER_ID_LIST}
                 </select>
             </td>
         </tr>
@@ -35,12 +36,12 @@
             <td colspan="2" class="imcmsAdmText">
                 <hr><br>
                 <font face="Verdana, Arial, Helvetica, sans-serif">
-                    <? templates/sv/AdminRoles_Delete1.htm/6 ?> <b>#ROLE_COUNT#</b> )</font></td>
+                    <? templates/sv/AdminRoles_Delete1.htm/6 ?> <b>${ROLE_COUNT}</b> )</font></td>
         </tr>
         <tr>
             <td width="90%">
                 <select name="select" size="4">
-                    #META_ID_LIST#
+                    ${META_ID_LIST}
                 </select>
             </td>
         </tr>
