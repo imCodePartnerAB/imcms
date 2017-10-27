@@ -118,9 +118,9 @@ public class FileAdmin extends HttpServlet {
         } else if (mp.getParameter("change2") != null) {    //UserDomainObject wants to change dir2
             dir2 = changeDir(files2, dir2, roots);
         } else if (mp.getParameter("mkdir1") != null) {
-            outputHasBeenHandled = makeDirectory(name, dir1, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = makeDirectory(name, dir1, dir1, dir2, res, req);
         } else if (mp.getParameter("mkdir2") != null) {
-            outputHasBeenHandled = makeDirectory(name, dir2, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = makeDirectory(name, dir2, dir1, dir2, res, req);
         } else if (mp.getParameter("delete1") != null) {
             outputHasBeenHandled = delete(dir1, files1, dir1, dir2, res, user, imcref);
         } else if (mp.getParameter("delete2") != null) {
@@ -136,9 +136,9 @@ public class FileAdmin extends HttpServlet {
         } else if (mp.getParameter("download2") != null) {
             outputHasBeenHandled = download(files2, dir2, res);
         } else if (mp.getParameter("rename1") != null) {
-            outputHasBeenHandled = rename(files1, name, dir1, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = rename(files1, name, dir1, dir1, dir2, res, req);
         } else if (mp.getParameter("rename2") != null) {
-            outputHasBeenHandled = rename(files2, name, dir2, dir1, dir2, res, user, imcref);
+            outputHasBeenHandled = rename(files2, name, dir2, dir1, dir2, res, req);
         } else if (mp.getParameter("copy1") != null) {
             outputHasBeenHandled = copy(files1, dir1, dir2, dir1, dir2, res, user, imcref);
         } else if (mp.getParameter("copy2") != null) {
@@ -258,7 +258,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean rename(String[] files, String name, File dir, File dir1, File dir2, HttpServletResponse res,
-                           UserDomainObject user, ImcmsServices imcref) throws IOException {
+                           HttpServletRequest req) throws IOException, ServletException {
         boolean handledOutput = false;
         if (files != null && files.length == 1) {    //Has the user chosen just one file?
             if (name != null && name.length() > 0) {
@@ -268,7 +268,7 @@ public class FileAdmin extends HttpServlet {
                     oldFilename.renameTo(newFilename);
                 }
             } else {
-                outputBlankFilenameError(dir1, dir2, res, user, imcref);
+                outputBlankFilenameError(dir1, dir2, res, req);
                 handledOutput = true;
             }
         }
@@ -311,7 +311,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean makeDirectory(String name, File dir, File dir1, File dir2, HttpServletResponse res,
-                                  UserDomainObject user, ImcmsServices imcref) throws IOException {
+                                  HttpServletRequest req) throws IOException, ServletException {
         boolean handledOutput = false;
         if (name != null && name.length() > 0) {
             File newname = new File(dir, name);
@@ -319,7 +319,7 @@ public class FileAdmin extends HttpServlet {
                 newname.mkdir();
             }
         } else {
-            outputBlankFilenameError(dir1, dir2, res, user, imcref);
+            outputBlankFilenameError(dir1, dir2, res, req);
             handledOutput = true;
         }
         return handledOutput;
@@ -441,15 +441,12 @@ public class FileAdmin extends HttpServlet {
         res.getWriter().print(imcref.getAdminTemplate("FileAdminDeleteWarning.jsp", user, vec));
     }
 
-    private void outputBlankFilenameError(File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
-                                          ImcmsServices imcref) throws IOException {
-        List vec = new ArrayList();
-        vec.add("#dir1#");
-        vec.add(getContextRelativeAbsolutePathToDirectory(dir1));
-        vec.add("#dir2#");
-        vec.add(getContextRelativeAbsolutePathToDirectory(dir2));
-        Utility.setDefaultHtmlContentType(res);
-        res.getWriter().print(imcref.getAdminTemplate("FileAdminNameBlank.jsp", user, vec));
+    private void outputBlankFilenameError(File dir1, File dir2, HttpServletResponse response,
+                                          HttpServletRequest request) throws IOException, ServletException {
+        request.setAttribute("dir1", getContextRelativeAbsolutePathToDirectory(dir1));
+        request.setAttribute("dir2", getContextRelativeAbsolutePathToDirectory(dir2));
+        Utility.setDefaultHtmlContentType(response);
+        response.getWriter().print(Utility.getAdminContents("FileAdminNameBlank.jsp", request, response));
     }
 
     private void moveOk(HttpServletRequest mp, File[] roots) throws IOException {
