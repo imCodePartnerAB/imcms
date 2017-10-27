@@ -19,8 +19,8 @@
 <ui:imcms_gui_head heading="${heading}"/>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
-<input type="HIDDEN" name="dir1" value="#dir1#">
-<input type="HIDDEN" name="dir2" value="#dir2#">
+    <input type="HIDDEN" name="dir1" value="${dir1}">
+    <input type="HIDDEN" name="dir2" value="${dir2}">
 <tr>
     <td><input type="submit" class="imcmsFormBtn" name="no" value="<? global/back ?>"></td>
     <td>&nbsp;</td>
@@ -32,8 +32,8 @@
 
 <table border="0" cellspacing="0" cellpadding="0" width="500">
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
-<input type="HIDDEN" name="dir1" value="#dir1#">
-<input type="HIDDEN" name="dir2" value="#dir2#">
+    <input type="HIDDEN" name="dir1" value="${dir1}">
+    <input type="HIDDEN" name="dir2" value="${dir2}">
 <tr>
     <td>
         <c:set var="heading">
@@ -49,7 +49,8 @@
     <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
-    <td align="right"><input type="submit" class="imcmsFormBtn" style="width:70" name="no" value="<? templates/sv/FileAdminFileExisted.html/2001 ?>"></td>
+    <td align="right"><input type="submit" class="imcmsFormBtn" style="width:70px" name="no"
+                             value="<? templates/sv/FileAdminFileExisted.html/2001 ?>"></td>
 </tr>
 </form>
 </table>
