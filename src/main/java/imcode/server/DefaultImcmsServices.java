@@ -206,13 +206,17 @@ public class DefaultImcmsServices implements ImcmsServices {
         return imcmsAuthenticatorAndUserAndRoleMapper;
     }
 
+    // todo: move to TemplateService!
     public String getAdminTemplatePath(String adminTemplateName, String langPrefix) {
         return "/" + config.getTemplatePath().getPath() + "/" + langPrefix + "/admin/" + adminTemplateName;
     }
 
     /**
      * Parse doc replace variables with data , use template
+     * @deprecated use {@link DefaultImcmsServices#getAdminTemplatePath(java.lang.String, java.lang.String)}
+     * since html replaced by jsp
      */
+    @Deprecated
     public String getAdminTemplate(String adminTemplateName, UserDomainObject user,
                                    List<String> tagsWithReplacements) {
         return getTemplateFromDirectory(adminTemplateName, user, tagsWithReplacements, "admin");
