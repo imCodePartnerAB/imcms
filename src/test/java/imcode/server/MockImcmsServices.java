@@ -186,7 +186,7 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     @Override
-    public String getAdminTemplatePath(String adminTemplateName, String langPrefix) {
+    public String getAdminTemplatePath(String adminTemplateName) {
         return null;
     }
 }

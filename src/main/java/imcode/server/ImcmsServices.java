@@ -38,7 +38,7 @@ public interface ImcmsServices {
     void setSessionCounterDate(Date date);
 
     // return template path
-    String getAdminTemplatePath(String adminTemplateName, String langPrefix);
+    String getAdminTemplatePath(String adminTemplateName);
 
     // parsedoc use template
     String getAdminTemplate(String adminTemplateName, UserDomainObject user, java.util.List<String> tagsWithReplacements);

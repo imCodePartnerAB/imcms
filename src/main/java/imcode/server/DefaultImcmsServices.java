@@ -207,13 +207,14 @@ public class DefaultImcmsServices implements ImcmsServices {
     }
 
     // todo: move to TemplateService!
-    public String getAdminTemplatePath(String adminTemplateName, String langPrefix) {
-        return "/" + config.getTemplatePath().getPath() + "/" + langPrefix + "/admin/" + adminTemplateName;
+    public String getAdminTemplatePath(String adminTemplateName) {
+        return "/" + config.getTemplatePath().getPath() + "/" + Imcms.getUser().getLanguageIso639_2() + "/admin/"
+                + adminTemplateName;
     }
 
     /**
      * Parse doc replace variables with data , use template
-     * @deprecated use {@link DefaultImcmsServices#getAdminTemplatePath(java.lang.String, java.lang.String)}
+     * @deprecated use {@link DefaultImcmsServices#getAdminTemplatePath(java.lang.String)}
      * since html replaced by jsp
      */
     @Deprecated

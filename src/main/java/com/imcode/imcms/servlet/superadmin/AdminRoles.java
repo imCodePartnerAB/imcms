@@ -103,7 +103,7 @@ public class AdminRoles extends HttpServlet {
         String opt = Html.createOptionList(rolesV, "");
         req.setAttribute("ROLES_MENU", opt);
 
-        final String adminTemplatePath = imcref.getAdminTemplatePath(HTML_ADMIN_ROLES, user.getLanguageIso639_2());
+        final String adminTemplatePath = imcref.getAdminTemplatePath(HTML_ADMIN_ROLES);
         req.getRequestDispatcher(adminTemplatePath).forward(req, res);
 
     } // End doGet
