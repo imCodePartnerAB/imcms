@@ -61,8 +61,8 @@
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateChange" action="TemplateChange" method="post">
-<input type="hidden" name="group_id" value="#group_id#">
-<input type="hidden" name="language" value="#language#">
+    <input type="hidden" name="group_id" value="${group_id}">
+    <input type="hidden" name="language" value="${language}">
 <tr>
     <td colspan="2">
         <c:set var="heading">
@@ -82,13 +82,13 @@
             <tr>
                 <td align="right">
                     <select name="template" size="10" style="width:100%" multiple>
-                        #template_list#
+                        ${template_list}
                     </select></td>
                 <td align="center">
                     &nbsp;<input type="submit" class="imcmsFormBtnSmall" name="list_templates_docs" value="<? templates/sv/template_list.html/2014 ?>" alt="<? templates/sv/template_list.html/2015 ?>" title="<? templates/sv/template_list.html/2016 ?>" style="width:70">&nbsp;</td>
                 <td>
                     <select name="templates_doc" size="10" style="width:100%" multiple>
-                        #templates_docs#
+                        ${templates_docs}
                     </select></td>
             </tr>
             <tr>

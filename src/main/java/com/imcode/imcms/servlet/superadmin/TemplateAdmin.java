@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,89 +38,76 @@ public class TemplateAdmin extends HttpServlet {
     private static final String TEMPLATE_GROUP_DELETE_WARNING = "templategroup_delete_warning.jsp";
     private static final String TEMPLATE_GROUP_DELETE_DOCUMENTS_ASSIGNED_WARNING = "templategroup_delete_documents_assigned_warning.jsp";
 
-    static String createDeleteTemplateGroupDialog(TemplateMapper templateMapper, ImcmsServices imcref,
-                                                  UserDomainObject user) {
-        return imcref.getAdminTemplate(ADMIN_TEMPLATE_DELETE, user, createTemplateGroupsList(templateMapper));
+    static String createDeleteTemplateGroupDialog(TemplateMapper templateMapper, HttpServletRequest request,
+                                                  HttpServletResponse response) throws ServletException, IOException {
+        createTemplateGroupsList(templateMapper, request);
+        return Utility.getAdminContents(ADMIN_TEMPLATE_DELETE, request, response);
     }
 
-    private static List<String> createTemplateGroupsList(TemplateMapper templateMapper) {
-        String temps = templateMapper.createHtmlOptionListOfTemplateGroups(null);
-        List<String> vec = new ArrayList<>();
-        vec.add("#templategroups#");
-        vec.add(temps);
-        return vec;
+    private static void createTemplateGroupsList(TemplateMapper templateMapper, HttpServletRequest request) {
+        final String temps = templateMapper.createHtmlOptionListOfTemplateGroups(null);
+        request.setAttribute("templategroups", temps);
     }
 
-    static String createAddGroupDialog(ImcmsServices imcref, UserDomainObject user) {
-        return imcref.getAdminTemplate(ADMIN_TEMPLATE_ADD, user, null);
+    static String createAddGroupDialog(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        return Utility.getAdminContents(ADMIN_TEMPLATE_ADD, request, response);
     }
 
-    private static List<String> createShortTemplateDialog(String lang, ImcmsServices imcref,
-                                                          TemplateMapper templateMapper) throws IOException {
-        List<String> vec = new ArrayList<>();
-        List<TemplateDomainObject> templates = imcref.getTemplateMapper().getAllTemplates();
+    private static void createShortTemplateDialog(String lang, HttpServletRequest request,
+                                                  TemplateMapper templateMapper) throws IOException {
+        List<TemplateDomainObject> templates = Imcms.getServices().getTemplateMapper().getAllTemplates();
         String temps = templateMapper.createHtmlOptionListOfTemplates(templates, null);
-        vec.add("#templates#");
-        vec.add(temps);
-        vec.addAll(langTag(lang));
-        return vec;
+        request.setAttribute("templates", temps);
+        langTag(lang, request);
     }
 
-    static String createRenameTemplateDialog(String lang, ImcmsServices imcref, TemplateMapper templateMapper,
-                                             UserDomainObject user, LocalizedMessage error) throws IOException {
-        return imcref.getAdminTemplate(ADMIN_TEMPLATE_RENAME, user,
-                createStandardTemplateDialog(lang, imcref, templateMapper, user, error));
+    static String createRenameTemplateDialog(String lang, TemplateMapper templateMapper,
+                                             HttpServletRequest request, HttpServletResponse response,
+                                             UserDomainObject user, LocalizedMessage error) throws IOException, ServletException {
+        createStandardTemplateDialog(lang, templateMapper, user, error, request);
+        return Utility.getAdminContents(ADMIN_TEMPLATE_RENAME, request, response);
     }
 
-    static String createChangeAvailabilityTemplateDialog(String lang, ImcmsServices imcref, TemplateMapper templateMapper,
-                                                         UserDomainObject user, LocalizedMessage error) throws IOException {
-        return imcref.getAdminTemplate(ADMIN_TEMPLATE_AVALIABILITY, user,
-                createStandardTemplateDialog(lang, imcref, templateMapper, user, error));
+    static String createChangeAvailabilityTemplateDialog(String lang, TemplateMapper templateMapper,
+                                                         HttpServletRequest request, HttpServletResponse response,
+                                                         UserDomainObject user, LocalizedMessage error) throws IOException, ServletException {
+        createStandardTemplateDialog(lang, templateMapper, user, error, request);
+        return Utility.getAdminContents(ADMIN_TEMPLATE_AVALIABILITY, request, response);
     }
 
-    static List<String> createStandardTemplateDialog(String lang, ImcmsServices imcref, TemplateMapper templateMapper,
-                                                     UserDomainObject user, LocalizedMessage error) throws IOException {
-        List<String> vec = langTag(lang);
-        vec.add("#templates#");
-        vec.add(templateMapper.createHtmlOptionListOfTemplates(imcref.getTemplateMapper().getAllTemplates(), null));
-        vec.add("#error#");
-        vec.add(null == error ? "" : error.toLocalizedString(user));
-        return vec;
+    private static void createStandardTemplateDialog(String lang, TemplateMapper templateMapper,
+                                                     UserDomainObject user, LocalizedMessage error,
+                                                     HttpServletRequest request) throws IOException {
+        langTag(lang, request);
+        request.setAttribute("templates", templateMapper.createHtmlOptionListOfTemplates(templateMapper.getAllTemplates(), null));
+        request.setAttribute("error", null == error ? "" : error.toLocalizedString(user));
     }
 
     static String createDeleteTemplateDialog(TemplateMapper templateMapper, UserDomainObject user, String lang,
-                                             ImcmsServices imcref) {
-        List<String> vec = new ArrayList<>();
+                                             HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String templatesList = templateMapper.createHtmlOptionListOfTemplatesWithDocumentCount(user);
-        vec.add("#templates#");
-        vec.add(templatesList);
-        vec.addAll(langTag(lang));
-        return imcref.getAdminTemplate(TEMPLATE_DELETE, user, vec);
+        request.setAttribute("templates", templatesList);
+        langTag(lang, request);
+        return Utility.getAdminContents(TEMPLATE_DELETE, request, response);
     }
 
-    static String createRenameTemplateGroupDialog(TemplateMapper templateMapper, ImcmsServices imcref,
-                                                  UserDomainObject user) {
-        return imcref.getAdminTemplate(TEMPLATE_GROUP_RENAME, user, createTemplateGroupsList(templateMapper));
+    static String createRenameTemplateGroupDialog(TemplateMapper templateMapper, HttpServletRequest request,
+                                                  HttpServletResponse response) throws ServletException, IOException {
+        createTemplateGroupsList(templateMapper, request);
+        return Utility.getAdminContents(TEMPLATE_GROUP_RENAME, request, response);
     }
 
     static String createAssignTemplatesToGroupDialog(TemplateMapper templateMapper, TemplateGroupDomainObject currentTemplateGroup, String language,
-                                                     UserDomainObject user, ImcmsServices imcref) throws IOException {
-        List<String> vec = new ArrayList<>();
+                                                     HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        String htmlOptionListOfTemplateGroups = templateMapper.createHtmlOptionListOfTemplateGroups(
-                currentTemplateGroup);
+        String htmlOptionListOfTemplateGroups = templateMapper.createHtmlOptionListOfTemplateGroups(currentTemplateGroup);
 
-        vec.add("#templategroups#");
-        vec.add(htmlOptionListOfTemplateGroups);
+        request.setAttribute("templategroups", htmlOptionListOfTemplateGroups);
         if (currentTemplateGroup == null) {
-            vec.add("#assigned#");
-            vec.add("");
-            vec.add("#unassigned#");
-            vec.add("");
-            vec.add("#group#");
-            vec.add("");
-            vec.add("#group_id#");
-            vec.add("");
+            request.setAttribute("assigned", "");
+            request.setAttribute("unassigned", "");
+            request.setAttribute("group", "");
+            request.setAttribute("group_id", "");
         } else {
             Collection<TemplateDomainObject> templatesInGroup = templateMapper.getTemplatesInGroup(currentTemplateGroup);
             List<TemplateDomainObject> templatesNotInGroup = templateMapper.getTemplatesNotInGroup(currentTemplateGroup);
@@ -129,22 +115,18 @@ public class TemplateAdmin extends HttpServlet {
                     templatesInGroup, null);
             String htmlOptionListOfTemplatesNotInSelectedGroup = templateMapper.createHtmlOptionListOfTemplates(
                     templatesNotInGroup, null);
-            vec.add("#assigned#");
-            vec.add(htmlOptionListOfTemplatesInSelectedGroup);
-            vec.add("#unassigned#");
-            vec.add(htmlOptionListOfTemplatesNotInSelectedGroup);
-            vec.add("#group#");
-            vec.add(currentTemplateGroup.getName());
-            vec.add("#group_id#");
-            vec.add("" + currentTemplateGroup.getId());
+            request.setAttribute("assigned", htmlOptionListOfTemplatesInSelectedGroup);
+            request.setAttribute("unassigned", htmlOptionListOfTemplatesNotInSelectedGroup);
+            request.setAttribute("group", currentTemplateGroup.getName());
+            request.setAttribute("group_id", currentTemplateGroup.getId());
         }
-        vec.addAll(langTag(language));
-        return imcref.getAdminTemplate(TEMPLATE_ASSIGN, user, vec);
+        langTag(language, request);
+        return Utility.getAdminContents(TEMPLATE_ASSIGN, request, response);
     }
 
     static String createHtmlOptionListOfDocumentsUsingTemplate(ImcmsServices imcref, TemplateDomainObject template) {
         DocumentDomainObject[] documents = imcref.getTemplateMapper().getDocumentsUsingTemplate(template);
-        StringBuffer htmlOptionList = new StringBuffer();
+        StringBuilder htmlOptionList = new StringBuilder();
         for (DocumentDomainObject document : documents) {
             final int metaId = document.getId();
 
@@ -159,69 +141,63 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     static String createDeleteTemplateInUseWarningDialog(String lang, ImcmsServices imcref,
-                                                         TemplateDomainObject template, UserDomainObject user,
-                                                         TemplateMapper templateMapper) throws IOException {
-        List<String> vec = langTag(lang);
-        vec.add("#template#");
-        vec.add(template.getName());
-        vec.add("#docs#");
-        vec.add(createHtmlOptionListOfDocumentsUsingTemplate(imcref, template));
-        vec.add("#templates#");
-        vec.add(templateMapper.createHtmlOptionListOfTemplates(templateMapper.getAllTemplatesExceptOne(template), null));
+                                                         TemplateDomainObject template, HttpServletRequest request,
+                                                         HttpServletResponse response,
+                                                         TemplateMapper templateMapper) throws IOException, ServletException {
+        langTag(lang, request);
+        request.setAttribute("template", template.getName());
+        request.setAttribute("docs", createHtmlOptionListOfDocumentsUsingTemplate(imcref, template));
+        request.setAttribute("templates", templateMapper.createHtmlOptionListOfTemplates(
+                templateMapper.getAllTemplatesExceptOne(template), null
+        ));
 
-        return imcref.getAdminTemplate(TEMPLATE_DELETE_WARNING, user, vec);
+        return Utility.getAdminContents(TEMPLATE_DELETE_WARNING, request, response);
     }
 
     static String createDeleteNonEmptyTemplateGroupWarningDialog(Iterable<TemplateDomainObject> templatesInGroup,
-                                                                 int templateGroupId, ImcmsServices imcref,
-                                                                 UserDomainObject user) {
-        return createTemplateGroupWarningDialog(templatesInGroup, templateGroupId, imcref, TEMPLATE_GROUP_DELETE_WARNING, user);
+                                                                 int templateGroupId, HttpServletRequest req,
+                                                                 HttpServletResponse res) throws ServletException, IOException {
+
+        return createTemplateGroupWarningDialog(templatesInGroup, templateGroupId, TEMPLATE_GROUP_DELETE_WARNING, req, res);
     }
 
     static String createDocumentsAssignedToTemplateInTemplateGroupWarningDialog(Iterable<TemplateDomainObject> templatesInGroup,
-                                                                                int templateGroupId, ImcmsServices imcref,
-                                                                                UserDomainObject user) {
+                                                                                int templateGroupId,
+                                                                                HttpServletRequest request,
+                                                                                HttpServletResponse response) throws ServletException, IOException {
 
-        return createTemplateGroupWarningDialog(templatesInGroup, templateGroupId, imcref, TEMPLATE_GROUP_DELETE_DOCUMENTS_ASSIGNED_WARNING, user);
+        return createTemplateGroupWarningDialog(templatesInGroup, templateGroupId, TEMPLATE_GROUP_DELETE_DOCUMENTS_ASSIGNED_WARNING, request, response);
     }
 
-    private static String createTemplateGroupWarningDialog(Iterable<TemplateDomainObject> templatesInGroup, int templateGroupId,
-                                                           ImcmsServices imcref, String template,
-                                                           UserDomainObject user) {
+    private static String createTemplateGroupWarningDialog(Iterable<TemplateDomainObject> templatesInGroup,
+                                                           int templateGroupId, String template,
+                                                           HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String commaSeparatedTemplateNames = StringUtils.join(new ArrayIterator(templatesInGroup) {
             public Object next() {
                 TemplateDomainObject template = (TemplateDomainObject) super.next();
                 return template.getName();
             }
         }, ", ");
-        List<String> vec = new ArrayList<>();
-        vec.add("#templates#");
-        vec.add(commaSeparatedTemplateNames);
-        vec.add("#templategroup#");
-        vec.add(String.valueOf(templateGroupId));
-        return imcref.getAdminTemplate(template, user, vec);
+        request.setAttribute("templates", commaSeparatedTemplateNames);
+        request.setAttribute("templategroup", String.valueOf(templateGroupId));
+        return Utility.getAdminContents(template, request, response);
     }
 
-    private static List<String> langTag(String lang) {
-        final List<String> languageTag = new ArrayList<>();
-        languageTag.add("#language#");
-        languageTag.add(lang);
-
-        return languageTag;
+    private static void langTag(String lang, HttpServletRequest request) {
+        request.setAttribute("language", lang);
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        ImcmsServices imcref = Imcms.getServices();
-        UserDomainObject user = Utility.getLoggedOnUser(req);
+        UserDomainObject user = Utility.getLoggedOnUser(request);
         if (!user.isSuperAdmin()) {
-            Utility.redirectToStartDocument(req, res);
+            Utility.redirectToStartDocument(request, response);
             return;
         }
 
-        Utility.setDefaultHtmlContentType(res);
-        PrintWriter out = res.getWriter();
-        String htmlStr = imcref.getAdminTemplate(TEMPLATE_ADMIN, user, null);
+        Utility.setDefaultHtmlContentType(response);
+        PrintWriter out = response.getWriter();
+        String htmlStr = Utility.getAdminContents(TEMPLATE_ADMIN, request, response);
         out.println(htmlStr);
     }
 
@@ -244,73 +220,72 @@ public class TemplateAdmin extends HttpServlet {
             res.sendRedirect("AdminManager");
             return;
         } else if (req.getParameter("add_template") != null) {
-            htmlStr = createUploadTemplateDialog(templateMapper, lang, imcref, user);
+            htmlStr = createUploadTemplateDialog(templateMapper, lang, req, res);
         } else if (req.getParameter("add_demotemplate") != null) {
-            htmlStr = createUploadDemoTemplateDialog(lang, templateMapper, imcref, user);
+            htmlStr = createUploadDemoTemplateDialog(lang, templateMapper, req, res);
         } else if (req.getParameter("delete_template") != null) {
-            htmlStr = createDeleteTemplateDialog(templateMapper, user, lang, imcref);
+            htmlStr = createDeleteTemplateDialog(templateMapper, user, lang, req, res);
         } else if (req.getParameter("rename_template") != null) {
-            htmlStr = createRenameTemplateDialog(lang, imcref, templateMapper, user, null);
+            htmlStr = createRenameTemplateDialog(lang, templateMapper, req, res, user, null);
         } else if (req.getParameter("change_availability_template") != null) {
-            htmlStr = createChangeAvailabilityTemplateDialog(lang, imcref, templateMapper, user, null);
+            htmlStr = createChangeAvailabilityTemplateDialog(lang, templateMapper, req, res, user, null);
         } else if (req.getParameter("get_template") != null) {
-            htmlStr = createDownloadTemplateDialog(lang, imcref, templateMapper, user);
+            htmlStr = createDownloadTemplateDialog(lang, templateMapper, req, res);
         } else if (req.getParameter("edit_template") != null) {
-            htmlStr = createEditTemplateDialog(lang, imcref, templateMapper, user);
+            htmlStr = createEditTemplateDialog(lang, templateMapper, req, res);
         } else if (req.getParameter("add_group") != null) {
-            htmlStr = createAddGroupDialog(imcref, user);
+            htmlStr = createAddGroupDialog(req, res);
         } else if (req.getParameter("delete_group") != null) {
-            htmlStr = createDeleteTemplateGroupDialog(templateMapper, imcref, user);
+            htmlStr = createDeleteTemplateGroupDialog(templateMapper, req, res);
         } else if (req.getParameter("rename_group") != null) {
-            htmlStr = createRenameTemplateGroupDialog(templateMapper, imcref, user);
+            htmlStr = createRenameTemplateGroupDialog(templateMapper, req, res);
         } else if (req.getParameter("assign_group") != null) {
-            htmlStr = createAssignTemplateGroupDialog(lang, templateMapper, user, imcref);
+            htmlStr = createAssignTemplateGroupDialog(lang, templateMapper, req, res);
         } else if (req.getParameter("show_templates") != null) {
-            htmlStr = createListTemplatesDialog(templateMapper, user, lang, imcref);
+            htmlStr = createListTemplatesDialog(templateMapper, user, lang, req, res);
         }
         out.print(htmlStr);
     }
 
     private String createListTemplatesDialog(TemplateMapper templateMapper, UserDomainObject user, String lang,
-                                             ImcmsServices imcref) {
+                                             HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String templateList = templateMapper.createHtmlOptionListOfTemplatesWithDocumentCount(user);
-        List<String> vec = langTag(lang);
-        vec.add("#template_list#");
-        vec.add(templateList);
-        return imcref.getAdminTemplate("template_list.jsp", user, vec);
+        langTag(lang, request);
+        request.setAttribute("template_list", templateList);
+        return Utility.getAdminContents("template_list.jsp", request, response);
     }
 
     private String createAssignTemplateGroupDialog(String lang, TemplateMapper templateMapper,
-                                                   UserDomainObject user, ImcmsServices imcref) throws IOException {
-        return createAssignTemplatesToGroupDialog(templateMapper, null, lang, user, imcref);
+                                                   HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        return createAssignTemplatesToGroupDialog(templateMapper, null, lang, req, res);
     }
 
-    private String createEditTemplateDialog(String lang, ImcmsServices imcref, TemplateMapper templateMapper,
-                                            UserDomainObject user) throws IOException {
-        return imcref.getAdminTemplate(ADMIN_TEMPLATE_EDIT, user, createShortTemplateDialog(lang, imcref, templateMapper));
+    private String createEditTemplateDialog(String lang, TemplateMapper templateMapper,
+                                            HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        createShortTemplateDialog(lang, request, templateMapper);
+        return Utility.getAdminContents(ADMIN_TEMPLATE_EDIT, request, response);
     }
 
-    private String createDownloadTemplateDialog(String lang, ImcmsServices imcref,
-                                                TemplateMapper templateMapper, UserDomainObject user) throws IOException {
-        return imcref.getAdminTemplate("template_get.jsp", user, createShortTemplateDialog(lang, imcref, templateMapper));
+    private String createDownloadTemplateDialog(String lang, TemplateMapper templateMapper, HttpServletRequest request,
+                                                HttpServletResponse response) throws IOException, ServletException {
+        createShortTemplateDialog(lang, request, templateMapper);
+        return Utility.getAdminContents("template_get.jsp", request, response);
     }
 
     private String createUploadDemoTemplateDialog(String lang, TemplateMapper templateMapper,
-                                                  ImcmsServices imcref, UserDomainObject user) throws IOException {
-        List<String> vec = langTag(lang);
+                                                  HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        langTag(lang, request);
         List<TemplateDomainObject> templates = templateMapper.getAllTemplates();
         String templatesList = templateMapper.createHtmlOptionListOfTemplates(templates, null);
-        vec.add("#templates#");
-        vec.add(templatesList);
-        return imcref.getAdminTemplate(TEMPLATE_DEMO_UPLOAD, user, vec);
+        request.setAttribute("templates", templatesList);
+        return Utility.getAdminContents(TEMPLATE_DEMO_UPLOAD, request, response);
     }
 
-    private String createUploadTemplateDialog(TemplateMapper templateMapper, String lang, ImcmsServices imcref,
-                                              UserDomainObject user) {
-        List<String> vec = langTag(lang);
+    private String createUploadTemplateDialog(TemplateMapper templateMapper, String lang, HttpServletRequest request,
+                                              HttpServletResponse response) throws ServletException, IOException {
+        langTag(lang, request);
         String temps = templateMapper.createHtmlOptionListOfTemplateGroups(null);
-        vec.add("#templategroups#");
-        vec.add(temps);
-        return imcref.getAdminTemplate(TEMPLATE_UPLOAD, user, vec);
+        request.setAttribute("templategroups", temps);
+        return Utility.getAdminContents(TEMPLATE_UPLOAD, request, response);
     }
 }

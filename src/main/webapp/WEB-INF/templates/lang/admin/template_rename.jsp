@@ -62,7 +62,7 @@
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateChange" action="TemplateChange" method="post">
-<input type="hidden" name="language" value="#language#">
+    <input type="hidden" name="language" value="${language}">
 <tr>
     <td colspan="2">
         <c:set var="heading">
@@ -78,12 +78,12 @@
                 <td width="80" height="24" class="imcmsAdmText" nowrap><? templates/sv/template_rename.html/1001 ?> &nbsp;</td>
                 <td>
                     <select name="template">
-                        #templates#
+                        ${templates}
                     </select></td>
             </tr>
             <tr>
                 <td height="24" class="imcmsAdmText" nowrap><? templates/sv/template_rename.html/1002 ?> &nbsp;</td>
-                <td><input type="text" name="name" size="30" maxlength="255"> <span class="error">#error#</span></td>
+                <td><input type="text" name="name" size="30" maxlength="255"> <span class="error">${error}</span></td>
             </tr>
         </table></td>
 </tr>

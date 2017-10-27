@@ -77,7 +77,7 @@
                 <td width="80" height="24" class="imcmsAdmText" nowrap><? templates/sv/template_rename.html/1001 ?> &nbsp;</td>
                 <td>
                     <select name="template" onchange="onSelectChange(this.value)" >
-                        #templates#
+                        ${templates}
                     </select></td>
             </tr>
             <tr>

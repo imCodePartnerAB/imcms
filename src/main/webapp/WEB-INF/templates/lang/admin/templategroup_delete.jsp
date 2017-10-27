@@ -77,7 +77,7 @@
                 <td width="80" height="24" class="imcmsAdmText" nowrap><? templates/sv/templategroup_delete.html/1001 ?></td>
                 <td>
                     <select name="templategroup">
-                        #templategroups#
+                        ${templategroups}
                     </select></td>
             </tr>
         </table></td>

@@ -97,7 +97,7 @@ function setSize() {
                         <tr>
                             <td>
                                 <select name="template">
-                                    #templates#
+                                    ${templates}
                                 </select></td>
                             <td class="imcmsAdmText" nowrap>&nbsp; <? templates/sv/templatedemo_upload.html/1003 ?></td>
                         </tr>

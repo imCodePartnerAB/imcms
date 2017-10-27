@@ -76,7 +76,7 @@
                 <td width="80" height="24" class="imcmsAdmText" nowrap><? templates/sv/template_delete.html/1001 ?> &nbsp;</td>
                 <td>
                     <select name="template">
-                        #templates#
+                        ${templates}
                     </select></td>
             </tr>
         </table></td>

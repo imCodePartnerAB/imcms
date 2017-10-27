@@ -32,8 +32,8 @@
 
 <table border="0" cellspacing="0" cellpadding="2" width="660">
 <form method="post" action="TemplateChange">
-<input type="HIDDEN" name="template" value="#template#">
-<input type="HIDDEN" name="language" value="#language#">
+    <input type="HIDDEN" name="template" value="${template}">
+    <input type="HIDDEN" name="language" value="${language}">
 <tr>
     <td class="imcmsAdmText">
         <? templates/sv/template_delete_warning.html/1001 ?>&nbsp;</td>
@@ -45,13 +45,13 @@
                 <td class="imcmsAdmText" nowrap><? templates/sv/template_delete_warning.html/1002 ?> &nbsp;</td>
                 <td>
                     <select name="select" size="7">
-                        #docs#
+                        ${docs}
                     </select></td>
                 <td nowrap>&nbsp; &nbsp;</td>
                 <td class="imcmsAdmText" nowrap><? templates/sv/template_delete_warning.html/1003 ?> &nbsp;</td>
                 <td>
                     <select name="new_template">
-                        #templates#
+                        ${templates}
                     </select></td>
             </tr>
         </table></td>

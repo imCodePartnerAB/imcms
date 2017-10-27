@@ -152,7 +152,7 @@ function setSize() {
             <tr>
                 <td>
                     <select name="templategroup" size="5" multiple>
-                        #templategroups#
+                        ${templategroups}
                     </select></td>
                 <td>&nbsp;&nbsp;</td>
                 <td class="imcmsAdmDim"><? templates/sv/template_upload.html/13 ?></td>

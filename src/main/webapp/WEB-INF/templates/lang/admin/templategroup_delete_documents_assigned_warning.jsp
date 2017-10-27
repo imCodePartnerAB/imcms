@@ -30,11 +30,12 @@
 
 <table border="0" cellspacing="0" cellpadding="2" width="310">
 <form method="post" action="TemplateChange">
-<input type="HIDDEN" name="templategroup" value="#templategroup#">
+    <input type="HIDDEN" name="templategroup" value="${templategroup}">
 <input type="HIDDEN" name="group_delete_cancel" value="Avbryt">
 <tr>
     <td align="center" class="imcmsAdmText"><b><? templates/sv/templategroup_delete_documents_assigned_warning.html/1 ?></b>
-<blockquote>#templates#</blockquote></td>
+        <blockquote>${templates}</blockquote>
+    </td>
 </tr>
 <tr>
     <td><ui:imcms_gui_hr wantedcolor="blue"/></td>

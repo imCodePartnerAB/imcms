@@ -74,8 +74,8 @@
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
     <form name="TemplateChange" action="TemplateChange" method="post">
-        <input type="hidden" name="group_id" value="#group_id#">
-        <input type="hidden" name="language" value="#language#">
+        <input type="hidden" name="group_id" value="${group_id}">
+        <input type="hidden" name="language" value="${language}">
         <tr>
             <td colspan="2">
                 <c:set var="heading">
@@ -91,14 +91,14 @@
                         <td height="24" nowrap><? templates/sv/template_assign.html/1001 ?>&nbsp;&nbsp;</td>
                         <td>
                             <select name="templategroup">
-                                #templategroups#
+                                ${templategroups}
                             </select></td>
                         <td>&nbsp;&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="show_assigned"
                                                value="<? templates/sv/template_assign.html/2014 ?>"></td>
                     </tr>
                     <tr>
                         <td height="24" class="imcmsAdmText"><? templates/sv/template_assign.html/8 ?></td>
-                        <td colspan="2" class="imcmsAdmText"><b><i>#group#</i></b></td>
+                        <td colspan="2" class="imcmsAdmText"><b><i>${group}</i></b></td>
                     </tr>
                 </table>
             </td>
@@ -115,17 +115,17 @@
                     <tr>
                         <td align="right">
                             <select name="unassigned" size="7" style="width:100%" multiple>
-                                #unassigned#
+                                ${unassigned}
                             </select></td>
                         <td align="center">
-                            &nbsp;<input type="submit" class="imcmsFormBtnSmall" style="width:60" name="assign"
+                            &nbsp;<input type="submit" class="imcmsFormBtnSmall" style="width:60px" name="assign"
                                          value="<? templates/sv/template_assign.html/2015 ?>">&nbsp;<br>
                             <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
-                            &nbsp;<input type="submit" class="imcmsFormBtnSmall" style="width:60" name="deassign"
+                            &nbsp;<input type="submit" class="imcmsFormBtnSmall" style="width:60px" name="deassign"
                                          value="<? templates/sv/template_assign.html/2016 ?>">&nbsp;</td>
                         <td>
                             <select name="assigned" size="7" style="width:100%" multiple>
-                                #assigned#
+                                ${assigned}
                             </select></td>
                     </tr>
                 </table>

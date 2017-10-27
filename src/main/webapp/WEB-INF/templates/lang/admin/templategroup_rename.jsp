@@ -77,7 +77,7 @@
                 <td height="24" class="imcmsAdmText" nowrap><? templates/sv/templategroup_rename.html/1001 ?> &nbsp; &nbsp;</td>
                 <td>
                     <select name="templategroup">
-                        #templategroups#
+                        ${templategroups}
                     </select></td>
             </tr>
             <tr>
