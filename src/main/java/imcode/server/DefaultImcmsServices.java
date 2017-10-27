@@ -6,7 +6,6 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
-import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.service.api.TemplateService;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -80,7 +79,8 @@ public class DefaultImcmsServices implements ImcmsServices {
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, ApplicationContext applicationContext, Config config,
                                 DocumentLanguages documentLanguages, DatabaseService databaseService,
-                                MailService mailService, TemplateService templateService) {
+                                MailService mailService, TemplateService templateService,
+                                ProcedureExecutor procedureExecutor) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.fileLoader = fileLoader;
@@ -91,8 +91,8 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.databaseService = databaseService;
         this.mailService = mailService;
         this.templateService = templateService;
+        this.procedureExecutor = procedureExecutor;
 
-        this.procedureExecutor = new DefaultProcedureExecutor(database, fileLoader);
         this.languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
         this.kerberosLoginService = new KerberosLoginService(config);
     }

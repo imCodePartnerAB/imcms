@@ -4,6 +4,8 @@ import com.imcode.db.Database;
 import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
+import com.imcode.imcms.db.DefaultProcedureExecutor;
+import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.service.api.TemplateService;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
@@ -126,11 +128,16 @@ public class WebConfig {
     }
 
     @Bean
+    public ProcedureExecutor procedureExecutor(Database database, CachingFileLoader fileLoader) {
+        return new DefaultProcedureExecutor(database, fileLoader);
+    }
+
+    @Bean
     public ImcmsServices createServices(Properties imcmsProperties, Database database, DocumentLanguages languages,
                                         LocalizedMessageProvider localizedMessageProvider, Config config,
                                         ApplicationContext applicationContext, CachingFileLoader fileLoader,
                                         DatabaseService databaseService, MailService mailService,
-                                        TemplateService templateService) {
+                                        TemplateService templateService, ProcedureExecutor procedureExecutor) {
 
         return new DefaultImcmsServices(
                 database,
@@ -142,7 +149,8 @@ public class WebConfig {
                 languages,
                 databaseService,
                 mailService,
-                templateService
+                templateService,
+                procedureExecutor
         );
     }
 
