@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -128,8 +129,9 @@ public class WebConfig {
     }
 
     @Bean
-    public ProcedureExecutor procedureExecutor(Database database, CachingFileLoader fileLoader) {
-        return new DefaultProcedureExecutor(database, fileLoader);
+    public ProcedureExecutor procedureExecutor(Database database, CachingFileLoader fileLoader,
+                                               @Value("classpath:sql") Resource sqlResource) {
+        return new DefaultProcedureExecutor(database, fileLoader, sqlResource);
     }
 
     @Bean

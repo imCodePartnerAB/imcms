@@ -4,16 +4,20 @@ import com.imcode.db.Database;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.imcms.persistence.components.SqlResourcePathResolver;
 import imcode.util.CachingFileLoader;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
+import org.springframework.core.io.Resource;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.*;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,11 +26,13 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
     private final static Logger log = Logger.getLogger(DefaultProcedureExecutor.class.getName());
     private final Database database;
     private final CachingFileLoader fileLoader;
-    private Map<String, Procedure> procedureCache = new HashMap<>();
+    private final Map<String, Procedure> procedureCache = CachingFileLoader.createSynchronizedMapDefaultInitialSize();
+    private final Resource sqlResource;
 
-    public DefaultProcedureExecutor(Database database, CachingFileLoader fileLoader) {
+    public DefaultProcedureExecutor(Database database, CachingFileLoader fileLoader, Resource sqlResource) {
         this.database = database;
         this.fileLoader = fileLoader;
+        this.sqlResource = sqlResource;
     }
 
     @Override
@@ -63,16 +69,28 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
     }
 
     private Procedure getProcedure(String wantedProcedure) {
-        String procedureName = wantedProcedure.toLowerCase();
-        File file = getFile(procedureName);
+        final String procedureName = wantedProcedure.toLowerCase();
         Procedure procedure = procedureCache.get(procedureName);
-        String procedureContents = fileLoader.getCachedFileStringIfRecent(file);
-        if (null == procedureContents) {
-            String procedureContents1 = loadFile(file);
+
+        if (procedure == null) {
             log.debug("Loading procedure " + procedureName);
-            procedure = prepareProcedure(procedureContents1, procedureName);
-            procedureCache.put(procedureName, procedure);
+
+            try (SqlResourcePathResolver pathResolver = new SqlResourcePathResolver(sqlResource.getURI())) {
+                final String procedureSubPath = "sprocs/" + wantedProcedure.toLowerCase() + ".prc";
+                final Path procedurePath = pathResolver.resolveSqlResourceSubPath(procedureSubPath);
+                final String procedureContents = loadFile(procedurePath);
+
+                procedure = prepareProcedure(procedureContents, procedureName);
+                procedureCache.put(procedureName, procedure);
+
+            } catch (Exception e) {
+                final String message = "SQL procedure resource path can't be resolved!";
+                log.error(message, e);
+                e.printStackTrace();
+                throw new RuntimeException(message);
+            }
         }
+
         return procedure;
     }
 
@@ -94,22 +112,12 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         return new Procedure(bodyWithParametersReplaced, parameterIndicesArray);
     }
 
-    private String loadFile(File file) {
+    private String loadFile(Path filePath) {
         try {
-            return fileLoader.getCachedFileString(file);
+            return fileLoader.getCachedFileString(filePath);
         } catch (IOException e) {
             throw new UnhandledException(e);
         }
-    }
-
-    protected File getFile(String wantedProcedure) {
-        final URL procedureResource = Thread.currentThread()
-                .getContextClassLoader()
-                .getResource("sql/sprocs/" + wantedProcedure.toLowerCase() + ".prc");
-
-        return Optional.ofNullable(procedureResource)
-                .map(url -> new File(url.getPath()))
-                .orElseThrow(() -> new RuntimeException("SQL procedure resource not found in classpath!"));
     }
 
     private Map<String, Integer> getParameterNameToIndexMapParsedFromHeader(Pattern parameterPattern, String headerParameters) {
