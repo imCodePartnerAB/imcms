@@ -87,9 +87,7 @@ public class DBConfig {
     }
 
     private void runSqlDiffs(DataSource dataSource) throws IOException {
-        final URI sqlResourcesURI = sqlDiffsResource
-                .getURI();
-
+        final URI sqlResourcesURI = sqlDiffsResource.getURI();
         final InputStream schemaXmlInputStream = schemaXmlResource.getInputStream();
         final Schema schema = Schema.fromInputStream(schemaXmlInputStream)
                 .setScriptsDir(sqlResourcesURI);
