@@ -158,7 +158,8 @@ public class GetDoc extends HttpServlet {
         if (!document.isPublished() && !user.canEdit(document)) {
             res.setStatus(HttpServletResponse.SC_FORBIDDEN);
             Utility.setDefaultHtmlContentType(res);
-            imcref.getAdminTemplate(NO_ACTIVE_DOCUMENT_URL, user, null);
+            final String adminTemplatePath = imcref.getAdminTemplatePath(NO_ACTIVE_DOCUMENT_URL);
+            req.getRequestDispatcher(adminTemplatePath).forward(req, res);
             return;
         }
 
