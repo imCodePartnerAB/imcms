@@ -62,8 +62,10 @@
 </tr>
 <tr>
     <td align="right">
-        <input type="submit" class="imcmsFormBtn" style="width:70" name="copyok" value="<? templates/sv/FileAdminCopyOverwriteWarning.html/2001 ?>">
-        <input type="submit" class="imcmsFormBtn" style="width:70" name="no" value="<? templates/sv/FileAdminCopyOverwriteWarning.html/2002 ?>"></td>
+        <input type="submit" class="imcmsFormBtn" style="width:70px" name="copyok"
+               value="<? templates/sv/FileAdminCopyOverwriteWarning.html/2001 ?>">
+        <input type="submit" class="imcmsFormBtn" style="width:70px" name="no"
+               value="<? templates/sv/FileAdminCopyOverwriteWarning.html/2002 ?>"></td>
 </tr>
 </form>
 </table>
