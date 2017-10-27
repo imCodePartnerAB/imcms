@@ -28,7 +28,7 @@
     <td><input type="button" value="<? templates/sv/template_upload_done.html/2002 ?>" title="<? templates/sv/template_upload_done.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('TemplateUploadNew')"></td>
 </tr>
 <input type="HIDDEN" name="add_template" value="Tillbaka">
-<input type="HIDDEN" name="language" value="#language#">
+    <input type="HIDDEN" name="language" value="${language}">
 </form>
 </table>
 <ui:imcms_gui_mid/>
