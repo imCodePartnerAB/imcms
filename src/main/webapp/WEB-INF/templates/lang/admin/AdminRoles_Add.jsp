@@ -3,7 +3,10 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<ui:imcms_gui_start_of_page titleAndHeading="templates/sv/AdminRoles_Add.htm/1"/>
+<c:set var="heading">
+    <fmt:message key="templates/sv/AdminRoles_Add.htm/1"/>
+</c:set>
+<ui:imcms_gui_start_of_page titleAndHeading="${heading}"/>
 
 <table width="400" border="0" cellspacing="0">
 <form method="post" action="AdminRoles" name="addIP">

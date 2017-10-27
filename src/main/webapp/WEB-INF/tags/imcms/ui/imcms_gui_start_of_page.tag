@@ -6,14 +6,10 @@
 
 <%@ attribute name="titleAndHeading" %>
 
-<c:set var="heading">
-    <fmt:message key="${titleAndHeading}"/>
-</c:set>
-
 <!-- gui_start_of_page -->
 <html>
 <head>
-    <title>${heading}</title>
+    <title>${titleAndHeading}</title>
 
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
     <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
@@ -21,6 +17,6 @@
 </head>
 <body>
 <ui:imcms_gui_outer_start/>
-<ui:imcms_gui_head heading="${heading}"/>
+<ui:imcms_gui_head heading="${titleAndHeading}"/>
 <ui:imcms_gui_mid/>
 <!-- /gui_start_of_page -->
