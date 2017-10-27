@@ -58,7 +58,7 @@ public class SaveInPage extends HttpServlet {
             req.getSession().setAttribute("flags", 0);
 
             if (requestedTemplate == null) {
-                errorNoTemplateSelected(documentId, services, req, res);
+                errorNoTemplateSelected(documentId, req, res);
                 return;
             } else if (!templateMapper.templateGroupContains(requestedTemplateGroup, requestedTemplate)) {
                 errorNoPermission(documentId, res);
@@ -108,11 +108,10 @@ public class SaveInPage extends HttpServlet {
         res.sendRedirect("AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE);
     }
 
-    private void errorNoTemplateSelected(int documentId, ImcmsServices services, HttpServletRequest request,
-                                         HttpServletResponse response) throws IOException, ServletException {
+    private void errorNoTemplateSelected(int documentId, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
         request.setAttribute("meta_id", documentId);
-        String templatePath = services.getAdminTemplatePath("inPage_admin_no_template.jsp");
-        response.getWriter().write(Utility.getContents(templatePath, request, response));
+        response.getWriter().write(Utility.getAdminContents("inPage_admin_no_template.jsp", request, response));
     }
 
     private TemplateGroupDomainObject getRequestedTemplateGroup(HttpServletRequest req, TemplateMapper templateMapper) {
