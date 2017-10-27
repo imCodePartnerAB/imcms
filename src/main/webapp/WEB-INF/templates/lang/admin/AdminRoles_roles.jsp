@@ -45,6 +45,5 @@
 </form>
 
 <ui:imcms_gui_end_of_page/>
-<ui:imcms_gui_end_of_page/>
 
 
