@@ -3,7 +3,6 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.util.HumanReadable;
 import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
@@ -64,7 +63,7 @@ public class FileAdmin extends HttpServlet {
             }
         }
 
-        outputFileAdmin(res, user, dir1, dir2);
+        outputFileAdmin(req, res, dir1, dir2);
     }
 
     /**
@@ -80,7 +79,6 @@ public class FileAdmin extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
         if (!user.isSuperAdmin()) {
@@ -154,7 +152,7 @@ public class FileAdmin extends HttpServlet {
         }
 
         if (!outputHasBeenHandled) {
-            outputFileAdmin(res, user, dir1, dir2);
+            outputFileAdmin(req, res, dir1, dir2);
         }
     }
 
@@ -355,10 +353,10 @@ public class FileAdmin extends HttpServlet {
         return handledOutput;
     }
 
-    private void outputFileAdmin(HttpServletResponse res, UserDomainObject user, File dir1, File dir2)
-            throws IOException {
+    private void outputFileAdmin(HttpServletRequest req, HttpServletResponse res, File dir1, File dir2)
+            throws IOException, ServletException {
         Utility.setDefaultHtmlContentType(res);
-        res.getWriter().print(parseFileAdmin(user, dir1, dir2));
+        res.getWriter().print(parseFileAdmin(req, res, dir1, dir2));
     }
 
     private void outputMoveOverwriteWarning(String option_list, File sourceDir, File destDir,
@@ -577,37 +575,28 @@ public class FileAdmin extends HttpServlet {
         return result;
     }
 
-    private String parseFileAdmin(UserDomainObject user, File fd1, File fd2) throws IOException {
-        ImcmsServices imcref = Imcms.getServices();
+    private String parseFileAdmin(HttpServletRequest request, HttpServletResponse response, File fd1, File fd2) throws IOException, ServletException {
 
         File[] rootlist = getRoots();
-        List vec = new ArrayList();
+
         if (fd1 != null) {
-            vec.add("#dir1#");
-            vec.add(getContextRelativeAbsolutePathToDirectory(fd1));
+            request.setAttribute("#dir1#", getContextRelativeAbsolutePathToDirectory(fd1));
             String optionlist = createDirectoryOptionList(rootlist, fd1);
-            vec.add("#files1#");
-            vec.add(optionlist);
+            request.setAttribute("#files1#", optionlist);
         } else {
-            vec.add("#dir1#");
-            vec.add("");
-            vec.add("#files1#");
-            vec.add("");
+            request.setAttribute("#dir1#", "");
+            request.setAttribute("#files1#", "");
         }
         if (fd2 != null) {
-            vec.add("#dir2#");
-            vec.add(getContextRelativeAbsolutePathToDirectory(fd2));
+            request.setAttribute("#dir2#", getContextRelativeAbsolutePathToDirectory(fd2));
             String optionlist = createDirectoryOptionList(rootlist, fd2);
-            vec.add("#files2#");
-            vec.add(optionlist);
+            request.setAttribute("#files2#", optionlist);
         } else {
-            vec.add("#dir2#");
-            vec.add("");
-            vec.add("#files2#");
-            vec.add("");
+            request.setAttribute("#dir2#", "");
+            request.setAttribute("#files2#", "");
         }
 
-        return imcref.getAdminTemplate("FileAdmin.jsp", user, vec);
+        return Utility.getAdminContents("FileAdmin.jsp", request, response);
     }
 
     private String getContextRelativeAbsolutePathToDirectory(File dir) throws IOException {

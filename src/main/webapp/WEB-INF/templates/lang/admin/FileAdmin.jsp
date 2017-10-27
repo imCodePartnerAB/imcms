@@ -320,8 +320,8 @@ function setSelectedFolders() {
 <ui:imcms_gui_head heading="${heading}"/>
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
-<input type="hidden" name="dir1" value="#dir1#">
-<input type="hidden" name="dir2" value="#dir2#">
+    <input type="hidden" name="dir1" value="${dir1}">
+    <input type="hidden" name="dir2" value="${dir2}">
 
     <tr>
         <td><input class="imcmsFormBtn" height="22" type="submit" name="cancel" value="<? templates/sv/FileAdmin.html/2022 ?>">
