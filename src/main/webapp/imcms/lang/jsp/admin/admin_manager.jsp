@@ -83,9 +83,10 @@
 		    </form>
 		</tr>
 		</table>
-#gui_mid_tabs1()
+<ui:imcms_gui_mid_tabs1/>
 <%= tabString %>
-#gui_mid_tabs2()<%
+<ui:imcms_gui_mid_tabs2/>
+<%
 if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabName())) {
 	if (null != adminManagerPage.getErrorMessage()) { %>
 	<div style="color: red"><%=
