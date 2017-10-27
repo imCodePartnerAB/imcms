@@ -170,9 +170,10 @@ public class AdminManager extends HttpServlet {
         String html_admin_part = "";
 
         if (loggedOnUser.isSuperAdmin()) {
-            html_admin_part = service.getAdminTemplate(HTML_ADMINTASK, loggedOnUser, null); // if superadmin
+            html_admin_part = Utility.getAdminContents(HTML_ADMINTASK, request, response);
+
         } else if (loggedOnUser.isUserAdminAndCanEditAtLeastOneRole()) { //if user is useradmin
-            html_admin_part = service.getAdminTemplate(HTML_USERADMINTASK, loggedOnUser, null); //if useradmin
+            html_admin_part = Utility.getAdminContents(HTML_USERADMINTASK, request, response);
         }
 
         DocumentIndex index = documentMapper.getDocumentIndex();
