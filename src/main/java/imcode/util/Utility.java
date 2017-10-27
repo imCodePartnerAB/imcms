@@ -180,6 +180,13 @@ public class Utility {
         return parameterInts;
     }
 
+    public static String getAdminContents(String templateName, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        final String templatePath = services.getAdminTemplatePath(templateName);
+        return getContents(templatePath, request, response);
+    }
+
     public static String getContents(String path, HttpServletRequest request,
                                      HttpServletResponse response) throws ServletException, IOException {
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(path);
