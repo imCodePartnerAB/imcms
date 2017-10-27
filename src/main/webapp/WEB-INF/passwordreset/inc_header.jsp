@@ -7,12 +7,18 @@
 	
 %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui"
-%><%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%!
+%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%!
 
 /* Validation errors and common heading */
 
 %>
-    <ui:imcms_gui_start_of_page titleAndHeading="passwordreset.title"/>
+<c:set var="heading">
+    <fmt:message key="passwordreset.title"/>
+</c:set>
+<ui:imcms_gui_start_of_page titleAndHeading="${heading}"/>
 <%
 List<String> errors = (List<String>)request.getAttribute(PasswordReset.REQUEST_ATTR_VALIDATION_ERRORS);
 
