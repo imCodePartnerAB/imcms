@@ -23,8 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
@@ -33,7 +31,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.*;
 import javax.servlet.jsp.PageContext;
-import javax.sql.DataSource;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -70,9 +67,11 @@ public class Utility {
     private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
     private static TextContentFilter textContentFilter;
-    private static DataSource dataSource;
+    private static ImcmsServices services;
 
-    private Utility() {
+    public Utility(TextContentFilter textContentFilter, ImcmsServices services) {
+        Utility.textContentFilter = textContentFilter;
+        Utility.services = services;
     }
 
     public static TextContentFilter getTextContentFilter() {
@@ -490,10 +489,4 @@ public class Utility {
         return StringUtils.join(requestParameterStrings.iterator(), "&");
     }
 
-    @Autowired
-    public void init(TextContentFilter textContentFilter,
-                     @Qualifier("dataSourceWithAutoCommit") DataSource dataSource) {
-        Utility.textContentFilter = textContentFilter;
-        Utility.dataSource = dataSource;
-    }
 }

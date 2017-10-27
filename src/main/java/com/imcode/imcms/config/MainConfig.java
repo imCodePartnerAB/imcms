@@ -18,8 +18,7 @@ import java.util.Properties;
         MappingConfig.class
 })
 @ComponentScan({
-        "com.imcode.imcms.domain",
-        "imcode.util"
+        "com.imcode.imcms.domain"
 })
 public class MainConfig {
 

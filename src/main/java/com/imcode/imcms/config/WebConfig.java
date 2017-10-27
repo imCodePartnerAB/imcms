@@ -47,6 +47,7 @@ import java.util.Properties;
         "com.imcode.imcms.servlet.apis",
         "com.imcode.imcms.controller",
         "com.imcode.imcms.mapping",
+        "imcode.util",
         "imcode.server"
 })
 public class WebConfig {
