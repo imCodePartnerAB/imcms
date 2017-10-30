@@ -6,7 +6,7 @@ Imcms.define("imcms-image-files-rest-api", ["imcms-rest-api"], function (rest) {
 
     var api = new rest.API("/images/folders");
 
-    var mockResponse = [{
+    var mockResponse = {
         name: "images",
         path: "images",
         files: [
@@ -643,7 +643,7 @@ Imcms.define("imcms-image-files-rest-api", ["imcms-rest-api"], function (rest) {
                 ]
             }
         ]
-    }];
+    };
 
     //mock data
     api.create = function (data) {

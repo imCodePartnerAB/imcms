@@ -383,8 +383,8 @@ Imcms.define("imcms-image-content-builder",
             (folder.folders || []).forEach(buildImages);
         }
 
-        function loadImageFoldersContent(folders) {
-            viewModel.root = folders[0];
+        function loadImageFoldersContent(imagesRootFolder) {
+            viewModel.root = imagesRootFolder;
             buildImages(viewModel.root);
             viewModel.$folder.push(buildRootFolder(viewModel.root));
 
