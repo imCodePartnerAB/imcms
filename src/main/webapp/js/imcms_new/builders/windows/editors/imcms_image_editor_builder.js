@@ -698,7 +698,13 @@ Imcms.define("imcms-image-editor-builder",
             clearDataStrategy: clearData
         });
 
+        var $tag;
+
         return {
+            setTag: function ($editedTag) {
+                $tag = $editedTag;
+                return this;
+            },
             build: function (opts) {
                 imageWindowBuilder.buildWindow.applyAsync(arguments, imageWindowBuilder);
             }

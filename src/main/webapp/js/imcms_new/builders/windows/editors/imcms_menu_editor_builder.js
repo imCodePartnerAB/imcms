@@ -222,7 +222,13 @@ Imcms.define("imcms-menu-editor-builder",
             clearDataStrategy: clearData
         });
 
+        var $tag;
+
         return {
+            setTag: function ($editedTag) {
+                $tag = $editedTag;
+                return this;
+            },
             build: function (opts) {
                 menuWindowBuilder.buildWindow.applyAsync(arguments, menuWindowBuilder);
             }

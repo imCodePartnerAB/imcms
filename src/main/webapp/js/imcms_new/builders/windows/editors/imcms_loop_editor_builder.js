@@ -207,7 +207,13 @@ Imcms.define("imcms-loop-editor-builder",
             clearDataStrategy: clearData
         });
 
+        var $tag;
+
         return {
+            setTag: function ($editedTag) {
+                $tag = $editedTag;
+                return this;
+            },
             build: function (opts) {
                 loopWindowBuilder.buildWindow.applyAsync(arguments, loopWindowBuilder);
             }
