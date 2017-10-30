@@ -668,7 +668,7 @@ Imcms.define("imcms-image-editor-builder",
                     top: angleBorderSize
                 });
 
-                imageDataContainers.$cropImg.attr("src", Imcms.contextPath + "/" + imageData.path);
+                imageDataContainers.$cropImg.attr("src", Imcms.contextPath + imageData.path);
 
                 // todo: receive correct crop area
                 imageDataContainers.$cropArea.css({
