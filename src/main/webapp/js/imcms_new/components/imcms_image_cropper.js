@@ -23,10 +23,8 @@ Imcms.define("imcms-image-cropper", [], function () {
     }
 
     function setElementWidthHeight($element, newWidth, newHeight) {
-        $element.css({
-            width: newWidth,
-            height: newHeight
-        });
+        $element.width(newWidth);
+        $element.height(newHeight);
     }
 
     var Limit = function () {
