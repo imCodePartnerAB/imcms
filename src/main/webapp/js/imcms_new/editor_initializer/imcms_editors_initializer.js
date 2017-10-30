@@ -8,15 +8,15 @@ Imcms.define("imcms-editors-initializer",
         "imcms-menu-editor-initializer"
     ],
     function (textEditorInit, imageEditorInit, loopEditorInit, menuEditorInit) {
-        var editors = Array.prototype.slice.call(arguments);
+        var editorInitializers = Array.prototype.slice.call(arguments);
 
-        function initEditor(editor) {
-            editor.initEditor();
+        function initEditor(editorInitializer) {
+            editorInitializer.initEditor();
         }
 
         return {
             initEditors: function () {
-                editors.forEach(initEditor);
+                editorInitializers.forEach(initEditor);
             }
         };
     }
