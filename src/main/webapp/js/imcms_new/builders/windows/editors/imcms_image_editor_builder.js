@@ -643,7 +643,7 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function fillLeftSideData(imageData) {
-            imageDataContainers.$image.attr("src", Imcms.contextPath + "/" + imageData.path);
+            imageDataContainers.$image.attr("src", Imcms.contextPath + imageData.path);
 
             setTimeout(function () { // to let image src load
                 imageDataContainers.$image.removeAttr("style");
