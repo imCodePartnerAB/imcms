@@ -403,10 +403,10 @@ Imcms.define("imcms-image-cropper", [], function () {
                 setCroppingAnglesTopLeft(newTop, newLeft);
             }
 
-            imageData.cropRegion.cropX1 = parseInt($croppingArea.css("left"));
-            imageData.cropRegion.cropY1 = parseInt($croppingArea.css("top"));
-            imageData.cropRegion.cropX2 = parseInt($croppingArea.css("left")) + $croppingArea.width();
-            imageData.cropRegion.cropY2 = parseInt($croppingArea.css("top")) + $croppingArea.height();
+            imageData.cropRegion.cropX1 = parseInt($croppingArea.css("left")) - 2;
+            imageData.cropRegion.cropY1 = parseInt($croppingArea.css("top")) - 2;
+            imageData.cropRegion.cropX2 = parseInt($croppingArea.css("left")) + $croppingArea.width() - 2;
+            imageData.cropRegion.cropY2 = parseInt($croppingArea.css("top")) + $croppingArea.height() - 2;
         });
 
         $imageEditor.on("dragstart", function () {
