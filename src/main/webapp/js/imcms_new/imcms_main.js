@@ -99,7 +99,7 @@ Imcms.config = {
         // </builders>
         // rest api
         "imcms-rest-api": "rest/imcms_rest_api.js",
-        "imcms-files-rest-api": "rest/imcms_files_rest_api.js",
+        "imcms-image-files-rest-api": "rest/imcms_image_files_rest_api.js",
         "imcms-documents-rest-api": "rest/imcms_documents_rest_api.js",
         "imcms-users-rest-api": "rest/imcms_users_rest_api.js",
         "imcms-categories-rest-api": "rest/imcms_categories_rest_api.js",

@@ -4,7 +4,7 @@
  */
 Imcms.define("imcms-image-content-builder",
     [
-        "imcms-files-rest-api", "imcms-bem-builder", "imcms-components-builder", "imcms-primitives-builder",
+        "imcms-image-files-rest-api", "imcms-bem-builder", "imcms-components-builder", "imcms-primitives-builder",
         "imcms-controls-builder", "imcms-modal-window-builder", "jquery"
     ],
     function (fileREST, BEM, components, primitives, controlsBuilder, modalWindow, $) {
