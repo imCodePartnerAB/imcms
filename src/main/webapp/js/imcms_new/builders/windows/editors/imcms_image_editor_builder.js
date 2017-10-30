@@ -320,6 +320,10 @@ Imcms.define("imcms-image-editor-builder",
             return $("<div>").append($editableImageArea, $bottomPanel);
         }
 
+        function reloadImageOnPage(imageDTO) {
+            $tag.find(".imcms-editor-content>img").attr("src", Imcms.contextPath + imageDTO.generatedFilePath);
+        }
+
         function buildRightSide(imageEditorBlockClass) {
 
             function buildSelectImageBtnContainer() {
@@ -575,9 +579,24 @@ Imcms.define("imcms-image-editor-builder",
                 imageWindowBuilder.closeWindow();
             }
 
+            function onImageSaved() {
+                imageWindowBuilder.closeWindow();
+
+                var imageRequestData = {
+                    docId: imageData.docId,
+                    index: imageData.index
+                };
+
+                imageData.loopEntryRef && (imageRequestData.loopEntryRef = imageData.loopEntryRef);
+
+                imageRestApi.read(imageRequestData)
+                    .success(reloadImageOnPage)
+                    .error(console.error.bind(console));
+            }
+
             function saveAndClose() {
                 imageRestApi.create(imageData)
-                    .success(imageWindowBuilder.closeWindow.bind(imageWindowBuilder))
+                    .success(onImageSaved)
                     .error(console.error.bind(console));
             }
 
