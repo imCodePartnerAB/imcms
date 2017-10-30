@@ -409,7 +409,7 @@ Imcms.define("imcms-image-content-builder",
                 $foldersContainer = options.foldersContainer;
                 $imagesContainer = options.imagesContainer;
 
-                fileREST.read("/images").done(loadImageFoldersContent);
+                fileREST.read().done(loadImageFoldersContent);
             },
             clearContent: function () {
                 $imagesContainer.children().detach();
