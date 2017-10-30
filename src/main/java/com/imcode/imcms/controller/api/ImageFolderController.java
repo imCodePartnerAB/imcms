@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 /**
  * Controller for Images Content Manager.
  * CRUD operations with image folders and content.
@@ -28,7 +26,7 @@ public class ImageFolderController {
     }
 
     @GetMapping
-    public List<ImageFolderDTO> getImageFolder() {
-        return null;
+    public ImageFolderDTO getImageFolder() {
+        return imageFolderService.getImageFolder();
     }
 }
