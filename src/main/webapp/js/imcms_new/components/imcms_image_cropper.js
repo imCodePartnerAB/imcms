@@ -290,14 +290,16 @@ Imcms.define("imcms-image-cropper", [], function () {
             $angle.css("display", "block");
         });
 
+        croppingAreaParams = {
+            height: imageData.cropRegion.cropY2 - imageData.cropRegion.cropY1,
+            width: imageData.cropRegion.cropX2 - imageData.cropRegion.cropX1
+        };
+
         removeCroppingListeners();
         setElementWidthHeight($cropImg, originImageWidth, originImageHeight);
-        setElementTopLeft($cropImg, 0, 0);
-
-        croppingAreaParams = {
-            height: $croppingArea.height(),
-            width: $croppingArea.width()
-        };
+        setElementWidthHeight($croppingArea, croppingAreaParams.width, croppingAreaParams.height);
+        setElementTopLeft($croppingArea, imageData.cropRegion.cropY1 + angleBorderSize, imageData.cropRegion.cropX1 + angleBorderSize);
+        setElementTopLeft($cropImg, -imageData.cropRegion.cropY1, -imageData.cropRegion.cropX1);
 
         $croppingArea.mousedown(function (event) {
             (isMouseDown = (event.which === 1)) && setCursor("move");
@@ -337,7 +339,10 @@ Imcms.define("imcms-image-cropper", [], function () {
         var angleSize = angles.$topRight.width();
 
         !function setStartCroppingAngles() {
-            setCroppingAnglesTopLeft(angleBorderSize, angleBorderSize);
+            setCroppingAnglesTopLeft(
+                imageData.cropRegion.cropY1 + angleBorderSize,
+                imageData.cropRegion.cropX1 + angleBorderSize
+            );
         }();
 
         function setCroppingAnglesTopLeft(top, left) {
