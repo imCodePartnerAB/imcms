@@ -580,8 +580,6 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function onImageSaved() {
-                imageWindowBuilder.closeWindow();
-
                 var imageRequestData = {
                     docId: imageData.docId,
                     index: imageData.index
@@ -595,6 +593,8 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function saveAndClose() {
+                imageWindowBuilder.closeWindow();
+
                 imageRestApi.create(imageData)
                     .success(onImageSaved)
                     .error(console.error.bind(console));
