@@ -1,6 +1,12 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import imcode.util.ImcmsImageUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.File;
+import java.util.function.Function;
 
 /**
  * Service for Images Content Manager.
@@ -10,5 +16,18 @@ import org.springframework.stereotype.Service;
  * 30.10.17.
  */
 @Service
+@Transactional
 public class ImageFolderService {
+
+    private final Function<File, ImageFolderDTO> fileToImageFolderDTO;
+
+    public ImageFolderService(Function<File, ImageFolderDTO> fileToImageFolderDTO) {
+        this.fileToImageFolderDTO = fileToImageFolderDTO;
+    }
+
+    public ImageFolderDTO getImageFolder() {
+        final File imagesRootFolder = ImcmsImageUtils.imagesPath;
+        return fileToImageFolderDTO.apply(imagesRootFolder);
+    }
+
 }
