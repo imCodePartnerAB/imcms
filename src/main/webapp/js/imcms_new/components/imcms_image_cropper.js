@@ -280,15 +280,14 @@ Imcms.define("imcms-image-cropper", [], function () {
             return;
         }
 
-        [
-            angles.$topLeft,
-            angles.$topRight,
-            angles.$bottomRight,
-            angles.$bottomLeft
-
-        ].forEach(function ($angle) {
-            $angle.css("display", "block");
-        });
+        if (!imageData.cropRegion) {
+            imageData.cropRegion = {
+                cropX1: 0,
+                cropY1: 0,
+                cropX2: $croppingArea.width(),
+                cropY2: $croppingArea.height()
+            };
+        }
 
         croppingAreaParams = {
             height: imageData.cropRegion.cropY2 - imageData.cropRegion.cropY1,
@@ -300,6 +299,25 @@ Imcms.define("imcms-image-cropper", [], function () {
         setElementWidthHeight($croppingArea, croppingAreaParams.width, croppingAreaParams.height);
         setElementTopLeft($croppingArea, imageData.cropRegion.cropY1 + angleBorderSize, imageData.cropRegion.cropX1 + angleBorderSize);
         setElementTopLeft($cropImg, -imageData.cropRegion.cropY1, -imageData.cropRegion.cropX1);
+
+        var angleSize = angles.$topRight.width();
+
+        !function setStartCroppingAngles() {
+            setCroppingAnglesTopLeft(
+                imageData.cropRegion.cropY1 + angleBorderSize,
+                imageData.cropRegion.cropX1 + angleBorderSize
+            );
+        }();
+
+        [
+            angles.$topLeft,
+            angles.$topRight,
+            angles.$bottomRight,
+            angles.$bottomLeft
+
+        ].forEach(function ($angle) {
+            $angle.css("display", "block");
+        });
 
         $croppingArea.mousedown(function (event) {
             (isMouseDown = (event.which === 1)) && setCursor("move");
@@ -335,15 +353,6 @@ Imcms.define("imcms-image-cropper", [], function () {
                 setCursor("");
             }
         });
-
-        var angleSize = angles.$topRight.width();
-
-        !function setStartCroppingAngles() {
-            setCroppingAnglesTopLeft(
-                imageData.cropRegion.cropY1 + angleBorderSize,
-                imageData.cropRegion.cropX1 + angleBorderSize
-            );
-        }();
 
         function setCroppingAnglesTopLeft(top, left) {
             setElementTopLeft(angles.$topLeft, top - angleBorderSize, left - angleBorderSize);
