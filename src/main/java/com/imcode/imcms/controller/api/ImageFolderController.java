@@ -1,6 +1,8 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.service.api.ImageFolderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +19,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/images/folders")
 public class ImageFolderController {
+
+    private final ImageFolderService imageFolderService;
+
+    @Autowired
+    public ImageFolderController(ImageFolderService imageFolderService) {
+        this.imageFolderService = imageFolderService;
+    }
 
     @GetMapping
     public List<ImageFolderDTO> getImageFolder() {
