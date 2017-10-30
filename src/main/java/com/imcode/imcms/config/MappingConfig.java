@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -260,4 +261,18 @@ public class MappingConfig {
             return dto;
         };
     }
+
+    @Bean
+    public Function<File, ImageFolderDTO> fileToImageFolderDTO() {
+        return file -> {
+            final ImageFolderDTO imageFolderDTO = new ImageFolderDTO();
+            imageFolderDTO.setName(file.getName());
+            imageFolderDTO.setPath(file.getPath());
+            imageFolderDTO.setFiles(null);
+            imageFolderDTO.setFolders(null);
+
+            return imageFolderDTO;
+        };
+    }
+
 }
