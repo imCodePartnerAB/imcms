@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -264,14 +265,35 @@ public class MappingConfig {
 
     @Bean
     public Function<File, ImageFolderDTO> fileToImageFolderDTO() {
-        return file -> {
-            final ImageFolderDTO imageFolderDTO = new ImageFolderDTO();
-            imageFolderDTO.setName(file.getName());
-            imageFolderDTO.setPath(file.getPath());
-            imageFolderDTO.setFiles(null);
-            imageFolderDTO.setFolders(null);
+        return new Function<File, ImageFolderDTO>() {
+            @Override
+            public ImageFolderDTO apply(File folderFile) {
+                final ImageFolderDTO imageFolderDTO = new ImageFolderDTO();
+                imageFolderDTO.setName(folderFile.getName());
+                imageFolderDTO.setPath(folderFile.getPath());
 
-            return imageFolderDTO;
+                final ArrayList<ImageFolderDTO> subFolders = new ArrayList<>();
+                final ArrayList<File> folderFiles = new ArrayList<>();
+
+                final File[] files = folderFile.listFiles();
+
+                if (files == null) {
+                    return imageFolderDTO;
+                }
+
+                for (File file : files) {
+                    if ((file.isDirectory())) {
+                        subFolders.add(this.apply(file));
+                    } else {
+                        folderFiles.add(file);
+                    }
+                }
+
+                imageFolderDTO.setFiles(null);
+                imageFolderDTO.setFolders(subFolders);
+
+                return imageFolderDTO;
+            }
         };
     }
 
