@@ -1,10 +1,18 @@
-Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (Imcms, $) {
+Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
 
     var API_PREFIX = "/api";
 
+    function logAjaxCall(type, url, data) {
+        console.log("AJAX " + type + " call: " + url + " with data: ");
+        console.log(data);
+    }
+
     function ajax(data, callback) {
+        var url = imcms.contextPath + API_PREFIX + this.url;
+        logAjaxCall(this.type, url, data);
+
         return $.ajax({
-            url: Imcms.contextPath + API_PREFIX + this.url,
+            url: url,
             type: this.type,
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
             data: data,
@@ -13,8 +21,11 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (Imcms, $) {
     }
 
     function ajaxWithBody(data, callback) {
+        var url = imcms.contextPath + API_PREFIX + this.url;
+        logAjaxCall(this.type, url, data);
+
         return $.ajax({
-            url: Imcms.contextPath + API_PREFIX + this.url,
+            url: url,
             type: this.type,
             contentType: 'application/json; charset=utf-8',
             data: JSON.stringify(data),
