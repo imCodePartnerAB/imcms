@@ -69,8 +69,7 @@ Imcms.define("imcms-content-manager-builder",
                     type: "file",
                     style: "display: none;",
                     change: function () {
-                        console.log("%c Not implemented feature: upload new image", "color: red;");
-                        console.log(this.files[0]);
+                        imageContentBuilder.onImageUpload(this.files[0]);
                     }
                 });
 

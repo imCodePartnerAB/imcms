@@ -411,6 +411,22 @@ Imcms.define("imcms-image-content-builder",
 
                 fileREST.read().done(loadImageFoldersContent);
             },
+            onImageUpload: function (file) {
+                var saveImageRequestData = {
+                    file: file
+                };
+
+                var $activeFolder = $("." + ACTIVE_FOLDER_CLASS);
+
+                if ($activeFolder.length) {
+                    saveImageRequestData.folder = $activeFolder.data("folderPath")
+                }
+
+                fileREST.create(saveImageRequestData)
+                    .done(function (response) {
+                        console.log("success file create");
+                    });
+            },
             clearContent: function () {
                 $imagesContainer.children().detach();
                 $foldersContainer.children().not("#closeFolders").detach();
