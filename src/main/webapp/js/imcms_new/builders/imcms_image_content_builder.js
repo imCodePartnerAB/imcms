@@ -345,7 +345,7 @@ Imcms.define("imcms-image-content-builder",
                     }),
                     "img-title": $("<div>", {
                             "class": "imcms-title",
-                            text: imageFile.name + "." + imageFile.format
+                        text: imageFile.name
                         }
                     ),
                     "img-size": $("<div>", {text: imageFile.resolution + imageFile.size})
