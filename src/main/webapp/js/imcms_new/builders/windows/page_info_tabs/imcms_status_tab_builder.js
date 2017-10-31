@@ -76,7 +76,7 @@ Imcms.define("imcms-status-tab-builder",
             {title: "Modified", dataTitle: "modified"},
             {title: "Archived", dataTitle: "archived"},
             {title: "Published", dataTitle: "published"},
-            {title: "Publication end", dataTitle: "publication_end"}
+            {title: "Publication end", dataTitle: "publicationEnd"}
         ];
 
         return {
