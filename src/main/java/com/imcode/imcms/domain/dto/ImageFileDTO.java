@@ -15,7 +15,7 @@ public class ImageFileDTO {
     private Format format;
     private String uploaded;
     private String resolution;
-    private Integer size;
+    private String size;
     private Integer width;
     private Integer height;
 
