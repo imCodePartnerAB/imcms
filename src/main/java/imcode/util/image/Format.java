@@ -45,8 +45,14 @@ public enum Format {
         this.writable = writable;
     }
 
-    public static Format findFormat(String format) {
-        return FORMAT_MAP.get(format);
+    public static Format findFormat(String formatOrExtension) {
+        final Format format = FORMAT_MAP.get(formatOrExtension);
+
+        if (format != null) {
+            return format;
+        }
+
+        return EXTENSION_MAP.get(formatOrExtension);
     }
 
     public static boolean isImage(String formatOrExtension) {
