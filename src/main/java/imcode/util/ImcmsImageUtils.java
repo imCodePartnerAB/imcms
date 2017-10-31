@@ -3,6 +3,7 @@ package imcode.util;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.dto.ImageData.CropRegion;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
+import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.ImageCropRegion;
@@ -16,6 +17,7 @@ import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -24,12 +26,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.*;
 import java.io.*;
 import java.text.Normalizer;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.UUID;
 
-//fixme: image no + image in a loop
 @Component
 public class ImcmsImageUtils {
 
@@ -37,9 +45,8 @@ public class ImcmsImageUtils {
     private static final int GEN_FILE_LENGTH = 255;
 
     public static File imagesPath;
-    private static String imagesUrl;
     public static String imageMagickPath;
-
+    private static String imagesUrl;
     @Value("${ImagePath}")
     private File imgPath;
 
@@ -87,6 +94,78 @@ public class ImcmsImageUtils {
         }
 
         return filename + suffix;
+    }
+
+    public static ImageFileDTO fileToImageFileDTO(File imageFile) {
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        final String fileName = imageFile.getName();
+
+        imageFileDTO.setName(fileName);
+        imageFileDTO.setFormat(Format.findFormat(FilenameUtils.getExtension(fileName)));
+        imageFileDTO.setPath(imageFile.getPath());
+
+        final Date lastModifiedDate = new Date(imageFile.lastModified());
+        final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.format(lastModifiedDate);
+
+        imageFileDTO.setUploaded(formattedDate);
+
+        long fileSize = imageFile.length();
+        String suffix;
+
+        if (fileSize >= (1024L * 1024L)) {
+            suffix = "MB";
+            fileSize /= 1024L * 1024L;
+
+        } else if (fileSize >= 1024L) {
+            suffix = "kB";
+            fileSize /= 1024L;
+
+        } else {
+            suffix = "B";
+        }
+
+        imageFileDTO.setSize(String.valueOf(fileSize) + suffix);
+
+        final Dimension imageDimension = getImageDimension(imageFile);
+
+        if (imageDimension != null) {
+            imageFileDTO.setWidth(imageDimension.width);
+            imageFileDTO.setHeight(imageDimension.height);
+            imageFileDTO.setResolution(String.valueOf(imageDimension.width) + "x" + imageDimension.height);
+        }
+
+        return imageFileDTO;
+    }
+
+    /**
+     * Gets image dimensions for given file
+     *
+     * @param imgFile image file
+     * @return dimensions of image
+     * @see <a href="https://stackoverflow.com/questions/672916/how-to-get-image-height-and-width-using-java#answer-12164026">method source</a>
+     */
+    private static Dimension getImageDimension(File imgFile) {
+        final String suffix = FilenameUtils.getExtension(imgFile.getName());
+        final Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix(suffix);
+
+        while (iter.hasNext()) {
+            final ImageReader reader = iter.next();
+            try {
+                final ImageInputStream stream = new FileImageInputStream(imgFile);
+                reader.setInput(stream);
+                final int width = reader.getWidth(reader.getMinIndex());
+                final int height = reader.getHeight(reader.getMinIndex());
+                return new Dimension(width, height);
+
+            } catch (IOException e) {
+                log.warn("Error reading: " + imgFile.getAbsolutePath(), e);
+
+            } finally {
+                reader.dispose();
+            }
+        }
+
+        return null;
     }
 
     public static ImageSource getImageSource(String imagePath) {

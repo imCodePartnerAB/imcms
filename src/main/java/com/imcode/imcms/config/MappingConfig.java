@@ -12,6 +12,9 @@ import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentStoredFields;
+import imcode.util.ImcmsImageUtils;
+import imcode.util.image.Format;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -264,7 +267,12 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<File, ImageFolderDTO> fileToImageFolderDTO() {
+    public Function<File, ImageFileDTO> fileToImageFileDTO() {
+        return ImcmsImageUtils::fileToImageFileDTO;
+    }
+
+    @Bean
+    public Function<File, ImageFolderDTO> fileToImageFolderDTO(Function<File, ImageFileDTO> fileToImageFileDTO) {
         return new Function<File, ImageFolderDTO>() {
             @Override
             public ImageFolderDTO apply(File folderFile) {
@@ -273,7 +281,7 @@ public class MappingConfig {
                 imageFolderDTO.setPath(folderFile.getPath());
 
                 final ArrayList<ImageFolderDTO> subFolders = new ArrayList<>();
-                final ArrayList<File> folderFiles = new ArrayList<>();
+                final ArrayList<ImageFileDTO> folderFiles = new ArrayList<>();
 
                 final File[] files = folderFile.listFiles();
 
@@ -284,12 +292,13 @@ public class MappingConfig {
                 for (File file : files) {
                     if ((file.isDirectory())) {
                         subFolders.add(this.apply(file));
-                    } else {
-                        folderFiles.add(file);
+
+                    } else if (Format.isImage(FilenameUtils.getExtension(file.getName()))) {
+                        folderFiles.add(fileToImageFileDTO.apply(file));
                     }
                 }
 
-                imageFolderDTO.setFiles(null);
+                imageFolderDTO.setFiles(folderFiles);
                 imageFolderDTO.setFolders(subFolders);
 
                 return imageFolderDTO;
