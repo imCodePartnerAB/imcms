@@ -274,6 +274,9 @@ Imcms.define("imcms-image-cropper", [], function () {
         var originImageWidth = $originImg.width();
         var originImageHeight = $originImg.height();
 
+        var croppingCoefficientX = imageData.width / originImageWidth;
+        var croppingCoefficientY = imageData.height / originImageHeight;
+
         if (!originImageWidth || !originImageHeight) {
             return;
         }
@@ -285,6 +288,11 @@ Imcms.define("imcms-image-cropper", [], function () {
                 cropX2: $croppingArea.width(),
                 cropY2: $croppingArea.height()
             };
+        } else {
+            imageData.cropRegion.cropX1 /= croppingCoefficientX;
+            imageData.cropRegion.cropY1 /= croppingCoefficientY;
+            imageData.cropRegion.cropX2 /= croppingCoefficientX;
+            imageData.cropRegion.cropY2 /= croppingCoefficientY;
         }
 
         croppingAreaParams = {
@@ -306,6 +314,11 @@ Imcms.define("imcms-image-cropper", [], function () {
                 imageData.cropRegion.cropX1 + angleBorderSize
             );
         }();
+
+        imageData.cropRegion.cropX1 *= croppingCoefficientX;
+        imageData.cropRegion.cropY1 *= croppingCoefficientY;
+        imageData.cropRegion.cropX2 *= croppingCoefficientX;
+        imageData.cropRegion.cropY2 *= croppingCoefficientY;
 
         [
             angles.$topLeft,
@@ -415,10 +428,10 @@ Imcms.define("imcms-image-cropper", [], function () {
                 setCroppingAnglesTopLeft(newTop, newLeft);
             }
 
-            imageData.cropRegion.cropX1 = parseInt($croppingArea.css("left")) - 2;
-            imageData.cropRegion.cropY1 = parseInt($croppingArea.css("top")) - 2;
-            imageData.cropRegion.cropX2 = parseInt($croppingArea.css("left")) + $croppingArea.width() - 2;
-            imageData.cropRegion.cropY2 = parseInt($croppingArea.css("top")) + $croppingArea.height() - 2;
+            imageData.cropRegion.cropX1 = croppingCoefficientX * (parseInt($croppingArea.css("left")) - 2);
+            imageData.cropRegion.cropY1 = croppingCoefficientY * (parseInt($croppingArea.css("top")) - 2);
+            imageData.cropRegion.cropX2 = croppingCoefficientX * (parseInt($croppingArea.css("left")) + $croppingArea.width() - 2);
+            imageData.cropRegion.cropY2 = croppingCoefficientY * (parseInt($croppingArea.css("top")) + $croppingArea.height() - 2);
         });
 
         $imageEditor.on("dragstart", function () {
