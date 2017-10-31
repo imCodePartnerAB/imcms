@@ -102,7 +102,9 @@ public class ImcmsImageUtils {
 
         imageFileDTO.setName(fileName);
         imageFileDTO.setFormat(Format.findFormat(FilenameUtils.getExtension(fileName)));
-        imageFileDTO.setPath(imageFile.getPath());
+
+        final String relativePath = imageFile.getPath().replace(imagesPath.getParentFile().getPath(), "");
+        imageFileDTO.setPath(relativePath);
 
         final Date lastModifiedDate = new Date(imageFile.lastModified());
         final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.format(lastModifiedDate);
