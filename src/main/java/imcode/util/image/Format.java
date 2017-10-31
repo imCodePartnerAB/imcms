@@ -49,16 +49,8 @@ public enum Format {
         return FORMAT_MAP.get(format);
     }
 
-    public static Format findFormatByExtension(String extension) {
-        return EXTENSION_MAP.get(extension);
-    }
-
-    public static Format findFormat(int ordinal) {
-        return ORDINAL_MAP.get(ordinal);
-    }
-
-    public static boolean isImage(String name) {
-        return FORMAT_MAP.containsKey(name) || EXTENSION_MAP.containsKey(name);
+    public static boolean isImage(String formatOrExtension) {
+        return FORMAT_MAP.containsKey(formatOrExtension) || EXTENSION_MAP.containsKey(formatOrExtension);
     }
 
 }
