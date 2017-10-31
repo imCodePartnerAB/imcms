@@ -69,7 +69,7 @@ Imcms.define("imcms-content-manager-builder",
                     type: "file",
                     style: "display: none;",
                     change: function () {
-                        imageContentBuilder.onImageUpload(this.files[0]);
+                        imageContentBuilder.onImageUpload(this.files);
                     }
                 });
 

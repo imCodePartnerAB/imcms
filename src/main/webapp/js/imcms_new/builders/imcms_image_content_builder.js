@@ -411,9 +411,9 @@ Imcms.define("imcms-image-content-builder",
 
                 fileREST.read().done(loadImageFoldersContent);
             },
-            onImageUpload: function (file) {
+            onImageUpload: function (files) {
                 var saveImageRequestData = {
-                    file: file
+                    files: files
                 };
 
                 var $activeFolder = $("." + ACTIVE_FOLDER_CLASS);
