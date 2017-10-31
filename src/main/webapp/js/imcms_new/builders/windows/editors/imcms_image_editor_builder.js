@@ -695,9 +695,11 @@ Imcms.define("imcms-image-editor-builder",
                 return;
             }
 
+            // direct reassign because $.extend skip 'undefined' but it's needed!
+            imageData.cropRegion = image.cropRegion;
             $.extend(imageData, image);
-            fillBodyHeadData(image);
-            fillLeftSideData(image);
+            fillBodyHeadData(imageData);
+            fillLeftSideData(imageData);
         }
 
         function loadData(opts) {
