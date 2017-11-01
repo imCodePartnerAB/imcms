@@ -192,14 +192,10 @@ Imcms.define("imcms-image-content-builder",
                         return;
                     }
 
-                    onConfirm({
-                        path: opts.folder.path,
-                        name: folderName
-                    }).done(onSuccess.bind({
-                            parentLevel: opts.level,
-                            $block: $folderCreationBlock
-                        })
-                    );
+                    onConfirm({folderPath: opts.folder.path + "/" + folderName}).done(onSuccess.bind({
+                        parentLevel: opts.level,
+                        $block: $folderCreationBlock
+                    }));
                 }
             });
 
