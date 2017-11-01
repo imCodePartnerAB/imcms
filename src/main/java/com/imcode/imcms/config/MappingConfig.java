@@ -279,7 +279,7 @@ public class MappingConfig {
             public ImageFolderDTO apply(File folderFile) {
                 final ImageFolderDTO imageFolderDTO = new ImageFolderDTO();
                 imageFolderDTO.setName(folderFile.getName());
-                final String relativePath = folderFile.getPath().replace(imagesPath.getParentFile().getPath(), "");
+                final String relativePath = folderFile.getPath().replace(imagesPath.getPath(), "");
                 imageFolderDTO.setPath(relativePath);
 
                 final ArrayList<ImageFolderDTO> subFolders = new ArrayList<>();
