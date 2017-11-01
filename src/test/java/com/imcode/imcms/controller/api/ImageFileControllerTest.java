@@ -5,6 +5,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.exception.FolderNotExistException;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
@@ -22,7 +23,6 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -131,13 +131,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                 .file(file)
                 .param("folder", "/generatedddddd"); // non-existing folder
 
-        try {
-            performRequestBuilderExpectedOk(fileUploadRequestBuilder); // exception should be thrown here
-            fail("Expected exception wasn't thrown");
-
-        } catch (IOException e) {
-            assertEquals(e.getMessage(), "Folder not exist! Folder creation is another service job.");
-        }
+        performRequestBuilderExpectException(FolderNotExistException.class, fileUploadRequestBuilder);
     }
 
 }
