@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
@@ -11,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -54,9 +54,8 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     public void createNewImageFolder_When_FolderNotExistBefore_Expect_FolderCreatedAndIsDirectoryAndReadableAndThenRemoved() throws Exception {
         final String testFolderName = "test_folder_name";
         final File folder = new File(imagesPath, testFolderName);
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(testFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
 
         assertFalse(folder.exists());
 
@@ -73,9 +72,8 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     public void createNewImageFolder_When_FolderAlreadyExist_Expect_FolderCreationAndThenExceptionAndFolderRemove() throws Exception {
         final String testFolderName = "test_folder_name";
         final File folder = new File(imagesPath, testFolderName);
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(testFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
 
         assertFalse(folder.exists());
 
@@ -101,21 +99,10 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         final File folder2 = new File(imagesPath, testFolderName2);
         final File folder3 = new File(imagesPath, testFolderName3);
 
-        final MockHttpServletRequestBuilder requestBuilder0 = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(testFolderName0);
-
-        final MockHttpServletRequestBuilder requestBuilder1 = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(testFolderName1);
-
-        final MockHttpServletRequestBuilder requestBuilder2 = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(testFolderName2);
-
-        final MockHttpServletRequestBuilder requestBuilder3 = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(testFolderName3);
+        final MockHttpServletRequestBuilder requestBuilder0 = getPostRequestBuilderWithContent(new ImageFolderDTO(testFolderName0));
+        final MockHttpServletRequestBuilder requestBuilder1 = getPostRequestBuilderWithContent(new ImageFolderDTO(testFolderName1));
+        final MockHttpServletRequestBuilder requestBuilder2 = getPostRequestBuilderWithContent(new ImageFolderDTO(testFolderName2));
+        final MockHttpServletRequestBuilder requestBuilder3 = getPostRequestBuilderWithContent(new ImageFolderDTO(testFolderName3));
 
         assertFalse(folder0.exists());
         assertFalse(folder1.exists());
@@ -161,9 +148,8 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
         final String testFolderName = "test_folder_name";
         final File folder = new File(imagesPath, testFolderName);
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(testFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
 
         assertFalse(folder.exists());
         performRequestBuilderExpectException(IllegalAccessException.class, requestBuilder);

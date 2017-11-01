@@ -90,15 +90,15 @@ public abstract class AbstractControllerTest {
         performRequestBuilderExpectedOk(requestBuilder);
     }
 
-    private ResultActions performRequestBuilderExpectedOkAndContentJsonUtf8(MockHttpServletRequestBuilder builder) throws Exception {
-        return performRequestBuilderExpectedOk(builder)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
-    }
-
-    private MockHttpServletRequestBuilder getPostRequestBuilderWithContent(Object content) throws Exception {
+    protected MockHttpServletRequestBuilder getPostRequestBuilderWithContent(Object content) throws Exception {
         return MockMvcRequestBuilders.post(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(content));
+    }
+
+    private ResultActions performRequestBuilderExpectedOkAndContentJsonUtf8(MockHttpServletRequestBuilder builder) throws Exception {
+        return performRequestBuilderExpectedOk(builder)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
     }
 
 }
