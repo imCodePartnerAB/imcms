@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for Images Content Manager.
- * CRUD operations with image folders and content.
+ * CRUD operations with image folders.
  *
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 30.10.17.
