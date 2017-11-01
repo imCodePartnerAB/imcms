@@ -35,7 +35,7 @@ public class ImageFileService {
 
     public List<ImageFileDTO> saveNewImageFiles(String folder, List<MultipartFile> files) throws IOException {
 
-        final File targetFolder = ((folder == null) || folder.isEmpty()) ? imagesPath : new File(imagesPath, folder);
+        final File targetFolder = getTargetFolder(folder);
         final ArrayList<ImageFileDTO> imageFileDTOS = new ArrayList<>();
         final Function<File, Boolean> mapAndAddToList = fileToImageFileDTO.andThen(imageFileDTOS::add);
 
@@ -57,5 +57,27 @@ public class ImageFileService {
         }
 
         return imageFileDTOS;
+    }
+
+    private File getTargetFolder(String folder) throws IOException {
+        final File targetFolder;
+
+        if ((folder == null) || folder.isEmpty()) {
+            targetFolder = imagesPath;
+
+        } else {
+            targetFolder = new File(imagesPath, folder);
+
+            if (!targetFolder.exists()) {
+                throw new IOException("Folder not exist! Folder creation is another service job.");
+
+            } else if (!targetFolder.isDirectory()) {
+                throw new IOException("Target directory is not a directory...");
+
+            } else if (!targetFolder.canWrite()) {
+                throw new IOException("Can't write to specified directory!");
+            }
+        }
+        return targetFolder;
     }
 }

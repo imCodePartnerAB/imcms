@@ -80,4 +80,20 @@ public class ImageFileServiceTest {
 
         imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPath.getParentFile(), imageFileDTO.getPath()).delete()));
     }
+
+    @Test
+    public void saveNewImageFiles_When_TwoFilesSentAndFolderNotExistButIsSet_Expect_CorrectResultSize() throws IOException {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+
+        final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
+        final List<MultipartFile> files = Arrays.asList(file, file);
+        final String folder = "/generateddddd"; // non-existing folder
+
+        try {
+            imageFileService.saveNewImageFiles(folder, files); // exception should be thrown here
+            fail("Expected exception wasn't thrown");
+        } catch (IOException e) {
+            assertEquals(e.getMessage(), "Folder not exist! Folder creation is another service job.");
+        }
+    }
 }
