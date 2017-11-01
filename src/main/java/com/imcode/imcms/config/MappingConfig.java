@@ -272,13 +272,15 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<File, ImageFolderDTO> fileToImageFolderDTO(Function<File, ImageFileDTO> fileToImageFileDTO) {
+    public Function<File, ImageFolderDTO> fileToImageFolderDTO(Function<File, ImageFileDTO> fileToImageFileDTO,
+                                                               @Value("${ImagePath}") File imagesPath) {
         return new Function<File, ImageFolderDTO>() {
             @Override
             public ImageFolderDTO apply(File folderFile) {
                 final ImageFolderDTO imageFolderDTO = new ImageFolderDTO();
                 imageFolderDTO.setName(folderFile.getName());
-                imageFolderDTO.setPath(folderFile.getPath());
+                final String relativePath = folderFile.getPath().replace(imagesPath.getParentFile().getPath(), "");
+                imageFolderDTO.setPath(relativePath);
 
                 final ArrayList<ImageFolderDTO> subFolders = new ArrayList<>();
                 final ArrayList<ImageFileDTO> folderFiles = new ArrayList<>();
