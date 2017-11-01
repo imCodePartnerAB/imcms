@@ -67,6 +67,7 @@ Imcms.define("imcms-content-manager-builder",
 
                 var $fileInput = $("<input>", {
                     type: "file",
+                    accept: "image/*",
                     style: "display: none;",
                     change: function () {
                         imageContentBuilder.onImageUpload(this.files);
