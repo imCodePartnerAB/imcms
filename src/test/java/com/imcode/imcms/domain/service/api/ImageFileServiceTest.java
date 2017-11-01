@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.exception.FolderNotExistException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,7 +82,7 @@ public class ImageFileServiceTest {
         imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPath.getParentFile(), imageFileDTO.getPath()).delete()));
     }
 
-    @Test
+    @Test(expected = FolderNotExistException.class)
     public void saveNewImageFiles_When_TwoFilesSentAndFolderNotExistButIsSet_Expect_CorrectException() throws IOException {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
 
@@ -89,11 +90,6 @@ public class ImageFileServiceTest {
         final List<MultipartFile> files = Arrays.asList(file, file);
         final String folder = "/generateddddd"; // non-existing folder
 
-        try {
-            imageFileService.saveNewImageFiles(folder, files); // exception should be thrown here
-            fail("Expected exception wasn't thrown");
-        } catch (IOException e) {
-            assertEquals(e.getMessage(), "Folder not exist! Folder creation is another service job.");
-        }
+        imageFileService.saveNewImageFiles(folder, files); // exception should be thrown here
     }
 }

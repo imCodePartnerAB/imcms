@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.exception.FolderNotExistException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class ImageFileService {
         return imageFileDTOS;
     }
 
-    private File getTargetFolder(String folder) throws IOException {
+    private File getTargetFolder(String folder) {
         final File targetFolder;
 
         if ((folder == null) || folder.isEmpty()) {
@@ -69,13 +70,13 @@ public class ImageFileService {
             targetFolder = new File(imagesPath, folder);
 
             if (!targetFolder.exists()) {
-                throw new IOException("Folder not exist! Folder creation is another service job.");
+                throw new FolderNotExistException("Folder " + folder + " not exist! Folder creation is another service job.");
 
             } else if (!targetFolder.isDirectory()) {
-                throw new IOException("Target directory is not a directory...");
+                throw new RuntimeException("Target directory is not a directory...");
 
             } else if (!targetFolder.canWrite()) {
-                throw new IOException("Can't write to specified directory!");
+                throw new RuntimeException("Can't write to specified directory!");
             }
         }
         return targetFolder;
