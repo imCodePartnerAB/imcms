@@ -87,4 +87,17 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPathFolder, imageFileDTO.getPath()).delete()));
     }
+
+    @Test
+    public void uploadImageFile_When_UserIsNotAdmin_Expect_CorrectException() throws Exception {
+        final UserDomainObject user = new UserDomainObject(2);
+        user.addRoleId(RoleId.USERS);
+        Imcms.setUser(user); // means current user is not admin now
+
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+        final MockMultipartFile file = new MockMultipartFile("files", "img1-test.jpg", null, imageFileBytes);
+        final MockMultipartHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath()).file(file);
+
+        performRequestBuilderExpectException(IllegalAccessException.class, fileUploadRequestBuilder);
+    }
 }
