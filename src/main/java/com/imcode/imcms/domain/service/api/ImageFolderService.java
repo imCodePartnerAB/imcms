@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
-import imcode.util.ImcmsImageUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +21,14 @@ public class ImageFolderService {
 
     private final Function<File, ImageFolderDTO> fileToImageFolderDTO;
 
+    @Value("${ImagePath}")
+    private File imagesPath;
+
     public ImageFolderService(Function<File, ImageFolderDTO> fileToImageFolderDTO) {
         this.fileToImageFolderDTO = fileToImageFolderDTO;
     }
 
     public ImageFolderDTO getImageFolder() {
-        final File imagesRootFolder = ImcmsImageUtils.imagesPath;
-        return fileToImageFolderDTO.apply(imagesRootFolder);
+        return fileToImageFolderDTO.apply(imagesPath);
     }
-
 }
