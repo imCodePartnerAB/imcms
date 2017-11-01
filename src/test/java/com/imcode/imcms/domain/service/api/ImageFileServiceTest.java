@@ -65,4 +65,19 @@ public class ImageFileServiceTest {
 
         imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPath.getParentFile(), imageFileDTO.getPath()).delete()));
     }
+
+    @Test
+    public void saveNewImageFiles_When_TwoFilesSentAndFolderIsSet_Expect_CorrectResultSize() throws IOException {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+
+        final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
+        final List<MultipartFile> files = Arrays.asList(file, file);
+        final String folder = "/generated";
+        final List<ImageFileDTO> imageFileDTOS = imageFileService.saveNewImageFiles(folder, files);
+
+        assertNotNull(imageFileDTOS);
+        assertEquals(files.size(), imageFileDTOS.size());
+
+        imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPath.getParentFile(), imageFileDTO.getPath()).delete()));
+    }
 }
