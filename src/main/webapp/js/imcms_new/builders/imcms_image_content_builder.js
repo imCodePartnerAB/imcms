@@ -31,36 +31,44 @@ Imcms.define("imcms-image-content-builder",
         });
 
         function onFolderRenamed(response) {
-            var newName = this.$block.find(".imcms-panel-named__input").val();
+            if (response) {
+                var newName = this.$block.find(".imcms-panel-named__input").val();
 
-            console.log("Renaming folder " + newName);
-            console.log(response);
+                this.$block.prev()
+                    .find(".imcms-folder__name")
+                    .text(newName);
 
-            this.$block.prev()
-                .find(".imcms-folder__name")
-                .text(newName);
+                this.$block.detach();
 
-            this.$block.detach();
+            } else {
+                console.error("Folder " + this.path + "/" + this.name + " not renamed!")
+            }
         }
 
         function onFolderCreated(response) {
-            console.log("Created folder: ");
-            console.log(response);
-            response.$images = [];
-            response.$folder = buildSubFolder(response, this.parentLevel + 1)
-                .addClass(SUBFOLDER_CLASS)
-                .css("display", "block")
-            ;
+            if (response) {
+                var newFolder = {
+                    name: this.name,
+                    path: this.path,
+                    $images: []
+                };
 
-            this.$block.replaceWith(response.$folder);
+                newFolder.$folder = buildSubFolder(newFolder, this.parentLevel + 1)
+                    .addClass(SUBFOLDER_CLASS)
+                    .css("display", "block");
 
-            var $parent = response.$folder.prev();
-            if ($parent.hasClass("imcms-folder") && !$parent.children(".imcms-folder__btn").length) {
-                $("<div>", {
-                        "class": "imcms-folder__btn imcms-folder-btn--open",
-                        click: openSubFolders
-                    }
-                ).prependTo($parent);
+                this.$block.replaceWith(newFolder.$folder);
+
+                var $parent = newFolder.$folder.prev();
+                if ($parent.hasClass("imcms-folder") && !$parent.children(".imcms-folder__btn").length) {
+                    $("<div>", {
+                            "class": "imcms-folder__btn imcms-folder-btn--open",
+                            click: openSubFolders
+                        }
+                    ).prependTo($parent);
+                }
+            } else {
+                console.error("Folder " + this.path + "/" + this.name + " not created!")
             }
         }
 
@@ -192,7 +200,13 @@ Imcms.define("imcms-image-content-builder",
                         return;
                     }
 
-                    onConfirm(opts.folder.path + "/" + folderName).done(onSuccess.bind({
+                    onConfirm({
+                        name: folderName,
+                        path: opts.folder.path
+
+                    }).done(onSuccess.bind({
+                        name: folderName,
+                        path: opts.folder.path + "/" + folderName,
                         parentLevel: opts.level,
                         $block: $folderCreationBlock
                     }));
