@@ -4,10 +4,10 @@
  */
 Imcms.define("imcms-image-content-builder",
     [
-        "imcms-image-files-rest-api", "imcms-bem-builder", "imcms-components-builder", "imcms-primitives-builder",
-        "imcms-controls-builder", "imcms-modal-window-builder", "jquery"
+        "imcms-image-files-rest-api", "imcms-image-folders-rest-api", "imcms-bem-builder", "imcms-components-builder",
+        "imcms-primitives-builder", "imcms-controls-builder", "imcms-modal-window-builder", "jquery"
     ],
-    function (fileREST, BEM, components, primitives, controlsBuilder, modalWindow, $) {
+    function (imageFilesREST, imageFoldersREST, BEM, components, primitives, controlsBuilder, modalWindow, $) {
         var OPENED_FOLDER_BTN_CLASS = "imcms-folder-btn--open";
         var SUBFOLDER_CLASS = "imcms-folders__subfolder";
         var ACTIVE_FOLDER_CLASS = "imcms-folder--active";
@@ -108,7 +108,7 @@ Imcms.define("imcms-image-content-builder",
             modalWindow.buildModalWindow("Do you want to remove folder \"" + this.name + "\"?", function (answer) {
                 if (answer) {
 
-                    fileREST.remove(this.path).done(onDoneRemoveFolder.bindArgs(this.$folder, this.path));
+                    imageFoldersREST.remove(this.path).done(onDoneRemoveFolder.bindArgs(this.$folder, this.path));
 
                     function onDoneRemoveFolder($folder, path) {
                         removeFolderFromEditor($folder);
@@ -142,7 +142,7 @@ Imcms.define("imcms-image-content-builder",
                     level: level,
                     name: currentFolderName
                 },
-                fileREST.update,
+                imageFoldersREST.update,
                 onFolderRenamed
             ).css({
                 position: "absolute",
@@ -219,7 +219,7 @@ Imcms.define("imcms-image-content-builder",
                 folder: parentFolder,
                 level: level,
                 name: ""
-            }, fileREST.create, onFolderCreated);
+            }, imageFoldersREST.create, onFolderCreated);
         }
 
         function showFolderCreationBlock(parentFolder, level) {
@@ -328,7 +328,7 @@ Imcms.define("imcms-image-content-builder",
         }
 
         function onImageDelete(imageFile) {
-            fileREST.remove(imageFile.path).done(function () {
+            imageFilesREST.remove(imageFile.path).done(function () {
                 $(this).parent().parent().detach();
             }.bind(this));
         }
@@ -409,7 +409,7 @@ Imcms.define("imcms-image-content-builder",
                 $foldersContainer = options.foldersContainer;
                 $imagesContainer = options.imagesContainer;
 
-                fileREST.read().done(loadImageFoldersContent);
+                imageFoldersREST.read().done(loadImageFoldersContent);
             },
             onImageUpload: function (files) {
                 var saveImageRequestData = {
@@ -422,7 +422,7 @@ Imcms.define("imcms-image-content-builder",
                     saveImageRequestData.folder = $activeFolder.data("folderPath")
                 }
 
-                fileREST.create(saveImageRequestData)
+                imageFilesREST.create(saveImageRequestData)
                     .done(function (response) {
                         console.log("success file create");
                     });
