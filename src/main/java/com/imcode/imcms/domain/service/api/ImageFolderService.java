@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,5 +31,15 @@ public class ImageFolderService {
 
     public ImageFolderDTO getImageFolder() {
         return fileToImageFolderDTO.apply(imagesPath);
+    }
+
+    public boolean createNewFolder(String imageFolderRelativePath) {
+        final File newFolder = new File(imagesPath, imageFolderRelativePath);
+
+        if (newFolder.exists()) {
+            throw new FolderAlreadyExistException("Folder with path " + imageFolderRelativePath + " already exist");
+        }
+
+        return newFolder.mkdir();
     }
 }
