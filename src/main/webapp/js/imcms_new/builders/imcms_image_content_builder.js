@@ -192,7 +192,7 @@ Imcms.define("imcms-image-content-builder",
                         return;
                     }
 
-                    onConfirm({folderPath: opts.folder.path + "/" + folderName}).done(onSuccess.bind({
+                    onConfirm(opts.folder.path + "/" + folderName).done(onSuccess.bind({
                         parentLevel: opts.level,
                         $block: $folderCreationBlock
                     }));

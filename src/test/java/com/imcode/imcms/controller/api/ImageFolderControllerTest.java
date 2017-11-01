@@ -56,7 +56,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         final File folder = new File(imagesPath, testFolderName);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .param("folderPath", testFolderName);
+                .content(testFolderName);
 
         assertFalse(folder.exists());
 
@@ -75,7 +75,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         final File folder = new File(imagesPath, testFolderName);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .param("folderPath", testFolderName);
+                .content(testFolderName);
 
         assertFalse(folder.exists());
 
@@ -103,19 +103,19 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder0 = MockMvcRequestBuilders.post(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .param("folderPath", testFolderName0);
+                .content(testFolderName0);
 
         final MockHttpServletRequestBuilder requestBuilder1 = MockMvcRequestBuilders.post(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .param("folderPath", testFolderName1);
+                .content(testFolderName1);
 
         final MockHttpServletRequestBuilder requestBuilder2 = MockMvcRequestBuilders.post(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .param("folderPath", testFolderName2);
+                .content(testFolderName2);
 
         final MockHttpServletRequestBuilder requestBuilder3 = MockMvcRequestBuilders.post(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .param("folderPath", testFolderName3);
+                .content(testFolderName3);
 
         assertFalse(folder0.exists());
         assertFalse(folder1.exists());
@@ -163,7 +163,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         final File folder = new File(imagesPath, testFolderName);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .param("folderPath", testFolderName);
+                .content(testFolderName);
 
         assertFalse(folder.exists());
         performRequestBuilderExpectException(IllegalAccessException.class, requestBuilder);
