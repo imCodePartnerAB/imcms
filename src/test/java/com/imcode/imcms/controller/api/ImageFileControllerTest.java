@@ -17,6 +17,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,4 +101,25 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         performRequestBuilderExpectException(IllegalAccessException.class, fileUploadRequestBuilder);
     }
+
+    @Test
+    public void uploadImageFile_When_FolderIsSet_Expect_OkAndCorrectResponse() throws Exception {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+        final MockMultipartFile file = new MockMultipartFile("files", "img1-test.jpg", null, imageFileBytes);
+        final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
+                .file(file)
+                .param("folder", "/generated");
+
+        final String jsonResponse = getJsonResponse(fileUploadRequestBuilder);
+        final List<ImageFileDTO> imageFileDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileDTO>>() {
+        });
+
+        assertNotNull(imageFileDTOS);
+        assertEquals(imageFileDTOS.size(), 1);
+
+        final File imagesPathFolder = imagesPath.getParentFile();
+
+        imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPathFolder, imageFileDTO.getPath()).delete()));
+    }
+
 }
