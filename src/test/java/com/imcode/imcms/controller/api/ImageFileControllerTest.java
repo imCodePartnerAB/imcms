@@ -51,7 +51,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void uploadImageFile_When_FolderIsNotSet_Expect_Ok() throws Exception {
+    public void uploadImageFile_When_FolderIsNotSet_Expect_OkAndCorrectResponse() throws Exception {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final MockMultipartFile file = new MockMultipartFile("files", "img1-test.jpg", null, imageFileBytes);
         final MockMultipartHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath()).file(file);
@@ -62,6 +62,26 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         assertNotNull(imageFileDTOS);
         assertEquals(imageFileDTOS.size(), 1);
+
+        final File imagesPathFolder = imagesPath.getParentFile();
+
+        imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPathFolder, imageFileDTO.getPath()).delete()));
+    }
+
+    @Test
+    public void uploadImageFile_When_FolderIsNotSetAndTwoFilesSent_Expect_OkAndCorrectResponse() throws Exception {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+        final MockMultipartFile file = new MockMultipartFile("files", "img1-test.jpg", null, imageFileBytes);
+        final MockMultipartHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
+                .file(file)
+                .file(file);
+
+        final String jsonResponse = getJsonResponse(fileUploadRequestBuilder);
+        final List<ImageFileDTO> imageFileDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileDTO>>() {
+        });
+
+        assertNotNull(imageFileDTOS);
+        assertEquals(imageFileDTOS.size(), 2);
 
         final File imagesPathFolder = imagesPath.getParentFile();
 
