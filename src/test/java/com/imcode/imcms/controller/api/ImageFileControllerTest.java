@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -120,6 +121,23 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         final File imagesPathFolder = imagesPath.getParentFile();
 
         imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPathFolder, imageFileDTO.getPath()).delete()));
+    }
+
+    @Test
+    public void uploadImageFile_When_FolderIsSetButNotExist_Expect_CorrectException() throws Exception {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+        final MockMultipartFile file = new MockMultipartFile("files", "img1-test.jpg", null, imageFileBytes);
+        final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
+                .file(file)
+                .param("folder", "/generatedddddd"); // non-existing folder
+
+        try {
+            performRequestBuilderExpectedOk(fileUploadRequestBuilder); // exception should be thrown here
+            fail("Expected exception wasn't thrown");
+
+        } catch (IOException e) {
+            assertEquals(e.getMessage(), "Folder not exist! Folder creation is another service job.");
+        }
     }
 
 }
