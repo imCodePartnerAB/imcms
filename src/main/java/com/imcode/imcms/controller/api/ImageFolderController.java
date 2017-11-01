@@ -2,10 +2,9 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.service.api.ImageFolderService;
+import imcode.server.Imcms;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller for Images Content Manager.
@@ -28,5 +27,15 @@ public class ImageFolderController {
     @GetMapping
     public ImageFolderDTO getImageFolder() {
         return imageFolderService.getImageFolder();
+    }
+
+    @PostMapping
+    public boolean createNewImageFolder(@RequestParam String folderPath) throws IllegalAccessException {
+        // todo: create annotation instead of copying this each time!
+        if (!Imcms.getUser().isSuperAdmin()) {
+            throw new IllegalAccessException("User do not have access to change image structure.");
+        }
+
+        return imageFolderService.createNewFolder(folderPath);
     }
 }
