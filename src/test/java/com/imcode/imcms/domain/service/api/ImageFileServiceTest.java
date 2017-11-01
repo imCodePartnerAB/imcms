@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,11 +39,25 @@ public class ImageFileServiceTest {
     private File imagesPath;
 
     @Test
-    public void saveNewImageFiles_When_FolderIsNotSet_Expect_CorrectDTO() throws IOException {
+    public void saveNewImageFiles_When_FolderIsNotSet_Expect_CorrectResultSize() throws IOException {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
 
         final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
         final List<MultipartFile> files = Collections.singletonList(file);
+        final List<ImageFileDTO> imageFileDTOS = imageFileService.saveNewImageFiles(null, files);
+
+        assertNotNull(imageFileDTOS);
+        assertEquals(files.size(), imageFileDTOS.size());
+
+        imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPath.getParentFile(), imageFileDTO.getPath()).delete()));
+    }
+
+    @Test
+    public void saveNewImageFiles_When_TwoFilesSentAndFolderIsNotSet_Expect_CorrectResultSize() throws IOException {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+
+        final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
+        final List<MultipartFile> files = Arrays.asList(file, file);
         final List<ImageFileDTO> imageFileDTOS = imageFileService.saveNewImageFiles(null, files);
 
         assertNotNull(imageFileDTOS);
