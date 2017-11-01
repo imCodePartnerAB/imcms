@@ -82,7 +82,7 @@ public class ImageFileServiceTest {
     }
 
     @Test
-    public void saveNewImageFiles_When_TwoFilesSentAndFolderNotExistButIsSet_Expect_CorrectResultSize() throws IOException {
+    public void saveNewImageFiles_When_TwoFilesSentAndFolderNotExistButIsSet_Expect_CorrectException() throws IOException {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
 
         final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
