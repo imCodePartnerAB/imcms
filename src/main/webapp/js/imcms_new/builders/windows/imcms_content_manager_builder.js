@@ -69,8 +69,15 @@ Imcms.define("imcms-content-manager-builder",
                     type: "file",
                     accept: "image/*",
                     style: "display: none;",
+                    multiple: "",
                     change: function () {
-                        imageContentBuilder.onImageUpload(this.files);
+                        var formData = new FormData();
+
+                        for (var i = 0; i < this.files.length; i++) {
+                            formData.append('files', this.files[i]);
+                        }
+
+                        imageContentBuilder.onImageUpload(formData);
                     }
                 });
 

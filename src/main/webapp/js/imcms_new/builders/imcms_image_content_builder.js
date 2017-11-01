@@ -421,20 +421,17 @@ Imcms.define("imcms-image-content-builder",
 
                 imageFoldersREST.read().done(loadImageFoldersContent);
             },
-            onImageUpload: function (files) {
-                var saveImageRequestData = {
-                    files: files
-                };
-
+            onImageUpload: function (formData) {
+                var saveImageRequestData = formData;
                 var $activeFolder = $("." + ACTIVE_FOLDER_CLASS);
 
                 if ($activeFolder.length) {
-                    saveImageRequestData.folder = $activeFolder.data("folderPath")
+                    saveImageRequestData.append("folder", $activeFolder.data("folderPath"));
                 }
 
                 imageFilesREST.create(saveImageRequestData)
                     .done(function (response) {
-                        console.log("success file create");
+                        console.log(response);
                     });
             },
             clearContent: function () {
