@@ -46,6 +46,7 @@ import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -100,6 +101,8 @@ public class Utility {
                 {"\u00c6", "AE"},
                 {"\u0020", "_"} // space
         };
+
+        normalizeMe = Normalizer.normalize(normalizeMe, Normalizer.Form.NFC);
 
         for (String[] replacement : specialCharacterReplacements) {
             normalizeMe = normalizeMe.replace(replacement[0], replacement[1]);
