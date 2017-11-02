@@ -4,6 +4,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
+import com.imcode.imcms.domain.exception.FolderNotExistException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,4 +132,139 @@ public class ImageFolderServiceTest {
             if (newFolder0.exists()) assertTrue(newFolder0.delete());
         }
     }
+
+    @Test
+    public void renameFolder_When_FolderExistsInRootImagesDirectory_Expect_True() throws Exception {
+        final String newFolderName = "new_test_folder";
+        final File newFolder = new File(imagesPath, newFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
+
+        assertFalse(newFolder.exists());
+
+        try {
+            assertTrue(imageFolderService.createNewFolder(imageFolderDTO));
+            assertTrue(newFolder.exists());
+            assertTrue(newFolder.isDirectory());
+            assertTrue(newFolder.canRead());
+
+            final String folderNewName = "new_name";
+            final File renamedFolder = new File(imagesPath, folderNewName);
+            imageFolderDTO.setName(folderNewName);
+
+            assertFalse(renamedFolder.exists());
+            assertTrue(imageFolderService.renameFolder(imageFolderDTO));
+            assertTrue(renamedFolder.exists());
+            assertFalse(newFolder.exists());
+            assertTrue(renamedFolder.delete());
+
+        } finally {
+            if (newFolder.exists()) assertTrue(newFolder.delete());
+        }
+    }
+
+    @Test(expected = FolderNotExistException.class)
+    public void renameFolder_When_FolderNotExist_Expect_CorrectException() throws Exception {
+        final String newFolderName = "new_test_folder";
+        final File newFolder = new File(imagesPath, newFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
+
+        assertFalse(newFolder.exists());
+
+        final String folderNewName = "new_name";
+        final File renamedFolder = new File(imagesPath, folderNewName);
+
+        assertFalse(renamedFolder.exists());
+
+        try {
+            imageFolderDTO.setName(folderNewName);
+
+            assertFalse(renamedFolder.exists());
+            imageFolderService.renameFolder(imageFolderDTO); // exception expected here!
+
+        } finally {
+            if (newFolder.exists()) assertTrue(newFolder.delete());
+            if (renamedFolder.exists()) assertTrue(renamedFolder.delete());
+        }
+    }
+
+    @Test
+    public void renameFolder_When_FolderExistsNestedInRootImagesDirectory_Expect_True() throws Exception {
+        final String newFolderName = "new_test_folder";
+        final File newFolder = new File(imagesPath, newFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
+
+        assertFalse(newFolder.exists());
+
+        final String newNestedFolderName = "nested_folder";
+        final String path = newFolderName + "/" + newNestedFolderName;
+        final File newNestedFolder = new File(imagesPath, path);
+        final ImageFolderDTO imageNestedFolderDTO = new ImageFolderDTO(newNestedFolderName, "/" + path);
+
+        assertFalse(newNestedFolder.exists());
+
+        final String nestedFolderNewName = "new_name";
+        final File renamedFolder = new File(imagesPath, newFolderName + "/" + nestedFolderNewName);
+
+        assertFalse(renamedFolder.exists());
+
+        try {
+            assertTrue(imageFolderService.createNewFolder(imageFolderDTO));
+            assertTrue(newFolder.exists());
+
+            assertTrue(imageFolderService.createNewFolder(imageNestedFolderDTO));
+            assertTrue(newNestedFolder.exists());
+
+            imageNestedFolderDTO.setName(nestedFolderNewName);
+
+            assertFalse(renamedFolder.exists());
+            assertTrue(imageFolderService.renameFolder(imageNestedFolderDTO));
+            assertTrue(renamedFolder.exists());
+            assertFalse(newNestedFolder.exists());
+            assertTrue(renamedFolder.delete());
+
+        } finally {
+            if (newFolder.exists()) assertTrue(newFolder.delete());
+            if (newNestedFolder.exists()) assertTrue(newNestedFolder.delete());
+            if (renamedFolder.exists()) assertTrue(renamedFolder.delete());
+        }
+    }
+
+    @Test(expected = FolderAlreadyExistException.class)
+    public void renameFolder_When_FolderWithSuchNameExist_Expect_CorrectException() throws Exception {
+        final String newFolderName = "new_test_folder";
+        final File newFolder = new File(imagesPath, newFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
+
+        assertFalse(newFolder.exists());
+
+        final String newFolderName1 = "new_test_folder1";
+        final File newFolder1 = new File(imagesPath, newFolderName1);
+        final ImageFolderDTO imageFolderDTO1 = new ImageFolderDTO(newFolderName1);
+
+        assertFalse(newFolder1.exists());
+
+        try {
+            assertTrue(imageFolderService.createNewFolder(imageFolderDTO));
+            assertTrue(newFolder.exists());
+            assertTrue(newFolder.isDirectory());
+            assertTrue(newFolder.canRead());
+
+            assertTrue(imageFolderService.createNewFolder(imageFolderDTO1));
+            assertTrue(newFolder1.exists());
+            assertTrue(newFolder1.isDirectory());
+            assertTrue(newFolder1.canRead());
+
+            final String folderNewName = newFolderName1;
+            final File renamedFolder = new File(imagesPath, folderNewName);
+            imageFolderDTO1.setName(folderNewName);
+
+            assertTrue(renamedFolder.exists());
+            imageFolderService.renameFolder(imageFolderDTO1); // exception expected here!
+
+        } finally {
+            if (newFolder.exists()) assertTrue(newFolder.delete());
+            if (newFolder1.exists()) assertTrue(newFolder1.delete());
+        }
+    }
+
 }

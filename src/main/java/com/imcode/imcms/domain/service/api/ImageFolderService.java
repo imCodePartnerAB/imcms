@@ -2,6 +2,8 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
+import com.imcode.imcms.domain.exception.FolderNotExistException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,5 +44,24 @@ public class ImageFolderService {
         }
 
         return newFolder.mkdir();
+    }
+
+    public boolean renameFolder(ImageFolderDTO renameMe) {
+        final String newName = renameMe.getName();
+        final String imageFolderRelativePath = renameMe.getPath();
+        final String path = StringUtils.substringBeforeLast(imageFolderRelativePath, File.separator);
+
+        final File folder = new File(imagesPath, imageFolderRelativePath);
+        final File newFolder = new File(imagesPath, path + "/" + newName);
+
+        if (!folder.exists()) {
+            throw new FolderNotExistException("Folder with path " + imageFolderRelativePath + " not exist!");
+        }
+
+        if (newFolder.exists()) {
+            throw new FolderAlreadyExistException("Folder with path " + path + "/" + newName + " already exist!");
+        }
+
+        return folder.renameTo(newFolder);
     }
 }
