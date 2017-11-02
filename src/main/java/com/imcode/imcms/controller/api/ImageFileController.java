@@ -3,10 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.service.api.ImageFileService;
 import imcode.server.Imcms;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -39,5 +36,16 @@ public class ImageFileController {
         }
 
         return imageFileService.saveNewImageFiles(folder, files);
+    }
+
+    @DeleteMapping
+    public boolean deleteImage(@RequestBody ImageFileDTO imageFileDTO) throws IllegalAccessException {
+
+        // todo: create annotation instead of copying this each time!
+        if (!Imcms.getUser().isSuperAdmin()) {
+            throw new IllegalAccessException("User do not have access to change image structure.");
+        }
+
+        return imageFileService.deleteImage(imageFileDTO);
     }
 }

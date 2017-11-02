@@ -10,10 +10,12 @@ import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,6 +28,7 @@ import java.io.File;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 
 @Transactional
@@ -132,6 +135,99 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                 .param("folder", "/generatedddddd"); // non-existing folder
 
         performRequestBuilderExpectException(FolderNotExistException.class, fileUploadRequestBuilder);
+    }
+
+    @Test
+    public void deleteImage_When_UserIsAdminAndFileExist_Expect_True() throws Exception {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+        final String originalFilename = "img1-test.jpg";
+        final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
+        final String folderName = "/generated";
+        final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
+                .file(file)
+                .param("folder", folderName);
+
+        performRequestBuilderExpectedOk(fileUploadRequestBuilder);
+
+        final File imageFile = new File(imagesPath, folderName + "/" + originalFilename);
+
+        try {
+            final ImageFileDTO imageFileDTO = new ImageFileDTO();
+            final String path = StringUtils.substringAfterLast(imagesPath.getPath(), File.separator);
+            imageFileDTO.setPath(path + folderName + "/" + originalFilename);
+
+            assertTrue(imageFile.exists());
+
+            final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFileDTO));
+
+            final String response = getJsonResponse(requestBuilder);
+
+            assertEquals(response, "true");
+            assertFalse(imageFile.exists());
+
+        } finally {
+            if (imageFile.exists()) {
+                assertTrue(imageFile.delete());
+            }
+        }
+
+    }
+
+    @Test
+    public void deleteImage_When_UserIsAdminAndFileNotExist_Expect_False() throws Exception {
+        final String originalFilename = "img1-test.jpg";
+        final String folderName = "/generated";
+        final File imageFile = new File(imagesPath, folderName + "/" + originalFilename);
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        final String path = StringUtils.substringAfterLast(imagesPath.getPath(), File.separator);
+        imageFileDTO.setPath(path + folderName + "/" + originalFilename);
+
+        assertFalse(imageFile.exists());
+
+        final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJson(imageFileDTO));
+
+        final String response = getJsonResponse(requestBuilder);
+
+        assertEquals(response, "false");
+        assertFalse(imageFile.exists());
+    }
+
+    @Test
+    public void deleteImage_When_UserIsNotAdmin_Expect_CorrectExceptionAndFileNotDeleted() throws Exception {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+        final String originalFilename = "img1-test.jpg";
+        final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
+        final String folderName = "/generated";
+        final File imageFile = new File(imagesPath, folderName + "/" + originalFilename);
+
+        final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
+                .file(file)
+                .param("folder", folderName);
+
+        assertFalse(imageFile.exists());
+        performRequestBuilderExpectedOk(fileUploadRequestBuilder);
+        assertTrue(imageFile.exists());
+
+        final UserDomainObject user = new UserDomainObject(2);
+        user.addRoleId(RoleId.USERS);
+        Imcms.setUser(user); // means current user is not admin now
+
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        final String path = StringUtils.substringAfterLast(imagesPath.getPath(), File.separator);
+        imageFileDTO.setPath(path + folderName + "/" + originalFilename);
+
+        final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJson(imageFileDTO));
+
+        assertTrue(imageFile.exists());
+        performRequestBuilderExpectException(IllegalAccessException.class, requestBuilder);
+        assertTrue(imageFile.exists());
+        assertTrue(imageFile.delete());
     }
 
 }
