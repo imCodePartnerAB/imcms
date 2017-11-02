@@ -32,7 +32,6 @@ import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
 import java.io.*;
-import java.text.Normalizer;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Objects;
@@ -72,26 +71,7 @@ public class ImcmsImageUtils {
             filename = filename.substring(0, maxLength);
         }
 
-        filename = Normalizer.normalize(filename, Normalizer.Form.NFC);
-
-        String[][] specialCharacterReplacements = {
-                {"\u00e5", "a"},// å
-                {"\u00c5", "A"},
-                {"\u00e4", "a"},// ä
-                {"\u00c4", "A"},
-                {"\u00f6", "o"},// ö
-                {"\u00d6", "O"},
-                {"\u00e9", "e"},// é
-                {"\u00c9", "E"},
-                {"\u00f8", "o"},// ø
-                {"\u00d8", "O"},
-                {"\u00e6", "ae"},// æ
-                {"\u00c6", "AE"},
-                {"\u0020", "_"} // space
-        };
-        for (String[] replacement : specialCharacterReplacements) {
-            filename = filename.replace(replacement[0], replacement[1]);
-        }
+        filename = Utility.normalizeString(filename);
 
         return filename + suffix;
     }

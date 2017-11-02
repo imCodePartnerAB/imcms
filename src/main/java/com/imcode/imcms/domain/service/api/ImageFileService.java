@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import imcode.util.Utility;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class ImageFileService {
         // do not rewrite using Java Stream API, file transfer can be long operation. in cycle.
         for (MultipartFile file : files) {
             int copiesCount = 1;
-            final String originalFilename = file.getOriginalFilename();
+            final String originalFilename = Utility.normalizeString(file.getOriginalFilename());
             File destination = new File(targetFolder, originalFilename);
 
             while (destination.exists()) {
