@@ -52,14 +52,5 @@ Imcms.define("imcms-image-files-rest-api", ["imcms-rest-api", "imcms", "jquery"]
         }
     };
 
-    api.remove = function (path) {
-        return {
-            done: function (callback) {
-                console.log("%c " + path + " was removed (not really)", "color: blue;");
-                callback.call();
-            }
-        }
-    };
-
     return api;
 });
