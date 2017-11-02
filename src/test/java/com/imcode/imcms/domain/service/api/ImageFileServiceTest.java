@@ -5,6 +5,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,8 +89,41 @@ public class ImageFileServiceTest {
 
         final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
         final List<MultipartFile> files = Arrays.asList(file, file);
-        final String folder = "/generateddddd"; // non-existing folder
+        final String nonExistingFolder = "/generateddddd";
 
-        imageFileService.saveNewImageFiles(folder, files); // exception should be thrown here
+        imageFileService.saveNewImageFiles(nonExistingFolder, files); // exception should be thrown here
+    }
+
+    @Test
+    public void deleteImage_When_ImageExist_Expect_True() throws IOException {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+
+        final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
+        final List<MultipartFile> files = Collections.singletonList(file);
+        final String folder = "/generated";
+
+        final List<ImageFileDTO> imageFileDTOS = imageFileService.saveNewImageFiles(folder, files);
+
+        assertNotNull(imageFileDTOS);
+        assertEquals(files.size(), 1);
+
+        final ImageFileDTO imageFileDTO = imageFileDTOS.get(0);
+        final File createdImageFile = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
+
+        assertTrue(createdImageFile.exists());
+        assertTrue(imageFileService.deleteImage(imageFileDTO));
+        assertFalse(createdImageFile.exists());
+    }
+
+    @Test
+    public void deleteImage_When_ImageNotExist_Expect_False() throws IOException {
+        final String nonExistingFileName = "not_existing_image_i_hope.jpg";
+        final File nonExistingImageFile = new File(imagesPath, nonExistingFileName);
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        final String path = StringUtils.substringAfterLast(imagesPath.getPath(), File.separator);
+        imageFileDTO.setPath(path + "/" + nonExistingFileName);
+
+        assertFalse(nonExistingImageFile.exists());
+        assertFalse(imageFileService.deleteImage(imageFileDTO));
     }
 }

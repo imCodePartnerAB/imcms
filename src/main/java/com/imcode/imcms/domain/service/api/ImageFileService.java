@@ -81,4 +81,11 @@ public class ImageFileService {
         }
         return targetFolder;
     }
+
+    public boolean deleteImage(ImageFileDTO imageFileDTO) {
+        final String imageFileDTOPath = imageFileDTO.getPath();
+        final File imageFile = new File(imagesPath.getParentFile(), imageFileDTOPath);
+
+        return imageFile.delete();
+    }
 }
