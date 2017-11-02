@@ -201,13 +201,15 @@ Imcms.define("imcms-image-content-builder",
                         return;
                     }
 
-                    onConfirm({
+                    var folderData = {
                         name: folderName,
-                        path: opts.folder.path + "/" + folderName
+                        path: opts.folder.path + ((!opts.name) ? "/" + folderName : "")
+                        // existing folders do have name in path
+                    };
 
-                    }).done(onSuccess.bind({
+                    onConfirm(folderData).done(onSuccess.bind({
                         name: folderName,
-                        path: opts.folder.path + "/" + folderName,
+                        path: opts.folder.path.replace(opts.folder.name, folderName),
                         parentLevel: opts.level,
                         $block: $folderCreationBlock
                     }));
