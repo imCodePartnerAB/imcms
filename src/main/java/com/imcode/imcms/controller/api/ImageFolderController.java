@@ -30,12 +30,12 @@ public class ImageFolderController {
     }
 
     @PostMapping
-    public boolean createNewImageFolder(@RequestBody ImageFolderDTO folderToCreate) throws IllegalAccessException {
+    public boolean createImageFolder(@RequestBody ImageFolderDTO folderToCreate) throws IllegalAccessException {
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {
             throw new IllegalAccessException("User do not have access to change image structure.");
         }
 
-        return imageFolderService.createNewFolder(folderToCreate);
+        return imageFolderService.createImageFolder(folderToCreate);
     }
 }

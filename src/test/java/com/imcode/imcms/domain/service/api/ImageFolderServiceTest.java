@@ -44,7 +44,7 @@ public class ImageFolderServiceTest {
         final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
 
         assertFalse(newFolder.exists());
-        assertTrue(imageFolderService.createNewFolder(imageFolderDTO));
+        assertTrue(imageFolderService.createImageFolder(imageFolderDTO));
         assertTrue(newFolder.exists());
         assertTrue(newFolder.isDirectory());
         assertTrue(newFolder.canRead());
@@ -58,11 +58,11 @@ public class ImageFolderServiceTest {
         final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
 
         assertFalse(newFolder.exists());
-        assertTrue(imageFolderService.createNewFolder(imageFolderDTO));
+        assertTrue(imageFolderService.createImageFolder(imageFolderDTO));
         assertTrue(newFolder.exists());
 
         try {
-            imageFolderService.createNewFolder(imageFolderDTO); // exception expected here
+            imageFolderService.createImageFolder(imageFolderDTO); // exception expected here
             fail("Expected exception wasn't thrown!");
 
         } catch (FolderAlreadyExistException e) {
@@ -100,10 +100,10 @@ public class ImageFolderServiceTest {
         assertFalse(newFolder3.exists());
 
         try {
-            assertTrue(imageFolderService.createNewFolder(imageFolderDTO0));
-            assertTrue(imageFolderService.createNewFolder(imageFolderDTO1));
-            assertTrue(imageFolderService.createNewFolder(imageFolderDTO2));
-            assertTrue(imageFolderService.createNewFolder(imageFolderDTO3));
+            assertTrue(imageFolderService.createImageFolder(imageFolderDTO0));
+            assertTrue(imageFolderService.createImageFolder(imageFolderDTO1));
+            assertTrue(imageFolderService.createImageFolder(imageFolderDTO2));
+            assertTrue(imageFolderService.createImageFolder(imageFolderDTO3));
 
             assertTrue(newFolder0.exists());
             assertTrue(newFolder1.exists());
@@ -142,7 +142,7 @@ public class ImageFolderServiceTest {
         assertFalse(newFolder.exists());
 
         try {
-            assertTrue(imageFolderService.createNewFolder(imageFolderDTO));
+            assertTrue(imageFolderService.createImageFolder(imageFolderDTO));
             assertTrue(newFolder.exists());
             assertTrue(newFolder.isDirectory());
             assertTrue(newFolder.canRead());
@@ -208,10 +208,10 @@ public class ImageFolderServiceTest {
         assertFalse(renamedFolder.exists());
 
         try {
-            assertTrue(imageFolderService.createNewFolder(imageFolderDTO));
+            assertTrue(imageFolderService.createImageFolder(imageFolderDTO));
             assertTrue(newFolder.exists());
 
-            assertTrue(imageFolderService.createNewFolder(imageNestedFolderDTO));
+            assertTrue(imageFolderService.createImageFolder(imageNestedFolderDTO));
             assertTrue(newNestedFolder.exists());
 
             imageNestedFolderDTO.setName(nestedFolderNewName);
@@ -244,12 +244,12 @@ public class ImageFolderServiceTest {
         assertFalse(newFolder1.exists());
 
         try {
-            assertTrue(imageFolderService.createNewFolder(imageFolderDTO));
+            assertTrue(imageFolderService.createImageFolder(imageFolderDTO));
             assertTrue(newFolder.exists());
             assertTrue(newFolder.isDirectory());
             assertTrue(newFolder.canRead());
 
-            assertTrue(imageFolderService.createNewFolder(imageFolderDTO1));
+            assertTrue(imageFolderService.createImageFolder(imageFolderDTO1));
             assertTrue(newFolder1.exists());
             assertTrue(newFolder1.isDirectory());
             assertTrue(newFolder1.canRead());
