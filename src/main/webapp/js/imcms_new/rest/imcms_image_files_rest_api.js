@@ -19,14 +19,14 @@ Imcms.define("imcms-image-files-rest-api", ["imcms-rest-api", "imcms", "jquery"]
         console.log(response);
     }
 
-    function ajax(data, callback) {
-        var url = imcms.contextPath + API_PREFIX + this.url;
-        var type = this.type;
+    api.create = function ajaxFilesPostCall(data, callback) {
+        var url = imcms.contextPath + API_PREFIX + apiPath;
+        var type = "POST";
         logAjaxRequest(type, url, data);
 
         return $.ajax({
             url: url,
-            type: this.type,
+            type: type,
             contentType: false,
             processData: false,
             data: data,
@@ -35,9 +35,7 @@ Imcms.define("imcms-image-files-rest-api", ["imcms-rest-api", "imcms", "jquery"]
                 callback && callback(response);
             }
         });
-    }
-
-    api.create = ajax.bind({url: apiPath, type: "POST"});
+    };
 
     api.update = function (data) {
         return {
