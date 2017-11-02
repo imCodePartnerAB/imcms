@@ -37,18 +37,5 @@ Imcms.define("imcms-image-files-rest-api", ["imcms-rest-api", "imcms", "jquery"]
         });
     };
 
-    api.update = function (data) {
-        return {
-            done: function (callback) {
-                console.log("%c Updating file: ", "color: blue;");
-                console.log(data);
-                callback({
-                    status: "OK",
-                    code: 200
-                });
-            }
-        }
-    };
-
     return api;
 });
