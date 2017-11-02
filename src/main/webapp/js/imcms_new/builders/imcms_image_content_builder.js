@@ -13,6 +13,7 @@ Imcms.define("imcms-image-content-builder",
         var ACTIVE_FOLDER_CLASS = "imcms-folder--active";
         var FOLDER_CREATION_BLOCK_ID = "imcms-folder-create-block";
         var ROOT_FOLDER_LEVEL = 0;
+        var activeFolder;
 
         var $foldersContainer, $imagesContainer, selectedImage;
 
@@ -270,6 +271,8 @@ Imcms.define("imcms-image-content-builder",
         }
 
         function onFolderClick(folder) {
+            activeFolder = folder;
+
             $("." + ACTIVE_FOLDER_CLASS).removeClass(ACTIVE_FOLDER_CLASS);
             $(this).addClass(ACTIVE_FOLDER_CLASS);
 
@@ -394,7 +397,7 @@ Imcms.define("imcms-image-content-builder",
         }
 
         function loadImageFoldersContent(imagesRootFolder) {
-            viewModel.root = imagesRootFolder;
+            viewModel.root = activeFolder = imagesRootFolder;
             buildImages(viewModel.root);
             viewModel.$folder.push(buildRootFolder(viewModel.root));
 
@@ -429,10 +432,15 @@ Imcms.define("imcms-image-content-builder",
                     saveImageRequestData.append("folder", $activeFolder.data("folderPath"));
                 }
 
-                imageFilesREST.create(saveImageRequestData)
-                    .done(function (response) {
-                        console.log(response);
+                imageFilesREST.create(saveImageRequestData).done(function (uploadedImageFiles) {
+                    var $newImages = uploadedImageFiles.map(function (imageFile) {
+                        return buildImage(imageFile).css("display", "block");
                     });
+                    activeFolder.files = activeFolder.files.concat(uploadedImageFiles);
+                    $imagesContainer.append($newImages);
+                    activeFolder.$images = activeFolder.$images.concat($newImages);
+                    viewModel.$images = viewModel.$images.concat($newImages);
+                });
             },
             clearContent: function () {
                 $imagesContainer.children().detach();
