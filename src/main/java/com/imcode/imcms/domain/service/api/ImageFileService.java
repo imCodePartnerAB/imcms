@@ -44,7 +44,8 @@ public class ImageFileService {
         // do not rewrite using Java Stream API, file transfer can be long operation. in cycle.
         for (MultipartFile file : files) {
             int copiesCount = 1;
-            final String originalFilename = Utility.normalizeString(file.getOriginalFilename());
+            String originalFilename = Utility.normalizeString(file.getOriginalFilename());
+            originalFilename = originalFilename.replace("(", "").replace(")", "");
             File destination = new File(targetFolder, originalFilename);
 
             while (destination.exists()) {
