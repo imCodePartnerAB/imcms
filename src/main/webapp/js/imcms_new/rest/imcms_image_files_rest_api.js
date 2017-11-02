@@ -27,8 +27,8 @@ Imcms.define("imcms-image-files-rest-api", ["imcms-rest-api", "imcms", "jquery"]
         return $.ajax({
             url: url,
             type: type,
-            contentType: false,
-            processData: false,
+            contentType: false, // this is the reason of custom function
+            processData: false, // this is the reason of custom function
             data: data,
             success: function (response) {
                 logAjaxResponse(type, url, response);

@@ -339,10 +339,7 @@ Imcms.define("imcms-image-content-builder",
 
         function onImageDelete(imageFile) {
             imageFilesREST.remove(imageFile).done(function (response) {
-                if (response) {
-                    // todo: remove from viewModel.$images and folder.files !!!1
-                    $(this).parent().parent().detach();
-                }
+                response && $(this).parent().parent().detach();
             }.bind(this));
         }
 
