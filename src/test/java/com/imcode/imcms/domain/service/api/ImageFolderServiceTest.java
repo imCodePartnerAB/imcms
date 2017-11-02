@@ -40,9 +40,10 @@ public class ImageFolderServiceTest {
     public void createNewImageFolder_When_FolderNotExistBefore_Expect_FolderCreatedAndIsDirectoryAndReadableAndThenRemoved() {
         final String newFolderName = "new_test_folder";
         final File newFolder = new File(imagesPath, newFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
 
         assertFalse(newFolder.exists());
-        assertTrue(imageFolderService.createNewFolder(newFolderName));
+        assertTrue(imageFolderService.createNewFolder(imageFolderDTO));
         assertTrue(newFolder.exists());
         assertTrue(newFolder.isDirectory());
         assertTrue(newFolder.canRead());
@@ -53,13 +54,14 @@ public class ImageFolderServiceTest {
     public void createNewImageFolder_When_FolderAlreadyExist_Expect_FolderCreationAndThenExceptionAndFolderRemove() {
         final String newFolderName = "new_test_folder";
         final File newFolder = new File(imagesPath, newFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
 
         assertFalse(newFolder.exists());
-        assertTrue(imageFolderService.createNewFolder(newFolderName));
+        assertTrue(imageFolderService.createNewFolder(imageFolderDTO));
         assertTrue(newFolder.exists());
 
         try {
-            imageFolderService.createNewFolder(newFolderName); // exception expected here
+            imageFolderService.createNewFolder(imageFolderDTO); // exception expected here
             fail("Expected exception wasn't thrown!");
 
         } catch (FolderAlreadyExistException e) {
@@ -79,15 +81,20 @@ public class ImageFolderServiceTest {
         final File newFolder2 = new File(imagesPath, newFolderName2);
         final File newFolder3 = new File(imagesPath, newFolderName3);
 
+        final ImageFolderDTO imageFolderDTO0 = new ImageFolderDTO(newFolderName0);
+        final ImageFolderDTO imageFolderDTO1 = new ImageFolderDTO(newFolderName1);
+        final ImageFolderDTO imageFolderDTO2 = new ImageFolderDTO(newFolderName2);
+        final ImageFolderDTO imageFolderDTO3 = new ImageFolderDTO(newFolderName3);
+
         assertFalse(newFolder0.exists());
         assertFalse(newFolder1.exists());
         assertFalse(newFolder2.exists());
         assertFalse(newFolder3.exists());
 
-        assertTrue(imageFolderService.createNewFolder(newFolderName0));
-        assertTrue(imageFolderService.createNewFolder(newFolderName1));
-        assertTrue(imageFolderService.createNewFolder(newFolderName2));
-        assertTrue(imageFolderService.createNewFolder(newFolderName3));
+        assertTrue(imageFolderService.createNewFolder(imageFolderDTO0));
+        assertTrue(imageFolderService.createNewFolder(imageFolderDTO1));
+        assertTrue(imageFolderService.createNewFolder(imageFolderDTO2));
+        assertTrue(imageFolderService.createNewFolder(imageFolderDTO3));
 
         assertTrue(newFolder0.exists());
         assertTrue(newFolder1.exists());

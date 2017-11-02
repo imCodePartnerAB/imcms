@@ -36,7 +36,6 @@ public class ImageFolderController {
             throw new IllegalAccessException("User do not have access to change image structure.");
         }
 
-        final String folderName = folderToCreate.getPath() + "/" + folderToCreate.getName();
-        return imageFolderService.createNewFolder(folderName);
+        return imageFolderService.createNewFolder(folderToCreate);
     }
 }
