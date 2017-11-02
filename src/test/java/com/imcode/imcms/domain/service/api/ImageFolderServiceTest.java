@@ -72,48 +72,63 @@ public class ImageFolderServiceTest {
     @Test
     public void createNewImageFolder_When_NestedFoldersToSave_Expect_FoldersCreatedAndAreDirectoriesAndReadableAndThenRemoved() {
         final String newFolderName0 = "new_test_folder";
-        final String newFolderName1 = newFolderName0 + "/nested1";
-        final String newFolderName2 = newFolderName1 + "/nested2";
-        final String newFolderName3 = newFolderName1 + "/nested3";
+        final String newFolderPath0 = "/" + newFolderName0;
 
-        final File newFolder0 = new File(imagesPath, newFolderName0);
-        final File newFolder1 = new File(imagesPath, newFolderName1);
-        final File newFolder2 = new File(imagesPath, newFolderName2);
-        final File newFolder3 = new File(imagesPath, newFolderName3);
+        final String newFolderName1 = "nested1";
+        final String newFolderPath1 = newFolderPath0 + "/" + newFolderName1;
 
-        final ImageFolderDTO imageFolderDTO0 = new ImageFolderDTO(newFolderName0);
-        final ImageFolderDTO imageFolderDTO1 = new ImageFolderDTO(newFolderName1);
-        final ImageFolderDTO imageFolderDTO2 = new ImageFolderDTO(newFolderName2);
-        final ImageFolderDTO imageFolderDTO3 = new ImageFolderDTO(newFolderName3);
+        final String newFolderName2 = "nested2";
+        final String newFolderPath2 = newFolderPath1 + "/" + newFolderName2;
+
+        final String newFolderName3 = "nested3";
+        final String newFolderPath3 = newFolderPath1 + "/" + newFolderName3;
+
+        final File newFolder0 = new File(imagesPath, newFolderPath0);
+        final File newFolder1 = new File(imagesPath, newFolderPath1);
+        final File newFolder2 = new File(imagesPath, newFolderPath2);
+        final File newFolder3 = new File(imagesPath, newFolderPath3);
+
+        final ImageFolderDTO imageFolderDTO0 = new ImageFolderDTO(newFolderName0, newFolderPath0);
+        final ImageFolderDTO imageFolderDTO1 = new ImageFolderDTO(newFolderName1, newFolderPath1);
+        final ImageFolderDTO imageFolderDTO2 = new ImageFolderDTO(newFolderName2, newFolderPath2);
+        final ImageFolderDTO imageFolderDTO3 = new ImageFolderDTO(newFolderName3, newFolderPath3);
 
         assertFalse(newFolder0.exists());
         assertFalse(newFolder1.exists());
         assertFalse(newFolder2.exists());
         assertFalse(newFolder3.exists());
 
-        assertTrue(imageFolderService.createNewFolder(imageFolderDTO0));
-        assertTrue(imageFolderService.createNewFolder(imageFolderDTO1));
-        assertTrue(imageFolderService.createNewFolder(imageFolderDTO2));
-        assertTrue(imageFolderService.createNewFolder(imageFolderDTO3));
+        try {
+            assertTrue(imageFolderService.createNewFolder(imageFolderDTO0));
+            assertTrue(imageFolderService.createNewFolder(imageFolderDTO1));
+            assertTrue(imageFolderService.createNewFolder(imageFolderDTO2));
+            assertTrue(imageFolderService.createNewFolder(imageFolderDTO3));
 
-        assertTrue(newFolder0.exists());
-        assertTrue(newFolder1.exists());
-        assertTrue(newFolder2.exists());
-        assertTrue(newFolder3.exists());
+            assertTrue(newFolder0.exists());
+            assertTrue(newFolder1.exists());
+            assertTrue(newFolder2.exists());
+            assertTrue(newFolder3.exists());
 
-        assertTrue(newFolder0.isDirectory());
-        assertTrue(newFolder1.isDirectory());
-        assertTrue(newFolder2.isDirectory());
-        assertTrue(newFolder3.isDirectory());
+            assertTrue(newFolder0.isDirectory());
+            assertTrue(newFolder1.isDirectory());
+            assertTrue(newFolder2.isDirectory());
+            assertTrue(newFolder3.isDirectory());
 
-        assertTrue(newFolder0.canRead());
-        assertTrue(newFolder1.canRead());
-        assertTrue(newFolder2.canRead());
-        assertTrue(newFolder3.canRead());
+            assertTrue(newFolder0.canRead());
+            assertTrue(newFolder1.canRead());
+            assertTrue(newFolder2.canRead());
+            assertTrue(newFolder3.canRead());
 
-        assertTrue(newFolder3.delete());
-        assertTrue(newFolder2.delete());
-        assertTrue(newFolder1.delete());
-        assertTrue(newFolder0.delete());
+            assertTrue(newFolder3.delete());
+            assertTrue(newFolder2.delete());
+            assertTrue(newFolder1.delete());
+            assertTrue(newFolder0.delete());
+
+        } finally {
+            if (newFolder3.exists()) assertTrue(newFolder3.delete());
+            if (newFolder2.exists()) assertTrue(newFolder2.delete());
+            if (newFolder1.exists()) assertTrue(newFolder1.delete());
+            if (newFolder0.exists()) assertTrue(newFolder0.delete());
+        }
     }
 }

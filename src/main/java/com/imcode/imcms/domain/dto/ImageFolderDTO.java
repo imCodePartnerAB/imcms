@@ -25,6 +25,6 @@ public class ImageFolderDTO {
     }
 
     public ImageFolderDTO(String name) {
-        this(name, "");
+        this(name, "/" + name);
     }
 }

@@ -34,7 +34,7 @@ public class ImageFolderService {
     }
 
     public boolean createNewFolder(ImageFolderDTO folderToCreate) {
-        final String imageFolderRelativePath = folderToCreate.getPath() + "/" + folderToCreate.getName();
+        final String imageFolderRelativePath = folderToCreate.getPath();
         final File newFolder = new File(imagesPath, imageFolderRelativePath);
 
         if (newFolder.exists()) {

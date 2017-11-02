@@ -203,7 +203,7 @@ Imcms.define("imcms-image-content-builder",
 
                     onConfirm({
                         name: folderName,
-                        path: opts.folder.path
+                        path: opts.folder.path + "/" + folderName
 
                     }).done(onSuccess.bind({
                         name: folderName,
