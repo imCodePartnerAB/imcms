@@ -38,4 +38,14 @@ public class ImageFolderController {
 
         return imageFolderService.createImageFolder(folderToCreate);
     }
+
+    @PatchMapping
+    public boolean renameFolder(@RequestBody ImageFolderDTO folderToRename) throws IllegalAccessException {
+        // todo: create annotation instead of copying this each time!
+        if (!Imcms.getUser().isSuperAdmin()) {
+            throw new IllegalAccessException("User do not have access to change image structure.");
+        }
+
+        return imageFolderService.renameFolder(folderToRename);
+    }
 }

@@ -5,6 +5,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
+import com.imcode.imcms.domain.exception.FolderNotExistException;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
@@ -12,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -154,5 +156,230 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         assertFalse(folder.exists());
         performRequestBuilderExpectException(IllegalAccessException.class, requestBuilder);
         assertFalse(folder.exists());
+    }
+
+    @Test
+    public void renameImageFolder_When_FolderExistAndUserIsAdmin_Expect_True() throws Exception {
+
+        final String testFolderName = "test_folder_name";
+        final File folder = new File(imagesPath, testFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
+        final MockHttpServletRequestBuilder requestBuilderPost = getPostRequestBuilderWithContent(imageFolderDTO);
+
+        assertFalse(folder.exists());
+
+        final String testFolderNewName = "test_folder_new_name";
+        imageFolderDTO.setName(testFolderNewName);
+        final File newFolder = new File(imagesPath, testFolderNewName);
+
+        assertFalse(newFolder.exists());
+
+        try {
+            final String jsonPostResponse = getJsonResponse(requestBuilderPost);
+
+            assertTrue(Boolean.parseBoolean(jsonPostResponse));
+            assertTrue(folder.exists());
+            assertTrue(folder.isDirectory());
+            assertTrue(folder.canRead());
+
+            final MockHttpServletRequestBuilder requestBuilderPatch = MockMvcRequestBuilders.patch(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFolderDTO));
+
+            final String jsonPatchResponse = getJsonResponse(requestBuilderPatch);
+
+            assertTrue(Boolean.parseBoolean(jsonPatchResponse));
+            assertFalse(folder.exists());
+            assertTrue(newFolder.exists());
+            assertTrue(newFolder.isDirectory());
+            assertTrue(newFolder.canRead());
+            assertTrue(newFolder.delete());
+
+        } finally {
+            if (folder.exists()) assertTrue(folder.delete());
+            if (newFolder.exists()) assertTrue(newFolder.delete());
+        }
+
+    }
+
+    @Test
+    public void renameImageFolder_When_FolderIsNestedAndExistAndUserIsAdmin_Expect_True() throws Exception {
+
+        final String testFolderName = "test_folder_name";
+        final File folder = new File(imagesPath, testFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
+        final MockHttpServletRequestBuilder requestBuilderPost = getPostRequestBuilderWithContent(imageFolderDTO);
+
+        assertFalse(folder.exists());
+
+        final String testNestedFolderName = "nested_folder_name";
+        final File nestedFolder = new File(folder, testNestedFolderName);
+        final String path = "/" + testFolderName + "/" + testNestedFolderName;
+        final ImageFolderDTO imageNestedFolderDTO = new ImageFolderDTO(testNestedFolderName, path);
+        final MockHttpServletRequestBuilder requestBuilderPostNested = getPostRequestBuilderWithContent(imageNestedFolderDTO);
+
+        assertFalse(nestedFolder.exists());
+
+        final String testNestedFolderNewName = "test_folder_new_name";
+        imageNestedFolderDTO.setName(testNestedFolderNewName);
+        final File newNestedFolder = new File(folder, testNestedFolderNewName);
+
+        assertFalse(newNestedFolder.exists());
+
+        try {
+            final String jsonPostResponse = getJsonResponse(requestBuilderPost);
+
+            assertTrue(Boolean.parseBoolean(jsonPostResponse));
+            assertTrue(folder.exists());
+            assertTrue(folder.isDirectory());
+            assertTrue(folder.canRead());
+
+            final String jsonPostNestedResponse = getJsonResponse(requestBuilderPostNested);
+
+            assertTrue(Boolean.parseBoolean(jsonPostNestedResponse));
+            assertTrue(nestedFolder.exists());
+            assertTrue(nestedFolder.isDirectory());
+            assertTrue(nestedFolder.canRead());
+
+            final MockHttpServletRequestBuilder requestBuilderPatch = MockMvcRequestBuilders.patch(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageNestedFolderDTO));
+
+            final String jsonPatchResponse = getJsonResponse(requestBuilderPatch);
+
+            assertTrue(Boolean.parseBoolean(jsonPatchResponse));
+            assertFalse(nestedFolder.exists());
+            assertTrue(newNestedFolder.exists());
+            assertTrue(newNestedFolder.isDirectory());
+            assertTrue(newNestedFolder.canRead());
+            assertTrue(newNestedFolder.delete());
+            assertTrue(folder.delete());
+
+        } finally {
+            if (folder.exists()) assertTrue(folder.delete());
+            if (nestedFolder.exists()) assertTrue(nestedFolder.delete());
+            if (newNestedFolder.exists()) assertTrue(newNestedFolder.delete());
+        }
+
+    }
+
+    @Test
+    public void renameImageFolder_When_FolderNotExistAndUserIsAdmin_Expect_CorrectException() throws Exception {
+
+        final String testFolderName = "test_folder_name";
+        final File folder = new File(imagesPath, testFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
+
+        assertFalse(folder.exists());
+
+        final String testFolderNewName = "test_folder_new_name";
+        imageFolderDTO.setName(testFolderNewName);
+        final File newFolder = new File(imagesPath, testFolderNewName);
+
+        assertFalse(newFolder.exists());
+
+        final MockHttpServletRequestBuilder requestBuilderPatch = MockMvcRequestBuilders.patch(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJson(imageFolderDTO));
+
+        performRequestBuilderExpectException(FolderNotExistException.class, requestBuilderPatch);
+        assertFalse(newFolder.exists());
+
+    }
+
+    @Test
+    public void renameImageFolder_When_FolderExistWithSuchNameAndUserIsAdmin_Expect_CorrectException() throws Exception {
+
+        final String testFolderName = "test_folder_name";
+        final File folder = new File(imagesPath, testFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
+
+        assertFalse(folder.exists());
+
+        final String testFolderName1 = "test_folder_name1";
+        final File folder1 = new File(imagesPath, testFolderName1);
+        final ImageFolderDTO imageFolderDTO1 = new ImageFolderDTO(testFolderName1);
+        final MockHttpServletRequestBuilder requestBuilder1 = getPostRequestBuilderWithContent(imageFolderDTO1);
+
+        assertFalse(folder1.exists());
+
+        final String testRenamedFolderNewName = testFolderName;
+        imageFolderDTO1.setName(testRenamedFolderNewName);
+        final File renamedFolder = new File(folder, testRenamedFolderNewName);
+
+        assertFalse(renamedFolder.exists());
+
+
+        try {
+
+            final String jsonResponse = getJsonResponse(requestBuilder);
+
+            assertTrue(Boolean.parseBoolean(jsonResponse));
+            assertTrue(folder.exists());
+
+            final String jsonResponse1 = getJsonResponse(requestBuilder1);
+
+            assertTrue(Boolean.parseBoolean(jsonResponse1));
+            assertTrue(folder1.exists());
+
+            final MockHttpServletRequestBuilder requestBuilderPatch = MockMvcRequestBuilders.patch(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFolderDTO1));
+
+            performRequestBuilderExpectException(FolderAlreadyExistException.class, requestBuilderPatch);
+            assertFalse(renamedFolder.exists());
+
+        } finally {
+            if (folder.exists()) assertTrue(folder.delete());
+            if (folder1.exists()) assertTrue(folder1.delete());
+            if (renamedFolder.exists()) assertTrue(renamedFolder.delete());
+        }
+
+    }
+
+    @Test
+    public void renameImageFolder_When_FolderExistAndUserIsNotAdmin_Expect_CorrectException() throws Exception {
+
+        final String testFolderName = "test_folder_name";
+        final File folder = new File(imagesPath, testFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
+        final MockHttpServletRequestBuilder requestBuilderPost = getPostRequestBuilderWithContent(imageFolderDTO);
+
+        assertFalse(folder.exists());
+
+        final String testFolderNewName = "test_folder_new_name";
+        imageFolderDTO.setName(testFolderNewName);
+        final File newFolder = new File(imagesPath, testFolderNewName);
+
+        assertFalse(newFolder.exists());
+
+
+        try {
+            final String jsonPostResponse = getJsonResponse(requestBuilderPost);
+
+            assertTrue(Boolean.parseBoolean(jsonPostResponse));
+            assertTrue(folder.exists());
+            assertTrue(folder.isDirectory());
+            assertTrue(folder.canRead());
+
+
+            final UserDomainObject user = new UserDomainObject(2);
+            user.addRoleId(RoleId.USERS);
+            Imcms.setUser(user); // means current user is not admin now
+
+
+            final MockHttpServletRequestBuilder requestBuilderPatch = MockMvcRequestBuilders.patch(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFolderDTO));
+
+            performRequestBuilderExpectException(IllegalAccessException.class, requestBuilderPatch);
+            assertFalse(newFolder.exists());
+
+
+        } finally {
+            if (folder.exists()) assertTrue(folder.delete());
+            if (newFolder.exists()) assertTrue(newFolder.delete());
+        }
     }
 }
