@@ -34,7 +34,6 @@ Imcms.define("imcms-image-content-builder",
         function onFolderRenamed(response) {
             if (response) {
                 this.$block.prev()
-                    .attr("data-folder-path", this.path)
                     .find(".imcms-folder__name")
                     .text(this.name);
 
@@ -335,7 +334,6 @@ Imcms.define("imcms-image-content-builder",
                     elements: elements
                 }
             ).buildBlockStructure("<div>", {
-                "data-folder-path": subfolder.path,
                 "data-folder-name": subfolder.name,
                 click: function () {
                     onFolderClick.call(this, subfolder);
