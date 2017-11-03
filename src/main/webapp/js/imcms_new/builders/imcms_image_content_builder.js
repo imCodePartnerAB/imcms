@@ -149,7 +149,7 @@ Imcms.define("imcms-image-content-builder",
             return buildFolderManageBlock({
                     folder: folder,
                     level: level,
-                    name: currentFolderName
+                    previousFolderName: currentFolderName
                 },
                 imageFoldersREST.update,
                 onFolderRenamed
@@ -188,7 +188,7 @@ Imcms.define("imcms-image-content-builder",
 
             var $folderNameInput = primitives.imcmsInput({
                 "class": "imcms-input",
-                value: opts.name,
+                value: opts.previousFolderName,
                 placeholder: "New folder name"
             });
             var $confirmBtn = components.buttons.neutralButton({
@@ -201,18 +201,30 @@ Imcms.define("imcms-image-content-builder",
                         return;
                     }
 
-                    var folderData = {
-                        name: folderName,
-                        path: opts.folder.path + ((!opts.name) ? "/" + folderName : "")
-                        // existing folders do have name in path
+                    var isNewFolder = !opts.previousFolderName;
+
+                    var dataOnConfirm = {
+                        name: folderName
                     };
 
-                    onConfirm(folderData).done(onSuccess.bind({
+                    var contextOnSuccess = {
                         name: folderName,
-                        path: opts.folder.path.replace(opts.folder.name, folderName),
                         parentLevel: opts.level,
                         $block: $folderCreationBlock
-                    }));
+                    };
+
+                    if (isNewFolder) {
+                        dataOnConfirm.path = contextOnSuccess.path = opts.folder.path + "/" + folderName;
+
+                    } else {
+                        var pathSplitBySeparator = opts.folder.path.split("/");
+                        pathSplitBySeparator[pathSplitBySeparator.length - 1] = folderName;
+
+                        dataOnConfirm.path = opts.folder.path;
+                        contextOnSuccess.path = pathSplitBySeparator.join("/");
+                    }
+
+                    onConfirm(dataOnConfirm).done(onSuccess.bind(contextOnSuccess));
                 }
             });
 
@@ -231,7 +243,7 @@ Imcms.define("imcms-image-content-builder",
             return buildFolderManageBlock({
                 folder: parentFolder,
                 level: level,
-                name: ""
+                previousFolderName: ""
             }, imageFoldersREST.create, onFolderCreated);
         }
 
