@@ -34,6 +34,7 @@ Imcms.define("imcms-image-content-builder",
         function onFolderRenamed(response) {
             if (response) {
                 this.$block.prev()
+                    .attr("data-folder-name", this.name)
                     .find(".imcms-folder__name")
                     .text(this.name);
 
