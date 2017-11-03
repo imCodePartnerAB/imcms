@@ -5,7 +5,6 @@ import imcode.server.ImcmsServices;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -13,7 +12,6 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import javax.servlet.ServletContext;
-import java.io.File;
 import java.util.Properties;
 
 @Configuration
@@ -25,21 +23,6 @@ import java.util.Properties;
         "imcode.server"
 })
 public class WebConfig {
-
-    private static final String DEFAULT_SOLR_HOME = "WEB-INF/solr";
-
-    @Bean
-    public File realPath(ServletContext servletContext) {
-        return new File(servletContext.getRealPath("/"));
-    }
-
-    @Bean
-    public Properties imcmsProperties(StandardEnvironment env, File realPath) {
-        final Properties imcmsProperties = (Properties) env.getPropertySources().get("imcms.properties").getSource();
-        final String solrHome = new File(realPath.getAbsolutePath(), DEFAULT_SOLR_HOME).getAbsolutePath();
-        imcmsProperties.setProperty("SolrHome", solrHome);
-        return imcmsProperties;
-    }
 
     @Bean
     public CommonsMultipartResolver multipartResolver(Properties imcmsProperties) {

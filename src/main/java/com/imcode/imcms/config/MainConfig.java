@@ -22,14 +22,9 @@ import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
@@ -58,13 +53,6 @@ public class MainConfig {
 
     private static final Logger LOG = Logger.getLogger(MainConfig.class);
 
-    private final StandardEnvironment env;
-
-    @Autowired
-    public MainConfig(StandardEnvironment env) {
-        this.env = env;
-    }
-
     //    Required to be able to access properties file from environment at other configs
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceHolderConfigurer() {
@@ -72,8 +60,11 @@ public class MainConfig {
     }
 
     @Bean
-    public Properties imcmsProperties() {
-        return (Properties) env.getPropertySources().get("imcms.properties").getSource();
+    public Properties imcmsProperties(StandardEnvironment env, @Value("WEB-INF/solr") File defaultSolrFolder) {
+        final Properties imcmsProperties = (Properties) env.getPropertySources().get("imcms.properties").getSource();
+        final String solrHome = defaultSolrFolder.getAbsolutePath();
+        imcmsProperties.setProperty("SolrHome", solrHome);
+        return imcmsProperties;
     }
 
     @Bean
