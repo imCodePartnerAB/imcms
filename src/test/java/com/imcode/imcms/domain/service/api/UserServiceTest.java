@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.mapping.jpa.User;
 import imcode.server.user.RoleId;
@@ -12,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfig.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class UserServiceTest {
 
     @Autowired

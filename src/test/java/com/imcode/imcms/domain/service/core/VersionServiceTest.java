@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.persistence.entity.Version;
 import org.junit.After;
 import org.junit.Before;
@@ -10,12 +11,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfig.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class VersionServiceTest {
 
     private final static int userId = 1;
