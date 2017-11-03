@@ -336,6 +336,7 @@ Imcms.define("imcms-image-content-builder",
                 }
             ).buildBlockStructure("<div>", {
                 "data-folder-path": subfolder.path,
+                "data-folder-name": subfolder.name,
                 click: function () {
                     onFolderClick.call(this, subfolder);
                 }
