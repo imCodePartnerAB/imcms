@@ -64,4 +64,15 @@ public class ImageFolderService {
 
         return folder.renameTo(newFolder);
     }
+
+    public boolean deleteFolder(ImageFolderDTO deleteMe) {
+        final String imageFolderRelativePath = deleteMe.getPath();
+        final File folderToDelete = new File(imagesPath, imageFolderRelativePath);
+
+        if (!folderToDelete.exists() || !folderToDelete.isDirectory()) {
+            throw new FolderNotExistException("Folder with path " + imageFolderRelativePath + " not exist!");
+        }
+
+        return folderToDelete.delete();
+    }
 }

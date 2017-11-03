@@ -269,4 +269,39 @@ public class ImageFolderServiceTest {
         }
     }
 
+    @Test
+    public void deleteFolder_When_FolderExist_Expect_TrueAndFolderDeleted() throws Exception {
+        final String newFolderName = "new_test_folder";
+        final File newFolder = new File(imagesPath, newFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
+
+        try {
+            assertFalse(newFolder.exists());
+            assertTrue(imageFolderService.createImageFolder(imageFolderDTO));
+            assertTrue(newFolder.exists());
+            assertTrue(newFolder.isDirectory());
+
+            assertTrue(imageFolderService.deleteFolder(imageFolderDTO));
+            assertFalse(newFolder.exists());
+
+        } finally {
+            if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
+        }
+    }
+
+    @Test(expected = FolderNotExistException.class)
+    public void deleteFolder_When_FolderNotExist_Expect_CorrectException() throws Exception {
+        final String newFolderName = "new_test_folder";
+        final File newFolder = new File(imagesPath, newFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
+
+        try {
+            assertFalse(newFolder.exists());
+            imageFolderService.deleteFolder(imageFolderDTO); // exception expected here!
+
+        } finally {
+            if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
+        }
+    }
+
 }
