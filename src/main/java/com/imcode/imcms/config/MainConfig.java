@@ -1,10 +1,41 @@
 package com.imcode.imcms.config;
 
+import com.imcode.db.Database;
+import com.imcode.imcms.api.DatabaseService;
+import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.api.MailService;
+import com.imcode.imcms.db.DefaultProcedureExecutor;
+import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.domain.service.api.TemplateService;
+import com.imcode.imcms.mapping.DocumentLanguageMapper;
+import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import imcode.server.Config;
+import imcode.server.DefaultImcmsServices;
+import imcode.server.ImcmsServices;
+import imcode.util.CachingFileLoader;
+import imcode.util.io.FileUtility;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.Converter;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.Resource;
 
+import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.util.Properties;
 
 @Configuration
@@ -18,9 +49,14 @@ import java.util.Properties;
         MappingConfig.class
 })
 @ComponentScan({
-        "com.imcode.imcms.domain"
+        "com.imcode.imcms.domain",
+        "com.imcode.imcms.mapping",
+        "imcode.util",
+        "imcode.server"
 })
 public class MainConfig {
+
+    private static final Logger LOG = Logger.getLogger(MainConfig.class);
 
     private final StandardEnvironment env;
 
@@ -38,5 +74,94 @@ public class MainConfig {
     @Bean
     public Properties imcmsProperties() {
         return (Properties) env.getPropertySources().get("imcms.properties").getSource();
+    }
+
+    @Bean
+    public LocalizedMessageProvider createLocalizedMessageProvider() {
+        return new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
+    }
+
+    @Bean
+    public DocumentLanguages createDocumentLanguages(DocumentLanguageMapper languageMapper, Properties imcmsProperties) {
+        return DocumentLanguages.create(languageMapper, imcmsProperties);
+    }
+
+    @Bean
+    public CachingFileLoader createCachingFileLoader() {
+        return new CachingFileLoader();
+    }
+
+    @Bean
+    public Config createConfigFromProperties(Properties imcmsProperties) {
+        class WebappRelativeFileConverter implements Converter {
+            @SuppressWarnings("unchecked")
+            public File convert(Class type, Object value) {
+                return FileUtility.getFileFromWebappRelativePath((String) value);
+            }
+        }
+
+        Config config = new Config();
+        ConvertUtils.register(new WebappRelativeFileConverter(), File.class);
+        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(config);
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            if (null == propertyDescriptor.getWriteMethod()) {
+                continue;
+            }
+            String uncapitalizedPropertyName = propertyDescriptor.getName();
+            String capitalizedPropertyName = StringUtils.capitalize(uncapitalizedPropertyName);
+            String propertyValue = imcmsProperties.getProperty(capitalizedPropertyName);
+            if (null != propertyValue) {
+                try {
+                    BeanUtils.setProperty(config, uncapitalizedPropertyName, propertyValue);
+                } catch (Exception e) {
+                    LOG.error("Failed to set property " + capitalizedPropertyName, e.getCause());
+                    continue;
+                }
+            }
+            try {
+                String setPropertyValue = BeanUtils.getProperty(config, uncapitalizedPropertyName);
+                if (null != setPropertyValue) {
+                    LOG.info(capitalizedPropertyName + " = " + setPropertyValue);
+                } else {
+                    LOG.warn(capitalizedPropertyName + " not set.");
+                }
+            } catch (Exception e) {
+                LOG.error(e, e);
+            }
+        }
+        return config;
+    }
+
+    @Bean
+    public MailService mailService(@Value("${SmtpServer}") String host, @Value("${SmtpPort}") int port) {
+        return new MailService(host, port);
+    }
+
+    @Bean
+    public ProcedureExecutor procedureExecutor(Database database, CachingFileLoader fileLoader,
+                                               @Value("classpath:sql") Resource sqlResource) {
+        return new DefaultProcedureExecutor(database, fileLoader, sqlResource);
+    }
+
+    @Bean
+    public ImcmsServices createServices(Properties imcmsProperties, Database database, DocumentLanguages languages,
+                                        LocalizedMessageProvider localizedMessageProvider, Config config,
+                                        ApplicationContext applicationContext, CachingFileLoader fileLoader,
+                                        DatabaseService databaseService, MailService mailService,
+                                        TemplateService templateService, ProcedureExecutor procedureExecutor) {
+
+        return new DefaultImcmsServices(
+                database,
+                imcmsProperties,
+                localizedMessageProvider,
+                fileLoader,
+                applicationContext,
+                config,
+                languages,
+                databaseService,
+                mailService,
+                templateService,
+                procedureExecutor
+        );
     }
 }

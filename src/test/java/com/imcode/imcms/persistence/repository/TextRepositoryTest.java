@@ -2,6 +2,7 @@ package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Text;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextType;
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -23,7 +25,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
+@WebAppConfiguration
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 @Transactional
 public class TextRepositoryTest {
 

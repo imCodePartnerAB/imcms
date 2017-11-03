@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Loop;
@@ -13,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Collections;
 import java.util.function.BiFunction;
@@ -20,7 +22,8 @@ import java.util.function.BiFunction;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfig.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class LoopDtoToLoopTest {
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_LOOP_INDEX = 1;

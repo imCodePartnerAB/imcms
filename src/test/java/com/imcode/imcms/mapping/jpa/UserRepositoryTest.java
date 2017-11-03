@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping.jpa;
 import com.imcode.imcms.api.Role;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.mapping.jpa.User.PasswordReset;
 import imcode.server.user.RoleId;
 import org.junit.After;
@@ -12,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,7 +26,8 @@ import static org.junit.Assert.assertNotNull;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
+@WebAppConfiguration
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class UserRepositoryTest {
 
     @Autowired
