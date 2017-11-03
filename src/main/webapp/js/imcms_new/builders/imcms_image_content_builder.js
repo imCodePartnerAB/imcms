@@ -33,11 +33,10 @@ Imcms.define("imcms-image-content-builder",
 
         function onFolderRenamed(response) {
             if (response) {
-                var newName = this.$block.find(".imcms-panel-named__input").val();
-
                 this.$block.prev()
+                    .attr("data-folder-path", this.path)
                     .find(".imcms-folder__name")
-                    .text(newName);
+                    .text(this.name);
 
                 this.$block.detach();
 
@@ -113,30 +112,29 @@ Imcms.define("imcms-image-content-builder",
             // todo: implement or delete it's control icon at all
         }
 
+        function removeFolderFromEditor($folder) {
+            $folder.detach();
+        }
+
+        function removeParentBtnIfNoSubfolders(path) {
+            var parentFolderPath = path.substring(0, path.lastIndexOf('/'));
+            var noChildFoldersLeft = $("[data-folder-path^='" + parentFolderPath + "/'").length === 0;
+            if (noChildFoldersLeft) {
+                $("[data-folder-path^='" + parentFolderPath + "'")
+                    .find(".imcms-folder__btn")
+                    .detach();
+            }
+        }
+
+        function onDoneRemoveFolder($folder, path) {
+            removeFolderFromEditor($folder);
+            removeParentBtnIfNoSubfolders(path);
+        }
+
         function removeFolder() { // this == folder
             modalWindow.buildModalWindow("Do you want to remove folder \"" + this.name + "\"?", function (answer) {
                 if (answer) {
-
                     imageFoldersREST.remove(this.path).done(onDoneRemoveFolder.bindArgs(this.$folder, this.path));
-
-                    function onDoneRemoveFolder($folder, path) {
-                        removeFolderFromEditor($folder);
-                        removeParentBtnIfNoSubfolders(path);
-
-                        function removeFolderFromEditor($folder) {
-                            $folder.detach();
-                        }
-
-                        function removeParentBtnIfNoSubfolders(path) {
-                            var parentFolderPath = path.substring(0, path.lastIndexOf('/'));
-                            var noChildFoldersLeft = $("[data-folder-path^='" + parentFolderPath + "/'").length === 0;
-                            if (noChildFoldersLeft) {
-                                $("[data-folder-path^='" + parentFolderPath + "'")
-                                    .find(".imcms-folder__btn")
-                                    .detach();
-                            }
-                        }
-                    }
                 }
             }.bind(this));
         }
@@ -224,7 +222,14 @@ Imcms.define("imcms-image-content-builder",
                         contextOnSuccess.path = pathSplitBySeparator.join("/");
                     }
 
-                    onConfirm(dataOnConfirm).done(onSuccess.bind(contextOnSuccess));
+                    onConfirm(dataOnConfirm).done(function (response) {
+                        if (response) {
+                            if (!isNewFolder) {
+                                (opts.folder.path = contextOnSuccess.path);
+                            }
+                            onSuccess.call(contextOnSuccess, response);
+                        }
+                    });
                 }
             });
 
