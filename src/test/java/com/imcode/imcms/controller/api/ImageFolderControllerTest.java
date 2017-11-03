@@ -24,8 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 @Transactional
 @WebAppConfiguration
@@ -381,6 +381,93 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         } finally {
             if (folder.exists()) assertTrue(FileUtility.forceDelete(folder));
             if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
+        }
+    }
+
+    @Test
+    public void deleteFolder_When_FolderExist_Expect_TrueAndFolderDeleted() throws Exception {
+        final String testFolderName = "test_folder_name";
+        final File folder = new File(imagesPath, testFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
+
+        assertFalse(folder.exists());
+
+        final String jsonResponse = getJsonResponse(requestBuilder);
+
+        assertTrue(Boolean.parseBoolean(jsonResponse));
+        assertTrue(folder.exists());
+        assertTrue(folder.isDirectory());
+        assertTrue(folder.canRead());
+
+        try {
+            final MockHttpServletRequestBuilder requestBuilderDelete = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFolderDTO));
+
+            final String response = getJsonResponse(requestBuilderDelete);
+
+            assertEquals(response, "true");
+            assertFalse(folder.exists());
+
+        } finally {
+            if (folder.exists()) assertTrue(FileUtility.forceDelete(folder));
+        }
+    }
+
+    @Test
+    public void deleteFolder_When_FolderNotExist_Expect_CorrectException() throws Exception {
+        final String testFolderName = "test_folder_name";
+        final File folder = new File(imagesPath, testFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
+
+        assertFalse(folder.exists());
+
+        try {
+            final MockHttpServletRequestBuilder requestBuilderDelete = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFolderDTO));
+
+            performRequestBuilderExpectException(FolderNotExistException.class, requestBuilderDelete);
+            assertFalse(folder.exists());
+
+        } finally {
+            if (folder.exists()) assertTrue(FileUtility.forceDelete(folder));
+        }
+    }
+
+    @Test
+    public void deleteFolder_When_FolderExistAndUserIsNotSuperAdmin_Expect_CorrectExceptionAndFolderNotDeleted() throws Exception {
+        final String testFolderName = "test_folder_name";
+        final File folder = new File(imagesPath, testFolderName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
+
+        assertFalse(folder.exists());
+
+        final String jsonResponse = getJsonResponse(requestBuilder);
+
+        assertTrue(Boolean.parseBoolean(jsonResponse));
+        assertTrue(folder.exists());
+        assertTrue(folder.isDirectory());
+        assertTrue(folder.canRead());
+
+        try {
+
+            final UserDomainObject user = new UserDomainObject(2);
+            user.addRoleId(RoleId.USERS);
+            Imcms.setUser(user); // means current user is not admin now
+
+
+            final MockHttpServletRequestBuilder requestBuilderDelete = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFolderDTO));
+
+            performRequestBuilderExpectException(IllegalAccessException.class, requestBuilderDelete);
+            assertTrue(folder.exists());
+
+        } finally {
+            if (folder.exists()) assertTrue(FileUtility.forceDelete(folder));
         }
     }
 }
