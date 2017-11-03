@@ -117,16 +117,15 @@ Imcms.define("imcms-image-content-builder",
         }
 
         function removeParentBtnIfNoSubfolders($folder) {
-            var $parentFolder = $folder.parent();
-
-            if (!$parentFolder.find("." + SUBFOLDER_CLASS).length) {
-                $parentFolder.find(".imcms-folder__btn").detach();
+            if (!$folder.find("." + SUBFOLDER_CLASS).length) {
+                $folder.find(".imcms-folder__btn").detach();
             }
         }
 
         function onDoneRemoveFolder($folder) {
-            removeParentBtnIfNoSubfolders($folder);
+            var $parentFolder = $folder.parent();
             removeFolderFromEditor($folder);
+            removeParentBtnIfNoSubfolders($parentFolder);
         }
 
         function removeFolder() { // this == folder
