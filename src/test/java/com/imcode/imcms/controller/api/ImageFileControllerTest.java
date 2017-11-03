@@ -71,16 +71,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         assertNotNull(imageFileDTOS);
         assertEquals(imageFileDTOS.size(), 1);
 
-        final File imagesPathFolder = imagesPath.getParentFile();
-
-        imageFileDTOS.forEach(imageFileDTO -> {
-            final File deleteMe = new File(imagesPathFolder, imageFileDTO.getPath());
-            try {
-                assertTrue(FileUtility.forceDelete(deleteMe));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        imageFileDTOS.forEach(this::deleteFile);
     }
 
     @Test
@@ -98,16 +89,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         assertNotNull(imageFileDTOS);
         assertEquals(imageFileDTOS.size(), 2);
 
-        final File imagesPathFolder = imagesPath.getParentFile();
-
-        imageFileDTOS.forEach(imageFileDTO -> {
-            final File deleteMe = new File(imagesPathFolder, imageFileDTO.getPath());
-            try {
-                assertTrue(FileUtility.forceDelete(deleteMe));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        imageFileDTOS.forEach(this::deleteFile);
     }
 
     @Test
@@ -138,16 +120,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         assertNotNull(imageFileDTOS);
         assertEquals(imageFileDTOS.size(), 1);
 
-        final File imagesPathFolder = imagesPath.getParentFile();
-
-        imageFileDTOS.forEach(imageFileDTO -> {
-            final File deleteMe = new File(imagesPathFolder, imageFileDTO.getPath());
-            try {
-                assertTrue(FileUtility.forceDelete(deleteMe));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        imageFileDTOS.forEach(this::deleteFile);
     }
 
     @Test
@@ -257,6 +230,16 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         performRequestBuilderExpectException(IllegalAccessException.class, requestBuilder);
         assertTrue(imageFile.exists());
         assertTrue(FileUtility.forceDelete(imageFile));
+    }
+
+    private void deleteFile(ImageFileDTO imageFileDTO) {
+        final File deleteMe = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
+
+        try {
+            assertTrue(FileUtility.forceDelete(deleteMe));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

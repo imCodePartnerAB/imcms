@@ -53,14 +53,7 @@ public class ImageFileServiceTest {
         assertNotNull(imageFileDTOS);
         assertEquals(files.size(), imageFileDTOS.size());
 
-        imageFileDTOS.forEach(imageFileDTO -> {
-            final File deleteMe = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
-            try {
-                assertTrue(FileUtility.forceDelete(deleteMe));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        imageFileDTOS.forEach(this::deleteFile);
     }
 
     @Test
@@ -74,14 +67,7 @@ public class ImageFileServiceTest {
         assertNotNull(imageFileDTOS);
         assertEquals(files.size(), imageFileDTOS.size());
 
-        imageFileDTOS.forEach(imageFileDTO -> {
-            final File deleteMe = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
-            try {
-                assertTrue(FileUtility.forceDelete(deleteMe));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        imageFileDTOS.forEach(this::deleteFile);
     }
 
     @Test
@@ -96,14 +82,7 @@ public class ImageFileServiceTest {
         assertNotNull(imageFileDTOS);
         assertEquals(files.size(), imageFileDTOS.size());
 
-        imageFileDTOS.forEach(imageFileDTO -> {
-            final File deleteMe = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
-            try {
-                assertTrue(FileUtility.forceDelete(deleteMe));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        imageFileDTOS.forEach(this::deleteFile);
     }
 
     @Test(expected = FolderNotExistException.class)
@@ -148,5 +127,15 @@ public class ImageFileServiceTest {
 
         assertFalse(nonExistingImageFile.exists());
         imageFileService.deleteImage(imageFileDTO); // exception expected here
+    }
+
+    private void deleteFile(ImageFileDTO imageFileDTO) {
+        final File deleteMe = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
+
+        try {
+            assertTrue(FileUtility.forceDelete(deleteMe));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
