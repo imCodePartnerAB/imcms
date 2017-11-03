@@ -9,6 +9,7 @@ import com.imcode.imcms.domain.exception.FolderNotExistException;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
+import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -25,6 +26,8 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -70,7 +73,14 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         final File imagesPathFolder = imagesPath.getParentFile();
 
-        imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPathFolder, imageFileDTO.getPath()).delete()));
+        imageFileDTOS.forEach(imageFileDTO -> {
+            final File deleteMe = new File(imagesPathFolder, imageFileDTO.getPath());
+            try {
+                assertTrue(FileUtility.forceDelete(deleteMe));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Test
@@ -90,7 +100,14 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         final File imagesPathFolder = imagesPath.getParentFile();
 
-        imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPathFolder, imageFileDTO.getPath()).delete()));
+        imageFileDTOS.forEach(imageFileDTO -> {
+            final File deleteMe = new File(imagesPathFolder, imageFileDTO.getPath());
+            try {
+                assertTrue(FileUtility.forceDelete(deleteMe));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Test
@@ -123,7 +140,14 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         final File imagesPathFolder = imagesPath.getParentFile();
 
-        imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPathFolder, imageFileDTO.getPath()).delete()));
+        imageFileDTOS.forEach(imageFileDTO -> {
+            final File deleteMe = new File(imagesPathFolder, imageFileDTO.getPath());
+            try {
+                assertTrue(FileUtility.forceDelete(deleteMe));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Test
@@ -169,14 +193,14 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         } finally {
             if (imageFile.exists()) {
-                assertTrue(imageFile.delete());
+                assertTrue(FileUtility.forceDelete(imageFile));
             }
         }
 
     }
 
     @Test
-    public void deleteImage_When_UserIsAdminAndFileNotExist_Expect_False() throws Exception {
+    public void deleteImage_When_UserIsAdminAndFileNotExist_Expect_CorrectException() throws Exception {
         final String originalFilename = "img1-test.jpg";
         final String folderName = "/generated";
         final File imageFile = new File(imagesPath, folderName + "/" + originalFilename);
@@ -190,9 +214,14 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(imageFileDTO));
 
-        final String response = getJsonResponse(requestBuilder);
+        try {
+            getJsonResponse(requestBuilder); // exception here
+            fail("Expected exception wasn't thrown!");
 
-        assertEquals(response, "false");
+        } catch (FileNotFoundException ignore) {
+            // expected exception
+        }
+
         assertFalse(imageFile.exists());
     }
 
@@ -227,7 +256,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         assertTrue(imageFile.exists());
         performRequestBuilderExpectException(IllegalAccessException.class, requestBuilder);
         assertTrue(imageFile.exists());
-        assertTrue(imageFile.delete());
+        assertTrue(FileUtility.forceDelete(imageFile));
     }
 
 }

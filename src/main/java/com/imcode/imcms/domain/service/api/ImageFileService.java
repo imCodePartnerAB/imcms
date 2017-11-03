@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import imcode.util.Utility;
+import imcode.util.io.FileUtility;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -84,10 +85,10 @@ public class ImageFileService {
         return targetFolder;
     }
 
-    public boolean deleteImage(ImageFileDTO imageFileDTO) {
+    public boolean deleteImage(ImageFileDTO imageFileDTO) throws IOException {
         final String imageFileDTOPath = imageFileDTO.getPath();
         final File imageFile = new File(imagesPath.getParentFile(), imageFileDTOPath);
 
-        return imageFile.delete();
+        return FileUtility.forceDelete(imageFile);
     }
 }

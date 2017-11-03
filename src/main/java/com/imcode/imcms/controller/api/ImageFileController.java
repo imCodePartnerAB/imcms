@@ -39,7 +39,7 @@ public class ImageFileController {
     }
 
     @DeleteMapping
-    public boolean deleteImage(@RequestBody ImageFileDTO imageFileDTO) throws IllegalAccessException {
+    public boolean deleteImage(@RequestBody ImageFileDTO imageFileDTO) throws IllegalAccessException, IOException {
 
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {

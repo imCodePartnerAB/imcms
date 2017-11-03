@@ -23,6 +23,19 @@ public class FileUtility {
     }
 
     /**
+     * Forced file deletion. Is useful for correct file deletion.
+     * Especially on Windows platform when there can be problems with file access.
+     *
+     * @param deleteMe file to delete
+     * @return if and only if file was really deleted
+     */
+    public static boolean forceDelete(File deleteMe) throws IOException {
+        FileUtils.forceDelete(deleteMe);
+
+        return !deleteMe.exists();
+    }
+
+    /**
      * Takes a path-string and returns a file. The path is prepended with the webapp dir if the path is relative.
      */
     public static File getFileFromWebappRelativePath(String pathString) {

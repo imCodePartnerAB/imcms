@@ -5,6 +5,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import imcode.util.io.FileUtility;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -38,7 +40,7 @@ public class ImageFolderServiceTest {
     }
 
     @Test
-    public void createNewImageFolder_When_FolderNotExistBefore_Expect_FolderCreatedAndIsDirectoryAndReadableAndThenRemoved() {
+    public void createNewImageFolder_When_FolderNotExistBefore_Expect_FolderCreatedAndIsDirectoryAndReadableAndThenRemoved() throws IOException {
         final String newFolderName = "new_test_folder";
         final File newFolder = new File(imagesPath, newFolderName);
         final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
@@ -48,11 +50,11 @@ public class ImageFolderServiceTest {
         assertTrue(newFolder.exists());
         assertTrue(newFolder.isDirectory());
         assertTrue(newFolder.canRead());
-        assertTrue(newFolder.delete());
+        assertTrue(FileUtility.forceDelete(newFolder));
     }
 
     @Test
-    public void createNewImageFolder_When_FolderAlreadyExist_Expect_FolderCreationAndThenExceptionAndFolderRemove() {
+    public void createNewImageFolder_When_FolderAlreadyExist_Expect_FolderCreationAndThenExceptionAndFolderRemove() throws IOException {
         final String newFolderName = "new_test_folder";
         final File newFolder = new File(imagesPath, newFolderName);
         final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
@@ -66,12 +68,12 @@ public class ImageFolderServiceTest {
             fail("Expected exception wasn't thrown!");
 
         } catch (FolderAlreadyExistException e) {
-            assertTrue(newFolder.delete());
+            assertTrue(FileUtility.forceDelete(newFolder));
         }
     }
 
     @Test
-    public void createNewImageFolder_When_NestedFoldersToSave_Expect_FoldersCreatedAndAreDirectoriesAndReadableAndThenRemoved() {
+    public void createNewImageFolder_When_NestedFoldersToSave_Expect_FoldersCreatedAndAreDirectoriesAndReadableAndThenRemoved() throws IOException {
         final String newFolderName0 = "new_test_folder";
         final String newFolderPath0 = "/" + newFolderName0;
 
@@ -120,16 +122,16 @@ public class ImageFolderServiceTest {
             assertTrue(newFolder2.canRead());
             assertTrue(newFolder3.canRead());
 
-            assertTrue(newFolder3.delete());
-            assertTrue(newFolder2.delete());
-            assertTrue(newFolder1.delete());
-            assertTrue(newFolder0.delete());
+            assertTrue(FileUtility.forceDelete(newFolder3));
+            assertTrue(FileUtility.forceDelete(newFolder2));
+            assertTrue(FileUtility.forceDelete(newFolder1));
+            assertTrue(FileUtility.forceDelete(newFolder0));
 
         } finally {
-            if (newFolder3.exists()) assertTrue(newFolder3.delete());
-            if (newFolder2.exists()) assertTrue(newFolder2.delete());
-            if (newFolder1.exists()) assertTrue(newFolder1.delete());
-            if (newFolder0.exists()) assertTrue(newFolder0.delete());
+            if (newFolder3.exists()) assertTrue(FileUtility.forceDelete(newFolder3));
+            if (newFolder2.exists()) assertTrue(FileUtility.forceDelete(newFolder2));
+            if (newFolder1.exists()) assertTrue(FileUtility.forceDelete(newFolder1));
+            if (newFolder0.exists()) assertTrue(FileUtility.forceDelete(newFolder0));
         }
     }
 
@@ -155,10 +157,10 @@ public class ImageFolderServiceTest {
             assertTrue(imageFolderService.renameFolder(imageFolderDTO));
             assertTrue(renamedFolder.exists());
             assertFalse(newFolder.exists());
-            assertTrue(renamedFolder.delete());
+            assertTrue(FileUtility.forceDelete(renamedFolder));
 
         } finally {
-            if (newFolder.exists()) assertTrue(newFolder.delete());
+            if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
         }
     }
 
@@ -182,8 +184,8 @@ public class ImageFolderServiceTest {
             imageFolderService.renameFolder(imageFolderDTO); // exception expected here!
 
         } finally {
-            if (newFolder.exists()) assertTrue(newFolder.delete());
-            if (renamedFolder.exists()) assertTrue(renamedFolder.delete());
+            if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
+            if (renamedFolder.exists()) assertTrue(FileUtility.forceDelete(renamedFolder));
         }
     }
 
@@ -220,12 +222,12 @@ public class ImageFolderServiceTest {
             assertTrue(imageFolderService.renameFolder(imageNestedFolderDTO));
             assertTrue(renamedFolder.exists());
             assertFalse(newNestedFolder.exists());
-            assertTrue(renamedFolder.delete());
+            assertTrue(FileUtility.forceDelete(renamedFolder));
 
         } finally {
-            if (newFolder.exists()) assertTrue(newFolder.delete());
-            if (newNestedFolder.exists()) assertTrue(newNestedFolder.delete());
-            if (renamedFolder.exists()) assertTrue(renamedFolder.delete());
+            if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
+            if (newNestedFolder.exists()) assertTrue(FileUtility.forceDelete(newNestedFolder));
+            if (renamedFolder.exists()) assertTrue(FileUtility.forceDelete(renamedFolder));
         }
     }
 
@@ -262,8 +264,8 @@ public class ImageFolderServiceTest {
             imageFolderService.renameFolder(imageFolderDTO1); // exception expected here!
 
         } finally {
-            if (newFolder.exists()) assertTrue(newFolder.delete());
-            if (newFolder1.exists()) assertTrue(newFolder1.delete());
+            if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
+            if (newFolder1.exists()) assertTrue(FileUtility.forceDelete(newFolder1));
         }
     }
 

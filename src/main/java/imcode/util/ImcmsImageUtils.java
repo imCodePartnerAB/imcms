@@ -17,6 +17,7 @@ import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
+import imcode.util.io.FileUtility;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -244,7 +245,11 @@ public class ImcmsImageUtils {
             IOUtils.closeQuietly(output);
 
             if (tempFile != null) {
-                tempFile.delete();
+                try {
+                    FileUtility.forceDelete(tempFile);
+                } catch (IOException e) {
+                    log.error("Can't delete file " + tempFile, e);
+                }
             }
         }
     }

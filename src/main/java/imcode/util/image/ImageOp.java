@@ -1,5 +1,6 @@
 package imcode.util.image;
 
+import imcode.util.io.FileUtility;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
@@ -325,7 +326,7 @@ public class ImageOp {
                 log.error(errorHandler.getData());
 
                 if (outputFile.exists()) {
-                    outputFile.delete();
+                    FileUtility.forceDelete(outputFile);
                 }
             } else {
                 return true;
@@ -334,7 +335,11 @@ public class ImageOp {
             log.fatal(ex.getMessage(), ex);
 
             if (outputFile.exists()) {
-                outputFile.delete();
+                try {
+                    FileUtility.forceDelete(outputFile);
+                } catch (IOException e) {
+                    log.error("Can't delete file " + outputFile, e);
+                }
             }
         } finally {
             IOUtils.closeQuietly(dataStream);

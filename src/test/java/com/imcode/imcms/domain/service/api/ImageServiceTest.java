@@ -14,6 +14,7 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
+import imcode.util.io.FileUtility;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +26,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.function.Function;
 
 import static org.junit.Assert.*;
@@ -125,7 +127,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void saveImage_When_ImageFileExists_Expect_GeneratedFileExists() {
+    public void saveImage_When_ImageFileExists_Expect_GeneratedFileExists() throws IOException {
         final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
             img.setIndex(TEST_IMAGE_INDEX);
             img.setDocId(TEST_DOC_ID);
@@ -146,11 +148,11 @@ public class ImageServiceTest {
         final File croppedImage = new File(ImcmsImageUtils.imagesPath, "generated/" + result.getGeneratedFilename());
 
         assertTrue(croppedImage.exists());
-        assertTrue(croppedImage.delete());
+        assertTrue(FileUtility.forceDelete(croppedImage));
     }
 
     @Test
-    public void saveImage_When_CroppingIsNotDefault_Expect_EqualCropping() {
+    public void saveImage_When_CroppingIsNotDefault_Expect_EqualCropping() throws IOException {
         final ImageData.CropRegion cropRegion = new ImageData.CropRegion(10, 10, 20, 20);
         final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
             img.setIndex(TEST_IMAGE_INDEX);
@@ -172,6 +174,6 @@ public class ImageServiceTest {
 
         final File croppedImage = new File(ImcmsImageUtils.imagesPath, "generated/" + result.getGeneratedFilename());
         assertEquals(result.getCropRegion(), cropRegion);
-        assertTrue(croppedImage.delete());
+        assertTrue(FileUtility.forceDelete(croppedImage));
     }
 }

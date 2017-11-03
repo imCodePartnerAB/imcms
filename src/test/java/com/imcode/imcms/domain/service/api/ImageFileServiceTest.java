@@ -4,6 +4,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,7 +53,14 @@ public class ImageFileServiceTest {
         assertNotNull(imageFileDTOS);
         assertEquals(files.size(), imageFileDTOS.size());
 
-        imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPath.getParentFile(), imageFileDTO.getPath()).delete()));
+        imageFileDTOS.forEach(imageFileDTO -> {
+            final File deleteMe = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
+            try {
+                assertTrue(FileUtility.forceDelete(deleteMe));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Test
@@ -65,7 +74,14 @@ public class ImageFileServiceTest {
         assertNotNull(imageFileDTOS);
         assertEquals(files.size(), imageFileDTOS.size());
 
-        imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPath.getParentFile(), imageFileDTO.getPath()).delete()));
+        imageFileDTOS.forEach(imageFileDTO -> {
+            final File deleteMe = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
+            try {
+                assertTrue(FileUtility.forceDelete(deleteMe));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Test
@@ -80,7 +96,14 @@ public class ImageFileServiceTest {
         assertNotNull(imageFileDTOS);
         assertEquals(files.size(), imageFileDTOS.size());
 
-        imageFileDTOS.forEach(imageFileDTO -> assertTrue(new File(imagesPath.getParentFile(), imageFileDTO.getPath()).delete()));
+        imageFileDTOS.forEach(imageFileDTO -> {
+            final File deleteMe = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
+            try {
+                assertTrue(FileUtility.forceDelete(deleteMe));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Test(expected = FolderNotExistException.class)
@@ -115,8 +138,8 @@ public class ImageFileServiceTest {
         assertFalse(createdImageFile.exists());
     }
 
-    @Test
-    public void deleteImage_When_ImageNotExist_Expect_False() throws IOException {
+    @Test(expected = FileNotFoundException.class)
+    public void deleteImage_When_ImageNotExist_Expect_CorrectException() throws IOException {
         final String nonExistingFileName = "not_existing_image_i_hope.jpg";
         final File nonExistingImageFile = new File(imagesPath, nonExistingFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
@@ -124,6 +147,6 @@ public class ImageFileServiceTest {
         imageFileDTO.setPath(path + "/" + nonExistingFileName);
 
         assertFalse(nonExistingImageFile.exists());
-        assertFalse(imageFileService.deleteImage(imageFileDTO));
+        imageFileService.deleteImage(imageFileDTO); // exception expected here
     }
 }

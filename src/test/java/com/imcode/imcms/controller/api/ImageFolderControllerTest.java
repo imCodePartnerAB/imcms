@@ -9,6 +9,7 @@ import com.imcode.imcms.domain.exception.FolderNotExistException;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
+import imcode.util.io.FileUtility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,7 +68,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         assertTrue(folder.exists());
         assertTrue(folder.isDirectory());
         assertTrue(folder.canRead());
-        assertTrue(folder.delete());
+        assertTrue(FileUtility.forceDelete(folder));
     }
 
     @Test
@@ -86,7 +87,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
         performRequestBuilderExpectException(FolderAlreadyExistException.class, requestBuilder);
 
-        assertTrue(folder.delete());
+        assertTrue(FileUtility.forceDelete(folder));
     }
 
     @Test
@@ -136,10 +137,10 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         assertTrue(folder2.canRead());
         assertTrue(folder3.canRead());
 
-        assertTrue(folder3.delete());
-        assertTrue(folder2.delete());
-        assertTrue(folder1.delete());
-        assertTrue(folder0.delete());
+        assertTrue(FileUtility.forceDelete(folder3));
+        assertTrue(FileUtility.forceDelete(folder2));
+        assertTrue(FileUtility.forceDelete(folder1));
+        assertTrue(FileUtility.forceDelete(folder0));
     }
 
     @Test
@@ -193,11 +194,11 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(newFolder.exists());
             assertTrue(newFolder.isDirectory());
             assertTrue(newFolder.canRead());
-            assertTrue(newFolder.delete());
+            assertTrue(FileUtility.forceDelete(newFolder));
 
         } finally {
-            if (folder.exists()) assertTrue(folder.delete());
-            if (newFolder.exists()) assertTrue(newFolder.delete());
+            if (folder.exists()) assertTrue(FileUtility.forceDelete(folder));
+            if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
         }
 
     }
@@ -252,13 +253,13 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(newNestedFolder.exists());
             assertTrue(newNestedFolder.isDirectory());
             assertTrue(newNestedFolder.canRead());
-            assertTrue(newNestedFolder.delete());
+            assertTrue(FileUtility.forceDelete(newNestedFolder));
             assertTrue(folder.delete());
 
         } finally {
-            if (folder.exists()) assertTrue(folder.delete());
-            if (nestedFolder.exists()) assertTrue(nestedFolder.delete());
-            if (newNestedFolder.exists()) assertTrue(newNestedFolder.delete());
+            if (folder.exists()) assertTrue(FileUtility.forceDelete(folder));
+            if (nestedFolder.exists()) assertTrue(FileUtility.forceDelete(nestedFolder));
+            if (newNestedFolder.exists()) assertTrue(FileUtility.forceDelete(newNestedFolder));
         }
 
     }
@@ -331,9 +332,9 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertFalse(renamedFolder.exists());
 
         } finally {
-            if (folder.exists()) assertTrue(folder.delete());
-            if (folder1.exists()) assertTrue(folder1.delete());
-            if (renamedFolder.exists()) assertTrue(renamedFolder.delete());
+            if (folder.exists()) assertTrue(FileUtility.forceDelete(folder));
+            if (folder1.exists()) assertTrue(FileUtility.forceDelete(folder1));
+            if (renamedFolder.exists()) assertTrue(FileUtility.forceDelete(renamedFolder));
         }
 
     }
@@ -378,8 +379,8 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
 
         } finally {
-            if (folder.exists()) assertTrue(folder.delete());
-            if (newFolder.exists()) assertTrue(newFolder.delete());
+            if (folder.exists()) assertTrue(FileUtility.forceDelete(folder));
+            if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
         }
     }
 }
