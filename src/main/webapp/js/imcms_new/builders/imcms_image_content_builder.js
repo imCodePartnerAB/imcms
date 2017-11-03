@@ -116,27 +116,40 @@ Imcms.define("imcms-image-content-builder",
             $folder.detach();
         }
 
-        function removeParentBtnIfNoSubfolders(path) {
-            var parentFolderPath = path.substring(0, path.lastIndexOf('/'));
-            var noChildFoldersLeft = $("[data-folder-path^='" + parentFolderPath + "/'").length === 0;
-            if (noChildFoldersLeft) {
-                $("[data-folder-path^='" + parentFolderPath + "'")
-                    .find(".imcms-folder__btn")
-                    .detach();
+        function removeParentBtnIfNoSubfolders($folder) {
+            var $parentFolder = $folder.parent();
+
+            if (!$parentFolder.find("." + SUBFOLDER_CLASS).length) {
+                $parentFolder.find(".imcms-folder__btn").detach();
             }
         }
 
-        function onDoneRemoveFolder($folder, path) {
+        function onDoneRemoveFolder($folder) {
+            removeParentBtnIfNoSubfolders($folder);
             removeFolderFromEditor($folder);
-            removeParentBtnIfNoSubfolders(path);
         }
 
         function removeFolder() { // this == folder
-            modalWindow.buildModalWindow("Do you want to remove folder \"" + this.name + "\"?", function (answer) {
-                if (answer) {
-                    imageFoldersREST.remove(this.path).done(onDoneRemoveFolder.bindArgs(this.$folder, this.path));
+            var $folder = this.$folder;
+            var path = this.path;
+            var name = this.name;
+
+            var onRemoveResponse = function (response) {
+                if (response) {
+                    onDoneRemoveFolder($folder);
+
+                } else {
+                    console.error("Folder " + name + " was not removed!");
                 }
-            }.bind(this));
+            };
+
+            var onAnswer = function (answer) {
+                if (answer) {
+                    imageFoldersREST.remove(path).done(onRemoveResponse);
+                }
+            };
+
+            modalWindow.buildModalWindow("Do you want to remove folder \"" + name + "\"?", onAnswer);
         }
 
         function buildFolderRenamingBlock(folder, level) {
