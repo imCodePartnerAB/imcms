@@ -6,7 +6,6 @@ import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +109,7 @@ public class ImageFileServiceTest {
         assertEquals(files.size(), 1);
 
         final ImageFileDTO imageFileDTO = imageFileDTOS.get(0);
-        final File createdImageFile = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
+        final File createdImageFile = new File(imagesPath, imageFileDTO.getPath());
 
         assertTrue(createdImageFile.exists());
         assertTrue(imageFileService.deleteImage(imageFileDTO));
@@ -122,15 +121,14 @@ public class ImageFileServiceTest {
         final String nonExistingFileName = "not_existing_image_i_hope.jpg";
         final File nonExistingImageFile = new File(imagesPath, nonExistingFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        final String path = StringUtils.substringAfterLast(imagesPath.getPath(), File.separator);
-        imageFileDTO.setPath(path + "/" + nonExistingFileName);
+        imageFileDTO.setPath(nonExistingFileName);
 
         assertFalse(nonExistingImageFile.exists());
         imageFileService.deleteImage(imageFileDTO); // exception expected here
     }
 
     private void deleteFile(ImageFileDTO imageFileDTO) {
-        final File deleteMe = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
+        final File deleteMe = new File(imagesPath, imageFileDTO.getPath());
 
         try {
             assertTrue(FileUtility.forceDelete(deleteMe));

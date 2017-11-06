@@ -87,7 +87,7 @@ public class ImageFileService {
 
     public boolean deleteImage(ImageFileDTO imageFileDTO) throws IOException {
         final String imageFileDTOPath = imageFileDTO.getPath();
-        final File imageFile = new File(imagesPath.getParentFile(), imageFileDTOPath);
+        final File imageFile = new File(imagesPath, imageFileDTOPath);
 
         return FileUtility.forceDelete(imageFile);
     }

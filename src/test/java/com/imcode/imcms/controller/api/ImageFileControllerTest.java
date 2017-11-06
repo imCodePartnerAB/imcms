@@ -11,7 +11,6 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -150,8 +149,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         try {
             final ImageFileDTO imageFileDTO = new ImageFileDTO();
-            final String path = StringUtils.substringAfterLast(imagesPath.getPath(), File.separator);
-            imageFileDTO.setPath(path + folderName + "/" + originalFilename);
+            imageFileDTO.setPath(folderName + "/" + originalFilename);
 
             assertTrue(imageFile.exists());
 
@@ -178,8 +176,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         final String folderName = "/generated";
         final File imageFile = new File(imagesPath, folderName + "/" + originalFilename);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        final String path = StringUtils.substringAfterLast(imagesPath.getPath(), File.separator);
-        imageFileDTO.setPath(path + folderName + "/" + originalFilename);
+        imageFileDTO.setPath(folderName + "/" + originalFilename);
 
         assertFalse(imageFile.exists());
 
@@ -219,8 +216,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         Imcms.setUser(user); // means current user is not admin now
 
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        final String path = StringUtils.substringAfterLast(imagesPath.getPath(), File.separator);
-        imageFileDTO.setPath(path + folderName + "/" + originalFilename);
+        imageFileDTO.setPath(folderName + "/" + originalFilename);
 
         final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -233,7 +229,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     }
 
     private void deleteFile(ImageFileDTO imageFileDTO) {
-        final File deleteMe = new File(imagesPath.getParentFile(), imageFileDTO.getPath());
+        final File deleteMe = new File(imagesPath, imageFileDTO.getPath());
 
         try {
             assertTrue(FileUtility.forceDelete(deleteMe));
