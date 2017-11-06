@@ -154,8 +154,8 @@ public class ImcmsImageUtils {
     public static ImageSource getImageSource(String imagePath) {
         ImageSource imageSource = new NullImageSource();
 
-        if (imagePath.startsWith(imagesUrl)) {
-            imagePath = imagePath.substring(imagesUrl.length());
+        if (imagePath.startsWith("/")) {
+            imagePath = imagePath.substring(1);
         }
 
         if (StringUtils.isNotBlank(imagePath)) {
