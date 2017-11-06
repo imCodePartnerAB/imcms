@@ -476,11 +476,7 @@ Imcms.define("imcms-image-content-builder",
             },
             onImageUpload: function (formData) {
                 var saveImageRequestData = formData;
-                var $activeFolder = $("." + ACTIVE_FOLDER_CLASS);
-
-                if ($activeFolder.length) {
-                    saveImageRequestData.append("folder", $activeFolder.data("folderPath"));
-                }
+                saveImageRequestData.append("folder", getFolderPath(activeFolder.$folder));
 
                 imageFilesREST.create(saveImageRequestData).done(function (uploadedImageFiles) {
                     var $newImages = uploadedImageFiles.map(function (imageFile) {
