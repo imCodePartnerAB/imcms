@@ -71,6 +71,7 @@
                             tristique scelerisque, mi felis vehicula dui, a rhoncus mi mauris in neque.
                         </div>
                     </div>
+                    <imcms:image no="1"/>
                 </div>
             </imcms:loop>
         </imcms:contentLoop>
