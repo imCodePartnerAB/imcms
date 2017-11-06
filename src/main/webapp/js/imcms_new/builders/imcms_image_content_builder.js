@@ -391,6 +391,7 @@ Imcms.define("imcms-image-content-builder",
         }
 
         function onImageDelete(imageFile) {
+            imageFile.path = getFolderPath(activeFolder.$folder) + "/" + imageFile.name;
             imageFilesREST.remove(imageFile).done(function (response) {
                 response && $(this).parent().parent().detach();
             }.bind(this));
@@ -428,7 +429,7 @@ Imcms.define("imcms-image-content-builder",
                 elements: {
                     "img": $("<div>", {
                         "class": "imcms-choose-img",
-                        style: "background-image: url(" + Imcms.contextPath + imageFile.path + ")"
+                        style: "background-image: url(" + Imcms.contextPath + "/images" + imageFile.path + ")"
                     }),
                     "description": buildImageDescription(imageFile)
                 }
