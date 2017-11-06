@@ -19,7 +19,7 @@ Imcms.define("imcms-image-content-builder",
 
         var viewModel = {
             root: {},
-            $folder: [],
+            folders: [],
             $images: []
         };
 
@@ -94,12 +94,11 @@ Imcms.define("imcms-image-content-builder",
                 elements: {
                     "name": $("<div>", {
                         "class": "imcms-title",
-                        text: rootFile.name,
-                        click: onFolderClick.bindArgs(rootFile)
+                        text: rootFile.name
                     }),
                     "control": folderControlsBuilder.create(rootFile, ROOT_FOLDER_LEVEL)
                 }
-            }).buildBlockStructure("<div>");
+            }).buildBlockStructure("<div>", {click: onFolderClick.bindArgs(rootFile)});
         }
 
         function buildRootFolder(rootFile) {
@@ -127,6 +126,7 @@ Imcms.define("imcms-image-content-builder",
             var $parentFolder = $folder.parent();
             removeFolderFromEditor($folder);
             removeParentBtnIfNoSubfolders($parentFolder);
+            $(".imcms-main-folders-controls").click();
         }
 
         function removeFolder() { // this == folder
@@ -450,15 +450,15 @@ Imcms.define("imcms-image-content-builder",
         function loadImageFoldersContent(imagesRootFolder) {
             viewModel.root = activeFolder = imagesRootFolder;
             buildImages(viewModel.root);
-            viewModel.$folder.push(buildRootFolder(viewModel.root));
+            viewModel.folders.push(buildRootFolder(viewModel.root));
 
             var $subfolders = buildSubFolders(viewModel.root, ROOT_FOLDER_LEVEL + 1).map(function ($subfolder) {
                 return rootFolderBEM.makeBlockElement("folders", $subfolder);
             });
 
-            viewModel.$folder = viewModel.$folder.concat($subfolders);
+            viewModel.folders = viewModel.folders.concat($subfolders);
 
-            $foldersContainer.append(viewModel.$folder);
+            $foldersContainer.append(viewModel.folders);
             $imagesContainer.append(viewModel.$images);
             viewModel.root.$images.forEach(function ($image) {
                 $image.css("display", "block");
@@ -483,7 +483,7 @@ Imcms.define("imcms-image-content-builder",
                     var $newImages = uploadedImageFiles.map(function (imageFile) {
                         return buildImage(imageFile).css("display", "block");
                     });
-                    activeFolder.files = activeFolder.files.concat(uploadedImageFiles);
+                    activeFolder.files = (activeFolder.files || []).concat(uploadedImageFiles);
                     $imagesContainer.append($newImages);
                     activeFolder.$images = activeFolder.$images.concat($newImages);
                     viewModel.$images = viewModel.$images.concat($newImages);
