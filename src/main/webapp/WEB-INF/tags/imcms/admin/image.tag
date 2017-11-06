@@ -31,7 +31,10 @@
 </c:set>
 
 <c:if test="${isEditMode}">
-    <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}" data-index="${no}">
+    <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}"
+         data-index="${no}"${empty loopEntryRef
+            ? '' : ' data-loop-index="'.concat(loopEntryRef.loopIndex).concat('" data-loop-entry-index="')
+            .concat(loopEntryRef.loopEntryIndex).concat('"')}>
         <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
         <div class="imcms-editor-area__control-wrap">
             <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">

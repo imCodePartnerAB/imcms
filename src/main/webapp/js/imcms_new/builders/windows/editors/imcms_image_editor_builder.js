@@ -585,7 +585,10 @@ Imcms.define("imcms-image-editor-builder",
                     index: imageData.index
                 };
 
-                imageData.loopEntryRef && (imageRequestData.loopEntryRef = imageData.loopEntryRef);
+                if (imageData.loopEntryRef) {
+                    imageRequestData["loopEntryRef.loopEntryIndex"] = imageData["loopEntryRef.loopEntryIndex"];
+                    imageRequestData["loopEntryRef.loopIndex"] = imageData["loopEntryRef.loopIndex"];
+                }
 
                 imageRestApi.read(imageRequestData)
                     .success(reloadImageOnPage)
@@ -703,6 +706,21 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function loadData(opts) {
+            if (opts.loopEntryIndex && opts.loopIndex) {
+
+                // todo: make all GET requests work with JSON data!!1 rewrite controllers and tests, but this have to be done!!!1
+                // opts.loopEntryRef = {
+                //     loopEntryIndex: opts.loopEntryIndex,
+                //     loopIndex: opts.loopIndex
+                // };
+
+                opts["loopEntryRef.loopEntryIndex"] = opts.loopEntryIndex;
+                opts["loopEntryRef.loopIndex"] = opts.loopIndex;
+
+                delete opts.loopEntryIndex;
+                delete opts.loopIndex;
+            }
+
             $.extend(imageData, opts);
             imageRestApi.read(opts).done(fillData);
         }
