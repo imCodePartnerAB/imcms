@@ -33,8 +33,9 @@ Imcms.define("imcms-image-content-builder",
 
         function onFolderRenamed(response) {
             if (response) {
+                this.$block.parent().attr("data-folder-name", this.name);
+
                 this.$block.prev()
-                    .attr("data-folder-name", this.name)
                     .find(".imcms-folder__name")
                     .text(this.name);
 
@@ -130,7 +131,7 @@ Imcms.define("imcms-image-content-builder",
 
         function removeFolder() { // this == folder
             var $folder = this.$folder;
-            var path = this.path;
+            var path = getFolderPath($folder);
             var name = this.name;
 
             var onRemoveResponse = function (response) {
@@ -193,6 +194,20 @@ Imcms.define("imcms-image-content-builder",
             }
         }
 
+        function getFolderPath($folder) {
+            var parentNames = $folder.parents("[data-folder-name]")
+                .map(function () {
+                    return $(this).attr("data-folder-name");
+                })
+                .toArray()
+                .reverse();
+
+            var selfName = $folder.attr("data-folder-name");
+            var relativePath = parentNames.concat(selfName).join("/");
+
+            return (relativePath.length ? "/" : "") + relativePath;
+        }
+
         function buildFolderManageBlock(opts, onConfirm, onSuccess) {
             $("#" + FOLDER_CREATION_BLOCK_ID).detach();
 
@@ -223,21 +238,23 @@ Imcms.define("imcms-image-content-builder",
                         $block: $folderCreationBlock
                     };
 
+                    var path = getFolderPath(opts.folder.$folder);
+
                     if (isNewFolder) {
-                        dataOnConfirm.path = contextOnSuccess.path = opts.folder.path + "/" + folderName;
+                        dataOnConfirm.path = contextOnSuccess.path = path + "/" + folderName;
 
                     } else {
-                        var pathSplitBySeparator = opts.folder.path.split("/");
+                        var pathSplitBySeparator = path.split("/");
                         pathSplitBySeparator[pathSplitBySeparator.length - 1] = folderName;
 
-                        dataOnConfirm.path = opts.folder.path;
+                        dataOnConfirm.path = path;
                         contextOnSuccess.path = pathSplitBySeparator.join("/");
                     }
 
                     onConfirm(dataOnConfirm).done(function (response) {
                         if (response) {
                             if (!isNewFolder) {
-                                (opts.folder.path = contextOnSuccess.path);
+                                opts.folder.path = contextOnSuccess.path;
                             }
                             onSuccess.call(contextOnSuccess, response);
                         }
@@ -335,7 +352,6 @@ Imcms.define("imcms-image-content-builder",
                     elements: elements
                 }
             ).buildBlockStructure("<div>", {
-                "data-folder-name": subfolder.name,
                 click: function () {
                     onFolderClick.call(this, subfolder);
                 }
@@ -362,7 +378,10 @@ Imcms.define("imcms-image-content-builder",
             return new BEM({
                 block: "imcms-folders",
                 elements: elements
-            }).buildBlockStructure("<div>", {"data-folders-lvl": level});
+            }).buildBlockStructure("<div>", {
+                "data-folder-name": subfolder.name,
+                "data-folders-lvl": level
+            });
         }
 
         function buildSubFolders(folder, level) {
