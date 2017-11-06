@@ -42,9 +42,7 @@
 </tr>
 <tr>
     <td>
-        <select size="10" style="width:100%" readonly>
-            #filelist#
-        </select></td>
+        <select size="10" style="width:100%" readonly>${filelist}</select></td>
 </tr>
 <tr>
     <td height="20"><? templates/sv/FileAdminDeleteWarning.html/5 ?></td>

@@ -580,20 +580,20 @@ public class FileAdmin extends HttpServlet {
         File[] rootlist = getRoots();
 
         if (fd1 != null) {
-            request.setAttribute("#dir1#", getContextRelativeAbsolutePathToDirectory(fd1));
+            request.setAttribute("dir1", getContextRelativeAbsolutePathToDirectory(fd1));
             String optionlist = createDirectoryOptionList(rootlist, fd1);
-            request.setAttribute("#files1#", optionlist);
+            request.setAttribute("files1", optionlist);
         } else {
-            request.setAttribute("#dir1#", "");
-            request.setAttribute("#files1#", "");
+            request.setAttribute("dir1", "");
+            request.setAttribute("files1", "");
         }
         if (fd2 != null) {
-            request.setAttribute("#dir2#", getContextRelativeAbsolutePathToDirectory(fd2));
+            request.setAttribute("dir2", getContextRelativeAbsolutePathToDirectory(fd2));
             String optionlist = createDirectoryOptionList(rootlist, fd2);
-            request.setAttribute("#files2#", optionlist);
+            request.setAttribute("files2", optionlist);
         } else {
-            request.setAttribute("#dir2#", "");
-            request.setAttribute("#files2#", "");
+            request.setAttribute("dir2", "");
+            request.setAttribute("files2", "");
         }
 
         return Utility.getAdminContents("FileAdmin.jsp", request, response);

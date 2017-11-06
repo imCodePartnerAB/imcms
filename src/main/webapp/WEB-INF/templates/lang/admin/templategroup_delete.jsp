@@ -61,7 +61,7 @@
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateChange" action="TemplateChange" method="post">
-<input type="hidden" name="language" value="#language#">
+    <input type="hidden" name="language" value="${language}">
 <tr>
     <td colspan="2">
         <c:set var="heading">

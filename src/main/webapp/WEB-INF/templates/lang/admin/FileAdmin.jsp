@@ -332,9 +332,9 @@ function setSelectedFolders() {
 
     <table border="0" cellspacing="0" cellpadding="0" width="760" align="center">
 <tr>
-    <td colspan="2" class="small"><? templates/sv/FileAdmin.html/3 ?></td>
+    <td colspan="2" class="small"><? templates/sv/FileAdmin.html/3 ?>${dir1}</td>
     <td colspan="2">&nbsp;</td>
-    <td colspan="2" align="right" class="small"><? templates/sv/FileAdmin.html/4 ?></td>
+    <td colspan="2" align="right" class="small"><? templates/sv/FileAdmin.html/4 ?>${dir2}</td>
 </tr>
 <tr>
     <td colspan="8"><ui:imcms_gui_hr wantedcolor="blue"/></td>
@@ -354,7 +354,7 @@ function setSelectedFolders() {
 		<select name="files1" id="fileSel_1" size="20" class="imcmsAdmForm" style="width:330px"
                 onChange="checkFileType(1,false)"
                 onDblClick="dblClickAction(1)" multiple>
-	#files1#
+            ${files1}
 		</select></span></td>
             </tr>
         </table></td>
@@ -430,7 +430,7 @@ function setSelectedFolders() {
 		<select name="files2" id="fileSel_2" size="20" class="imcmsAdmForm" style="width:330px"
                 onChange="checkFileType(2,false)"
                 onDblClick="dblClickAction(2)" multiple>
-	#files2#
+            ${files2}
 		</select></span></td>
             </tr>
         </table></td>

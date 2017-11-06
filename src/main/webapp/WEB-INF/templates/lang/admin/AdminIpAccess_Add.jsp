@@ -38,7 +38,7 @@
         </tr>
         <tr>
             <td><? templates/sv/AdminIpAccess_Add.htm/4 ?></td>
-            <td><select name="USER_ID" size="1">#USERS_LIST#</select></td>
+            <td><select name="USER_ID" size="1">${USERS_LIST}</select></td>
         </tr>
         <tr>
             <td><? templates/sv/AdminIpAccess_Add.htm/6 ?></td>

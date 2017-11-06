@@ -73,7 +73,7 @@ function setSize() {
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="TemplateAdd" enctype="multipart/form-data">
-<input type="hidden" name="language" value="#language#">
+    <input type="hidden" name="language" value="${language}">
 <input type="hidden" name="demo" value="true">
 <tr>
     <td colspan="2">

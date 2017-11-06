@@ -29,7 +29,7 @@
 </table>
 <ui:imcms_gui_mid/>
 
-#doc_type_description#
+${doc_type_description}
 <ui:imcms_gui_bottom/>
 <ui:imcms_gui_outer_end/>
 

@@ -26,7 +26,7 @@
 <td colspan="2"><input type="text" name="ROLE_NAME" size="40" maxlength="60"></td>
 </tr>
 <tr>
-    <td colspan="2">#ROLE_PERMISSIONS#</td>
+    <td colspan="2">${ROLE_PERMISSIONS}</td>
 </tr>
 <tr>
     <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>

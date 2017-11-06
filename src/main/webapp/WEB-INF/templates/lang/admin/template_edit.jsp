@@ -71,7 +71,7 @@ function editFile() {
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateEdit">
-<input type="HIDDEN" name="language" value="#language#">
+    <input type="HIDDEN" name="language" value="${language}">
 <tr>
     <td colspan="2">
         <c:set var="heading">

@@ -12,5 +12,5 @@
         <ui:imcms_gui_heading heading="${heading}"/>
     </td>
 </tr>
-#PERMISSION_ROWS#
+    ${PERMISSION_ROWS}
 </table>
