@@ -3,12 +3,14 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import imcode.util.io.FileUtility;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.function.Function;
 
 /**
@@ -65,7 +67,7 @@ public class ImageFolderService {
         return folder.renameTo(newFolder);
     }
 
-    public boolean deleteFolder(ImageFolderDTO deleteMe) {
+    public boolean deleteFolder(ImageFolderDTO deleteMe) throws IOException {
         final String imageFolderRelativePath = deleteMe.getPath();
         final File folderToDelete = new File(imagesPath, imageFolderRelativePath);
 
@@ -73,6 +75,6 @@ public class ImageFolderService {
             throw new FolderNotExistException("Folder with path " + imageFolderRelativePath + " not exist!");
         }
 
-        return folderToDelete.delete();
+        return FileUtility.forceDelete(folderToDelete);
     }
 }

@@ -6,6 +6,8 @@ import imcode.server.Imcms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 /**
  * Controller for Images Content Manager.
  * CRUD operations with image folders.
@@ -50,7 +52,7 @@ public class ImageFolderController {
     }
 
     @DeleteMapping
-    public boolean deleteFolder(@RequestBody ImageFolderDTO folderToDelete) throws IllegalAccessException {
+    public boolean deleteFolder(@RequestBody ImageFolderDTO folderToDelete) throws IllegalAccessException, IOException {
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {
             throw new IllegalAccessException("User do not have access to change image structure.");
