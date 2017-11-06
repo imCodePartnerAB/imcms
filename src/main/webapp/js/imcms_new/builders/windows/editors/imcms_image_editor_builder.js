@@ -643,7 +643,7 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function fillLeftSideData(imageData) {
-            imageDataContainers.$image.attr("src", Imcms.contextPath + imageData.path);
+            imageDataContainers.$image.attr("src", Imcms.contextPath + "/" + Imcms.imagesPath + imageData.path);
 
             setTimeout(function () { // to let image src load
                 imageDataContainers.$image.removeAttr("style");
@@ -668,7 +668,7 @@ Imcms.define("imcms-image-editor-builder",
                     top: angleBorderSize
                 });
 
-                imageDataContainers.$cropImg.attr("src", Imcms.contextPath + imageData.path);
+                imageDataContainers.$cropImg.attr("src", Imcms.contextPath + "/" + Imcms.imagesPath + imageData.path);
 
                 // todo: receive correct crop area
                 imageDataContainers.$cropArea.css({

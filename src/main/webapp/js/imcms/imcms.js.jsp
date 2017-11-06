@@ -1,8 +1,8 @@
 <%@ page import="com.imcode.imcms.api.DocumentLanguage" %>
     <%@ page import="com.imcode.imcms.servlet.Version" %>
     <%@ page import="imcode.server.Imcms "%>
-    <%@ page import="imcode.server.document.DocumentDomainObject" %>
-    <%@ page import="imcode.server.ImcmsConstants"%>
+    <%@ page import="imcode.server.ImcmsConstants" %>
+    <%@ page import="imcode.server.document.DocumentDomainObject"%>
     <%@ page contentType="text/javascript" pageEncoding="UTF-8"	%>
     <%
 
@@ -21,11 +21,13 @@
     pageContext.setAttribute("isVersioningAllowed", Imcms.isVersioningAllowed());
     pageContext.setAttribute("language", language);
     pageContext.setAttribute("document", document);
+    pageContext.setAttribute("imagesPath", Imcms.getServices().getConfig().getImagePath());
 
 %>
     Imcms = {
         accessFlags: ${editDocAccessFlags},
         contextPath: "${pageContext.request.contextPath}",
+        imagesPath: "${imagesPath}",
         version: "${version}",
         isEditMode: ${isEditMode},
         isVersioningAllowed: ${isVersioningAllowed},
