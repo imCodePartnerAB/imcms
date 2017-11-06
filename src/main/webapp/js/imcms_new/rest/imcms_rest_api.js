@@ -19,26 +19,13 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
 
         return $.ajax({
             url: url,
-            type: this.type,
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            data: data,
-            success: function (response) {
-                logAjaxResponse(type, url, response);
-                callback && callback(response);
-            }
-        });
-    }
-
-    function ajaxWithBody(data, callback) {
-        var url = imcms.contextPath + API_PREFIX + this.url;
-        var type = this.type;
-        logAjaxRequest(type, url, data);
-
-        return $.ajax({
-            url: url,
             type: type,
-            contentType: 'application/json; charset=utf-8',
-            data: JSON.stringify(data),
+            contentType: this.json ?
+                'application/json; charset=utf-8'
+                : 'application/x-www-form-urlencoded; charset=UTF-8',
+
+            data: this.json ? JSON.stringify(data) : data,
+
             success: function (response) {
                 logAjaxResponse(type, url, response);
                 callback && callback(response);
@@ -47,19 +34,19 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
     }
 
     function get(path) {
-        return ajax.bind({url: path, type: "GET"});
+        return ajax.bind({url: path, type: "GET", json: false});
     }
 
     function post(path) {
-        return ajaxWithBody.bind({url: path, type: "POST"});
+        return ajax.bind({url: path, type: "POST", json: true});
     }
 
     function patch(path) {
-        return ajaxWithBody.bind({url: path, type: "PATCH"});
+        return ajax.bind({url: path, type: "PATCH", json: true});
     }
 
     function remove(path) {
-        return ajaxWithBody.bind({url: path, type: "DELETE"});
+        return ajax.bind({url: path, type: "DELETE", json: true});
     }
 
     var API = function (url) {
