@@ -708,12 +708,7 @@ Imcms.define("imcms-image-editor-builder",
         function loadData(opts) {
             if (opts.loopEntryIndex && opts.loopIndex) {
 
-                // todo: make all GET requests work with JSON data!!1 rewrite controllers and tests, but this have to be done!!!1
-                // opts.loopEntryRef = {
-                //     loopEntryIndex: opts.loopEntryIndex,
-                //     loopIndex: opts.loopIndex
-                // };
-
+                // note that this data have to be set in such way because of non-JSON GET AJAX call
                 opts["loopEntryRef.loopEntryIndex"] = opts.loopEntryIndex;
                 opts["loopEntryRef.loopIndex"] = opts.loopIndex;
 
