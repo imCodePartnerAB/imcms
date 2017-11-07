@@ -308,4 +308,20 @@ public class MappingConfig {
         };
     }
 
+    @Bean
+    public Function<Text, TextDTO> textToTextDTO(Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO) {
+        return text -> {
+            final TextDTO textDTO = new TextDTO();
+
+            textDTO.setDocId(text.getVersion().getDocId());
+            textDTO.setIndex(text.getIndex());
+            textDTO.setLoopEntryRef(loopEntryRefToDTO.apply(text.getLoopEntryRef()));
+            textDTO.setLangCode(text.getLanguage().getCode());
+            textDTO.setText(text.getText());
+            textDTO.setType(text.getType());
+
+            return textDTO;
+        };
+    }
+
 }
