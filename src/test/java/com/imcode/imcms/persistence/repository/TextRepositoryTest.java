@@ -97,6 +97,27 @@ public class TextRepositoryTest {
     }
 
     @Test
+    public void testFindByDocVersionAndIndexAndLoopEntryRef() throws Exception {
+        for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+            final LoopEntryRef loopEntryRef = new LoopEntryRef(index, index);
+            for (Language language : languages) {
+                for (Version version : versions) {
+                    Text text = textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
+                            version, language, index, loopEntryRef
+                    );
+
+                    if ((index & 1) == 0) {
+                        assertNull(text);
+                    } else {
+                        assertNotNull(text);
+                        assertEquals(loopEntryRef, text.getLoopEntryRef());
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     public void testDeleteByDocVersionAndLanguage() throws Exception {
         for (Language language : languages) {
             for (Version version : versions) {

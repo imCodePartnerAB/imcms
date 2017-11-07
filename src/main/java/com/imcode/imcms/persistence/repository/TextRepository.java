@@ -23,6 +23,9 @@ public interface TextRepository extends JpaRepository<Text, Integer> {
     @Query("SELECT t FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.index = ?3 AND t.loopEntryRef IS NULL")
     Text findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, Language language, int no);
 
+    @Query("SELECT t FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.index = ?3 AND t.loopEntryRef = ?4")
+    Text findByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, Language language, int index, LoopEntryRef loopEntryRef);
+
     @Query("SELECT t.id FROM Text t WHERE t.version = ?1 AND t.language = ?2 AND t.index = ?3 AND t.loopEntryRef IS NULL")
     Integer findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, Language language, int no);
 
