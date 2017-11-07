@@ -4,6 +4,10 @@
     height: 100%;
 }
 
+.imcms-menu-items-tree {
+    border: 1px solid transparent;
+}
+
 .imcms-menu-editor-body__right-side .imcms-menu-list {
     height: 92%;
     height: -webkit-calc(100% - 55px);
