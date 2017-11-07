@@ -5,10 +5,11 @@
 Imcms.define("imcms-menu-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
-        "imcms-window-builder", "imcms-menus-rest-api", "imcms-controls-builder", "imcms-page-info-builder", "jquery"
+        "imcms-window-builder", "imcms-menus-rest-api", "imcms-controls-builder", "imcms-page-info-builder", "jquery",
+        "imcms-primitives-builder"
     ],
     function (BEM, components, documentEditorBuilder, imcmsModalWindow, WindowBuilder, menusRestApi,
-              controls, pageInfoBuilder, $) {
+              controls, pageInfoBuilder, $, primitivesBuilder) {
 
         var $title, $menuElementsContainer, $documentsContainer;
         var docId, menuId;
@@ -35,13 +36,29 @@ Imcms.define("imcms-menu-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
+        function createItem() {
+            var $dataInput = $("#dataInput"),
+                menuElementsTree = [{
+                    documentId: $dataInput.attr("data-id"),
+                    title: $dataInput.attr("data-title")
+                }],
+                $menuElement = buildMenuEditorContent(menuElementsTree);
+
+            $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement.find(".imcms-menu-items"));
+        }
+
         function buildFooter() {
             var $saveAndClose = components.buttons.saveButton({
-                text: "Save and close",
-                click: saveAndClose
-            });
+                    text: "Save and close",
+                    click: saveAndClose
+                }),
+                $dataInput = primitivesBuilder.imcmsInput({
+                    "type": "hidden",
+                    "id": "dataInput",
+                    change: createItem
+                });
 
-            return menuWindowBuilder.buildFooter([$saveAndClose]);
+            return menuWindowBuilder.buildFooter([$saveAndClose, $dataInput]);
         }
 
         function buildMenuEditorContent(menuElementsTree) {
@@ -127,7 +144,7 @@ Imcms.define("imcms-menu-editor-builder",
                     elements: {
                         "menu-item": buildMenuItems(menuElementTree)
                     }
-                }).buildBlockStructure("<div>", {"data-menu-items-lvl": level});
+                }).buildBlockStructure("<div>", {"data-menu-items-lvl": level, "data-menu-id":  menuElementTree.documentId});
 
                 ++level;
 
@@ -138,11 +155,10 @@ Imcms.define("imcms-menu-editor-builder",
                 return treeBlock.append($childElements);
             }
 
-            function buildMenuElements(menuElementsTree) {
-                var $menuItems = menuElementsTree.map(function (menuElementTree) {
-                    return buildMenuItemTree(menuElementTree, 1);
+            function buildMenuElements(menuElements) {
+                var $menuItems = menuElements.map(function (menuElement) {
+                    return buildMenuItemTree(menuElement, 1);
                 });
-
                 return new BEM({
                     block: "imcms-menu-items-tree",
                     elements: {

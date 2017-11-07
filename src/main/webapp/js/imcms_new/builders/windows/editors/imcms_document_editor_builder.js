@@ -11,6 +11,22 @@ Imcms.define("imcms-document-editor-builder",
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, controlsBuilder, usersRestApi,
               categoriesRestApi, WindowBuilder, $) {
 
+        var isMouseDown = false,
+            mouseCoords = {
+                pageX: undefined,
+                pageY: undefined,
+                newPageX: undefined,
+                newPageY: undefined
+            },
+            $menuArea,
+            menuAreaProp = {
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0
+            }
+        ;
+
         function buildBodyHeadTools() {
 
             function onNewDocButtonClick(e) {
@@ -172,6 +188,118 @@ Imcms.define("imcms-document-editor-builder",
             return controlsBuilder.buildControlsBlock("<div>", controls);
         }
 
+        function moveFrame(event) {
+            var $this = $(".imcms-document-items--frame");
+            mouseCoords.newPageX = event.clientX;
+            mouseCoords.newPageY = event.clientY;
+
+            if (isMouseDown) {
+                $this.css({
+                    "top": (mouseCoords.newPageY - mouseCoords.pageY) + mouseCoords.top,
+                    "left": (mouseCoords.newPageX - mouseCoords.pageX) + mouseCoords.left
+                });
+                console.log("detectTargetArea(event): ", detectTargetArea(event));
+                if (detectTargetArea(event)) {
+                    $menuArea.css({
+                        "border-color": "#51aeea"
+                    })
+                } else {
+                    $menuArea.css({
+                        "border-color": "transparent"
+                    })
+                }
+            }
+        }
+
+        function checkDocInMenuEditor(original) {
+            var status = true,
+                originalId = parseInt(original.find(".imcms-title").first().text())
+            ;
+            $(".imcms-menu-items").each(function () {
+                if (parseInt($(this).attr("data-menu-id")) === originalId) {
+                    status = false;
+                }
+            });
+
+            return status;
+        }
+
+        function createFrame(event) {
+            var $this = $(this),
+                original = $this.closest(".imcms-document-items"),
+                frame = original.clone(),
+                frameItem = frame.find(".imcms-document-item")
+            ;
+            $menuArea = $(".imcms-menu-items-tree");
+
+            if (!checkDocInMenuEditor(original)) {
+                event.preventDefault();
+                return
+            }
+
+            isMouseDown = true;
+            mouseCoords = {
+                pageX: event.clientX,
+                pageY: event.clientY,
+                top: $this.closest(".imcms-document-items").position().top,
+                left: $this.closest(".imcms-document-items").position().left
+            };
+            menuAreaProp = {
+                top: $menuArea.position().top,
+                left: $menuArea.position().left,
+                right: menuAreaProp.left + $menuArea.outerWidth(),
+                bottom: menuAreaProp.top + $menuArea.outerHeight()
+            };
+
+            frameItem.attr("data-id", frameItem.children().first().text());
+            frameItem.attr("data-title", frameItem.children().eq(1).text());
+
+            frame.addClass("imcms-document-items--frame");
+            frame.css({
+                "background-color": "#e9e9f5",
+                "position": "absolute",
+                "z-index": 11001,
+                "width": $(".imcms-document-list__items").outerWidth(),
+                "top": mouseCoords.top,
+                "left": mouseCoords.left
+            });
+
+            frame.appendTo("body");
+            $(document).on("mousemove", moveFrame);
+
+
+            $(document).on("dragstart", function () {
+                return false;
+            });
+
+        }
+
+        function detectTargetArea(event) {
+            return (event.pageY > menuAreaProp.top) && (event.pageY < menuAreaProp.bottom) && (event.pageX > menuAreaProp.left) && (event.pageX < menuAreaProp.right);
+        }
+
+        $(document).on("mouseup", function (event) {
+            var frame = $(".imcms-document-items--frame"),
+                frameItem = frame.find(".imcms-document-item"),
+                dataInput = $("#dataInput")
+            ;
+
+            if (frame.length === 0) {
+                return
+            }
+
+            if (detectTargetArea(event)) {
+                dataInput.attr("data-id", frameItem.attr("data-id"));
+                dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
+                $menuArea.css({
+                    "border-color": "transparent"
+                });
+            }
+
+            frame.remove();
+            isMouseDown = false;
+        });
+
         function buildDocItem(document, opts) {
             var $docItemId = components.texts.titleText("<div>", document.id);
             $docItemId.modifiers = ["col-2"];
@@ -185,7 +313,7 @@ Imcms.define("imcms-document-editor-builder",
             var $docItemType = components.texts.titleText("<div>", document.type);
             $docItemType.modifiers = ["col-4"];
 
-            return new BEM({
+            var $docItem = new BEM({
                 block: "imcms-document-item",
                 elements: {
                     "info": [
@@ -197,6 +325,12 @@ Imcms.define("imcms-document-editor-builder",
                     "controls": buildDocItemControls(document.id, opts)
                 }
             }).buildBlockStructure("<div>");
+
+            if (opts.moveEnable === true) {
+                $docItem.find(".imcms-control--move").on("mousedown", createFrame);
+            }
+
+            return $docItem;
         }
 
         function buildDocumentItemContainer(document, opts) {
