@@ -252,14 +252,6 @@
     </tag-file>
 
     <function>
-        <name>getDocument</name>
-        <function-class>com.imcode.imcms.web.tag.Functions</function-class>
-        <function-signature>com.imcode.imcms.api.TextDocument getDocument(java.lang.String,
-            javax.servlet.jsp.PageContext)
-        </function-signature>
-    </function>
-
-    <function>
         <name>getTextDocumentDomainObject</name>
         <function-class>com.imcode.imcms.web.tag.Functions</function-class>
         <function-signature>imcode.server.document.textdocument.TextDocumentDomainObject getTextDocumentDomainObject(
