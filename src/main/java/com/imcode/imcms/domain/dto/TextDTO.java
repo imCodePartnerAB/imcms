@@ -17,9 +17,10 @@ public class TextDTO {
     private Type type = Type.PLAIN_TEXT;
     private String text = "";
 
-    public TextDTO(Integer index, Integer docId, LoopEntryRefDTO loopEntryRef) {
+    public TextDTO(Integer index, Integer docId, String langCode, LoopEntryRefDTO loopEntryRef) {
         this.index = index;
         this.docId = docId;
+        this.langCode = langCode;
         this.loopEntryRef = loopEntryRef;
     }
 }
