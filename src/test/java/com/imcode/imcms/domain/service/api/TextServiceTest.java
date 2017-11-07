@@ -5,6 +5,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Text;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
@@ -89,6 +90,32 @@ public class TextServiceTest {
                 text.setText("test");
                 text.setType(PLAIN_TEXT);
                 text.setVersion(version);
+
+                textRepository.save(text);
+                textDTOS.add(textToTextDTO.apply(text));
+            }
+        }
+
+        for (TextDTO textDTO : textDTOS) {
+            final TextDTO savedText = textService.getText(textDTO);
+            assertEquals(savedText, textDTO);
+        }
+    }
+
+    @Test
+    public void getText_When_InLoop_Expect_CorrectDTO() {
+        final List<TextDTO> textDTOS = new ArrayList<>();
+        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+
+        for (Language language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                final Text text = new Text();
+                text.setIndex(index);
+                text.setVersion(version);
+                text.setLanguage(language);
+                text.setLoopEntryRef(loopEntryRef);
+                text.setText("test");
+                text.setType(PLAIN_TEXT);
 
                 textRepository.save(text);
                 textDTOS.add(textToTextDTO.apply(text));
