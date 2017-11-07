@@ -324,4 +324,21 @@ public class MappingConfig {
         };
     }
 
+    @Bean
+    public TernaryFunction<TextDTO, Version, Language, Text> textDtoToText(
+            Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef
+    ) {
+        return (textDTO, version, language) -> {
+            final Text text = new Text();
+            text.setIndex(textDTO.getIndex());
+            text.setVersion(version);
+            text.setLanguage(language);
+            text.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(textDTO.getLoopEntryRef()));
+            text.setType(textDTO.getType());
+            text.setText(textDTO.getText());
+
+            return text;
+        };
+    }
+
 }
