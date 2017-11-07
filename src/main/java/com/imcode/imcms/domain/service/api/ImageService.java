@@ -75,7 +75,7 @@ public class ImageService {
 
         return Optional.ofNullable(image)
                 .map(imageToImageDTO)
-                .orElse(new ImageDTO(index, docId));
+                .orElse(new ImageDTO(index, docId, loopEntryRefDTO));
     }
 
     private void generateImage(ImageDTO imageDTO) {
