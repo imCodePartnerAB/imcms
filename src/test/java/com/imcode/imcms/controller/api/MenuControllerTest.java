@@ -8,6 +8,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.persistence.entity.Menu;
 import imcode.server.Imcms;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
 import org.junit.Test;
@@ -75,6 +76,11 @@ public class MenuControllerTest extends AbstractControllerTest {
         menuDTO.setDocId(menu.getVersion().getDocId());
         menuDTO.setMenuItems(menuDataInitializer.getMenuItemDtoList());
 
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user);
+
         performPostWithContentExpectOk(menuDTO);
     }
 
@@ -89,6 +95,11 @@ public class MenuControllerTest extends AbstractControllerTest {
 
         menuDataInitializer.cleanRepositories();
         versionDataInitializer.createData(0, 1001);
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user);
 
         performPostWithContentExpectOk(menuDTO);
     }
