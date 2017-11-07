@@ -50,7 +50,7 @@ Imcms.define("imcms-loop-editor-builder",
 
             function onCreateNewClicked() {
                 var newLoopEntry = {
-                    no: getMaxLoopItemID() + 1,
+                    index: getMaxLoopItemID() + 1,
                     content: "",
                     enabled: true
                 };
