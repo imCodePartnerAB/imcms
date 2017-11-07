@@ -44,15 +44,20 @@ public class ImageService {
     }
 
     public ImageDTO getImage(ImageDTO dataHolder) {
-        return getImage(dataHolder.getDocId(), dataHolder.getIndex(), dataHolder.getLoopEntryRef());
+        return getImage(
+                dataHolder.getDocId(),
+                dataHolder.getIndex(),
+                dataHolder.getLangCode(),
+                dataHolder.getLoopEntryRef()
+        );
     }
 
-    public ImageDTO getImage(int docId, int index, LoopEntryRefDTO loopEntryRef) {
-        return getImage(docId, index, loopEntryRef, versionService::getDocumentWorkingVersion);
+    public ImageDTO getImage(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
+        return getImage(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
     }
 
-    public ImageDTO getPublicImage(int docId, int index, LoopEntryRefDTO loopEntryRef) {
-        return getImage(docId, index, loopEntryRef, versionService::getLatestVersion);
+    public ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
+        return getImage(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
     }
 
     public void saveImage(ImageDTO imageDTO) {
@@ -68,9 +73,11 @@ public class ImageService {
         imageRepository.save(image);
     }
 
-    private ImageDTO getImage(int docId, int index, LoopEntryRefDTO loopEntryRefDTO, Function<Integer, Version> versionReceiver) {
+    private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRefDTO,
+                              Function<Integer, Version> versionReceiver) {
+
         final Version version = versionReceiver.apply(docId);
-        final Language language = languageService.getCurrentUserLanguage();
+        final Language language = languageService.findByCode(langCode);
         final Image image = getImage(index, version, language, loopEntryRefDTO);
 
         return Optional.ofNullable(image)

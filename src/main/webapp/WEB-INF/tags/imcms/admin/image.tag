@@ -13,6 +13,7 @@
 <%--@elvariable id="image" type="com.imcode.imcms.domain.dto.ImageDTO"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
 <%--@elvariable id="loopEntryRef" type="com.imcode.imcms.domain.dto.LoopEntryRefDTO"--%>
+<%--@elvariable id="language" type="java.lang.String"--%>
 
 <c:if test="${empty index}">
     <c:set var="index" value="${no}"/><%-- old attribute "no" support --%>
@@ -22,8 +23,8 @@
 
 <c:set var="imageContent">
     <c:set var="image" value="${isEditMode
-     ? imageService.getImage(targetDocId, index, loopEntryRef)
-     : imageService.getPublicImage(targetDocId, index, loopEntryRef)}"/>
+     ? imageService.getImage(targetDocId, index, language, loopEntryRef)
+     : imageService.getPublicImage(targetDocId, index, language, loopEntryRef)}"/>
     <c:set var="imgPath" value="${image.generatedFilePath}"/>
     <c:set var="imgPath" value="${empty imgPath ? '/imcms/eng/images/admin/ico_image.gif' : imgPath}"/>
     <c:set var="style" value="${empty style ? '' : ' style=\"'.concat(style).concat('\"')}"/>
@@ -31,7 +32,7 @@
 </c:set>
 
 <c:if test="${isEditMode}">
-    <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}"
+    <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}" data-lang-code="${language}"
          data-index="${no}"${empty loopEntryRef
             ? '' : ' data-loop-index="'.concat(loopEntryRef.loopIndex).concat('" data-loop-entry-index="')
             .concat(loopEntryRef.loopEntryIndex).concat('"')}>

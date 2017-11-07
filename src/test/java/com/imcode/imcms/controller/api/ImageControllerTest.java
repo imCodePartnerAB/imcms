@@ -103,7 +103,8 @@ public class ImageControllerTest extends AbstractControllerTest {
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(TEST_DOC_ID))
-                .param("index", String.valueOf(TEST_IMAGE_INDEX));
+                .param("index", String.valueOf(TEST_IMAGE_INDEX))
+                .param("langCode", imageDTO.getLangCode());
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(imageDTO));
     }
@@ -117,7 +118,8 @@ public class ImageControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(imageDTO.getDocId()))
                 .param("index", String.valueOf(imageDTO.getIndex()))
                 .param("loopEntryRef.loopIndex", String.valueOf(loopEntryRef.getLoopIndex()))
-                .param("loopEntryRef.loopEntryIndex", String.valueOf(loopEntryRef.getLoopEntryIndex()));
+                .param("loopEntryRef.loopEntryIndex", String.valueOf(loopEntryRef.getLoopEntryIndex()))
+                .param("langCode", imageDTO.getLangCode());
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(imageDTO));
     }
@@ -162,7 +164,8 @@ public class ImageControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder getImageReqBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(imageDTO.getDocId()))
-                .param("index", String.valueOf(imageDTO.getIndex()));
+                .param("index", String.valueOf(imageDTO.getIndex()))
+                .param("langCode", imageDTO.getLangCode());
 
         final String imageJson = getJsonResponse(getImageReqBuilder);
         final ImageDTO imageDtoResult = fromJson(imageJson, ImageDTO.class);

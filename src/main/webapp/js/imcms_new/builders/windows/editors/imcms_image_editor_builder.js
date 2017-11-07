@@ -582,7 +582,8 @@ Imcms.define("imcms-image-editor-builder",
             function onImageSaved() {
                 var imageRequestData = {
                     docId: imageData.docId,
-                    index: imageData.index
+                    index: imageData.index,
+                    langCode: imageData.langCode
                 };
 
                 if (imageData.loopEntryRef) {

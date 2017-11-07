@@ -74,6 +74,7 @@ public class ViewDocumentController {
         mav.setViewName(viewName);
 
         mav.addObject("currentDocument", textDocument);
+        mav.addObject("language", textDocument.getLanguage().getCode());
         mav.addObject("isAdmin", Imcms.getUser().isAdmin());
         mav.addObject("isEditMode", isEditMode);
         mav.addObject("contextPath", request.getContextPath());
