@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
+import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
@@ -128,4 +129,48 @@ public class TextServiceTest {
         }
     }
 
+    @Test
+    public void saveText_When_NotInLoop_Expect_CorrectDTO() {
+        final List<TextDTO> textDTOS = new ArrayList<>();
+
+        for (Language language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                final TextDTO textDTO = new TextDTO(index, DOC_ID, language.getCode(), null);
+                textDTO.setText("test");
+                textDTO.setType(PLAIN_TEXT);
+
+                textDTOS.add(textDTO);
+
+                textService.save(textDTO);
+            }
+        }
+
+        for (TextDTO textDTO : textDTOS) {
+            final TextDTO savedText = textService.getText(textDTO);
+            assertEquals(savedText, textDTO);
+        }
+    }
+
+    @Test
+    public void saveText_When_InLoop_Expect_CorrectDTO() {
+        final List<TextDTO> textDTOS = new ArrayList<>();
+        final LoopEntryRefDTO loopEntryRef = new LoopEntryRefDTO(1, 1);
+
+        for (Language language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                final TextDTO textDTO = new TextDTO(index, DOC_ID, language.getCode(), loopEntryRef);
+                textDTO.setText("test");
+                textDTO.setType(PLAIN_TEXT);
+
+                textDTOS.add(textDTO);
+
+                textService.save(textDTO);
+            }
+        }
+
+        for (TextDTO textDTO : textDTOS) {
+            final TextDTO savedText = textService.getText(textDTO);
+            assertEquals(savedText, textDTO);
+        }
+    }
 }

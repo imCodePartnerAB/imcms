@@ -8,6 +8,7 @@ import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Text;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.TextRepository;
+import com.imcode.imcms.util.function.TernaryFunction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,18 +24,21 @@ public class TextService {
     private final LanguageService languageService;
     private final VersionService versionService;
     private final Function<Text, TextDTO> textToTextDTO;
+    private final TernaryFunction<TextDTO, Version, Language, Text> textDtoToText;
 
     public TextService(TextRepository textRepository,
                        Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
                        LanguageService languageService,
                        VersionService versionService,
-                       Function<Text, TextDTO> textToTextDTO) {
+                       Function<Text, TextDTO> textToTextDTO,
+                       TernaryFunction<TextDTO, Version, Language, Text> textDtoToText) {
 
         this.textRepository = textRepository;
         this.loopEntryRefDtoToLoopEntryRef = loopEntryRefDtoToLoopEntryRef;
         this.languageService = languageService;
         this.versionService = versionService;
         this.textToTextDTO = textToTextDTO;
+        this.textDtoToText = textDtoToText;
     }
 
     public TextDTO getText(TextDTO textRequestData) {
@@ -48,6 +52,16 @@ public class TextService {
 
     public TextDTO getText(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
         return getText(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
+    }
+
+    public void save(TextDTO textDTO) {
+        final Version version = versionService.getDocumentWorkingVersion(textDTO.getDocId());
+        final Language language = languageService.findByCode(textDTO.getLangCode());
+        final Text text = textDtoToText.apply(textDTO, version, language);
+        final Integer imageId = getTextId(textDTO, version, language);
+
+        text.setId(imageId);
+        textRepository.save(text);
     }
 
     private TextDTO getText(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRefDTO,
@@ -68,5 +82,17 @@ public class TextService {
         return (loopEntryRef == null)
                 ? textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
                 : textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
+    }
+
+    private Integer getTextId(TextDTO textDTO, Version version, Language language) {
+        final Integer index = textDTO.getIndex();
+        final LoopEntryRefDTO loopEntryRefDTO = textDTO.getLoopEntryRef();
+        final Text text = getText(index, version, language, loopEntryRefDTO);
+
+        if (text == null) {
+            return null;
+        }
+
+        return text.getId();
     }
 }
