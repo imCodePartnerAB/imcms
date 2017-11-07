@@ -20,12 +20,10 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -42,8 +40,8 @@ import java.util.stream.Collectors;
 /*
  todo: Since {@link RequestMapping} can get in request path parameters like "/{id}/{someparam1}/{someparam2}" it would be better to REPLACE  {@link RequestParam} with {@link PathParam}
  */
-@RestController
-@RequestMapping("/text")
+//@RestController
+//@RequestMapping("/text")
 public class TextController {
     private static final Logger log = Logger.getLogger(TextController.class);
 
@@ -57,7 +55,7 @@ public class TextController {
 
     private final TextContentFilter textContentFilter;
 
-    @Autowired
+    //    @Autowired
     public TextController(TextContentFilter textContentFilter) {
         this.textContentFilter = textContentFilter;
     }
