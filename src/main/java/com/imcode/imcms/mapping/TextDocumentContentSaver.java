@@ -6,12 +6,11 @@ import com.imcode.imcms.mapping.jpa.UserRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Menu;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuItem;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
-import com.imcode.imcms.persistence.repository.ImageRepository;
-import com.imcode.imcms.persistence.repository.LanguageRepository;
-import com.imcode.imcms.persistence.repository.LoopRepository;
+import com.imcode.imcms.persistence.repository.*;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
@@ -316,7 +315,7 @@ public class TextDocumentContentSaver {
         text.setVersion(version);
         text.setIndex(no);
         text.setText(textDO.getText());
-        text.setType(TextType.values()[textDO.getType()]);
+        text.setType(TextBase.Type.values()[textDO.getType()]);
         text.setLoopEntryRef(loopEntryRef);
 
         return text;

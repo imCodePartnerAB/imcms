@@ -1,7 +1,5 @@
-package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
+package com.imcode.imcms.persistence.entity;
 
-import com.imcode.imcms.mapping.jpa.doc.content.VersionedI18nContent;
-import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,18 +12,21 @@ import javax.validation.constraints.NotNull;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @MappedSuperclass
-class TextBase extends VersionedI18nContent {
+public class TextBase extends VersionedI18nContent {
 
     @NotNull
     @Column(name = "`index`")
     private Integer index;
 
     @NotNull
-    private TextType type;
+    private Type type;
 
     @Column(columnDefinition = "longtext")
     private String text;
 
     private LoopEntryRef loopEntryRef;
 
+    public enum Type {
+        PLAIN_TEXT, HTML
+    }
 }

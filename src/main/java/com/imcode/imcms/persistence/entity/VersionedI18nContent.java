@@ -1,7 +1,5 @@
-package com.imcode.imcms.mapping.jpa.doc.content;
+package com.imcode.imcms.persistence.entity;
 
-import com.imcode.imcms.persistence.entity.Language;
-import com.imcode.imcms.persistence.entity.VersionedContent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @MappedSuperclass
-public abstract class VersionedI18nContent extends VersionedContent {
+abstract class VersionedI18nContent extends VersionedContent {
 
     @NotNull
     @ManyToOne
