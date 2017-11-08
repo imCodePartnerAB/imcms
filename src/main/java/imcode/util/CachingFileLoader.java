@@ -56,7 +56,7 @@ public class CachingFileLoader {
         return content;
     }
 
-    private String decodeBytes(byte[] inputBytes, String resourceName) throws IOException {
+    private String decodeBytes(byte[] inputBytes, String resourceName) {
         Charset utf8Charset = Charset.forName(Imcms.UTF_8_ENCODING);
         Charset fallbackCharset = Charset.defaultCharset();
         if (fallbackCharset.equals(utf8Charset) || fallbackCharset.equals(Charset.forName(Imcms.ASCII_ENCODING))) {

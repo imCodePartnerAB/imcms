@@ -95,7 +95,7 @@ public class ImageOp {
         return args;
     }
 
-    private static ImageInfo processImageInfo(StringInputStreamHandler inputHandler) throws InterruptedException {
+    private static ImageInfo processImageInfo(StringInputStreamHandler inputHandler) {
         if (inputHandler.getData() != null) {
             String input = inputHandler.getData();
 

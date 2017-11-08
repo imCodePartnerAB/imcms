@@ -103,7 +103,7 @@ public class SaveInPage extends HttpServlet {
         }
     }
 
-    private void errorNoPermission(int documentId, HttpServletResponse res) throws IOException, ServletException {
+    private void errorNoPermission(int documentId, HttpServletResponse res) throws IOException {
         Utility.setDefaultHtmlContentType(res);
         res.sendRedirect("AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE);
     }

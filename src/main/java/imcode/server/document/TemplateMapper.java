@@ -79,7 +79,7 @@ public class TemplateMapper {
     }
 
     public String createHtmlOptionListOfTemplates(Iterable<TemplateDomainObject> templates,
-                                                  TemplateDomainObject selectedTemplate) throws IOException {
+                                                  TemplateDomainObject selectedTemplate) {
         StringBuilder temps = new StringBuilder();
         for (TemplateDomainObject template : templates) {
 

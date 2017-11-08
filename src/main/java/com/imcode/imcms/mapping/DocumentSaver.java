@@ -137,8 +137,7 @@ public class DocumentSaver {
         }
     }
 
-    public DocumentVersion makeDocumentVersion(List<DocumentDomainObject> docs, UserDomainObject user)
-            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+    public DocumentVersion makeDocumentVersion(List<DocumentDomainObject> docs, UserDomainObject user) {
 
         DocumentDomainObject firstDoc = docs.get(0);
         DocumentMeta meta = firstDoc.getMeta().clone();

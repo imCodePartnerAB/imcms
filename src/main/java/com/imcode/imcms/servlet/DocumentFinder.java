@@ -42,7 +42,7 @@ public class DocumentFinder extends WebComponent {
         page.setDocumentFinder(this);
     }
 
-    public void selectDocument(DocumentDomainObject selectedDocument) throws IOException, ServletException {
+    public void selectDocument(DocumentDomainObject selectedDocument) {
         selectDocumentCommand.handle(selectedDocument.getId());
     }
 

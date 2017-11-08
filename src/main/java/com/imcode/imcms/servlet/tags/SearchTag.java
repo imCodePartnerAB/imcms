@@ -56,9 +56,9 @@ public class SearchTag extends BodyTagSupport implements IPageableTag {
     }
 
     private SolrQuery createQuery() {
-        String query = Arrays.asList(new String[]{DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE, DocumentIndex.FIELD__META_TEXT,
+        String query = Arrays.stream(new String[]{DocumentIndex.FIELD__META_ID, DocumentIndex.FIELD__META_HEADLINE, DocumentIndex.FIELD__META_TEXT,
                 DocumentIndex.FIELD__KEYWORD, DocumentIndex.FIELD__ALIAS, DocumentIndex.FIELD__TEXT
-        }).stream().map(field -> String.format("%s:*%s*", field, searchRequest)).collect(Collectors.joining(" "));
+        }).map(field -> String.format("%s:*%s*", field, searchRequest)).collect(Collectors.joining(" "));
         return new SolrQuery(query);
     }
 

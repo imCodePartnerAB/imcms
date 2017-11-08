@@ -119,7 +119,7 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     private void doFilterSendError(ServletRequest request, ServletResponse response, FilterChain filterChain)
-            throws IOException, ServletException {
+            throws IOException {
         ((HttpServletResponse) response).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
     }
 
