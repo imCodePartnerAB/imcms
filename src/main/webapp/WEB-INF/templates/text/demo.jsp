@@ -72,6 +72,7 @@
                         </div>
                     </div>
                     <imcms:image no="1"/>
+                    <imcms:text no="1" label="Demo loop text"/>
                 </div>
             </imcms:loop>
         </imcms:contentLoop>
