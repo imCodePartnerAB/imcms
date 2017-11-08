@@ -110,7 +110,8 @@ Imcms.config = {
         "imcms-loops-rest-api": "rest/imcms_loops_rest_api.js",
         "imcms-menus-rest-api": "rest/imcms_menus_rest_api.js",
         "imcms-images-rest-api": "rest/imcms_images_rest_api.js",
-        "imcms-languages-rest-api": "rest/imcms_languages_rest_api.js"
+        "imcms-languages-rest-api": "rest/imcms_languages_rest_api.js",
+        "imcms-texts-rest-api": "rest/imcms_texts_rest_api.js"
     }
 };
 if (Imcms.browserInfo.isIE10) {
