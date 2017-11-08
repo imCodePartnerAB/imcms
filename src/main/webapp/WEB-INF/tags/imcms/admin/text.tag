@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ attribute name="no" required="true" %>
+<%@ attribute name="index" required="false" %>
 <%@ attribute name="document" required="false" %>
 <%@ attribute name="placeholder" required="false" %>
 <%@ attribute name="label" required="false" %>
@@ -12,16 +13,28 @@
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
-<%--@elvariable id="targetDoc" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
+<%--@elvariable id="textService" type="com.imcode.imcms.domain.service.api.TextService"--%>
 <%--@elvariable id="loopEntryRef" type="com.imcode.imcms.domain.dto.LoopEntryRefDTO"--%>
 <%--@elvariable id="textField" type="com.imcode.imcms.api.TextDocument.TextField"--%>
+<%--@elvariable id="language" type="java.lang.String"--%>
 
-<c:set var="targetDoc"
-       value="${empty document ? currentDocument : (imcms:getTextDocumentDomainObject(document, pageContext))}"/>
-<c:set var="textField"
-       value="${loopEntryRef eq null ? targetDoc.getText(no) : targetDoc.getText(loopEntryRef)}"/>
+<c:if test="${empty index}">
+    <c:set var="index" value="${no}"/><%-- old attribute "no" support --%>
+</c:if>
+
+<c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
+
+<c:set var="textField" value="${isEditMode
+     ? textService.getText(targetDocId, index, language, loopEntryRef)
+     : textService.getPublicText(targetDocId, index, language, loopEntryRef)}"/>
+
 <c:set var="textContent" value="${pre}${textField.text}${post}"/>
+
+<c:set var="loopData">
+    <c:if test="${loopEntryRef ne null}"> data-loop-entry-ref.loop-entry-index="${loopEntryRef.loopEntryIndex}"
+        data-loop-entry-ref.loop-index="${loopEntryRef.loopIndex}"</c:if>
+</c:set>
 
 <c:if test="${isEditMode}">
     <div class="imcms-editor-area imcms-editor-area--text">
@@ -29,9 +42,8 @@
             <div class="imcms-editor-area__text-label">${label}</div>
         </c:if>
         <div class="imcms-editor-area__text-toolbar"></div>
-        <div class="imcms-editor-area__content-wrap">
-            <div class="imcms-editor-content imcms-editor-content--text">${textContent}</div>
-        </div>
+        <div class="imcms-editor-content imcms-editor-content--text" data-index="${index}" data-doc-id="${targetDocId}"
+             data-lang-code="${language}" data-type="HTML"${loopData}>${textContent}</div>
         <div class="imcms-editor-area__control-wrap">
             <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
                 <div class="imcms-editor-area__control-title">Text Editor</div>
