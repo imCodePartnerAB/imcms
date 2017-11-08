@@ -281,40 +281,37 @@ Function.prototype.applyAsync = function (args, context) {
             unresolvedArgs = Array.prototype.slice.call(arguments),
             resolvedArgs;
 
-        try {
-            switch (arguments[0] && arguments[0].constructor) {
-                case undefined : // anonymous module with undefined id, nothing to modify
-                case String : // means first arg is id
-                    resolvedArgs = unresolvedArgs;
-                    break;
+        switch (arguments[0] && arguments[0].constructor) {
+            case undefined : // anonymous module with undefined id, nothing to modify
+            case String : // means first arg is id
+                resolvedArgs = unresolvedArgs;
+                break;
 
-                case Array : // in this case we have an anonymous module with dependencies array
-                    resolvedArgs = [anonymousModuleId].concat(unresolvedArgs);
-                    break;
+            case Array : // in this case we have an anonymous module with dependencies array
+                resolvedArgs = [anonymousModuleId].concat(unresolvedArgs);
+                break;
 
-                case Function : // anonymous independent module
-                    resolvedArgs = [anonymousModuleId, depsForIndependentModule].concat(unresolvedArgs);
-                    break;
+            case Function : // anonymous independent module
+                resolvedArgs = [anonymousModuleId, depsForIndependentModule].concat(unresolvedArgs);
+                break;
 
-                default :
-                    throw "Can't resolve first argument for 'define'!";
-            }
-            switch (resolvedArgs[1] && resolvedArgs[1].constructor) {
-                case Array : // dependencies are presented, nothing to change
-                    break;
+            default :
+                console.error("Can't resolve first argument for 'define'!");
+                console.error(arguments);
+        }
+        switch (resolvedArgs[1] && resolvedArgs[1].constructor) {
+            case Array : // dependencies are presented, nothing to change
+                break;
 
-                case Function : // independent module and dependencies are not presented
-                    var factory = resolvedArgs[1];
-                    resolvedArgs[1] = []; // empty dependencies array
-                    resolvedArgs[2] = factory;
-                    break;
+            case Function : // independent module and dependencies are not presented
+                var factory = resolvedArgs[1];
+                resolvedArgs[1] = []; // empty dependencies array
+                resolvedArgs[2] = factory;
+                break;
 
-                default :
-                    throw "Can't resolve second argument for 'define'!";
-            }
-        } catch (e) {
-            console.error(e);
-            console.error(arguments);
+            default :
+                console.error("Can't resolve second argument for 'define'!");
+                console.error(arguments);
         }
 
         return resolvedArgs;
