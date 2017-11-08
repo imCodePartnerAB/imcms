@@ -24,7 +24,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -182,10 +185,9 @@ public class TextDocumentContentLoader {
         return result;
     }
 
-    public Map<DocumentLanguage, ImageDomainObject> getImages(VersionRef versionRef, int imageNo, Optional<com.imcode.imcms.mapping.container.LoopEntryRef> loopEntryRefOpt) {
-        return loopEntryRefOpt.isPresent()
-                ? getLoopImages(versionRef, TextDocumentDomainObject.LoopItemRef.of(loopEntryRefOpt.get(), imageNo))
-                : getImages(versionRef, imageNo);
+    public Map<DocumentLanguage, ImageDomainObject> getImages(VersionRef versionRef, int imageNo, com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef) {
+        return (null == loopEntryRef) ? getImages(versionRef, imageNo)
+                : getLoopImages(versionRef, TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, imageNo));
     }
 
     public Map<DocumentLanguage, ImageDomainObject> getImages(VersionRef versionRef, int imageNo) {
@@ -211,10 +213,9 @@ public class TextDocumentContentLoader {
         return result;
     }
 
-    public ImageDomainObject getImage(DocRef docRef, int imageNo, Optional<com.imcode.imcms.mapping.container.LoopEntryRef> loopEntryRefOpt) {
-        return loopEntryRefOpt.isPresent()
-                ? getLoopImage(docRef, TextDocumentDomainObject.LoopItemRef.of(loopEntryRefOpt.get(), imageNo))
-                : getImage(docRef, imageNo);
+    public ImageDomainObject getImage(DocRef docRef, int imageNo, com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef) {
+        return (loopEntryRef == null) ? getImage(docRef, imageNo)
+                : getLoopImage(docRef, TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, imageNo));
     }
 
     public ImageDomainObject getImage(DocRef docRef, int imageNo) {
