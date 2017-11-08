@@ -228,7 +228,7 @@ public class ClientHttpRequest {
         write('"');
         newline();
         write("Content-Type: ");
-        String type = connection.guessContentTypeFromName(filename);
+        String type = URLConnection.guessContentTypeFromName(filename);
         if (type == null) {
             type = "application/octet-stream";
         }
