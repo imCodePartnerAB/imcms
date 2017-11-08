@@ -38,13 +38,13 @@ Imcms.define("imcms-menu-editor-builder",
 
         function createItem() {
             var $dataInput = $("#dataInput"),
-                menuElementsTree = [{
+                menuElementsTree = {
                     documentId: $dataInput.attr("data-id"),
                     title: $dataInput.attr("data-title")
-                }],
-                $menuElement = buildMenuEditorContent(menuElementsTree);
+                },
+                $menuElement = buildMenuItemTree(menuElementsTree, 1);
 
-            $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement.find(".imcms-menu-items"));
+            $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement);
         }
 
         function buildFooter() {
@@ -61,8 +61,103 @@ Imcms.define("imcms-menu-editor-builder",
             return menuWindowBuilder.buildFooter([$saveAndClose, $dataInput]);
         }
 
+        function removeMenuItemFromEditor(currentMenuItem) {
+            var submenuItem = currentMenuItem.parent().find(".imcms-menu-items"),
+                parentMenuItem = currentMenuItem.closest(".imcms-menu-items"),
+                currentMenuItemWrap = parentMenuItem.parent();
+
+            submenuItem.remove();
+            currentMenuItem.remove();
+            parentMenuItem.remove();
+
+            if (currentMenuItemWrap.children().length === 1) {
+                currentMenuItemWrap.find(".imcms-menu-item__btn").remove();
+            }
+        }
+
+        function removeMenuItem() {
+            var currentMenuItem = $(this).closest(".imcms-menu-item"),
+                currentMenuItemName = currentMenuItem.find(".imcms-menu-item__info").text();
+
+            var question = "Do you want to remove menu item \"" + currentMenuItemName + "\"?";
+            imcmsModalWindow.buildModalWindow(question, function (answer) {
+                if (!answer) {
+                    return;
+                }
+
+                removeMenuItemFromEditor(currentMenuItem)
+            });
+        }
+
+        function buildMenuItemControls(menuItemDocId) {
+            var $controlMove = controls.move();
+            var $controlRemove = controls.remove(function () {
+                removeMenuItem.call(this, menuItemDocId);
+            });
+            var $controlEdit = controls.edit(function () {
+                pageInfoBuilder.build(menuItemDocId);
+            });
+
+            return controls.buildControlsBlock("<div>", [
+                $controlMove,
+                $controlRemove,
+                $controlEdit
+            ]);
+        }
+
+        function showHideSubmenu() {
+            var $btn = $(this),
+                level = $btn.parents(".imcms-menu-items").attr("data-menu-items-lvl")
+            ;
+
+            level = parseInt(level) + 1;
+            $btn.parents(".imcms-menu-items")
+                .find(".imcms-menu-items[data-menu-items-lvl=" + level + "]")
+                .each(function () {
+                    $(this).slideToggle()
+                });
+            $btn.toggleClass("imcms-menu-item-btn--open");
+        }
+
+        function buildMenuItems(menuElementTree) {
+            var elements = {};
+
+            if (menuElementTree.children.length) {
+                elements.btn = $("<div>", {click: showHideSubmenu});
+            }
+
+            elements.info = components.texts.titleText("<div>", menuElementTree.documentId + " - " + menuElementTree.title);
+            elements.controls = buildMenuItemControls(menuElementTree.documentId);
+
+            return new BEM({
+                block: "imcms-menu-item",
+                elements: elements
+            }).buildBlockStructure("<div>");
+        }
+
+        function buildMenuItemTree(menuElementTree, level) {
+            menuElementTree.children = menuElementTree.children || [];
+
+            var treeBlock = new BEM({
+                block: "imcms-menu-items",
+                elements: {
+                    "menu-item": buildMenuItems(menuElementTree)
+                }
+            }).buildBlockStructure("<div>", {"data-menu-items-lvl": level, "data-menu-id": menuElementTree.documentId});
+
+            ++level;
+
+            var $childElements = menuElementTree.children.map(function (childElement) {
+                return buildMenuItemTree(childElement, level).addClass("imcms-submenu-items--close");
+            });
+
+            return treeBlock.append($childElements);
+        }
+
+
+
         function buildMenuEditorContent(menuElementsTree) {
-            function removeMenuItemFromEditor(currentMenuItem) {
+            /*function removeMenuItemFromEditor(currentMenuItem) {
                 var submenuItem = currentMenuItem.parent().find(".imcms-menu-items"),
                     parentMenuItem = currentMenuItem.closest(".imcms-menu-items"),
                     currentMenuItemWrap = parentMenuItem.parent();
@@ -165,6 +260,18 @@ Imcms.define("imcms-menu-editor-builder",
                         "menu-items": $menuItems
                     }
                 }).buildBlockStructure("<div>");
+            }*/
+
+            function buildMenuElements(menuElements) {
+                var $menuItems = menuElements.map(function (menuElement) {
+                    return buildMenuItemTree(menuElement, 1);
+                });
+                return new BEM({
+                    block: "imcms-menu-items-tree",
+                    elements: {
+                        "menu-items": $menuItems
+                    }
+                }).buildBlockStructure("<div>");
             }
 
             function buildMenuTitlesRow() {
@@ -184,7 +291,6 @@ Imcms.define("imcms-menu-editor-builder",
                     }
                 }).buildBlockStructure("<div>");
             }
-
 
             return new BEM({
                 block: "imcms-menu-list",
