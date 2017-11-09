@@ -102,6 +102,7 @@ Imcms.config = {
         "imcms-image-files-rest-api": "rest/imcms_image_files_rest_api.js",
         "imcms-image-folders-rest-api": "rest/imcms_image_folders_rest_api.js",
         "imcms-documents-rest-api": "rest/imcms_documents_rest_api.js",
+        "imcms-documents-search-rest-api": "rest/imcms_documents_search_rest_api.js",
         "imcms-users-rest-api": "rest/imcms_users_rest_api.js",
         "imcms-categories-rest-api": "rest/imcms_categories_rest_api.js",
         "imcms-roles-rest-api": "rest/imcms_roles_rest_api.js",
