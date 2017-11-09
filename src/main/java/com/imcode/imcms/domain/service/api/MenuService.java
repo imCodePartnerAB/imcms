@@ -109,10 +109,6 @@ public class MenuService {
 
     /**
      * Also adds necessary props from meta to current item and it items.
-     *
-     * @param menuItemDTO
-     * @param user
-     * @return
      */
     private boolean isMenuItemVisibleToUser(MenuItemDTO menuItemDTO, UserDomainObject user) {
         final DocumentDTO documentDTO = documentService.get(menuItemDTO.getDocumentId());
