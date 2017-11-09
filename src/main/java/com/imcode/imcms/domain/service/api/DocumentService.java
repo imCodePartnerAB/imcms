@@ -9,11 +9,11 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static imcode.server.document.DocumentComparators.ID;
 
 @Service
 public class DocumentService {
@@ -29,6 +29,14 @@ public class DocumentService {
 
     public DocumentDTO get(int docId) {
         return documentMapping.apply(metaRepository.findOne(docId));
+    }
+
+    List<DocumentDTO> getAllDocuments() {
+        return metaRepository.findAll()
+                .stream()
+                .sorted(ID::compare)
+                .map(documentMapping)
+                .collect(Collectors.toList());
     }
 
     boolean hasUserAccessToDoc(int docId, UserDomainObject user) {
