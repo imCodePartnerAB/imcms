@@ -23,12 +23,19 @@ import java.util.stream.Collectors;
 public class SearchDocumentService {
 
     private final Function<DocumentStoredFields, DocumentDTO> mapper;
+    private final DocumentService documentService;
 
-    public SearchDocumentService(Function<DocumentStoredFields, DocumentDTO> mapper) {
+    public SearchDocumentService(Function<DocumentStoredFields, DocumentDTO> mapper,
+                                 DocumentService documentService) {
         this.mapper = mapper;
+        this.documentService = documentService;
     }
 
     public List<DocumentDTO> searchDocuments(SearchQueryDTO searchQuery) {
+
+        if (searchQuery == null) {
+            return documentService.getAllDocuments();
+        }
 
         if (searchQuery.getUserId() == null) {
             searchQuery.setUserId(Imcms.getUser().getId());
