@@ -229,16 +229,6 @@ Imcms.define("imcms-documents-rest-api", ["imcms-rest-api"], function (rest) {
         type: "text"
     }];
 
-
-    api.read = function (data) {
-        return {
-            done: function (callback) {
-                callback((typeof data === "string" || typeof data === "number")
-                    ? docListMock[0] : docListMock);
-            }
-        }
-    };
-
     api.remove = function (documentId) {
         return {
             done: function (callback) {
