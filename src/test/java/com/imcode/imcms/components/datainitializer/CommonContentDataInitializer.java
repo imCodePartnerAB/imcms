@@ -1,8 +1,8 @@
 package com.imcode.imcms.components.datainitializer;
 
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
+import com.imcode.imcms.persistence.entity.CommonContent;
 import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import org.springframework.stereotype.Component;
 

@@ -3,9 +3,9 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.DocRef;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
+import com.imcode.imcms.persistence.entity.CommonContent;
 import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -100,7 +100,7 @@ public class DocumentContentMapper {
                 .headline(commonContent.getHeadline())
                 .menuImageURL(commonContent.getMenuImageURL())
                 .menuText(commonContent.getMenuText())
-                .enabled(commonContent.getEnabled())
+                .enabled(commonContent.isEnabled())
                 .build();
     }
 }

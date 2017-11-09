@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.core;
 
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
+import com.imcode.imcms.persistence.entity.CommonContent;
+import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import imcode.server.LanguageMapper;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
