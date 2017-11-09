@@ -13,12 +13,12 @@ import java.util.List;
  * Created by dmizem from Ubrainians for imCode on 19.10.17.
  */
 @RestController
-@RequestMapping("/documents")
-public class DocumentController {
+@RequestMapping("/documents/search")
+public class SearchDocumentController {
 
     private final SearchDocumentService searchDocumentService;
 
-    public DocumentController(SearchDocumentService searchDocumentService) {
+    public SearchDocumentController(SearchDocumentService searchDocumentService) {
         this.searchDocumentService = searchDocumentService;
     }
 
