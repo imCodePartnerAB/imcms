@@ -20,6 +20,8 @@ import java.util.Optional;
 import static imcode.server.ImcmsConstants.PERM_EDIT_DOCUMENT;
 
 /**
+ * General controller for document viewing in any mode.
+ *
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 18.09.17.
  */
@@ -33,7 +35,7 @@ public class ViewDocumentController {
         this.documentMapper = documentMapper;
     }
 
-    @RequestMapping("/")
+    @RequestMapping({"", "/"})
     public ModelAndView goToStartPage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
         final TextDocumentDomainObject textDocument = getTextDocument(String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID), getDefaultLanguageCode(), request);
         return processDocView(textDocument, request, response, mav);
