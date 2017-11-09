@@ -13,8 +13,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static imcode.server.document.DocumentComparators.ID;
-
 @Service
 public class DocumentService {
 
@@ -34,7 +32,7 @@ public class DocumentService {
     List<DocumentDTO> getAllDocuments() {
         return metaRepository.findAll()
                 .stream()
-                .sorted(ID::compare)
+                .sorted(Comparator.comparingInt(Meta::getId))
                 .map(documentMapping)
                 .collect(Collectors.toList());
     }
