@@ -33,7 +33,7 @@ public class SearchDocumentService {
 
     public List<DocumentDTO> searchDocuments(SearchQueryDTO searchQuery) {
 
-        if (searchQuery == null) {
+        if (searchQuery.getTerm() == null) {
             return documentService.getAllDocuments();
         }
 
