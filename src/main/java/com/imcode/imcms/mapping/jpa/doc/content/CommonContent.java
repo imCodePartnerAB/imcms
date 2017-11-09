@@ -54,7 +54,7 @@ public class CommonContent {
     /**
      * Related document version number
      */
-    @Column(name = "version_no")
+    @Column(name = "version_no", nullable = false)
     private Integer versionNo;
 
     public CommonContent() {
