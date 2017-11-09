@@ -62,7 +62,7 @@ public class SearchDocumentService {
 
         if (searchQuery.getCategoriesId() != null) {
             indexQuery = indexQuery.insert(0, indexQuery)
-                    .append(") AND (" + DocumentIndex.FIELD__CATEGORY_ID + ":(")
+                    .append(") AND (" + DocumentIndex.FIELD__CATEGORY_ID + ":(") // don't be so sad
                     .append(searchQuery.getCategoriesId().stream().map(Object::toString).collect(Collectors.joining(" AND ")))
                     .append("))");
         }
