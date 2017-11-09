@@ -54,6 +54,10 @@ public class TextService {
         return getText(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
     }
 
+    public TextDTO getPublicText(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
+        return getText(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
+    }
+
     public void save(TextDTO textDTO) {
         final Version version = versionService.getDocumentWorkingVersion(textDTO.getDocId());
         final Language language = languageService.findByCode(textDTO.getLangCode());

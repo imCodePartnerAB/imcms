@@ -101,7 +101,7 @@ public class CategoryMapper {
         categoryTypeRepository.saveAndFlush(toJpaObject(categoryType));
     }
 
-    public CategoryDomainObject addCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
+    public CategoryDomainObject addCategory(CategoryDomainObject category) {
         return toDomainObject(categoryRepository.saveAndFlush(toJpaObject(category)));
     }
 

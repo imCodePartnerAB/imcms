@@ -344,8 +344,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    void changeDocumentDefaultVersion(int docId, int newDocDefaultVersionNo, UserDomainObject publisher)
-            throws DocumentSaveException, NoPermissionToEditDocumentException {
+    void changeDocumentDefaultVersion(int docId, int newDocDefaultVersionNo, UserDomainObject publisher) {
         try {
             documentSaver.changeDocumentDefaultVersion(docId, newDocDefaultVersionNo, publisher);
         } finally {

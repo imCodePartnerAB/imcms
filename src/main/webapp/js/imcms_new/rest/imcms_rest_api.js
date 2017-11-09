@@ -17,12 +17,20 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
         var type = this.type;
         logAjaxRequest(type, url, data);
 
+        var contentType;
+
+        if (this.contentType === undefined) {
+            contentType = 'application/' + (this.json ? 'json' : 'x-www-form-urlencoded') + '; charset=UTF-8'
+
+        } else {
+            contentType = this.contentType;
+        }
+
         return $.ajax({
             url: url,
             type: type,
-            contentType: this.json ?
-                'application/json; charset=utf-8'
-                : 'application/x-www-form-urlencoded; charset=UTF-8',
+            contentType: contentType,
+            processData: this.processData,
 
             data: this.json ? JSON.stringify(data) : data,
 
@@ -57,6 +65,8 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
     };
 
     return {
+
+        ajax: ajax,
 
         API: API,
 

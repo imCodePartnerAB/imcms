@@ -3,9 +3,16 @@
  * 01.09.17
  */
 Imcms.define("imcms-text-editor-initializer",
-    ["tinyMCE", "imcms-uuid-generator", "jquery", "imcms"],
-    function (tinyMCE, uuidGenerator, $, imcms) {
+    ["tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api"],
+    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi) {
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
+
+        function saveContent(editor) {
+            var textDTO = $(editor.$()).data();
+            textDTO.text = editor.getContent();
+
+            textsRestApi.create(textDTO); // todo: unfocus current editor, maybe
+        }
 
         var inlineEditorConfig = {
             skin_url: imcms.contextPath + '/js/libs/tinymce/skins/white',
@@ -20,7 +27,8 @@ Imcms.define("imcms-text-editor-initializer",
             ' alignleft aligncenter alignright alignjustify | link image | fullscreen | save',
             menubar: false,
             statusbar: false,
-            init_instance_callback: prepareEditor
+            init_instance_callback: prepareEditor,
+            save_onsavecallback: saveContent
         };
 
         function clearSaveBtnText(editor) {

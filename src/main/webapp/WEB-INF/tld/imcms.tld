@@ -252,22 +252,6 @@
     </tag-file>
 
     <function>
-        <name>getTextDocumentDomainObject</name>
-        <function-class>com.imcode.imcms.web.tag.Functions</function-class>
-        <function-signature>imcode.server.document.textdocument.TextDocumentDomainObject getTextDocumentDomainObject(
-            java.lang.String,javax.servlet.jsp.PageContext)
-        </function-signature>
-    </function>
-
-    <function>
-        <name>getAbsolutePathToDocument</name>
-        <function-class>imcode.util.Utility</function-class>
-        <function-signature>java.lang.String getAbsolutePathToDocument(javax.servlet.http.HttpServletRequest,
-            imcode.server.document.DocumentDomainObject)
-        </function-signature>
-    </function>
-
-    <function>
         <name>getStatusIconTemplatePath</name>
         <function-class>imcode.util.Html</function-class>
         <function-signature>java.lang.String getStatusIconTemplatePath(imcode.server.document.LifeCyclePhase)

@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
@@ -144,7 +143,7 @@ public class AdminCategories extends HttpServlet {
     }
 
     private AdminCategoriesPage editCategory(HttpServletRequest req, HttpServletResponse res, AdminCategoriesPage formBean,
-                                             CategoryMapper categoryMapper) throws ServletException, IOException {
+                                             CategoryMapper categoryMapper) {
         formBean.setMode(PARAMETER_MODE__EDIT_CATEGORY);
 
         CategoryDomainObject category = getCategoryFromIdInRequest(req, categoryMapper);
@@ -186,7 +185,7 @@ public class AdminCategories extends HttpServlet {
     }
 
     private AdminCategoriesPage addCategory(HttpServletRequest req, HttpServletResponse res, AdminCategoriesPage adminCategoriesPage,
-                                            CategoryMapper categoryMapper) throws ServletException, IOException {
+                                            CategoryMapper categoryMapper) {
         adminCategoriesPage.setMode(PARAMETER_MODE__ADD_CATEGORY);
 
         CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest(req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, categoryMapper);
@@ -200,10 +199,7 @@ public class AdminCategories extends HttpServlet {
         adminCategoriesPage.setCategoryTypeToEdit(categoryTypeToAddTo);
 
         if (null != req.getParameter(PARAMETER__ADD_CATEGORY_BUTTON) && StringUtils.isNotBlank(newCategory.getName())) {
-            try {
-                categoryMapper.addCategory(newCategory);
-            } catch (CategoryAlreadyExistsException ignored) {
-            }
+            categoryMapper.addCategory(newCategory);
             adminCategoriesPage.setCategoryToEdit(new CategoryDomainObject(0, null, "", "", null));
             adminCategoriesPage.setUniqueCategoryName(true);
         }

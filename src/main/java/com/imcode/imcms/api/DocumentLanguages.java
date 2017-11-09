@@ -21,29 +21,10 @@ public class DocumentLanguages {
 
     private final List<DocumentLanguage> languages;
 
-    /**
-     * @deprecated use DI to get bean instance or
-     * {@link DocumentLanguages#create(com.imcode.imcms.mapping.DocumentLanguageMapper, java.util.Properties)}
-     * to init
-     */
-    @Deprecated
-    public DocumentLanguages(List<DocumentLanguage> languages, Map<String, DocumentLanguage> languagesByHosts,
-                             DocumentLanguage defaultLanguage) {
+    private DocumentLanguages(List<DocumentLanguage> languages, Map<String, DocumentLanguage> languagesByHosts,
+                              DocumentLanguage defaultLanguage) {
         this.languagesByHosts = Collections.unmodifiableMap(languagesByHosts);
         this.defaultLanguage = defaultLanguage;
-
-        this.languages = Collections.unmodifiableList(languages);
-        this.languagesByCodes = new HashMap<>();
-
-        for (DocumentLanguage language : languages) {
-            languagesByCodes.put(language.getCode(), language);
-        }
-    }
-
-    private DocumentLanguages(List<DocumentLanguage> languages, Map<String, DocumentLanguage> languagesByHosts,
-                              DocumentLanguageMapper languageMapper) {
-        this.languagesByHosts = Collections.unmodifiableMap(languagesByHosts);
-        this.defaultLanguage = languageMapper.getDefault();
 
         this.languages = Collections.unmodifiableList(languages);
         this.languagesByCodes = new HashMap<>();

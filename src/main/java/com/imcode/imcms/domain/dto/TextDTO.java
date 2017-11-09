@@ -14,7 +14,7 @@ public class TextDTO {
     private Integer docId;
     private LoopEntryRefDTO loopEntryRef;
     private String langCode;
-    private Type type = Type.PLAIN_TEXT;
+    private Type type = Type.HTML;
     private String text = "";
 
     public TextDTO(Integer index, Integer docId, String langCode, LoopEntryRefDTO loopEntryRef) {
