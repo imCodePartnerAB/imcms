@@ -118,7 +118,7 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function loadPageInfoDataFromDocumentBy(docId) {
-            documentsRestApi.read(docId).done(function (document) {
+            documentsRestApi.read({docId: docId}).done(function (document) {
                 $title.text("document " + document.id);
 
                 pageInfoTabs.tabBuilders.forEach(function (tab) {
