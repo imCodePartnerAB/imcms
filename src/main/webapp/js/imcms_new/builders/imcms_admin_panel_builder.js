@@ -61,7 +61,7 @@ Imcms.define("imcms-admin-panel-builder",
                 }, {
                     name: 'edit',
                     tag: '<a>',
-                    href: imcms.contextPath + "/servlet/AdminDoc?meta_id=" + imcms.document.id + "&flags=" + imcms.accessFlags,
+                        href: imcms.contextPath + "/servlet/AdminDoc?meta_id=" + imcms.document.id,
                     content: 'edit',
                     modifiers: ["edit"]
                 }, {

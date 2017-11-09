@@ -158,7 +158,7 @@ public class Utility {
     }
 
     public static boolean isTextDocument(DocumentDomainObject document) {
-        return DocumentTypeDomainObject.TEXT == document.getDocumentType();
+        return DocumentTypeDomainObject.TEXT.equals(document.getDocumentType());
     }
 
     public static UserDomainObject getLoggedOnUser(HttpServletRequest req) {
