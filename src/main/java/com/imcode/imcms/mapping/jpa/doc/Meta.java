@@ -38,7 +38,6 @@ public class Meta implements Serializable {
     @Column(name = "activate", nullable = false, updatable = false)
     private Integer activate = 1;
 
-    //Create enum
     @Column(name = "doc_type", nullable = false, updatable = false)
     @Enumerated(EnumType.ORDINAL)
     private DocumentType documentType;
@@ -114,46 +113,14 @@ public class Meta implements Serializable {
     private Set<Integer> categoryIds = new HashSet<>();
 
     /**
-     * Set id is either restricted 1 or restricted 2
-     * Roles are user defined or system predefined roles
-     * RoleId to permission-set id mapping.
+     * @see com.imcode.imcms.persistence.entity.Role#id as key
+     * @see Permission#ordinal() as value
      */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "roles_rights", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "role_id")
     @Column(name = "set_id", columnDefinition = "smallint")
     private Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<>();
-
-    /**
-     * Limited 1 permission set's bits for new document.
-     * Permission set id mapped to bits.
-     * permisionId in the table actually is not an item 'id' but a bit set value.
-     */
-    // .
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
-    @MapKeyColumn(name = "set_id")
-    @Column(name = "permission_id")
-    private Map<Integer, Integer> permissionSetBitsMap = new HashMap<>();
-
-    /**
-     * Limited 1 permission set's bits for a new (inherited) document.
-     * Permission set id mapped to bits.
-     * permisionId in the table actually is not an 'id' but a bit set value.
-     */
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "new_doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
-    @MapKeyColumn(name = "set_id")
-    @Column(name = "permission_id")
-    private Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<>();
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
-    private Set<PermissionSetEx> permissionSetEx = new HashSet<>();
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "new_doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
-    private Set<PermissionSetEx> permissionSetExForNew = new HashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -168,6 +135,34 @@ public class Meta implements Serializable {
     @Column(name = "value")
     private Set<String> keywords = new HashSet<>();
 
+    // TODO: 20.10.17 Delete field mapping and table
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
+    @MapKeyColumn(name = "set_id")
+    @Column(name = "permission_id")
+    private Map<Integer, Integer> permissionSetBitsMap = new HashMap<>();
+
+    // TODO: 20.10.17 Delete field mapping and table
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "new_doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
+    @MapKeyColumn(name = "set_id")
+    @Column(name = "permission_id")
+    private Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<>();
+
+    // TODO: 20.10.17 Delete mapping and table
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
+    private Set<PermissionSetEx> permissionSetEx = new HashSet<>();
+
+    // TODO: 20.10.17 Delete mapping and table
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "new_doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
+    private Set<PermissionSetEx> permissionSetExForNew = new HashSet<>();
+
+    /**
+     * DocumentType database column has int value. It takes from {@link Enum#ordinal}.
+     * Do not change order of enum constants.
+     */
     public enum DocumentType {
         FILE,
         HTML,
@@ -175,6 +170,10 @@ public class Meta implements Serializable {
         URL
     }
 
+    /**
+     * PublicationStatus database column has int value. It takes from {@link Enum#ordinal}.
+     * Do not change order of enum constants.
+     */
     public enum PublicationStatus {
         NEW,
         DISAPPROVED,
@@ -187,6 +186,30 @@ public class Meta implements Serializable {
     public enum DisabledLanguageShowMode {
         SHOW_IN_DEFAULT_LANGUAGE,
         DO_NOT_SHOW,
+    }
+
+    /**
+     * Permissions for document access.
+     * Permission strictness defined by descending {@link Permission#ordinal()}.
+     * Do not change order of enum constants.
+     */
+    public enum Permission {
+        EDIT,
+        RESTRICTED_1,
+        RESTRICTED_2,
+        VIEW;
+
+        public static Permission fromOrdinal(int ordinal) {
+            return values()[ordinal];
+        }
+
+        public boolean isMorePrivilegedThan(Permission permission) {
+            return ordinal() < permission.ordinal();
+        }
+
+        public boolean isAtLeastAsPrivilegedAs(Permission permission) {
+            return ordinal() <= permission.ordinal();
+        }
     }
 
     /**
