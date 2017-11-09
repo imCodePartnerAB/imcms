@@ -5,10 +5,10 @@
 Imcms.define("imcms-document-editor-builder",
     [
         "imcms-bem-builder", "imcms-page-info-builder", "imcms-components-builder", "imcms-primitives-builder",
-        "imcms-documents-rest-api", "imcms-controls-builder", "imcms-users-rest-api", "imcms-categories-rest-api",
-        "imcms-window-builder", "jquery"
+        "imcms-documents-rest-api", "imcms-documents-search-rest-api", "imcms-controls-builder", "imcms-users-rest-api",
+        "imcms-categories-rest-api", "imcms-window-builder", "jquery"
     ],
-    function (BEM, pageInfoBuilder, components, primitives, docRestApi, controlsBuilder, usersRestApi,
+    function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, controlsBuilder, usersRestApi,
               categoriesRestApi, WindowBuilder, $) {
 
         var isMouseDown = false,
@@ -474,7 +474,7 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function loadDocumentEditorContent(opts) {
-            docRestApi.read(null).done(function (documentList) {
+            docSearchRestApi.read().done(function (documentList) {
                 $editorBody = buildEditorBody(documentList, opts);
                 $documentsContainer.append($editorBody);
             });
