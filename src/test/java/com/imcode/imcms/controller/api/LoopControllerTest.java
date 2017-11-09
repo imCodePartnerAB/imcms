@@ -11,6 +11,7 @@ import com.imcode.imcms.persistence.entity.Loop;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;
 import imcode.server.Imcms;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.Before;
@@ -68,11 +69,11 @@ public class LoopControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void postLoop_When_UserIsNotAdmin_Expect_IllegalAccessException() throws Exception {
+    public void postLoop_When_UserIsNotAdmin_Expect_NoPermissionToEditDocumentException() throws Exception {
         final UserDomainObject user = new UserDomainObject(2);
         Imcms.setUser(user); // means current user is default user
 
-        performPostWithContentExpectException(TEST_LOOP_DTO, IllegalAccessException.class);
+        performPostWithContentExpectException(TEST_LOOP_DTO, NoPermissionToEditDocumentException.class);
     }
 
     @Test

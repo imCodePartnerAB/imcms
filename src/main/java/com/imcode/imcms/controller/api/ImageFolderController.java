@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.service.api.ImageFolderService;
 import imcode.server.Imcms;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,30 +33,30 @@ public class ImageFolderController {
     }
 
     @PostMapping
-    public boolean createImageFolder(@RequestBody ImageFolderDTO folderToCreate) throws IllegalAccessException {
+    public boolean createImageFolder(@RequestBody ImageFolderDTO folderToCreate) {
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {
-            throw new IllegalAccessException("User do not have access to change image structure.");
+            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
         }
 
         return imageFolderService.createImageFolder(folderToCreate);
     }
 
     @PatchMapping
-    public boolean renameFolder(@RequestBody ImageFolderDTO folderToRename) throws IllegalAccessException {
+    public boolean renameFolder(@RequestBody ImageFolderDTO folderToRename) {
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {
-            throw new IllegalAccessException("User do not have access to change image structure.");
+            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
         }
 
         return imageFolderService.renameFolder(folderToRename);
     }
 
     @DeleteMapping
-    public boolean deleteFolder(@RequestBody ImageFolderDTO folderToDelete) throws IllegalAccessException, IOException {
+    public boolean deleteFolder(@RequestBody ImageFolderDTO folderToDelete) throws IOException {
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {
-            throw new IllegalAccessException("User do not have access to change image structure.");
+            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
         }
 
         return imageFolderService.deleteFolder(folderToDelete);

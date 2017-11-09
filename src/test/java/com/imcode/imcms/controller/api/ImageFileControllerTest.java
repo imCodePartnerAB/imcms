@@ -7,6 +7,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import imcode.server.Imcms;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
@@ -101,7 +102,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         final MockMultipartFile file = new MockMultipartFile("files", "img1-test.jpg", null, imageFileBytes);
         final MockMultipartHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath()).file(file);
 
-        performRequestBuilderExpectException(IllegalAccessException.class, fileUploadRequestBuilder);
+        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, fileUploadRequestBuilder);
     }
 
     @Test
@@ -223,7 +224,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                 .content(asJson(imageFileDTO));
 
         assertTrue(imageFile.exists());
-        performRequestBuilderExpectException(IllegalAccessException.class, requestBuilder);
+        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
         assertTrue(imageFile.exists());
         assertTrue(FileUtility.forceDelete(imageFile));
     }

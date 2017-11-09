@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.service.api.LoopService;
 import imcode.server.Imcms;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,11 +22,11 @@ public class LoopController {
     }
 
     @PostMapping
-    public void saveLoop(@RequestBody LoopDTO loopDTO) throws IllegalAccessException {
+    public void saveLoop(@RequestBody LoopDTO loopDTO) {
 
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {
-            throw new IllegalAccessException("User do not have access to change loop structure.");
+            throw new NoPermissionToEditDocumentException("User do not have access to change loop structure.");
         }
 
         loopService.saveLoop(loopDTO);

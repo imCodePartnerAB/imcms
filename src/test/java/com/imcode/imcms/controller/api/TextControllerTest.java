@@ -12,6 +12,7 @@ import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
@@ -170,6 +171,6 @@ public class TextControllerTest extends AbstractControllerTest {
                 .param("type", PLAIN_TEXT.name())
                 .param("text", "testestest");
 
-        performRequestBuilderExpectException(IllegalAccessException.class, requestBuilder);
+        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
     }
 }

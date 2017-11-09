@@ -7,6 +7,7 @@ import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import imcode.server.Imcms;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
@@ -155,7 +156,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
 
         assertFalse(folder.exists());
-        performRequestBuilderExpectException(IllegalAccessException.class, requestBuilder);
+        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
         assertFalse(folder.exists());
     }
 
@@ -374,7 +375,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
-            performRequestBuilderExpectException(IllegalAccessException.class, requestBuilderPatch);
+            performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilderPatch);
             assertFalse(newFolder.exists());
 
 
@@ -463,7 +464,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
-            performRequestBuilderExpectException(IllegalAccessException.class, requestBuilderDelete);
+            performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilderDelete);
             assertTrue(folder.exists());
 
         } finally {
