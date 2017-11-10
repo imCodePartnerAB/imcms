@@ -1,10 +1,15 @@
 package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
+import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
+import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
+import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.persistence.entity.CommonContent;
+import com.imcode.imcms.util.Value;
+import imcode.server.LanguageMapper;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
 import org.junit.Before;
@@ -16,12 +21,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -39,6 +44,12 @@ public class CommonContentServiceTest {
 
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
+
+    @Autowired
+    private VersionDataInitializer versionDataInitializer;
+
+    @Autowired
+    private LanguageDataInitializer languageDataInitializer;
 
     @Autowired
     private Function<CommonContent, CommonContentDTO> commonContentToDto;
@@ -75,8 +86,48 @@ public class CommonContentServiceTest {
     }
 
     @Test
-    public void saveCommonContent_Expect_Saved() {
+    public void saveCommonContent_When_ExistBefore_Expect_Saved() {
+        final List<CommonContentDTO> contents = commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX)
+                .stream()
+                .map(commonContentToDto)
+                .collect(Collectors.toList());
 
+        for (CommonContentDTO content : contents) {
+            content.setHeadline("test_content_headline");
+            commonContentService.save(content);
+        }
+
+        user.setLanguageIso639_2("eng");
+        final CommonContentDTO engContent = commonContentService.getOrCreate(DOC_ID, VERSION_INDEX, user);
+
+        user.setLanguageIso639_2("swe");
+        final CommonContentDTO sweContent = commonContentService.getOrCreate(DOC_ID, VERSION_INDEX, user);
+
+        assertTrue(contents.containsAll(Arrays.asList(engContent, sweContent)));
+    }
+
+    @Test
+    public void saveCommonContent_When_NotExistBefore_Expect_Saved() {
+        versionDataInitializer.createData(VERSION_INDEX, DOC_ID);
+
+        for (LanguageDTO languageDTO : languageDataInitializer.createData()) {
+            final CommonContentDTO commonContentDTO = Value.with(new CommonContentDTO(), contentDTO -> {
+                contentDTO.setVersionNo(VERSION_INDEX);
+                contentDTO.setEnabled(true);
+                contentDTO.setMenuImageURL("menu_image_url_test");
+                contentDTO.setMenuText("menu_text_test");
+                contentDTO.setHeadline("test_headline");
+                contentDTO.setDocId(DOC_ID);
+                contentDTO.setLanguage(languageDTO);
+            });
+
+            commonContentService.save(commonContentDTO);
+            user.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(languageDTO.getCode()));
+            final CommonContentDTO savedContent = commonContentService.getOrCreate(DOC_ID, VERSION_INDEX, user);
+            commonContentDTO.setId(savedContent.getId());
+
+            assertEquals(savedContent, commonContentDTO);
+        }
     }
 
 }

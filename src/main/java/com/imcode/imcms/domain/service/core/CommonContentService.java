@@ -16,12 +16,15 @@ public class CommonContentService {
 
     private final CommonContentRepository commonContentRepository;
     private final Function<CommonContent, CommonContentDTO> commonContentToDTO;
+    private final Function<CommonContentDTO, CommonContent> commonContentSaver;
 
     public CommonContentService(CommonContentRepository commonContentRepository,
-                                Function<CommonContent, CommonContentDTO> commonContentToDTO) {
+                                Function<CommonContent, CommonContentDTO> commonContentToDTO,
+                                Function<CommonContentDTO, CommonContent> commonContentDtoToCommonContent) {
 
         this.commonContentRepository = commonContentRepository;
         this.commonContentToDTO = commonContentToDTO;
+        this.commonContentSaver = commonContentDtoToCommonContent.andThen(commonContentRepository::save);
     }
 
     /**
@@ -46,6 +49,10 @@ public class CommonContentService {
         }
 
         return createFromWorkingVersion(docId, code, versionNo);
+    }
+
+    public void save(CommonContentDTO saveMe) {
+        commonContentSaver.apply(saveMe);
     }
 
     private CommonContentDTO createFromWorkingVersion(int docId, String code, int versionNo) {
