@@ -250,7 +250,8 @@ public class MappingConfig {
 
     @Bean
     public Function<Meta, DocumentDTO> documentMapping(VersionService versionService,
-                                                       CommonContentService commonContentService) {
+                                                       CommonContentService commonContentService,
+                                                       Function<Language, LanguageDTO> languageToLanguageDTO) {
         return (meta) -> {
             final DocumentDTO dto = new DocumentDTO();
             final Integer metaId = meta.getId();
@@ -262,6 +263,14 @@ public class MappingConfig {
             final UserDomainObject user = Imcms.getUser();
             final String title = commonContentService.getOrCreate(metaId, latestVersion, user).getHeadline();
             dto.setTitle(title);
+
+            final List<LanguageDTO> languages = new ArrayList<>();
+
+            for (Language language : meta.getEnabledLanguages()) {
+                languageToLanguageDTO.andThen(languages::add).apply(language);
+            }
+
+            dto.setLanguages(languages);
 
             return dto;
         };
