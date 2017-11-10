@@ -37,6 +37,10 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
             success: function (response) {
                 logAjaxResponse(type, url, response);
                 callback && callback(response);
+            },
+
+            error: function (response) {
+                console.error(response);
             }
         });
     }
