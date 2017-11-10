@@ -18,7 +18,8 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
 
     @Query("SELECT m FROM com.imcode.imcms.persistence.entity.Menu m " +
             "left join fetch m.menuItems " +
-            "WHERE m.version = ?1")
+            "WHERE m.version = ?1 " +
+            "GROUP BY m.id")
     List<Menu> findByVersion(Version version);
 
 }
