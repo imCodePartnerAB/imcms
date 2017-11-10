@@ -14,8 +14,29 @@ Imcms.define("imcms-menu-editor-builder",
         var $title, $menuElementsContainer, $documentsContainer;
         var docId, menuId;
 
+        function saveMenuElements() {
+            var menuItems = $menuElementsContainer.find("[data-menu-items-lvl=1]")
+                .map(function () {
+                    return {
+                        documentId: $(this).data("menuId"),
+                        children: [] // todo: get children too!
+                    }
+                })
+                .toArray();
+
+            var menuDTO = {
+                menuId: menuId,
+                docId: docId,
+                menuItems: menuItems
+            };
+
+            menusRestApi.create(menuDTO).done(function () {
+                // todo: update menu on page!
+            });
+        }
+
         function saveAndClose() {
-            // fixme: just closing now, should be save and close
+            saveMenuElements();
             menuWindowBuilder.closeWindow();
         }
 
@@ -153,7 +174,6 @@ Imcms.define("imcms-menu-editor-builder",
 
             return treeBlock.append($childElements);
         }
-
 
 
         function buildMenuEditorContent(menuElementsTree) {
