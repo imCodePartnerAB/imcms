@@ -14,9 +14,12 @@
 <%--@elvariable id="targetDocId" type="java.lang.Integer"--%>
 <%--@elvariable id="menuService" type="com.imcode.imcms.domain.service.api.MenuService"--%>
 
-<c:set var="targetDocId"
-       value="${empty document ? currentDocument.id : document}"/>
-<c:set var="menuItems" value="${menuService.getPublicMenuItemsOf(index, targetDocId)}" scope="request"/>
+<c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
+
+<c:set var="menuItems" value="${isEditMode
+     ? menuService.getMenuItemsOf(index, targetDocId)
+     : menuService.getPublicMenuItemsOf(index, targetDocId)}" scope="request"/>
+
 <c:set var="menuContent">${pre}<jsp:doBody/>${post}</c:set>
 <c:remove var="menuItems"/>
 
