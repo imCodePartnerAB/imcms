@@ -11,6 +11,7 @@ import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentStoredFields;
+import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import org.apache.commons.io.FilenameUtils;
@@ -252,14 +253,15 @@ public class MappingConfig {
                                                        CommonContentService commonContentService) {
         return (meta) -> {
             final DocumentDTO dto = new DocumentDTO();
-            dto.setId(meta.getId());
+            final Integer metaId = meta.getId();
+            dto.setId(metaId);
             dto.setTarget(meta.getTarget());
             dto.setAlias(meta.getProperties().get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
 
-            final Version latestVersion = versionService.getLatestVersion(meta.getId());
-            final CommonContent commonContent = commonContentService
-                    .getOrCreate(meta.getId(), latestVersion.getNo(), Imcms.getUser());
-            dto.setTitle(commonContent.getHeadline());
+            final int latestVersion = versionService.getLatestVersion(metaId).getNo();
+            final UserDomainObject user = Imcms.getUser();
+            final String title = commonContentService.getOrCreate(metaId, latestVersion, user).getHeadline();
+            dto.setTitle(title);
 
             return dto;
         };
