@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "imcms_doc_i18n_meta")
-public class CommonContent {
+public class CommonContent implements CommonContentDataHolder<Language> {
 
     private static final int META_HEADLINE_MAX_LENGTH = 255;
     private static final int META_TEXT_MAX_LENGTH = 1000;

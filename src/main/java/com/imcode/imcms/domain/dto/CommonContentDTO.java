@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import com.imcode.imcms.persistence.entity.CommonContentDataHolder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommonContentDTO {
+public class CommonContentDTO implements CommonContentDataHolder<LanguageDTO> {
 
     private Integer id;
     private Integer docId;

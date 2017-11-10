@@ -2,6 +2,7 @@ package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.dto.ImageData.CropRegion;
+import com.imcode.imcms.domain.service.api.LanguageService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.User;
@@ -33,6 +34,18 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
 
 @Configuration
 public class MappingConfig {
+    private static <C1 extends CommonContentDataHolder<L1>, C2 extends CommonContentDataHolder<L2>, L1, L2>
+    void transferCommonContentData(C1 from, C2 to, Function<L1, L2> languageMapper) {
+        to.setId(from.getId());
+        to.setDocId(from.getDocId());
+        to.setHeadline(from.getHeadline());
+        to.setLanguage(languageMapper.apply(from.getLanguage()));
+        to.setMenuText(from.getMenuText());
+        to.setMenuImageURL(from.getMenuImageURL());
+        to.setEnabled(from.isEnabled());
+        to.setVersionNo(from.getVersionNo());
+    }
+
     @Bean
     public Function<LoopEntryDTO, LoopEntry> loopEntryDtoToEntry() {
         return loopEntryDTO -> new LoopEntry(loopEntryDTO.getIndex(), loopEntryDTO.isEnabled());
@@ -83,6 +96,11 @@ public class MappingConfig {
             BeanUtils.copyProperties(language, languageDTO);
             return languageDTO;
         };
+    }
+
+    @Bean
+    public Function<LanguageDTO, Language> languageDtoToLanguage(LanguageService languageService) {
+        return languageDTO -> languageService.findByCode(languageDTO.getCode());
     }
 
     @Bean
@@ -251,19 +269,19 @@ public class MappingConfig {
     }
 
     @Bean
+    public Function<CommonContentDTO, CommonContent> dtoToCommonContent(Function<LanguageDTO, Language> dtoToLanguage) {
+        return commonContentDTO -> {
+            final CommonContent commonContent = new CommonContent();
+            transferCommonContentData(commonContentDTO, commonContent, dtoToLanguage);
+            return commonContent;
+        };
+    }
+
+    @Bean
     public Function<CommonContent, CommonContentDTO> commonContentToDTO(Function<Language, LanguageDTO> languageToDTO) {
         return commonContent -> {
             final CommonContentDTO commonContentDTO = new CommonContentDTO();
-
-            commonContentDTO.setId(commonContent.getId());
-            commonContentDTO.setDocId(commonContent.getDocId());
-            commonContentDTO.setHeadline(commonContent.getHeadline());
-            commonContentDTO.setLanguage(languageToDTO.apply(commonContent.getLanguage()));
-            commonContentDTO.setMenuText(commonContent.getMenuText());
-            commonContentDTO.setMenuImageURL(commonContent.getMenuImageURL());
-            commonContentDTO.setEnabled(commonContent.isEnabled());
-            commonContentDTO.setVersionNo(commonContent.getVersionNo());
-
+            transferCommonContentData(commonContent, commonContentDTO, languageToDTO);
             return commonContentDTO;
         };
     }
