@@ -24,11 +24,13 @@ public class SearchDocumentService {
 
     private final Function<DocumentStoredFields, DocumentDTO> mapper;
     private final DocumentService documentService;
+    private final DocumentMapper documentMapper;
 
     public SearchDocumentService(Function<DocumentStoredFields, DocumentDTO> mapper,
-                                 DocumentService documentService) {
+                                 DocumentService documentService, DocumentMapper documentMapper) {
         this.mapper = mapper;
         this.documentService = documentService;
+        this.documentMapper = documentMapper;
     }
 
     public List<DocumentDTO> searchDocuments(SearchQueryDTO searchQuery) {
@@ -40,8 +42,6 @@ public class SearchDocumentService {
         if (searchQuery.getUserId() == null) {
             searchQuery.setUserId(Imcms.getUser().getId());
         }
-
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         List<DocumentDTO> result;
         StringBuilder indexQuery = new StringBuilder();
