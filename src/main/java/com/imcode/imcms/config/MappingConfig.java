@@ -6,10 +6,10 @@ import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.Meta;
+import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentStoredFields;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
@@ -28,6 +28,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
 @Configuration
 public class MappingConfig {
@@ -69,7 +71,7 @@ public class MappingConfig {
             documentDTO.setAlias(documentFields.alias());
             documentDTO.setTitle(documentFields.headline());
             documentDTO.setTarget(null);
-            documentDTO.setType(Meta.DocumentType.values()[documentFields.documentType()]);
+            documentDTO.setType(DocumentType.values()[documentFields.documentType()]);
             return documentDTO;
         };
     }
@@ -249,6 +251,24 @@ public class MappingConfig {
     }
 
     @Bean
+    public Function<CommonContent, CommonContentDTO> commonContentToDTO(Function<Language, LanguageDTO> languageToDTO) {
+        return commonContent -> {
+            final CommonContentDTO commonContentDTO = new CommonContentDTO();
+
+            commonContentDTO.setId(commonContent.getId());
+            commonContentDTO.setDocId(commonContent.getDocId());
+            commonContentDTO.setHeadline(commonContent.getHeadline());
+            commonContentDTO.setLanguage(languageToDTO.apply(commonContent.getLanguage()));
+            commonContentDTO.setMenuText(commonContent.getMenuText());
+            commonContentDTO.setMenuImageURL(commonContent.getMenuImageURL());
+            commonContentDTO.setEnabled(commonContent.isEnabled());
+            commonContentDTO.setVersionNo(commonContent.getVersionNo());
+
+            return commonContentDTO;
+        };
+    }
+
+    @Bean
     public Function<Meta, DocumentDTO> documentMapping(VersionService versionService,
                                                        CommonContentService commonContentService,
                                                        Function<Language, LanguageDTO> languageToLanguageDTO) {
@@ -257,7 +277,7 @@ public class MappingConfig {
             final Integer metaId = meta.getId();
             dto.setId(metaId);
             dto.setTarget(meta.getTarget());
-            dto.setAlias(meta.getProperties().get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
+            dto.setAlias(meta.getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
 
             final int latestVersion = versionService.getLatestVersion(metaId).getNo();
             final UserDomainObject user = Imcms.getUser();

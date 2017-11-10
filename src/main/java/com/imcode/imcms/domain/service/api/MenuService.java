@@ -1,11 +1,11 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.VersionService;
-import com.imcode.imcms.persistence.entity.CommonContent;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
@@ -141,7 +141,7 @@ public class MenuService {
 
     private void addTitleToMenuItem(MenuItemDTO menuItemDTO, UserDomainObject user) {
         final Version latestVersion = versionService.getLatestVersion(menuItemDTO.getDocumentId());
-        final CommonContent commonContent = commonContentService
+        final CommonContentDTO commonContent = commonContentService
                 .getOrCreate(latestVersion.getDocId(), latestVersion.getNo(), user);
 
         menuItemDTO.setTitle(commonContent.getHeadline());
