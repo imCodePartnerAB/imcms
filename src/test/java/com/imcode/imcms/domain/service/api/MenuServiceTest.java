@@ -23,8 +23,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -90,7 +89,7 @@ public class MenuServiceTest {
         final Set<Version> versions = new HashSet<>();
         final List<MenuDTO> menuDTOS = IntStream.range(0, 4)
                 .mapToObj(menuIndex -> {
-                    final Menu menu = menuDataInitializer.createData(false, menuIndex);
+                    final Menu menu = menuDataInitializer.createData(true, menuIndex);
                     versions.add(menu.getVersion());
                     return menuToMenuDTO.apply(menu);
                 })
@@ -99,6 +98,31 @@ public class MenuServiceTest {
         final Collection<MenuDTO> allByVersion = menuService.findAllByVersion(new ArrayList<>(versions).get(0));
         assertEquals(menuDTOS.size(), allByVersion.size());
         assertTrue(allByVersion.containsAll(menuDTOS));
+    }
+
+    @Test
+    public void saveMenu_When_ExistBefore_Expect_NoDuplicatedDataAndCorrectSave() {
+        menuDataInitializer.cleanRepositories();
+        versionDataInitializer.createData(VERSION_NO, DOC_ID);
+
+        final Menu menu = menuDataInitializer.createData(true);
+        final List<MenuItemDTO> menuItemBefore = menuDataInitializer.getMenuItemDtoList();
+        final MenuDTO menuDTO = menuDtoFrom(menu.getNo(), menu.getVersion().getDocId(), menuItemBefore);
+
+        menuService.saveFrom(menuDTO);
+
+        List<MenuItemDTO> menuItemAfter = menuDataInitializer.getMenuItemDtoList();
+        assertEquals(menuItemBefore.size(), menuItemAfter.size());
+        assertEquals(menuItemBefore, menuItemAfter);
+
+        final List<MenuItemDTO> menuItems = menuDTO.getMenuItems();
+        final MenuItemDTO removed = menuItems.remove(0);
+        final int newSize = menuItems.size();
+        assertNotNull(removed);
+        menuService.saveFrom(menuDTO);
+
+        menuItemAfter = menuDataInitializer.getMenuItemDtoList();
+        assertEquals(newSize, menuItemAfter.size());
     }
 
     private void getMenuItemsOf_When_MenuNoAndDocId_Expect_ResultEqualsExpectedMenuItems(boolean isAll) {
