@@ -161,14 +161,60 @@ Imcms.define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
+        function createFrame(event) {
+            var $this = $(this),
+                original = $this.closest(".imcms-document-items"),
+                $frame = original.clone(),
+                frameItem = $frame.find(".imcms-document-item")
+            ;
+            $menuArea = $(".imcms-menu-items-tree");
+
+            if (!checkDocInMenuEditor(original)) {
+                event.preventDefault();
+                return
+            }
+
+            isMouseDown = true;
+            mouseCoords = {
+                pageX: event.clientX,
+                pageY: event.clientY,
+                top: $this.closest(".imcms-document-items").position().top,
+                left: $this.closest(".imcms-document-items").position().left
+            };
+            menuAreaProp = {
+                top: $menuArea.position().top,
+                left: $menuArea.position().left,
+                right: menuAreaProp.left + $menuArea.outerWidth(),
+                bottom: menuAreaProp.top + $menuArea.outerHeight()
+            };
+
+            frameItem.attr("data-id", frameItem.children().first().text());
+            frameItem.attr("data-title", frameItem.children().eq(1).text());
+
+            $frame.addClass("imcms-document-items--frame");
+            $frame.css({
+                "background-color": "#e9e9f5",
+                "position": "absolute",
+                "z-index": 11001,
+                "width": $(".imcms-document-list__items").outerWidth(),
+                "top": mouseCoords.top,
+                "left": mouseCoords.left
+            });
+
+            $frame.appendTo("body");
+
+            $(document).on("mousemove", moveFrame)
+                .on("dragstart", function () {
+                    return false;
+                });
+        }
+
         function buildDocItemControls(documentId, opts) {
             var controls = [];
 
             if (opts) {
                 if (opts.moveEnable) {
-                    var $controlMove = controlsBuilder.move(function () {
-                        console.log("%c Not implemented feature: move doc", "color: red;");
-                    });
+                    var $controlMove = controlsBuilder.move().on("mousedown", createFrame);
                     controls.push($controlMove);
                 }
 
@@ -227,56 +273,6 @@ Imcms.define("imcms-document-editor-builder",
             return status;
         }
 
-        function createFrame(event) {
-            var $this = $(this),
-                original = $this.closest(".imcms-document-items"),
-                $frame = original.clone(),
-                frameItem = $frame.find(".imcms-document-item")
-            ;
-            $menuArea = $(".imcms-menu-items-tree");
-
-            if (!checkDocInMenuEditor(original)) {
-                event.preventDefault();
-                return
-            }
-
-            isMouseDown = true;
-            mouseCoords = {
-                pageX: event.clientX,
-                pageY: event.clientY,
-                top: $this.closest(".imcms-document-items").position().top,
-                left: $this.closest(".imcms-document-items").position().left
-            };
-            menuAreaProp = {
-                top: $menuArea.position().top,
-                left: $menuArea.position().left,
-                right: menuAreaProp.left + $menuArea.outerWidth(),
-                bottom: menuAreaProp.top + $menuArea.outerHeight()
-            };
-
-            frameItem.attr("data-id", frameItem.children().first().text());
-            frameItem.attr("data-title", frameItem.children().eq(1).text());
-
-            $frame.addClass("imcms-document-items--frame");
-            $frame.css({
-                "background-color": "#e9e9f5",
-                "position": "absolute",
-                "z-index": 11001,
-                "width": $(".imcms-document-list__items").outerWidth(),
-                "top": mouseCoords.top,
-                "left": mouseCoords.left
-            });
-
-            $frame.appendTo("body");
-            $(document).on("mousemove", moveFrame);
-
-
-            $(document).on("dragstart", function () {
-                return false;
-            });
-
-        }
-
         function detectTargetArea(event) {
             return (event.pageY > menuAreaProp.top) && (event.pageY < menuAreaProp.bottom) && (event.pageX > menuAreaProp.left) && (event.pageX < menuAreaProp.right);
         }
@@ -305,6 +301,7 @@ Imcms.define("imcms-document-editor-builder",
             var menuDoc = null,
                 placeStatus = null
             ;
+
             // false -> under parent; true -> in parent; null -> under all
 
             function highlightMenuDoc(param, elem) {
@@ -411,7 +408,7 @@ Imcms.define("imcms-document-editor-builder",
             var $docItemType = components.texts.titleText("<div>", document.type);
             $docItemType.modifiers = ["col-4"];
 
-            var $docItem = new BEM({
+            return new BEM({
                 block: "imcms-document-item",
                 elements: {
                     "info": [
@@ -423,12 +420,6 @@ Imcms.define("imcms-document-editor-builder",
                     "controls": buildDocItemControls(document.id, opts)
                 }
             }).buildBlockStructure("<div>");
-
-            if (opts.moveEnable === true) {
-                $docItem.find(".imcms-control--move").on("mousedown", createFrame);
-            }
-
-            return $docItem;
         }
 
         function buildDocumentItemContainer(document, opts) {

@@ -8,12 +8,11 @@ import java.io.IOException;
 
 public class StartDoc extends HttpServlet {
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String newPath = "/api/viewDoc/";
-        req.getRequestDispatcher(newPath).forward(req, res);
-    }
+    private static final long serialVersionUID = -7352117429674871492L;
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // just forward to new controller
+        final String newPath = "/api/viewDoc";
+        request.getRequestDispatcher(newPath).forward(request, response);
     }
 }

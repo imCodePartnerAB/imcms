@@ -199,9 +199,6 @@ public class ImcmsSetupFilter implements Filter {
     /**
      * When request path matches a physical or mapped resource then processes request normally.
      * Otherwise threats a request as a document request.
-     *
-     * @throws ServletException
-     * @throws IOException
      */
     private void handleDocumentUri(FilterChain chain,
                                    HttpServletRequest request,
@@ -212,14 +209,12 @@ public class ImcmsSetupFilter implements Filter {
 
         String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
         path = StringUtils.substringAfter(path, request.getContextPath());
-        ServletContext servletContext = request.getSession().getServletContext();
-        Set resourcePaths = servletContext.getResourcePaths(path);
+        final Set resourcePaths = request.getSession().getServletContext().getResourcePaths(path);
 
         if (resourcePaths == null || resourcePaths.size() == 0) {
-            String documentIdString = getDocumentIdString(service, path);
-
+            final String documentIdString = getDocumentIdString(service, path);
             final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
-            DocumentDomainObject document = service.getDocumentMapper()
+            final DocumentDomainObject document = service.getDocumentMapper()
                     .getVersionedDocument(documentIdString, langCode, request);
 
             request.setAttribute("contextPath", request.getContextPath());

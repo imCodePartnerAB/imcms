@@ -1,12 +1,10 @@
 package com.imcode.imcms.controller.core;
 
-import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.parser.ParserParameters;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +13,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 import java.util.Optional;
 
-import static imcode.server.ImcmsConstants.PERM_EDIT_DOCUMENT;
-
 /**
+ * General controller for document viewing in any mode.
+ * <p>
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 18.09.17.
  */
@@ -33,7 +32,7 @@ public class ViewDocumentController {
         this.documentMapper = documentMapper;
     }
 
-    @RequestMapping("/")
+    @RequestMapping({"", "/"})
     public ModelAndView goToStartPage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
         final TextDocumentDomainObject textDocument = getTextDocument(String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID), getDefaultLanguageCode(), request);
         return processDocView(textDocument, request, response, mav);
@@ -52,25 +51,10 @@ public class ViewDocumentController {
     private ModelAndView processDocView(TextDocumentDomainObject textDocument, HttpServletRequest request, HttpServletResponse response,
                                         ModelAndView mav) {
 
-        // save doc data
-        // this should be done to use tags functionality on page
-
-        final ParserParameters parserParameters = Optional.ofNullable(ParserParameters.fromRequest(request))
-                .orElse(new ParserParameters(textDocument, request, response));
-
-        final TextDocumentViewing viewing = Optional.ofNullable(TextDocumentViewing.fromRequest(request))
-                .orElse(new TextDocumentViewing(parserParameters));
-
-        TextDocumentViewing.putInRequest(viewing);
-        ParserParameters.putInRequest(parserParameters);
-
-        final boolean isEditMode = viewing.isEditing();
-
-        if (isEditMode) {
-            parserParameters.setFlags(PERM_EDIT_DOCUMENT);
-        }
-
+        final String isEditModeStr = Objects.toString(request.getAttribute("isEditMode"), "false");
+        final boolean isEditMode = Boolean.parseBoolean(isEditModeStr);
         final String viewName = textDocument.getTemplateName();
+
         mav.setViewName(viewName);
 
         mav.addObject("currentDocument", textDocument);
