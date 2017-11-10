@@ -16,7 +16,7 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
             "where menu.no = ?1 and menu.version = ?2")
     Menu findByNoAndVersionAndFetchMenuItemsEagerly(Integer menuNo, Version version);
 
-    @Query("SELECT m FROM com.imcode.imcms.persistence.entity.Menu m " +
+    @Query("SELECT DISTINCT m FROM com.imcode.imcms.persistence.entity.Menu m " +
             "left join fetch m.menuItems " +
             "WHERE m.version = ?1 " +
             "GROUP BY m.id")
