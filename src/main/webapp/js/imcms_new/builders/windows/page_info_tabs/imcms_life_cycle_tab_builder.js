@@ -32,13 +32,13 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 name: "status"
             }, [{
                 text: "In Process",
-                "data-value": "0"
+                "data-value": "NEW"
             }, {
                 text: "Disapproved",
-                "data-value": "1"
+                "data-value": "DISAPPROVED"
             }, {
                 text: "Approved",
-                "data-value": "2"
+                "data-value": "APPROVED"
             }]);
 
             return lifeCycleInnerStructureBEM.buildBlock("<div>", [{"select": tabData.$docStatusSelect}]);

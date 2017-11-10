@@ -72,7 +72,7 @@ public class MetaDataInitializer extends AbstractTestDataInitializer<Void, Meta>
         dto.setType(DocumentType.TEXT);
         dto.setDisabledLanguageShowMode(DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         dto.setTarget("_blank");
-        dto.setPublicationStatus(PublicationStatus.APPROVED.ordinal());
+        dto.setPublicationStatus(PublicationStatus.APPROVED);
         dto.setAlias("/test");
         dto.setTitle(title);
 
