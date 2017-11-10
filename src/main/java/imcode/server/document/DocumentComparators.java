@@ -36,7 +36,7 @@ public class DocumentComparators {
         }
     };
 
-    public abstract static class DocumentComparator extends ChainableReversibleNullComparator {
+    public abstract static class DocumentComparator extends ChainableReversibleNullComparator<DocumentDomainObject> {
         private static final long serialVersionUID = 1781489936968170084L;
         private final String name;
 
@@ -48,12 +48,10 @@ public class DocumentComparators {
             return name;
         }
 
-        public int compare(Object o1, Object o2) {
-            if (null == o1 || null == o2) {
-                throw new NullArgumentException("o1 and o2");
+        public int compare(DocumentDomainObject d1, DocumentDomainObject d2) {
+            if (null == d1 || null == d2) {
+                throw new NullArgumentException("Null doc in comparator");
             }
-            final DocumentDomainObject d1 = (DocumentDomainObject) o1;
-            final DocumentDomainObject d2 = (DocumentDomainObject) o2;
             try {
                 return compareDocuments(d1, d2);
             } catch (NullPointerException npe) {

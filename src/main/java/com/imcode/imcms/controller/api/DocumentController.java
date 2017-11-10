@@ -1,30 +1,27 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.SearchQueryDTO;
-import com.imcode.imcms.domain.service.api.SearchDocumentService;
+import com.imcode.imcms.domain.service.api.DocumentService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 /**
- * Created by dmizem from Ubrainians for imCode on 19.10.17.
+ * Created by Serhii Maksymchuk from Ubrainians for imCode
+ * 09.11.17.
  */
 @RestController
 @RequestMapping("/documents")
 public class DocumentController {
 
-    private final SearchDocumentService searchDocumentService;
+    private DocumentService documentService;
 
-    public DocumentController(SearchDocumentService searchDocumentService) {
-        this.searchDocumentService = searchDocumentService;
+    public DocumentController(DocumentService documentService) {
+        this.documentService = documentService;
     }
 
     @GetMapping
-    public List<DocumentDTO> getDocuments(SearchQueryDTO searchQuery) {
-        return searchDocumentService.searchDocuments(searchQuery);
+    public DocumentDTO getDocument(int docId) {
+        return documentService.get(docId);
     }
-
 }

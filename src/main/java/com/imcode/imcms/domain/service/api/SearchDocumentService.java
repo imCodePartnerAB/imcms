@@ -23,18 +23,25 @@ import java.util.stream.Collectors;
 public class SearchDocumentService {
 
     private final Function<DocumentStoredFields, DocumentDTO> mapper;
-    private final DocumentMapper documentMapper;
+    private final DocumentService documentService;
 
-    public SearchDocumentService(Function<DocumentStoredFields, DocumentDTO> mapper, DocumentMapper documentMapper) {
+    public SearchDocumentService(Function<DocumentStoredFields, DocumentDTO> mapper,
+                                 DocumentService documentService) {
         this.mapper = mapper;
-        this.documentMapper = documentMapper;
+        this.documentService = documentService;
     }
 
     public List<DocumentDTO> searchDocuments(SearchQueryDTO searchQuery) {
 
+        if (searchQuery.getTerm() == null) {
+            return documentService.getAllDocuments();
+        }
+
         if (searchQuery.getUserId() == null) {
             searchQuery.setUserId(Imcms.getUser().getId());
         }
+
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         List<DocumentDTO> result;
         StringBuilder indexQuery = new StringBuilder();
@@ -55,7 +62,7 @@ public class SearchDocumentService {
 
         if (searchQuery.getCategoriesId() != null) {
             indexQuery = indexQuery.insert(0, indexQuery)
-                    .append(") AND (" + DocumentIndex.FIELD__CATEGORY_ID + ":(")
+                    .append(") AND (" + DocumentIndex.FIELD__CATEGORY_ID + ":(") // don't be so sad
                     .append(searchQuery.getCategoriesId().stream().map(Object::toString).collect(Collectors.joining(" AND ")))
                     .append("))");
         }

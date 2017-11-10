@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
@@ -63,8 +64,9 @@ public class InternalError extends HttpServlet {
         Object exception = request.getAttribute(attributeName);
         request.setAttribute(attributeName, null);
 
-        String userId = Utility.getLoggedOnUser(request).getId() + "";
-
+        int userId = Optional.ofNullable(Utility.getLoggedOnUser(request))
+                .map(UserDomainObject::getId)
+                .orElse(2);
         try {
             String responseJson = sendError((Throwable) exception, request, userId);
             String errorId = logError(responseJson, userId);
@@ -76,7 +78,7 @@ public class InternalError extends HttpServlet {
         request.getRequestDispatcher(ERROR_500_VIEW_URL).forward(request, response);
     }
 
-    private String sendError(Throwable exception, HttpServletRequest request, String userId) throws Exception {
+    private String sendError(Throwable exception, HttpServletRequest request, int userId) throws Exception {
         Map<String, String> exceptionInfo = parse(exception);
         Map<String, String> requestInfo = parse(request);
 
@@ -111,7 +113,7 @@ public class InternalError extends HttpServlet {
                 .add("imcms-version", Version.getImcmsVersion(getServletContext()))
                 .add("database-version", defaultString(Version.getRequiredDbVersion(), DEFAULT_RESPONSE))
 
-                .add("user-id", userId)
+                .add("user-id", String.valueOf(userId))
 
                 .build();
 
@@ -166,7 +168,7 @@ public class InternalError extends HttpServlet {
         return requestInfo;
     }
 
-    private String logError(String response, String userId) throws IOException {
+    private String logError(String response, int userId) throws IOException {
         HashMap<String, Object> responseMap = new ObjectMapper().readValue(response, HashMap.class);
         String errorId = (String) responseMap.get("error_id");
         String state = (String) responseMap.get("state");

@@ -37,7 +37,7 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         function createItem() {
-            var $dataInput = $("#dataInput"),
+            var $dataInput = $(this),
                 menuElementsTree = {
                     documentId: $dataInput.attr("data-id"),
                     title: $dataInput.attr("data-title")
