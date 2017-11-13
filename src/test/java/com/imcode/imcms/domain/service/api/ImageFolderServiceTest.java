@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 
+import static java.io.File.separator;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -75,16 +76,16 @@ public class ImageFolderServiceTest {
     @Test
     public void createNewImageFolder_When_NestedFoldersToSave_Expect_FoldersCreatedAndAreDirectoriesAndReadableAndThenRemoved() throws IOException {
         final String newFolderName0 = "new_test_folder";
-        final String newFolderPath0 = "/" + newFolderName0;
+        final String newFolderPath0 = separator + newFolderName0;
 
         final String newFolderName1 = "nested1";
-        final String newFolderPath1 = newFolderPath0 + "/" + newFolderName1;
+        final String newFolderPath1 = newFolderPath0 + separator + newFolderName1;
 
         final String newFolderName2 = "nested2";
-        final String newFolderPath2 = newFolderPath1 + "/" + newFolderName2;
+        final String newFolderPath2 = newFolderPath1 + separator + newFolderName2;
 
         final String newFolderName3 = "nested3";
-        final String newFolderPath3 = newFolderPath1 + "/" + newFolderName3;
+        final String newFolderPath3 = newFolderPath1 + separator + newFolderName3;
 
         final File newFolder0 = new File(imagesPath, newFolderPath0);
         final File newFolder1 = new File(imagesPath, newFolderPath1);
@@ -198,14 +199,14 @@ public class ImageFolderServiceTest {
         assertFalse(newFolder.exists());
 
         final String newNestedFolderName = "nested_folder";
-        final String path = newFolderName + "/" + newNestedFolderName;
+        final String path = newFolderName + separator + newNestedFolderName;
         final File newNestedFolder = new File(imagesPath, path);
-        final ImageFolderDTO imageNestedFolderDTO = new ImageFolderDTO(newNestedFolderName, "/" + path);
+        final ImageFolderDTO imageNestedFolderDTO = new ImageFolderDTO(newNestedFolderName, separator + path);
 
         assertFalse(newNestedFolder.exists());
 
         final String nestedFolderNewName = "new_name";
-        final File renamedFolder = new File(imagesPath, newFolderName + "/" + nestedFolderNewName);
+        final File renamedFolder = new File(imagesPath, newFolderName + separator + nestedFolderNewName);
 
         assertFalse(renamedFolder.exists());
 

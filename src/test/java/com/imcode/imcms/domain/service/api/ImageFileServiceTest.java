@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static java.io.File.separator;
 import static org.junit.Assert.*;
 
 @Transactional
@@ -75,7 +76,7 @@ public class ImageFileServiceTest {
 
         final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
         final List<MultipartFile> files = Arrays.asList(file, file);
-        final String folder = "/generated";
+        final String folder = separator + "generated";
         final List<ImageFileDTO> imageFileDTOS = imageFileService.saveNewImageFiles(folder, files);
 
         assertNotNull(imageFileDTOS);
@@ -90,7 +91,7 @@ public class ImageFileServiceTest {
 
         final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
         final List<MultipartFile> files = Arrays.asList(file, file);
-        final String nonExistingFolder = "/generateddddd";
+        final String nonExistingFolder = separator + "generateddddd";
 
         imageFileService.saveNewImageFiles(nonExistingFolder, files); // exception should be thrown here
     }
@@ -101,7 +102,7 @@ public class ImageFileServiceTest {
 
         final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
         final List<MultipartFile> files = Collections.singletonList(file);
-        final String folder = "/generated";
+        final String folder = separator + "generated";
 
         final List<ImageFileDTO> imageFileDTOS = imageFileService.saveNewImageFiles(folder, files);
 

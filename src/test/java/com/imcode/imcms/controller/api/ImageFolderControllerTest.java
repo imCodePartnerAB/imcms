@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 
+import static java.io.File.separator;
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
@@ -94,9 +95,9 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     @Test
     public void createNewImageFolder_When_NestedFoldersToSave_Expect_FoldersCreatedAndAreDirectoriesAndReadableAndThenRemoved() throws Exception {
         final String testFolderName0 = "test_folder_name";
-        final String testFolderName1 = testFolderName0 + "/nested1";
-        final String testFolderName2 = testFolderName1 + "/nested2";
-        final String testFolderName3 = testFolderName1 + "/nested3";
+        final String testFolderName1 = testFolderName0 + separator + "nested1";
+        final String testFolderName2 = testFolderName1 + separator + "nested2";
+        final String testFolderName3 = testFolderName1 + separator + "nested3";
 
         final File folder0 = new File(imagesPath, testFolderName0);
         final File folder1 = new File(imagesPath, testFolderName1);
@@ -216,7 +217,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
         final String testNestedFolderName = "nested_folder_name";
         final File nestedFolder = new File(folder, testNestedFolderName);
-        final String path = "/" + testFolderName + "/" + testNestedFolderName;
+        final String path = separator + testFolderName + separator + testNestedFolderName;
         final ImageFolderDTO imageNestedFolderDTO = new ImageFolderDTO(testNestedFolderName, path);
         final MockHttpServletRequestBuilder requestBuilderPostNested = getPostRequestBuilderWithContent(imageNestedFolderDTO);
 

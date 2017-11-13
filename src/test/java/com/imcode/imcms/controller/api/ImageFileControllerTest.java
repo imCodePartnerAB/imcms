@@ -111,7 +111,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         final MockMultipartFile file = new MockMultipartFile("files", "img1-test.jpg", null, imageFileBytes);
         final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
                 .file(file)
-                .param("folder", "/generated");
+                .param("folder", File.separator + "generated");
 
         final String jsonResponse = getJsonResponse(fileUploadRequestBuilder);
         final List<ImageFileDTO> imageFileDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileDTO>>() {
@@ -129,7 +129,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         final MockMultipartFile file = new MockMultipartFile("files", "img1-test.jpg", null, imageFileBytes);
         final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
                 .file(file)
-                .param("folder", "/generatedddddd"); // non-existing folder
+                .param("folder", File.separator + "generatedddddd"); // non-existing folder
 
         performRequestBuilderExpectException(FolderNotExistException.class, fileUploadRequestBuilder);
     }
@@ -139,18 +139,18 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final String originalFilename = "img1-test.jpg";
         final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
-        final String folderName = "/generated";
+        final String folderName = File.separator + "generated";
         final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
                 .file(file)
                 .param("folder", folderName);
 
         performRequestBuilderExpectedOk(fileUploadRequestBuilder);
 
-        final File imageFile = new File(imagesPath, folderName + "/" + originalFilename);
+        final File imageFile = new File(imagesPath, folderName + File.separator + originalFilename);
 
         try {
             final ImageFileDTO imageFileDTO = new ImageFileDTO();
-            imageFileDTO.setPath(folderName + "/" + originalFilename);
+            imageFileDTO.setPath(folderName + File.separator + originalFilename);
 
             assertTrue(imageFile.exists());
 
@@ -174,10 +174,10 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     @Test
     public void deleteImage_When_UserIsAdminAndFileNotExist_Expect_CorrectException() throws Exception {
         final String originalFilename = "img1-test.jpg";
-        final String folderName = "/generated";
-        final File imageFile = new File(imagesPath, folderName + "/" + originalFilename);
+        final String folderName = File.separator + "generated";
+        final File imageFile = new File(imagesPath, folderName + File.separator + originalFilename);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(folderName + "/" + originalFilename);
+        imageFileDTO.setPath(folderName + File.separator + originalFilename);
 
         assertFalse(imageFile.exists());
 
@@ -201,8 +201,8 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final String originalFilename = "img1-test.jpg";
         final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
-        final String folderName = "/generated";
-        final File imageFile = new File(imagesPath, folderName + "/" + originalFilename);
+        final String folderName = File.separator + "generated";
+        final File imageFile = new File(imagesPath, folderName + File.separator + originalFilename);
 
         final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
                 .file(file)
@@ -217,7 +217,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         Imcms.setUser(user); // means current user is not admin now
 
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(folderName + "/" + originalFilename);
+        imageFileDTO.setPath(folderName + File.separator + originalFilename);
 
         final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)

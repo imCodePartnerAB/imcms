@@ -54,14 +54,14 @@ public class ImageFolderService {
         final String path = StringUtils.substringBeforeLast(imageFolderRelativePath, File.separator);
 
         final File folder = new File(imagesPath, imageFolderRelativePath);
-        final File newFolder = new File(imagesPath, path + "/" + newName);
+        final File newFolder = new File(imagesPath, path + File.separator + newName);
 
         if (!folder.exists()) {
             throw new FolderNotExistException("Folder with path " + imageFolderRelativePath + " not exist!");
         }
 
         if (newFolder.exists()) {
-            throw new FolderAlreadyExistException("Folder with path " + path + "/" + newName + " already exist!");
+            throw new FolderAlreadyExistException("Folder with path " + path + File.separator + newName + " already exist!");
         }
 
         return folder.renameTo(newFolder);
