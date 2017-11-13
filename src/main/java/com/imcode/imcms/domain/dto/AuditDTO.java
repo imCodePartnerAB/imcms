@@ -16,7 +16,7 @@ public class AuditDTO implements Serializable {
 
     private static final long serialVersionUID = -1101899199352381698L;
 
-    private int id;
+    private Integer id;
 
     private String by;
 
@@ -35,6 +35,10 @@ public class AuditDTO implements Serializable {
 
     @JsonIgnore
     public void setDateTime(Date dateTime) {
+        if (dateTime == null) {
+            return;
+        }
+
         setDate(DATE_FORMAT.format(dateTime));
         setTime(TIME_FORMAT.format(dateTime));
     }
