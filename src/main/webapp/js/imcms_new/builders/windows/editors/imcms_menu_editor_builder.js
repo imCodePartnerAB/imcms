@@ -6,17 +6,16 @@ Imcms.define("imcms-menu-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-controls-builder", "imcms-page-info-builder", "jquery",
-        "imcms-primitives-builder"
+        "imcms-primitives-builder", "imcms-jquery-element-reload"
     ],
     function (BEM, components, documentEditorBuilder, imcmsModalWindow, WindowBuilder, menusRestApi,
-              controls, pageInfoBuilder, $, primitivesBuilder) {
+              controls, pageInfoBuilder, $, primitivesBuilder, reloadElement) {
 
         var $title, $menuElementsContainer, $documentsContainer;
         var docId, menuIndex;
 
-        function reloadMenuOnPage(savedMenu) {
-            // todo: update menu on page!
-            console.log(savedMenu);
+        function reloadMenuOnPage() {
+            reloadElement($tag.find(".imcms-editor-content"));
         }
 
         function saveMenuElements() {

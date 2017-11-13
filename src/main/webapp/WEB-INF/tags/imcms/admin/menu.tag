@@ -25,7 +25,9 @@
 
 <c:if test="${isEditMode}">
     <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}" data-menu-index="${index}">
-        <div class="imcms-editor-area__content imcms-editor-content">${menuContent}</div>
+        <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
+             data-menu-index="${index}">${menuContent}</div>
+            <%-- attributes used as unique identifier while reload --%>
         <div class="imcms-editor-area__control-wrap">
             <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu">
                 <div class="imcms-editor-area__control-title">Menu Editor</div>
