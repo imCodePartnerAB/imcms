@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.core.VersionService;
@@ -48,17 +47,17 @@ public class MenuService {
         this.menuSaver = menuToMenuDTO.compose(menuRepository::saveAndFlush);
     }
 
-    public List<MenuItemDTO> getMenuItemsOf(int menuNo, int docId) {
-        return getMenuItemsOf(menuNo, docId, MenuItemsStatus.ALL);
+    public List<MenuItemDTO> getMenuItemsOf(int menuIndex, int docId) {
+        return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL);
     }
 
-    public List<MenuItemDTO> getPublicMenuItemsOf(int menuNo, int docId) {
-        return getMenuItemsOf(menuNo, docId, MenuItemsStatus.PUBLIC);
+    public List<MenuItemDTO> getPublicMenuItemsOf(int menuIndex, int docId) {
+        return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC);
     }
 
     public MenuDTO saveFrom(MenuDTO menuDTO) {
 
-        Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuId(), menuDTO.getDocId()))
+        Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuIndex(), menuDTO.getDocId()))
                 .orElseGet(() -> createMenu(menuDTO));
 
         if (!menu.getMenuItems().isEmpty()) {
@@ -82,16 +81,16 @@ public class MenuService {
     private Menu createMenu(MenuDTO menuDTO) {
         final Version workingVersion = versionService.getDocumentWorkingVersion(menuDTO.getDocId());
         final Menu menu = new Menu();
-        menu.setNo(menuDTO.getMenuId());
+        menu.setNo(menuDTO.getMenuIndex());
         menu.setVersion(workingVersion);
         return menuRepository.saveAndFlush(menu);
     }
 
-    private List<MenuItemDTO> getMenuItemsOf(int menuNo, int docId, MenuItemsStatus status) {
+    private List<MenuItemDTO> getMenuItemsOf(int menuIndex, int docId, MenuItemsStatus status) {
         final Version version = versionService.getVersion(docId, status.equals(MenuItemsStatus.ALL)
                 ? versionService::getDocumentWorkingVersion : versionService::getLatestVersion);
 
-        final Menu menu = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, version);
+        final Menu menu = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
         final UserDomainObject user = Imcms.getUser();
 
         return Optional.ofNullable(menu)
@@ -103,25 +102,17 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Also adds necessary props from meta to current item and it items.
-     */
     private boolean isMenuItemVisibleToUser(MenuItemDTO menuItemDTO, UserDomainObject user) {
-        final DocumentDTO documentDTO = documentService.get(menuItemDTO.getDocumentId());
-
-        final boolean hasAccess = documentService.hasUserAccessToDoc(documentDTO.getId(), user);
+        final boolean hasAccess = documentService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user);
 
         if (hasAccess) {
-            final List<MenuItemDTO> children = menuItemDTO.getChildren().stream()
+            final List<MenuItemDTO> children = menuItemDTO.getChildren()
+                    .stream()
                     .filter(menuItem -> isMenuItemVisibleToUser(menuItem, user))
                     .collect(Collectors.toList());
+
             menuItemDTO.setChildren(children);
         }
-
-        final String link = "/" + (documentDTO.getAlias() == null ? documentDTO.getId() : documentDTO.getAlias());
-
-        menuItemDTO.setTarget(documentDTO.getTarget());
-        menuItemDTO.setLink(link);
 
         return hasAccess;
     }

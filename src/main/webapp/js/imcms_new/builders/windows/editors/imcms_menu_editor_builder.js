@@ -12,27 +12,30 @@ Imcms.define("imcms-menu-editor-builder",
               controls, pageInfoBuilder, $, primitivesBuilder) {
 
         var $title, $menuElementsContainer, $documentsContainer;
-        var docId, menuId;
+        var docId, menuIndex;
+
+        function reloadMenuOnPage(savedMenu) {
+            // todo: update menu on page!
+            console.log(savedMenu);
+        }
 
         function saveMenuElements() {
             var menuItems = $menuElementsContainer.find("[data-menu-items-lvl=1]")
                 .map(function () {
                     return {
-                        documentId: $(this).data("menuId"),
+                        documentId: $(this).data("menuIndex"),
                         children: [] // todo: get children too!
                     }
                 })
                 .toArray();
 
             var menuDTO = {
-                menuId: menuId,
+                menuIndex: menuIndex,
                 docId: docId,
                 menuItems: menuItems
             };
 
-            menusRestApi.create(menuDTO).done(function () {
-                // todo: update menu on page!
-            });
+            menusRestApi.create(menuDTO).done(reloadMenuOnPage);
         }
 
         function saveAndClose() {
@@ -336,12 +339,12 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         function addHeadData(opts) {
-            $title.append(": " + opts.docId + "-" + opts.menuId);
+            $title.append(": " + opts.docId + "-" + opts.menuIndex);
         }
 
         function buildMenuEditor(opts) {
             docId = opts.docId;
-            menuId = opts.menuId;
+            menuIndex = opts.menuIndex;
 
             return new BEM({
                 block: "imcms-menu-editor",

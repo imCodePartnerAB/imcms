@@ -6,11 +6,11 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.persistence.entity.Menu;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +31,13 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Autowired
     private VersionDataInitializer versionDataInitializer;
 
+    @Before
+    public void setUp() throws Exception {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        Imcms.setUser(user);
+    }
+
     @After
     public void cleanRepos() {
         menuDataInitializer.cleanRepositories();
@@ -44,15 +51,12 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     public void getMenuItems_When_MenuExists_Expect_MenuItemsDtosJson() throws Exception {
-        final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("eng");
-        Imcms.setUser(user);
-        final Menu menu = menuDataInitializer.createData(true);
-        final String expectedMenuItemDtos = asJson(menuDataInitializer.getMenuItemDtoList());
+        final MenuDTO menu = menuDataInitializer.createData(true);
+        final String expectedMenuItemDtos = asJson(menu.getMenuItems());
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("menuId", String.valueOf(menu.getNo()))
-                .param("docId", String.valueOf(menu.getVersion().getDocId()));
+                .param("menuIndex", String.valueOf(menu.getMenuIndex()))
+                .param("docId", String.valueOf(menu.getDocId()));
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedMenuItemDtos);
     }
@@ -61,7 +65,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     public void getMenuItems_When_MenuMissing_Expect_Expect_EmptyArray() throws Exception {
         versionDataInitializer.createData(0, 1001);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("menuId", "1")
+                .param("menuIndex", "1")
                 .param("docId", "1001");
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
@@ -69,12 +73,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     public void postMenu_When_MenuExistWithMenuItems_Expect_Ok() throws Exception {
-        final Menu menu = menuDataInitializer.createData(true);
-
-        final MenuDTO menuDTO = new MenuDTO();
-        menuDTO.setMenuId(menu.getNo());
-        menuDTO.setDocId(menu.getVersion().getDocId());
-        menuDTO.setMenuItems(menuDataInitializer.getMenuItemDtoList());
+        final MenuDTO menuDTO = menuDataInitializer.createData(true);
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
@@ -86,12 +85,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     public void postMenu_When_MenuMissing_Expect_EmptyArray() throws Exception {
-        final Menu menu = menuDataInitializer.createData(true);
-
-        final MenuDTO menuDTO = new MenuDTO();
-        menuDTO.setMenuId(1);
-        menuDTO.setDocId(menu.getVersion().getDocId());
-        menuDTO.setMenuItems(menuDataInitializer.getMenuItemDtoList());
+        final MenuDTO menuDTO = menuDataInitializer.createData(true);
 
         menuDataInitializer.cleanRepositories();
         versionDataInitializer.createData(0, 1001);

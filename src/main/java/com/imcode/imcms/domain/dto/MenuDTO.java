@@ -10,7 +10,9 @@ import java.util.List;
 @NoArgsConstructor
 public class MenuDTO implements Serializable {
 
-    private Integer menuId;
+    private static final long serialVersionUID = 2486639868480793796L;
+
+    private Integer menuIndex;
 
     private Integer docId;
 

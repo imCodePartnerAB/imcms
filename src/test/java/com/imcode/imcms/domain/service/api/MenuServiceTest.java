@@ -6,7 +6,6 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -20,7 +19,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -42,9 +40,6 @@ public class MenuServiceTest {
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
-
-    @Autowired
-    private Function<Menu, MenuDTO> menuToMenuDTO;
 
     @Before
     public void setUp() throws Exception {
@@ -97,9 +92,9 @@ public class MenuServiceTest {
         final Set<Version> versions = new HashSet<>();
         final List<MenuDTO> menuDTOS = IntStream.range(0, 4)
                 .mapToObj(menuIndex -> {
-                    final Menu menu = menuDataInitializer.createData(true, menuIndex);
-                    versions.add(menu.getVersion());
-                    return menuToMenuDTO.apply(menu);
+                    final MenuDTO menu = menuDataInitializer.createData(true, menuIndex);
+                    versions.add(menuDataInitializer.getVersion());
+                    return menu;
                 })
                 .collect(Collectors.toList());
 
@@ -113,9 +108,8 @@ public class MenuServiceTest {
         menuDataInitializer.cleanRepositories();
         versionDataInitializer.createData(VERSION_NO, DOC_ID);
 
-        final Menu menu = menuDataInitializer.createData(true);
-        final List<MenuItemDTO> menuItemBefore = menuDataInitializer.getMenuItemDtoList();
-        final MenuDTO menuDTO = menuDtoFrom(menu.getNo(), menu.getVersion().getDocId(), menuItemBefore);
+        final MenuDTO menuDTO = menuDataInitializer.createData(true);
+        final List<MenuItemDTO> menuItemBefore = menuDTO.getMenuItems();
 
         MenuDTO savedMenu = menuService.saveFrom(menuDTO);
 
@@ -134,14 +128,11 @@ public class MenuServiceTest {
     }
 
     private void getMenuItemsOf_When_MenuNoAndDocId_Expect_ResultEqualsExpectedMenuItems(boolean isAll) {
-        final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("eng");
-        Imcms.setUser(user);
-        final Menu menu = menuDataInitializer.createData(true);
+        final MenuDTO menu = menuDataInitializer.createData(true);
 
         final List<MenuItemDTO> menuItemDtosOfMenu = isAll
-                ? menuService.getMenuItemsOf(menu.getNo(), menu.getVersion().getDocId())
-                : menuService.getPublicMenuItemsOf(menu.getNo(), menu.getVersion().getDocId());
+                ? menuService.getMenuItemsOf(menu.getMenuIndex(), menu.getDocId())
+                : menuService.getPublicMenuItemsOf(menu.getMenuIndex(), menu.getDocId());
 
         assertEquals(menuDataInitializer.getMenuItemDtoList().size(), menuItemDtosOfMenu.size());
         assertEquals(menuDataInitializer.getMenuItemDtoList().get(0).getChildren().size(), menuItemDtosOfMenu.get(0).getChildren().size());
@@ -157,10 +148,8 @@ public class MenuServiceTest {
     }
 
     private void saveFrom_Expect_SameSizeAndResultsEquals(boolean menuExist) {
-        final Menu menu = menuDataInitializer.createData(true);
-        final List<MenuItemDTO> menuItemBefore = menuDataInitializer.getMenuItemDtoList();
-
-        final MenuDTO menuDTO = menuDtoFrom(menu.getNo(), menu.getVersion().getDocId(), menuDataInitializer.getMenuItemDtoList());
+        final MenuDTO menuDTO = menuDataInitializer.createData(true);
+        final List<MenuItemDTO> menuItemBefore = menuDTO.getMenuItems();
 
         if (!menuExist) {
             menuDataInitializer.cleanRepositories();
@@ -172,14 +161,6 @@ public class MenuServiceTest {
         final List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
         assertEquals(menuItemBefore.size(), menuItemAfter.size());
         assertEquals(menuItemBefore, menuItemAfter);
-    }
-
-    private MenuDTO menuDtoFrom(int menuId, int docId, List<MenuItemDTO> menuItems) {
-        final MenuDTO menuDTO = new MenuDTO();
-        menuDTO.setMenuId(menuId);
-        menuDTO.setDocId(docId);
-        menuDTO.setMenuItems(menuItems);
-        return menuDTO;
     }
 
 }

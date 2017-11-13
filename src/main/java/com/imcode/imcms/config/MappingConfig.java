@@ -2,6 +2,7 @@ package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.dto.ImageData.CropRegion;
+import com.imcode.imcms.domain.service.api.DocumentService;
 import com.imcode.imcms.domain.service.api.LanguageService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.VersionService;
@@ -118,6 +119,7 @@ public class MappingConfig {
 
     @Bean
     public Function<MenuItem, MenuItemDTO> menuItemToDTO(VersionService versionService,
+                                                         DocumentService documentService,
                                                          CommonContentService commonContentService) {
         return new Function<MenuItem, MenuItemDTO>() {
             @Override
@@ -130,6 +132,13 @@ public class MappingConfig {
                         .getOrCreate(latestVersion.getDocId(), latestVersion.getNo(), Imcms.getUser());
 
                 menuItemDTO.setTitle(commonContent.getHeadline());
+
+                final DocumentDTO documentDTO = documentService.get(menuItemDTO.getDocumentId());
+                final String alias = documentDTO.getAlias();
+                final String link = "/" + (alias == null ? menuItemDTO.getDocumentId() : alias);
+
+                menuItemDTO.setTarget(documentDTO.getTarget());
+                menuItemDTO.setLink(link);
 
                 final List<MenuItemDTO> children = menuItem.getChildren()
                         .stream()
@@ -147,7 +156,7 @@ public class MappingConfig {
         return menu -> {
             final MenuDTO menuDTO = new MenuDTO();
             menuDTO.setDocId(menu.getVersion().getDocId());
-            menuDTO.setMenuId(menu.getNo());
+            menuDTO.setMenuIndex(menu.getNo());
             menuDTO.setMenuItems(menu.getMenuItems().stream().map(menuItemToMenuItemDTO).collect(Collectors.toList()));
 
             return menuDTO;

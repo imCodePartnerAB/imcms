@@ -4,9 +4,12 @@ package com.imcode.imcms.persistence.repository;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
+import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,6 +52,10 @@ public class MenuRepositoryTest {
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.execute("DELETE FROM imcms_menu");
         jdbcTemplate.execute("DELETE FROM imcms_menu_item");
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        Imcms.setUser(user);
     }
 
     @After
@@ -60,22 +67,23 @@ public class MenuRepositoryTest {
 
     @Test
     public void findOne_When_menuWithoutMenuItems_Expect_theSameMenuNoAndVersion() throws Exception {
-        final Menu menu = menuDataInitializer.createData(false);
-        final Version version = menu.getVersion();
+        final MenuDTO menu = menuDataInitializer.createData(false);
+        final Version version = menuDataInitializer.getVersion();
 
-        final Menu menuPersisted = menuRepository.findOne(menu.getId());
+        final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
         final Version versionPersisted = menuPersisted.getVersion();
 
-        assertEquals(menu.getNo(), menuPersisted.getNo());
+        assertEquals(menu.getMenuIndex(), menuPersisted.getNo());
         assertEquals(version.getDocId(), versionPersisted.getDocId());
         assertEquals(version.getNo(), versionPersisted.getNo());
     }
 
     @Test
     public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithoutMenuItems_Expect_notNullMenu() {
-        final Menu menu = menuDataInitializer.createData(false);
+        final MenuDTO menu = menuDataInitializer.createData(false);
+        final Version version = menuDataInitializer.getVersion();
 
-        final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getNo(), menu.getVersion());
+        final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
 
         assertNotNull(menuPersisted);
     }
@@ -83,9 +91,10 @@ public class MenuRepositoryTest {
     @Test
     public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_Expect_correctItemsCapacity()
             throws Exception {
-        final Menu menu = menuDataInitializer.createData(true);
+        final MenuDTO menu = menuDataInitializer.createData(true);
+        final Version version = menuDataInitializer.getVersion();
 
-        final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getNo(), menu.getVersion());
+        final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
 
         final List<MenuItem> menuItems = menuPersisted.getMenuItems();
 
@@ -97,9 +106,10 @@ public class MenuRepositoryTest {
     @Test
     public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_Expect_correctItemsOrder()
             throws Exception {
-        final Menu menu = menuDataInitializer.createData(true);
+        final MenuDTO menu = menuDataInitializer.createData(true);
+        final Version version = menuDataInitializer.getVersion();
 
-        final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getNo(), menu.getVersion());
+        final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
 
         final List<MenuItem> menuItems = menuPersisted.getMenuItems();
 
@@ -113,9 +123,10 @@ public class MenuRepositoryTest {
     @Test
     public void deleteMenuItems()
             throws Exception {
-        final Menu menu = menuDataInitializer.createData(true);
+        final MenuDTO menu = menuDataInitializer.createData(true);
+        final Version version = menuDataInitializer.getVersion();
 
-        final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getNo(), menu.getVersion());
+        final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
         for (Iterator<MenuItem> iterator = menuPersisted.getMenuItems().iterator(); iterator.hasNext(); ) {
             MenuItem projectEntity = iterator.next();
             projectEntity.setMenu(null);
