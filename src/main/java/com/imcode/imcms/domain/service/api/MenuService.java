@@ -1,10 +1,8 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
@@ -28,15 +26,14 @@ public class MenuService {
     @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository")
     private final MenuRepository menuRepository;
     private final VersionService versionService;
-    private final CommonContentService commonContentService;
     private final DocumentService documentService;
     private final Function<MenuItem, MenuItemDTO> menuItemToDto;
     private final Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList;
     private final Function<Menu, MenuDTO> menuToMenuDTO;
+    private final Function<Menu, MenuDTO> menuSaver;
 
     public MenuService(MenuRepository menuRepository,
                        VersionService versionService,
-                       CommonContentService commonContentService,
                        DocumentService documentService,
                        Function<MenuItem, MenuItemDTO> menuItemToDto,
                        Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList,
@@ -44,11 +41,11 @@ public class MenuService {
 
         this.menuRepository = menuRepository;
         this.versionService = versionService;
-        this.commonContentService = commonContentService;
         this.documentService = documentService;
         this.menuItemToDto = menuItemToDto;
         this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
         this.menuToMenuDTO = menuToMenuDTO;
+        this.menuSaver = menuToMenuDTO.compose(menuRepository::saveAndFlush);
     }
 
     public List<MenuItemDTO> getMenuItemsOf(int menuNo, int docId) {
@@ -59,7 +56,7 @@ public class MenuService {
         return getMenuItemsOf(menuNo, docId, MenuItemsStatus.PUBLIC);
     }
 
-    public void saveFrom(MenuDTO menuDTO) {
+    public MenuDTO saveFrom(MenuDTO menuDTO) {
 
         Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuId(), menuDTO.getDocId()))
                 .orElseGet(() -> createMenu(menuDTO));
@@ -70,7 +67,7 @@ public class MenuService {
 
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
-        menuRepository.saveAndFlush(menu);
+        return menuSaver.apply(menu);
     }
 
     public Collection<MenuDTO> findAllByVersion(Version version) {
@@ -102,7 +99,6 @@ public class MenuService {
                 .getMenuItems()
                 .stream()
                 .map(menuItemToDto)
-                .peek(menuItemDTO -> addTitleToMenuItem(menuItemDTO, user))
                 .filter(menuItemDTO -> (status == MenuItemsStatus.ALL) || isMenuItemVisibleToUser(menuItemDTO, user))
                 .collect(Collectors.toList());
     }
@@ -137,17 +133,6 @@ public class MenuService {
             iterator.remove();
         }
         return menuRepository.saveAndFlush(menu);
-    }
-
-    private void addTitleToMenuItem(MenuItemDTO menuItemDTO, UserDomainObject user) {
-        final Version latestVersion = versionService.getLatestVersion(menuItemDTO.getDocumentId());
-        final CommonContentDTO commonContent = commonContentService
-                .getOrCreate(latestVersion.getDocId(), latestVersion.getNo(), user);
-
-        menuItemDTO.setTitle(commonContent.getHeadline());
-
-        menuItemDTO.getChildren()
-                .forEach(childMenuItemDTO -> addTitleToMenuItem(childMenuItemDTO, user));
     }
 
     private enum MenuItemsStatus {

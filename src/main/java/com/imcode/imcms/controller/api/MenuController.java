@@ -27,13 +27,13 @@ public class MenuController {
     }
 
     @PostMapping
-    public void saveMenu(@RequestBody MenuDTO menu) {
+    public MenuDTO saveMenu(@RequestBody MenuDTO menu) {
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {
             throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
         }
 
-        menuService.saveFrom(menu);
+        return menuService.saveFrom(menu);
     }
 
 }

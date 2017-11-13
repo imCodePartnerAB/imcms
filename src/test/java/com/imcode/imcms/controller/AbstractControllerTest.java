@@ -90,6 +90,11 @@ public abstract class AbstractControllerTest {
         performRequestBuilderExpectedOk(requestBuilder);
     }
 
+    protected void performPostWithContentExpectOkAndJsonContentEquals(Object content, Object response) throws Exception {
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(content);
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(response));
+    }
+
     protected MockHttpServletRequestBuilder getPostRequestBuilderWithContent(Object content) throws Exception {
         return MockMvcRequestBuilders.post(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)

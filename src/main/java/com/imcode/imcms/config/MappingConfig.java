@@ -117,15 +117,26 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<MenuItem, MenuItemDTO> menuItemToDTO() {
+    public Function<MenuItem, MenuItemDTO> menuItemToDTO(VersionService versionService,
+                                                         CommonContentService commonContentService) {
         return new Function<MenuItem, MenuItemDTO>() {
             @Override
             public MenuItemDTO apply(MenuItem menuItem) {
                 final MenuItemDTO menuItemDTO = new MenuItemDTO();
                 menuItemDTO.setDocumentId(menuItem.getDocumentId());
-                menuItemDTO.setChildren(menuItem.getChildren().stream()
+
+                final Version latestVersion = versionService.getLatestVersion(menuItemDTO.getDocumentId());
+                final CommonContentDTO commonContent = commonContentService
+                        .getOrCreate(latestVersion.getDocId(), latestVersion.getNo(), Imcms.getUser());
+
+                menuItemDTO.setTitle(commonContent.getHeadline());
+
+                final List<MenuItemDTO> children = menuItem.getChildren()
+                        .stream()
                         .map(this)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList());
+
+                menuItemDTO.setChildren(children);
                 return menuItemDTO;
             }
         };

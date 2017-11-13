@@ -11,6 +11,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,13 @@ public class MenuServiceTest {
 
     @Autowired
     private Function<Menu, MenuDTO> menuToMenuDTO;
+
+    @Before
+    public void setUp() throws Exception {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        Imcms.setUser(user);
+    }
 
     @After
     public void cleanUpData() {
@@ -109,9 +117,9 @@ public class MenuServiceTest {
         final List<MenuItemDTO> menuItemBefore = menuDataInitializer.getMenuItemDtoList();
         final MenuDTO menuDTO = menuDtoFrom(menu.getNo(), menu.getVersion().getDocId(), menuItemBefore);
 
-        menuService.saveFrom(menuDTO);
+        MenuDTO savedMenu = menuService.saveFrom(menuDTO);
 
-        List<MenuItemDTO> menuItemAfter = menuDataInitializer.getMenuItemDtoList();
+        List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
         assertEquals(menuItemBefore.size(), menuItemAfter.size());
         assertEquals(menuItemBefore, menuItemAfter);
 
@@ -119,9 +127,9 @@ public class MenuServiceTest {
         final MenuItemDTO removed = menuItems.remove(0);
         final int newSize = menuItems.size();
         assertNotNull(removed);
-        menuService.saveFrom(menuDTO);
+        savedMenu = menuService.saveFrom(menuDTO);
 
-        menuItemAfter = menuDataInitializer.getMenuItemDtoList();
+        menuItemAfter = savedMenu.getMenuItems();
         assertEquals(newSize, menuItemAfter.size());
     }
 
@@ -159,9 +167,9 @@ public class MenuServiceTest {
             versionDataInitializer.createData(VERSION_NO, DOC_ID);
         }
 
-        menuService.saveFrom(menuDTO);
+        final MenuDTO savedMenu = menuService.saveFrom(menuDTO);
 
-        final List<MenuItemDTO> menuItemAfter = menuDataInitializer.getMenuItemDtoList();
+        final List<MenuItemDTO> menuItemAfter = savedMenu.getMenuItems();
         assertEquals(menuItemBefore.size(), menuItemAfter.size());
         assertEquals(menuItemBefore, menuItemAfter);
     }

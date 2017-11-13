@@ -81,7 +81,7 @@ public class MenuControllerTest extends AbstractControllerTest {
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user);
 
-        performPostWithContentExpectOk(menuDTO);
+        performPostWithContentExpectOkAndJsonContentEquals(menuDTO, menuDTO);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class MenuControllerTest extends AbstractControllerTest {
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user);
 
-        performPostWithContentExpectOk(menuDTO);
+        performPostWithContentExpectOkAndJsonContentEquals(menuDTO, menuDTO);
     }
 
 }
