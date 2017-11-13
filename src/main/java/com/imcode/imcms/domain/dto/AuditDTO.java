@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Date;
 
-import static imcode.util.DateConstants.DATETIME_DOC_FORMAT;
+import static imcode.util.DateConstants.*;
 
 @Data
 @NoArgsConstructor
@@ -31,6 +31,12 @@ public class AuditDTO implements Serializable {
         } catch (ParseException e) {
             return null;
         }
+    }
+
+    @JsonIgnore
+    public void setDateTime(Date dateTime) {
+        setDate(DATE_FORMAT.format(dateTime));
+        setTime(TIME_FORMAT.format(dateTime));
     }
 
 }
