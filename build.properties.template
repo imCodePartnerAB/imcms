@@ -110,7 +110,7 @@ documentation-host = http://docs.imcms.net/en/latest/
 # ImageMagick is a software suite for creating, editing and composing images. It can be downloaded from http://www.imagemagick.org.
 # This path should lead to where ImageMagick is installed, and is required only on windows. Use portable version
 # to avoid possible errors. Newer versions works too (latest tested 7.0.2-5).
-# For example: c:/program files/imagemagick-6.4.9-q16
+# For example: C:\\\\Program Files\\\\ImageMagick-6.9.6-Q16
 image-magick-path = 
 
 # Path where all the images that are uploaded to image archive will be stored, can be relative or absolute.

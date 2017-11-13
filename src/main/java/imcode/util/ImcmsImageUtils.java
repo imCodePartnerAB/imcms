@@ -46,12 +46,9 @@ public class ImcmsImageUtils {
 
     public static File imagesPath;
     public static String imageMagickPath;
-    private static String imagesUrl;
+
     @Value("${ImagePath}")
     private File imgPath;
-
-    @Value("${ImageUrl}")
-    private String imgUrl;
 
     @Value("${ImageMagickPath}")
     private String imgMagickPath;
@@ -84,7 +81,10 @@ public class ImcmsImageUtils {
         imageFileDTO.setName(fileName);
         imageFileDTO.setFormat(Format.findFormat(FilenameUtils.getExtension(fileName)));
 
-        final String relativePath = imageFile.getPath().replace(imagesPath.getPath(), "");
+        final String relativePath = imageFile.getPath()
+                .replace(imagesPath.getPath(), "")
+                .replace("\\", "/");
+
         imageFileDTO.setPath(relativePath);
 
         final Date lastModifiedDate = new Date(imageFile.lastModified());
@@ -351,7 +351,6 @@ public class ImcmsImageUtils {
     @PostConstruct
     public void init() {
         ImcmsImageUtils.imagesPath = imgPath;
-        ImcmsImageUtils.imagesUrl = imgUrl;
         ImcmsImageUtils.imageMagickPath = imgMagickPath;
     }
 }
