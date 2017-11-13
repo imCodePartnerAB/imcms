@@ -129,12 +129,11 @@ public class ImcmsImageUtils {
      */
     private static Dimension getImageDimension(File imgFile) {
         final String suffix = FilenameUtils.getExtension(imgFile.getName());
-        final Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix(suffix);
+        final Iterator<ImageReader> imageReaders = ImageIO.getImageReadersBySuffix(suffix);
 
-        while (iter.hasNext()) {
-            final ImageReader reader = iter.next();
-            try {
-                final ImageInputStream stream = new FileImageInputStream(imgFile);
+        while (imageReaders.hasNext()) {
+            final ImageReader reader = imageReaders.next();
+            try (ImageInputStream stream = new FileImageInputStream(imgFile)) {
                 reader.setInput(stream);
                 final int width = reader.getWidth(reader.getMinIndex());
                 final int height = reader.getHeight(reader.getMinIndex());
