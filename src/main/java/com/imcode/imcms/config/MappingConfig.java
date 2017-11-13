@@ -24,10 +24,12 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -310,6 +312,16 @@ public class MappingConfig {
     public Function<Meta, DocumentDTO> documentMapping(VersionService versionService,
                                                        CommonContentService commonContentService,
                                                        Function<Language, LanguageDTO> languageToLanguageDTO) {
+
+        final BiFunction<Supplier<Integer>, Supplier<Date>, AuditDTO> auditDtoCreator =
+                (auditorIdSupplier, auditedDateSupplier) -> {
+
+                    final AuditDTO audit = new AuditDTO();
+                    audit.setId(auditorIdSupplier.get());
+                    audit.setDateTime(auditedDateSupplier.get());
+                    return audit;
+                };
+
         return (meta) -> {
             final DocumentDTO dto = new DocumentDTO();
             final Integer metaId = meta.getId();
@@ -317,9 +329,10 @@ public class MappingConfig {
             dto.setTarget(meta.getTarget());
             dto.setAlias(meta.getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
 
-            final int latestVersion = versionService.getLatestVersion(metaId).getNo();
+            final Version latestVersion = versionService.getLatestVersion(metaId);
+            final int latestVersionIndex = latestVersion.getNo();
             final UserDomainObject user = Imcms.getUser();
-            final String title = commonContentService.getOrCreate(metaId, latestVersion, user).getHeadline();
+            final String title = commonContentService.getOrCreate(metaId, latestVersionIndex, user).getHeadline();
             dto.setTitle(title);
 
             final List<LanguageDTO> languages = new ArrayList<>();
@@ -328,7 +341,16 @@ public class MappingConfig {
                 languageToLanguageDTO.andThen(languages::add).apply(language);
             }
 
+            final User modifier = latestVersion.getModifiedBy();
+            final User creator = latestVersion.getCreatedBy();
+
             dto.setLanguages(languages);
+            dto.setPublished(auditDtoCreator.apply(meta::getPublisherId, meta::getPublicationStartDatetime));
+            dto.setPublicationEnd(auditDtoCreator.apply(meta::getDepublisherId, meta::getPublicationEndDatetime));
+            dto.setArchived(auditDtoCreator.apply(meta::getArchiverId, meta::getArchivedDatetime));
+            dto.setCreated(auditDtoCreator.apply(meta::getCreatorId, meta::getCreatedDatetime));
+            dto.setModified(auditDtoCreator.apply(modifier::getId, meta::getModifiedDatetime));
+            dto.setCurrentVersion(auditDtoCreator.apply(creator::getId, latestVersion::getCreatedDt));
 
             return dto;
         };
