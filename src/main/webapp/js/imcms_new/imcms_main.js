@@ -40,6 +40,9 @@ Imcms.config = {
         "imcms-uuid-generator": "components/imcms_uuid_generator.js",
         "imcms-image-cropper": "components/imcms_image_cropper.js",
         "imcms-validator": "components/imcms_validator.js",
+        "imcms-jquery-element-reload": "components/imcms_jquery_element_reload.js",
+        "imcms-jquery-string-selector": "components/imcms_jquery_string_selector.js",
+        "imcms-dom-attributes-extractor": "components/imcms_dom_attributes_extractor.js",
         // editors initializer
         "imcms-text-editor-initializer": "editor_initializer/imcms_text_editor_initializer.js",
         "imcms-editors-initializer": "editor_initializer/imcms_editors_initializer.js",
