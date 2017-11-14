@@ -429,6 +429,8 @@ public class MappingConfig {
             dto.setModified(auditDtoCreator.apply(modifier::getId, meta::getModifiedDatetime));
             dto.setCurrentVersion(auditDtoCreator.apply(creator::getId, latestVersion::getCreatedDt));
 
+            dto.setKeywords(meta.getKeywords());
+
             return dto;
         };
     }
