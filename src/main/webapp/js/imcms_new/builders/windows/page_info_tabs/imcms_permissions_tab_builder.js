@@ -10,21 +10,21 @@ Imcms.define("imcms-permissions-tab-builder",
         return {
             name: "permissions",
             buildTab: function (index) {
-                function createRestrictedCheckboxesDependingOnIndex(index) {
+                function createRestrictedCheckboxesDependingOnIndex(permissionSetName) {
                     return mapCheckboxesFromAttributesArray([{
-                        name: "edit_text" + index,
+                        name: "edit_text_" + permissionSetName,
                         text: "Edit text"
                     }, {
-                        name: "edit_menu" + index,
+                        name: "edit_menu_" + permissionSetName,
                         text: "Edit menu"
                     }, {
-                        name: "edit_image" + index,
+                        name: "edit_image_" + permissionSetName,
                         text: "Edit image"
                     }, {
-                        name: "edit_loop" + index,
+                        name: "edit_loop_" + permissionSetName,
                         text: "Edit loop"
                     }, {
-                        name: "edit_doc_info" + index,
+                        name: "edit_doc_info_" + permissionSetName,
                         text: "Edit doc info"
                     }]);
                 }
@@ -35,21 +35,21 @@ Imcms.define("imcms-permissions-tab-builder",
                     });
                 }
 
-                var restrictedCheckboxes0 = createRestrictedCheckboxesDependingOnIndex(0);
+                var restrictedCheckboxes1 = createRestrictedCheckboxesDependingOnIndex("RESTRICTED_1");
                 var $restrictedRole1Rights = components.checkboxes.checkboxContainer("<div>",
-                    restrictedCheckboxes0,
+                    restrictedCheckboxes1,
                     {title: "Restricted 1"}
                 );
                 $restrictedRole1Rights.modifiers = ["float-l", "col-3"];
 
-                var restrictedCheckboxes1 = createRestrictedCheckboxesDependingOnIndex(1);
+                var restrictedCheckboxes2 = createRestrictedCheckboxesDependingOnIndex("RESTRICTED_2");
                 var $restrictedRole2Rights = components.checkboxes.checkboxContainer("<div>",
-                    restrictedCheckboxes1,
+                    restrictedCheckboxes2,
                     {title: "Restricted 2"}
                 );
                 $restrictedRole2Rights.modifiers = ["float-l", "col-3"];
 
-                tabData.restrictedCheckboxes = restrictedCheckboxes0.concat(restrictedCheckboxes1);
+                tabData.restrictedCheckboxes = restrictedCheckboxes1.concat(restrictedCheckboxes2);
 
                 var $permissionsWrapper = new BEM({
                     block: "imcms-field",
@@ -67,18 +67,20 @@ Imcms.define("imcms-permissions-tab-builder",
                     restrictedCheckboxes[permission.find("input").prop("name")] = permission;
                 });
 
-                document.permissions.forEach(function (permission, index) {
+                Object.keys(document.permissions).forEach(function (permissionName) {
+                    var permission = document.permissions[permissionName];
+
                     var edit_text = "edit_text",
                         edit_menu = "edit_menu",
                         edit_image = "edit_image",
                         edit_loop = "edit_loop",
                         edit_doc_info = "edit_doc_info";
 
-                    restrictedCheckboxes[edit_text + index].setChecked(permission[edit_text]);
-                    restrictedCheckboxes[edit_menu + index].setChecked(permission[edit_menu]);
-                    restrictedCheckboxes[edit_image + index].setChecked(permission[edit_image]);
-                    restrictedCheckboxes[edit_loop + index].setChecked(permission[edit_loop]);
-                    restrictedCheckboxes[edit_doc_info + index].setChecked(permission[edit_doc_info]);
+                    restrictedCheckboxes[edit_text + "_" + permissionName].setChecked(permission[edit_text]);
+                    restrictedCheckboxes[edit_menu + "_" + permissionName].setChecked(permission[edit_menu]);
+                    restrictedCheckboxes[edit_image + "_" + permissionName].setChecked(permission[edit_image]);
+                    restrictedCheckboxes[edit_loop + "_" + permissionName].setChecked(permission[edit_loop]);
+                    restrictedCheckboxes[edit_doc_info + "_" + permissionName].setChecked(permission[edit_doc_info]);
                 });
             },
             clearTabData: function () {
