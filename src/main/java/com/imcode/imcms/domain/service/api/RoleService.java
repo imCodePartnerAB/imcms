@@ -21,6 +21,10 @@ public class RoleService {
         this.roleToRoleDTO = roleToRoleDTO;
     }
 
+    public RoleDTO getById(int id) {
+        return roleToRoleDTO.apply(roleRepository.findOne(id));
+    }
+
     public List<RoleDTO> getAll() {
         return roleRepository.findAll().stream()
                 .map(roleToRoleDTO)
