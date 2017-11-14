@@ -4,6 +4,7 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.UserService;
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -449,11 +450,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setDocumentPermissionSetTypeForRoleId(RoleId roleId,
-                                                      DocumentPermissionSetTypeDomainObject permissionSetType) {
+                                                      PermissionDTO permissionSetType) {
         getRolePermissionMappings().setPermissionSetTypeForRole(roleId, permissionSetType);
     }
 
-    public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetTypeForRoleId(RoleId roleId) {
+    public PermissionDTO getDocumentPermissionSetTypeForRoleId(RoleId roleId) {
         return getRolePermissionMappings().getPermissionSetTypeForRole(roleId);
     }
 

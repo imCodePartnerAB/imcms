@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.apis;
 
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,11 +18,11 @@ public class PermissionController {
     @RequestMapping
     protected Object getPermissionsList() {
         return Stream
-                .of(DocumentPermissionSetTypeDomainObject.values())
+                .of(PermissionDTO.values())
                 .collect(
                         Collectors.toMap(
-                                DocumentPermissionSetTypeDomainObject::getId,
-                                DocumentPermissionSetTypeDomainObject::getName
+                                PermissionDTO::getId,
+                                PermissionDTO::getName
                         )
                 );
     }

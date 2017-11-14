@@ -1,10 +1,10 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.jpa.doc.Meta;
 import com.imcode.imcms.mapping.jpa.doc.MetaRepository;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
@@ -51,9 +51,9 @@ public class DocumentService {
                 .map(RoleId::getRoleId)
                 .map(docPermissions::get)
                 .filter(Objects::nonNull)
-                .map(DocumentPermissionSetTypeDomainObject::fromPermission)
+                .map(PermissionDTO::fromPermission)
                 .anyMatch(documentPermissionSetTypeDomainObject
-                        -> documentPermissionSetTypeDomainObject.isAtLeastAsPrivilegedAs(DocumentPermissionSetTypeDomainObject.VIEW));
+                        -> documentPermissionSetTypeDomainObject.isAtLeastAsPrivilegedAs(PermissionDTO.VIEW));
     }
 
 }

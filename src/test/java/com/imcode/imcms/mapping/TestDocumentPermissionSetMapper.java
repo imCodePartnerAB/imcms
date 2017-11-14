@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import junit.framework.TestCase;
 
@@ -11,7 +11,7 @@ public class TestDocumentPermissionSetMapper extends TestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        textDocumentPermissionSet = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_1);
+        textDocumentPermissionSet = new TextDocumentPermissionSetDomainObject(PermissionDTO.RESTRICTED_1);
     }
 
     public void testSetTextDocumentPermissionSetFromBits() throws Exception {

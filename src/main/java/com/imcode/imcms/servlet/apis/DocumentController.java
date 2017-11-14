@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.api.*;
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -401,7 +402,7 @@ public class DocumentController {
 
         docEntity.access.forEach((id, map) -> {
             int permission = Integer.parseInt(map.get("permission").toString());
-            DocumentPermissionSetTypeDomainObject permissionSetType = DocumentPermissionSetTypeDomainObject.values()[permission];
+            PermissionDTO permissionSetType = PermissionDTO.values()[permission];
             docDomainObject.setDocumentPermissionSetTypeForRoleId(new RoleId(id), permissionSetType);
         });
 
@@ -528,8 +529,8 @@ public class DocumentController {
      * @param entity   presented entity
      */
     protected void asTextDocument(TextDocumentDomainObject document, TextDocumentEntity entity) {
-        TextDocumentPermissionSetDomainObject permissions1 = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_1);
-        TextDocumentPermissionSetDomainObject permissions2 = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_2);
+        TextDocumentPermissionSetDomainObject permissions1 = new TextDocumentPermissionSetDomainObject(PermissionDTO.RESTRICTED_1);
+        TextDocumentPermissionSetDomainObject permissions2 = new TextDocumentPermissionSetDomainObject(PermissionDTO.RESTRICTED_2);
         DocumentPermissionSets docPermissions = new DocumentPermissionSets();
 
         TextDocumentPermission textDocPermission0 = entity.permissions.get(0);

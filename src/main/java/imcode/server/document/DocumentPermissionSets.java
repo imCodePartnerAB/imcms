@@ -1,5 +1,7 @@
 package imcode.server.document;
 
+import com.imcode.imcms.domain.dto.PermissionDTO;
+
 import java.io.Serializable;
 
 /**
@@ -7,15 +9,15 @@ import java.io.Serializable;
  * <p/>
  * Note: Unfortunately the name of this class is a bit misleading.
  *
- * @see DocumentPermissionSetTypeDomainObject
+ * @see PermissionDTO
  * @see DocumentDomainObject#getPermissionSets()
  * @see DocumentDomainObject#getPermissionSetsForNewDocument()
  */
 public class DocumentPermissionSets implements Serializable, Cloneable {
 
     private DocumentPermissionSetDomainObject[] permissionSets = new DocumentPermissionSetDomainObject[]{
-            new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_1),
-            new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_2)
+            new TextDocumentPermissionSetDomainObject(PermissionDTO.RESTRICTED_1),
+            new TextDocumentPermissionSetDomainObject(PermissionDTO.RESTRICTED_2)
     };
 
     public DocumentPermissionSetDomainObject getRestricted1() {
@@ -43,8 +45,8 @@ public class DocumentPermissionSets implements Serializable, Cloneable {
         try {
             DocumentPermissionSets clone = (DocumentPermissionSets) super.clone();
             clone.permissionSets = new DocumentPermissionSetDomainObject[]{
-                    (DocumentPermissionSetDomainObject) permissionSets[0].clone(),
-                    (DocumentPermissionSetDomainObject) permissionSets[1].clone()
+                    permissionSets[0].clone(),
+                    permissionSets[1].clone()
             };
 
             return clone;

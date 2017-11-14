@@ -1,5 +1,6 @@
 package imcode.server.document;
 
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.util.LazilyLoadedObject;
@@ -16,19 +17,19 @@ import java.util.Set;
  */
 public class DocumentPermissionSetDomainObject implements Serializable, LazilyLoadedObject.Copyable, Cloneable {
 
-    public static final DocumentPermissionSetDomainObject NONE = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.NONE) {
+    public static final DocumentPermissionSetDomainObject NONE = new TextDocumentPermissionSetDomainObject(PermissionDTO.NONE) {
         public boolean hasPermission(DocumentPermission permission) {
             return false;
         }
     };
 
-    public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.VIEW) {
+    public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject(PermissionDTO.VIEW) {
         public boolean hasPermission(DocumentPermission permission) {
             return false;
         }
     };
 
-    public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.EDIT) {
+    public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject(PermissionDTO.EDIT) {
         public Set<Integer> getAllowedTemplateGroupIds() {
             return Imcms.getServices().getTemplateMapper().getAllTemplateGroupIds();
         }
@@ -61,22 +62,22 @@ public class DocumentPermissionSetDomainObject implements Serializable, LazilyLo
     private static final String PERMISSION_SET_NAME__RESTRICTED_2 = "Restricted Two";
     private static final String PERMISSION_SET_NAME__READ = "Read";
     private static final String PERMISSION_SET_NAME__NONE = "None";
-    private DocumentPermissionSetTypeDomainObject type;
+    private PermissionDTO type;
     private HashSet<DocumentPermission> permissions = new HashSet<>();
 
-    public DocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject typeId) {
+    public DocumentPermissionSetDomainObject(PermissionDTO typeId) {
         this.type = typeId;
     }
 
-    private static String getName(DocumentPermissionSetTypeDomainObject userPermissionSetId) {
+    private static String getName(PermissionDTO userPermissionSetId) {
         String result;
-        if (DocumentPermissionSetTypeDomainObject.EDIT.equals(userPermissionSetId)) {
+        if (PermissionDTO.EDIT.equals(userPermissionSetId)) {
             result = PERMISSION_SET_NAME__FULL;
-        } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(userPermissionSetId)) {
+        } else if (PermissionDTO.RESTRICTED_1.equals(userPermissionSetId)) {
             result = PERMISSION_SET_NAME__RESTRICTED_1;
-        } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(userPermissionSetId)) {
+        } else if (PermissionDTO.RESTRICTED_2.equals(userPermissionSetId)) {
             result = PERMISSION_SET_NAME__RESTRICTED_2;
-        } else if (DocumentPermissionSetTypeDomainObject.VIEW.equals(userPermissionSetId)) {
+        } else if (PermissionDTO.VIEW.equals(userPermissionSetId)) {
             result = PERMISSION_SET_NAME__READ;
         } else {
             result = PERMISSION_SET_NAME__NONE;
@@ -96,7 +97,7 @@ public class DocumentPermissionSetDomainObject implements Serializable, LazilyLo
         return permissions.contains(permission);
     }
 
-    public DocumentPermissionSetTypeDomainObject getType() {
+    public PermissionDTO getType() {
         return type;
     }
 
@@ -107,7 +108,7 @@ public class DocumentPermissionSetDomainObject implements Serializable, LazilyLo
     public String toString() {
         StringBuffer buff = new StringBuffer();
         buff.append(getTypeName());
-        if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(type) || DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(type)) {
+        if (PermissionDTO.RESTRICTED_1.equals(type) || PermissionDTO.RESTRICTED_2.equals(type)) {
             buff.append(" (")
                     .append("editDocumentInformation=")
                     .append(getEditDocumentInformation())

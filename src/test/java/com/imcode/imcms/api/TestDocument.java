@@ -1,7 +1,7 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import imcode.server.MockImcmsServices;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.MockRoleGetter;
 import imcode.server.user.RoleId;
@@ -22,9 +22,9 @@ public class TestDocument extends TestCase {
         contentManagementSystem.setInternal(imcmsServices);
         imcmsServices.setRoleGetter(new MockRoleGetter());
         final TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
-        textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERADMIN, DocumentPermissionSetTypeDomainObject.EDIT);
-        textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.EDIT);
-        textDocument.setDocumentPermissionSetTypeForRoleId(new RoleId(3), DocumentPermissionSetTypeDomainObject.EDIT);
+        textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERADMIN, PermissionDTO.EDIT);
+        textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, PermissionDTO.EDIT);
+        textDocument.setDocumentPermissionSetTypeForRoleId(new RoleId(3), PermissionDTO.EDIT);
         Document doc = new TextDocument(textDocument, contentManagementSystem);
 
         final Map allRolesMappedToPermissions = doc.getRolesMappedToPermissions();

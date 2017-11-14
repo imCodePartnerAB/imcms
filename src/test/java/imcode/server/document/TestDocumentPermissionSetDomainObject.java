@@ -1,11 +1,12 @@
 package imcode.server.document;
 
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import junit.framework.TestCase;
 
 public class TestDocumentPermissionSetDomainObject extends TestCase {
 
     private static final DocumentPermission PERMISSION = new DocumentPermission("test");
-    DocumentPermissionSetDomainObject documentPermissionSet = new DocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_1) {
+    DocumentPermissionSetDomainObject documentPermissionSet = new DocumentPermissionSetDomainObject(PermissionDTO.RESTRICTED_1) {
         public void setFromBits(
                 int permissionBits) {
         }

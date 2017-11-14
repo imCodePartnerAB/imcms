@@ -1,8 +1,12 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.jpa.doc.Meta;
-import imcode.server.document.*;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.RoleId;
@@ -55,16 +59,16 @@ public class Document implements Serializable {
         for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : mappings) {
             RoleId roleId = mapping.getRoleId();
             RoleDomainObject role = roleGetter.getRole(roleId);
-            DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
-            if (DocumentPermissionSetTypeDomainObject.EDIT.equals(documentPermissionSetType)) {
+            PermissionDTO documentPermissionSetType = mapping.getDocumentPermissionSetType();
+            if (PermissionDTO.EDIT.equals(documentPermissionSetType)) {
                 result.put(role, DocumentPermissionSetDomainObject.FULL);
-            } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType)) {
+            } else if (PermissionDTO.RESTRICTED_1.equals(documentPermissionSetType)) {
                 result.put(role, internalDocument.getPermissionSets().getRestricted1());
-            } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType)) {
+            } else if (PermissionDTO.RESTRICTED_2.equals(documentPermissionSetType)) {
                 result.put(role, internalDocument.getPermissionSets().getRestricted2());
-            } else if (DocumentPermissionSetTypeDomainObject.VIEW.equals(documentPermissionSetType)) {
+            } else if (PermissionDTO.VIEW.equals(documentPermissionSetType)) {
                 result.put(role, DocumentPermissionSetDomainObject.READ);
-            } else if (!DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType)) {
+            } else if (!PermissionDTO.NONE.equals(documentPermissionSetType)) {
                 log.warn("A missing mapping in DocumentPermissionSetMapper");
             }
         }

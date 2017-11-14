@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.*;
@@ -12,7 +13,6 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -360,7 +360,7 @@ public class DocumentSaver {
                     .getMappings();
 
             for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : oldDocumentMappings) {
-                mappings.setPermissionSetTypeForRole(mapping.getRoleId(), DocumentPermissionSetTypeDomainObject.NONE);
+                mappings.setPermissionSetTypeForRole(mapping.getRoleId(), PermissionDTO.NONE);
             }
         }
 
@@ -378,7 +378,7 @@ public class DocumentSaver {
 
         for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : mappingsArray) {
             RoleId roleId = mapping.getRoleId();
-            DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
+            PermissionDTO documentPermissionSetType = mapping.getDocumentPermissionSetType();
 
             final boolean canSetDocumentPermissionSetTypeForRoleIdOnDocument = user
                     .canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument);
@@ -386,7 +386,7 @@ public class DocumentSaver {
             if (null == oldDocument || canSetDocumentPermissionSetTypeForRoleIdOnDocument) {
 
                 // According to schema design NONE value can not be save into the DB table
-                if (documentPermissionSetType.equals(DocumentPermissionSetTypeDomainObject.NONE)) {
+                if (documentPermissionSetType.equals(PermissionDTO.NONE)) {
                     roleIdToPermissionSetIdMap.remove(roleId.intValue());
                 } else {
                     roleIdToPermissionSetIdMap.put(roleId.intValue(), documentPermissionSetType.getPermission());

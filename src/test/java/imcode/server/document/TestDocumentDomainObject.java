@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import imcode.server.user.RoleId;
 import junit.framework.TestCase;
 
@@ -24,11 +25,11 @@ public class TestDocumentDomainObject extends TestCase {
 
     public void testDeepCloneRoles() throws CloneNotSupportedException {
         RoleId roleId = RoleId.SUPERADMIN;
-        assertEquals(document.getDocumentPermissionSetTypeForRoleId(roleId), DocumentPermissionSetTypeDomainObject.NONE);
+        assertEquals(document.getDocumentPermissionSetTypeForRoleId(roleId), PermissionDTO.NONE);
         DocumentDomainObject clone = document.clone();
-        clone.setDocumentPermissionSetTypeForRoleId(roleId, DocumentPermissionSetTypeDomainObject.EDIT);
-        assertEquals(clone.getDocumentPermissionSetTypeForRoleId(roleId), DocumentPermissionSetTypeDomainObject.EDIT);
-        assertEquals(document.getDocumentPermissionSetTypeForRoleId(roleId), DocumentPermissionSetTypeDomainObject.NONE);
+        clone.setDocumentPermissionSetTypeForRoleId(roleId, PermissionDTO.EDIT);
+        assertEquals(clone.getDocumentPermissionSetTypeForRoleId(roleId), PermissionDTO.EDIT);
+        assertEquals(document.getDocumentPermissionSetTypeForRoleId(roleId), PermissionDTO.NONE);
     }
 
     public void testDeepClonePermissionSets() throws CloneNotSupportedException {

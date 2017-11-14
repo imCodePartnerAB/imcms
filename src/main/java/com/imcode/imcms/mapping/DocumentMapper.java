@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.api.*;
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
@@ -157,9 +158,9 @@ public class DocumentMapper implements DocumentGetter {
      * <p>
      * By default if parent doc type is {@link imcode.server.document.textdocument.TextDocumentDomainObject} its default template is used.
      * It might be overridden however if most privileged permission set type for the current user is either
-     * {@link imcode.server.document.DocumentPermissionSetTypeDomainObject#RESTRICTED_1}
+     * {@link PermissionDTO#RESTRICTED_1}
      * or
-     * {@link imcode.server.document.DocumentPermissionSetTypeDomainObject#RESTRICTED_2}
+     * {@link PermissionDTO#RESTRICTED_2}
      * and there is a default template associated with that set type.
      * <p>
      * Please note:
@@ -169,12 +170,12 @@ public class DocumentMapper implements DocumentGetter {
      */
     private void setTemplateForNewTextDocument(TextDocumentDomainObject newTextDocument, UserDomainObject user,
                                                DocumentDomainObject parent) {
-        DocumentPermissionSetTypeDomainObject documentPermissionSetType = user.getDocumentPermissionSetTypeFor(parent);
+        PermissionDTO documentPermissionSetType = user.getDocumentPermissionSetTypeFor(parent);
         String templateName = null;
 
-        if (documentPermissionSetType == DocumentPermissionSetTypeDomainObject.RESTRICTED_1) {
+        if (documentPermissionSetType == PermissionDTO.RESTRICTED_1) {
             templateName = newTextDocument.getDefaultTemplateNameForRestricted1();
-        } else if (documentPermissionSetType == DocumentPermissionSetTypeDomainObject.RESTRICTED_2) {
+        } else if (documentPermissionSetType == PermissionDTO.RESTRICTED_2) {
             templateName = newTextDocument.getDefaultTemplateNameForRestricted2();
         }
 

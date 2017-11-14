@@ -1,5 +1,6 @@
 package imcode.server.document;
 
+import com.imcode.imcms.domain.dto.PermissionDTO;
 import imcode.server.ImcmsConstants;
 
 import java.util.Collections;
@@ -26,7 +27,7 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
      */
     private HashSet<Integer> allowedDocumentTypeIds = new HashSet<>();
 
-    public TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject typeId) {
+    public TextDocumentPermissionSetDomainObject(PermissionDTO typeId) {
         super(typeId);
     }
 
