@@ -4,7 +4,7 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.jpa.doc.Meta;
-import com.imcode.imcms.mapping.jpa.doc.MetaRepository;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;

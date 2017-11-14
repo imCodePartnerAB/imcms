@@ -6,7 +6,7 @@ import com.imcode.imcms.mapping.jpa.doc.Meta.DisabledLanguageShowMode;
 import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
 import com.imcode.imcms.mapping.jpa.doc.Meta.Permission;
 import com.imcode.imcms.mapping.jpa.doc.Meta.PublicationStatus;
-import com.imcode.imcms.mapping.jpa.doc.MetaRepository;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.RoleId;
 import org.springframework.stereotype.Component;

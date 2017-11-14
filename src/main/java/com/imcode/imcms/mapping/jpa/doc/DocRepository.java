@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping.jpa.doc;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.content.*;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
