@@ -19,7 +19,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 
@@ -28,7 +27,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by dmizem from Ubrainians for imCode on 20.10.17.
  */
-@Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
