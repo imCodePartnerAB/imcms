@@ -30,7 +30,6 @@ import static org.junit.Assert.assertEquals;
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
-
 public class SearchDocumentServiceTest {
     private File testSolrFolder;
 

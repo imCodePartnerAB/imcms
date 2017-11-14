@@ -17,10 +17,10 @@ import static org.junit.Assert.assertEquals;
 /**
  * @see CategoryService
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 @Transactional
+@WebAppConfiguration
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class CategoryServiceTest {
 
     @Autowired

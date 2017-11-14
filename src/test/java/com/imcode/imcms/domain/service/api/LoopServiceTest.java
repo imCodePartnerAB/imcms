@@ -25,10 +25,10 @@ import java.util.List;
 import static com.imcode.imcms.components.datainitializer.LoopDataInitializer.TEST_VERSION_NO;
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 @Transactional
+@WebAppConfiguration
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class LoopServiceTest {
 
     private static final int TEST_DOC_ID = 1001;

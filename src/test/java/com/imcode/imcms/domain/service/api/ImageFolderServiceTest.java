@@ -21,10 +21,10 @@ import java.io.IOException;
 import static java.io.File.separator;
 import static org.junit.Assert.*;
 
+@Transactional
+@WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
-@WebAppConfiguration
-@Transactional
 public class ImageFolderServiceTest {
 
     @Autowired
