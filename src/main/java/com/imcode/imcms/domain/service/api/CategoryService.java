@@ -14,19 +14,25 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final Function<Category, CategoryDTO> mapper;
+    private final Function<Category, CategoryDTO> categoryToCategoryDTO;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository, Function<Category, CategoryDTO> mapper) {
+    public CategoryService(CategoryRepository categoryRepository,
+                           Function<Category, CategoryDTO> categoryToCategoryDTO) {
+
         this.categoryRepository = categoryRepository;
-        this.mapper = mapper;
+        this.categoryToCategoryDTO = categoryToCategoryDTO;
     }
 
     public List<CategoryDTO> getAll() {
         return categoryRepository.findAll()
                 .stream()
-                .map(mapper)
+                .map(categoryToCategoryDTO)
                 .collect(Collectors.toList());
+    }
+
+    public CategoryDTO getById(int id) {
+        return categoryToCategoryDTO.apply(categoryRepository.findOne(id));
     }
 
 }
