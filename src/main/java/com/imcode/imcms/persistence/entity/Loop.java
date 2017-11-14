@@ -1,6 +1,8 @@
 package com.imcode.imcms.persistence.entity;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -9,12 +11,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "imcms_text_doc_content_loops")
-@Getter
-@Setter
 @NoArgsConstructor
-@ToString
 @EqualsAndHashCode(callSuper = true)
 public class Loop extends VersionedContent {
 
