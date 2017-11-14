@@ -2,7 +2,6 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
@@ -17,11 +16,9 @@ import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.springframework.stereotype.Service;
@@ -51,7 +48,6 @@ public class DocumentSaver {
     private final PropertyRepository propertyRepository;
     private final DocumentCreatingVisitor documentCreatingVisitor;
     private final DocumentSavingVisitor documentSavingVisitor;
-    private final DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
 
     @Inject
     public DocumentSaver(DocRepository docRepository, VersionRepository versionRepository,
@@ -163,11 +159,6 @@ public class DocumentSaver {
 
         Meta jpaMeta = toJpaObject(doc.getMeta());
 
-        if (user.canEditPermissionsFor(oldDoc)) {
-            newUpdateDocumentRolePermissions(jpaMeta, doc, user, oldDoc);
-            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, doc, user, oldDoc);
-        }
-
         metaRepository.saveAndFlush(jpaMeta);
 
         commonContents.forEach((language, dcc) -> {
@@ -209,10 +200,8 @@ public class DocumentSaver {
 
         meta.setId(null);
         Meta jpaMeta = toJpaObject(meta);
-        newUpdateDocumentRolePermissions(jpaMeta, firstDoc, user, null);
 
         // Update permissions
-        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, firstDoc, user, null);
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
         meta.setId(newDocId);
 
@@ -271,14 +260,7 @@ public class DocumentSaver {
         metaDO.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
         metaDO.setDocumentType(doc.getDocumentTypeId());
 
-        if (!user.isSuperAdminOrHasFullPermissionOn(doc)) {
-            metaDO.getPermissionSets().setRestricted1(metaDO.getPermissionSetsForNewDocument().getRestricted1());
-            metaDO.getPermissionSets().setRestricted2(metaDO.getPermissionSetsForNewDocument().getRestricted2());
-        }
-
         Meta jpaMeta = toJpaObject(metaDO);
-        newUpdateDocumentRolePermissions(jpaMeta, doc, user, null);
-        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(jpaMeta, doc, user, null);
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
 
         dccMap.forEach((language, dcc) -> {
@@ -340,63 +322,6 @@ public class DocumentSaver {
             throws NoPermissionInternalException, DocumentSaveException {
         documentMapper.getCategoryMapper().checkMaxDocumentCategoriesOfType(document);
         checkIfAliasAlreadyExist(document);
-    }
-
-    /**
-     * Update meta roles to permissions set mapping.
-     * Modified copy of legacy updateDocumentRolePermissions method.
-     * NB! Compared to legacy this method does not update database.
-     *
-     * @param document    document being saved
-     * @param user        an authorized user
-     * @param oldDocument original doc when updating or null when inserting (a new doc)
-     */
-    private void newUpdateDocumentRolePermissions(Meta jpaMeta, DocumentDomainObject document, UserDomainObject user,
-                                                  DocumentDomainObject oldDocument) {
-
-        // Original (old) and modified or new document permission set type mapping.
-        RoleIdToDocumentPermissionSetTypeMappings mappings = new RoleIdToDocumentPermissionSetTypeMappings();
-
-        // Copy original document' roles to mapping with NONE(4) permissions-set assigned
-        if (null != oldDocument) {
-            RoleIdToDocumentPermissionSetTypeMappings.Mapping[] oldDocumentMappings = oldDocument
-                    .getRoleIdsMappedToDocumentPermissionSetTypes()
-                    .getMappings();
-
-            for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : oldDocumentMappings) {
-                mappings.setPermissionSetTypeForRole(mapping.getRoleId(), PermissionDTO.NONE);
-            }
-        }
-
-        // Copy modified or new document' roles to mapping
-        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] documentMappings = document
-                .getRoleIdsMappedToDocumentPermissionSetTypes()
-                .getMappings();
-
-        for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : documentMappings) {
-            mappings.setPermissionSetTypeForRole(mapping.getRoleId(), mapping.getDocumentPermissionSetType());
-        }
-
-        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappingsArray = mappings.getMappings();
-        Map<Integer, Meta.Permission> roleIdToPermissionSetIdMap = jpaMeta.getRoleIdToPermissionSetIdMap();
-
-        for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : mappingsArray) {
-            RoleId roleId = mapping.getRoleId();
-            PermissionDTO documentPermissionSetType = mapping.getDocumentPermissionSetType();
-
-            final boolean canSetDocumentPermissionSetTypeForRoleIdOnDocument = user
-                    .canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument);
-
-            if (null == oldDocument || canSetDocumentPermissionSetTypeForRoleIdOnDocument) {
-
-                // According to schema design NONE value can not be save into the DB table
-                if (documentPermissionSetType.equals(PermissionDTO.NONE)) {
-                    roleIdToPermissionSetIdMap.remove(roleId.intValue());
-                } else {
-                    roleIdToPermissionSetIdMap.put(roleId.intValue(), documentPermissionSetType.getPermission());
-                }
-            }
-        }
     }
 
     private void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {

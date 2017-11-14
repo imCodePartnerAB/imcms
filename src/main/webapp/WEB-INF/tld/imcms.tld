@@ -64,11 +64,6 @@
             <variable-class>com.imcode.imcms.api.ContentManagementSystem</variable-class>
             <scope>AT_BEGIN</scope>
         </variable>
-        <variable>
-            <name-given>viewing</name-given>
-            <variable-class>com.imcode.imcms.api.TextDocumentViewing</variable-class>
-            <scope>AT_BEGIN</scope>
-        </variable>
     </tag>
 
     <tag>

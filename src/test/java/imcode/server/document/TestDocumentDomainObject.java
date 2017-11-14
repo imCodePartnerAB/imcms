@@ -1,8 +1,6 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.domain.dto.PermissionDTO;
-import imcode.server.user.RoleId;
 import junit.framework.TestCase;
 
 import java.util.Date;
@@ -21,30 +19,6 @@ public class TestDocumentDomainObject extends TestCase {
             public void accept(DocumentVisitor documentVisitor) {
             }
         };
-    }
-
-    public void testDeepCloneRoles() throws CloneNotSupportedException {
-        RoleId roleId = RoleId.SUPERADMIN;
-        assertEquals(document.getDocumentPermissionSetTypeForRoleId(roleId), PermissionDTO.NONE);
-        DocumentDomainObject clone = document.clone();
-        clone.setDocumentPermissionSetTypeForRoleId(roleId, PermissionDTO.EDIT);
-        assertEquals(clone.getDocumentPermissionSetTypeForRoleId(roleId), PermissionDTO.EDIT);
-        assertEquals(document.getDocumentPermissionSetTypeForRoleId(roleId), PermissionDTO.NONE);
-    }
-
-    public void testDeepClonePermissionSets() throws CloneNotSupportedException {
-        assertFalse(document.getPermissionSets().getRestricted1().getEditDocumentInformation());
-
-        DocumentDomainObject clone = document.clone();
-//        assertNotSame(document.attributes, clone.attributes) ;
-        assertNotSame(document.getPermissionSets(), clone.getPermissionSets());
-        assertNotSame(document.getPermissionSets().getRestricted1(), clone.getPermissionSets().getRestricted1());
-
-        assertFalse(clone.getPermissionSets().getRestricted1().getEditDocumentInformation());
-
-        clone.getPermissionSets().getRestricted1().setEditDocumentInformation(true);
-        assertTrue(clone.getPermissionSets().getRestricted1().getEditDocumentInformation());
-        assertFalse(document.getPermissionSets().getRestricted1().getEditDocumentInformation());
     }
 
     public void testGetLifeCyclePhaseAtTime() throws Exception {

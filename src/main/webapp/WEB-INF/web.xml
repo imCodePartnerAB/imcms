@@ -237,11 +237,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveInPage</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveInPage</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.SearchDocuments</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.SearchDocuments</servlet-class>
     </servlet>
@@ -294,11 +289,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.AdminPanelServlet</servlet-class>
     </servlet>
 
     <servlet>
@@ -452,11 +442,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveInPage</servlet-name>
-        <url-pattern>/servlet/SaveInPage</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.SearchDocuments</servlet-name>
         <url-pattern>/servlet/SearchDocuments</url-pattern>
     </servlet-mapping>
@@ -504,11 +489,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.XmlDoc</servlet-name>
         <url-pattern>/servlet/XmlDoc</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
-        <url-pattern>/servlet/AdminPanelServlet</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

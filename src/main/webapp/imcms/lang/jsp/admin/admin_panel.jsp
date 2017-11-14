@@ -1,11 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="im" uri="imcms" %>
+<%@ page import="com.imcode.imcms.api.DocumentVersionInfo" %>
 <%@ page import="com.imcode.imcms.servlet.Version" %>
+<%@ page import="imcode.server.Imcms" %>
 <%@ page import="imcode.server.ImcmsConstants" %>
 <%@ page import="org.apache.commons.lang3.BooleanUtils" %>
-<%@ page import="imcode.server.Imcms" %>
-<%@ page import="com.imcode.imcms.api.DocumentVersionInfo" %>
 <im:variables/>
 <%
     if (!user.canEdit(document)) {
@@ -40,11 +40,7 @@
 
     final boolean hasNewerVersion = (workingVersionModifiedTime > defaultVersionModifiedTime);
     pageContext.setAttribute("hasNewerVersion", hasNewerVersion);
-
-    final boolean canEditDocInfo = user.getInternal()
-            .getPermissionSetFor(document.getInternal())
-            .getEditDocumentInformation();
-    pageContext.setAttribute("canEditDocInfo", canEditDocInfo);
+    pageContext.setAttribute("canEditDocInfo", true);
 
     final String documentLifeCyclePhase = document.getInternal()
             .getLifeCyclePhase()

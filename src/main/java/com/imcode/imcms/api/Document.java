@@ -1,21 +1,13 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.RoleGetter;
-import imcode.server.user.RoleId;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class Document implements Serializable {
@@ -30,49 +22,12 @@ public class Document implements Serializable {
         this.contentManagementSystem = contentManagementSystem;
     }
 
-    private static Map<Role, DocumentPermissionSet> wrapDomainObjectsInMap(Map<RoleDomainObject, DocumentPermissionSetDomainObject> rolesMappedToPermissionsIds) {
-        Map<Role, DocumentPermissionSet> result = new HashMap<>();
-
-        for (Map.Entry<RoleDomainObject, DocumentPermissionSetDomainObject> entry : rolesMappedToPermissionsIds.entrySet()) {
-            result.put(new Role(entry.getKey()), new DocumentPermissionSet(entry.getValue()));
-        }
-        return result;
-    }
-
     public DocumentDomainObject getInternal() {
         return internalDocument;
     }
 
     public int getId() {
         return internalDocument.getId();
-    }
-
-    /**
-     * @return map of roles Role -> DocumentPermissionSet instances.
-     */
-    public Map<Role, DocumentPermissionSet> getRolesMappedToPermissions() {
-        RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = internalDocument.getRoleIdsMappedToDocumentPermissionSetTypes();
-
-        Map<RoleDomainObject, DocumentPermissionSetDomainObject> result = new HashMap<>();
-        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappings = roleIdToDocumentPermissionSetTypeMappings.getMappings();
-        RoleGetter roleGetter = contentManagementSystem.getInternal().getRoleGetter();
-        for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : mappings) {
-            RoleId roleId = mapping.getRoleId();
-            RoleDomainObject role = roleGetter.getRole(roleId);
-            PermissionDTO documentPermissionSetType = mapping.getDocumentPermissionSetType();
-            if (PermissionDTO.EDIT.equals(documentPermissionSetType)) {
-                result.put(role, DocumentPermissionSetDomainObject.FULL);
-            } else if (PermissionDTO.RESTRICTED_1.equals(documentPermissionSetType)) {
-                result.put(role, internalDocument.getPermissionSets().getRestricted1());
-            } else if (PermissionDTO.RESTRICTED_2.equals(documentPermissionSetType)) {
-                result.put(role, internalDocument.getPermissionSets().getRestricted2());
-            } else if (PermissionDTO.VIEW.equals(documentPermissionSetType)) {
-                result.put(role, DocumentPermissionSetDomainObject.READ);
-            } else if (!PermissionDTO.NONE.equals(documentPermissionSetType)) {
-                log.warn("A missing mapping in DocumentPermissionSetMapper");
-            }
-        }
-        return wrapDomainObjectsInMap(result);
     }
 
     /**
@@ -104,10 +59,6 @@ public class Document implements Serializable {
         internalDocument.setSearchDisabled(searchDisabled);
     }
 
-    public DocumentPermissionSet getDocumentPermissionSetForUser() {
-        return new DocumentPermissionSet(contentManagementSystem.getCurrentUser().getInternal().getPermissionSetFor(internalDocument));
-    }
-
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -137,11 +88,6 @@ public class Document implements Serializable {
 
     public void setKeywords(Set<String> keywords) {
         internalDocument.setKeywords(keywords);
-    }
-
-    public DocumentPermissionSet getPermissionSetRestrictedOne() {
-        DocumentPermissionSetDomainObject restrictedOne = internalDocument.getPermissionSets().getRestricted1();
-        return new DocumentPermissionSet(restrictedOne);
     }
 
     public String getHeadline() {
@@ -305,31 +251,14 @@ public class Document implements Serializable {
     }
 
     @SuppressWarnings("unused")
-    public DocumentPermissionSet getPermissionSetRestrictedTwo() {
-        DocumentPermissionSetDomainObject restrictedTwo = internalDocument.getPermissionSets().getRestricted2();
-        return new DocumentPermissionSet(restrictedTwo);
-    }
-
-    @SuppressWarnings("unused")
     public void removeCategory(Category category) {
         internalDocument.removeCategoryId(category.getId());
     }
 
-    @SuppressWarnings("unused")
-    public void setPermissionSetTypeForRole(Role role, DocumentPermissionSetType documentPermissionSetType) {
-        internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), documentPermissionSetType.getInternal());
-    }
-
-    @SuppressWarnings("unused")
-    public DocumentPermissionSetType getPermissionSetTypeForRole(Role role) {
-        return new DocumentPermissionSetType(internalDocument.getDocumentPermissionSetTypeForRoleId(role.getInternal().getId()));
-    }
-
-    @SuppressWarnings("unused")
     /**
-     * @param categoryType
      * @return an array of Categories, empty array if no one found.
      */
+    @SuppressWarnings("unused")
     public Category[] getCategoriesOfType(CategoryType categoryType) {
         CategoryMapper categoryMapper = contentManagementSystem.getInternal().getCategoryMapper();
         Set<CategoryDomainObject> categoriesOfType = categoryMapper.getCategoriesOfType(categoryType.getInternal(), internalDocument.getCategoryIds());

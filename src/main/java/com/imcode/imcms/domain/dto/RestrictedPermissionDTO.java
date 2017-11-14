@@ -11,8 +11,6 @@ public class RestrictedPermissionDTO implements Serializable {
 
     private static final long serialVersionUID = -3568020825278050072L;
 
-    private int id;
-
     private boolean editText;
 
     private boolean editMenu;

@@ -7,8 +7,8 @@ import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.repository.MetaRepository;
-import imcode.server.ImcmsConstants;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.user.RoleId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,11 +22,6 @@ import java.util.stream.Collectors;
  */
 @Component
 public class DocumentLoader {
-
-    /**
-     * Permission to create child documents.
-     */
-    public final static int PERM_CREATE_DOCUMENT = 8;
 
     @Autowired
     private PropertyRepository propertyRepository;
@@ -89,61 +84,6 @@ public class DocumentLoader {
         metaDO.setRoleIdToDocumentPermissionSetTypeMappings(rolePermissionMappings);
     }
 
-    private void initDocumentsPermissionSets(DocumentMeta metaDO, Meta ormMeta) {
-        DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-                ormMeta.getPermissionSetBitsMap(), ormMeta.getPermissionSetEx());
-
-        metaDO.setPermissionSets(permissionSets);
-    }
-
-    private void initDocumentsPermissionSetsForNew(DocumentMeta metaDO, Meta jpaMeta) {
-        DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-                jpaMeta.getPermissionSetBitsForNewMap(), jpaMeta.getPermissionSetExForNew());
-
-        metaDO.setPermissionSetsForNewDocument(permissionSets);
-    }
-
-    private DocumentPermissionSets createDocumentsPermissionSets(
-            Map<Integer, Integer> permissionSetBitsMap,
-            Set<Meta.PermissionSetEx> permissionSetEx) {
-
-        DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-
-        for (Map.Entry<Integer, Integer> permissionSetBitsEntry : permissionSetBitsMap.entrySet()) {
-            Integer setId = permissionSetBitsEntry.getKey();
-            Integer permissionSetBits = permissionSetBitsEntry.getValue();
-            DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
-
-            if (permissionSetBits != 0 && restricted.isEmpty()) {
-                restricted.setFromBits(permissionSetBits);
-            }
-        }
-
-        for (Meta.PermissionSetEx ex : permissionSetEx) {
-            Integer setId = ex.getSetId();
-            DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
-
-            setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());
-        }
-
-        return permissionSets;
-    }
-
-    private void setPermissionData(DocumentPermissionSetDomainObject permissionSet, Integer permissionId, Integer permissionData) {
-        if (null != permissionId) {
-            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) permissionSet;
-            switch (permissionId) {
-                case PERM_CREATE_DOCUMENT:
-                    textDocumentPermissionSet.addAllowedDocumentTypeId(permissionData);
-                    break;
-                case ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE:
-                    textDocumentPermissionSet.addAllowedTemplateGroupId(permissionData);
-                    break;
-                default:
-            }
-        }
-    }
-
     private DocumentMeta toDomainObject(Meta meta) {
         if (meta == null) return null;
 
@@ -180,8 +120,6 @@ public class DocumentLoader {
         metaDO.setTarget(meta.getTarget());
 
         initRoleIdToPermissionSetIdMap(metaDO, meta);
-        initDocumentsPermissionSets(metaDO, meta);
-        initDocumentsPermissionSetsForNew(metaDO, meta);
 
         return metaDO;
     }

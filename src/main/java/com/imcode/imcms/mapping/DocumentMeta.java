@@ -4,7 +4,6 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSets;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import org.apache.commons.lang.NullArgumentException;
 
@@ -58,8 +57,6 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile Set<Integer> categoryIds = new CopyOnWriteArraySet<>();
     private volatile Set<DocumentLanguage> enabledLanguages = new CopyOnWriteArraySet<>();
     private volatile Set<String> keywords = new CopyOnWriteArraySet<>();
-    private volatile DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-    private volatile DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
     private volatile RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
     private volatile Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
 
@@ -74,14 +71,6 @@ public class DocumentMeta implements Serializable, Cloneable {
 
             clone.keywords = new CopyOnWriteArraySet<>(keywords);
             clone.enabledLanguages = new CopyOnWriteArraySet<>(enabledLanguages);
-
-            if (permissionSets != null) {
-                clone.permissionSets = permissionSets.clone();
-            }
-
-            if (permissionSetsForNewDocuments != null) {
-                clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments.clone();
-            }
 
             if (roleIdToDocumentPermissionSetTypeMappings != null) {
                 clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
@@ -252,7 +241,7 @@ public class DocumentMeta implements Serializable, Cloneable {
     }
 
     public void setKeywords(Set<String> keywords) {
-        this.keywords = new CopyOnWriteArraySet<>(keywords != null ? keywords : Collections.<String>emptySet());
+        this.keywords = new CopyOnWriteArraySet<>(keywords != null ? keywords : Collections.emptySet());
     }
 
     public DisabledLanguageShowMode getDisabledLanguageShowMode() {
@@ -269,24 +258,8 @@ public class DocumentMeta implements Serializable, Cloneable {
 
     public void setEnabledLanguages(Set<DocumentLanguage> languages) {
         this.enabledLanguages = new CopyOnWriteArraySet<>(
-                languages != null ? languages : Collections.<DocumentLanguage>emptySet()
+                languages != null ? languages : Collections.emptySet()
         );
-    }
-
-    public DocumentPermissionSets getPermissionSets() {
-        return permissionSets;
-    }
-
-    public void setPermissionSets(DocumentPermissionSets permissionSets) {
-        this.permissionSets = permissionSets;
-    }
-
-    public DocumentPermissionSets getPermissionSetsForNewDocument() {
-        return permissionSetsForNewDocuments;
-    }
-
-    public void setPermissionSetsForNewDocument(DocumentPermissionSets permissionSetsForNewDocuments) {
-        this.permissionSetsForNewDocuments = permissionSetsForNewDocuments;
     }
 
     public RoleIdToDocumentPermissionSetTypeMappings getRoleIdToDocumentPermissionSetTypeMappings() {

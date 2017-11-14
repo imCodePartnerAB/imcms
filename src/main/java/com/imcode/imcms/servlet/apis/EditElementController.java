@@ -1,9 +1,7 @@
 package com.imcode.imcms.servlet.apis;
 
-import com.imcode.imcms.api.TextDocumentViewing;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.parser.ParserParameters;
 import imcode.util.Utility;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,8 +53,6 @@ public class EditElementController {
             return null;
         }
 
-        prepareRequest(document, request, response);
-
         ModelAndView mav = new ModelAndView(SINGLE_EDITOR_VIEW); // jsp for element editing
         mav.addObject("flags", PERM_EDIT_DOCUMENT); // flags to use admin functionality
 
@@ -74,14 +70,4 @@ public class EditElementController {
         return mav;
     }
 
-    private void prepareRequest(DocumentDomainObject document,
-                                HttpServletRequest request,
-                                HttpServletResponse response) {
-        // this should be done to use tags functionality on page
-        ParserParameters parserParameters = new ParserParameters(document, request, response);
-        TextDocumentViewing.putInRequest(new TextDocumentViewing(parserParameters));
-        ParserParameters.putInRequest(parserParameters);
-
-        parserParameters.setFlags(PERM_EDIT_DOCUMENT);
-    }
 }

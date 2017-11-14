@@ -14,8 +14,6 @@ import com.jcabi.w3c.ValidationResponse;
 import com.jcabi.w3c.ValidatorBuilder;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.text.StringEscapeUtils;
@@ -132,15 +130,6 @@ public class TextController {
                            @RequestParam(value = "contenttype", required = false) String contentType) {
 
         final UserDomainObject user = Imcms.getUser();
-        final TextDocumentDomainObject doc = imcmsServices.getDocumentMapper().getWorkingDocument(docId);
-        final TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)
-                user.getPermissionSetFor(doc);
-
-        // fixme: v4.
-        if (!permissionSet.getEditTexts()) {
-            //AdminDoc.adminDoc(documentId, user, request, res, getServletContext)
-            return "";
-        }
 
         com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRefOpt = null;
 

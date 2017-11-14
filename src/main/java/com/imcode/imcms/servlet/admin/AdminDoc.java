@@ -1,21 +1,14 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.flow.ChangeDocDefaultVersionPageFlow;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.PageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.DocumentHistory;
-import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.HtmlDocumentDomainObject;
-import imcode.server.document.UrlDocumentDomainObject;
-import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -80,7 +73,8 @@ public class AdminDoc extends HttpServlet {
             flags = 0;
         }
 
-        final PageFlow pageFlow = createFlow(req, document, flags, user);
+        // fixme: remove this thing
+        final PageFlow pageFlow = createFlow(req, document, flags);
 
         if (null != pageFlow && user.canEdit(document)) {
             pageFlow.dispatch(req, res);
@@ -94,24 +88,14 @@ public class AdminDoc extends HttpServlet {
     /**
      * @param document document associated with a flow.
      * @param flags    command flags.
-     * @param user     user
      * @return new page flow
      */
-    private PageFlow createFlow(HttpServletRequest req, DocumentDomainObject document, int flags, UserDomainObject user) {
+    private PageFlow createFlow(HttpServletRequest req, DocumentDomainObject document, int flags) {
         RedirectToDocumentCommand returnCommand = new RedirectToDocumentCommand(document);
 
         PageFlow pageFlow = null;
-        if (ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags && user.canEditDocumentInformationFor(document)) {
-            pageFlow = new EditDocPageFlow(document);
-        } else if (ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor(document)) {
-            pageFlow = new EditDocPageFlow(document);
-        } else if (document instanceof HtmlDocumentDomainObject && ImcmsConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags) {
-            pageFlow = new EditDocPageFlow(document);
-        } else if (document instanceof UrlDocumentDomainObject && ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags) {
-            pageFlow = new EditDocPageFlow(document);
-        } else if (document instanceof FileDocumentDomainObject && ImcmsConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags) {
-            pageFlow = new EditDocPageFlow(document);
-        } else if (ImcmsConstants.DISPATCH_FLAG__PUBLISH == flags) {
+
+        if (ImcmsConstants.DISPATCH_FLAG__PUBLISH == flags) {
             pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.PublishWorkingVersionCommand());
         } else if (ImcmsConstants.DISPATCH_FLAG__SET_DEFAULT_VERSION == flags) {
             try {
@@ -124,50 +108,9 @@ public class AdminDoc extends HttpServlet {
         return pageFlow;
     }
 
-    private static class EditDocPageFlow extends PageFlow {
-
-        protected DocumentDomainObject document;
-
-        // todo: editor tag arg: perms/info/profile/etc
-        private EditDocPageFlow(DocumentDomainObject document) {
-            super(null);
-            this.document = document;
-        }
-
-        @Override
-        public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            //String docAdminUrl = request.getContextPath() + "/imcms/docadmin?meta_id=" + request.getParameter("meta_id");
-            DocumentRequest documentRequest = new DocumentRequest(Imcms.getServices(), Imcms.getUser(), document, null, request, response);
-            ParserParameters parserParameters = new ParserParameters(documentRequest);
-
-            parserParameters.setFlags(56568);
-
-            ParserParameters.putInRequest(parserParameters);
-
-            ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
-            Document document = cms.getDocumentService().getDocument(this.document.getId());
-
-            request.setAttribute("document", document);
-            request.setAttribute("user", cms.getCurrentUser());
-
-            request.getRequestDispatcher("/WEB-INF/jsp/admin/edit_document.jsp").forward(request, response);
-        }
-
-        @Override
-        protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        }
-
-        @Override
-        protected void dispatchOk(HttpServletRequest request, HttpServletResponse response, String page) throws IOException, ServletException {
-        }
-
-        @Override
-        protected void dispatchFromPage(HttpServletRequest request, HttpServletResponse response, String page) throws IOException, ServletException {
-        }
-    }
-
     private static class RedirectToDocumentCommand implements DispatchCommand {
 
+        private static final long serialVersionUID = -5123598083288706042L;
         private final DocumentDomainObject document;
 
         RedirectToDocumentCommand(DocumentDomainObject document) {

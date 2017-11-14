@@ -32,13 +32,6 @@ public class Meta implements Serializable {
     @Column(name = "disabled_language_show_rule", nullable = false)
     private DisabledLanguageShowMode disabledLanguageShowMode = DisabledLanguageShowMode.DO_NOT_SHOW;
 
-    /**
-     * DEPRECATED?
-     * RB4: this field is never used or referenced, it is merely set to '1' at the insert.
-     */
-    @Column(name = "activate", nullable = false, updatable = false)
-    private Integer activate = 1;
-
     @Column(name = "doc_type", nullable = false, updatable = false)
     @Enumerated(EnumType.ORDINAL)
     private DocumentType documentType;
@@ -54,14 +47,6 @@ public class Meta implements Serializable {
 
     @Column(name = "show_meta", nullable = false, columnDefinition = "int")
     private Boolean linkedForUnauthorizedUsers;
-
-    /**
-     * Deprecated with no replacement.
-     */
-    @Deprecated
-    @Column(name = "lang_prefix", nullable = false)
-    @SuppressWarnings("unused")
-    private String lang_prefix = "";
 
     @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -137,29 +122,13 @@ public class Meta implements Serializable {
     @Column(name = "value")
     private Set<String> keywords = new HashSet<>();
 
-    // TODO: 20.10.17 Delete field mapping and table
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
-    @MapKeyColumn(name = "set_id")
-    @Column(name = "permission_id")
-    private Map<Integer, Integer> permissionSetBitsMap = new HashMap<>();
-
-    // TODO: 20.10.17 Delete field mapping and table
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "new_doc_permission_sets", joinColumns = @JoinColumn(name = "meta_id"))
-    @MapKeyColumn(name = "set_id")
-    @Column(name = "permission_id")
-    private Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<>();
-
-    // TODO: 20.10.17 Delete mapping and table
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
-    private Set<PermissionSetEx> permissionSetEx = new HashSet<>();
-
-    // TODO: 20.10.17 Delete mapping and table
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "new_doc_permission_sets_ex", joinColumns = @JoinColumn(name = "meta_id"))
-    private Set<PermissionSetEx> permissionSetExForNew = new HashSet<>();
+    @ElementCollection
+    @CollectionTable(
+            name = "imcms_doc_restricted_permissions",
+            joinColumns = @JoinColumn(name = "meta_id")
+    )
+    @OrderColumn(name = "order_index")
+    private Set<RestrictedPermission> restrictedPermissions = new HashSet<>();
 
     /**
      * DocumentType database column has int value. It takes from {@link Enum#ordinal}.
@@ -215,35 +184,5 @@ public class Meta implements Serializable {
         public boolean isAtLeastAsPrivilegedAs(Permission type) {
             return ordinal() <= type.ordinal();
         }
-    }
-
-    /**
-     * Create (create only!) permission for template or a document type.
-     * <p/>
-     * set_id (actually it is a 'set *type* id') can be: restricted 1 or restricted 2
-     * <p/>
-     * Mapped to doc_permission_set and new_doc_permission_set
-     */
-    @Embeddable
-    @Data
-    public static class PermissionSetEx {
-
-        @Column(name = "set_id")
-        private Integer setId;
-
-        /**
-         * Document type (1 2 5 7 8) or template group id
-         */
-        @Column(name = "permission_data")
-        private Integer permissionData;
-
-        /**
-         * For documents: DatabaseDocumentGetter.PERM_CREATE_DOCUMENT
-         * For templates: TextDocumentPermissionSetDomainObject.EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID
-         * ?Bit set value?
-         */
-        @Column(name = "permission_id")
-        private Integer permissionId;
-
     }
 }

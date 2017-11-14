@@ -4,7 +4,6 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.UserService;
-import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -15,7 +14,6 @@ import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -447,31 +445,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void removeCategoryId(int categoryId) {
         meta.getCategoryIds().remove(categoryId);
-    }
-
-    public void setDocumentPermissionSetTypeForRoleId(RoleId roleId,
-                                                      PermissionDTO permissionSetType) {
-        getRolePermissionMappings().setPermissionSetTypeForRole(roleId, permissionSetType);
-    }
-
-    public PermissionDTO getDocumentPermissionSetTypeForRoleId(RoleId roleId) {
-        return getRolePermissionMappings().getPermissionSetTypeForRole(roleId);
-    }
-
-    public DocumentPermissionSets getPermissionSets() {
-        return meta.getPermissionSets();
-    }
-
-    public void setPermissionSets(DocumentPermissionSets permissionSets) {
-        meta.setPermissionSets(permissionSets);
-    }
-
-    public DocumentPermissionSets getPermissionSetsForNewDocument() {
-        return meta.getPermissionSetsForNewDocument();
-    }
-
-    public void setPermissionSetsForNewDocument(DocumentPermissionSets permissionSetsForNew) {
-        meta.setPermissionSetsForNewDocument(permissionSetsForNew);
     }
 
     public abstract void accept(DocumentVisitor documentVisitor);
