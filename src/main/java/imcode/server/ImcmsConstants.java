@@ -1,6 +1,7 @@
 package imcode.server;
 
-public class ImcmsConstants {
+public class
+ImcmsConstants {
 
     public static final int DEFAULT_START_DOC_ID = 1001;
 
@@ -141,6 +142,9 @@ public class ImcmsConstants {
      * Single element editor view name, file is %name%.jsp
      */
     public static final String SINGLE_EDITOR_VIEW = "editElement";
+
+    public static final String ENG_CODE = "en";
+    public static final String SWE_CODE = "sv";
 
     private ImcmsConstants() {
         throw new AssertionError();
