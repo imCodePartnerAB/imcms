@@ -14,6 +14,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,6 +30,12 @@ public class RoleServiceTest {
         assertLike(RoleId.SUPERADMIN, roles.get(0));
         assertLike(RoleId.USERADMIN, roles.get(1));
         assertLike(RoleId.USERS, roles.get(2));
+    }
+
+    @Test
+    public void getById_When_Exist_Expect_NotNull() {
+        final Integer id = roleService.getAll().get(0).getId();
+        assertNotNull(roleService.getById(id));
     }
 
     private void assertLike(RoleId roleId, RoleDTO roleDTO) {

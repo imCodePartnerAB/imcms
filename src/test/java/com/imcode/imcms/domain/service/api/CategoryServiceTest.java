@@ -13,6 +13,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @see CategoryService
@@ -37,6 +38,12 @@ public class CategoryServiceTest {
     @Test
     public void getAllExpectedEqualsCategoriesAsDtoTest() {
         assertEquals(categoryDataInitilizer.getCategoriesAsDTO(), categoryService.getAll());
+    }
+
+    @Test
+    public void getById_When_Exist_Expect_NotNull() {
+        final Integer id = categoryDataInitilizer.getCategoriesAsDTO().get(0).getId();
+        assertNotNull(categoryService.getById(id));
     }
 
 }
