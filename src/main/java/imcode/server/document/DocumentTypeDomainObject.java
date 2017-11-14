@@ -1,6 +1,6 @@
 package imcode.server.document;
 
-import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
+import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.util.IdLocalizedNamePair;
 

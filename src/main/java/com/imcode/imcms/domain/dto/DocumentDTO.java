@@ -1,8 +1,8 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.mapping.jpa.doc.Meta.DisabledLanguageShowMode;
-import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
-import com.imcode.imcms.mapping.jpa.doc.Meta.PublicationStatus;
+import com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode;
+import com.imcode.imcms.persistence.entity.Meta.DocumentType;
+import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

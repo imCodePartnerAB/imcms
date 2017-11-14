@@ -2,7 +2,7 @@ package com.imcode.imcms.api;
 
 import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.jpa.doc.Meta;
+import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;

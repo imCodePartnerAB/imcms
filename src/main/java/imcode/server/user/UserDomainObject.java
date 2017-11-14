@@ -5,7 +5,7 @@ import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.DocumentMeta;
-import com.imcode.imcms.mapping.jpa.doc.Meta;
+import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
 import imcode.server.document.*;
 import org.apache.commons.collections.CollectionUtils;

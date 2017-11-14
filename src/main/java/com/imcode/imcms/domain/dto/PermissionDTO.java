@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.mapping.jpa.doc.Meta.Permission;
+import com.imcode.imcms.persistence.entity.Meta.Permission;
 
 import java.io.Serializable;
 

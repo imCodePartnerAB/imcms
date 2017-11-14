@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.mapping.jpa.doc.Meta;
+import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;

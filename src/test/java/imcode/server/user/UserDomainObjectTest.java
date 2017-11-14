@@ -1,7 +1,7 @@
 package imcode.server.user;
 
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.mapping.jpa.doc.Meta;
+import com.imcode.imcms.persistence.entity.Meta;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;

@@ -10,7 +10,7 @@ import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
-import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
+import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import imcode.server.Imcms;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;

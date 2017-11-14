@@ -11,7 +11,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
-import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
+import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;

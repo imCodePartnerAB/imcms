@@ -1,11 +1,11 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.mapping.jpa.doc.Meta;
-import com.imcode.imcms.mapping.jpa.doc.Meta.DisabledLanguageShowMode;
-import com.imcode.imcms.mapping.jpa.doc.Meta.DocumentType;
-import com.imcode.imcms.mapping.jpa.doc.Meta.Permission;
-import com.imcode.imcms.mapping.jpa.doc.Meta.PublicationStatus;
+import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode;
+import com.imcode.imcms.persistence.entity.Meta.DocumentType;
+import com.imcode.imcms.persistence.entity.Meta.Permission;
+import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.RoleId;
