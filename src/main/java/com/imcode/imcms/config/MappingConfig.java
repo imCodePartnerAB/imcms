@@ -2,6 +2,7 @@ package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.dto.ImageData.CropRegion;
+import com.imcode.imcms.domain.service.api.CategoryService;
 import com.imcode.imcms.domain.service.api.DocumentService;
 import com.imcode.imcms.domain.service.api.LanguageService;
 import com.imcode.imcms.domain.service.api.RoleService;
@@ -388,7 +389,8 @@ public class MappingConfig {
     public Function<Meta, DocumentDTO> documentMapping(VersionService versionService,
                                                        CommonContentService commonContentService,
                                                        Function<Language, LanguageDTO> languageToLanguageDTO,
-                                                       RoleService roleService) {
+                                                       RoleService roleService,
+                                                       CategoryService categoryService) {
 
         final BiFunction<Supplier<Integer>, Supplier<Date>, AuditDTO> auditDtoCreator =
                 (auditorIdSupplier, auditedDateSupplier) -> {
@@ -444,6 +446,13 @@ public class MappingConfig {
                     .collect(Collectors.toSet());
 
             dto.setRoles(rolesDTO);
+
+            final Set<CategoryDTO> categories = meta.getCategoryIds()
+                    .stream()
+                    .map(categoryService::getById)
+                    .collect(Collectors.toSet());
+
+            dto.setCategories(categories);
 
             return dto;
         };
