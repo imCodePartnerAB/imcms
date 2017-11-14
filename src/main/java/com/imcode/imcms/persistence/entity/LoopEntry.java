@@ -6,11 +6,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Table;
 
 @Data
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "imcms_text_doc_contents")
 public class LoopEntry {
 
     @Column(name = "`index`")
