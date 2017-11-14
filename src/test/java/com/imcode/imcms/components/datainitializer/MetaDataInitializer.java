@@ -46,9 +46,9 @@ public class MetaDataInitializer extends AbstractTestDataInitializer<Void, Meta>
 
         meta.setProperties(Collections.singletonMap(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, "/test"));
 
-        final Map<Integer, Integer> roleRights = new HashMap<>();
-        roleRights.put(RoleId.USERADMIN_ID, Permission.EDIT.ordinal());
-        roleRights.put(RoleId.SUPERADMIN_ID, Permission.EDIT.ordinal());
+        final Map<Integer, Meta.Permission> roleRights = new HashMap<>();
+        roleRights.put(RoleId.USERADMIN_ID, Permission.EDIT);
+        roleRights.put(RoleId.SUPERADMIN_ID, Permission.EDIT);
         meta.setRoleIdToPermissionSetIdMap(roleRights);
 
         final Set<String> keywords = new HashSet<>();

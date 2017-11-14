@@ -25,16 +25,16 @@ public class TestDocumentDomainObject extends TestCase {
     public void testDeepCloneRoles() throws CloneNotSupportedException {
         RoleId roleId = RoleId.SUPERADMIN;
         assertEquals(document.getDocumentPermissionSetTypeForRoleId(roleId), DocumentPermissionSetTypeDomainObject.NONE);
-        DocumentDomainObject clone = (DocumentDomainObject) document.clone();
-        clone.setDocumentPermissionSetTypeForRoleId(roleId, DocumentPermissionSetTypeDomainObject.FULL);
-        assertEquals(clone.getDocumentPermissionSetTypeForRoleId(roleId), DocumentPermissionSetTypeDomainObject.FULL);
+        DocumentDomainObject clone = document.clone();
+        clone.setDocumentPermissionSetTypeForRoleId(roleId, DocumentPermissionSetTypeDomainObject.EDIT);
+        assertEquals(clone.getDocumentPermissionSetTypeForRoleId(roleId), DocumentPermissionSetTypeDomainObject.EDIT);
         assertEquals(document.getDocumentPermissionSetTypeForRoleId(roleId), DocumentPermissionSetTypeDomainObject.NONE);
     }
 
     public void testDeepClonePermissionSets() throws CloneNotSupportedException {
         assertFalse(document.getPermissionSets().getRestricted1().getEditDocumentInformation());
 
-        DocumentDomainObject clone = (DocumentDomainObject) document.clone();
+        DocumentDomainObject clone = document.clone();
 //        assertNotSame(document.attributes, clone.attributes) ;
         assertNotSame(document.getPermissionSets(), clone.getPermissionSets());
         assertNotSame(document.getPermissionSets().getRestricted1(), clone.getPermissionSets().getRestricted1());
@@ -76,7 +76,7 @@ public class TestDocumentDomainObject extends TestCase {
     }
 
     private void assertLifeCyclePhase(LifeCyclePhase lifeCyclePhase) {
-        assertEquals(lifeCyclePhase, document.getLifeCyclePhaseAtTime(document, new Date(1)));
+        assertEquals(lifeCyclePhase, DocumentDomainObject.getLifeCyclePhaseAtTime(document, new Date(1)));
     }
 
     public void testGetDocumentProperties() throws Exception {

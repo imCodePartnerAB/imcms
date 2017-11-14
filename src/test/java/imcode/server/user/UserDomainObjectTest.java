@@ -8,8 +8,6 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
-import static imcode.server.document.DocumentPermissionSetTypeDomainObject.FULL;
-import static imcode.server.document.DocumentPermissionSetTypeDomainObject.NONE;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -24,11 +22,11 @@ public class UserDomainObjectTest {
         meta = new Meta();
         meta.setId(0);
 
-        final HashMap<Integer, Integer> roleRights = new HashMap<>();
+        final HashMap<Integer, Meta.Permission> roleRights = new HashMap<>();
 
-        roleRights.put(RoleId.USERS_ID, NONE.getId());
-        roleRights.put(RoleId.USERADMIN_ID, FULL.getId());
-        roleRights.put(RoleId.SUPERADMIN_ID, FULL.getId());
+        roleRights.put(RoleId.USERS_ID, Meta.Permission.NONE);
+        roleRights.put(RoleId.USERADMIN_ID, Meta.Permission.EDIT);
+        roleRights.put(RoleId.SUPERADMIN_ID, Meta.Permission.EDIT);
 
         meta.setRoleIdToPermissionSetIdMap(roleRights);
 

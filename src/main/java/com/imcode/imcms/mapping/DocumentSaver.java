@@ -374,7 +374,7 @@ public class DocumentSaver {
         }
 
         RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappingsArray = mappings.getMappings();
-        Map<Integer, Integer> roleIdToPermissionSetIdMap = jpaMeta.getRoleIdToPermissionSetIdMap();
+        Map<Integer, Meta.Permission> roleIdToPermissionSetIdMap = jpaMeta.getRoleIdToPermissionSetIdMap();
 
         for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : mappingsArray) {
             RoleId roleId = mapping.getRoleId();
@@ -389,7 +389,7 @@ public class DocumentSaver {
                 if (documentPermissionSetType.equals(DocumentPermissionSetTypeDomainObject.NONE)) {
                     roleIdToPermissionSetIdMap.remove(roleId.intValue());
                 } else {
-                    roleIdToPermissionSetIdMap.put(roleId.intValue(), documentPermissionSetType.getId());
+                    roleIdToPermissionSetIdMap.put(roleId.intValue(), documentPermissionSetType.getPermission());
                 }
             }
         }
@@ -447,7 +447,7 @@ public class DocumentSaver {
                         .collect(
                                 Collectors.toMap(
                                         it -> it.getRoleId().getRoleId(),
-                                        it -> it.getDocumentPermissionSetType().getId()
+                                        it -> it.getDocumentPermissionSetType().getPermission()
                                 )
                         )
         );

@@ -19,6 +19,8 @@ import java.util.*;
 @NoArgsConstructor
 public class Meta implements Serializable {
 
+    private static final long serialVersionUID = 9024338066876530277L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "meta_id")
@@ -76,7 +78,7 @@ public class Meta implements Serializable {
     @Column(name = "target", nullable = false)
     private String target;
 
-    @Column(name = "archived_datetime", nullable = true)
+    @Column(name = "archived_datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date archivedDatetime;
 
@@ -86,18 +88,18 @@ public class Meta implements Serializable {
     @Column(name = "depublisher_id")
     private Integer depublisherId;
 
-    @Column(name = "publisher_id", nullable = true)
+    @Column(name = "publisher_id")
     private Integer publisherId;
 
-    @Column(name = "status", nullable = true)
+    @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
     private PublicationStatus publicationStatus;
 
-    @Column(name = "publication_start_datetime", nullable = true)
+    @Column(name = "publication_start_datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationStartDatetime;
 
-    @Column(name = "publication_end_datetime", nullable = true)
+    @Column(name = "publication_end_datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationEndDatetime;
 
@@ -114,13 +116,14 @@ public class Meta implements Serializable {
 
     /**
      * @see com.imcode.imcms.persistence.entity.Role#id as key
-     * @see Permission#ordinal() as value
+     * @see Permission as value
      */
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = Permission.class)
     @CollectionTable(name = "roles_rights", joinColumns = @JoinColumn(name = "meta_id"))
     @MapKeyColumn(name = "role_id")
-    @Column(name = "set_id", columnDefinition = "smallint")
-    private Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<>();
+    @Column(name = "permission", columnDefinition = "VARCHAR(16)")
+    @Enumerated(EnumType.STRING)
+    private Map<Integer, Permission> roleIdToPermissionSetIdMap = new HashMap<>();
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -190,8 +193,6 @@ public class Meta implements Serializable {
 
     /**
      * Permissions for document access.
-     * Permission strictness defined by descending {@link Permission#ordinal()}.
-     * Do not change order of enum constants.
      */
     public enum Permission {
         EDIT,
@@ -200,16 +201,20 @@ public class Meta implements Serializable {
         VIEW,
         NONE;
 
-        public static Permission fromOrdinal(int ordinal) {
-            return values()[ordinal];
+        public int getId() {
+            return ordinal();
         }
 
-        public boolean isMorePrivilegedThan(Permission permission) {
-            return ordinal() < permission.ordinal();
+        public String getName() {
+            return toString().toLowerCase();
         }
 
-        public boolean isAtLeastAsPrivilegedAs(Permission permission) {
-            return ordinal() <= permission.ordinal();
+        public boolean isMorePrivilegedThan(Permission type) {
+            return ordinal() < type.ordinal();
+        }
+
+        public boolean isAtLeastAsPrivilegedAs(Permission type) {
+            return ordinal() <= type.ordinal();
         }
     }
 

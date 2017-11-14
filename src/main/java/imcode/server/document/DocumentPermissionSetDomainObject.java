@@ -22,13 +22,13 @@ public class DocumentPermissionSetDomainObject implements Serializable, LazilyLo
         }
     };
 
-    public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.READ) {
+    public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.VIEW) {
         public boolean hasPermission(DocumentPermission permission) {
             return false;
         }
     };
 
-    public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.FULL) {
+    public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.EDIT) {
         public Set<Integer> getAllowedTemplateGroupIds() {
             return Imcms.getServices().getTemplateMapper().getAllTemplateGroupIds();
         }
@@ -70,13 +70,13 @@ public class DocumentPermissionSetDomainObject implements Serializable, LazilyLo
 
     private static String getName(DocumentPermissionSetTypeDomainObject userPermissionSetId) {
         String result;
-        if (DocumentPermissionSetTypeDomainObject.FULL.equals(userPermissionSetId)) {
+        if (DocumentPermissionSetTypeDomainObject.EDIT.equals(userPermissionSetId)) {
             result = PERMISSION_SET_NAME__FULL;
         } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(userPermissionSetId)) {
             result = PERMISSION_SET_NAME__RESTRICTED_1;
         } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(userPermissionSetId)) {
             result = PERMISSION_SET_NAME__RESTRICTED_2;
-        } else if (DocumentPermissionSetTypeDomainObject.READ.equals(userPermissionSetId)) {
+        } else if (DocumentPermissionSetTypeDomainObject.VIEW.equals(userPermissionSetId)) {
             result = PERMISSION_SET_NAME__READ;
         } else {
             result = PERMISSION_SET_NAME__NONE;

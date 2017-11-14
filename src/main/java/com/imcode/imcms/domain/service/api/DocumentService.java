@@ -45,15 +45,15 @@ public class DocumentService {
             return true;
         }
 
-        final Map<Integer, Integer> docPermissions = meta.getRoleIdToPermissionSetIdMap();
+        final Map<Integer, Meta.Permission> docPermissions = meta.getRoleIdToPermissionSetIdMap();
 
         return Arrays.stream(user.getRoleIds())
                 .map(RoleId::getRoleId)
                 .map(docPermissions::get)
                 .filter(Objects::nonNull)
-                .map(DocumentPermissionSetTypeDomainObject::fromInt)
+                .map(DocumentPermissionSetTypeDomainObject::fromPermission)
                 .anyMatch(documentPermissionSetTypeDomainObject
-                        -> documentPermissionSetTypeDomainObject.isAtLeastAsPrivilegedAs(DocumentPermissionSetTypeDomainObject.READ));
+                        -> documentPermissionSetTypeDomainObject.isAtLeastAsPrivilegedAs(DocumentPermissionSetTypeDomainObject.VIEW));
     }
 
 }

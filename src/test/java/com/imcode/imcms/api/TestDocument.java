@@ -22,9 +22,9 @@ public class TestDocument extends TestCase {
         contentManagementSystem.setInternal(imcmsServices);
         imcmsServices.setRoleGetter(new MockRoleGetter());
         final TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
-        textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERADMIN, DocumentPermissionSetTypeDomainObject.FULL);
-        textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL);
-        textDocument.setDocumentPermissionSetTypeForRoleId(new RoleId(3), DocumentPermissionSetTypeDomainObject.FULL);
+        textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERADMIN, DocumentPermissionSetTypeDomainObject.EDIT);
+        textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.EDIT);
+        textDocument.setDocumentPermissionSetTypeForRoleId(new RoleId(3), DocumentPermissionSetTypeDomainObject.EDIT);
         Document doc = new TextDocument(textDocument, contentManagementSystem);
 
         final Map allRolesMappedToPermissions = doc.getRolesMappedToPermissions();

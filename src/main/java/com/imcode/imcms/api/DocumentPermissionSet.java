@@ -16,7 +16,7 @@ public class DocumentPermissionSet {
      * @deprecated Use {@link DocumentPermissionSetType#FULL}
      */
     @Deprecated
-    public final static int FULL = DocumentPermissionSetTypeDomainObject.FULL.getId();
+    public final static int FULL = DocumentPermissionSetTypeDomainObject.EDIT.getId();
     /**
      * @deprecated Use {@link DocumentPermissionSetType#RESTRICTED_1}
      */
@@ -31,7 +31,7 @@ public class DocumentPermissionSet {
      * @deprecated Use {@link DocumentPermissionSetType#READ}
      */
     @Deprecated
-    public final static int READ = DocumentPermissionSetTypeDomainObject.READ.getId();
+    public final static int READ = DocumentPermissionSetTypeDomainObject.VIEW.getId();
     /**
      * @deprecated Use {@link DocumentPermissionSetType#NONE}
      */

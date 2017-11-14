@@ -377,7 +377,7 @@ public class MappingConfig {
             meta.setLinkedForUnauthorizedUsers(true);                   // fixme: not sure what to do with this
             meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(true); // fixme: not sure what to do with this
 
-            final Map<Integer, Integer> roleIdToPermissionSetId = new HashMap<>();
+            final Map<Integer, Meta.Permission> roleIdToPermissionSetId = new HashMap<>();
             // fixme: permissions logic have to be rewritten at all!!!!
             meta.setRoleIdToPermissionSetIdMap(roleIdToPermissionSetId);
 

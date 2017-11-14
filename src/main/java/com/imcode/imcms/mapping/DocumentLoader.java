@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.mapping.jpa.doc.Meta;
+import com.imcode.imcms.mapping.jpa.doc.Meta.Permission;
 import com.imcode.imcms.mapping.jpa.doc.MetaRepository;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import imcode.server.ImcmsConstants;
@@ -78,10 +79,10 @@ public class DocumentLoader {
         RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
                 new RoleIdToDocumentPermissionSetTypeMappings();
 
-        for (Map.Entry<Integer, Integer> roleIdToPermissionSetId : jpaMeta.getRoleIdToPermissionSetIdMap().entrySet()) {
+        for (Map.Entry<Integer, Permission> roleIdToPermissionSetId : jpaMeta.getRoleIdToPermissionSetIdMap().entrySet()) {
             rolePermissionMappings.setPermissionSetTypeForRole(
                     new RoleId(roleIdToPermissionSetId.getKey()),
-                    DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
+                    DocumentPermissionSetTypeDomainObject.fromPermission(roleIdToPermissionSetId.getValue()));
         }
 
         metaDO.setRoleIdToDocumentPermissionSetTypeMappings(rolePermissionMappings);

@@ -56,13 +56,13 @@ public class Document implements Serializable {
             RoleId roleId = mapping.getRoleId();
             RoleDomainObject role = roleGetter.getRole(roleId);
             DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
-            if (DocumentPermissionSetTypeDomainObject.FULL.equals(documentPermissionSetType)) {
+            if (DocumentPermissionSetTypeDomainObject.EDIT.equals(documentPermissionSetType)) {
                 result.put(role, DocumentPermissionSetDomainObject.FULL);
             } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType)) {
                 result.put(role, internalDocument.getPermissionSets().getRestricted1());
             } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType)) {
                 result.put(role, internalDocument.getPermissionSets().getRestricted2());
-            } else if (DocumentPermissionSetTypeDomainObject.READ.equals(documentPermissionSetType)) {
+            } else if (DocumentPermissionSetTypeDomainObject.VIEW.equals(documentPermissionSetType)) {
                 result.put(role, DocumentPermissionSetDomainObject.READ);
             } else if (!DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType)) {
                 log.warn("A missing mapping in DocumentPermissionSetMapper");
@@ -206,25 +206,6 @@ public class Document implements Serializable {
             categories[i] = new Category(categoryDomainObject);
         }
         return categories;
-    }
-
-    /**
-     * @param permissionSetId One of the constants in {@link DocumentPermissionSet}.
-     * @since 2.0
-     * @deprecated Use {@link #setPermissionSetTypeForRole(Role, DocumentPermissionSetType)}
-     */
-    public void setPermissionSetIdForRole(Role role, int permissionSetId) {
-        if (null != role) {
-            internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), DocumentPermissionSetTypeDomainObject.fromInt(permissionSetId));
-        }
-    }
-
-    /**
-     * @since 2.0
-     * @deprecated Use {@link #getPermissionSetTypeForRole(Role)}
-     */
-    public int getPermissionSetIdForRole(Role role) {
-        return internalDocument.getDocumentPermissionSetTypeForRoleId(role.getInternal().getId()).getId();
     }
 
     public User getPublisher() {

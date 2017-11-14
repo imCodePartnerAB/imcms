@@ -9,7 +9,7 @@ ALTER TABLE `roles_rights`
 
 
 UPDATE `roles_rights`
-SET `permission_tmp` = 'FULL'
+SET `permission_tmp` = 'EDIT'
 WHERE `set_id` = 0;
 UPDATE `roles_rights`
 SET `permission_tmp` = 'RESTRICTED_1'
@@ -18,7 +18,7 @@ UPDATE `roles_rights`
 SET `permission_tmp` = 'RESTRICTED_2'
 WHERE `set_id` = 2;
 UPDATE `roles_rights`
-SET `permission_tmp` = 'READ'
+SET `permission_tmp` = 'VIEW'
 WHERE `set_id` = 3;
 UPDATE `roles_rights`
 SET `permission_tmp` = 'NONE'
