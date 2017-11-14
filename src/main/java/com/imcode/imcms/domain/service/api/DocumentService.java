@@ -18,15 +18,23 @@ public class DocumentService {
 
     private final MetaRepository metaRepository;
     private final Function<Meta, DocumentDTO> documentMapping;
+    private final Function<DocumentDTO, Meta> metaSaver;
 
     public DocumentService(MetaRepository metaRepository,
-                           Function<Meta, DocumentDTO> documentMapping) {
+                           Function<Meta, DocumentDTO> metaToDocumentDTO,
+                           Function<DocumentDTO, Meta> documentDtoToMeta) {
+
         this.metaRepository = metaRepository;
-        this.documentMapping = documentMapping;
+        this.documentMapping = metaToDocumentDTO;
+        this.metaSaver = documentDtoToMeta.andThen(metaRepository::save);
     }
 
     public DocumentDTO get(int docId) {
         return documentMapping.apply(metaRepository.findOne(docId));
+    }
+
+    public void save(DocumentDTO saveMe) {
+        metaSaver.apply(saveMe);
     }
 
     List<DocumentDTO> getAllDocuments() {
