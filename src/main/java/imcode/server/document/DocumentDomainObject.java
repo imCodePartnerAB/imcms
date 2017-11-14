@@ -383,10 +383,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setLinkableByOtherUsers(linkableByOtherUsers);
     }
 
-    public boolean isRestrictedOneMorePrivilegedThanRestrictedTwo() {
-        return meta.getRestrictedOneMorePrivilegedThanRestrictedTwo();
-    }
-
     public boolean isPublished() {
         return isPublishedAtTime(meta, new Date());
     }

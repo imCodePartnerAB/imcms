@@ -39,9 +39,6 @@ public class Meta implements Serializable {
     @Column(name = "owner_id", nullable = false)
     private Integer creatorId;
 
-    @Column(name = "permissions", nullable = false, columnDefinition = "int")
-    private Boolean restrictedOneMorePrivilegedThanRestrictedTwo;
-
     @Column(name = "shared", nullable = false, columnDefinition = "int")
     private Boolean linkableByOtherUsers;
 

@@ -30,7 +30,6 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile DisabledLanguageShowMode disabledLanguageShowMode = DisabledLanguageShowMode.DO_NOT_SHOW;
     // todo: rename to documentTypeId
     private volatile Integer documentType;
-    private volatile Boolean restrictedOneMorePrivilegedThanRestrictedTwo;
     private volatile Boolean linkableByOtherUsers;
     private volatile Boolean linkedForUnauthorizedUsers;
     /**
@@ -105,15 +104,6 @@ public class DocumentMeta implements Serializable, Cloneable {
 
     public void setCreatorId(Integer creatorId) {
         this.creatorId = creatorId;
-    }
-
-    public Boolean getRestrictedOneMorePrivilegedThanRestrictedTwo() {
-        return restrictedOneMorePrivilegedThanRestrictedTwo;
-    }
-
-    public void setRestrictedOneMorePrivilegedThanRestrictedTwo(
-            Boolean restrictedOneMorePrivilegedThanRestrictedTwo) {
-        this.restrictedOneMorePrivilegedThanRestrictedTwo = restrictedOneMorePrivilegedThanRestrictedTwo;
     }
 
     public Boolean getLinkableByOtherUsers() {

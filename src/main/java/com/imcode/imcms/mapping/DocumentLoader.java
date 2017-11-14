@@ -115,7 +115,6 @@ public class DocumentLoader {
         metaDO.setPublicationStartDatetime(meta.getPublicationStartDatetime());
         metaDO.setPublicationStatus(publicationStatusFromInt(meta.getPublicationStatus().ordinal()));
         metaDO.setPublisherId(meta.getPublisherId());
-        metaDO.setRestrictedOneMorePrivilegedThanRestrictedTwo(meta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
         metaDO.setSearchDisabled(meta.isSearchDisabled());
         metaDO.setTarget(meta.getTarget());
 

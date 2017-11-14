@@ -36,7 +36,6 @@ public class MetaDataInitializer extends AbstractTestDataInitializer<Void, Meta>
         meta.setDisabledLanguageShowMode(DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         meta.setDocumentType(DocumentType.TEXT);
         meta.setCreatorId(1);
-        meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(true);
         meta.setLinkableByOtherUsers(true);
         meta.setLinkedForUnauthorizedUsers(true);
         meta.setCreatedDatetime(new Date());
