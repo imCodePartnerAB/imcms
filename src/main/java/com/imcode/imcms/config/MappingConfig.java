@@ -23,10 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -305,6 +302,86 @@ public class MappingConfig {
             final CommonContentDTO commonContentDTO = new CommonContentDTO();
             transferCommonContentData(commonContent, commonContentDTO, languageToDTO);
             return commonContentDTO;
+        };
+    }
+
+    @Bean
+    public Function<DocumentDTO, Meta> documentDtoToMeta(LanguageService languageService,
+                                                         CommonContentService commonContentService) {
+
+        return documentDTO -> {
+            final Meta meta = new Meta();
+            final int docId = documentDTO.getId();
+            final int version = documentDTO.getCurrentVersion().getId();
+
+            final CommonContentDTO commonContent = commonContentService.getOrCreate(docId, version, Imcms.getUser());
+            commonContent.setHeadline(documentDTO.getTitle());
+//            commonContentService.
+
+            // todo: save these DTO fields too:
+            // title // in common content
+            // template
+            // childTemplate
+            // also version !
+
+            meta.setId(docId);
+            meta.setDefaultVersionNo(version); // fixme: save or check version first
+            meta.setPublicationStatus(documentDTO.getPublicationStatus());
+            meta.setTarget(documentDTO.getTarget());
+            meta.setDocumentType(documentDTO.getType());
+            meta.setKeywords(documentDTO.getKeywords());
+
+            final AuditDTO publication = documentDTO.getPublished();
+            meta.setPublisherId(publication.getId());
+            meta.setPublicationStartDatetime(publication.getFormattedDate());
+
+            final AuditDTO publicationEnd = documentDTO.getPublicationEnd();
+            meta.setDepublisherId(publicationEnd.getId());
+            meta.setPublicationEndDatetime(publicationEnd.getFormattedDate());
+
+            final AuditDTO archivation = documentDTO.getArchived();
+            meta.setArchiverId(archivation.getId());
+            meta.setArchivedDatetime(archivation.getFormattedDate());
+
+            // save creator to version too
+            final AuditDTO creation = documentDTO.getCreated();
+            meta.setCreatorId(creation.getId());
+            meta.setCreatedDatetime(creation.getFormattedDate());
+
+            final AuditDTO modification = documentDTO.getModified();
+            // no such field, save to Version#modifiedBy
+//            meta.setModifierId(modification.getId());
+            meta.setModifiedDatetime(modification.getFormattedDate());
+
+            meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
+
+            meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
+            meta.setSearchDisabled(documentDTO.isSearchDisabled());
+
+            final Set<Language> languages = documentDTO.getLanguages()
+                    .stream()
+                    .filter(LanguageDTO::isEnabled)
+                    .map(languageDTO -> languageService.findByCode(languageDTO.getCode()))
+                    .collect(Collectors.toSet());
+
+            meta.setEnabledLanguages(languages);
+
+            final Set<Integer> categoryIds = documentDTO.getCategories()
+                    .stream()
+                    .map(CategoryDTO::getId)
+                    .collect(Collectors.toSet());
+
+            meta.setCategoryIds(categoryIds);
+
+            meta.setLinkableByOtherUsers(true);                         // fixme: not sure what to do with this
+            meta.setLinkedForUnauthorizedUsers(true);                   // fixme: not sure what to do with this
+            meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(true); // fixme: not sure what to do with this
+
+            final Map<Integer, Integer> roleIdToPermissionSetId = new HashMap<>();
+            // fixme: permissions logic have to be rewritten at all!!!!
+            meta.setRoleIdToPermissionSetIdMap(roleIdToPermissionSetId);
+
+            return meta;
         };
     }
 
