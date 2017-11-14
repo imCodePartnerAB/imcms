@@ -197,7 +197,8 @@ public class Meta implements Serializable {
         EDIT,
         RESTRICTED_1,
         RESTRICTED_2,
-        VIEW;
+        VIEW,
+        NONE;
 
         public static Permission fromOrdinal(int ordinal) {
             return values()[ordinal];
