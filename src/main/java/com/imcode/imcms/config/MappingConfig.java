@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.dto.ImageData.CropRegion;
 import com.imcode.imcms.domain.service.api.DocumentService;
 import com.imcode.imcms.domain.service.api.LanguageService;
+import com.imcode.imcms.domain.service.api.RoleService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.User;
@@ -387,7 +388,8 @@ public class MappingConfig {
     @Bean
     public Function<Meta, DocumentDTO> documentMapping(VersionService versionService,
                                                        CommonContentService commonContentService,
-                                                       Function<Language, LanguageDTO> languageToLanguageDTO) {
+                                                       Function<Language, LanguageDTO> languageToLanguageDTO,
+                                                       RoleService roleService) {
 
         final BiFunction<Supplier<Integer>, Supplier<Date>, AuditDTO> auditDtoCreator =
                 (auditorIdSupplier, auditedDateSupplier) -> {
@@ -429,6 +431,20 @@ public class MappingConfig {
             dto.setCurrentVersion(auditDtoCreator.apply(creator::getId, latestVersion::getCreatedDt));
 
             dto.setKeywords(meta.getKeywords());
+
+            final Set<RoleDTO> rolesDTO = meta.getRoleIdToPermissionSetIdMap()
+                    .entrySet()
+                    .stream()
+                    .map(integerPermissionEntry -> {
+                        final Integer roleId = integerPermissionEntry.getKey();
+                        final Meta.Permission rolePermission = integerPermissionEntry.getValue();
+                        final RoleDTO role = roleService.getById(roleId);
+                        role.setPermission(PermissionDTO.fromPermission(rolePermission));
+                        return role;
+                    })
+                    .collect(Collectors.toSet());
+
+            dto.setRoles(rolesDTO);
 
             return dto;
         };
