@@ -67,8 +67,8 @@ Imcms.define("imcms-permissions-tab-builder",
                     restrictedCheckboxes[permission.find("input").prop("name")] = permission;
                 });
 
-                Object.keys(document.permissions).forEach(function (permissionName) {
-                    var permission = document.permissions[permissionName];
+                Object.keys(document.restrictedPermissions).forEach(function (permissionName) {
+                    var permission = document.restrictedPermissions[permissionName];
 
                     var edit_text = "edit_text",
                         edit_menu = "edit_menu",

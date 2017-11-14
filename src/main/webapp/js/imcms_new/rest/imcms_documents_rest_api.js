@@ -108,7 +108,7 @@ Imcms.define("imcms-documents-rest-api", ["imcms-rest-api"], function (rest) {
                 id: 7
             }
         ],
-        permissions: {
+        restrictedPermissions: {
             "RESTRICTED_1": {
                 edit_text: true,
                 edit_menu: false,

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -50,7 +51,7 @@ public class DocumentDTO implements Serializable {
 
     private Set<CategoryDTO> categories;
 
-    private Set<RestrictedPermissionDTO> permissions;
+    private Map<PermissionDTO, RestrictedPermissionDTO> restrictedPermissions;
 
     private Set<RoleDTO> roles;
 
