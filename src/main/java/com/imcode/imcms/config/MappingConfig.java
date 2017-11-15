@@ -307,8 +307,65 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<DocumentDTO, Meta> documentDtoToMeta(LanguageService languageService,
-                                                         CommonContentService commonContentService) {
+    public Function<RestrictedPermission, PermissionDTO> restrictedPermissionToPermissionDTO() {
+        return restrictedPermission -> PermissionDTO.fromPermission(restrictedPermission.getPermission());
+    }
+
+    @Bean
+    public Function<RestrictedPermission, RestrictedPermissionDTO> restrictedPermissionToDto() {
+        return restrictedPermission -> {
+            final RestrictedPermissionDTO permissionDTO = new RestrictedPermissionDTO();
+
+            permissionDTO.setEditDocumentInfo(restrictedPermission.getEditDocInfo());
+            permissionDTO.setEditImage(restrictedPermission.getEditImage());
+            permissionDTO.setEditLoop(restrictedPermission.getEditLoop());
+            permissionDTO.setEditMenu(restrictedPermission.getEditMenu());
+            permissionDTO.setEditText(restrictedPermission.getEditText());
+
+            return permissionDTO;
+        };
+    }
+
+    @Bean
+    public Function<Set<RestrictedPermission>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO(
+            Function<RestrictedPermission, PermissionDTO> restrictedPermissionToDTO,
+            Function<RestrictedPermission, RestrictedPermissionDTO> restrictedPermissionToDto
+    ) {
+        return restrictedPermissions -> restrictedPermissions.stream().collect(
+                Collectors.toMap(restrictedPermissionToDTO, restrictedPermissionToDto)
+        );
+    }
+
+    @Bean
+    public Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermission>>
+    restrictedPermissionsDtoToRestrictedPermissions() {
+        return restrictedPermissions -> restrictedPermissions.entrySet()
+                .stream()
+                .map(permissionDtoToRestrictedDto -> {
+                    final PermissionDTO permissionDTO = permissionDtoToRestrictedDto.getKey();
+                    final RestrictedPermissionDTO restrictedPermissionDTO = permissionDtoToRestrictedDto.getValue();
+
+                    final RestrictedPermission restrictedPermission = new RestrictedPermission();
+
+                    restrictedPermission.setPermission(permissionDTO.getPermission());
+                    restrictedPermission.setEditDocInfo(restrictedPermissionDTO.isEditDocumentInfo());
+                    restrictedPermission.setEditImage(restrictedPermissionDTO.isEditImage());
+                    restrictedPermission.setEditLoop(restrictedPermissionDTO.isEditLoop());
+                    restrictedPermission.setEditMenu(restrictedPermissionDTO.isEditMenu());
+                    restrictedPermission.setEditText(restrictedPermissionDTO.isEditText());
+
+                    return restrictedPermission;
+                })
+                .collect(Collectors.toSet());
+    }
+
+    @Bean
+    public Function<DocumentDTO, Meta> documentDtoToMeta(
+            LanguageService languageService,
+            CommonContentService commonContentService,
+            Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermission>>
+                    restrictedPermissionsDtoToRestrictedPermissions
+    ) {
 
         return documentDTO -> {
             final Meta meta = new Meta();
@@ -377,21 +434,23 @@ public class MappingConfig {
             meta.setLinkableByOtherUsers(true);                         // fixme: not sure what to do with this
             meta.setLinkedForUnauthorizedUsers(true);                   // fixme: not sure what to do with this
 
-            final Map<Integer, Meta.Permission> roleIdToPermissionSetId = new HashMap<>();
-            // fixme: permissions logic have to be rewritten at all!!!!
-            meta.setRoleIdToPermissionSetIdMap(roleIdToPermissionSetId);
+            meta.setRestrictedPermissions(restrictedPermissionsDtoToRestrictedPermissions.apply(
+                    documentDTO.getRestrictedPermissions()
+            ));
 
             return meta;
         };
     }
 
     @Bean
-    public Function<Meta, DocumentDTO> documentMapping(VersionService versionService,
-                                                       CommonContentService commonContentService,
-                                                       Function<Language, LanguageDTO> languageToLanguageDTO,
-                                                       RoleService roleService,
-                                                       CategoryService categoryService) {
-
+    public Function<Meta, DocumentDTO> documentMapping(
+            VersionService versionService,
+            CommonContentService commonContentService,
+            Function<Language, LanguageDTO> languageToLanguageDTO,
+            Function<Set<RestrictedPermission>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO,
+            RoleService roleService,
+            CategoryService categoryService
+    ) {
         final BiFunction<Supplier<Integer>, Supplier<Date>, AuditDTO> auditDtoCreator =
                 (auditorIdSupplier, auditedDateSupplier) -> {
 
@@ -453,6 +512,7 @@ public class MappingConfig {
                     .collect(Collectors.toSet());
 
             dto.setCategories(categories);
+            dto.setRestrictedPermissions(restrictedPermissionsToDTO.apply(meta.getRestrictedPermissions()));
 
             return dto;
         };

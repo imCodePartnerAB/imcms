@@ -5,6 +5,8 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.PermissionDTO;
+import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
 import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
@@ -21,10 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
 import java.util.function.Function;
 
 import static imcode.server.ImcmsConstants.ENG_CODE;
@@ -114,6 +113,40 @@ public class DocumentServiceTest {
 
         final DocumentDTO documentDTO1 = documentService.get(documentDTO.getId());
 
+        assertEquals(documentDTO1, documentDTO);
+    }
+
+    @Test
+    public void save_When_RestrictedPermissionsSet_Expect_Saved() {
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final HashMap<PermissionDTO, RestrictedPermissionDTO> restrictedPermissions = new HashMap<>();
+
+        final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
+        restricted1.setEditDocumentInfo(true);
+        restricted1.setEditImage(false);
+        restricted1.setEditLoop(true);
+        restricted1.setEditMenu(false);
+        restricted1.setEditText(true);
+
+        final RestrictedPermissionDTO restricted2 = new RestrictedPermissionDTO();
+        restricted2.setEditDocumentInfo(false);
+        restricted2.setEditImage(true);
+        restricted2.setEditLoop(false);
+        restricted2.setEditMenu(true);
+        restricted2.setEditText(false);
+
+        restrictedPermissions.put(PermissionDTO.RESTRICTED_1, restricted1);
+        restrictedPermissions.put(PermissionDTO.RESTRICTED_2, restricted2);
+
+        documentDTO.setRestrictedPermissions(restrictedPermissions);
+
+        documentService.save(documentDTO);
+
+        final DocumentDTO documentDTO1 = documentService.get(documentDTO.getId());
+
+        assertEquals(restricted1, documentDTO1.getRestrictedPermissions().get(PermissionDTO.RESTRICTED_1));
+        assertEquals(restricted2, documentDTO1.getRestrictedPermissions().get(PermissionDTO.RESTRICTED_2));
         assertEquals(documentDTO1, documentDTO);
     }
 
