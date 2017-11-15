@@ -114,6 +114,11 @@ Imcms.define("imcms-date-time-builder",
         function createDateBox(attributes, withCalendar) {
             attributes = attributes || {};
             attributes.placeholder = "yyyy-mm-dd";
+
+            if (!withCalendar) {
+                attributes.readonly = "readonly";
+            }
+
             var $dateInput = dateInputContainerBEM.buildElement("input", "<input>", attributes),
                 $dateInputContainer = dateInputContainerBEM.buildBlock("<div>", [
                     {"input": $dateInput}
@@ -131,7 +136,7 @@ Imcms.define("imcms-date-time-builder",
 
             var blockResult = datePickerBEM.buildBlock("<div>", datePickerElements);
 
-            return new DatePicker(blockResult);
+            return new DatePicker(blockResult, withCalendar);
         }
 
         function validateDateInput($dateInput, dateValidator) {
@@ -222,6 +227,11 @@ Imcms.define("imcms-date-time-builder",
         function createTimeBox(attributes, withClock) {
             attributes = attributes || {};
             attributes.placeholder = "HH:mm";
+
+            if (!withClock) {
+                attributes.readonly = "readonly";
+            }
+
             var $timeInput = timeInputBEM.buildElement("input", "<input>", attributes),
                 $timeInputContainer = timeInputBEM.buildBlock("<div>", [
                     {"input": $timeInput}
@@ -234,7 +244,7 @@ Imcms.define("imcms-date-time-builder",
             }
 
             var blockResult = timePickerBEM.buildBlock("<div>", timePickerElements);
-            return new TimePicker(blockResult);
+            return new TimePicker(blockResult, withClock);
         }
 
         function createDateTimeBox(attributes) {
@@ -251,11 +261,6 @@ Imcms.define("imcms-date-time-builder",
 
         return {
             dateBoxReadOnly: function (attributes) {
-                attributes = attributes || {};
-                attributes.readonly = "readonly";
-                return createDateBox(attributes);
-            },
-            datePicker: function (attributes) {
                 return createDateBox(attributes);
             },
             datePickerCalendar: function (attributes) {
@@ -265,13 +270,9 @@ Imcms.define("imcms-date-time-builder",
                 return createTimeBox(attributes, true);
             },
             timeBoxReadOnly: function (attributes) {
-                attributes = attributes || {};
-                attributes.readonly = "readonly";
                 return createTimeBox(attributes);
             },
             dateTimeReadOnly: function (attributes) {
-                attributes = attributes || {};
-                attributes.readonly = "readonly";
                 return createDateTimeBox(attributes);
             }
         };

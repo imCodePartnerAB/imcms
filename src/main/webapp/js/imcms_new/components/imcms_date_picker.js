@@ -15,7 +15,8 @@ Imcms.define("imcms-date-picker",
                 || $target.hasClass("imcms-current-date__input")
                 || $target.hasClass(".imcms-date-picker__current-date")
                 || $target.parents(".imcms-calendar").length
-            ) {
+            )
+            {
                 return;
             }
 
@@ -131,30 +132,29 @@ Imcms.define("imcms-date-picker",
             }
         }
 
-        var DatePicker = function ($dateBoxContainer) {
+        $(document).click(closeCalendar);
+
+        return function ($dateBoxContainer, withCalendar) {
             this.datePicker = $dateBoxContainer.hasClass(DATE_PICKER_CLASS)
                 ? $dateBoxContainer
                 : $dateBoxContainer.find(DATE_PICKER_CLASS_SELECTOR);
 
-            if (this.datePicker.find(".imcms-calendar").length) {
-                this.datePicker.find(".imcms-date-picker__current-date")
-                    .click(openCalendar)
-                    .end()
-                    .find(".imcms-calendar__button")
-                    .click(imcmsCalendar.chooseMonth)
-                ;
+            $dateBoxContainer.setDate = getDateSetter($dateBoxContainer);
+
+            if (!withCalendar) {
+                return $dateBoxContainer;
             }
 
-            this.datePicker.find(".imcms-current-date__input")
+            this.datePicker.find(".imcms-date-picker__current-date")
+                .click(openCalendar)
+                .end()
+                .find(".imcms-calendar__button")
+                .click(imcmsCalendar.chooseMonth)
+                .end()
+                .find(".imcms-current-date__input")
                 .on('blur', currentDateValidation)
                 .on('input', rebuildCalendar);
 
-            $dateBoxContainer.setDate = getDateSetter($dateBoxContainer);
-
             return $dateBoxContainer;
-        };
-
-        $(document).click(closeCalendar);
-
-        return DatePicker
+        }
     });

@@ -212,17 +212,21 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
         };
     }
 
-    return function ($timePickerContainer) {
+    return function ($timePickerContainer, withClock) {
         var $timePicker = getTimePicker($timePickerContainer),
             $inputTime = $timePicker.find(".imcms-current-time__input"),
             $arrowButtons = $timePicker.find(".imcms-time-picker__button"),
             mousewheelEvent = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel";
 
+        $timePickerContainer.setTime = apiSetTime($timePickerContainer);
+
+        if (!withClock) {
+            return $timePickerContainer;
+        }
+
         $inputTime.click(initTimePicker.bindArgs($timePicker, $inputTime))
             .keydown(allowNumbersAndColons)
             .on("input", initTimePicker.bindArgs($timePicker, $inputTime));
-
-        $timePickerContainer.setTime = apiSetTime($timePickerContainer);
 
         $arrowButtons.click(arrowButtonsClick);
 
