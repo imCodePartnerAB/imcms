@@ -465,7 +465,7 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function buildBody() {
-            return $documentsContainer = new BEM({
+            return new BEM({
                 block: "imcms-document-editor-body",
                 elements: {
                     "body-head": buildBodyHead()
@@ -473,7 +473,7 @@ Imcms.define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
-        function loadDocumentEditorContent(opts) {
+        function loadDocumentEditorContent($documentsContainer, opts) {
             docSearchRestApi.read().done(function (documentList) {
                 $editorBody = buildEditorBody(documentList, opts);
                 $documentsContainer.append($editorBody);
@@ -485,7 +485,7 @@ Imcms.define("imcms-document-editor-builder",
                 block: "imcms-document-editor",
                 elements: {
                     "head": buildHead(),
-                    "body": buildBody(),
+                    "body": $documentsContainer = buildBody(),
                     "footer": buildFooter()
                 }
             }).buildBlockStructure("<div>", {"class": "imcms-editor-window"});
@@ -500,7 +500,7 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function loadData() {
-            loadDocumentEditorContent({
+            loadDocumentEditorContent($documentsContainer, {
                 editEnable: true,
                 removeEnable: true
             });
