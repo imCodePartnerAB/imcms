@@ -6,33 +6,35 @@ Imcms.define("imcms-menu-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-controls-builder", "imcms-page-info-builder", "jquery",
-        "imcms-primitives-builder"
+        "imcms-primitives-builder", "imcms-jquery-element-reload"
     ],
     function (BEM, components, documentEditorBuilder, imcmsModalWindow, WindowBuilder, menusRestApi,
-              controls, pageInfoBuilder, $, primitivesBuilder) {
+              controls, pageInfoBuilder, $, primitivesBuilder, reloadElement) {
 
         var $title, $menuElementsContainer, $documentsContainer;
-        var docId, menuId;
+        var docId, menuIndex;
+
+        function reloadMenuOnPage() {
+            reloadElement($tag.find(".imcms-editor-content"));
+        }
 
         function saveMenuElements() {
             var menuItems = $menuElementsContainer.find("[data-menu-items-lvl=1]")
                 .map(function () {
                     return {
-                        documentId: $(this).data("menuId"),
+                        documentId: $(this).data("documentId"),
                         children: [] // todo: get children too!
                     }
                 })
                 .toArray();
 
             var menuDTO = {
-                menuId: menuId,
+                menuIndex: menuIndex,
                 docId: docId,
                 menuItems: menuItems
             };
 
-            menusRestApi.create(menuDTO).done(function () {
-                // todo: update menu on page!
-            });
+            menusRestApi.create(menuDTO).done(reloadMenuOnPage);
         }
 
         function saveAndClose() {
@@ -193,7 +195,10 @@ Imcms.define("imcms-menu-editor-builder",
                 elements: {
                     "menu-item": buildMenuItems(menuElementTree)
                 }
-            }).buildBlockStructure("<div>", {"data-menu-items-lvl": level, "data-menu-id": menuElementTree.documentId});
+            }).buildBlockStructure("<div>", {
+                "data-menu-items-lvl": level,
+                "data-document-id": menuElementTree.documentId
+            });
 
             ++level;
 
@@ -260,12 +265,12 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         function addHeadData(opts) {
-            $title.append(": " + opts.docId + "-" + opts.menuId);
+            $title.append(": " + opts.docId + "-" + opts.menuIndex);
         }
 
         function buildMenuEditor(opts) {
             docId = opts.docId;
-            menuId = opts.menuId;
+            menuIndex = opts.menuIndex;
 
             return new BEM({
                 block: "imcms-menu-editor",
