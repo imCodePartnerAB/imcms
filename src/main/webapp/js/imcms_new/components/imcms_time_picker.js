@@ -26,8 +26,14 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
     }
 
     function getDateObjValidated($inputTime) {
-        var inputVal = $inputTime.val().split(":"),
-            currentTime = getCurrentTimeObj(),
+        var time = $inputTime.val(),
+            currentTime = getCurrentTimeObj();
+
+        if (!time) {
+            return currentTime;
+        }
+
+        var inputVal = time.split(":"),
             currentHours = currentTime.hours.toString(),
             currentMinutes = currentTime.minutes.toString(),
             hours = inputVal[0],
@@ -44,12 +50,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
             hasErrorClass = true;
         }
 
-        if (hasErrorClass) {
-            $inputTime.addClass("imcms-current-time__input--error");
-
-        } else {
-            $inputTime.removeClass("imcms-current-time__input--error");
-        }
+        $inputTime.toggleClass("imcms-current-time__input--error", hasErrorClass);
 
         return {
             hours: hours,
