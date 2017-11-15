@@ -185,9 +185,11 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
     function createCloseTimePickerFunction($timePicker, $inputTime) {
         return function (e) {
             var className = e.target.className;
+
             if (className
                 && className.indexOf("imcms-time-picker") === -1
-                && className.indexOf("imcms-current-time") === -1) {
+                && className.indexOf("imcms-current-time") === -1)
+            {
                 $timePicker
                     .find(".imcms-time-picker__time")
                     .css("display", "none");
@@ -197,11 +199,11 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
                 var currentTime = getCurrentTimeObj();
                 $inputTime.val(currentTime.hours + ":" + currentTime.minutes);
                 $inputTime.removeClass("imcms-current-time__input--error")
+
             } else {
-                var prevVal = $inputTime
-                        .val(),
-                    correctedVal = prevVal
-                        .split(":")
+                var prevVal = $inputTime.val(),
+
+                    correctedVal = prevVal.split(":")
                         .map(optionalAddZeroBeforeNumber)
                         .join(":");
 
@@ -218,15 +220,13 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
             $arrowButtons = $timePicker.find(".imcms-time-picker__button"),
             mousewheelEvent = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel";
 
-        $inputTime
-            .click(initTimePicker.bindArgs($timePicker, $inputTime))
+        $inputTime.click(initTimePicker.bindArgs($timePicker, $inputTime))
             .keydown(allowNumbersAndColons)
             .on("input", initTimePicker.bindArgs($timePicker, $inputTime));
 
         $timePickerContainer.setTime = apiSetTime($timePickerContainer);
 
-        $arrowButtons
-            .click(arrowButtonsClick);
+        $arrowButtons.click(arrowButtonsClick);
 
         $timePicker.find(".imcms-time-picker__hours,.imcms-time-picker__minutes")
             .bind(mousewheelEvent, minutesAndHoursContainersMouseWheel)
