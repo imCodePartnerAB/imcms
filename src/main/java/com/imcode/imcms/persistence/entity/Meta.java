@@ -119,7 +119,7 @@ public class Meta implements Serializable {
     @Column(name = "value")
     private Set<String> keywords = new HashSet<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "imcms_doc_restricted_permissions",
             joinColumns = @JoinColumn(name = "meta_id")
