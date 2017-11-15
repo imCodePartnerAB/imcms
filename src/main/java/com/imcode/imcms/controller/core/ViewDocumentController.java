@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -33,22 +32,26 @@ public class ViewDocumentController {
     }
 
     @RequestMapping({"", "/"})
-    public ModelAndView goToStartPage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
-        final TextDocumentDomainObject textDocument = getTextDocument(String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID), getDefaultLanguageCode(), request);
-        return processDocView(textDocument, request, response, mav);
+    public ModelAndView goToStartPage(HttpServletRequest request, ModelAndView mav) {
+
+        final String docId = String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID);
+        final TextDocumentDomainObject textDocument = getTextDocument(docId, getDefaultLanguageCode(), request);
+
+        return processDocView(textDocument, request, mav);
     }
 
     @RequestMapping("/{docIdentifier}")
     public ModelAndView getDocument(@PathVariable("docIdentifier") String docIdentifier,
                                     @RequestParam(value = "language-code", required = false) String languageCode,
                                     HttpServletRequest request,
-                                    HttpServletResponse response,
                                     ModelAndView mav) {
-        final TextDocumentDomainObject textDocument = getTextDocument(docIdentifier, getLanguageCodeOrDefault(languageCode), request);
-        return processDocView(textDocument, request, response, mav);
+
+        final String languageCodeOrDefault = getLanguageCodeOrDefault(languageCode);
+        final TextDocumentDomainObject textDocument = getTextDocument(docIdentifier, languageCodeOrDefault, request);
+        return processDocView(textDocument, request, mav);
     }
 
-    private ModelAndView processDocView(TextDocumentDomainObject textDocument, HttpServletRequest request, HttpServletResponse response,
+    private ModelAndView processDocView(TextDocumentDomainObject textDocument, HttpServletRequest request,
                                         ModelAndView mav) {
 
         final String isEditModeStr = Objects.toString(request.getAttribute("isEditMode"), "false");
