@@ -1,9 +1,7 @@
 Imcms.define("imcms-date-picker",
     ["imcms", "imcms-calendar", "jquery"],
     function (imcms, imcmsCalendar, $) {
-        var DATE_PICKER_CLASS = "imcms-date-picker",
-            DATE_PICKER_CLASS_SELECTOR = ".imcms-date-picker"
-        ;
+        var DATE_PICKER_CLASS_SELECTOR = ".imcms-date-picker";
 
         function openCalendar() {
             imcmsCalendar.init($(this).parents(DATE_PICKER_CLASS_SELECTOR));
@@ -14,8 +12,7 @@ Imcms.define("imcms-date-picker",
             if ($target.closest(".imcms-current-date__input").length
                 || $target.hasClass("imcms-current-date__input")
                 || $target.hasClass(".imcms-date-picker__current-date")
-                || $target.parents(".imcms-calendar").length
-            )
+                || $target.parents(".imcms-calendar").length)
             {
                 return;
             }
@@ -106,7 +103,7 @@ Imcms.define("imcms-date-picker",
             ;
 
             imcmsCalendar.buildCalendar(year, month, day, $calendar);
-            var fileredByDay = $calendar.find(".imcms-calendar__day")
+            var filteredByDay = $calendar.find(".imcms-calendar__day")
                 .each(function () {
                     $(this).removeClass("imcms-day--today");
                 })
@@ -118,7 +115,7 @@ Imcms.define("imcms-date-picker",
                     return dayOnCalendar === day;
                 });
 
-            var lastOrFirst = day <= 20 ? fileredByDay.first() : fileredByDay.last();
+            var lastOrFirst = day <= 20 ? filteredByDay.first() : filteredByDay.last();
 
             lastOrFirst.addClass("imcms-day--today");
 
@@ -135,17 +132,13 @@ Imcms.define("imcms-date-picker",
         $(document).click(closeCalendar);
 
         return function ($dateBoxContainer, withCalendar) {
-            this.datePicker = $dateBoxContainer.hasClass(DATE_PICKER_CLASS)
-                ? $dateBoxContainer
-                : $dateBoxContainer.find(DATE_PICKER_CLASS_SELECTOR);
-
             $dateBoxContainer.setDate = getDateSetter($dateBoxContainer);
 
             if (!withCalendar) {
                 return $dateBoxContainer;
             }
 
-            this.datePicker.find(".imcms-date-picker__current-date")
+            $dateBoxContainer.find(".imcms-date-picker__current-date")
                 .click(openCalendar)
                 .end()
                 .find(".imcms-calendar__button")
