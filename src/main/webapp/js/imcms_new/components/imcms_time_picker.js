@@ -84,12 +84,15 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
 
     function addValuesWithShift(timeValue, value, limit) {
         var result = timeValue + value;
+
         if (result > limit) {
             result = result - (limit + 1);
         }
+
         if (result < 0) {
             result = limit;
         }
+
         result = optionalAddZeroBeforeNumber(result);
         return result;
     }
@@ -128,15 +131,10 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
     function minutesAndHoursContainersMouseWheel(e) {
         var event = window.event || e;
         event = event.originalEvent ? event.originalEvent : event;
+
         var delta = event.detail ? event.detail * (-40) : event.wheelDelta,
             mousewheelUp = delta > 0,
-            incrementOrDecrementBtnSelector;
-
-        if (mousewheelUp) {
-            incrementOrDecrementBtnSelector = ".imcms-button--increment";
-        } else {
-            incrementOrDecrementBtnSelector = ".imcms-button--decrement";
-        }
+            incrementOrDecrementBtnSelector = ".imcms-button--" + ((mousewheelUp) ? "increment" : "decrement");
 
         $(this).find(incrementOrDecrementBtnSelector).click();
 
@@ -154,6 +152,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
         if (!isMouseLeaveEvent) {
             $selectedTimeUnit.addClass(selectedTimeUnitChooseClassName);
             $connectedTimeUnit.addClass(connectedTimeUnitChooseClassName);
+
         } else {
             $selectedTimeUnit.removeClass(selectedTimeUnitChooseClassName);
             $connectedTimeUnit.removeClass(connectedTimeUnitChooseClassName);
