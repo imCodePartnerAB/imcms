@@ -81,13 +81,12 @@ Imcms.define("imcms-appearance-tab-builder",
             name: "appearance",
             buildTab: function (index, docId) {
                 if (!docId) {
-                    languagesRestApi.read()
-                        .done(function (languages) {
-                            if (!tabData.languages) {
-                                var documentLanguages = mapLanguages(languages);
-                                tabData.$result.prepend(documentLanguages);
-                            }
-                        });
+                    languagesRestApi.read().done(function (languages) {
+                        if (!tabData.languages) {
+                            var documentLanguages = mapLanguages(languages);
+                            tabData.$result.prepend(documentLanguages);
+                        }
+                    });
                 }
 
                 tabData.$showIn = components.selects.imcmsSelect("<div>", {
