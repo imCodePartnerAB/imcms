@@ -237,9 +237,9 @@ Imcms.define("imcms-date-time-builder",
             return new TimePicker(blockResult);
         }
 
-        function createDateTimeBox(attributes, withTimeCalendar) {
-            var $datePart = createDateBox(attributes, withTimeCalendar),
-                $timePart = createTimeBox(attributes, withTimeCalendar)
+        function createDateTimeBox(attributes) {
+            var $datePart = createDateBox(attributes),
+                $timePart = createTimeBox(attributes)
             ;
             var blockResult = dateTimeBEM.buildBlock("<div>", [
                 {"date-picker": $datePart},
@@ -273,9 +273,6 @@ Imcms.define("imcms-date-time-builder",
                 attributes = attributes || {};
                 attributes.readonly = "readonly";
                 return createDateTimeBox(attributes);
-            },
-            dateTimePicker: function (attributes) {
-                return createDateTimeBox(attributes, true);
             }
         };
     });
