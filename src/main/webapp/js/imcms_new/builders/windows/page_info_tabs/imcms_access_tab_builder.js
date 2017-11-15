@@ -219,7 +219,6 @@ Imcms.define("imcms-access-tab-builder",
             clearTabData: function () {
                 tabData.$rolesBody.empty();
                 tabData.$rolesField.css("display", "none");
-                this.fillTabDataFromDocument({roles: []});
             }
         };
     }

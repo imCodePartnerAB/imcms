@@ -84,7 +84,7 @@ Imcms.define("imcms-categories-tab-builder",
                 }
             },
             clearTabData: function () {
-                this.fillTabDataFromDocument();
+                this.data.$categoriesBlock && this.data.$categoriesBlock.empty();
             }
         };
     }
