@@ -143,23 +143,17 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
 
     function optionalHighlight(e) {
         var $selectedTimeUnit = $(this),
-            linkIndex = $selectedTimeUnit.data("link-index"),
-            $connectedTimeUnit = $selectedTimeUnit.parent().siblings().find("[data-link-index='" + linkIndex + "']"),
             isMouseLeaveEvent = e.type === "mouseleave",
-            selectedTimeUnitChooseClassName = getChooseClassName($selectedTimeUnit),
-            connectedTimeUnitChooseClassName = getChooseClassName($connectedTimeUnit);
+            selectedTimeUnitChooseClassName = getChooseClassName($selectedTimeUnit);
 
         if (!isMouseLeaveEvent) {
             $selectedTimeUnit.addClass(selectedTimeUnitChooseClassName);
-            $connectedTimeUnit.addClass(connectedTimeUnitChooseClassName);
 
         } else {
             $selectedTimeUnit.removeClass(selectedTimeUnitChooseClassName);
-            $connectedTimeUnit.removeClass(connectedTimeUnitChooseClassName);
         }
 
         $selectedTimeUnit.siblings().removeClass(selectedTimeUnitChooseClassName);
-        $connectedTimeUnit.siblings().removeClass(connectedTimeUnitChooseClassName);
 
         function getChooseClassName($timeUnit) {
             return $timeUnit.hasClass("imcms-time-picker__hour")
@@ -169,15 +163,18 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
 
     function pickTime() {
         var $selectedTimeUnit = $(this),
-            linkIndex = $selectedTimeUnit.data("link-index"),
             $pickerHourOrMinute = $selectedTimeUnit.parent(),
-            $connectedTimeUnit = $pickerHourOrMinute.siblings().find("[data-link-index='" + linkIndex + "']"),
-            $timeInput = $pickerHourOrMinute.parent().siblings().find(".imcms-current-time__input"),
-            time = [$selectedTimeUnit.text(), $connectedTimeUnit.text()];
+            hoursPosition = 0,
+            minutesPosition = 1,
+            $timeInput = $pickerHourOrMinute.parent().siblings().find(".imcms-current-time__input");
 
-        if ($selectedTimeUnit.hasClass("imcms-time-picker__minute")) {
-            time = time.reverse();
-        }
+        var prevTime = $timeInput.val();
+        var time = (prevTime) ? prevTime.split(":") : ["00", "00"];
+
+        var changedPosition = ($selectedTimeUnit.hasClass("imcms-time-picker__minute"))
+            ? minutesPosition : hoursPosition;
+
+        time[changedPosition] = $selectedTimeUnit.text();
 
         $timeInput.val(time.join(":"));
     }
@@ -213,24 +210,24 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
     }
 
     return function ($timePickerContainer, withClock) {
-        var $timePicker = getTimePicker($timePickerContainer),
-            $inputTime = $timePicker.find(".imcms-current-time__input"),
-            $arrowButtons = $timePicker.find(".imcms-time-picker__button"),
-            mousewheelEvent = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel";
-
         $timePickerContainer.setTime = apiSetTime($timePickerContainer);
 
         if (!withClock) {
             return $timePickerContainer;
         }
 
+        var $timePicker = getTimePicker($timePickerContainer),
+            $inputTime = $timePicker.find(".imcms-current-time__input"),
+            mousewheelEvent = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel";
+
         $inputTime.click(initTimePicker.bindArgs($timePicker, $inputTime))
             .keydown(allowNumbersAndColons)
             .on("input", initTimePicker.bindArgs($timePicker, $inputTime));
 
-        $arrowButtons.click(arrowButtonsClick);
-
-        $timePicker.find(".imcms-time-picker__hours,.imcms-time-picker__minutes")
+        $timePicker.find(".imcms-time-picker__button")
+            .click(arrowButtonsClick)
+            .end()
+            .find(".imcms-time-picker__hours,.imcms-time-picker__minutes")
             .bind(mousewheelEvent, minutesAndHoursContainersMouseWheel)
             .end()
             .find(".imcms-time-picker__minute,.imcms-time-picker__hour")
