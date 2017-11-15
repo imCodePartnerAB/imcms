@@ -51,13 +51,13 @@ Imcms.define("imcms-selects-builder",
             var $this = $(this),
                 content = $this.text(),
                 value = $this.data("value"),
-                select = $this.closest(".imcms-select__drop-down-list"),
-                itemValue = select.find(".imcms-drop-down-list__select-item-value").html(content)
+                $select = $this.closest(".imcms-select__drop-down-list"),
+                itemValue = $select.find(".imcms-drop-down-list__select-item-value").html(content)
             ;
 
             // todo: implement labeling selected item by [selected] attribute
 
-            select.removeClass("imcms-select__drop-down-list--active")
+            $select.removeClass("imcms-select__drop-down-list--active")
                 .parent()
                 .find("input")
                 .data("content", content)
@@ -98,28 +98,34 @@ Imcms.define("imcms-selects-builder",
             return selectBEM.makeBlockElement("drop-down-list", $dropDownList);
         }
 
-        function apiSelectValue(resultImcmsSelect, $selectedValInput) {
+        function apiSelectValue($resultImcmsSelect, $selectedValInput) {
             return function (value) {
-                var selectCandidate = resultImcmsSelect.find("[data-value='" + value + "']");
-                if (selectCandidate.length) {
-                    onOptionSelected.call(selectCandidate);
+                var $selectCandidate = $resultImcmsSelect.find("[data-value='" + value + "']");
+
+                if ($selectCandidate.length) {
+                    onOptionSelected.call($selectCandidate);
                     $selectedValInput.val(value);
-                    return resultImcmsSelect;
+                    return $resultImcmsSelect;
+
                 } else {
                     console.error("Value '" + value + "' for select doesn't exist");
+                    console.error($resultImcmsSelect[0]);
                 }
             }
         }
 
-        function apiSelectFirst(resultImcmsSelect) {
+        function apiSelectFirst($resultImcmsSelect) {
             return function () {
-                var selectCandidate = resultImcmsSelect.find(".imcms-drop-down-list__items")
+                var $selectCandidate = $resultImcmsSelect.find(".imcms-drop-down-list__items")
                     .find(".imcms-drop-down-list__item").first();
-                if (selectCandidate.length) {
-                    onOptionSelected.call(selectCandidate);
-                    return resultImcmsSelect;
+
+                if ($selectCandidate.length) {
+                    onOptionSelected.call($selectCandidate);
+                    return $resultImcmsSelect;
+
                 } else {
                     console.error("Select is empty, nothing to choose");
+                    console.error($resultImcmsSelect[0]);
                 }
             }
         }
@@ -130,37 +136,37 @@ Imcms.define("imcms-selects-builder",
             }
         }
 
-        function apiSelectedValue(resultImcmsSelect) {
+        function apiSelectedValue($resultImcmsSelect) {
             return function () {
-                return resultImcmsSelect.parent().find("input").val();
+                return $resultImcmsSelect.parent().find("input").val();
             }
         }
 
-        function apiSelectedText(resultImcmsSelect) {
+        function apiSelectedText($resultImcmsSelect) {
             return function () {
-                return resultImcmsSelect.parent().find("input").data("content");
+                return $resultImcmsSelect.parent().find("input").data("content");
             }
         }
 
-        function apiClearSelect(resultImcmsSelect) {
+        function apiClearSelect($resultImcmsSelect) {
             return function () {
-                var $input = resultImcmsSelect.parent().find("input");
+                var $input = $resultImcmsSelect.parent().find("input");
                 $input.val("");
                 $input.removeProp("data-content");
-                return resultImcmsSelect.find(".imcms-drop-down-list").detach();
+                return $resultImcmsSelect.find(".imcms-drop-down-list").detach();
             }
         }
 
-        function apiDeleteOption(resultImcmsSelect) {
+        function apiDeleteOption($resultImcmsSelect) {
             return function (optionValue) {
-                return resultImcmsSelect.find("[data-value='" + optionValue + "']").detach();
+                return $resultImcmsSelect.find("[data-value='" + optionValue + "']").detach();
 
             }
         }
 
-        function apiHasOptions(resultImcmsSelect) {
+        function apiHasOptions($resultImcmsSelect) {
             return function () {
-                return resultImcmsSelect.find("[data-value]").length > 0;
+                return $resultImcmsSelect.find("[data-value]").length > 0;
             }
         }
 
@@ -189,18 +195,19 @@ Imcms.define("imcms-selects-builder",
 
                 $selectElements.push($selectedValInput);
 
-                var resultImcmsSelect = selectBEM.buildBlock("<div>", blockElements, (attributes["class"] ? {"class": attributes["class"]} : {}))
-                    .append($selectElements);
+                var $resultImcmsSelect = selectBEM.buildBlock("<div>", blockElements,
+                    (attributes["class"] ? {"class": attributes["class"]} : {})
+                ).append($selectElements);
 
-                resultImcmsSelect.selectValue = apiSelectValue(resultImcmsSelect, $selectedValInput);
-                resultImcmsSelect.selectFirst = apiSelectFirst(resultImcmsSelect);
-                resultImcmsSelect.selectedValue = apiSelectedValue(resultImcmsSelect);
-                resultImcmsSelect.selectedText = apiSelectedText(resultImcmsSelect);
-                resultImcmsSelect.clearSelect = apiClearSelect(resultImcmsSelect);
-                resultImcmsSelect.deleteOption = apiDeleteOption(resultImcmsSelect);
-                resultImcmsSelect.hasOptions = apiHasOptions(resultImcmsSelect);
+                $resultImcmsSelect.selectValue = apiSelectValue($resultImcmsSelect, $selectedValInput);
+                $resultImcmsSelect.selectFirst = apiSelectFirst($resultImcmsSelect);
+                $resultImcmsSelect.selectedValue = apiSelectedValue($resultImcmsSelect);
+                $resultImcmsSelect.selectedText = apiSelectedText($resultImcmsSelect);
+                $resultImcmsSelect.clearSelect = apiClearSelect($resultImcmsSelect);
+                $resultImcmsSelect.deleteOption = apiDeleteOption($resultImcmsSelect);
+                $resultImcmsSelect.hasOptions = apiHasOptions($resultImcmsSelect);
 
-                return resultImcmsSelect;
+                return $resultImcmsSelect;
             },
             addOptionsToSelect: function (options, $select) {
                 var selectContainsDropDownList = $select.find(".imcms-select__drop-down-list").length;
