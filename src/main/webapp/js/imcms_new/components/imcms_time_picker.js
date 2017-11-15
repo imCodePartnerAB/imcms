@@ -9,9 +9,11 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
         }
 
         var result = +numberStr;
+
         if (result < 10) {
             result = "0" + result;
         }
+
         return result.toString();
     }
 
@@ -44,6 +46,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
 
         if (hasErrorClass) {
             $inputTime.addClass("imcms-current-time__input--error");
+
         } else {
             $inputTime.removeClass("imcms-current-time__input--error");
         }
@@ -71,6 +74,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
     function allowNumbersAndColons() {
         var pressedButton = event.key,
             result = true;
+
         if (pressedButton.length === 1) {
             result = /^[0-9:]$/.test(pressedButton);
         }
@@ -93,17 +97,12 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
     function initTimePicker($timePicker, $inputTime) {
         var parsedDate = getDateObjValidated($inputTime);
 
-        $timePicker
-            .find(".imcms-time-picker__time")
-            .css("display", "block");
+        $timePicker.find(".imcms-time-picker__time").css("display", "block");
 
         var hours = +parsedDate.hours,
             minutes = +parsedDate.minutes,
-            hoursContainers = $timePicker
-                .find(".imcms-time-picker__hour"),
-            minutesContainers = $timePicker
-                .find(".imcms-time-picker__minute");
-
+            hoursContainers = $timePicker.find(".imcms-time-picker__hour"),
+            minutesContainers = $timePicker.find(".imcms-time-picker__minute");
 
         hoursContainers.each(function (index) {
             $(this).text(addValuesWithShift(hours, index, 23));
@@ -139,9 +138,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
             incrementOrDecrementBtnSelector = ".imcms-button--decrement";
         }
 
-        $(this)
-            .find(incrementOrDecrementBtnSelector)
-            .click();
+        $(this).find(incrementOrDecrementBtnSelector).click();
 
         return false;
     }
@@ -194,9 +191,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
                 && className.indexOf("imcms-time-picker") === -1
                 && className.indexOf("imcms-current-time") === -1)
             {
-                $timePicker
-                    .find(".imcms-time-picker__time")
-                    .css("display", "none");
+                $timePicker.find(".imcms-time-picker__time").css("display", "none");
             }
 
             if ($inputTime.hasClass("imcms-current-time__input--error")) {
@@ -218,7 +213,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
         };
     }
 
-    var TimePicker = function ($timePickerContainer) {
+    return function ($timePickerContainer) {
         var $timePicker = getTimePicker($timePickerContainer),
             $inputTime = $timePicker.find(".imcms-current-time__input"),
             $arrowButtons = $timePicker.find(".imcms-time-picker__button"),
@@ -244,6 +239,4 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
 
         return $timePickerContainer;
     };
-
-    return TimePicker;
 });
