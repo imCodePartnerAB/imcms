@@ -168,8 +168,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
             minutesPosition = 1,
             $timeInput = $pickerHourOrMinute.parent().siblings().find(".imcms-current-time__input");
 
-        var prevTime = $timeInput.val();
-        var time = (prevTime) ? prevTime.split(":") : ["00", "00"];
+        var time = ($timeInput.val() || "00:00").split(":");
 
         var changedPosition = ($selectedTimeUnit.hasClass("imcms-time-picker__minute"))
             ? minutesPosition : hoursPosition;
@@ -179,35 +178,26 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
         $timeInput.val(time.join(":"));
     }
 
-    function createCloseTimePickerFunction($timePicker, $inputTime) {
-        return function (e) {
-            var className = e.target.className;
+    function closeTimePickerFunction(e) {
+        var className = e.target.className;
 
-            if (className
-                && className.indexOf("imcms-time-picker") === -1
-                && className.indexOf("imcms-current-time") === -1)
-            {
-                $timePicker.find(".imcms-time-picker__time").css("display", "none");
-            }
+        if (className
+            && className.indexOf("imcms-time-picker") === -1
+            && className.indexOf("imcms-current-time") === -1)
+        {
+            $(".imcms-time-picker__time").css("display", "none");
+        }
 
-            if ($inputTime.hasClass("imcms-current-time__input--error")) {
-                var currentTime = getCurrentTimeObj();
-                $inputTime.val(currentTime.hours + ":" + currentTime.minutes);
-                $inputTime.removeClass("imcms-current-time__input--error")
+        $(".imcms-current-time__input--error").each(function () {
+            var currentTime = getCurrentTimeObj();
+            var $this = $(this);
 
-            } else {
-                var prevVal = $inputTime.val(),
-
-                    correctedVal = prevVal.split(":")
-                        .map(optionalAddZeroBeforeNumber)
-                        .join(":");
-
-                if (prevVal !== correctedVal) {
-                    $inputTime.val(correctedVal);
-                }
-            }
-        };
+            $this.val(currentTime.hours + ":" + currentTime.minutes);
+            $this.removeClass("imcms-current-time__input--error")
+        });
     }
+
+    $(document).click(closeTimePickerFunction);
 
     return function ($timePickerContainer, withClock) {
         $timePickerContainer.setTime = apiSetTime($timePickerContainer);
@@ -234,8 +224,6 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
             .click(pickTime)
             .mouseenter(optionalHighlight)
             .mouseleave(optionalHighlight);
-
-        $(document).click(createCloseTimePickerFunction($timePicker, $inputTime));
 
         return $timePickerContainer;
     };
