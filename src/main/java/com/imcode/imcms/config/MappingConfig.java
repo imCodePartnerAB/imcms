@@ -2,10 +2,7 @@ package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.dto.ImageData.CropRegion;
-import com.imcode.imcms.domain.service.api.CategoryService;
-import com.imcode.imcms.domain.service.api.DocumentService;
-import com.imcode.imcms.domain.service.api.LanguageService;
-import com.imcode.imcms.domain.service.api.RoleService;
+import com.imcode.imcms.domain.service.api.*;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.User;
@@ -449,14 +446,21 @@ public class MappingConfig {
             Function<Language, LanguageDTO> languageToLanguageDTO,
             Function<Set<RestrictedPermission>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO,
             RoleService roleService,
-            CategoryService categoryService
+            CategoryService categoryService,
+            UserService userService
     ) {
         final BiFunction<Supplier<Integer>, Supplier<Date>, AuditDTO> auditDtoCreator =
                 (auditorIdSupplier, auditedDateSupplier) -> {
 
                     final AuditDTO audit = new AuditDTO();
-                    audit.setId(auditorIdSupplier.get());
+                    final Integer userId = auditorIdSupplier.get();
                     audit.setDateTime(auditedDateSupplier.get());
+
+                    if (userId != null) {
+                        audit.setId(userId);
+                        audit.setBy(userService.getUser(userId).getLogin());
+                    }
+
                     return audit;
                 };
 
