@@ -4,6 +4,10 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
     ;
 
     function optionalAddZeroBeforeNumber(numberStr) {
+        if (numberStr === "" || numberStr === null || numberStr === undefined) { // without 0
+            return numberStr;
+        }
+
         var result = +numberStr;
         if (result < 10) {
             result = "0" + result;
