@@ -44,7 +44,15 @@ Imcms.define("imcms-window-builder", ["imcms-window-components-builder", "jquery
         closeWindow: function () {
             this._enableBackgroundPageScrolling();
             this.$editor.css("display", "none");
-            this.clearDataStrategy && this.clearDataStrategy.call();
+
+            if (this.clearDataStrategy) {
+                try {
+                    this.clearDataStrategy.call();
+
+                } catch (e) {
+                    console.error(e);
+                }
+            }
         },
         /**
          * Builds head with specified title and close button
