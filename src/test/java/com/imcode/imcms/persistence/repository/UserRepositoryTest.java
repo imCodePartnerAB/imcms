@@ -1,9 +1,10 @@
-package com.imcode.imcms.mapping.jpa;
+package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.api.Role;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
+import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.User.PasswordReset;
 import imcode.server.user.RoleId;
 import org.junit.After;
@@ -25,8 +26,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class UserRepositoryTest {
 
