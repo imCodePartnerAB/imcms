@@ -11,6 +11,8 @@ public class LanguageDTO implements Serializable {
 
     private static final long serialVersionUID = -3433592782831228045L;
 
+    private Integer id;
+
     /**
      * Two-letter ISO-639-1 code, like "en" or "sv"
      */
@@ -21,9 +23,5 @@ public class LanguageDTO implements Serializable {
     private String nativeName;
 
     private boolean enabled;
-
-    private String title;
-
-    private String menuText;
 
 }

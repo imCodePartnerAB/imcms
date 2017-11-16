@@ -18,30 +18,38 @@ import java.util.stream.Collectors;
 @Component
 public class MenuDataInitializer extends AbstractTestDataInitializer<Boolean, MenuDTO> {
 
+    private static final int DOC_ID = 1001;
+    private static final int VERSION_INDEX = 0;
+    private static final int MENU_INDEX = 1;
+
     private final MenuRepository menuRepository;
     private final VersionDataInitializer versionDataInitializer;
+    private final CommonContentDataInitializer commonContentDataInitializer;
     private final Function<Menu, MenuDTO> menuToMenuDTO;
     private Menu savedMenu;
     private Version version;
 
     public MenuDataInitializer(@Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
                                VersionDataInitializer versionDataInitializer,
+                               CommonContentDataInitializer commonContentDataInitializer,
                                Function<Menu, MenuDTO> menuToMenuDTO) {
         super(menuRepository);
         this.menuRepository = menuRepository;
         this.versionDataInitializer = versionDataInitializer;
+        this.commonContentDataInitializer = commonContentDataInitializer;
         this.menuToMenuDTO = menuToMenuDTO;
     }
 
     @Override
     public MenuDTO createData(Boolean withMenuItems) {
         cleanRepositories();
-        return createData(withMenuItems, 1);
+//        commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX);
+        return createData(withMenuItems, MENU_INDEX);
     }
 
     public MenuDTO createData(Boolean withMenuItems, int menuIndex) {
         final Menu menu = new Menu();
-        version = versionDataInitializer.createData(0, 1001);
+        version = versionDataInitializer.createData(VERSION_INDEX, DOC_ID);
         menu.setVersion(version);
         menu.setNo(menuIndex);
         savedMenu = menuRepository.saveAndFlush(menu);
@@ -109,7 +117,7 @@ public class MenuDataInitializer extends AbstractTestDataInitializer<Boolean, Me
     private MenuItem createMenuItem(int sortOrder, Menu menu) {
         final MenuItem menuItem = new MenuItem();
         menuItem.setSortOrder(sortOrder);
-        menuItem.setDocumentId(1001);
+        menuItem.setDocumentId(DOC_ID);
         menuItem.setMenu(menu);
         return menuItem;
     }

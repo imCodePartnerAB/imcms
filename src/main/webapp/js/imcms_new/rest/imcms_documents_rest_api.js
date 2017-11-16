@@ -39,24 +39,31 @@ Imcms.define("imcms-documents-rest-api", ["imcms-rest-api"], function (rest) {
     //mock data
     var docListMock = [{
         id: 1001,
-        title: "Start page",
         alias: "start-page",
         type: "text",
         target: "_blank",
-        languages: [
+        commonContents: [
             {
-                name: "English",
                 enabled: true,
-                code: "eng",
                 title: "Title text",
-                menuText: "Menu text"
+                menuText: "Menu text",
+                language: {
+                    id: 1,
+                    code: "en",
+                    name: "English",
+                    nativeName: "English"
+                }
             },
             {
-                name: "Swedish",
                 enabled: true,
-                code: "swe",
                 title: "Titeltext",
-                menuText: "Menytext"
+                menuText: "Menytext",
+                language: {
+                    id: 2,
+                    code: "sv",
+                    name: "Swedish",
+                    nativeName: "Svenska"
+                }
             }
         ],
         publicationStatus: 1,

@@ -27,7 +27,7 @@ public class DocumentDTO implements Serializable {
 
     private String alias;
 
-    private List<LanguageDTO> languages;
+    private List<CommonContentDTO> commonContents;
 
     private PublicationStatus publicationStatus;
 

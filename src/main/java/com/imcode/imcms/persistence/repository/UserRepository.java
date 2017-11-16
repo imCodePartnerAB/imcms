@@ -1,5 +1,6 @@
-package com.imcode.imcms.mapping.jpa;
+package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.mapping.jpa.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

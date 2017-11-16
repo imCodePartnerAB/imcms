@@ -62,7 +62,7 @@ public class ImageService {
 
     public void saveImage(ImageDTO imageDTO) {
         final Version version = versionService.getDocumentWorkingVersion(imageDTO.getDocId());
-        final Language language = languageService.findByCode(imageDTO.getLangCode());
+        final Language language = languageService.findEntityByCode(imageDTO.getLangCode());
 
         generateImage(imageDTO);
 
@@ -77,7 +77,7 @@ public class ImageService {
                               Function<Integer, Version> versionReceiver) {
 
         final Version version = versionReceiver.apply(docId);
-        final Language language = languageService.findByCode(langCode);
+        final Language language = languageService.findEntityByCode(langCode);
         final Image image = getImage(index, version, language, loopEntryRefDTO);
 
         return Optional.ofNullable(image)

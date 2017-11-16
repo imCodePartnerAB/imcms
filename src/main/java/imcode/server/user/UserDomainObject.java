@@ -1,10 +1,8 @@
 package imcode.server.user;
 
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.DocGetterCallback;
-import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
@@ -606,20 +604,6 @@ public class UserDomainObject implements Cloneable, Serializable {
             }
         }
         return false;
-    }
-
-    public boolean canSeeDocumentInMenus(DocumentDomainObject document) {
-        return document.isActive() && canSeeDocumentWhenEditingMenus(document)
-                && languageIsActive(document);
-    }
-
-    private boolean languageIsActive(DocumentDomainObject document) {
-        DocumentLanguage currentLanguage = getDocGetterCallback().getLanguage();
-        DocumentMeta meta = document.getMeta();
-        boolean enabled = meta.getEnabledLanguages().contains(currentLanguage);
-
-        return enabled ||
-                meta.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
     }
 
     public boolean canSeeDocumentWhenEditingMenus(DocumentDomainObject document) {

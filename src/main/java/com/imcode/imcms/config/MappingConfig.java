@@ -2,7 +2,10 @@ package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.dto.ImageData.CropRegion;
-import com.imcode.imcms.domain.service.api.*;
+import com.imcode.imcms.domain.service.api.CategoryService;
+import com.imcode.imcms.domain.service.api.DocumentService;
+import com.imcode.imcms.domain.service.api.RoleService;
+import com.imcode.imcms.domain.service.api.UserService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.User;
@@ -11,7 +14,6 @@ import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentStoredFields;
-import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import org.apache.commons.io.FilenameUtils;
@@ -81,7 +83,6 @@ public class MappingConfig {
             documentDTO.setId(documentFields.id());
             documentDTO.setAlias(documentFields.alias());
             documentDTO.setTitle(documentFields.headline());
-            documentDTO.setTarget(null);
             documentDTO.setType(DocumentType.values()[documentFields.documentType()]);
             return documentDTO;
         };
@@ -97,8 +98,12 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<LanguageDTO, Language> languageDtoToLanguage(LanguageService languageService) {
-        return languageDTO -> languageService.findByCode(languageDTO.getCode());
+    public Function<LanguageDTO, Language> languageDtoToLanguage() {
+        return languageDTO -> {
+            final Language language = new Language();
+            BeanUtils.copyProperties(languageDTO, language);
+            return language;
+        };
     }
 
     @Bean
@@ -125,6 +130,9 @@ public class MappingConfig {
                 menuItemDTO.setDocumentId(menuItem.getDocumentId());
 
                 final Version latestVersion = versionService.getLatestVersion(menuItemDTO.getDocumentId());
+
+                // note: for current user language
+                // fixme: what if such content is disabled?
                 final CommonContentDTO commonContent = commonContentService
                         .getOrCreate(latestVersion.getDocId(), latestVersion.getNo(), Imcms.getUser());
 
@@ -358,8 +366,6 @@ public class MappingConfig {
 
     @Bean
     public Function<DocumentDTO, Meta> documentDtoToMeta(
-            LanguageService languageService,
-            CommonContentService commonContentService,
             Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermission>>
                     restrictedPermissionsDtoToRestrictedPermissions
     ) {
@@ -369,12 +375,7 @@ public class MappingConfig {
             final int docId = documentDTO.getId();
             final int version = documentDTO.getCurrentVersion().getId();
 
-            final CommonContentDTO commonContent = commonContentService.getOrCreate(docId, version, Imcms.getUser());
-            commonContent.setHeadline(documentDTO.getTitle());
-//            commonContentService.
-
             // todo: save these DTO fields too:
-            // title // in common content
             // template
             // childTemplate
             // also version !
@@ -413,14 +414,6 @@ public class MappingConfig {
             meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
             meta.setSearchDisabled(documentDTO.isSearchDisabled());
 
-            final Set<Language> languages = documentDTO.getLanguages()
-                    .stream()
-                    .filter(LanguageDTO::isEnabled)
-                    .map(languageDTO -> languageService.findByCode(languageDTO.getCode()))
-                    .collect(Collectors.toSet());
-
-            meta.setEnabledLanguages(languages);
-
             final Set<Integer> categoryIds = documentDTO.getCategories()
                     .stream()
                     .map(CategoryDTO::getId)
@@ -443,7 +436,6 @@ public class MappingConfig {
     public Function<Meta, DocumentDTO> documentMapping(
             VersionService versionService,
             CommonContentService commonContentService,
-            Function<Language, LanguageDTO> languageToLanguageDTO,
             Function<Set<RestrictedPermission>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO,
             RoleService roleService,
             CategoryService categoryService,
@@ -472,21 +464,10 @@ public class MappingConfig {
             dto.setAlias(meta.getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
 
             final Version latestVersion = versionService.getLatestVersion(metaId);
-            final int latestVersionIndex = latestVersion.getNo();
-            final UserDomainObject user = Imcms.getUser();
-            final String title = commonContentService.getOrCreate(metaId, latestVersionIndex, user).getHeadline();
-            dto.setTitle(title);
-
-            final List<LanguageDTO> languages = new ArrayList<>();
-
-            for (Language language : meta.getEnabledLanguages()) {
-                languageToLanguageDTO.andThen(languages::add).apply(language);
-            }
-
             final User modifier = latestVersion.getModifiedBy();
             final User creator = latestVersion.getCreatedBy();
 
-            dto.setLanguages(languages);
+            dto.setCommonContents(commonContentService.getOrCreateCommonContents(metaId, latestVersion.getNo()));
             dto.setPublished(auditDtoCreator.apply(meta::getPublisherId, meta::getPublicationStartDatetime));
             dto.setPublicationEnd(auditDtoCreator.apply(meta::getDepublisherId, meta::getPublicationEndDatetime));
             dto.setArchived(auditDtoCreator.apply(meta::getArchiverId, meta::getArchivedDatetime));

@@ -106,14 +106,6 @@ public class Meta implements Serializable {
     @Enumerated(EnumType.STRING)
     private Map<Integer, Permission> roleIdToPermissionSetIdMap = new HashMap<>();
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "imcms_doc_languages",
-            joinColumns = @JoinColumn(name = "doc_id"),
-            inverseJoinColumns = @JoinColumn(name = "language_id")
-    )
-    private Set<Language> enabledLanguages = new HashSet<>();
-
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "imcms_doc_keywords", joinColumns = @JoinColumn(name = "doc_id"))
     @Column(name = "value")

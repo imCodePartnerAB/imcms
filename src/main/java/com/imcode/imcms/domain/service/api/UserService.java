@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.mapping.jpa.User;
-import com.imcode.imcms.mapping.jpa.UserRepository;
+import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.user.RoleId;
 import org.springframework.stereotype.Service;
 

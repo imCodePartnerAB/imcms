@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.user.RoleId;
@@ -18,14 +19,17 @@ public class DocumentService {
 
     private final MetaRepository metaRepository;
     private final Function<Meta, DocumentDTO> documentMapping;
+    private final CommonContentService commonContentService;
     private final Function<DocumentDTO, Meta> metaSaver;
 
     public DocumentService(MetaRepository metaRepository,
                            Function<Meta, DocumentDTO> metaToDocumentDTO,
-                           Function<DocumentDTO, Meta> documentDtoToMeta) {
+                           Function<DocumentDTO, Meta> documentDtoToMeta,
+                           CommonContentService commonContentService) {
 
         this.metaRepository = metaRepository;
         this.documentMapping = metaToDocumentDTO;
+        this.commonContentService = commonContentService;
         this.metaSaver = documentDtoToMeta.andThen(metaRepository::save);
     }
 
@@ -34,6 +38,7 @@ public class DocumentService {
     }
 
     public void save(DocumentDTO saveMe) {
+        commonContentService.save(saveMe.getCommonContents());
         metaSaver.apply(saveMe);
     }
 

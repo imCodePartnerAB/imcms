@@ -350,13 +350,6 @@ public class DocumentSaver {
                 metaDO.getDisabledLanguageShowMode().name()
         ));
         meta.setDocumentType(DocumentType.values()[metaDO.getDocumentType()]);
-
-        Set<Language> enabledLanguages = metaDO.getEnabledLanguages()
-                .stream()
-                .map(l -> languageRepository.findByCode(l.getCode()))
-                .collect(Collectors.toSet());
-
-        meta.setEnabledLanguages(enabledLanguages);
         meta.setId(metaDO.getId());
         meta.setKeywords(metaDO.getKeywords());
         meta.setLinkableByOtherUsers(metaDO.getLinkableByOtherUsers());

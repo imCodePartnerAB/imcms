@@ -1,7 +1,7 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.mapping.jpa.User;
-import com.imcode.imcms.mapping.jpa.UserRepository;
+import com.imcode.imcms.persistence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;

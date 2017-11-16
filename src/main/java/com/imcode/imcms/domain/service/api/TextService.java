@@ -60,7 +60,7 @@ public class TextService {
 
     public void save(TextDTO textDTO) {
         final Version version = versionService.getDocumentWorkingVersion(textDTO.getDocId());
-        final Language language = languageService.findByCode(textDTO.getLangCode());
+        final Language language = languageService.findEntityByCode(textDTO.getLangCode());
         final Text text = textDtoToText.apply(textDTO, version, language);
         final Integer imageId = getTextId(textDTO, version, language);
 
@@ -72,7 +72,7 @@ public class TextService {
                             Function<Integer, Version> versionReceiver) {
 
         final Version version = versionReceiver.apply(docId);
-        final Language language = languageService.findByCode(langCode);
+        final Language language = languageService.findEntityByCode(langCode);
         final Text text = getText(index, version, language, loopEntryRefDTO);
 
         return Optional.ofNullable(text)

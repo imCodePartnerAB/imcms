@@ -13,17 +13,40 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static imcode.server.ImcmsConstants.ENG_CODE;
+import static imcode.server.ImcmsConstants.SWE_CODE;
+import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 @Transactional
+@WebAppConfiguration
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class LanguageRepositoryTest {
 
     @Autowired
     private LanguageRepository languageRepository;
+
+    @Test
+    public void testFindAll() throws Exception {
+        assertEquals(2, languageRepository.findAll().size());
+    }
+
+    @Test
+    public void testFindByCode() throws Exception {
+        assertNotNull(languageRepository.findByCode(ENG_CODE));
+        assertNotNull(languageRepository.findByCode(SWE_CODE));
+    }
+
+    @Test
+    public void testSave() throws Exception {
+        Language language = new Language();
+
+        language.setId(1);
+        language.setCode(ENG_CODE);
+        language.setName("English");
+
+        languageRepository.save(language);
+    }
 
     @Test
     public void findByCode() throws Exception {

@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Loads documents from the database.
@@ -28,8 +25,6 @@ public class DocumentLoader {
     @Autowired
     private MetaRepository metaRepository;
 
-    @Autowired
-    private DocumentLanguageMapper languageMapper;
     @Autowired
     private DocumentContentMapper contentMapper;
     @Autowired
@@ -97,12 +92,6 @@ public class DocumentLoader {
         metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());
         metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(meta.getDisabledLanguageShowMode().name()));
         metaDO.setDocumentType(meta.getDocumentType().ordinal());
-
-        Set<DocumentLanguage> apiLanguages = meta.getEnabledLanguages().stream()
-                .map(languageMapper::toApiObject)
-                .collect(Collectors.toSet());
-
-        metaDO.setEnabledLanguages(apiLanguages);
         metaDO.setId(meta.getId());
         metaDO.setKeywords(meta.getKeywords());
         metaDO.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());

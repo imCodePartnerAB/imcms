@@ -7,9 +7,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
-import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.entity.Meta;
-import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
@@ -23,11 +21,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.function.Function;
 
-import static imcode.server.ImcmsConstants.ENG_CODE;
-import static imcode.server.ImcmsConstants.SWE_CODE;
 import static org.junit.Assert.assertEquals;
 
 @Transactional
@@ -47,9 +45,6 @@ public class DocumentServiceTest {
     private MetaRepository metaRepository;
 
     @Autowired
-    private LanguageRepository languageRepository;
-
-    @Autowired
     private Function<Meta, DocumentDTO> metaToDocumentDTO;
 
     @Autowired
@@ -62,11 +57,6 @@ public class DocumentServiceTest {
     public void setUp() throws Exception {
         final Meta metaDoc = Value.with(new Meta(), meta -> {
 
-            final HashSet<Language> languages = new HashSet<>(Arrays.asList(
-                    languageRepository.findByCode(ENG_CODE),
-                    languageRepository.findByCode(SWE_CODE)
-            ));
-
             meta.setArchivedDatetime(new Date());
             meta.setArchiverId(1);
             meta.setCategoryIds(Collections.emptySet());
@@ -75,7 +65,6 @@ public class DocumentServiceTest {
             meta.setDefaultVersionNo(0);
             meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
             meta.setDocumentType(Meta.DocumentType.TEXT);
-            meta.setEnabledLanguages(languages);
             meta.setKeywords(Collections.emptySet());
             meta.setLinkableByOtherUsers(true);
             meta.setLinkedForUnauthorizedUsers(true);

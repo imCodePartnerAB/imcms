@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
@@ -54,7 +53,6 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile Integer depublisherId;
     private volatile Map<String, String> properties = new ConcurrentHashMap<>();
     private volatile Set<Integer> categoryIds = new CopyOnWriteArraySet<>();
-    private volatile Set<DocumentLanguage> enabledLanguages = new CopyOnWriteArraySet<>();
     private volatile Set<String> keywords = new CopyOnWriteArraySet<>();
     private volatile RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
     private volatile Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
@@ -69,7 +67,6 @@ public class DocumentMeta implements Serializable, Cloneable {
             clone.categoryIds = new CopyOnWriteArraySet<>(categoryIds);
 
             clone.keywords = new CopyOnWriteArraySet<>(keywords);
-            clone.enabledLanguages = new CopyOnWriteArraySet<>(enabledLanguages);
 
             if (roleIdToDocumentPermissionSetTypeMappings != null) {
                 clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
@@ -240,16 +237,6 @@ public class DocumentMeta implements Serializable, Cloneable {
 
     public void setDisabledLanguageShowMode(DisabledLanguageShowMode disabledLanguageShowMode) {
         this.disabledLanguageShowMode = disabledLanguageShowMode;
-    }
-
-    public Set<DocumentLanguage> getEnabledLanguages() {
-        return enabledLanguages;
-    }
-
-    public void setEnabledLanguages(Set<DocumentLanguage> languages) {
-        this.enabledLanguages = new CopyOnWriteArraySet<>(
-                languages != null ? languages : Collections.emptySet()
-        );
     }
 
     public RoleIdToDocumentPermissionSetTypeMappings getRoleIdToDocumentPermissionSetTypeMappings() {

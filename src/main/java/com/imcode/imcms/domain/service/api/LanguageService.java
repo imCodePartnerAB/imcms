@@ -3,9 +3,6 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
-import imcode.server.Imcms;
-import imcode.server.LanguageMapper;
-import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,25 +17,34 @@ public class LanguageService {
 
     public LanguageService(LanguageRepository languageRepository,
                            Function<Language, LanguageDTO> languageToLanguageDTO) {
+
         this.languageRepository = languageRepository;
         this.languageToLanguageDTO = languageToLanguageDTO;
     }
 
-    public Language findByCode(String code) {
-        return languageRepository.findByCode(code);
+    /**
+     * Get language DTO by it's two-letter ISO-639-1 code
+     *
+     * @param code ISO-639-1 code
+     * @return language DTO
+     */
+    public LanguageDTO findByCode(String code) {
+        return languageToLanguageDTO.compose(languageRepository::findByCode).apply(code);
     }
 
-    public Language getCurrentUserLanguage() {
-        return getUserLanguage(Imcms.getUser());
-    }
-
-    public Language getUserLanguage(UserDomainObject user) {
-        final String code = LanguageMapper.convert639_2to639_1(user.getLanguageIso639_2());
+    /**
+     * @param code ISO-639-1 code
+     * @return language entity
+     * @deprecated use {@link com.imcode.imcms.domain.service.api.LanguageService#findByCode(java.lang.String)}
+     */
+    @Deprecated
+    public Language findEntityByCode(String code) {
         return languageRepository.findByCode(code);
     }
 
     public List<LanguageDTO> getAll() {
-        return languageRepository.findAll().stream()
+        return languageRepository.findAll()
+                .stream()
                 .map(languageToLanguageDTO)
                 .collect(Collectors.toList());
     }
