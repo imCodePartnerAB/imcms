@@ -465,7 +465,6 @@ public class MappingConfig {
 
             final Version latestVersion = versionService.getLatestVersion(metaId);
             final User modifier = latestVersion.getModifiedBy();
-            final User creator = latestVersion.getCreatedBy();
 
             dto.setCommonContents(commonContentService.getOrCreateCommonContents(metaId, latestVersion.getNo()));
             dto.setPublished(auditDtoCreator.apply(meta::getPublisherId, meta::getPublicationStartDatetime));
@@ -473,7 +472,12 @@ public class MappingConfig {
             dto.setArchived(auditDtoCreator.apply(meta::getArchiverId, meta::getArchivedDatetime));
             dto.setCreated(auditDtoCreator.apply(meta::getCreatorId, meta::getCreatedDatetime));
             dto.setModified(auditDtoCreator.apply(modifier::getId, meta::getModifiedDatetime));
-            dto.setCurrentVersion(auditDtoCreator.apply(creator::getId, latestVersion::getCreatedDt));
+
+            final AuditDTO versionAudit = new AuditDTO();
+            versionAudit.setDateTime(latestVersion.getCreatedDt());
+            versionAudit.setId(latestVersion.getNo());
+            versionAudit.setBy(modifier.getLogin());
+            dto.setCurrentVersion(versionAudit);
 
             dto.setKeywords(meta.getKeywords());
 
