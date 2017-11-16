@@ -31,8 +31,8 @@ Imcms.define("imcms-appearance-tab-builder",
                 $pageTitle = components.texts.textBox("<div>", {
                     name: "title",
                     text: "Title",
-                    value: commonContent.title,
-                    placeholder: commonContent.title
+                    value: commonContent.headline,
+                    placeholder: commonContent.headline
                 }),
                 $pageTitleContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-box": $pageTitle}]),
                 $menuText = components.texts.textArea("<div>", {
@@ -44,6 +44,7 @@ Imcms.define("imcms-appearance-tab-builder",
                 $linkToImage = chooseImage.container("<div>", {
                     id: "path-to-image",
                     name: "image",
+                    value: commonContent.menuImageURL,
                     placeholder: "Image path",
                     "label-text": "Link to image",
                     "button-text": "choose..."
@@ -64,7 +65,7 @@ Imcms.define("imcms-appearance-tab-builder",
 
         return {
             name: "appearance",
-            buildTab: function (index, docId) {
+            buildTab: function (index) {
                 tabData.$showIn = components.selects.imcmsSelect("<div>", {
                     id: "show-in",
                     text: "Show in",
