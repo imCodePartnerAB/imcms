@@ -11,6 +11,7 @@ Imcms.define("imcms-choose-image-builder",
                         id: attributes.id,
                         name: attributes.name,
                         text: attributes["label-text"],
+                        value: attributes.value,
                         placeholder: attributes.placeholder
                     }),
                     $result = new BEM({
