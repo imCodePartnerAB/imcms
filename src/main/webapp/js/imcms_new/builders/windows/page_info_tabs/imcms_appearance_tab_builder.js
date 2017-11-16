@@ -1,10 +1,6 @@
 Imcms.define("imcms-appearance-tab-builder",
-    [
-        "imcms-bem-builder", "imcms-components-builder",
-        "imcms-page-info-tabs-linker", "imcms-choose-image-builder",
-        "imcms-languages-rest-api"
-    ],
-    function (BEM, components, linker, chooseImage, languagesRestApi) {
+    ["imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tabs-linker", "imcms-choose-image-builder"],
+    function (BEM, components, linker, chooseImage) {
         var pageInfoInnerStructureBEM = new BEM({
             block: "imcms-field",
             elements: {
@@ -18,42 +14,33 @@ Imcms.define("imcms-appearance-tab-builder",
 
         var tabData = {};
 
-        function mapLanguages(languages) {
-            return languages.map(buildDocumentLanguage)
-                .reduce(function (l1, l2) {
-                    return l1.concat(l2);
-                });
+        function buildCommonContents(commonContents) {
+            return commonContents.map(buildDocumentCommonContent).reduce(function (cc1, cc2) {
+                return cc1.concat(cc2);
+            });
         }
 
-        function buildDocumentLanguage(language) {
+        function buildDocumentCommonContent(commonContent) {
             var $checkbox = components.checkboxes.imcmsCheckbox("<div>", {
-                    name: language.name.toLowerCase(),
-                    text: language.name,
-                    checked: language.enabled ? "checked" : undefined
+                    name: commonContent.language.name.toLowerCase(), // fixme: or native name?
+                    text: commonContent.language.name,
+                    checked: commonContent.enabled ? "checked" : undefined
                 }),
-                $checkboxWrapper = components.checkboxes.checkboxContainer("<div>", [
-                    $checkbox
-                ]),
-                $checkboxContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{
-                    "checkboxes": $checkboxWrapper
-                }]),
+                $checkboxWrapper = components.checkboxes.checkboxContainer("<div>", [$checkbox]),
+                $checkboxContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"checkboxes": $checkboxWrapper}]),
                 $pageTitle = components.texts.textBox("<div>", {
                     name: "title",
                     text: "Title",
-                    value: language.title,
-                    placeholder: language.title
+                    value: commonContent.title,
+                    placeholder: commonContent.title
                 }),
-                $pageTitleContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [
-                    {"text-box": $pageTitle}
-                ]),
+                $pageTitleContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-box": $pageTitle}]),
                 $menuText = components.texts.textArea("<div>", {
                     text: "Menu text",
-                    value: language.menuText,
+                    value: commonContent.menuText,
                     name: "menu-text"
                 }),
-                $menuTextContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [
-                    {"text-area": $menuText}
-                ]),
+                $menuTextContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-area": $menuText}]),
                 $linkToImage = chooseImage.container("<div>", {
                     id: "path-to-image",
                     name: "image",
@@ -61,34 +48,23 @@ Imcms.define("imcms-appearance-tab-builder",
                     "label-text": "Link to image",
                     "button-text": "choose..."
                 }),
-                $linkToImageContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{
-                    "choose-image": $linkToImage
-                }]);
+                $linkToImageContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"choose-image": $linkToImage}]);
 
-            tabData.languages = tabData.languages || [];
+            tabData.commonContents = tabData.commonContents || [];
 
-            tabData.languages.push({
+            tabData.commonContents.push({
                 checkbox: $checkbox,
                 pageTitle: $pageTitle,
                 menuText: $menuText,
                 linkToImage: $linkToImage
             });
 
-            return [$checkboxContainer, $pageTitleContainer, $menuTextContainer, $linkToImageContainer]
+            return [$checkboxContainer, $pageTitleContainer, $menuTextContainer, $linkToImageContainer];
         }
 
         return {
             name: "appearance",
             buildTab: function (index, docId) {
-                if (!docId) {
-                    languagesRestApi.read().done(function (languages) {
-                        if (!tabData.languages) {
-                            var documentLanguages = mapLanguages(languages);
-                            tabData.$result.prepend(documentLanguages);
-                        }
-                    });
-                }
-
                 tabData.$showIn = components.selects.imcmsSelect("<div>", {
                     id: "show-in",
                     text: "Show in",
@@ -104,9 +80,7 @@ Imcms.define("imcms-appearance-tab-builder",
                     "data-value": "_top"
                 }]);
 
-                var $showInContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [
-                    {"select": tabData.$showIn}
-                ]);
+                var $showInContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"select": tabData.$showIn}]);
 
                 tabData.$documentAlias = components.texts.textBox("<div>", {
                     name: "alias",
@@ -118,39 +92,27 @@ Imcms.define("imcms-appearance-tab-builder",
                     {"text-box": tabData.$documentAlias}
                 ]);
 
-                var tabElements = [
-                    $showInContainer,
-                    $documentAliasContainer
-                ];
+                var tabElements = [$showInContainer, $documentAliasContainer];
 
                 var $result = linker.buildFormBlock(tabElements, index);
                 tabData.$result = $result;
+
                 return $result;
             },
             fillTabDataFromDocument: function (document) {
-                if (tabData.languages) {
-                    tabData.languages.forEach(function (language, index) {
-                        var documentLanguage = document.languages[index];
-                        language.checkbox.setChecked(documentLanguage.enabled);
-                        language.pageTitle.setValue(documentLanguage.title);
-                        language.menuText.setValue(documentLanguage.menuText);
-                    });
-                } else {
-                    var documentLanguages = mapLanguages(document.languages);
-                    tabData.$result.prepend(documentLanguages);
-                }
-
+                var documentCommonContents = buildCommonContents(document.commonContents);
+                tabData.$result.prepend(documentCommonContents);
                 tabData.$showIn.selectValue(document.target);
                 tabData.$documentAlias.setValue(document.alias);
             },
             clearTabData: function () {
                 var emptyString = '';
 
-                tabData.languages.forEach(function (language, index) {
-                    language.checkbox.setChecked(index === 0);//check only first
-                    language.pageTitle.setValue(emptyString);
-                    language.menuText.setValue(emptyString);
-                    language.linkToImage.setValue(emptyString);
+                tabData.commonContents.forEach(function (commonContent, index) {
+                    commonContent.checkbox.setChecked(index === 0);//check only first
+                    commonContent.pageTitle.setValue(emptyString);
+                    commonContent.menuText.setValue(emptyString);
+                    commonContent.linkToImage.setValue(emptyString);
                 });
 
                 tabData.$showIn.selectFirst();
