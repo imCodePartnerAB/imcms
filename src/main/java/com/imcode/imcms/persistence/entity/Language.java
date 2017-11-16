@@ -21,6 +21,9 @@ public class Language implements Serializable, Cloneable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    /**
+     * Two-letter ISO-639-1 code, like "en" or "sv"
+     */
     @NotNull
     @Column(nullable = false)
     private String code;
