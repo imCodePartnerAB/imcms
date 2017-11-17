@@ -39,12 +39,6 @@ public class Meta implements Serializable {
     @Column(name = "owner_id", nullable = false)
     private Integer creatorId;
 
-    @Column(name = "shared", nullable = false, columnDefinition = "int")
-    private Boolean linkableByOtherUsers;
-
-    @Column(name = "show_meta", nullable = false, columnDefinition = "int")
-    private Boolean linkedForUnauthorizedUsers;
-
     @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDatetime;
@@ -53,36 +47,42 @@ public class Meta implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDatetime;
 
-    @Column(name = "disable_search", nullable = false, columnDefinition = "int")
-    private boolean searchDisabled;
-
-    @Column(name = "target", nullable = false)
-    private String target;
+    @Column(name = "archiver_id")
+    private Integer archiverId;
 
     @Column(name = "archived_datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date archivedDatetime;
 
-    @Column(name = "archiver_id")
-    private Integer archiverId;
-
-    @Column(name = "depublisher_id")
-    private Integer depublisherId;
-
     @Column(name = "publisher_id")
     private Integer publisherId;
-
-    @Column(name = "status")
-    @Enumerated(EnumType.ORDINAL)
-    private PublicationStatus publicationStatus;
 
     @Column(name = "publication_start_datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationStartDatetime;
 
+    @Column(name = "depublisher_id")
+    private Integer depublisherId;
+
     @Column(name = "publication_end_datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationEndDatetime;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.ORDINAL)
+    private PublicationStatus publicationStatus;
+
+    @Column(name = "shared", nullable = false, columnDefinition = "int")
+    private Boolean linkableByOtherUsers;
+
+    @Column(name = "show_meta", nullable = false, columnDefinition = "int")
+    private Boolean linkedForUnauthorizedUsers;
+
+    @Column(name = "disable_search", nullable = false, columnDefinition = "int")
+    private boolean searchDisabled;
+
+    @Column(name = "target", nullable = false)
+    private String target;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "document_properties", joinColumns = @JoinColumn(name = "meta_id"))
