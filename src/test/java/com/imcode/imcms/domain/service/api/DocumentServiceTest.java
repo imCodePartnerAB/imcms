@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
+import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static org.junit.Assert.assertEquals;
 
 @Transactional
@@ -70,7 +72,7 @@ public class DocumentServiceTest {
             meta.setModifiedDatetime(new Date());
             meta.setModifierId(1);
             meta.setDefaultVersionNo(0);
-            meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
+            meta.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
             meta.setDocumentType(Meta.DocumentType.TEXT);
             meta.setKeywords(Collections.emptySet());
             meta.setLinkableByOtherUsers(true);
@@ -259,6 +261,24 @@ public class DocumentServiceTest {
         assertEquals(emptyArchivedAudit, savedDocumentDTO.getArchived());
         assertEquals(emptyPublishedAudit, savedDocumentDTO.getPublished());
         assertEquals(emptyDepublishedAudit, savedDocumentDTO.getPublicationEnd());
+    }
+
+    @Test
+    public void save_When_CustomMissingLanguagePropertySet_Expect_Saved() {
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
+
+        documentService.save(documentDTO);
+        DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+
+        assertEquals(savedDocumentDTO.getDisabledLanguageShowMode(), SHOW_IN_DEFAULT_LANGUAGE);
+
+        documentDTO.setDisabledLanguageShowMode(DO_NOT_SHOW);
+
+        documentService.save(documentDTO);
+        savedDocumentDTO = documentService.get(createdDoc.getId());
+
+        assertEquals(savedDocumentDTO.getDisabledLanguageShowMode(), DO_NOT_SHOW);
     }
 
 }
