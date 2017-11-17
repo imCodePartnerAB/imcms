@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-public class MetaDataInitializer extends AbstractTestDataInitializer<Void, Meta> {
+public class MetaDataInitializer extends TestDataCleaner {
 
     private final MetaRepository metaRepository;
     private final CommonContentDataInitializer commonContentDataInitializer;
@@ -28,7 +28,6 @@ public class MetaDataInitializer extends AbstractTestDataInitializer<Void, Meta>
         this.commonContentDataInitializer = commonContentDataInitializer;
     }
 
-    @Override
     public Meta createData() {
         Meta meta = new Meta();
 

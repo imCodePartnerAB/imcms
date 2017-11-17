@@ -14,7 +14,7 @@ import static imcode.server.ImcmsConstants.ENG_CODE;
 import static imcode.server.ImcmsConstants.SWE_CODE;
 
 @Component
-public class LanguageDataInitializer extends AbstractTestDataInitializer<Void, List<LanguageDTO>> {
+public class LanguageDataInitializer extends TestDataCleaner {
 
     @Autowired
     private LanguageRepository languageRepository;
@@ -26,7 +26,6 @@ public class LanguageDataInitializer extends AbstractTestDataInitializer<Void, L
         super();
     }
 
-    @Override
     public List<LanguageDTO> createData() {
         final Function<String, LanguageDTO> languageGetter = languageMapper.compose(languageRepository::findByCode);
         final LanguageDTO englishLanguage = languageGetter.apply(ENG_CODE);

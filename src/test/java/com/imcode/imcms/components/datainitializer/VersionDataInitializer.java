@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class VersionDataInitializer extends AbstractTestDataInitializer<Integer, Version> {
+public class VersionDataInitializer extends TestDataCleaner {
     private final VersionRepository versionRepository;
     private final UserDataInitializer userDataInitializer;
 
@@ -22,7 +22,6 @@ public class VersionDataInitializer extends AbstractTestDataInitializer<Integer,
         this.userDataInitializer = userDataInitializer;
     }
 
-    @Override
     public Version createData(Integer versionIndex, Integer docId) {
         Version testVersion = versionRepository.findByDocIdAndNo(docId, versionIndex);
 

@@ -16,7 +16,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class MenuDataInitializer extends AbstractTestDataInitializer<Boolean, MenuDTO> {
+public class MenuDataInitializer extends TestDataCleaner {
 
     private static final int DOC_ID = 1001;
     private static final int VERSION_INDEX = 0;
@@ -24,26 +24,21 @@ public class MenuDataInitializer extends AbstractTestDataInitializer<Boolean, Me
 
     private final MenuRepository menuRepository;
     private final VersionDataInitializer versionDataInitializer;
-    private final CommonContentDataInitializer commonContentDataInitializer;
     private final Function<Menu, MenuDTO> menuToMenuDTO;
     private Menu savedMenu;
     private Version version;
 
     public MenuDataInitializer(@Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
                                VersionDataInitializer versionDataInitializer,
-                               CommonContentDataInitializer commonContentDataInitializer,
                                Function<Menu, MenuDTO> menuToMenuDTO) {
         super(menuRepository);
         this.menuRepository = menuRepository;
         this.versionDataInitializer = versionDataInitializer;
-        this.commonContentDataInitializer = commonContentDataInitializer;
         this.menuToMenuDTO = menuToMenuDTO;
     }
 
-    @Override
     public MenuDTO createData(Boolean withMenuItems) {
         cleanRepositories();
-//        commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX);
         return createData(withMenuItems, MENU_INDEX);
     }
 

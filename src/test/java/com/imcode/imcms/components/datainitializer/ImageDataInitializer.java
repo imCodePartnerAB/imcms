@@ -11,7 +11,7 @@ import imcode.util.image.Format;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ImageDataInitializer extends AbstractTestDataInitializer<Integer, Image> {
+public class ImageDataInitializer extends TestDataCleaner {
 
     private final LanguageRepository languageRepository;
     private final ImageRepository imageRepository;
@@ -26,7 +26,6 @@ public class ImageDataInitializer extends AbstractTestDataInitializer<Integer, I
         this.versionDataInitializer = versionDataInitializer;
     }
 
-    @Override
     public Image createData(Integer imageIndex, Integer docId, Integer versionIndex) {
         final Version version = versionDataInitializer.createData(versionIndex, docId);
         final Language language = languageRepository.findByCode("en");

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
-public class TemplateDataInitializer extends AbstractTestDataInitializer<Integer, List<TemplateDTO>> {
+public class TemplateDataInitializer extends TestDataCleaner {
 
     private final TemplateRepository templateRepository;
     private final Function<Template, TemplateDTO> templateToTemplateDTO;
@@ -23,7 +23,6 @@ public class TemplateDataInitializer extends AbstractTestDataInitializer<Integer
         this.templateToTemplateDTO = templateToTemplateDTO;
     }
 
-    @Override
     public List<TemplateDTO> createData(Integer howMuch) {
         return IntStream.range(0, howMuch)
                 .mapToObj(i -> Value.with(new Template(), template -> {

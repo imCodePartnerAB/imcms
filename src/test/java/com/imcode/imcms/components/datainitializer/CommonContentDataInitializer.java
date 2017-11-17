@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class CommonContentDataInitializer extends AbstractTestDataInitializer<Integer, List<CommonContent>> {
+public class CommonContentDataInitializer extends TestDataCleaner {
     private static final String ENG_CODE = "en";
     private static final String SWE_CODE = "sv";
 
@@ -33,7 +33,6 @@ public class CommonContentDataInitializer extends AbstractTestDataInitializer<In
         versionDataInitializer.cleanRepositories();
     }
 
-    @Override
     public List<CommonContent> createData(Integer docId, Integer versionIndex) {
         Language en = languageRepository.findByCode(ENG_CODE);
         Language se = languageRepository.findByCode(SWE_CODE);

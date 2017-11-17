@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
-public class UserDataInitializer extends AbstractTestDataInitializer<Integer, List<User>> {
+public class UserDataInitializer extends TestDataCleaner {
     private final UserRepository userRepository;
     private final JdbcTemplate jdbcTemplate;
 
@@ -34,7 +34,6 @@ public class UserDataInitializer extends AbstractTestDataInitializer<Integer, Li
         return userRepository.saveAndFlush(new User(login, "dummy_pass", login + "@imcode.com"));
     }
 
-    @Override
     public List<User> createData(Integer howMuch, Integer roleId) {
         final List<User> users = IntStream.range(roleId * 100, howMuch + roleId * 100)
                 .mapToObj(i -> new User("test" + i, "test" + i, i + "test@imcode.com"))

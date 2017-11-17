@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.function.BiFunction;
 
 @Component
-public class LoopDataInitializer extends AbstractTestDataInitializer<LoopDTO, Loop> {
+public class LoopDataInitializer extends TestDataCleaner {
     public static final int TEST_VERSION_NO = 0;
 
     private final LoopRepository loopRepository;
@@ -25,7 +25,6 @@ public class LoopDataInitializer extends AbstractTestDataInitializer<LoopDTO, Lo
         this.versionDataInitializer = versionDataInitializer;
     }
 
-    @Override
     public Loop createData(LoopDTO loopDTO) {
         final Version testVersion = versionDataInitializer.createData(TEST_VERSION_NO, loopDTO.getDocId());
 

@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 import static java.util.Collections.singletonList;
 
 @Component
-public class CategoryDataInitializer extends AbstractTestDataInitializer<Integer, List<Category>> {
+public class CategoryDataInitializer extends TestDataCleaner {
 
     private final CategoryTypeRepository categoryTypeRepository;
     private final CategoryRepository categoryRepository;
@@ -39,7 +39,6 @@ public class CategoryDataInitializer extends AbstractTestDataInitializer<Integer
         this.categoryTypeMapper = categoryTypeMapper;
     }
 
-    @Override
     public List<Category> createData(Integer elementsCount) {
         cleanRepositories();
         this.elementsCount = elementsCount;
