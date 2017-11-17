@@ -295,6 +295,16 @@ public class DocumentServiceTest {
 
         final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
         assertEquals(keywords, savedDocumentDTO.getKeywords());
+
+        final int prevSize = keywords.size();
+        keywords.remove("test keyword 1");
+        assertEquals(keywords.size() + 1, prevSize);
+
+        savedDocumentDTO.setKeywords(keywords);
+        documentService.save(savedDocumentDTO);
+
+        final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
+        assertEquals(keywords, savedDocumentDTO1.getKeywords());
     }
 
 }
