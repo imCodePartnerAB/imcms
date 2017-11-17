@@ -21,10 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -66,7 +63,7 @@ public class DocumentServiceTest {
 
             meta.setArchivedDatetime(new Date());
             meta.setArchiverId(1);
-            meta.setCategoryIds(Collections.emptySet());
+            meta.setCategoryIds(new HashSet<>());
             meta.setCreatedDatetime(new Date());
             meta.setCreatorId(1);
             meta.setModifiedDatetime(new Date());
@@ -74,7 +71,7 @@ public class DocumentServiceTest {
             meta.setDefaultVersionNo(0);
             meta.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
             meta.setDocumentType(Meta.DocumentType.TEXT);
-            meta.setKeywords(Collections.emptySet());
+            meta.setKeywords(new HashSet<>());
             meta.setLinkableByOtherUsers(true);
             meta.setLinkedForUnauthorizedUsers(true);
             meta.setPublicationStartDatetime(new Date());
@@ -279,6 +276,25 @@ public class DocumentServiceTest {
         savedDocumentDTO = documentService.get(createdDoc.getId());
 
         assertEquals(savedDocumentDTO.getDisabledLanguageShowMode(), DO_NOT_SHOW);
+    }
+
+    @Test
+    public void save_When_CustomKeywordsSet_Expect_Saved() {
+        final Set<String> keywords = new HashSet<>();
+        keywords.add("test keyword 1");
+        keywords.add("test keyword 2");
+        keywords.add("test keyword 3");
+        keywords.add("test keyword 4");
+        keywords.add("test keyword 5");
+        keywords.add("test keyword 6");
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        documentDTO.setKeywords(keywords);
+
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertEquals(keywords, savedDocumentDTO.getKeywords());
     }
 
 }
