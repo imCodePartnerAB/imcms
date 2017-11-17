@@ -1,13 +1,12 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
+import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
-import com.imcode.imcms.domain.dto.CommonContentDTO;
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.PermissionDTO;
-import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
+import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
@@ -27,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 
@@ -55,6 +55,9 @@ public class DocumentServiceTest {
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
 
+    @Autowired
+    private UserDataInitializer userDataInitializer;
+
     @Before
     public void setUp() throws Exception {
         final Meta metaDoc = Value.with(new Meta(), meta -> {
@@ -64,13 +67,14 @@ public class DocumentServiceTest {
             meta.setCategoryIds(Collections.emptySet());
             meta.setCreatedDatetime(new Date());
             meta.setCreatorId(1);
+            meta.setModifiedDatetime(new Date());
+            meta.setModifierId(1);
             meta.setDefaultVersionNo(0);
             meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
             meta.setDocumentType(Meta.DocumentType.TEXT);
             meta.setKeywords(Collections.emptySet());
             meta.setLinkableByOtherUsers(true);
             meta.setLinkedForUnauthorizedUsers(true);
-            meta.setModifiedDatetime(new Date());
             meta.setPublicationStartDatetime(new Date());
             meta.setPublicationStatus(Meta.PublicationStatus.APPROVED);
             meta.setPublisherId(1);
@@ -204,6 +208,57 @@ public class DocumentServiceTest {
 
         savedDocumentDTO = documentService.get(createdDoc.getId());
         assertEquals(savedDocumentDTO.getPublicationStatus(), statusNew);
+    }
+
+    @Test
+    public void save_When_CreatedAndModifiedAndArchivedAndPublishedAndDepublishedAttributesSet_Expect_Saved() {
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final User user = userDataInitializer.createData("testUser");
+
+        final Supplier<AuditDTO> auditCreator = () -> {
+            final AuditDTO auditDTO = new AuditDTO();
+            auditDTO.setDateTime(new Date());
+            auditDTO.setId(user.getId());
+            auditDTO.setBy(user.getLogin());
+            return auditDTO;
+        };
+
+        final AuditDTO createdAudit = auditCreator.get();
+        final AuditDTO modifiedAudit = auditCreator.get();
+        final AuditDTO archivedAudit = auditCreator.get();
+        final AuditDTO publishedAudit = auditCreator.get();
+        final AuditDTO depublishedAudit = auditCreator.get();
+
+        documentDTO.setCreated(createdAudit);
+        documentDTO.setModified(modifiedAudit);
+        documentDTO.setArchived(archivedAudit);
+        documentDTO.setPublished(publishedAudit);
+        documentDTO.setPublicationEnd(depublishedAudit);
+
+        documentService.save(documentDTO);
+        DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+
+        assertEquals(createdAudit, savedDocumentDTO.getCreated());
+        assertEquals(modifiedAudit, savedDocumentDTO.getModified());
+        assertEquals(archivedAudit, savedDocumentDTO.getArchived());
+        assertEquals(publishedAudit, savedDocumentDTO.getPublished());
+        assertEquals(depublishedAudit, savedDocumentDTO.getPublicationEnd());
+
+        // only for nullable things
+        final AuditDTO emptyArchivedAudit = new AuditDTO();
+        final AuditDTO emptyPublishedAudit = new AuditDTO();
+        final AuditDTO emptyDepublishedAudit = new AuditDTO();
+
+        documentDTO.setArchived(emptyArchivedAudit);
+        documentDTO.setPublished(emptyPublishedAudit);
+        documentDTO.setPublicationEnd(emptyDepublishedAudit);
+
+        documentService.save(documentDTO);
+        savedDocumentDTO = documentService.get(createdDoc.getId());
+
+        assertEquals(emptyArchivedAudit, savedDocumentDTO.getArchived());
+        assertEquals(emptyPublishedAudit, savedDocumentDTO.getPublished());
+        assertEquals(emptyDepublishedAudit, savedDocumentDTO.getPublicationEnd());
     }
 
 }
