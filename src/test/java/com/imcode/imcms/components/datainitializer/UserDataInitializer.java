@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,15 +19,19 @@ public class UserDataInitializer extends AbstractTestDataInitializer<Integer, Li
 
     public UserDataInitializer(UserRepository userRepository,
                                @Qualifier("dataSourceWithAutoCommit") DataSource dataSource) {
+
         this.userRepository = userRepository;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    @Override
-    public List<User> createData(Integer userId) {
-        final User user = userRepository.saveAndFlush(new User(userId, "admin", "admin", "admin@imcode.com"));
-        user.setId(userId);
-        return Collections.singletonList(userRepository.saveAndFlush(user));
+    public User createData(String login) {
+        final User user = userRepository.findByLogin(login);
+
+        if (user != null) {
+            return user;
+        }
+
+        return userRepository.saveAndFlush(new User(login, "dummy_pass", login + "@imcode.com"));
     }
 
     @Override
