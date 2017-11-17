@@ -43,6 +43,9 @@ public class Meta implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDatetime;
 
+    @Column(name = "modifier_id", nullable = false)
+    private Integer modifierId;
+
     @Column(name = "date_modified", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDatetime;

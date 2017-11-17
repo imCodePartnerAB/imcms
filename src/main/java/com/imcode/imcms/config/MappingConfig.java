@@ -405,8 +405,7 @@ public class MappingConfig {
             meta.setCreatedDatetime(creation.getFormattedDate());
 
             final AuditDTO modification = documentDTO.getModified();
-            // no such field, save to Version#modifiedBy
-//            meta.setModifierId(modification.getId());
+            meta.setModifierId(modification.getId());
             meta.setModifiedDatetime(modification.getFormattedDate());
 
             meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
@@ -472,7 +471,7 @@ public class MappingConfig {
             dto.setPublicationEnd(auditDtoCreator.apply(meta::getDepublisherId, meta::getPublicationEndDatetime));
             dto.setArchived(auditDtoCreator.apply(meta::getArchiverId, meta::getArchivedDatetime));
             dto.setCreated(auditDtoCreator.apply(meta::getCreatorId, meta::getCreatedDatetime));
-            dto.setModified(auditDtoCreator.apply(modifier::getId, meta::getModifiedDatetime));
+            dto.setModified(auditDtoCreator.apply(meta::getModifierId, meta::getModifiedDatetime));
             dto.setDisabledLanguageShowMode(meta.getDisabledLanguageShowMode());
 
             final AuditDTO versionAudit = new AuditDTO();
