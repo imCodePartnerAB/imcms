@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -305,6 +305,23 @@ public class DocumentServiceTest {
 
         final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
         assertEquals(keywords, savedDocumentDTO1.getKeywords());
+    }
+
+    @Test
+    public void save_When_SearchEnabledAndDisabled_Expect_Saved() {
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+
+        documentDTO.setSearchDisabled(true);
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertTrue(savedDocumentDTO.isSearchDisabled());
+
+        savedDocumentDTO.setSearchDisabled(false);
+        documentService.save(savedDocumentDTO);
+
+        final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
+        assertFalse(savedDocumentDTO1.isSearchDisabled());
     }
 
 }

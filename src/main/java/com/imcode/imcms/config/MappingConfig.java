@@ -479,6 +479,7 @@ public class MappingConfig {
             versionAudit.setId(latestVersion.getNo());
             versionAudit.setBy(modifier.getLogin());
             dto.setCurrentVersion(versionAudit);
+            dto.setSearchDisabled(meta.isSearchDisabled());
 
             dto.setKeywords(meta.getKeywords());
 
