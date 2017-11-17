@@ -161,4 +161,20 @@ public class DocumentServiceTest {
         assertEquals(savedDocumentDTO.getCommonContents(), commonContents);
     }
 
+    @Test
+    public void save_When_TargetAndAliasChanged_Expect_Saved() {
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final String newTarget = "_blank";
+        final String newAlias = "test-alias";
+
+        documentDTO.setTarget(newTarget);
+        documentDTO.setAlias(newAlias);
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+
+        assertEquals(savedDocumentDTO.getTarget(), newTarget);
+        assertEquals(savedDocumentDTO.getAlias(), newAlias);
+    }
+
 }
