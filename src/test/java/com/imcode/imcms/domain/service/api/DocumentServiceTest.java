@@ -4,6 +4,7 @@ import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
+import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
@@ -137,6 +139,26 @@ public class DocumentServiceTest {
         assertEquals(restricted1, documentDTO1.getRestrictedPermissions().get(PermissionDTO.RESTRICTED_1));
         assertEquals(restricted2, documentDTO1.getRestrictedPermissions().get(PermissionDTO.RESTRICTED_2));
         assertEquals(documentDTO1, documentDTO);
+    }
+
+    @Test
+    public void save_When_CustomCommonContentsSet_Expect_Saved() {
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+
+        final List<CommonContentDTO> commonContents = documentDTO.getCommonContents();
+
+        for (int i = 0; i < commonContents.size(); i++) {
+            CommonContentDTO commonContentDTO = commonContents.get(i);
+            commonContentDTO.setHeadline("Test headline " + i);
+            commonContentDTO.setMenuText("Test menu text " + i);
+            commonContentDTO.setMenuImageURL("Test menu image url " + i);
+            commonContentDTO.setEnabled((i % 2) == 0);
+        }
+
+        documentService.save(documentDTO);
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+
+        assertEquals(savedDocumentDTO.getCommonContents(), commonContents);
     }
 
 }

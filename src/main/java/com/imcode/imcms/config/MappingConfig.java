@@ -462,6 +462,7 @@ public class MappingConfig {
             dto.setId(metaId);
             dto.setTarget(meta.getTarget());
             dto.setAlias(meta.getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
+            dto.setPublicationStatus(meta.getPublicationStatus());
 
             final Version latestVersion = versionService.getLatestVersion(metaId);
             final User modifier = latestVersion.getModifiedBy();
@@ -472,6 +473,7 @@ public class MappingConfig {
             dto.setArchived(auditDtoCreator.apply(meta::getArchiverId, meta::getArchivedDatetime));
             dto.setCreated(auditDtoCreator.apply(meta::getCreatorId, meta::getCreatedDatetime));
             dto.setModified(auditDtoCreator.apply(modifier::getId, meta::getModifiedDatetime));
+            dto.setDisabledLanguageShowMode(meta.getDisabledLanguageShowMode());
 
             final AuditDTO versionAudit = new AuditDTO();
             versionAudit.setDateTime(latestVersion.getCreatedDt());
