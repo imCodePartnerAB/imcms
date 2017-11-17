@@ -177,4 +177,33 @@ public class DocumentServiceTest {
         assertEquals(savedDocumentDTO.getAlias(), newAlias);
     }
 
+    @Test
+    public void save_When_DifferentPublicationStatusSet_Expect_Saved() {
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final Meta.PublicationStatus statusApproved = Meta.PublicationStatus.APPROVED;
+        final Meta.PublicationStatus statusDisapproved = Meta.PublicationStatus.DISAPPROVED;
+        final Meta.PublicationStatus statusNew = Meta.PublicationStatus.NEW;
+
+        // approved
+        documentDTO.setPublicationStatus(statusApproved);
+        documentService.save(documentDTO);
+
+        DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertEquals(savedDocumentDTO.getPublicationStatus(), statusApproved);
+
+        // disapproved
+        documentDTO.setPublicationStatus(statusDisapproved);
+        documentService.save(documentDTO);
+
+        savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertEquals(savedDocumentDTO.getPublicationStatus(), statusDisapproved);
+
+        // new
+        documentDTO.setPublicationStatus(statusNew);
+        documentService.save(documentDTO);
+
+        savedDocumentDTO = documentService.get(createdDoc.getId());
+        assertEquals(savedDocumentDTO.getPublicationStatus(), statusNew);
+    }
+
 }
