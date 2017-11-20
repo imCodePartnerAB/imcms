@@ -392,11 +392,18 @@ public class MappingConfig {
     }
 
     @Bean
+    public Function<Set<RoleDTO>, Map<Integer, Meta.Permission>> rolesDtoToRoleIdByPermission() {
+        return roleDTOS -> roleDTOS.stream().collect(Collectors.toMap(RoleDTO::getId,
+                roleDTO -> roleDTO.getPermission().getPermission()
+        ));
+    }
+
+    @Bean
     public Function<DocumentDTO, Meta> documentDtoToMeta(
+            Function<Set<RoleDTO>, Map<Integer, Meta.Permission>> rolesDtoToRoleIdByPermission,
             Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermission>>
                     restrictedPermissionsDtoToRestrictedPermissions
     ) {
-
         return documentDTO -> {
             final Meta meta = new Meta();
             final int docId = documentDTO.getId();
@@ -449,6 +456,8 @@ public class MappingConfig {
 
             meta.setLinkableByOtherUsers(true);                         // fixme: not sure what to do with this
             meta.setLinkedForUnauthorizedUsers(true);                   // fixme: not sure what to do with this
+
+            meta.setRoleIdToPermission(rolesDtoToRoleIdByPermission.apply(documentDTO.getRoles()));
 
             meta.setRestrictedPermissions(restrictedPermissionsDtoToRestrictedPermissions.apply(
                     documentDTO.getRestrictedPermissions()
