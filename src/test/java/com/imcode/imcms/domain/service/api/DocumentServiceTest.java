@@ -65,6 +65,9 @@ public class DocumentServiceTest {
     @Autowired
     private CategoryDataInitializer categoryDataInitializer;
 
+    @Autowired
+    private RoleService roleService;
+
     @Before
     public void setUp() throws Exception {
         final Meta metaDoc = Value.with(new Meta(), meta -> {
@@ -362,4 +365,29 @@ public class DocumentServiceTest {
 
     }
 
+    @Test
+    public void save_When_CustomAccessRulesSet_Expect_Saved() {
+        final Set<RoleDTO> roles = new HashSet<>();
+
+        for (PermissionDTO permissionDTO : PermissionDTO.values()) {
+            final RoleDTO roleDTO = roleService.save(new RoleDTO(null, "test_role_" + permissionDTO));
+            roleDTO.setPermission(permissionDTO);
+            roles.add(roleDTO);
+        }
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        documentDTO.setRoles(roles);
+
+        documentService.save(documentDTO);
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+
+        assertTrue(savedDocumentDTO.getRoles().containsAll(roles));
+
+        final Set<RoleDTO> roles1 = new HashSet<>();
+        savedDocumentDTO.setRoles(roles1);
+        documentService.save(savedDocumentDTO);
+
+        final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
+        assertEquals(savedDocumentDTO1.getRoles(), roles1);
+    }
 }
