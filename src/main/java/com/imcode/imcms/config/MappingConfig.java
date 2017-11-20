@@ -65,6 +65,16 @@ public class MappingConfig {
     }
 
     @Bean
+    public Function<RoleDTO, Role> roleDtoToRole() {
+        return roleDTO -> {
+            final Role role = new Role();
+            role.setId(roleDTO.getId());
+            role.setName(roleDTO.getName());
+            return role;
+        };
+    }
+
+    @Bean
     public Function<Template, TemplateDTO> templateToTemplateDTO() {
         return template -> new TemplateDTO(template.getId(), template.getName(), template.isHidden());
     }
