@@ -592,6 +592,8 @@ public class AdminManager extends HttpServlet {
             url += "AdminDeleteDoc";
         } else if ( whichButton.equalsIgnoreCase( "IP-access" ) ) {
             url += "AdminIpAccess";
+        } else if ( whichButton.equalsIgnoreCase( "IP-whitelist" ) ) {
+            url += "AdminIpWhiteList";
         } else if ( whichButton.equalsIgnoreCase( "SystemMessage" ) ) {
             url += "AdminSystemInfo";
         } else if ( whichButton.equalsIgnoreCase( "AdminRoles" ) ) {
