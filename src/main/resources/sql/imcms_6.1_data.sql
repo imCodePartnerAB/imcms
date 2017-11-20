@@ -78,7 +78,7 @@ SET @start_document__text2__swedish = '<p><a href="<?imcms:contextpath?>/login/"
 INSERT INTO users
   (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, active, create_date, language, session_id)
 VALUES
-  (@user_id__admin, 'admin', 'admin', 'Admin', 'Super', '', '', '', '', '', '', '', '', 0, 1, NOW(), @'ui__language', NULL),
+  (@user_id__admin, 'admin', 'admin', 'Admin', 'Super', '', '', '', '', '', '', '', 'admin@imcode.com', 0, 1, NOW(), @'ui__language', NULL),
   (@user_id__user, 'user', 'user', 'User', 'Extern', '', '', '', '', '', '', '', '', 0, 1, NOW(), @'ui__language', NULL);
 
 --
