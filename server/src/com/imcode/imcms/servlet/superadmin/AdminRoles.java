@@ -78,7 +78,7 @@ public class AdminRoles extends HttpServlet {
         Utility.setDefaultHtmlContentType(res);
 
         if ( !user.isSuperAdmin() ) {
-            AdminIpAccess.printNonAdminError(imcref, user, req, res, getClass());
+            AdminIpAccess.printNonAdminError(user, req, res, getClass());
         } else {// *************** GENERATE THE ADMINISTRATE ROLES PAGE *****************
             if ( req.getParameter("VIEW_ADMIN_ROLES") != null ) {
                 // Lets get all ROLES from DB

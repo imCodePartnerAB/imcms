@@ -38,7 +38,7 @@ public class AdminDeleteDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
         if ( !user.isSuperAdmin() ) {
-            AdminIpAccess.printNonAdminError(imcref, user, req, res, getClass());
+            AdminIpAccess.printNonAdminError(user, req, res, getClass());
         } else {
             Map vm = new HashMap();
             AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
@@ -54,7 +54,7 @@ public class AdminDeleteDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
-            AdminIpAccess.printNonAdminError(imcref, user, req, res, getClass());
+            AdminIpAccess.printNonAdminError(user, req, res, getClass());
         } else {
             if ( req.getParameter("DELETE_DOC") != null ) {
 
