@@ -13,11 +13,15 @@ import java.util.stream.Collectors;
 public class RoleService {
 
     private final RoleRepository roleRepository;
+    private final Function<RoleDTO, Role> roleDtoToRole;
     private final Function<Role, RoleDTO> roleToRoleDTO;
 
     public RoleService(RoleRepository roleRepository,
+                       Function<RoleDTO, Role> roleDtoToRole,
                        Function<Role, RoleDTO> roleToRoleDTO) {
+
         this.roleRepository = roleRepository;
+        this.roleDtoToRole = roleDtoToRole;
         this.roleToRoleDTO = roleToRoleDTO;
     }
 
@@ -29,6 +33,12 @@ public class RoleService {
         return roleRepository.findAll().stream()
                 .map(roleToRoleDTO)
                 .collect(Collectors.toList());
+    }
+
+    public RoleDTO save(RoleDTO saveMe) {
+        return roleDtoToRole.andThen(roleRepository::save)
+                .andThen(roleToRoleDTO)
+                .apply(saveMe);
     }
 
 }

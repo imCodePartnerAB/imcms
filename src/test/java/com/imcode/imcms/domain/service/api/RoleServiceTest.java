@@ -38,6 +38,15 @@ public class RoleServiceTest {
         assertNotNull(roleService.getById(id));
     }
 
+    @Test
+    public void save() throws Exception {
+        final RoleDTO saveMe = new RoleDTO(null, "test_name_role");
+        final RoleDTO saved = roleService.save(saveMe);
+        final RoleDTO received = roleService.getById(saved.getId());
+
+        assertEquals(received, saved);
+    }
+
     private void assertLike(RoleId roleId, RoleDTO roleDTO) {
         assertEquals((Integer) roleId.getRoleId(), roleDTO.getId());
         assertEquals(roleId.getName(), roleDTO.getName());
