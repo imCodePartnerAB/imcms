@@ -6,10 +6,10 @@ Imcms.define("imcms-document-editor-builder",
     [
         "imcms-bem-builder", "imcms-page-info-builder", "imcms-components-builder", "imcms-primitives-builder",
         "imcms-documents-rest-api", "imcms-documents-search-rest-api", "imcms-controls-builder", "imcms-users-rest-api",
-        "imcms-categories-rest-api", "imcms-window-builder", "jquery"
+        "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms"
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, controlsBuilder, usersRestApi,
-              categoriesRestApi, WindowBuilder, $) {
+              categoriesRestApi, WindowBuilder, $, imcms) {
 
         var isMouseDown = false,
             mouseCoords = {
@@ -399,7 +399,15 @@ Imcms.define("imcms-document-editor-builder",
             var $docItemId = components.texts.titleText("<div>", document.id);
             $docItemId.modifiers = ["col-2"];
 
-            var $docItemTitle = components.texts.titleText("<div>", document.title);
+            var title = document.commonContents.filter(function (commonContent) {
+                return commonContent.language.code === imcms.language.code;
+
+            }).map(function (commonContent) {
+                return commonContent.headline;
+
+            })[0];
+
+            var $docItemTitle = components.texts.titleText("<div>", title);
             $docItemTitle.modifiers = ["col-3"];
 
             var $docItemAlias = components.texts.titleText("<div>", document.alias);
