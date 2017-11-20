@@ -35,6 +35,13 @@ public class RoleService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Saves role by it's data holder.
+     * <b>Note that {@link RoleDTO#permission} is * omitted while save and in
+     * return value.</b>
+     *
+     * @return saved Role in DTO form.
+     */
     public RoleDTO save(RoleDTO saveMe) {
         return roleDtoToRole.andThen(roleRepository::save)
                 .andThen(roleToRoleDTO)
