@@ -17,27 +17,33 @@
             <!-- gui_head -->
             <table border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                    <td class="imcmsAdmBgHead" colspan="6"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
-                                                                width="1" height="20" alt=""/></td>
+                    <td class="imcmsAdmBgHead" colspan="6"><img
+                            src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
+                            width="1" height="20" alt=""/></td>
                 </tr>
                 <tr class="imcmsAdmBgHead">
-                    <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1"
+                    <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1"
+                                         height="1"
                                          alt=""/></td>
                     <td nowrap="nowrap"><span
                             class="imcmsAdmHeadingTop"><? templates/sv/AdminManager_adminTask_element.htm/6 ?></span>
                     </td>
                     <td align="right"><a href="http://www.imcms.net/" target="_blank" title="www.imcms.net"><img
-                            src="${contextPath}/imcms/${language}/images/admin/logo_imcms_admin.gif" width="100" height="20"
+                            src="${contextPath}/imcms/${language}/images/admin/logo_imcms_admin.gif" width="100"
+                            height="20"
                             alt="www.imcms.net" border="0"/></a></td>
-                    <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1"
+                    <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1"
+                                         height="1"
                                          alt=""/></td>
                 </tr>
                 <tr>
-                    <td colspan="6" class="imcmsAdmBgHead"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
-                                                                width="1" height="20" alt=""/></td>
+                    <td colspan="6" class="imcmsAdmBgHead"><img
+                            src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
+                            width="1" height="20" alt=""/></td>
                 </tr>
                 <tr class="imcmsAdmBgHead">
-                    <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1"
+                    <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1"
+                                         height="1"
                                          alt=""/></td>
                     <td colspan="2">
                         <!-- /gui_head -->
@@ -57,25 +63,32 @@
                         <!-- /gui_head_help_and_back_buttons -->
                         <!-- gui_mid -->
                     </td>
-                    <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1"
+                    <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1"
+                                         height="1"
                                          alt=""/></td>
                 </tr>
                 <tr>
-                    <td class="imcmsAdmBgHead" colspan="6"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
-                                                                width="1" height="20" alt=""/></td>
+                    <td class="imcmsAdmBgHead" colspan="6"><img
+                            src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
+                            width="1" height="20" alt=""/></td>
                 </tr>
                 <tr>
-                    <td height="10" class="imcmsAdmBorder"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
-                                                                width="1" height="1" alt=""/></td>
-                    <td class="imcmsAdmBgCont" colspan="4"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
-                                                                width="1" height="1" alt=""/></td>
-                    <td class="imcmsAdmBorder"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1"
+                    <td height="10" class="imcmsAdmBorder"><img
+                            src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
+                            width="1" height="1" alt=""/></td>
+                    <td class="imcmsAdmBgCont" colspan="4"><img
+                            src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
+                            width="1" height="1" alt=""/></td>
+                    <td class="imcmsAdmBorder"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
+                                                    width="1"
                                                     height="1" alt=""/></td>
                 </tr>
                 <tr class="imcmsAdmBgCont">
-                    <td class="imcmsAdmBorder"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1"
+                    <td class="imcmsAdmBorder"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
+                                                    width="1"
                                                     height="1" alt=""/></td>
-                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1" alt=""/></td>
+                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1" alt=""/>
+                    </td>
                     <td colspan="2">
                         <!-- /gui_mid -->
                         <!-- /gui_start_of_page -->
@@ -85,7 +98,8 @@
                                 <tr>
                                     <td><!-- gui_heading -->
                                         <span class="imcmsAdmHeading"><? templates/sv/AdminIpAccess.htm/3005 ?></span><br/>
-                                        <img src="${contextPath}/imcms/${language}/images/admin/1x1_20568d.gif" width="100%"
+                                        <img src="${contextPath}/imcms/${language}/images/admin/1x1_20568d.gif"
+                                             width="100%"
                                              height="1" style="margin: 8px 0;" alt=""/>
                                         <!-- /gui_heading -->
                                     </td>
@@ -107,7 +121,8 @@
                                             </tr>
                                             <tr>
                                                 <td colspan="5">
-                                                    <img src="${contextPath}/imcms/${language}/images/admin/1x1_cccccc.gif" width="100%"
+                                                    <img src="${contextPath}/imcms/${language}/images/admin/1x1_cccccc.gif"
+                                                         width="100%"
                                                          height="1" style="margin: 8px 0;" alt=""/></td>
                                             </tr>
                                             #ALL_IP_ACCESSES#
@@ -116,13 +131,14 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <img src="${contextPath}/imcms/${language}/images/admin/1x1_20568d.gif" width="100%"
+                                        <img src="${contextPath}/imcms/${language}/images/admin/1x1_20568d.gif"
+                                             width="100%"
                                              height="1" style="margin: 8px 0;" alt=""/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td align="right">
-                                        <input type="submit" class="imcmsFormBtn" name="ADD_IP_ACCESS"
+                                        <input type="submit" class="imcmsFormBtn" name="ADD_IP_RANGE"
                                                value="<? templates/sv/AdminIpAccess.htm/2001 ?>">
                                         <input type="submit" class="imcmsFormBtn" name="RESAVE_IP_ACCESS"
                                                value="<? templates/sv/AdminIpAccess.htm/2002 ?>">
@@ -135,31 +151,42 @@
                         <!-- gui_end_of_page -->
                         <!-- gui_bottom -->
                     </td>
-                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1" alt=""/></td>
-                    <td class="imcmsAdmBorder"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1"
+                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1" alt=""/>
+                    </td>
+                    <td class="imcmsAdmBorder"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
+                                                    width="1"
                                                     height="1" alt=""/></td>
                 </tr>
                 <tr>
-                    <td height="10" class="imcmsAdmBorder"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
-                                                                width="1" height="1" alt=""/></td>
-                    <td colspan="4" class="imcmsAdmBgCont"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
-                                                                width="1" height="1" alt=""/></td>
-                    <td class="imcmsAdmBorder"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1"
+                    <td height="10" class="imcmsAdmBorder"><img
+                            src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
+                            width="1" height="1" alt=""/></td>
+                    <td colspan="4" class="imcmsAdmBgCont"><img
+                            src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
+                            width="1" height="1" alt=""/></td>
+                    <td class="imcmsAdmBorder"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif"
+                                                    width="1"
                                                     height="1" alt=""/></td>
                 </tr>
                 <tr class="imcmsAdmBgCont">
-                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1" alt=""/></td>
-                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="24" height="1" alt=""/></td>
-                    <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1"
+                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1" alt=""/>
+                    </td>
+                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="24" height="1" alt=""/>
+                    </td>
+                    <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1"
+                                         height="1"
                                          alt=""/></td>
-                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="24" height="1" alt=""/></td>
-                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1" alt=""/></td>
+                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="24" height="1" alt=""/>
+                    </td>
+                    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1" alt=""/>
+                    </td>
                 </tr>
             </table>
             <!-- /gui_bottom -->            <!-- gui_outer_end -->
         <td align="right" valign="top"
             style="background: transparent url(${contextPath}/imcms/${language}/images/admin/imcms_admin_shadow_right.gif) top left repeat-y;">
-            <img src="${contextPath}/imcms/${language}/images/admin/imcms_admin_shadow_right_top.gif" width="12" height="12"
+            <img src="${contextPath}/imcms/${language}/images/admin/imcms_admin_shadow_right_top.gif" width="12"
+                 height="12"
                  border="0" alt=""/></td>
     </tr>
     <tr>
@@ -178,6 +205,7 @@
         </td>
     </tr>
 </table>
-<!-- /gui_outer_end --></body>
+<!-- /gui_outer_end -->
+</body>
 </html>
 <!-- /gui_end_of_page -->
