@@ -7,8 +7,6 @@ import com.imcode.imcms.persistence.entity.CommonContent;
 import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
-import imcode.server.LanguageMapper;
-import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -41,24 +39,6 @@ public class CommonContentService {
     }
 
     /**
-     * Gets common content for working or published versions.
-     * If common content of non working version is {@code null} it creates new common content based on working.
-     *
-     * @param docId     of document
-     * @param versionNo version no
-     * @param userDO    user to get language
-     * @return common content of docId, versionNo and user language.
-     *
-     * @deprecated use {@link CommonContentService#getOrCreate(int, int, com.imcode.imcms.domain.dto.LanguageDTO)}
-     */
-    @Deprecated
-    public CommonContentDTO getOrCreate(int docId, int versionNo, UserDomainObject userDO) {
-        final String code = LanguageMapper.convert639_2to639_1(userDO.getLanguageIso639_2());
-        final LanguageDTO languageDTO = languageService.findByCode(code);
-        return getOrCreate(docId, versionNo, languageDTO);
-    }
-
-    /**
      * Get document's common contents for all languages
      * If common content of non working version is {@code null} it creates new common content based on working.
      *
@@ -84,8 +64,9 @@ public class CommonContentService {
      */
     public CommonContentDTO getOrCreate(int docId, int versionNo, LanguageDTO languageDTO) {
         final Language language = languageDtoToLanguage.apply(languageDTO);
-        final CommonContent commonContent = commonContentRepository
-                .findByDocIdAndVersionNoAndLanguage(docId, versionNo, language);
+        final CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
+                docId, versionNo, language
+        );
 
         if (commonContent != null) {
             return commonContentToDTO.apply(commonContent);
@@ -111,8 +92,9 @@ public class CommonContentService {
     }
 
     private CommonContentDTO createFromWorkingVersion(int docId, int versionNo, Language language) {
-        final CommonContent commonContent = commonContentRepository
-                .findByDocIdAndVersionNoAndLanguage(docId, WORKING_VERSION_INDEX, language);
+        final CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
+                docId, WORKING_VERSION_INDEX, language
+        );
 
         final CommonContent newCommonContent = new CommonContent();
         newCommonContent.setVersionNo(versionNo);

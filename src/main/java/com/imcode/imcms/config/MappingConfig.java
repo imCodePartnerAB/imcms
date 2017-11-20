@@ -2,10 +2,7 @@ package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.dto.ImageData.CropRegion;
-import com.imcode.imcms.domain.service.api.CategoryService;
-import com.imcode.imcms.domain.service.api.DocumentService;
-import com.imcode.imcms.domain.service.api.RoleService;
-import com.imcode.imcms.domain.service.api.UserService;
+import com.imcode.imcms.domain.service.api.*;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.User;
@@ -13,6 +10,7 @@ import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
+import imcode.server.LanguageMapper;
 import imcode.server.document.index.DocumentStoredFields;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
@@ -122,6 +120,7 @@ public class MappingConfig {
     @Bean
     public Function<MenuItem, MenuItemDTO> menuItemToDTO(VersionService versionService,
                                                          DocumentService documentService,
+                                                         LanguageService languageService,
                                                          CommonContentService commonContentService) {
         return new Function<MenuItem, MenuItemDTO>() {
             @Override
@@ -132,9 +131,13 @@ public class MappingConfig {
                 final Version latestVersion = versionService.getLatestVersion(menuItemDTO.getDocumentId());
 
                 // note: for current user language
+                final String code = LanguageMapper.convert639_2to639_1(Imcms.getUser().getLanguageIso639_2());
+                final LanguageDTO languageDTO = languageService.findByCode(code);
+
                 // fixme: what if such content is disabled?
-                final CommonContentDTO commonContent = commonContentService
-                        .getOrCreate(latestVersion.getDocId(), latestVersion.getNo(), Imcms.getUser());
+                final CommonContentDTO commonContent = commonContentService.getOrCreate(
+                        latestVersion.getDocId(), latestVersion.getNo(), languageDTO
+                );
 
                 menuItemDTO.setTitle(commonContent.getHeadline());
 
