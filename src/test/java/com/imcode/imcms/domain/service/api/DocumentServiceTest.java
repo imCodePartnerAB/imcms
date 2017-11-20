@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
@@ -56,6 +58,12 @@ public class DocumentServiceTest {
 
     @Autowired
     private UserDataInitializer userDataInitializer;
+
+    @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
+    private CategoryDataInitializer categoryDataInitializer;
 
     @Before
     public void setUp() throws Exception {
@@ -322,6 +330,36 @@ public class DocumentServiceTest {
 
         final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
         assertFalse(savedDocumentDTO1.isSearchDisabled());
+    }
+
+    @Test
+    public void save_When_CategoriesIsSet_Expect_Saved() {
+        categoryDataInitializer.createData(50);
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+
+        final Set<CategoryDTO> categories = categoryService.getAll().stream()
+                .filter(categoryDTO -> categoryDTO.getId() % 2 == 0)
+                .collect(Collectors.toSet());
+
+        documentDTO.setCategories(categories);
+
+        documentService.save(documentDTO);
+        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+
+        assertEquals(categories, savedDocumentDTO.getCategories());
+
+        final Set<CategoryDTO> categories1 = categoryService.getAll().stream()
+                .filter(categoryDTO -> categoryDTO.getId() % 2 == 1)
+                .collect(Collectors.toSet());
+
+        documentDTO.setCategories(categories1);
+
+        documentService.save(documentDTO);
+        final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
+
+        assertEquals(categories1, savedDocumentDTO1.getCategories());
+
     }
 
 }
