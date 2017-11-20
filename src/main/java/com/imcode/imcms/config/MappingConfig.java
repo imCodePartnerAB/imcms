@@ -368,6 +368,20 @@ public class MappingConfig {
     }
 
     @Bean
+    public Function<Map<Integer, Meta.Permission>, Set<RoleDTO>> roleIdByPermissionToRoleDTOs(RoleService roleService) {
+        return integerPermissionMap -> integerPermissionMap.entrySet()
+                .stream()
+                .map(roleIdToPermission -> {
+                    final Integer roleId = roleIdToPermission.getKey();
+                    final Meta.Permission rolePermission = roleIdToPermission.getValue();
+                    final RoleDTO role = roleService.getById(roleId);
+                    role.setPermission(PermissionDTO.fromPermission(rolePermission));
+                    return role;
+                })
+                .collect(Collectors.toSet());
+    }
+
+    @Bean
     public Function<DocumentDTO, Meta> documentDtoToMeta(
             Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermission>>
                     restrictedPermissionsDtoToRestrictedPermissions
@@ -439,7 +453,7 @@ public class MappingConfig {
             VersionService versionService,
             CommonContentService commonContentService,
             Function<Set<RestrictedPermission>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO,
-            RoleService roleService,
+            Function<Map<Integer, Meta.Permission>, Set<RoleDTO>> roleIdByPermissionToRoleDTOs,
             CategoryService categoryService,
             UserService userService
     ) {
@@ -486,18 +500,7 @@ public class MappingConfig {
 
             dto.setKeywords(meta.getKeywords());
 
-            final Set<RoleDTO> rolesDTO = meta.getRoleIdToPermission()
-                    .entrySet()
-                    .stream()
-                    .map(roleIdToPermission -> {
-                        final Integer roleId = roleIdToPermission.getKey();
-                        final Meta.Permission rolePermission = roleIdToPermission.getValue();
-                        final RoleDTO role = roleService.getById(roleId);
-                        role.setPermission(PermissionDTO.fromPermission(rolePermission));
-                        return role;
-                    })
-                    .collect(Collectors.toSet());
-
+            final Set<RoleDTO> rolesDTO = roleIdByPermissionToRoleDTOs.apply(meta.getRoleIdToPermission());
             dto.setRoles(rolesDTO);
 
             final Set<CategoryDTO> categories = meta.getCategoryIds()
