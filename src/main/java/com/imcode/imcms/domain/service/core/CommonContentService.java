@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.service.api.LanguageService;
 import com.imcode.imcms.persistence.entity.CommonContent;
 import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
+import com.imcode.imcms.util.Value;
 import imcode.server.LanguageMapper;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
@@ -90,7 +91,12 @@ public class CommonContentService {
             return commonContentToDTO.apply(commonContent);
 
         } else if (versionNo == WORKING_VERSION_INDEX) {
-            return new CommonContentDTO();
+            return Value.with(new CommonContentDTO(), commonContentDTO -> {
+                commonContentDTO.setEnabled(true);
+                commonContentDTO.setLanguage(languageDTO);
+                commonContentDTO.setDocId(docId);
+                commonContentDTO.setVersionNo(versionNo);
+            });
         }
 
         return createFromWorkingVersion(docId, versionNo, language);
