@@ -486,12 +486,12 @@ public class MappingConfig {
 
             dto.setKeywords(meta.getKeywords());
 
-            final Set<RoleDTO> rolesDTO = meta.getRoleIdToPermissionSetIdMap()
+            final Set<RoleDTO> rolesDTO = meta.getRoleIdToPermission()
                     .entrySet()
                     .stream()
-                    .map(integerPermissionEntry -> {
-                        final Integer roleId = integerPermissionEntry.getKey();
-                        final Meta.Permission rolePermission = integerPermissionEntry.getValue();
+                    .map(roleIdToPermission -> {
+                        final Integer roleId = roleIdToPermission.getKey();
+                        final Meta.Permission rolePermission = roleIdToPermission.getValue();
                         final RoleDTO role = roleService.getById(roleId);
                         role.setPermission(PermissionDTO.fromPermission(rolePermission));
                         return role;

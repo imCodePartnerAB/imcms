@@ -70,7 +70,7 @@ public class DocumentLoader {
         RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
                 new RoleIdToDocumentPermissionSetTypeMappings();
 
-        for (Map.Entry<Integer, Permission> roleIdToPermissionSetId : jpaMeta.getRoleIdToPermissionSetIdMap().entrySet()) {
+        for (Map.Entry<Integer, Permission> roleIdToPermissionSetId : jpaMeta.getRoleIdToPermission().entrySet()) {
             rolePermissionMappings.setPermissionSetTypeForRole(
                     new RoleId(roleIdToPermissionSetId.getKey()),
                     PermissionDTO.fromPermission(roleIdToPermissionSetId.getValue()));

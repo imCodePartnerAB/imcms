@@ -671,7 +671,7 @@ public class UserDomainObject implements Cloneable, Serializable {
             return true;
         }
 
-        final Map<Integer, Meta.Permission> docPermissions = meta.getRoleIdToPermissionSetIdMap();
+        final Map<Integer, Meta.Permission> docPermissions = meta.getRoleIdToPermission();
 
         return Arrays.stream(getRoleIds())
                 .map(RoleId::getRoleId)

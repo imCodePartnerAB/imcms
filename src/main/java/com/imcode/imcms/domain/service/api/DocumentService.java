@@ -58,7 +58,7 @@ public class DocumentService {
             return true;
         }
 
-        final Map<Integer, Meta.Permission> docPermissions = meta.getRoleIdToPermissionSetIdMap();
+        final Map<Integer, Meta.Permission> docPermissions = meta.getRoleIdToPermission();
 
         return Arrays.stream(user.getRoleIds())
                 .map(RoleId::getRoleId)

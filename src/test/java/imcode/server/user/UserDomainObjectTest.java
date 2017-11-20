@@ -28,7 +28,7 @@ public class UserDomainObjectTest {
         roleRights.put(RoleId.USERADMIN_ID, Meta.Permission.EDIT);
         roleRights.put(RoleId.SUPERADMIN_ID, Meta.Permission.EDIT);
 
-        meta.setRoleIdToPermissionSetIdMap(roleRights);
+        meta.setRoleIdToPermission(roleRights);
 
         user = new UserDomainObject();
     }

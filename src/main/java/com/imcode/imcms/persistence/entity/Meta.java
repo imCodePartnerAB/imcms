@@ -107,7 +107,7 @@ public class Meta implements Serializable {
     @MapKeyColumn(name = "role_id")
     @Column(name = "permission", columnDefinition = "VARCHAR(16)")
     @Enumerated(EnumType.STRING)
-    private Map<Integer, Permission> roleIdToPermissionSetIdMap = new HashMap<>();
+    private Map<Integer, Permission> roleIdToPermission = new HashMap<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "imcms_doc_keywords", joinColumns = @JoinColumn(name = "doc_id"))

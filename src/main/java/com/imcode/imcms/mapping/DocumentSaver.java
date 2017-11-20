@@ -361,7 +361,7 @@ public class DocumentSaver {
         meta.setPublicationStartDatetime(metaDO.getPublicationStartDatetime());
         meta.setPublicationStatus(metaDO.getPublicationStatus().asEnum());
         meta.setPublisherId(metaDO.getPublisherId());
-        meta.setRoleIdToPermissionSetIdMap(
+        meta.setRoleIdToPermission(
                 Stream.of(metaDO.getRoleIdToDocumentPermissionSetTypeMappings().getMappings())
                         .collect(
                                 Collectors.toMap(

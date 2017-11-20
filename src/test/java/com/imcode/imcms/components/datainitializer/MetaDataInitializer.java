@@ -47,7 +47,7 @@ public class MetaDataInitializer extends TestDataCleaner {
         final Map<Integer, Meta.Permission> roleRights = new HashMap<>();
         roleRights.put(RoleId.USERADMIN_ID, Permission.EDIT);
         roleRights.put(RoleId.SUPERADMIN_ID, Permission.EDIT);
-        meta.setRoleIdToPermissionSetIdMap(roleRights);
+        meta.setRoleIdToPermission(roleRights);
 
         final Set<String> keywords = new HashSet<>();
         keywords.add("keyword 1");
