@@ -84,7 +84,7 @@
                             <table border="0" cellspacing="0" cellpadding="2" width="400">
                                 <tr>
                                     <td><!-- gui_heading -->
-                                        <span class="imcmsAdmHeading"><? templates/sv/AdminIpAccess.htm/3000 ?></span><br/>
+                                        <span class="imcmsAdmHeading"><? templates/sv/AdminIpAccess.htm/3005 ?></span><br/>
                                         <img src="${contextPath}/imcms/${language}/images/admin/1x1_20568d.gif" width="100%"
                                              height="1" style="margin: 8px 0;" alt=""/>
                                         <!-- /gui_heading -->
@@ -100,7 +100,7 @@
                                         <table border="0" cellspacing="0" cellpadding="2" width="100%">
                                             <tr>
                                                 <td><b><? templates/sv/AdminIpAccess.htm/3001 ?></b></td>
-                                                <td><b><? templates/sv/AdminIpAccess.htm/3002 ?></b></td>
+                                                <td><b><? templates/sv/AdminIpAccess.htm/3006 ?></b></td>
                                                 <td><b><? templates/sv/AdminIpAccess.htm/3003 ?></b></td>
                                                 <td>&nbsp;&nbsp;&nbsp;</td>
                                                 <td><b><? templates/sv/AdminIpAccess.htm/3004 ?></b></td>
