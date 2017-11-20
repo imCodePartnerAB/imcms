@@ -18,10 +18,10 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 @Transactional
+@WebAppConfiguration
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class CategoryRepositoryTest {
 
     @Autowired

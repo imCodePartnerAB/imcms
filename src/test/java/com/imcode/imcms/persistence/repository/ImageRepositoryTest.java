@@ -28,10 +28,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 @Transactional
+@WebAppConfiguration
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class ImageRepositoryTest {
 
     private static final int DOC_ID = 1001;

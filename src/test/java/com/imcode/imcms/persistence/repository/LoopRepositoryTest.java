@@ -25,10 +25,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 @Transactional
+@WebAppConfiguration
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class LoopRepositoryTest {
 
     private static final int DOC_ID = 1001;
