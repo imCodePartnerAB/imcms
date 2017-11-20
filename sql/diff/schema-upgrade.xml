@@ -1,76 +1,76 @@
 <schema-upgrade>
-  <diff version="4.9">
-    <vendor name="mysql">
-      <script location="diff-4.8-4.9-mysql.sql"/>
-    </vendor>
-    <vendor name="mssql">
-      <script location="diff-4.8-4.9-mssql.sql"/>
-    </vendor>
-  </diff>
-  <diff version="4.10">
-    <vendor name="mysql">
-      <script location="diff-4.9-4.10-mysql.sql"/>
-    </vendor>
-    <vendor name="mssql">
-      <script location="diff-4.9-4.10-mssql.sql"/>
-    </vendor>
-  </diff>
-  <diff version="4.11">
-    <vendor name="mysql">
-      <script location="diff-4.10-4.11-mysql.sql"/>
-    </vendor>
-    <vendor name="mssql">
-      <script location="diff-4.10-4.11-mssql.sql"/>
-    </vendor>
-  </diff>
-  <diff version="4.12">
-    <vendor name="mysql">
-      <script location="diff-4.11-4.12-mysql.sql"/>
-    </vendor>
-    <vendor name="mssql">
-      <script location="diff-4.11-4.12-mssql.sql"/>
-    </vendor>
-  </diff>
-  <diff version="4.13">
-    <vendor name="mysql">
-      <script location="diff-4.12-4.13-mysql.sql"/>
-    </vendor>
-    <vendor name="mssql">
-      <script location="diff-4.12-4.13-mssql.sql"/>
-    </vendor>
-  </diff>
-  <diff version="4.14">
-    <vendor name="mysql">
-      <script location="diff-4.13-4.14-mysql.sql"/>
-    </vendor>
-    <vendor name="mssql">
-      <script location="diff-4.13-4.14-mssql.sql"/>
-    </vendor>
-  </diff>
-  <diff version="4.15">
-    <vendor name="mysql">
-      <script location="diff-4.14-4.15-mysql.sql"/>
-    </vendor>
-    <vendor name="mssql">
-      <script location="diff-4.14-4.15-mssql.sql"/>
-    </vendor>
-  </diff>
-  <diff version="4.16">
-    <vendor name="mysql">
-      <script location="diff-4.15-4.16-mysql.sql"/>
-    </vendor>
-    <vendor name="mssql">
-      <script location="diff-4.15-4.16-mssql.sql"/>
-    </vendor>
-  </diff>
-  <diff version="4.17">
-    <vendor name="mysql">
-      <script location="diff-4.16-4.17-mysql.sql"/>
-    </vendor>
-    <vendor name="mssql">
-      <script location="diff-4.16-4.17-mssql.sql"/>
-    </vendor>
-  </diff>
+    <diff version="4.9">
+        <vendor name="mysql">
+            <script location="diff-4.8-4.9-mysql.sql"/>
+        </vendor>
+        <vendor name="mssql">
+            <script location="diff-4.8-4.9-mssql.sql"/>
+        </vendor>
+    </diff>
+    <diff version="4.10">
+        <vendor name="mysql">
+            <script location="diff-4.9-4.10-mysql.sql"/>
+        </vendor>
+        <vendor name="mssql">
+            <script location="diff-4.9-4.10-mssql.sql"/>
+        </vendor>
+    </diff>
+    <diff version="4.11">
+        <vendor name="mysql">
+            <script location="diff-4.10-4.11-mysql.sql"/>
+        </vendor>
+        <vendor name="mssql">
+            <script location="diff-4.10-4.11-mssql.sql"/>
+        </vendor>
+    </diff>
+    <diff version="4.12">
+        <vendor name="mysql">
+            <script location="diff-4.11-4.12-mysql.sql"/>
+        </vendor>
+        <vendor name="mssql">
+            <script location="diff-4.11-4.12-mssql.sql"/>
+        </vendor>
+    </diff>
+    <diff version="4.13">
+        <vendor name="mysql">
+            <script location="diff-4.12-4.13-mysql.sql"/>
+        </vendor>
+        <vendor name="mssql">
+            <script location="diff-4.12-4.13-mssql.sql"/>
+        </vendor>
+    </diff>
+    <diff version="4.14">
+        <vendor name="mysql">
+            <script location="diff-4.13-4.14-mysql.sql"/>
+        </vendor>
+        <vendor name="mssql">
+            <script location="diff-4.13-4.14-mssql.sql"/>
+        </vendor>
+    </diff>
+    <diff version="4.15">
+        <vendor name="mysql">
+            <script location="diff-4.14-4.15-mysql.sql"/>
+        </vendor>
+        <vendor name="mssql">
+            <script location="diff-4.14-4.15-mssql.sql"/>
+        </vendor>
+    </diff>
+    <diff version="4.16">
+        <vendor name="mysql">
+            <script location="diff-4.15-4.16-mysql.sql"/>
+        </vendor>
+        <vendor name="mssql">
+            <script location="diff-4.15-4.16-mssql.sql"/>
+        </vendor>
+    </diff>
+    <diff version="4.17">
+        <vendor name="mysql">
+            <script location="diff-4.16-4.17-mysql.sql"/>
+        </vendor>
+        <vendor name="mssql">
+            <script location="diff-4.16-4.17-mssql.sql"/>
+        </vendor>
+    </diff>
     <diff version="4.18">
         <vendor name="mysql">
             <script location="diff-4.17-4.18-mysql.sql"/>
