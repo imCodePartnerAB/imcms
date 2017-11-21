@@ -31,6 +31,12 @@ public class AdminIpWhiteList extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final UserDomainObject user = Utility.getLoggedOnUser(request);
         final String language = user.getLanguageIso639_2();
+
+        if (!user.isSuperAdmin()) {
+            AdminIpAccess.printNonAdminError(user, request, response, getClass());
+            return;
+        }
+
         final String templatePath = getAdminTemplatePath(WHITE_LIST_TEMPLATE, user);
 
         response.setContentType("text/html");
