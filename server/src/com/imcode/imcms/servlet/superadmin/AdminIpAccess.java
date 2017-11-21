@@ -29,9 +29,9 @@ public class AdminIpAccess extends HttpServlet {
 
     static void printNonAdminError(UserDomainObject user, HttpServletRequest req,
                                    HttpServletResponse res, Class clazz) throws IOException {
-        Properties langProperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
-        String msg = langProperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-        String header = "Error in " + ClassUtils.getShortClassName(clazz) + ".";
+        final Properties langProperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
+        final String msg = langProperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+        final String header = "Error in " + ClassUtils.getShortClassName(clazz) + ".";
         log.debug(header + "- user is not an administrator");
         AdminRoles.printErrorMessage(req, res, header, msg);
     }
@@ -40,8 +40,7 @@ public class AdminIpAccess extends HttpServlet {
      * The GET method creates the html page when this page has been
      * redirected from somewhere else.
      */
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         ImcmsServices imcmsServices = Imcms.getServices();
 
