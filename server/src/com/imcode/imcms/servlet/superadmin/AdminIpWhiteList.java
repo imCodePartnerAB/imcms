@@ -230,7 +230,7 @@ public class AdminIpWhiteList extends HttpServlet {
         final byte[] addressTo = InetAddress.getByName(ipTo).getAddress();
 
         for (int i = 0; i < addressFrom.length; i++) {
-            if (addressFrom[i] > addressTo[i]) {
+            if ((0xff & (int) addressFrom[i]) > (0xff & (int) addressTo[i])) { // 0xff to get values from 0 to 255
                 return false;
             }
         }
