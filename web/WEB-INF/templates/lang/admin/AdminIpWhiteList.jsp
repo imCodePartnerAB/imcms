@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <!-- gui_start_of_page -->
 <html>
@@ -122,10 +123,23 @@
                                             <tr>
                                                 <td colspan="5">
                                                     <img src="${contextPath}/imcms/${language}/images/admin/1x1_cccccc.gif"
-                                                         width="100%"
-                                                         height="1" style="margin: 8px 0;" alt=""/></td>
+                                                         width="100%" height="1" style="margin: 8px 0;" alt=""/></td>
                                             </tr>
-                                            #ALL_IP_ACCESSES#
+                                            <c:forEach items="${roleIpRanges}" var="ipRange">
+                                                <tr>
+                                                    <td align="center"><input type="checkbox" name="EDIT_IP_RANGE"
+                                                                              value="${ipRange.id}"></td>
+                                                    <td>
+                                                        <c:if test="${ipRange.admin}">Superadmin</c:if>
+                                                        <c:if test="${not ipRange.admin}">Other roles</c:if>
+                                                    </td>
+                                                    <td><input type="text" name="IP_START" value="${ipRange.ipFrom}"
+                                                               size="15" maxlength="15"></td>
+                                                    <td align="center">-</td>
+                                                    <td><input type="text" name="IP_END" value="${ipRange.ipTo}"
+                                                               size="15" maxlength="15"></td>
+                                                </tr>
+                                            </c:forEach>
                                         </table>
                                     </td>
                                 </tr>
