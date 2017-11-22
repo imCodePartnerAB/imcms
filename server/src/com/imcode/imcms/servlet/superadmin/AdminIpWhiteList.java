@@ -6,6 +6,7 @@ import com.imcode.db.commands.SqlQueryDatabaseCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
+import com.imcode.imcms.servlet.RoleIpRange;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -267,37 +268,6 @@ public class AdminIpWhiteList extends HttpServlet {
 
     private String getAdminTemplatePath(String templateFileName, UserDomainObject user) {
         return "/WEB-INF/templates/" + user.getLanguageIso639_2() + "/admin/" + templateFileName;
-    }
-
-    @SuppressWarnings("unused")
-    public final class RoleIpRange {
-        private final int id;
-        private final boolean isAdmin;
-        private final String ipFrom;
-        private final String ipTo;
-
-        private RoleIpRange(int id, boolean isAdmin, String ipFrom, String ipTo) {
-            this.id = id;
-            this.isAdmin = isAdmin;
-            this.ipFrom = ipFrom;
-            this.ipTo = ipTo;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public boolean isAdmin() {
-            return isAdmin;
-        }
-
-        public String getIpFrom() {
-            return ipFrom;
-        }
-
-        public String getIpTo() {
-            return ipTo;
-        }
     }
 
 }
