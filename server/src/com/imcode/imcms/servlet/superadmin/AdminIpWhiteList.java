@@ -35,16 +35,20 @@ public class AdminIpWhiteList extends HttpServlet {
     private static final String WHITE_LIST_TEMPLATE = "AdminIpWhiteList.jsp";
     private static final String WHITE_LIST_ADD_TEMPLATE = "AdminIpWhiteList_Add.jsp";
     private static final String TABLE_NAME = "imcms_ip_white_list";
+    private static final String IS_ADMIN = "is_admin";
+    private static final String IP_RANGE_FROM = "ip_range_from";
+    private static final String IP_RANGE_TO = "ip_range_to";
 
     private final InetAddressValidator ipValidator = InetAddressValidator.getInstance();
 
     private final RowTransformer<RoleIpRange> rowTransformer = new RowTransformer<RoleIpRange>() {
         @Override
         public RoleIpRange createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
-            final boolean isAdmin = resultSet.getBoolean(1);
-            final String ipFrom = resultSet.getString(2);
-            final String ipTo = resultSet.getString(3);
-            return new RoleIpRange(isAdmin, ipFrom, ipTo);
+            final int id = resultSet.getInt("id");
+            final boolean isAdmin = resultSet.getBoolean(IS_ADMIN);
+            final String ipFrom = resultSet.getString(IP_RANGE_FROM);
+            final String ipTo = resultSet.getString(IP_RANGE_TO);
+            return new RoleIpRange(id, isAdmin, ipFrom, ipTo);
         }
 
         @Override
@@ -63,12 +67,7 @@ public class AdminIpWhiteList extends HttpServlet {
             return;
         }
 
-        final DatabaseCommand<List<RoleIpRange>> queryCommand = new SqlQueryDatabaseCommand<List<RoleIpRange>>(
-                "SELECT is_admin, ip_range_from, ip_range_to FROM " + TABLE_NAME, new Object[]{},
-                new CollectionHandler<RoleIpRange, List<RoleIpRange>>(new ArrayList<RoleIpRange>(), rowTransformer)
-        );
-
-        final List<RoleIpRange> roleIpRanges = Imcms.getServices().getDatabase().execute(queryCommand);
+        final List<RoleIpRange> roleIpRanges = getRoleIpRanges();
         final String templatePath = getAdminTemplatePath(WHITE_LIST_TEMPLATE, user);
 
         response.setContentType("text/html");
@@ -100,9 +99,9 @@ public class AdminIpWhiteList extends HttpServlet {
             if (ipValidator.isValidInet4Address(ipFrom) && ipValidator.isValidInet4Address(ipTo)) {
                 final String isAdmin = String.valueOf(request.getParameter("IS_ADMIN"));
                 final String[][] commandParams = new String[][]{
-                        {"is_admin", isAdmin},
-                        {"ip_range_from", ipFrom},
-                        {"ip_range_to", ipTo},
+                        {IS_ADMIN, isAdmin},
+                        {IP_RANGE_FROM, ipFrom},
+                        {IP_RANGE_TO, ipTo},
                 };
 
                 log.info("Adding new IP range from " + ipFrom + " to " + ipTo + " for "
@@ -125,19 +124,38 @@ public class AdminIpWhiteList extends HttpServlet {
         }
     }
 
+    private List<RoleIpRange> getRoleIpRanges() {
+        final String sqlCommand = "SELECT id, " + IS_ADMIN + ", " + IP_RANGE_FROM + ", " + IP_RANGE_TO
+                + " FROM " + TABLE_NAME
+                + " ORDER BY id";
+        final CollectionHandler<RoleIpRange, List<RoleIpRange>> collectionHandler =
+                new CollectionHandler<RoleIpRange, List<RoleIpRange>>(new ArrayList<RoleIpRange>(), rowTransformer);
+        final DatabaseCommand<List<RoleIpRange>> queryCommand = new SqlQueryDatabaseCommand<List<RoleIpRange>>(
+                sqlCommand, new Object[]{}, collectionHandler
+        );
+
+        return Imcms.getServices().getDatabase().execute(queryCommand);
+    }
+
     private String getAdminTemplatePath(String templateFileName, UserDomainObject user) {
         return "/WEB-INF/templates/" + user.getLanguageIso639_2() + "/admin/" + templateFileName;
     }
 
     public final class RoleIpRange {
+        private final int id;
         private final boolean isAdmin;
         private final String ipFrom;
         private final String ipTo;
 
-        private RoleIpRange(boolean isAdmin, String ipFrom, String ipTo) {
+        private RoleIpRange(int id, boolean isAdmin, String ipFrom, String ipTo) {
+            this.id = id;
             this.isAdmin = isAdmin;
             this.ipFrom = ipFrom;
             this.ipTo = ipTo;
+        }
+
+        public int getId() {
+            return id;
         }
 
         public boolean isAdmin() {
@@ -150,26 +168,6 @@ public class AdminIpWhiteList extends HttpServlet {
 
         public String getIpTo() {
             return ipTo;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            RoleIpRange that = (RoleIpRange) o;
-
-            if (isAdmin != that.isAdmin) return false;
-            if (!ipFrom.equals(that.ipFrom)) return false;
-            return ipTo.equals(that.ipTo);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = (isAdmin ? 1 : 0);
-            result = 31 * result + ipFrom.hashCode();
-            result = 31 * result + ipTo.hashCode();
-            return result;
         }
     }
 
