@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -96,7 +98,10 @@ public class AdminIpWhiteList extends HttpServlet {
             final String ipFrom = request.getParameter("IP_START");
             final String ipTo = request.getParameter("IP_END");
 
-            if (ipValidator.isValidInet4Address(ipFrom) && ipValidator.isValidInet4Address(ipTo)) {
+            if (ipValidator.isValidInet4Address(ipFrom)
+                    && ipValidator.isValidInet4Address(ipTo)
+                    && isIpFromLessThanIpFrom(ipFrom, ipTo))
+            {
                 final String isAdmin = String.valueOf(request.getParameter("IS_ADMIN"));
                 final String[][] commandParams = new String[][]{
                         {IS_ADMIN, isAdmin},
@@ -124,6 +129,19 @@ public class AdminIpWhiteList extends HttpServlet {
                 AdminRoles.printErrorMessage(request, response, header, msg);
             }
         }
+    }
+
+    private boolean isIpFromLessThanIpFrom(String ipFrom, String ipTo) throws UnknownHostException {
+        final byte[] addressFrom = InetAddress.getByName(ipFrom).getAddress();
+        final byte[] addressTo = InetAddress.getByName(ipTo).getAddress();
+
+        for (int i = 0; i < addressFrom.length; i++) {
+            if (addressFrom[i] > addressTo[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private List<RoleIpRange> getRoleIpRanges() {
