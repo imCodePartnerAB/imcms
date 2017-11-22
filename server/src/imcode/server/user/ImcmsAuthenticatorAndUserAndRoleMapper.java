@@ -9,6 +9,8 @@ import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.servlet.LoginPasswordManager;
+import com.imcode.imcms.servlet.RoleIpRange;
+import com.imcode.imcms.servlet.superadmin.AdminIpWhiteList;
 import imcode.server.ImcmsServices;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
@@ -20,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -903,5 +906,40 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 }
             }
         }
+    }
+
+    /**
+     * Checks is user's IP and role in white list.
+     *
+     * @param user to be checked
+     * @param request to get user's IP
+     * @return true if user's IP and role is in white list or if no such
+     * list in DB, or if user is null or default
+     * @since 4.2.29
+     */
+    public boolean isUserIpAllowed(UserDomainObject user, HttpServletRequest request) {
+        if (user == null || user.isDefaultUser()) {
+            return true; // only non-default users have to be checked
+        }
+
+        final boolean isUserSuperAdmin = user.isSuperAdmin();
+        final String userIP = request.getRemoteAddr();
+        final long userIpLong = Utility.ipStringToLong(userIP);
+
+        for (RoleIpRange roleIpRange : AdminIpWhiteList.getRoleIpRanges()) {
+            if ((roleIpRange.isAdmin() && isUserSuperAdmin) || (!roleIpRange.isAdmin() && !isUserSuperAdmin)) {
+                final String ipFrom = roleIpRange.getIpFrom();
+                final String ipTo = roleIpRange.getIpTo();
+
+                final long ipFromLong = Utility.ipStringToLong(ipFrom);
+                final long ipToLong = Utility.ipStringToLong(ipTo);
+
+                if (ipFromLong > userIpLong || ipToLong < userIpLong) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

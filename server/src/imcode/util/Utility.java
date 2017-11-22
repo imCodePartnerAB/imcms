@@ -3,6 +3,7 @@ package imcode.util;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 
@@ -472,6 +473,14 @@ public class Utility {
     }
 
     public static void makeUserLoggedIn(HttpServletRequest req, UserDomainObject user) {
+
+        final ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices()
+                .getImcmsAuthenticatorAndUserAndRoleMapper();
+
+        if (userAndRoleMapper.isUserIpAllowed(user, req)) {
+//            throw new UserIpIsNotAllowedException(user, req);
+        }
+
         if ( null != user && !user.isDefaultUser() && !req.isSecure() && Imcms.getServices().getConfig().getSecureLoginRequired() ) {
             return;
         }
