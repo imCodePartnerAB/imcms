@@ -127,17 +127,17 @@
                                             </tr>
                                             <c:forEach items="${roleIpRanges}" var="ipRange">
                                                 <tr>
-                                                    <td align="center"><input type="checkbox" name="EDIT_IP_RANGE"
+                                                    <td align="center"><input type="checkbox" name="EDIT_IP_RANGE_ID"
                                                                               value="${ipRange.id}"></td>
                                                     <td>
                                                         <c:if test="${ipRange.admin}">Superadmin</c:if>
                                                         <c:if test="${not ipRange.admin}">Other roles</c:if>
                                                     </td>
-                                                    <td><input type="text" name="IP_START" value="${ipRange.ipFrom}"
-                                                               size="15" maxlength="15"></td>
+                                                    <td><input type="text" name="IP_START${ipRange.id}"
+                                                               value="${ipRange.ipFrom}" size="15" maxlength="15"></td>
                                                     <td align="center">-</td>
-                                                    <td><input type="text" name="IP_END" value="${ipRange.ipTo}"
-                                                               size="15" maxlength="15"></td>
+                                                    <td><input type="text" name="IP_END${ipRange.id}"
+                                                               value="${ipRange.ipTo}" size="15" maxlength="15"></td>
                                                 </tr>
                                             </c:forEach>
                                         </table>
@@ -154,7 +154,7 @@
                                     <td align="right">
                                         <input type="submit" class="imcmsFormBtn" name="ADD_IP_RANGE"
                                                value="<? templates/sv/AdminIpAccess.htm/2001 ?>">
-                                        <input type="submit" class="imcmsFormBtn" name="RESAVE_IP_ACCESS"
+                                        <input type="submit" class="imcmsFormBtn" name="UPDATE_IP_RANGE"
                                                value="<? templates/sv/AdminIpAccess.htm/2002 ?>">
                                         <input type="submit" class="imcmsFormBtn" name="IP_WARN_DELETE"
                                                value="<? templates/sv/AdminIpAccess.htm/2003 ?>"></td>
