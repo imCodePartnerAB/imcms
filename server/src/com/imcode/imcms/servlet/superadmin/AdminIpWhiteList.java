@@ -128,6 +128,8 @@ public class AdminIpWhiteList extends HttpServlet {
                         .getProperty("error/servlet/AdminIpWhiteList/validate_form_parameters") + "<br>";
                 AdminRoles.printErrorMessage(request, response, header, msg);
             }
+        } else if (request.getParameter("CANCEL_ADD_IP") != null) {
+            doGet(request, response);
         }
     }
 
@@ -161,6 +163,7 @@ public class AdminIpWhiteList extends HttpServlet {
         return "/WEB-INF/templates/" + user.getLanguageIso639_2() + "/admin/" + templateFileName;
     }
 
+    @SuppressWarnings("unused")
     public final class RoleIpRange {
         private final int id;
         private final boolean isAdmin;
