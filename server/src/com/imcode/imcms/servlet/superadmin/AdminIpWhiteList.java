@@ -46,22 +46,6 @@ public class AdminIpWhiteList extends HttpServlet {
 
     private final InetAddressValidator ipValidator = InetAddressValidator.getInstance();
 
-    private final RowTransformer<RoleIpRange> rowTransformer = new RowTransformer<RoleIpRange>() {
-        @Override
-        public RoleIpRange createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
-            final int id = resultSet.getInt("id");
-            final boolean isAdmin = resultSet.getBoolean(IS_ADMIN);
-            final String ipFrom = resultSet.getString(IP_RANGE_FROM);
-            final String ipTo = resultSet.getString(IP_RANGE_TO);
-            return new RoleIpRange(id, isAdmin, ipFrom, ipTo);
-        }
-
-        @Override
-        public Class<RoleIpRange> getClassOfCreatedObjects() {
-            return RoleIpRange.class;
-        }
-    };
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final UserDomainObject user = Utility.getLoggedOnUser(request);
@@ -253,12 +237,30 @@ public class AdminIpWhiteList extends HttpServlet {
         return firstSegmentFrom < firstSegmentTo;
     }
 
-    private List<RoleIpRange> getRoleIpRanges() {
+    public static List<RoleIpRange> getRoleIpRanges() {
+        final RowTransformer<RoleIpRange> rowTransformer = new RowTransformer<RoleIpRange>() {
+            @Override
+            public RoleIpRange createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
+                final int id = resultSet.getInt("id");
+                final boolean isAdmin = resultSet.getBoolean(IS_ADMIN);
+                final String ipFrom = resultSet.getString(IP_RANGE_FROM);
+                final String ipTo = resultSet.getString(IP_RANGE_TO);
+                return new RoleIpRange(id, isAdmin, ipFrom, ipTo);
+            }
+
+            @Override
+            public Class<RoleIpRange> getClassOfCreatedObjects() {
+                return RoleIpRange.class;
+            }
+        };
+
         final String sqlCommand = "SELECT id, " + IS_ADMIN + ", " + IP_RANGE_FROM + ", " + IP_RANGE_TO
                 + " FROM " + TABLE_NAME
                 + " ORDER BY id";
+
         final CollectionHandler<RoleIpRange, List<RoleIpRange>> collectionHandler =
                 new CollectionHandler<RoleIpRange, List<RoleIpRange>>(new ArrayList<RoleIpRange>(), rowTransformer);
+
         final DatabaseCommand<List<RoleIpRange>> queryCommand = new SqlQueryDatabaseCommand<List<RoleIpRange>>(
                 sqlCommand, new Object[]{}, collectionHandler
         );
