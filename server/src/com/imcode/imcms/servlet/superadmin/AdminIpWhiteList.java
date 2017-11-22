@@ -118,7 +118,7 @@ public class AdminIpWhiteList extends HttpServlet {
                 request.getRequestDispatcher(templatePath).forward(request, response);
 
             } else {
-                final String header = "Error in AdminIpWhiteList.";
+                final String header = "Error in AdminIpWhiteList";
                 final String msg = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user)
                         .getProperty("error/servlet/AdminIpWhiteList/validate_form_parameters") + "<br>";
                 AdminRoles.printErrorMessage(request, response, header, msg);
