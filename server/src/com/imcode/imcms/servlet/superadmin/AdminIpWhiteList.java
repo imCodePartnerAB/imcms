@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -85,7 +84,7 @@ public class AdminIpWhiteList extends HttpServlet {
             setViewDataAndForwardTo(WHITE_LIST_ADD_TEMPLATE, request, response, user);
 
         } else if (request.getParameter("ADD_NEW_IP_RANGE") != null) {
-            addNewIpRange(request, response, user);
+            addNewIpRange(request, response);
 
         } else if ((request.getParameter("CANCEL_ADD_IP") != null)
                 || (request.getParameter("IP_CANCEL_DELETE") != null))
@@ -93,24 +92,24 @@ public class AdminIpWhiteList extends HttpServlet {
             doGet(request, response);
 
         } else if (request.getParameter("UPDATE_IP_RANGE") != null) {
-            updateIpRange(request, response, user);
+            updateIpRange(request, response);
 
         } else if (request.getParameter("IP_WARN_DELETE") != null) {
             request.setAttribute("DELETE_IP_RANGE_ID", request.getParameterValues("EDIT_IP_RANGE_ID"));
             setViewDataAndForwardTo(WARN_DEL_IP_TEMPLATE, request, response, user);
 
         } else if (request.getParameter("DEL_IP_RANGE") != null) {
-            deleteIpRange(request, response, user);
+            deleteIpRange(request, response);
         }
     }
 
-    private void deleteIpRange(HttpServletRequest request, HttpServletResponse response, UserDomainObject user)
+    private void deleteIpRange(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         final String[] deleteIpRangeIdsStr = request.getParameterValues("DELETE_IP_RANGE_ID");
 
         if (deleteIpRangeIdsStr == null || deleteIpRangeIdsStr.length == 0) {
-            setRangesAndViewDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
+            doGet(request, response);
             return;
         }
 
@@ -128,13 +127,20 @@ public class AdminIpWhiteList extends HttpServlet {
         }
 
         Imcms.getServices().getDatabase().execute(new SqlUpdateCommand(sql, deleteIpRangeIds));
-        setRangesAndViewDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
+        doGet(request, response);
     }
 
-    private void updateIpRange(HttpServletRequest request, HttpServletResponse response, UserDomainObject user)
+    private void updateIpRange(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        for (String editIpRangeId : request.getParameterValues("EDIT_IP_RANGE_ID")) {
+        final String[] editIpRangeIds = request.getParameterValues("EDIT_IP_RANGE_ID");
+
+        if ((editIpRangeIds == null) || (editIpRangeIds.length == 0)) {
+            doGet(request, response);
+            return;
+        }
+
+        for (String editIpRangeId : editIpRangeIds) {
             final int rangeId = Integer.parseInt(editIpRangeId);
             final String ipFrom = request.getParameter("IP_START" + rangeId);
             final String ipTo = request.getParameter("IP_END" + rangeId);
@@ -156,10 +162,10 @@ public class AdminIpWhiteList extends HttpServlet {
             }
         }
 
-        setRangesAndViewDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
+        doGet(request, response);
     }
 
-    private void addNewIpRange(HttpServletRequest request, HttpServletResponse response, UserDomainObject user)
+    private void addNewIpRange(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         final String ipFrom = request.getParameter("IP_START");
@@ -181,10 +187,10 @@ public class AdminIpWhiteList extends HttpServlet {
 
             Imcms.getServices().getDatabase().execute(new InsertIntoTableDatabaseCommand(TABLE_NAME, commandParams));
 
-            setRangesAndViewDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
+            doGet(request, response);
 
         } else {
-            doError(request, response, user);
+            doError(request, response);
         }
     }
 
@@ -216,26 +222,21 @@ public class AdminIpWhiteList extends HttpServlet {
         request.getRequestDispatcher(templatePath).forward(request, response);
     }
 
-    private void doError(HttpServletRequest request, HttpServletResponse response,
-                         UserDomainObject user) throws IOException {
+    private void doError(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+        final UserDomainObject user = Utility.getLoggedOnUser(request);
         final String header = "Error in AdminIpWhiteList";
         final String msg = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user)
                 .getProperty("error/servlet/AdminIpWhiteList/validate_form_parameters") + "<br>";
+
         AdminRoles.printErrorMessage(request, response, header, msg);
     }
 
     private boolean isIpFromLessThanIpTo(String ipFrom, String ipTo) throws UnknownHostException {
-        final byte[] addressFrom = InetAddress.getByName(ipFrom).getAddress();
-        final byte[] addressTo = InetAddress.getByName(ipTo).getAddress();
+        final int firstSegmentFrom = Integer.parseInt(ipFrom.split("\\.")[0]);
+        final int firstSegmentTo = Integer.parseInt(ipTo.split("\\.")[0]);
 
-        for (int i = 0; i < addressFrom.length; i++) {
-            if ((0xff & (int) addressFrom[i]) > (0xff & (int) addressTo[i])) { // 0xff to get values from 0 to 255
-                return false;
-            }
-        }
-
-        return true;
+        return firstSegmentFrom < firstSegmentTo;
     }
 
     private List<RoleIpRange> getRoleIpRanges() {
