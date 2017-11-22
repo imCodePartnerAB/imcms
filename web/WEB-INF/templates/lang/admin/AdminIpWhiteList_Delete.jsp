@@ -1,15 +1,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head><title><? templates/sv/AdminIpAccess_Delete2.htm/1 ?> </title>
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-    <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/imcms/${language}/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 </head>
-<body><!-- gui_outer_start -->
+<body>
 <table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable" align="center">
     <tr>
         <td class="imcmsAdmTable">
-            <!-- /gui_outer_start -->
-            <!-- gui_head -->
             <table border="0" cellspacing="0" cellpadding="0">
                 <tr>
                     <td class="imcmsAdmBgHead" colspan="6"><img
@@ -35,12 +33,10 @@
                     <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1"
                                          height="1" alt=""/></td>
                     <td colspan="2">
-                        <!-- /gui_head -->
-                        <!-- gui_head_help_and_back_buttons -->
                         <form method="post" action="AdminIpWhiteList">
                             <table border="0" cellspacing="0" cellpadding="0">
                                 <tr>
-                                    <td><input type="submit" class="imcmsFormBtn" name="CANCEL_ADD_IP"
+                                    <td><input type="submit" class="imcmsFormBtn" name="IP_CANCEL_DELETE"
                                                value="<? global/back ?>"/></td>
                                     <td style="padding-left:10px;"><input type="button" value="<? global/help ?>"
                                                                           title="<? global/openthehelppage ?>"
@@ -50,8 +46,6 @@
                                 </tr>
                             </table>
                         </form>
-                        <!-- /gui_head_help_and_back_buttons -->
-                        <!-- gui_mid -->
                     </td>
                     <td colspan="2"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1"
                                          height="1" alt=""/></td>
@@ -77,19 +71,16 @@
                     <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1" alt=""/>
                     </td>
                     <td colspan="2">
-                        <!-- /gui_mid -->
-                        <form method="post" action="AdminIpWhiteList">
-                            <c:forEach items="${DELETE_IP_RANGE_ID}" var="rangeId">
-                                <input type="hidden" name="DELETE_IP_RANGE_ID" value="${rangeId}">
-                            </c:forEach>
+                        <form method="post" action="AdminIpWhiteList"><c:forEach items="${DELETE_IP_RANGE_ID}"
+                                                                                 var="rangeId"> <input type="hidden"
+                                                                                                       name="DELETE_IP_RANGE_ID"
+                                                                                                       value="${rangeId}"> </c:forEach>
                             <table border="0" cellspacing="0" cellpadding="2" width="400">
                                 <tr>
-                                    <td>
-                                        <!-- gui_heading -->
-                                        <span class="imcmsAdmHeading"><? global/warning ?></span><br/>
-                                        <img src="${contextPath}/imcms/${language}/images/admin/1x1_20568d.gif"
-                                             width="100%" height="1" style="margin: 8px 0;" alt=""/>
-                                        <!-- /gui_heading -->
+                                    <td>                                        <span
+                                            class="imcmsAdmHeading"><? global/warning ?></span><br/> <img
+                                            src="${contextPath}/imcms/${language}/images/admin/1x1_20568d.gif"
+                                            width="100%" height="1" style="margin: 8px 0;" alt=""/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -107,8 +98,6 @@
                                 </tr>
                             </table>
                         </form>
-                        <!-- gui_end_of_page -->
-                        <!-- gui_bottom -->
                     </td>
                     <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="1" alt=""/>
                     </td>
@@ -138,12 +127,10 @@
                     </td>
                 </tr>
             </table>
-            <!-- /gui_bottom -->            <!-- gui_outer_end -->
         <td align="right" valign="top"
             style="background: transparent url(${contextPath}/imcms/${language}/images/admin/imcms_admin_shadow_right.gif) top left repeat-y;">
             <img src="${contextPath}/imcms/${language}/images/admin/imcms_admin_shadow_right_top.gif" width="12"
-                 height="12" border="0" alt=""/>
-        </td>
+                 height="12" border="0" alt=""/></td>
     </tr>
     <tr>
         <td colspan="2">
@@ -151,8 +138,7 @@
                 <tr>
                     <td style="background: transparent url(${contextPath}/imcms/${language}/images/admin/imcms_admin_shadow_bottom.gif) top left repeat-x;">
                         <img src="${contextPath}/imcms/${language}/images/admin/imcms_admin_shadow_bottom_left.gif"
-                             width="12" height="12" border="0" alt=""/>
-                    </td>
+                             width="12" height="12" border="0" alt=""/></td>
                     <td style="background: transparent url(${contextPath}/imcms/${language}/images/admin/imcms_admin_shadow_bottom.gif) top left repeat-x;"
                         align="right"><img
                             src="${contextPath}/imcms/${language}/images/admin/imcms_admin_shadow_bottom_right.gif"
@@ -161,6 +147,6 @@
             </table>
         </td>
     </tr>
-</table><!-- /gui_outer_end --></body>
+</table>
+</body>
 </html>
-<!-- /gui_end_of_page -->
