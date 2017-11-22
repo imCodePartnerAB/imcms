@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.db.DatabaseCommand;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.db.commands.SqlQueryDatabaseCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
@@ -62,33 +63,25 @@ public class AdminIpWhiteList extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final UserDomainObject user = Utility.getLoggedOnUser(request);
-        final String language = user.getLanguageIso639_2();
 
         if (!user.isSuperAdmin()) {
             AdminIpAccess.printNonAdminError(user, request, response, getClass());
             return;
         }
 
-        final List<RoleIpRange> roleIpRanges = getRoleIpRanges();
-        final String templatePath = getAdminTemplatePath(WHITE_LIST_TEMPLATE, user);
-
-        response.setContentType("text/html");
-        request.setAttribute("contextPath", request.getContextPath());
-        request.setAttribute("language", language);
-        request.setAttribute("roleIpRanges", roleIpRanges);
-        request.getRequestDispatcher(templatePath).forward(request, response);
+        setDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final UserDomainObject user = Utility.getLoggedOnUser(request);
-        final String language = user.getLanguageIso639_2();
 
         if (!user.isSuperAdmin()) {
             AdminIpAccess.printNonAdminError(user, request, response, getClass());
 
         } else if (request.getParameter("ADD_IP_RANGE") != null) {
             final String templatePath = getAdminTemplatePath(WHITE_LIST_ADD_TEMPLATE, user);
+            final String language = user.getLanguageIso639_2();
 
             request.setAttribute("contextPath", request.getContextPath());
             request.setAttribute("language", language);
@@ -100,7 +93,7 @@ public class AdminIpWhiteList extends HttpServlet {
 
             if (ipValidator.isValidInet4Address(ipFrom)
                     && ipValidator.isValidInet4Address(ipTo)
-                    && isIpFromLessThanIpFrom(ipFrom, ipTo))
+                    && isIpFromLessThanIpTo(ipFrom, ipTo))
             {
                 final String isAdmin = String.valueOf(request.getParameter("IS_ADMIN"));
                 final String[][] commandParams = new String[][]{
@@ -114,26 +107,63 @@ public class AdminIpWhiteList extends HttpServlet {
 
                 Imcms.getServices().getDatabase().execute(new InsertIntoTableDatabaseCommand(TABLE_NAME, commandParams));
 
-                final String templatePath = getAdminTemplatePath(WHITE_LIST_TEMPLATE, user);
-                final List<RoleIpRange> roleIpRanges = getRoleIpRanges();
-
-                request.setAttribute("contextPath", request.getContextPath());
-                request.setAttribute("language", language);
-                request.setAttribute("roleIpRanges", roleIpRanges);
-                request.getRequestDispatcher(templatePath).forward(request, response);
+                setDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
 
             } else {
-                final String header = "Error in AdminIpWhiteList";
-                final String msg = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user)
-                        .getProperty("error/servlet/AdminIpWhiteList/validate_form_parameters") + "<br>";
-                AdminRoles.printErrorMessage(request, response, header, msg);
+                doError(request, response, user);
             }
         } else if (request.getParameter("CANCEL_ADD_IP") != null) {
             doGet(request, response);
+
+        } else if (request.getParameter("UPDATE_IP_RANGE") != null) {
+            final int rangeId = Integer.parseInt(request.getParameter("EDIT_IP_RANGE_ID"));
+            final String ipFrom = request.getParameter("IP_START" + rangeId);
+            final String ipTo = request.getParameter("IP_END" + rangeId);
+
+            if (ipValidator.isValidInet4Address(ipFrom)
+                    && ipValidator.isValidInet4Address(ipTo)
+                    && isIpFromLessThanIpTo(ipFrom, ipTo))
+            {
+                final String sql = "UPDATE " + TABLE_NAME
+                        + " SET " + IP_RANGE_FROM + " = ?,"
+                        + " " + IP_RANGE_TO + " = ?"
+                        + " WHERE id = ?";
+
+                final Object[] params = {ipFrom, ipTo, rangeId};
+
+                log.info("Updating IP range with id " + rangeId + " from " + ipFrom + " to " + ipTo);
+
+                Imcms.getServices().getDatabase().execute(new SqlUpdateCommand(sql, params));
+
+                setDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
+
+            } else {
+                doError(request, response, user);
+            }
         }
     }
 
-    private boolean isIpFromLessThanIpFrom(String ipFrom, String ipTo) throws UnknownHostException {
+    private void setDataAndForwardTo(String templateName, HttpServletRequest request, HttpServletResponse response,
+                                     UserDomainObject user) throws ServletException, IOException {
+
+        final String templatePath = getAdminTemplatePath(templateName, user);
+        final List<RoleIpRange> roleIpRanges = getRoleIpRanges();
+        final String language = user.getLanguageIso639_2();
+
+        request.setAttribute("contextPath", request.getContextPath());
+        request.setAttribute("language", language);
+        request.setAttribute("roleIpRanges", roleIpRanges);
+        request.getRequestDispatcher(templatePath).forward(request, response);
+    }
+
+    private void doError(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException {
+        final String header = "Error in AdminIpWhiteList";
+        final String msg = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user)
+                .getProperty("error/servlet/AdminIpWhiteList/validate_form_parameters") + "<br>";
+        AdminRoles.printErrorMessage(request, response, header, msg);
+    }
+
+    private boolean isIpFromLessThanIpTo(String ipFrom, String ipTo) throws UnknownHostException {
         final byte[] addressFrom = InetAddress.getByName(ipFrom).getAddress();
         final byte[] addressTo = InetAddress.getByName(ipTo).getAddress();
 
