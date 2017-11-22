@@ -95,12 +95,25 @@ public class AdminIpWhiteList extends HttpServlet {
             updateIpRange(request, response);
 
         } else if (request.getParameter("IP_WARN_DELETE") != null) {
-            request.setAttribute("DELETE_IP_RANGE_ID", request.getParameterValues("EDIT_IP_RANGE_ID"));
-            setViewDataAndForwardTo(WARN_DEL_IP_TEMPLATE, request, response, user);
+            showDeletionWarning(request, response, user);
 
         } else if (request.getParameter("DEL_IP_RANGE") != null) {
             deleteIpRange(request, response);
         }
+    }
+
+    private void showDeletionWarning(HttpServletRequest request, HttpServletResponse response, UserDomainObject user)
+            throws ServletException, IOException {
+
+        final String[] editIpRangeIds = request.getParameterValues("EDIT_IP_RANGE_ID");
+
+        if (editIpRangeIds == null || editIpRangeIds.length == 0) {
+            doGet(request, response);
+            return;
+        }
+
+        request.setAttribute("DELETE_IP_RANGE_ID", editIpRangeIds);
+        setViewDataAndForwardTo(WARN_DEL_IP_TEMPLATE, request, response, user);
     }
 
     private void deleteIpRange(HttpServletRequest request, HttpServletResponse response)
