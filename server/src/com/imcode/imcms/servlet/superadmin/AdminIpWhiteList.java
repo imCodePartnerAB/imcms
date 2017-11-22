@@ -37,6 +37,8 @@ public class AdminIpWhiteList extends HttpServlet {
 
     private static final String WHITE_LIST_TEMPLATE = "AdminIpWhiteList.jsp";
     private static final String WHITE_LIST_ADD_TEMPLATE = "AdminIpWhiteList_Add.jsp";
+    private static final String WARN_DEL_IP_TEMPLATE = "AdminIpWhiteList_Delete.jsp";
+
     private static final String TABLE_NAME = "imcms_ip_white_list";
     private static final String IS_ADMIN = "is_admin";
     private static final String IP_RANGE_FROM = "ip_range_from";
@@ -69,7 +71,7 @@ public class AdminIpWhiteList extends HttpServlet {
             return;
         }
 
-        setDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
+        setRangesAndViewDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
     }
 
     @Override
@@ -80,43 +82,60 @@ public class AdminIpWhiteList extends HttpServlet {
             AdminIpAccess.printNonAdminError(user, request, response, getClass());
 
         } else if (request.getParameter("ADD_IP_RANGE") != null) {
-            final String templatePath = getAdminTemplatePath(WHITE_LIST_ADD_TEMPLATE, user);
-            final String language = user.getLanguageIso639_2();
-
-            request.setAttribute("contextPath", request.getContextPath());
-            request.setAttribute("language", language);
-            request.getRequestDispatcher(templatePath).forward(request, response);
+            setViewDataAndForwardTo(WHITE_LIST_ADD_TEMPLATE, request, response, user);
 
         } else if (request.getParameter("ADD_NEW_IP_RANGE") != null) {
-            final String ipFrom = request.getParameter("IP_START");
-            final String ipTo = request.getParameter("IP_END");
+            addNewIpRange(request, response, user);
 
-            if (ipValidator.isValidInet4Address(ipFrom)
-                    && ipValidator.isValidInet4Address(ipTo)
-                    && isIpFromLessThanIpTo(ipFrom, ipTo))
-            {
-                final String isAdmin = String.valueOf(request.getParameter("IS_ADMIN"));
-                final String[][] commandParams = new String[][]{
-                        {IS_ADMIN, isAdmin},
-                        {IP_RANGE_FROM, ipFrom},
-                        {IP_RANGE_TO, ipTo},
-                };
-
-                log.info("Adding new IP range from " + ipFrom + " to " + ipTo + " for "
-                        + ("1".equals(isAdmin) ? "super" : "non") + "-admin roles.");
-
-                Imcms.getServices().getDatabase().execute(new InsertIntoTableDatabaseCommand(TABLE_NAME, commandParams));
-
-                setDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
-
-            } else {
-                doError(request, response, user);
-            }
-        } else if (request.getParameter("CANCEL_ADD_IP") != null) {
+        } else if ((request.getParameter("CANCEL_ADD_IP") != null)
+                || (request.getParameter("IP_CANCEL_DELETE") != null))
+        {
             doGet(request, response);
 
         } else if (request.getParameter("UPDATE_IP_RANGE") != null) {
-            final int rangeId = Integer.parseInt(request.getParameter("EDIT_IP_RANGE_ID"));
+            updateIpRange(request, response, user);
+
+        } else if (request.getParameter("IP_WARN_DELETE") != null) {
+            request.setAttribute("DELETE_IP_RANGE_ID", request.getParameterValues("EDIT_IP_RANGE_ID"));
+            setViewDataAndForwardTo(WARN_DEL_IP_TEMPLATE, request, response, user);
+
+        } else if (request.getParameter("DEL_IP_RANGE") != null) {
+            deleteIpRange(request, response, user);
+        }
+    }
+
+    private void deleteIpRange(HttpServletRequest request, HttpServletResponse response, UserDomainObject user)
+            throws ServletException, IOException {
+
+        final String[] deleteIpRangeIdsStr = request.getParameterValues("DELETE_IP_RANGE_ID");
+
+        if (deleteIpRangeIdsStr == null || deleteIpRangeIdsStr.length == 0) {
+            setRangesAndViewDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
+            return;
+        }
+
+        final Integer[] deleteIpRangeIds = new Integer[deleteIpRangeIdsStr.length];
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE";
+
+        for (int i = 0; i < deleteIpRangeIdsStr.length; i++) {
+            if (i != 0) {
+                sql = sql.concat(" OR");
+            }
+
+            sql = sql.concat(" id = ?");
+
+            deleteIpRangeIds[i] = Integer.parseInt(deleteIpRangeIdsStr[i]);
+        }
+
+        Imcms.getServices().getDatabase().execute(new SqlUpdateCommand(sql, deleteIpRangeIds));
+        setRangesAndViewDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
+    }
+
+    private void updateIpRange(HttpServletRequest request, HttpServletResponse response, UserDomainObject user)
+            throws ServletException, IOException {
+
+        for (String editIpRangeId : request.getParameterValues("EDIT_IP_RANGE_ID")) {
+            final int rangeId = Integer.parseInt(editIpRangeId);
             final String ipFrom = request.getParameter("IP_START" + rangeId);
             final String ipTo = request.getParameter("IP_END" + rangeId);
 
@@ -134,17 +153,58 @@ public class AdminIpWhiteList extends HttpServlet {
                 log.info("Updating IP range with id " + rangeId + " from " + ipFrom + " to " + ipTo);
 
                 Imcms.getServices().getDatabase().execute(new SqlUpdateCommand(sql, params));
-
-                setDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
-
-            } else {
-                doError(request, response, user);
             }
+        }
+
+        setRangesAndViewDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
+    }
+
+    private void addNewIpRange(HttpServletRequest request, HttpServletResponse response, UserDomainObject user)
+            throws ServletException, IOException {
+
+        final String ipFrom = request.getParameter("IP_START");
+        final String ipTo = request.getParameter("IP_END");
+
+        if (ipValidator.isValidInet4Address(ipFrom)
+                && ipValidator.isValidInet4Address(ipTo)
+                && isIpFromLessThanIpTo(ipFrom, ipTo))
+        {
+            final String isAdmin = String.valueOf(request.getParameter("IS_ADMIN"));
+            final String[][] commandParams = new String[][]{
+                    {IS_ADMIN, isAdmin},
+                    {IP_RANGE_FROM, ipFrom},
+                    {IP_RANGE_TO, ipTo},
+            };
+
+            log.info("Adding new IP range from " + ipFrom + " to " + ipTo + " for "
+                    + ("1".equals(isAdmin) ? "super" : "non") + "-admin roles.");
+
+            Imcms.getServices().getDatabase().execute(new InsertIntoTableDatabaseCommand(TABLE_NAME, commandParams));
+
+            setRangesAndViewDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
+
+        } else {
+            doError(request, response, user);
         }
     }
 
-    private void setDataAndForwardTo(String templateName, HttpServletRequest request, HttpServletResponse response,
-                                     UserDomainObject user) throws ServletException, IOException {
+    private void setViewDataAndForwardTo(String templateName,
+                                         HttpServletRequest request,
+                                         HttpServletResponse response,
+                                         UserDomainObject user) throws ServletException, IOException {
+
+        final String templatePath = getAdminTemplatePath(templateName, user);
+        final String language = user.getLanguageIso639_2();
+
+        request.setAttribute("contextPath", request.getContextPath());
+        request.setAttribute("language", language);
+        request.getRequestDispatcher(templatePath).forward(request, response);
+    }
+
+    private void setRangesAndViewDataAndForwardTo(String templateName,
+                                                  HttpServletRequest request,
+                                                  HttpServletResponse response,
+                                                  UserDomainObject user) throws ServletException, IOException {
 
         final String templatePath = getAdminTemplatePath(templateName, user);
         final List<RoleIpRange> roleIpRanges = getRoleIpRanges();
@@ -156,7 +216,9 @@ public class AdminIpWhiteList extends HttpServlet {
         request.getRequestDispatcher(templatePath).forward(request, response);
     }
 
-    private void doError(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException {
+    private void doError(HttpServletRequest request, HttpServletResponse response,
+                         UserDomainObject user) throws IOException {
+
         final String header = "Error in AdminIpWhiteList";
         final String msg = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user)
                 .getProperty("error/servlet/AdminIpWhiteList/validate_form_parameters") + "<br>";
