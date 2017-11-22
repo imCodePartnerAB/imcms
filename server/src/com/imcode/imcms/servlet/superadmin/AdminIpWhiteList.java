@@ -110,9 +110,11 @@ public class AdminIpWhiteList extends HttpServlet {
                 Imcms.getServices().getDatabase().execute(new InsertIntoTableDatabaseCommand(TABLE_NAME, commandParams));
 
                 final String templatePath = getAdminTemplatePath(WHITE_LIST_TEMPLATE, user);
+                final List<RoleIpRange> roleIpRanges = getRoleIpRanges();
 
                 request.setAttribute("contextPath", request.getContextPath());
                 request.setAttribute("language", language);
+                request.setAttribute("roleIpRanges", roleIpRanges);
                 request.getRequestDispatcher(templatePath).forward(request, response);
 
             } else {
