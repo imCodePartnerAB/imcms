@@ -88,6 +88,10 @@ public class Utility {
     public static long ipStringToLong(String ip) throws IllegalArgumentException {
         long ipInt = 0;
 
+        if ("0:0:0:0:0:0:0:1".equals(ip)) {
+            ip = "172.0.0.1"; // localhost handled here
+        }
+
         StringTokenizer ipTok = new StringTokenizer(ip, ".");
 
         if (4 != ipTok.countTokens()) {
