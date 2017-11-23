@@ -41,12 +41,14 @@ public class TemplateService {
 
     private boolean isTemplateFileExist(String templateName) {
         for (String extension : new String[]{"jsp", "jspx", "html"}) {
-            String templateFileName = templateName + "." + extension;
-            File templateFile = new File(TemplateMapper.getTemplateDirectory(), templateFileName);
+            final String templateFileName = templateName + "." + extension;
+            final File templateFile = new File(TemplateMapper.getTemplateDirectory(), templateFileName);
+
             if (templateFile.exists()) {
                 return true;
             }
         }
+
         return false;
     }
 
