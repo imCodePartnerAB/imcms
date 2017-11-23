@@ -31,16 +31,23 @@ public class TemplateService {
     }
 
     public Optional<TemplateDTO> getTemplate(String templateName) {
-        String[] extensions = new String[]{"jsp", "jspx", "html"};
-        for (String extension : extensions) {
+        if (isTemplateFileExist(templateName)) {
+            final Template template = templateRepository.findByName(templateName);
+            return Optional.ofNullable(template).map(templateToTemplateDTO);
+        }
+
+        return Optional.empty();
+    }
+
+    private boolean isTemplateFileExist(String templateName) {
+        for (String extension : new String[]{"jsp", "jspx", "html"}) {
             String templateFileName = templateName + "." + extension;
             File templateFile = new File(TemplateMapper.getTemplateDirectory(), templateFileName);
             if (templateFile.exists()) {
-                final Template template = templateRepository.findByName(templateName);
-                return Optional.ofNullable(template).map(templateToTemplateDTO);
+                return true;
             }
         }
-        return Optional.empty();
+        return false;
     }
 
 }
