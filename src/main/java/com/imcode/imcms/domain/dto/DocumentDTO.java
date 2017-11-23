@@ -55,8 +55,8 @@ public class DocumentDTO implements Serializable {
 
     private Set<RoleDTO> roles;
 
-    private int template;
+    private TemplateDTO template;
 
-    private int childTemplate;
+    private TemplateDTO childTemplate;
 
 }
