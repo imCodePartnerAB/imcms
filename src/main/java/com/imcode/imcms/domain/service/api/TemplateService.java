@@ -17,17 +17,31 @@ public class TemplateService {
 
     private final TemplateRepository templateRepository;
     private final Function<Template, TemplateDTO> templateToTemplateDTO;
+    private final Function<TemplateDTO, TemplateDTO> templateSaver;
 
     public TemplateService(TemplateRepository templateRepository,
-                           Function<Template, TemplateDTO> templateToTemplateDTO) {
+                           Function<Template, TemplateDTO> templateToTemplateDTO,
+                           Function<TemplateDTO, Template> templateDtoToTemplate) {
+
         this.templateRepository = templateRepository;
         this.templateToTemplateDTO = templateToTemplateDTO;
+        this.templateSaver = templateDtoToTemplate.andThen(templateRepository::save).andThen(templateToTemplateDTO);
     }
 
     public List<TemplateDTO> getAll() {
         return templateRepository.findAll().stream()
                 .map(templateToTemplateDTO)
                 .collect(Collectors.toList());
+    }
+
+    public TemplateDTO save(TemplateDTO saveMe) {
+        final String templateName = saveMe.getName();
+
+        if (isTemplateFileExist(templateName)) {
+            return templateSaver.apply(saveMe);
+        }
+
+        return null;
     }
 
     public Optional<TemplateDTO> getTemplate(String templateName) {
