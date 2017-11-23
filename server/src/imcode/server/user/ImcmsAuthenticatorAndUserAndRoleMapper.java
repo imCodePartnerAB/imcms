@@ -10,6 +10,7 @@ import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import com.imcode.imcms.servlet.RoleIpRange;
+import com.imcode.imcms.servlet.UserIpIsNotAllowedException;
 import com.imcode.imcms.servlet.superadmin.AdminIpWhiteList;
 import imcode.server.ImcmsServices;
 import imcode.util.DateConstants;
@@ -904,6 +905,23 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     /**
+     * Checks is user's IP and role in white list and throws Exception if not.
+     *
+     * @param user to be checked
+     * @param request to get user's IP
+     * @since 4.2.29
+     * @throws UserIpIsNotAllowedException if user's IP for role is not in white list
+     */
+    public void checkUserIpAllowed(UserDomainObject user, HttpServletRequest request) throws UserIpIsNotAllowedException {
+
+        if (isUserIpAllowed(user, request)) {
+            return;
+        }
+
+        throw new UserIpIsNotAllowedException(user, request);
+    }
+
+    /**
      * Checks is user's IP and role in white list.
      *
      * @param user    to be checked
@@ -912,16 +930,19 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
      * list in DB, or if user is null or default
      * @since 4.2.29
      */
-    public boolean isUserIpAllowed(UserDomainObject user, HttpServletRequest request) {
-        if (user == null || user.isDefaultUser()) {
+    private boolean isUserIpAllowed(UserDomainObject user, HttpServletRequest request) {
+        final List<RoleIpRange> roleIpRanges = AdminIpWhiteList.getRoleIpRanges();
+
+        if (user == null || user.isDefaultUser() || roleIpRanges.isEmpty()) {
             return true; // only non-default users have to be checked
         }
 
         final boolean isUserSuperAdmin = user.isSuperAdmin();
         final String userIP = request.getRemoteAddr();
         final long userIpLong = Utility.ipStringToLong(userIP);
+        boolean atLeastOnceInWhiteList = false;
 
-        for (RoleIpRange roleIpRange : AdminIpWhiteList.getRoleIpRanges()) {
+        for (RoleIpRange roleIpRange : roleIpRanges) {
             if ((roleIpRange.isAdmin() && isUserSuperAdmin) || (!roleIpRange.isAdmin() && !isUserSuperAdmin)) {
                 final String ipFrom = roleIpRange.getIpFrom();
                 final String ipTo = roleIpRange.getIpTo();
@@ -929,12 +950,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 final long ipFromLong = Utility.ipStringToLong(ipFrom);
                 final long ipToLong = Utility.ipStringToLong(ipTo);
 
-                if (ipFromLong > userIpLong || ipToLong < userIpLong) {
-                    return false;
+                if (ipFromLong < userIpLong && userIpLong < ipToLong) {
+                    atLeastOnceInWhiteList = true;
                 }
             }
         }
 
-        return true;
+        return atLeastOnceInWhiteList;
     }
 }
