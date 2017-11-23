@@ -474,13 +474,6 @@ public class Utility {
 
     public static void makeUserLoggedIn(HttpServletRequest req, UserDomainObject user) {
 
-        final ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices()
-                .getImcmsAuthenticatorAndUserAndRoleMapper();
-
-        if (userAndRoleMapper.isUserIpAllowed(user, req)) {
-//            throw new UserIpIsNotAllowedException(user, req);
-        }
-
         if ( null != user && !user.isDefaultUser() && !req.isSecure() && Imcms.getServices().getConfig().getSecureLoginRequired() ) {
             return;
         }
