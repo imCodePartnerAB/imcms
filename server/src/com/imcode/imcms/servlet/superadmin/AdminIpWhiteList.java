@@ -231,10 +231,10 @@ public class AdminIpWhiteList extends HttpServlet {
     }
 
     private boolean isIpFromLessThanIpTo(String ipFrom, String ipTo) throws UnknownHostException {
-        final int firstSegmentFrom = Integer.parseInt(ipFrom.split("\\.")[0]);
-        final int firstSegmentTo = Integer.parseInt(ipTo.split("\\.")[0]);
+        final long ipFromLong = Utility.ipStringToLong(ipFrom);
+        final long ipToLong = Utility.ipStringToLong(ipTo);
 
-        return firstSegmentFrom < firstSegmentTo;
+        return ipFromLong <= ipToLong;
     }
 
     public static List<RoleIpRange> getRoleIpRanges() {
