@@ -23,10 +23,17 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
+import javax.servlet.ServletException;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.jstl.core.Config;
+import javax.servlet.jsp.jstl.fmt.LocalizationContext;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static javax.servlet.jsp.jstl.core.Config.FMT_LOCALIZATION_CONTEXT;
 
 public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegistry, Authenticator, RoleGetter {
 
@@ -902,6 +909,20 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 }
             }
         }
+    }
+
+    public void forwardDeniedUserToMessagePage(UserDomainObject user,
+                                               HttpServletRequest request,
+                                               ServletResponse response) throws ServletException, IOException {
+
+        final String lang = user.getLanguageIso639_2();
+        final String accessDeniedPage = "/WEB-INF/templates/" + lang + "/admin/accessDeniedForUserIP.jsp";
+        final UserDomainObject defaultUser = getDefaultUser();
+
+        defaultUser.setLanguageIso639_2(lang);
+        Utility.makeUserLoggedIn(request, defaultUser);
+        Config.set(request, FMT_LOCALIZATION_CONTEXT, new LocalizationContext(Utility.getResourceBundle(request)));
+        request.getRequestDispatcher(accessDeniedPage).forward(request, response);
     }
 
     /**
