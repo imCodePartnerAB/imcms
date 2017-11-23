@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.MissingLoginDataException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
@@ -59,9 +60,20 @@ public class ImcmsSetupFilter implements Filter {
         }
 
         UserDomainObject user = Utility.getLoggedOnUser(request);
+
         if (null == user) {
             user = service.verifyUserByIpOrDefault(request.getRemoteAddr());
             assert user.isActive();
+            final ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper =
+                    service.getImcmsAuthenticatorAndUserAndRoleMapper();
+            try {
+                userAndRoleMapper.checkUserIpAllowed(user, request);
+
+            } catch (UserIpIsNotAllowedException e) {
+                userAndRoleMapper.forwardDeniedUserToMessagePage(user, request, response);
+                return;
+            }
+
             Utility.makeUserLoggedIn(request, user);
         }
 

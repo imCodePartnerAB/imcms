@@ -48,6 +48,8 @@ public abstract class ContentManagementSystem {
             return null;
         }
 
+        Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().checkUserIpAllowed(user, request);
+
         ContentManagementSystem cms = Utility.initRequestWithApi(request, user);
 
         if (services.getConfig().isDenyMultipleUserLogin()) {

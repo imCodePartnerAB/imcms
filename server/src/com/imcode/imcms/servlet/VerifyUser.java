@@ -7,6 +7,7 @@ import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.logging.Log;
@@ -43,7 +44,16 @@ public class VerifyUser extends HttpServlet {
         final String name = req.getParameter(REQUEST_PARAMETER__USERNAME);
         final String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
 
-        final ContentManagementSystem cms = ContentManagementSystem.login(req, res, name, passwd);
+        final ContentManagementSystem cms;
+        final ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices()
+                .getImcmsAuthenticatorAndUserAndRoleMapper();
+        try {
+            cms = ContentManagementSystem.login(req, res, name, passwd);
+
+        } catch (UserIpIsNotAllowedException e) {
+            userAndRoleMapper.forwardDeniedUserToMessagePage(e.getUser(), req, res);
+            return;
+        }
 
         if (null != cms) {
             final User currentUser = cms.getCurrentUser();
