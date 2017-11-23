@@ -76,7 +76,12 @@ public class MappingConfig {
 
     @Bean
     public Function<Template, TemplateDTO> templateToTemplateDTO() {
-        return template -> new TemplateDTO(template.getId(), template.getName(), template.isHidden());
+        return TemplateDTO::new;
+    }
+
+    @Bean
+    public Function<TemplateDTO, Template> templateDtoToTemplate() {
+        return Template::new;
     }
 
     @Bean
