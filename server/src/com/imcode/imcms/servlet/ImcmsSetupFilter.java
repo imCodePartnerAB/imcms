@@ -23,10 +23,22 @@ import java.util.Set;
 
 public class ImcmsSetupFilter implements Filter {
 
-    private static final Log log = LogFactory.getLog(ImcmsSetupFilter.class);
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
+    private static final Log log = LogFactory.getLog(ImcmsSetupFilter.class);
 
-    public void doFilter( ServletRequest r, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
+    public static String getDocumentIdString(ImcmsServices service, String path) {
+        String documentPathPrefix = service.getConfig().getDocumentPathPrefix();
+        String documentIdString = null;
+        if (StringUtils.isNotBlank(documentPathPrefix) && path.startsWith(documentPathPrefix)) {
+            documentIdString = path.substring(documentPathPrefix.length());
+            if (documentIdString.endsWith("/")) {
+                documentIdString = documentIdString.substring(0, documentIdString.length() - 1);
+            }
+        }
+        return documentIdString;
+    }
+
+    public void doFilter(ServletRequest r, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         r.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
 
         HttpServletRequest request = (HttpServletRequest) r;
@@ -34,22 +46,22 @@ public class ImcmsSetupFilter implements Filter {
         HttpSession session = request.getSession();
 
         ImcmsServices service = Imcms.getServices();
-        if ( session.isNew() ) {
+        if (session.isNew()) {
             service.incrementSessionCounter();
-            setDomainSessionCookie( response, session );
+            setDomainSessionCookie(response, session);
         }
 
         String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
         FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
-                                                              null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
-        if ( null != workaroundUriEncoding ) {
+                null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
+        if (null != workaroundUriEncoding) {
             request = new UriEncodingWorkaroundWrapper(request, fallbackDecoder);
         }
 
-        UserDomainObject user = Utility.getLoggedOnUser(request) ;
-        if ( null == user ) {
-            user = service.verifyUserByIpOrDefault(request.getRemoteAddr()) ;
-            assert user.isActive() ;
+        UserDomainObject user = Utility.getLoggedOnUser(request);
+        if (null == user) {
+            user = service.verifyUserByIpOrDefault(request.getRemoteAddr());
+            assert user.isActive();
             Utility.makeUserLoggedIn(request, user);
         }
 
@@ -58,40 +70,41 @@ public class ImcmsSetupFilter implements Filter {
 
         Utility.initRequestWithApi(request, user);
 
-        NDC.setMaxDepth( 0 );
+        NDC.setMaxDepth(0);
         String contextPath = request.getContextPath();
-        if ( !"".equals( contextPath ) ) {
-            NDC.push( contextPath );
+        if (!"".equals(contextPath)) {
+            NDC.push(contextPath);
         }
-        NDC.push( StringUtils.substringAfterLast( request.getRequestURI(), "/" ) );
+        NDC.push(StringUtils.substringAfterLast(request.getRequestURI(), "/"));
 
         handleDocumentUri(chain, request, response, service, fallbackDecoder);
-        NDC.setMaxDepth( 0 );
+        NDC.setMaxDepth(0);
     }
 
     private void handleDocumentUri(FilterChain chain, HttpServletRequest request, ServletResponse response,
                                    ImcmsServices service, FallbackDecoder fallbackDecoder) throws ServletException, IOException {
-        String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder) ;
-        path = StringUtils.substringAfter( path, request.getContextPath() ) ;
+        String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
+        path = StringUtils.substringAfter(path, request.getContextPath());
         String documentIdString = getDocumentIdString(service, path);
         ServletContext servletContext = request.getSession().getServletContext();
         Set resources = servletContext.getResourcePaths(path);
-        if ( null == resources || 0 == resources.size() ) {
+        if (null == resources || 0 == resources.size()) {
             DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
             if (null != document) {
                 try {
-                    GetDoc.viewDoc( document, request, (HttpServletResponse)response );
-                    return ;
-                } catch( NumberFormatException nfe ) {}
+                    GetDoc.viewDoc(document, request, (HttpServletResponse) response);
+                    return;
+                } catch (NumberFormatException nfe) {
+                }
             }
         }
-		try {
+        try {
             chain.doFilter(request, response);
 
         } catch (MissingLoginDataException e) {
             log.error("Null login data received. User redirected to missingLoginData.jsp.", e);
             throw new MissingLoginDataException(e);
-		} catch (Exception e) {
+        } catch (Exception e) {
             final Throwable cause = e.getCause();
 
             if (cause != null && ("Broken pipe".equals(cause.getMessage()))) {
@@ -140,30 +153,18 @@ public class ImcmsSetupFilter implements Filter {
         }
     }
 
-    public static String getDocumentIdString(ImcmsServices service, String path) {
-        String documentPathPrefix = service.getConfig().getDocumentPathPrefix() ;
-        String documentIdString = null ;
-        if ( StringUtils.isNotBlank( documentPathPrefix ) && path.startsWith( documentPathPrefix )) {
-            documentIdString = path.substring( documentPathPrefix.length());
-            if (documentIdString.endsWith( "/" ) ) {
-                documentIdString = documentIdString.substring(0,documentIdString.length()-1);
-            }
-        }
-        return documentIdString;
-    }
-
-    private void setDomainSessionCookie( ServletResponse response, HttpSession session ) {
+    private void setDomainSessionCookie(ServletResponse response, HttpSession session) {
 
         String domain = Imcms.getServices().getConfig().getSessionCookieDomain();
         if (StringUtils.isNotBlank(domain)) {
-            Cookie cookie = new Cookie( JSESSIONID_COOKIE_NAME, session.getId());
-            cookie.setDomain( domain );
-            cookie.setPath( "/" );
-            ((HttpServletResponse)response).addCookie( cookie );
+            Cookie cookie = new Cookie(JSESSIONID_COOKIE_NAME, session.getId());
+            cookie.setDomain(domain);
+            cookie.setPath("/");
+            ((HttpServletResponse) response).addCookie(cookie);
         }
     }
 
-    public void init( FilterConfig config ) throws ServletException {
+    public void init(FilterConfig config) throws ServletException {
     }
 
     public void destroy() {
