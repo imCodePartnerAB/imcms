@@ -1,9 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
-import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
-import com.imcode.imcms.components.datainitializer.UserDataInitializer;
-import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
+import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.*;
@@ -68,8 +65,13 @@ public class DocumentServiceTest {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private TemplateDataInitializer templateDataInitializer;
+
     @Before
     public void setUp() throws Exception {
+        templateDataInitializer.cleanRepositories();
+
         final Meta metaDoc = Value.with(new Meta(), meta -> {
 
             meta.setArchivedDatetime(new Date());
@@ -98,6 +100,7 @@ public class DocumentServiceTest {
         Imcms.setUser(user);
 
         metaRepository.save(metaDoc);
+        templateDataInitializer.createData(metaDoc.getId(), "demo", "demo");
         versionDataInitializer.createData(TEST_VERSION_INDEX, metaDoc.getId());
         commonContentDataInitializer.createData(metaDoc.getId(), TEST_VERSION_INDEX);
         createdDoc = metaToDocumentDTO.apply(metaDoc);
@@ -110,7 +113,48 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void save() throws Exception {
+    public void getDocumentTitle() throws Exception {
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final String testHeadline = "test_headline";
+
+        for (CommonContentDTO commonContentDTO : documentDTO.getCommonContents()) {
+            commonContentDTO.setHeadline(testHeadline);
+        }
+
+        documentService.save(documentDTO);
+
+        assertEquals(documentService.getDocumentTitle(createdDoc.getId()), testHeadline);
+    }
+
+    @Test
+    public void getDocumentTarget() throws Exception {
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final String testTarget = "_target";
+        documentDTO.setTarget(testTarget);
+        documentService.save(documentDTO);
+
+        assertEquals(documentService.getDocumentTarget(createdDoc.getId()), testTarget);
+    }
+
+    @Test
+    public void getDocumentLink_When_NoAlias_Expect_DocIdInLink() throws Exception {
+        final int docId = createdDoc.getId();
+
+        assertEquals(documentService.getDocumentLink(docId), "/" + createdDoc.getId());
+    }
+
+    @Test
+    public void getDocumentLink_When_AliasIsSet_Expect_AliasInLink() throws Exception {
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final String testAlias = "test_alias";
+        documentDTO.setAlias(testAlias);
+        documentService.save(documentDTO);
+
+        assertEquals(documentService.getDocumentLink(createdDoc.getId()), "/" + testAlias);
+    }
+
+    @Test
+    public void save_With_Target_Expected_Saved() throws Exception {
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
         documentDTO.setTarget("test_target");
 
@@ -391,4 +435,32 @@ public class DocumentServiceTest {
         assertEquals(documentDTO1, documentDTO);
     }
 
+    @Test
+    public void save_When_CustomTemplateSet_Expect_Saved() throws Exception {
+//        final String templateName = "test_" + System.currentTimeMillis();
+//        final File templateFile = new File(TemplateMapper.getTemplateDirectory(), templateName + ".jsp");
+//        final TemplateDTO templateDTO = new TemplateDTO(null, templateName, false);
+//
+//        try {
+//            assertTrue(templateFile.createNewFile());
+//            assertNotNull(templateService.save(templateDTO));
+//
+//            final Optional<TemplateDTO> oTemplate = templateService.getTemplate(templateName);
+//            assertTrue(oTemplate.isPresent());
+//
+//            final TemplateDTO templateDTO1 = oTemplate.get();
+//            final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+//            documentDTO.setTemplate(templateDTO1);
+//
+//            documentService.save(documentDTO);
+//
+//            final DocumentDTO savedDoc = documentService.get(documentDTO.getId());
+//            final TemplateDTO savedTemplate = savedDoc.getTemplate();
+//
+//            assertEquals(savedTemplate, templateDTO1);
+//
+//        } finally {
+//            assertTrue(FileUtility.forceDelete(templateFile));
+//        }
+    }
 }

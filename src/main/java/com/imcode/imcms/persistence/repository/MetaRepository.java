@@ -24,4 +24,7 @@ public interface MetaRepository extends JpaRepository<Meta, Integer> {
 
     @Query("SELECT min(m.id), max(m.id) FROM Meta m")
     Integer[] findMinAndMaxId();
+
+    @Query("SELECT m.target FROM Meta m WHERE m.id = ?")
+    String findTarget(int docId);
 }
