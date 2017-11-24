@@ -2,7 +2,9 @@ package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
+import com.imcode.imcms.persistence.entity.TextDocumentTemplate;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
+import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import com.imcode.imcms.util.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +16,15 @@ import java.util.stream.IntStream;
 @Component
 public class TemplateDataInitializer extends TestDataCleaner {
 
+    private final TextDocumentTemplateRepository textDocumentTemplateRepository;
     private final TemplateRepository templateRepository;
     private final Function<TemplateJPA, TemplateDTO> templateToTemplateDTO;
 
-    public TemplateDataInitializer(TemplateRepository templateRepository, Function<TemplateJPA, TemplateDTO> templateToTemplateDTO) {
-        super(templateRepository);
+    public TemplateDataInitializer(TextDocumentTemplateRepository textDocumentTemplateRepository,
+                                   TemplateRepository templateRepository,
+                                   Function<TemplateJPA, TemplateDTO> templateToTemplateDTO) {
+        super(templateRepository, textDocumentTemplateRepository);
+        this.textDocumentTemplateRepository = textDocumentTemplateRepository;
         this.templateRepository = templateRepository;
         this.templateToTemplateDTO = templateToTemplateDTO;
     }
@@ -44,4 +50,13 @@ public class TemplateDataInitializer extends TestDataCleaner {
         });
     }
 
+    public void createData(int docId, String templateName, String childrenTemplate) {
+        final TextDocumentTemplate textDocumentTemplate = new TextDocumentTemplate();
+        textDocumentTemplate.setTemplateName(templateName);
+        textDocumentTemplate.setChildrenTemplateName(childrenTemplate);
+        textDocumentTemplate.setDocId(docId);
+        textDocumentTemplate.setTemplateGroupId(0); // dummy group
+
+        textDocumentTemplateRepository.save(textDocumentTemplate);
+    }
 }
