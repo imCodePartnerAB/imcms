@@ -1,12 +1,12 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.persistence.entity.Template;
+import com.imcode.imcms.persistence.entity.TemplateJPA;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TemplateRepository extends JpaRepository<Template, Integer> {
+public interface TemplateRepository extends JpaRepository<TemplateJPA, Integer> {
 
-    Template findByName(String name);
+    TemplateJPA findByName(String name);
 
 }

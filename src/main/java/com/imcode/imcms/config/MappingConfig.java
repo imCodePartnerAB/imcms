@@ -75,13 +75,13 @@ public class MappingConfig {
     }
 
     @Bean
-    public Function<Template, TemplateDTO> templateToTemplateDTO() {
+    public Function<TemplateJPA, TemplateDTO> templateToTemplateDTO() {
         return TemplateDTO::new;
     }
 
     @Bean
-    public Function<TemplateDTO, Template> templateDtoToTemplate() {
-        return Template::new;
+    public Function<TemplateDTO, TemplateJPA> templateDtoToTemplate() {
+        return TemplateJPA::new;
     }
 
     @Bean

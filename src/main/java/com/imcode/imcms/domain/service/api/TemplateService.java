@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.TemplateDTO;
-import com.imcode.imcms.persistence.entity.Template;
+import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
 import imcode.server.document.TemplateMapper;
 import org.springframework.stereotype.Service;
@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 public class TemplateService {
 
     private final TemplateRepository templateRepository;
-    private final Function<Template, TemplateDTO> templateToTemplateDTO;
+    private final Function<TemplateJPA, TemplateDTO> templateToTemplateDTO;
     private final Function<TemplateDTO, TemplateDTO> templateSaver;
 
     public TemplateService(TemplateRepository templateRepository,
-                           Function<Template, TemplateDTO> templateToTemplateDTO,
-                           Function<TemplateDTO, Template> templateDtoToTemplate) {
+                           Function<TemplateJPA, TemplateDTO> templateToTemplateDTO,
+                           Function<TemplateDTO, TemplateJPA> templateDtoToTemplate) {
 
         this.templateRepository = templateRepository;
         this.templateToTemplateDTO = templateToTemplateDTO;
@@ -46,7 +46,7 @@ public class TemplateService {
 
     public Optional<TemplateDTO> getTemplate(String templateName) {
         if (isTemplateFileExist(templateName)) {
-            final Template template = templateRepository.findByName(templateName);
+            final TemplateJPA template = templateRepository.findByName(templateName);
             return Optional.ofNullable(template).map(templateToTemplateDTO);
         }
 
