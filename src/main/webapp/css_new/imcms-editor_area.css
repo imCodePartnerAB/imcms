@@ -100,6 +100,17 @@
     transform: rotate(45deg);
 }
 
-.imcms-editor-area__control-wrap:hover .imcms-editor-area__control-title {
-    display: block;
+.imcms-editor-area__control-title--top:before {
+    bottom: auto;
+    top: -5px;
+}
+
+.imcms-editor-area__control-title--right:before {
+    left: auto;
+    right: 5px;
+}
+
+.imcms-editor-area__control-title--left:before {
+    right: auto;
+    left: 5px;
 }
