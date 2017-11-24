@@ -11,7 +11,8 @@ Imcms.define("imcms-editor-labels-initializer", ["jquery"], function ($) {
                 };
             }
 
-            function positioningLabel($ctrl, event) {
+            function positioningLabel(event) {
+                var $ctrl = $(this);
                 var $label = $ctrl.find(".imcms-editor-area__control-title"),
                     mouseCoords = {
                         x: event.clientX,
@@ -21,14 +22,14 @@ Imcms.define("imcms-editor-labels-initializer", ["jquery"], function ($) {
                     labelParam = getParams($label)
                 ;
 
-                if (mouseCoords.y > (ctrlParams.height + labelParam.height + 5)) { // 5px - height of label:before
+                var labelHeight = (ctrlParams.height + labelParam.height + 5);
+                if (mouseCoords.y > labelHeight) { // 5px - height of label:before
                     $label.css({
                         "top": -(labelParam.height + 5) + "px"
                     });
                     $label.removeClass().addClass("imcms-editor-area__control-title")
-                }
 
-                if (mouseCoords.y < (ctrlParams.height + labelParam.height + 5)) {
+                } else if (mouseCoords.y < labelHeight) {
                     $label.css({
                         "top": ctrlParams.height + 5 + "px"
                     });
@@ -40,9 +41,8 @@ Imcms.define("imcms-editor-labels-initializer", ["jquery"], function ($) {
                         "left": $label.position().left - (labelParam.width - ctrlParams.width)
                     });
                     $label.addClass("imcms-editor-area__control-title--right");
-                }
 
-                if ((mouseCoords.x - (labelParam.width / 2)) < 0) {
+                } else if ((mouseCoords.x - (labelParam.width / 2)) < 0) {
                     $label.css({
                         "left": 0
                     });
@@ -52,9 +52,7 @@ Imcms.define("imcms-editor-labels-initializer", ["jquery"], function ($) {
                 $label.show();
             }
 
-            editControls.on("mouseenter", function (event) {
-                positioningLabel($(this), event);
-            });
+            editControls.on("mouseenter", positioningLabel);
 
             editControls.on("mouseleave", function () {
                 $(this).find(".imcms-editor-area__control-title").hide();
