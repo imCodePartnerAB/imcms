@@ -22,13 +22,11 @@ public class TextDocumentTemplate {
     @Column(name = "template_name")
     private String templateName;
 
+    // fixme: not used yet
     @Column(name = "group_id")
     private int templateGroupId;
 
-    @Column(name = "default_template")
-    private String defaultTemplateName;
-
-    @Column(name = "default_children_template")
-    private String defaultChildrenTemplate;
+    @Column(name = "children_template_name")
+    private String childrenTemplateName;
 
 }

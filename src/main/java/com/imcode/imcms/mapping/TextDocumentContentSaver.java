@@ -167,7 +167,7 @@ public class TextDocumentContentSaver {
         TextDocumentTemplate textDocumentTemplate = new TextDocumentTemplate();
 
         textDocumentTemplate.setDocId(docId);
-        textDocumentTemplate.setDefaultTemplateName(templateNamesDO.getDefaultTemplateName());
+        textDocumentTemplate.setChildrenTemplateName(templateNamesDO.getDefaultTemplateName());
         textDocumentTemplate.setTemplateGroupId(templateNamesDO.getTemplateGroupId());
         textDocumentTemplate.setTemplateName(templateNamesDO.getTemplateName());
 
