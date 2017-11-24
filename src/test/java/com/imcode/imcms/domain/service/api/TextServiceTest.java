@@ -11,7 +11,6 @@ import com.imcode.imcms.persistence.entity.Text;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +29,7 @@ import static com.imcode.imcms.persistence.entity.TextBase.Type.PLAIN_TEXT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
@@ -61,17 +62,12 @@ public class TextServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        clearRepos();
+        textRepository.deleteAll();
+        textRepository.flush();
 
         version = versionDataInitializer.createData(VERSION_NO, DOC_ID);
         languages = Arrays.asList(languageRepository.findByCode(ENG_CODE), languageRepository.findByCode(SWE_CODE));
         // both langs should already be created
-    }
-
-    @After
-    public void clearRepos() {
-        textRepository.deleteAll();
-        textRepository.flush();
     }
 
     @Test
