@@ -8,8 +8,8 @@ import com.imcode.imcms.domain.service.api.MenuService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TemplateNames;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TemplateNamesRepository;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
@@ -69,15 +69,15 @@ public class TextDocumentContentLoader {
 
 
     TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
-        TemplateNames jpaTemplateNames = templateNamesRepository.findOne(docId);
+        TextDocumentTemplate jpaTextDocumentTemplate = templateNamesRepository.findOne(docId);
 
-        if (jpaTemplateNames == null) return null;
+        if (jpaTextDocumentTemplate == null) return null;
 
         TextDocumentDomainObject.TemplateNames templateNamesDO = new TextDocumentDomainObject.TemplateNames();
 
-        templateNamesDO.setDefaultTemplateName(jpaTemplateNames.getDefaultTemplateName());
-        templateNamesDO.setTemplateGroupId(jpaTemplateNames.getTemplateGroupId());
-        templateNamesDO.setTemplateName(jpaTemplateNames.getTemplateName());
+        templateNamesDO.setDefaultTemplateName(jpaTextDocumentTemplate.getDefaultTemplateName());
+        templateNamesDO.setTemplateGroupId(jpaTextDocumentTemplate.getTemplateGroupId());
+        templateNamesDO.setTemplateName(jpaTextDocumentTemplate.getTemplateName());
 
         return templateNamesDO;
     }

@@ -165,14 +165,14 @@ public class TextDocumentContentSaver {
     }
 
     private void saveTemplateNames(int docId, TextDocumentDomainObject.TemplateNames templateNamesDO) {
-        TemplateNames templateNames = new TemplateNames();
+        TextDocumentTemplate textDocumentTemplate = new TextDocumentTemplate();
 
-        templateNames.setDocId(docId);
-        templateNames.setDefaultTemplateName(templateNamesDO.getDefaultTemplateName());
-        templateNames.setTemplateGroupId(templateNamesDO.getTemplateGroupId());
-        templateNames.setTemplateName(templateNamesDO.getTemplateName());
+        textDocumentTemplate.setDocId(docId);
+        textDocumentTemplate.setDefaultTemplateName(templateNamesDO.getDefaultTemplateName());
+        textDocumentTemplate.setTemplateGroupId(templateNamesDO.getTemplateGroupId());
+        textDocumentTemplate.setTemplateName(templateNamesDO.getTemplateName());
 
-        templateNamesRepository.save(templateNames);
+        templateNamesRepository.save(textDocumentTemplate);
     }
 
     public void saveMenu(TextDocMenuContainer container) {
