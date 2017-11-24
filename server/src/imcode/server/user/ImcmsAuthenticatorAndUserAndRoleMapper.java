@@ -19,6 +19,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.validator.routines.InetAddressValidator;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
@@ -958,8 +959,13 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             return true; // only non-default users have to be checked
         }
 
-        final boolean isUserSuperAdmin = user.isSuperAdmin();
         final String userIP = request.getRemoteAddr();
+
+        if (isNotValidInet4Address(userIP)) {
+            return false;
+        }
+
+        final boolean isUserSuperAdmin = user.isSuperAdmin();
         final long userIpLong = Utility.ipStringToLong(userIP);
         boolean atLeastOnceInWhiteList = false;
 
@@ -978,5 +984,13 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         }
 
         return atLeastOnceInWhiteList;
+    }
+
+    private boolean isNotValidInet4Address(String ip) {
+        if ("0:0:0:0:0:0:0:1".equals(ip)) {
+            ip = "172.0.0.1"; // localhost handled here
+        }
+
+        return !InetAddressValidator.getInstance().isValidInet4Address(ip);
     }
 }
