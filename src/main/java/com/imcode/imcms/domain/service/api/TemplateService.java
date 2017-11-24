@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
-import imcode.server.document.TemplateMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -17,14 +17,17 @@ public class TemplateService {
 
     private final TemplateRepository templateRepository;
     private final Function<TemplateJPA, TemplateDTO> templateToTemplateDTO;
+    private final File templateDirectory;
     private final Function<TemplateDTO, TemplateDTO> templateSaver;
 
     public TemplateService(TemplateRepository templateRepository,
                            Function<TemplateJPA, TemplateDTO> templateToTemplateDTO,
-                           Function<TemplateDTO, TemplateJPA> templateDtoToTemplate) {
+                           Function<TemplateDTO, TemplateJPA> templateDtoToTemplate,
+                           @Value("WEB-INF/templates/text") File templateDirectory) {
 
         this.templateRepository = templateRepository;
         this.templateToTemplateDTO = templateToTemplateDTO;
+        this.templateDirectory = templateDirectory;
         this.templateSaver = templateDtoToTemplate.andThen(templateRepository::save).andThen(templateToTemplateDTO);
     }
 
@@ -56,7 +59,7 @@ public class TemplateService {
     private boolean isTemplateFileExist(String templateName) {
         for (String extension : new String[]{"jsp", "jspx", "html"}) {
             final String templateFileName = templateName + "." + extension;
-            final File templateFile = new File(TemplateMapper.getTemplateDirectory(), templateFileName);
+            final File templateFile = new File(templateDirectory, templateFileName);
 
             if (templateFile.exists()) {
                 return true;

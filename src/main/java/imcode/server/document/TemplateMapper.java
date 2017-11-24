@@ -53,7 +53,7 @@ public class TemplateMapper {
         return allTemplates;
     }
 
-    public static File getTemplateDirectory() {
+    private static File getTemplateDirectory() {
         return new File(Imcms.getPath(), "WEB-INF/templates/text");
     }
 

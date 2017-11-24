@@ -4,11 +4,11 @@ import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.TemplateDTO;
-import imcode.server.document.TemplateMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -26,6 +26,9 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class TemplateServiceTest {
+
+    @Value("WEB-INF/templates/text")
+    private File templateDirectory;
 
     @Autowired
     private TemplateService templateService;
@@ -49,7 +52,7 @@ public class TemplateServiceTest {
     @Test
     public void getByName() throws IOException {
         final String templateName = "testttt123";
-        final File templateFile = new File(TemplateMapper.getTemplateDirectory(), templateName + ".jsp");
+        final File templateFile = new File(templateDirectory, templateName + ".jsp");
         templateFile.createNewFile();
 
         try {
@@ -67,7 +70,7 @@ public class TemplateServiceTest {
     @Test
     public void save() throws Exception {
         final String templateName = "testttt123";
-        final File templateFile = new File(TemplateMapper.getTemplateDirectory(), templateName + ".jsp");
+        final File templateFile = new File(templateDirectory, templateName + ".jsp");
 
         try {
             assertTrue(templateFile.createNewFile());
