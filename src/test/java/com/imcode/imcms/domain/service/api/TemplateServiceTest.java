@@ -5,7 +5,6 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.TemplateDTO;
 import imcode.server.document.TemplateMapper;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
+@Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
@@ -38,11 +39,6 @@ public class TemplateServiceTest {
     public void setUp() throws Exception {
         dataInitializer.cleanRepositories();
         templatesExpected = dataInitializer.createData(5);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dataInitializer.cleanRepositories();
     }
 
     @Test
