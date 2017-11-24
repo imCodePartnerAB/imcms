@@ -13,7 +13,6 @@ Imcms.define("imcms-editor-labels-initializer", ["jquery"], function ($) {
 
             function positioningLabel($ctrl, event) {
                 var $label = $ctrl.find(".imcms-editor-area__control-title"),
-                    $labelBefore$ctrl = $ctrl.find(".imcms-editor-area__control-title:before"),
                     mouseCoords = {
                         x: event.clientX,
                         y: event.clientY
@@ -21,8 +20,6 @@ Imcms.define("imcms-editor-labels-initializer", ["jquery"], function ($) {
                     ctrlParams = getParams($ctrl),
                     labelParam = getParams($label)
                 ;
-
-                console.log("$labelBefore$ctrl: ", $labelBefore$ctrl);
 
                 if (mouseCoords.y > (ctrlParams.height + labelParam.height + 5)) { // 5px - height of label:before
                     $label.css({
