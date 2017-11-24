@@ -8,8 +8,8 @@ import com.imcode.imcms.domain.service.api.MenuService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TemplateNamesRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextDocumentTemplate;
+import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextDocumentTemplateRepository;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
@@ -39,7 +39,7 @@ public class TextDocumentContentLoader {
     private final TextRepository textRepository;
     private final TextHistoryRepository textHistoryRepository;
     private final ImageRepository imageRepository;
-    private final TemplateNamesRepository templateNamesRepository;
+    private final TextDocumentTemplateRepository textDocumentTemplateRepository;
     private final LanguageRepository languageRepository;
     private final DocumentLanguageMapper languageMapper;
     private final MenuService menuService;
@@ -50,7 +50,7 @@ public class TextDocumentContentLoader {
                                      TextRepository textRepository,
                                      TextHistoryRepository textHistoryRepository,
                                      ImageRepository imageRepository,
-                                     TemplateNamesRepository templateNamesRepository,
+                                     TextDocumentTemplateRepository textDocumentTemplateRepository,
                                      MenuService menuService,
                                      LanguageRepository languageRepository,
                                      DocumentLanguageMapper languageMapper,
@@ -60,7 +60,7 @@ public class TextDocumentContentLoader {
         this.textRepository = textRepository;
         this.textHistoryRepository = textHistoryRepository;
         this.imageRepository = imageRepository;
-        this.templateNamesRepository = templateNamesRepository;
+        this.textDocumentTemplateRepository = textDocumentTemplateRepository;
         this.menuService = menuService;
         this.languageRepository = languageRepository;
         this.languageMapper = languageMapper;
@@ -69,7 +69,7 @@ public class TextDocumentContentLoader {
 
 
     TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
-        TextDocumentTemplate jpaTextDocumentTemplate = templateNamesRepository.findOne(docId);
+        TextDocumentTemplate jpaTextDocumentTemplate = textDocumentTemplateRepository.findOne(docId);
 
         if (jpaTextDocumentTemplate == null) return null;
 

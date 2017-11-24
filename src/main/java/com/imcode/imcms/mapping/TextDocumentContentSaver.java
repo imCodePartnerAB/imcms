@@ -34,7 +34,7 @@ public class TextDocumentContentSaver {
     private final TextHistoryRepository textHistoryRepository;
     private final ImageRepository imageRepository;
     private final MenuRepository menuRepository;
-    private final TemplateNamesRepository templateNamesRepository;
+    private final TextDocumentTemplateRepository textDocumentTemplateRepository;
     private final LoopRepository loopRepository;
     private final LanguageRepository languageRepository;
     private final UserRepository userRepository;
@@ -42,7 +42,7 @@ public class TextDocumentContentSaver {
     @Inject
     public TextDocumentContentSaver(VersionRepository versionRepository, TextRepository textRepository,
                                     TextHistoryRepository textHistoryRepository, ImageRepository imageRepository,
-                                    MenuRepository menuRepository, TemplateNamesRepository templateNamesRepository,
+                                    MenuRepository menuRepository, TextDocumentTemplateRepository textDocumentTemplateRepository,
                                     LoopRepository loopRepository, LanguageRepository languageRepository,
                                     UserRepository userRepository) {
         this.versionRepository = versionRepository;
@@ -50,7 +50,7 @@ public class TextDocumentContentSaver {
         this.textHistoryRepository = textHistoryRepository;
         this.imageRepository = imageRepository;
         this.menuRepository = menuRepository;
-        this.templateNamesRepository = templateNamesRepository;
+        this.textDocumentTemplateRepository = textDocumentTemplateRepository;
         this.loopRepository = loopRepository;
         this.languageRepository = languageRepository;
         this.userRepository = userRepository;
@@ -172,7 +172,7 @@ public class TextDocumentContentSaver {
         textDocumentTemplate.setTemplateGroupId(templateNamesDO.getTemplateGroupId());
         textDocumentTemplate.setTemplateName(templateNamesDO.getTemplateName());
 
-        templateNamesRepository.save(textDocumentTemplate);
+        textDocumentTemplateRepository.save(textDocumentTemplate);
     }
 
     public void saveMenu(TextDocMenuContainer container) {
