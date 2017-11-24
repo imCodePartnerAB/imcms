@@ -72,11 +72,6 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testFindByEmailUnique() throws Exception {
-        assertNotNull(repository.findByEmailUnique("admin@imcode.com"));
-    }
-
-    @Test
     public void testFindById() throws Exception {
         assertNotNull(repository.findById(1));
     }
