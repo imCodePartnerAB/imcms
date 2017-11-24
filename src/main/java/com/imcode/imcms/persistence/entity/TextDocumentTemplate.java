@@ -1,7 +1,6 @@
 package com.imcode.imcms.persistence.entity;
 
 import lombok.Data;
-import org.apache.commons.lang.UnhandledException;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +13,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "text_docs")
-public class TextDocumentTemplate implements Cloneable {
+public class TextDocumentTemplate {
 
     @Id
     @Column(name = "meta_id")
@@ -31,14 +30,5 @@ public class TextDocumentTemplate implements Cloneable {
 
     @Column(name = "default_children_template")
     private String defaultChildrenTemplate;
-
-    @Override
-    public TextDocumentTemplate clone() {
-        try {
-            return (TextDocumentTemplate) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new UnhandledException(e);
-        }
-    }
 
 }
