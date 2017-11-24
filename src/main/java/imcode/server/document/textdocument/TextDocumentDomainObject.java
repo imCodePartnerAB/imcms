@@ -213,14 +213,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         templateNames.setDefaultTemplateName(defaultTemplateId);
     }
 
-    public String getDefaultTemplateNameForRestricted1() {
-        return templateNames.getDefaultTemplateNameForRestricted1();
-    }
-
-    public String getDefaultTemplateNameForRestricted2() {
-        return templateNames.getDefaultTemplateNameForRestricted2();
-    }
-
     /**
      * @return images outside ot content loops.
      */
@@ -388,8 +380,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         private String templateName;
         private int templateGroupId;
         private String defaultTemplateName;
-        private String defaultTemplateNameForRestricted1;
-        private String defaultTemplateNameForRestricted2;
 
         @Override
         public TemplateNames clone() {
@@ -422,22 +412,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         public void setDefaultTemplateName(String defaultTemplateName) {
             this.defaultTemplateName = defaultTemplateName;
-        }
-
-        public String getDefaultTemplateNameForRestricted1() {
-            return defaultTemplateNameForRestricted1;
-        }
-
-        public void setDefaultTemplateNameForRestricted1(String defaultTemplateNameForRestricted1) {
-            this.defaultTemplateNameForRestricted1 = defaultTemplateNameForRestricted1;
-        }
-
-        public String getDefaultTemplateNameForRestricted2() {
-            return defaultTemplateNameForRestricted2;
-        }
-
-        public void setDefaultTemplateNameForRestricted2(String defaultTemplateNameForRestricted2) {
-            this.defaultTemplateNameForRestricted2 = defaultTemplateNameForRestricted2;
         }
     }
 

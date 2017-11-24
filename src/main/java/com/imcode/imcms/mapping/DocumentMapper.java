@@ -2,7 +2,6 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
@@ -129,7 +128,7 @@ public class DocumentMapper implements DocumentGetter {
             newTextDocument.removeAllMenus();
             newTextDocument.removeAllContentLoops();
 
-            setTemplateForNewTextDocument(newTextDocument, user, parentDoc);
+            setTemplateForNewTextDocument(newTextDocument, parentDoc);
         } else {
             newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
             newDocument.setMeta(parentDoc.getMeta().clone());
@@ -157,29 +156,17 @@ public class DocumentMapper implements DocumentGetter {
      * Sets text doc's template.
      * <p>
      * By default if parent doc type is {@link imcode.server.document.textdocument.TextDocumentDomainObject} its default template is used.
-     * It might be overridden however if most privileged permission set type for the current user is either
-     * {@link PermissionDTO#RESTRICTED_1}
-     * or
-     * {@link PermissionDTO#RESTRICTED_2}
-     * and there is a default template associated with that set type.
      * <p>
      * Please note:
      * According to specification only doc of type {@link imcode.server.document.textdocument.TextDocumentDomainObject}
      * can be used as parent (of a 'profile').
      * NB! for some (undocumented) reason a doc of any type might be used as a parent.
      */
-    private void setTemplateForNewTextDocument(TextDocumentDomainObject newTextDocument, UserDomainObject user,
+    private void setTemplateForNewTextDocument(TextDocumentDomainObject newTextDocument,
                                                DocumentDomainObject parent) {
-        PermissionDTO documentPermissionSetType = user.getDocumentPermissionSetTypeFor(parent);
         String templateName = null;
 
-        if (documentPermissionSetType == PermissionDTO.RESTRICTED_1) {
-            templateName = newTextDocument.getDefaultTemplateNameForRestricted1();
-        } else if (documentPermissionSetType == PermissionDTO.RESTRICTED_2) {
-            templateName = newTextDocument.getDefaultTemplateNameForRestricted2();
-        }
-
-        if (templateName == null && parent instanceof TextDocumentDomainObject) {
+        if (parent instanceof TextDocumentDomainObject) {
             templateName = ((TextDocumentDomainObject) parent).getDefaultTemplateName();
         }
 

@@ -76,8 +76,6 @@ public class TextDocumentContentLoader {
         TextDocumentDomainObject.TemplateNames templateNamesDO = new TextDocumentDomainObject.TemplateNames();
 
         templateNamesDO.setDefaultTemplateName(jpaTemplateNames.getDefaultTemplateName());
-        templateNamesDO.setDefaultTemplateNameForRestricted1(jpaTemplateNames.getDefaultTemplateNameForRestricted1());
-        templateNamesDO.setDefaultTemplateNameForRestricted2(jpaTemplateNames.getDefaultTemplateNameForRestricted2());
         templateNamesDO.setTemplateGroupId(jpaTemplateNames.getTemplateGroupId());
         templateNamesDO.setTemplateName(jpaTemplateNames.getTemplateName());
 

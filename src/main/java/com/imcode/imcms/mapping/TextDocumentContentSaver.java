@@ -169,8 +169,6 @@ public class TextDocumentContentSaver {
 
         templateNames.setDocId(docId);
         templateNames.setDefaultTemplateName(templateNamesDO.getDefaultTemplateName());
-        templateNames.setDefaultTemplateNameForRestricted1(templateNamesDO.getDefaultTemplateNameForRestricted1());
-        templateNames.setDefaultTemplateNameForRestricted2(templateNamesDO.getDefaultTemplateNameForRestricted2());
         templateNames.setTemplateGroupId(templateNamesDO.getTemplateGroupId());
         templateNames.setTemplateName(templateNamesDO.getTemplateName());
 
