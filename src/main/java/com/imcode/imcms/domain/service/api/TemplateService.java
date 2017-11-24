@@ -73,14 +73,14 @@ public class TemplateService {
                 .collect(Collectors.toList());
     }
 
-    public TemplateDTO save(TemplateDTO saveMe) {
+    public Optional<TemplateDTO> save(TemplateDTO saveMe) {
         final String templateName = saveMe.getName();
 
         if (isTemplateFileExist(templateName)) {
-            return templateSaver.apply(saveMe);
+            return templateSaver.andThen(Optional::of).apply(saveMe);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public Optional<TemplateDTO> getTemplate(String templateName) {

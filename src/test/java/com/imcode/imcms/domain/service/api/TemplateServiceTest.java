@@ -76,9 +76,10 @@ public class TemplateServiceTest {
             assertTrue(templateFile.createNewFile());
 
             TemplateDTO templateDTO = new TemplateDTO(null, templateName, false);
-            templateDTO = templateService.save(templateDTO);
-            assertNotNull(templateDTO);
+            final Optional<TemplateDTO> oTemplate = templateService.save(templateDTO);
+            assertTrue(oTemplate.isPresent());
 
+            templateDTO = oTemplate.get();
             final Optional<TemplateDTO> templateOptional = templateService.getTemplate(templateName);
             assertTrue(templateOptional.isPresent());
             final TemplateDTO templateResult = templateOptional.get();
@@ -94,7 +95,7 @@ public class TemplateServiceTest {
     public void save_When_NoTemplate_Expect_Null() throws Exception {
         final String dummyName = "test_" + System.currentTimeMillis();
         final TemplateDTO templateDTO = new TemplateDTO(null, dummyName, false);
-        assertNull(templateService.save(templateDTO));
+        assertFalse(templateService.save(templateDTO).isPresent());
     }
 
 }
