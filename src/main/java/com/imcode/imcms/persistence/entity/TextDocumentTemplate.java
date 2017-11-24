@@ -29,6 +29,9 @@ public class TextDocumentTemplate implements Cloneable {
     @Column(name = "default_template")
     private String defaultTemplateName;
 
+    @Column(name = "default_children_template")
+    private String defaultChildrenTemplate;
+
     @Override
     public TextDocumentTemplate clone() {
         try {
