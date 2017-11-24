@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Table(name = "template")
 @AllArgsConstructor
 @NoArgsConstructor
-public class TemplateJPA extends TemplateDataHolder {
+public class TemplateJPA extends Template {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class TemplateJPA extends TemplateDataHolder {
     @Column(name = "is_hidden", nullable = false)
     private boolean hidden;
 
-    public TemplateJPA(TemplateDataHolder templateFrom) {
+    public TemplateJPA(Template templateFrom) {
         super(templateFrom);
     }
 }

@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.persistence.entity.TemplateDataHolder;
+import com.imcode.imcms.persistence.entity.Template;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TemplateDTO extends TemplateDataHolder implements Serializable {
+public class TemplateDTO extends Template implements Serializable {
 
     private static final long serialVersionUID = 441290133487733989L;
 
@@ -20,7 +20,7 @@ public class TemplateDTO extends TemplateDataHolder implements Serializable {
 
     private boolean hidden;
 
-    public TemplateDTO(TemplateDataHolder templateFrom) {
+    public TemplateDTO(Template templateFrom) {
         super(templateFrom);
     }
 }
