@@ -1,4 +1,4 @@
-package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
+package com.imcode.imcms.persistence.entity;
 
 import lombok.Data;
 import org.apache.commons.lang.UnhandledException;

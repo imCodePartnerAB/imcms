@@ -1,5 +1,6 @@
-package com.imcode.imcms.mapping.jpa.doc.content.textdoc;
+package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.persistence.entity.TextDocumentTemplate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
