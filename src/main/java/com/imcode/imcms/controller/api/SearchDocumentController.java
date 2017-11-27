@@ -18,7 +18,7 @@ public class SearchDocumentController {
 
     private final SearchDocumentService searchDocumentService;
 
-    public SearchDocumentController(SearchDocumentService searchDocumentService) {
+    SearchDocumentController(SearchDocumentService searchDocumentService) {
         this.searchDocumentService = searchDocumentService;
     }
 

@@ -17,7 +17,7 @@ public class TextController {
     private final TextService textService;
 
     @Autowired
-    public TextController(TextService textService) {
+    TextController(TextService textService) {
         this.textService = textService;
     }
 

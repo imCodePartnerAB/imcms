@@ -12,7 +12,7 @@ public class LoopController {
 
     private final LoopService loopService;
 
-    public LoopController(LoopService loopService) {
+    LoopController(LoopService loopService) {
         this.loopService = loopService;
     }
 

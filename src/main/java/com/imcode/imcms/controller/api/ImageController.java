@@ -15,7 +15,7 @@ public class ImageController {
 
     private final ImageService imageService;
 
-    public ImageController(ImageService imageService) {
+    ImageController(ImageService imageService) {
         this.imageService = imageService;
     }
 

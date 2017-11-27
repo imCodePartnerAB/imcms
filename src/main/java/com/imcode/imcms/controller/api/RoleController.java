@@ -14,7 +14,7 @@ public class RoleController {
 
     private final RoleService roleService;
 
-    public RoleController(RoleService roleService) {
+    RoleController(RoleService roleService) {
         this.roleService = roleService;
     }
 

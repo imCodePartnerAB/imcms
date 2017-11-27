@@ -16,7 +16,7 @@ public class DocumentController {
 
     private DocumentService documentService;
 
-    public DocumentController(DocumentService documentService) {
+    DocumentController(DocumentService documentService) {
         this.documentService = documentService;
     }
 

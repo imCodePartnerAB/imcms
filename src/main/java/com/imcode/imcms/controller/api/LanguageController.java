@@ -14,7 +14,7 @@ public class LanguageController {
 
     private final LanguageService languageService;
 
-    public LanguageController(LanguageService languageService) {
+    LanguageController(LanguageService languageService) {
         this.languageService = languageService;
     }
 

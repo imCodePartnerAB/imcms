@@ -23,7 +23,7 @@ public class ImageFolderController {
     private final ImageFolderService imageFolderService;
 
     @Autowired
-    public ImageFolderController(ImageFolderService imageFolderService) {
+    ImageFolderController(ImageFolderService imageFolderService) {
         this.imageFolderService = imageFolderService;
     }
 

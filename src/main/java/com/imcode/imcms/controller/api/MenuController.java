@@ -17,7 +17,7 @@ public class MenuController {
     private final MenuService menuService;
 
     @Autowired
-    public MenuController(MenuService menuService) {
+    MenuController(MenuService menuService) {
         this.menuService = menuService;
     }
 

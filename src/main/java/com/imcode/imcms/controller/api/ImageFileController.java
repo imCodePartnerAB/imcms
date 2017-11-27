@@ -23,7 +23,7 @@ public class ImageFileController {
 
     private final ImageFileService imageFileService;
 
-    public ImageFileController(ImageFileService imageFileService) {
+    ImageFileController(ImageFileService imageFileService) {
         this.imageFileService = imageFileService;
     }
 

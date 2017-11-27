@@ -27,7 +27,7 @@ public class ViewDocumentController {
 
     private final DocumentMapper documentMapper;
 
-    public ViewDocumentController(DocumentMapper documentMapper) {
+    ViewDocumentController(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
     }
 

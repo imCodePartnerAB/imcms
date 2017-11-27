@@ -16,7 +16,7 @@ public class CategoryTypeController {
     private final CategoryTypeService categoryTypeService;
 
     @Autowired
-    public CategoryTypeController(CategoryTypeService categoryTypeService) {
+    CategoryTypeController(CategoryTypeService categoryTypeService) {
         this.categoryTypeService = categoryTypeService;
     }
 
