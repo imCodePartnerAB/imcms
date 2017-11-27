@@ -6,20 +6,15 @@ import com.imcode.imcms.persistence.repository.LanguageRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 public class LanguageService {
 
     private final LanguageRepository languageRepository;
-    private final Function<LanguageJPA, LanguageDTO> languageToLanguageDTO;
 
-    LanguageService(LanguageRepository languageRepository,
-                    Function<LanguageJPA, LanguageDTO> languageToLanguageDTO) {
-
+    LanguageService(LanguageRepository languageRepository) {
         this.languageRepository = languageRepository;
-        this.languageToLanguageDTO = languageToLanguageDTO;
     }
 
     /**
@@ -29,7 +24,7 @@ public class LanguageService {
      * @return language DTO
      */
     public LanguageDTO findByCode(String code) {
-        return languageToLanguageDTO.compose(languageRepository::findByCode).apply(code);
+        return new LanguageDTO(languageRepository.findByCode(code));
     }
 
     /**
@@ -45,7 +40,7 @@ public class LanguageService {
     public List<LanguageDTO> getAll() {
         return languageRepository.findAll()
                 .stream()
-                .map(languageToLanguageDTO)
+                .map(LanguageDTO::new)
                 .collect(Collectors.toList());
     }
 

@@ -21,19 +21,16 @@ public class CommonContentService {
 
     private final CommonContentRepository commonContentRepository;
     private final Function<CommonContentJPA, CommonContentDTO> commonContentToDTO;
-    private final Function<LanguageDTO, LanguageJPA> languageDtoToLanguage;
     private final LanguageService languageService;
     private final Function<CommonContentDTO, CommonContentJPA> commonContentSaver;
 
     CommonContentService(CommonContentRepository commonContentRepository,
                          Function<CommonContentJPA, CommonContentDTO> commonContentToDTO,
                          Function<CommonContentDTO, CommonContentJPA> commonContentDtoToCommonContent,
-                         Function<LanguageDTO, LanguageJPA> languageDtoToLanguage,
                          LanguageService languageService) {
 
         this.commonContentRepository = commonContentRepository;
         this.commonContentToDTO = commonContentToDTO;
-        this.languageDtoToLanguage = languageDtoToLanguage;
         this.languageService = languageService;
         this.commonContentSaver = commonContentDtoToCommonContent.andThen(commonContentRepository::save);
     }
@@ -63,7 +60,7 @@ public class CommonContentService {
      * @return common content of docId, versionNo and user language.
      */
     public CommonContentDTO getOrCreate(int docId, int versionNo, LanguageDTO languageDTO) {
-        final LanguageJPA language = languageDtoToLanguage.apply(languageDTO);
+        final LanguageJPA language = new LanguageJPA(languageDTO);
         final CommonContentJPA commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
                 docId, versionNo, language
         );

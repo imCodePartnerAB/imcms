@@ -15,7 +15,6 @@ import imcode.server.document.index.DocumentStoredFields;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,24 +49,6 @@ class MappingConfig {
             documentDTO.setTitle(documentFields.headline());
             documentDTO.setType(DocumentType.values()[documentFields.documentType()]);
             return documentDTO;
-        };
-    }
-
-    @Bean
-    public Function<LanguageJPA, LanguageDTO> languageToLanguageDTO() {
-        return language -> {
-            final LanguageDTO languageDTO = new LanguageDTO();
-            BeanUtils.copyProperties(language, languageDTO);
-            return languageDTO;
-        };
-    }
-
-    @Bean
-    public Function<LanguageDTO, LanguageJPA> languageDtoToLanguage() {
-        return languageDTO -> {
-            final LanguageJPA language = new LanguageJPA();
-            BeanUtils.copyProperties(languageDTO, language);
-            return language;
         };
     }
 
@@ -246,13 +227,13 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<CommonContentDTO, CommonContentJPA> dtoToCommonContent(Function<LanguageDTO, LanguageJPA> dtoToLanguage) {
-        return commonContentDTO -> new CommonContentJPA(commonContentDTO, dtoToLanguage.apply(commonContentDTO.getLanguage()));
+    public Function<CommonContentDTO, CommonContentJPA> dtoToCommonContent() {
+        return commonContentDTO -> new CommonContentJPA(commonContentDTO, new LanguageJPA(commonContentDTO.getLanguage()));
     }
 
     @Bean
-    public Function<CommonContentJPA, CommonContentDTO> commonContentToDTO(Function<LanguageJPA, LanguageDTO> languageToDTO) {
-        return commonContent -> new CommonContentDTO(commonContent, languageToDTO.apply(commonContent.getLanguage()));
+    public Function<CommonContentJPA, CommonContentDTO> commonContentToDTO() {
+        return commonContent -> new CommonContentDTO(commonContent, new LanguageDTO(commonContent.getLanguage()));
     }
 
     @Bean

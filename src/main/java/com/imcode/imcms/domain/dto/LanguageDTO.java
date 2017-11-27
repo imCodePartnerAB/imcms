@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import com.imcode.imcms.persistence.entity.Language;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -7,7 +8,7 @@ import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-public class LanguageDTO implements Serializable {
+public class LanguageDTO extends Language implements Serializable {
 
     private static final long serialVersionUID = -3433592782831228045L;
 
@@ -24,4 +25,7 @@ public class LanguageDTO implements Serializable {
 
     private boolean enabled;
 
+    public LanguageDTO(Language from) {
+        super(from);
+    }
 }

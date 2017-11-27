@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-@Entity
-@Table(name = "imcms_languages")
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class LanguageJPA {
+@Table(name = "imcms_languages")
+public class LanguageJPA extends Language {
 
     private static final long serialVersionUID = -7712182762931242124L;
 
@@ -45,4 +45,7 @@ public class LanguageJPA {
         this(null, code, name, nativeName, enabled);
     }
 
+    public LanguageJPA(Language from) {
+        super(from);
+    }
 }
