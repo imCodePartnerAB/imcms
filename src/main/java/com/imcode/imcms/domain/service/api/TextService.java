@@ -62,9 +62,9 @@ public class TextService {
         final Version version = versionService.getDocumentWorkingVersion(textDTO.getDocId());
         final Language language = languageService.findEntityByCode(textDTO.getLangCode());
         final Text text = textDtoToText.apply(textDTO, version, language);
-        final Integer imageId = getTextId(textDTO, version, language);
+        final Integer textId = getTextId(textDTO, version, language);
 
-        text.setId(imageId);
+        text.setId(textId);
         textRepository.save(text);
     }
 
