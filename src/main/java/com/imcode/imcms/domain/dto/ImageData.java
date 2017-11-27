@@ -71,10 +71,10 @@ public abstract class ImageData implements Serializable {
     public static class CropRegion extends ImageCropRegionDataHolder implements Serializable {
         private static final long serialVersionUID = -586488435877347784L;
 
-        private volatile int cropX1 = -1;
-        private volatile int cropY1 = -1;
-        private volatile int cropX2 = -1;
-        private volatile int cropY2 = -1;
+        private volatile int cropX1;
+        private volatile int cropY1;
+        private volatile int cropX2;
+        private volatile int cropY2;
 
         @JsonIgnore
         private volatile boolean valid;

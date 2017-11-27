@@ -169,12 +169,20 @@ public class ImageServiceTest {
 
         imageService.saveImage(imageDTO);
 
-        final ImageDTO result = imageService.getImage(imageDTO);
+        ImageDTO result = null;
 
-        assertNotNull(result);
+        try {
+            result = imageService.getImage(imageDTO);
 
-        final File croppedImage = new File(imagesPath, "generated/" + result.getGeneratedFilename());
-        assertEquals(result.getCropRegion(), cropRegion);
-        assertTrue(FileUtility.forceDelete(croppedImage));
+            assertNotNull(result);
+            assertEquals(result.getCropRegion(), cropRegion);
+
+        } finally {
+            if (result != null) {
+                final File croppedImage = new File(imagesPath, "generated/" + result.getGeneratedFilename());
+                assertTrue(FileUtility.forceDelete(croppedImage));
+            }
+        }
+
     }
 }
