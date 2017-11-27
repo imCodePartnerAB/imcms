@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.core.CommonContentService;
+import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
@@ -30,6 +31,7 @@ public class DocumentService {
     private final CommonContentService commonContentService;
     private final VersionService versionService;
     private final LanguageService languageService;
+    private final TextDocumentTemplateService textDocumentTemplateService;
     private final Function<DocumentDTO, Meta> metaSaver;
 
     public DocumentService(MetaRepository metaRepository,
@@ -37,13 +39,15 @@ public class DocumentService {
                            Function<DocumentDTO, Meta> documentDtoToMeta,
                            CommonContentService commonContentService,
                            VersionService versionService,
-                           LanguageService languageService) {
+                           LanguageService languageService,
+                           TextDocumentTemplateService textDocumentTemplateService) {
 
         this.metaRepository = metaRepository;
         this.documentMapping = metaToDocumentDTO;
         this.commonContentService = commonContentService;
         this.versionService = versionService;
         this.languageService = languageService;
+        this.textDocumentTemplateService = textDocumentTemplateService;
         this.metaSaver = documentDtoToMeta.andThen(metaRepository::save);
     }
 
@@ -53,6 +57,7 @@ public class DocumentService {
 
     public void save(DocumentDTO saveMe) {
         commonContentService.save(saveMe.getCommonContents());
+        Optional.ofNullable(saveMe.getTemplate()).ifPresent(textDocumentTemplateService::save);
         metaSaver.apply(saveMe);
     }
 
