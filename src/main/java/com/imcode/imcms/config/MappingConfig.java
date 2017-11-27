@@ -338,11 +338,11 @@ class MappingConfig {
 
     @Bean
     public Function<Set<RestrictedPermission>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO(
-            Function<RestrictedPermission, PermissionDTO> restrictedPermissionToDTO,
-            Function<RestrictedPermission, RestrictedPermissionDTO> restrictedPermissionToDto
+            Function<RestrictedPermission, PermissionDTO> restrictedPermissionToPermissionDTO,
+            Function<RestrictedPermission, RestrictedPermissionDTO> restrictedPermissionToRestrictedPermissionDTO
     ) {
         return restrictedPermissions -> restrictedPermissions.stream().collect(
-                Collectors.toMap(restrictedPermissionToDTO, restrictedPermissionToDto)
+                Collectors.toMap(restrictedPermissionToPermissionDTO, restrictedPermissionToRestrictedPermissionDTO)
         );
     }
 
@@ -489,7 +489,6 @@ class MappingConfig {
             dto.setType(meta.getDocumentType());
 
             final Version latestVersion = versionService.getLatestVersion(metaId);
-            final User modifier = latestVersion.getModifiedBy();
 
             dto.setCommonContents(commonContentService.getOrCreateCommonContents(metaId, latestVersion.getNo()));
             dto.setPublished(auditDtoCreator.apply(meta::getPublisherId, meta::getPublicationStartDatetime));
@@ -502,7 +501,7 @@ class MappingConfig {
             final AuditDTO versionAudit = new AuditDTO();
             versionAudit.setDateTime(latestVersion.getCreatedDt());
             versionAudit.setId(latestVersion.getNo());
-            versionAudit.setBy(modifier.getLogin());
+            versionAudit.setBy(latestVersion.getModifiedBy().getLogin());
             dto.setCurrentVersion(versionAudit);
             dto.setSearchDisabled(meta.isSearchDisabled());
 
