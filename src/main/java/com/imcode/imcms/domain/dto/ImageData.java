@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.imcode.imcms.persistence.entity.ImageCropRegionDataHolder;
+import com.imcode.imcms.persistence.entity.ImageCropRegion;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.NullImageSource;
@@ -68,7 +68,7 @@ public abstract class ImageData implements Serializable {
 
     @Data
     @NoArgsConstructor
-    public static class ImageCropRegionDTO extends ImageCropRegionDataHolder implements Serializable {
+    public static class ImageCropRegionDTO extends ImageCropRegion implements Serializable {
         private static final long serialVersionUID = -586488435877347784L;
 
         private volatile int cropX1;
@@ -99,7 +99,7 @@ public abstract class ImageData implements Serializable {
             updateValid();
         }
 
-        public ImageCropRegionDTO(ImageCropRegionDataHolder cropRegionDataHolder) {
+        public ImageCropRegionDTO(ImageCropRegion cropRegionDataHolder) {
             super(cropRegionDataHolder);
         }
 

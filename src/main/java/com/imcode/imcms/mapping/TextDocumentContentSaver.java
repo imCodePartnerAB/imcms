@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.domain.dto.ImageData;
+import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
@@ -327,7 +327,7 @@ public class TextDocumentContentSaver {
     }
 
     private Image toJpaObject(ImageDomainObject imageDO, Version version, LanguageJPA language, int no, LoopEntryRef loopEntryRef) {
-        ImageData.ImageCropRegionDTO cropRegionDO = imageDO.getCropRegion();
+        ImageCropRegionDTO cropRegionDO = imageDO.getCropRegion();
         ImageCropRegionJPA cropRegion = cropRegionDO.isValid()
                 ? new ImageCropRegionJPA(cropRegionDO)
                 : new ImageCropRegionJPA(-1, -1, -1, -1);

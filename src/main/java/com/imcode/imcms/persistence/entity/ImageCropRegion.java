@@ -3,9 +3,9 @@ package com.imcode.imcms.persistence.entity;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public abstract class ImageCropRegionDataHolder {
+public abstract class ImageCropRegion {
 
-    protected ImageCropRegionDataHolder(ImageCropRegionDataHolder from) {
+    protected ImageCropRegion(ImageCropRegion from) {
         setCropX1(from.getCropX1());
         setCropY1(from.getCropY1());
         setCropX2(from.getCropX2());
