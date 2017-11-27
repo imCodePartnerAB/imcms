@@ -4,11 +4,14 @@ import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
+import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.Before;
@@ -21,7 +24,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -46,7 +48,7 @@ public class DocumentServiceTest {
     private MetaRepository metaRepository;
 
     @Autowired
-    private Function<Meta, DocumentDTO> metaToDocumentDTO;
+    private TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> metaToDocumentDTO;
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
@@ -71,6 +73,9 @@ public class DocumentServiceTest {
 
     @Autowired
     private TextDocumentTemplateService templateService;
+
+    @Autowired
+    private CommonContentService commonContentService;
 
     @Before
     public void setUp() throws Exception {
@@ -105,9 +110,12 @@ public class DocumentServiceTest {
 
         metaRepository.save(metaDoc);
         templateDataInitializer.createData(metaDoc.getId(), "demo", "demo");
-        versionDataInitializer.createData(TEST_VERSION_INDEX, metaDoc.getId());
+        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, metaDoc.getId());
         commonContentDataInitializer.createData(metaDoc.getId(), TEST_VERSION_INDEX);
-        createdDoc = metaToDocumentDTO.apply(metaDoc);
+        final List<CommonContentDTO> commonContents = commonContentService.getOrCreateCommonContents(
+                metaDoc.getId(), version.getNo()
+        );
+        createdDoc = metaToDocumentDTO.apply(metaDoc, version, commonContents);
     }
 
     @Test

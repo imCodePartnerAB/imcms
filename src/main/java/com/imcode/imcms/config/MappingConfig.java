@@ -6,9 +6,7 @@ import com.imcode.imcms.domain.service.api.CategoryService;
 import com.imcode.imcms.domain.service.api.DocumentService;
 import com.imcode.imcms.domain.service.api.RoleService;
 import com.imcode.imcms.domain.service.api.UserService;
-import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
-import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
@@ -455,9 +453,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<Meta, DocumentDTO> documentMapping(
-            VersionService versionService,
-            CommonContentService commonContentService,
+    public TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> documentMapping(
             Function<Set<RestrictedPermission>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO,
             Function<Map<Integer, Meta.Permission>, Set<RoleDTO>> roleIdByPermissionToRoleDTOs,
             CategoryService categoryService,
@@ -479,7 +475,7 @@ class MappingConfig {
                     return audit;
                 };
 
-        return (meta) -> {
+        return (meta, latestVersion, commonContents) -> {
             final DocumentDTO dto = new DocumentDTO();
             final Integer metaId = meta.getId();
             dto.setId(metaId);
@@ -487,10 +483,7 @@ class MappingConfig {
             dto.setAlias(meta.getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
             dto.setPublicationStatus(meta.getPublicationStatus());
             dto.setType(meta.getDocumentType());
-
-            final Version latestVersion = versionService.getLatestVersion(metaId);
-
-            dto.setCommonContents(commonContentService.getOrCreateCommonContents(metaId, latestVersion.getNo()));
+            dto.setCommonContents(commonContents);
             dto.setPublished(auditDtoCreator.apply(meta::getPublisherId, meta::getPublicationStartDatetime));
             dto.setPublicationEnd(auditDtoCreator.apply(meta::getDepublisherId, meta::getPublicationEndDatetime));
             dto.setArchived(auditDtoCreator.apply(meta::getArchiverId, meta::getArchivedDatetime));

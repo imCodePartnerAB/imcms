@@ -11,6 +11,7 @@ import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.LanguageMapper;
 import imcode.server.user.RoleId;
@@ -27,7 +28,7 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
 public class DocumentService {
 
     private final MetaRepository metaRepository;
-    private final Function<Meta, DocumentDTO> documentMapping;
+    private final TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> documentMapping;
     private final CommonContentService commonContentService;
     private final VersionService versionService;
     private final LanguageService languageService;
@@ -35,7 +36,7 @@ public class DocumentService {
     private final Function<DocumentDTO, Meta> metaSaver;
 
     DocumentService(MetaRepository metaRepository,
-                    Function<Meta, DocumentDTO> metaToDocumentDTO,
+                    TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> metaToDocumentDTO,
                     Function<DocumentDTO, Meta> documentDtoToMeta,
                     CommonContentService commonContentService,
                     VersionService versionService,
@@ -52,7 +53,11 @@ public class DocumentService {
     }
 
     public DocumentDTO get(int docId) {
-        return documentMapping.apply(metaRepository.findOne(docId));
+        final Version latestVersion = versionService.getLatestVersion(docId);
+        final List<CommonContentDTO> commonContents = commonContentService.getOrCreateCommonContents(
+                docId, latestVersion.getNo()
+        );
+        return documentMapping.apply(metaRepository.findOne(docId), latestVersion, commonContents);
     }
 
     public void save(DocumentDTO saveMe) {
@@ -65,7 +70,14 @@ public class DocumentService {
         return metaRepository.findAll()
                 .stream()
                 .sorted(Comparator.comparingInt(Meta::getId))
-                .map(documentMapping)
+                .map(meta -> {
+                    final Integer docId = meta.getId();
+                    final Version latestVersion = versionService.getLatestVersion(docId);
+                    final List<CommonContentDTO> commonContents = commonContentService.getOrCreateCommonContents(
+                            docId, latestVersion.getNo()
+                    );
+                    return documentMapping.apply(meta, latestVersion, commonContents);
+                })
                 .collect(Collectors.toList());
     }
 
