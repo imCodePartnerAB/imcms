@@ -37,21 +37,6 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
 class MappingConfig {
 
     @Bean
-    public Function<RoleJPA, RoleDTO> roleToRoleDTO() {
-        return role -> new RoleDTO(role.getId(), role.getName());
-    }
-
-    @Bean
-    public Function<RoleDTO, RoleJPA> roleDtoToRole() {
-        return roleDTO -> {
-            final RoleJPA role = new RoleJPA();
-            role.setId(roleDTO.getId());
-            role.setName(roleDTO.getName());
-            return role;
-        };
-    }
-
-    @Bean
     public Function<TemplateJPA, TemplateDTO> templateToTemplateDTO() {
         return TemplateDTO::new;
     }

@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "roles")
 @Data
 @NoArgsConstructor
-public class RoleJPA {
+public class RoleJPA extends Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +30,7 @@ public class RoleJPA {
     @Column(name = "admin_role", nullable = false)
     private Integer adminRole = 1;
 
+    public RoleJPA(Role from) {
+        super(from);
+    }
 }

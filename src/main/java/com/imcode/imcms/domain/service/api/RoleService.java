@@ -13,25 +13,18 @@ import java.util.stream.Collectors;
 public class RoleService {
 
     private final RoleRepository roleRepository;
-    private final Function<RoleDTO, RoleJPA> roleDtoToRole;
-    private final Function<RoleJPA, RoleDTO> roleToRoleDTO;
 
-    RoleService(RoleRepository roleRepository,
-                Function<RoleDTO, RoleJPA> roleDtoToRole,
-                Function<RoleJPA, RoleDTO> roleToRoleDTO) {
-
+    RoleService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
-        this.roleDtoToRole = roleDtoToRole;
-        this.roleToRoleDTO = roleToRoleDTO;
     }
 
     public RoleDTO getById(int id) {
-        return roleToRoleDTO.apply(roleRepository.findOne(id));
+        return new RoleDTO(roleRepository.findOne(id));
     }
 
     public List<RoleDTO> getAll() {
         return roleRepository.findAll().stream()
-                .map(roleToRoleDTO)
+                .map(RoleDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -43,8 +36,8 @@ public class RoleService {
      * @return saved Role in DTO form.
      */
     public RoleDTO save(RoleDTO saveMe) {
-        return roleDtoToRole.andThen(roleRepository::save)
-                .andThen(roleToRoleDTO)
+        return ((Function<RoleDTO, RoleJPA>) RoleJPA::new).andThen(roleRepository::save)
+                .andThen(RoleDTO::new)
                 .apply(saveMe);
     }
 
