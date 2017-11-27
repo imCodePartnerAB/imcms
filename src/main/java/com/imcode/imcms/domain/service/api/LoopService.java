@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,13 +21,15 @@ import java.util.stream.Collectors;
 public class LoopService {
 
     private final LoopRepository loopRepository;
-    private final Function<Loop, LoopDTO> loopToDtoMapper;
+    private final BiFunction<Loop, Version, LoopDTO> loopToDtoMapper;
     private final BiFunction<LoopDTO, Version, Loop> loopDtoToLoop;
     private final VersionService versionService;
 
     @Autowired
-    LoopService(LoopRepository loopRepository, Function<Loop, LoopDTO> loopToDtoMapper,
-                BiFunction<LoopDTO, Version, Loop> loopDtoToLoop, VersionService versionService) {
+    LoopService(LoopRepository loopRepository,
+                BiFunction<Loop, Version, LoopDTO> loopToDtoMapper,
+                BiFunction<LoopDTO, Version, Loop> loopDtoToLoop,
+                VersionService versionService) {
         this.loopRepository = loopRepository;
         this.loopToDtoMapper = loopToDtoMapper;
         this.loopDtoToLoop = loopDtoToLoop;
@@ -40,7 +41,7 @@ public class LoopService {
         final Loop loop = loopRepository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
 
         return Optional.ofNullable(loop)
-                .map(loopToDtoMapper)
+                .map(loop1 -> loopToDtoMapper.apply(loop1, loop1.getVersion()))
                 .orElse(LoopDTO.empty(docId, loopIndex));
     }
 
@@ -68,6 +69,8 @@ public class LoopService {
     }
 
     public Collection<LoopDTO> findAllByVersion(Version version) {
-        return loopRepository.findByVersion(version).stream().map(loopToDtoMapper).collect(Collectors.toSet());
+        return loopRepository.findByVersion(version).stream()
+                .map(loop1 -> loopToDtoMapper.apply(loop1, loop1.getVersion()))
+                .collect(Collectors.toSet());
     }
 }

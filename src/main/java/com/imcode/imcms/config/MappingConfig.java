@@ -66,6 +66,19 @@ class MappingConfig {
     }
 
     @Bean
+    public BiFunction<Loop, Version, LoopDTO> loopToLoopDTO() {
+        return (loop, version) -> {
+            final List<LoopEntryDTO> loopEntryDTOs = Objects.requireNonNull(loop)
+                    .getEntries()
+                    .stream()
+                    .map(LoopEntryDTO::new)
+                    .collect(Collectors.toList());
+
+            return new LoopDTO(version.getDocId(), loop.getIndex(), loopEntryDTOs);
+        };
+    }
+
+    @Bean
     public Function<MenuItem, MenuItemDTO> menuItemToDTO(DocumentService documentService) {
         return new Function<MenuItem, MenuItemDTO>() {
             @Override
@@ -124,19 +137,6 @@ class MappingConfig {
                     return menuItem;
                 })
                 .collect(Collectors.toList());
-    }
-
-    @Bean
-    public Function<Loop, LoopDTO> loopToLoopDTO() {
-        return loop -> {
-            final List<LoopEntryDTO> loopEntryDTOs = Objects.requireNonNull(loop)
-                    .getEntries()
-                    .stream()
-                    .map(LoopEntryDTO::new)
-                    .collect(Collectors.toList());
-
-            return new LoopDTO(loop.getVersion().getDocId(), loop.getIndex(), loopEntryDTOs);
-        };
     }
 
     @Bean
