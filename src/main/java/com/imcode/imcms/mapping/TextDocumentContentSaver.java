@@ -287,10 +287,10 @@ public class TextDocumentContentSaver {
             loop = new Loop();
             loop.setVersion(version);
             loop.setIndex(loopIndex);
-            loop.getEntries().add(new LoopEntry(entryIndex));
+            loop.getEntries().add(new LoopEntryJPA(entryIndex));
         } else {
             if (!loop.containsEntry(entryRef.getLoopEntryIndex())) {
-                loop.getEntries().add(new LoopEntry(entryIndex));
+                loop.getEntries().add(new LoopEntryJPA(entryIndex));
             }
         }
         loopRepository.save(loop);
@@ -372,10 +372,10 @@ public class TextDocumentContentSaver {
     }
 
     private Loop toJpaObject(VersionRef versionRef, int loopNo, com.imcode.imcms.api.Loop loopDO) {
-        List<LoopEntry> entries = new LinkedList<>();
+        List<LoopEntryJPA> entries = new LinkedList<>();
         Version version = findVersion(versionRef);
 
-        loopDO.getEntries().forEach((entryNo, enabled) -> entries.add(new LoopEntry(entryNo, enabled)));
+        loopDO.getEntries().forEach((entryNo, enabled) -> entries.add(new LoopEntryJPA(entryNo, enabled)));
 
         return Value.with(
                 new Loop(),

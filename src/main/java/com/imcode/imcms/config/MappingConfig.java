@@ -37,12 +37,12 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
 class MappingConfig {
 
     @Bean
-    public Function<LoopEntryDTO, LoopEntry> loopEntryDtoToEntry() {
-        return loopEntryDTO -> new LoopEntry(loopEntryDTO.getIndex(), loopEntryDTO.isEnabled());
+    public Function<LoopEntryDTO, LoopEntryJPA> loopEntryDtoToEntry() {
+        return loopEntryDTO -> new LoopEntryJPA(loopEntryDTO.getIndex(), loopEntryDTO.isEnabled());
     }
 
     @Bean
-    public Function<LoopEntry, LoopEntryDTO> loopEntryToLoopEntryDTO() {
+    public Function<LoopEntryJPA, LoopEntryDTO> loopEntryToLoopEntryDTO() {
         return entry -> new LoopEntryDTO(entry.getIndex(), entry.isEnabled());
     }
 
@@ -112,9 +112,9 @@ class MappingConfig {
     }
 
     @Bean
-    public BiFunction<LoopDTO, Version, Loop> loopDtoToLoop(Function<LoopEntryDTO, LoopEntry> loopEntryDtoToEntry) {
+    public BiFunction<LoopDTO, Version, Loop> loopDtoToLoop(Function<LoopEntryDTO, LoopEntryJPA> loopEntryDtoToEntry) {
         return (loopDTO, version) -> {
-            final List<LoopEntry> entries = Objects.requireNonNull(loopDTO)
+            final List<LoopEntryJPA> entries = Objects.requireNonNull(loopDTO)
                     .getEntries()
                     .stream()
                     .map(loopEntryDtoToEntry)
@@ -186,7 +186,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<Loop, LoopDTO> loopToLoopDTO(Function<LoopEntry, LoopEntryDTO> loopEntryToDtoMapper) {
+    public Function<Loop, LoopDTO> loopToLoopDTO(Function<LoopEntryJPA, LoopEntryDTO> loopEntryToDtoMapper) {
         return loop -> {
             final List<LoopEntryDTO> loopEntryDTOs = Objects.requireNonNull(loop)
                     .getEntries()

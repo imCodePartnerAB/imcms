@@ -13,14 +13,14 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "imcms_text_doc_contents")
-public class LoopEntry {
+public class LoopEntryJPA {
 
     @Column(name = "`index`")
     private int index;
 
     private boolean enabled;
 
-    public LoopEntry(int index) {
+    public LoopEntryJPA(int index) {
         this(index, true);
     }
 }

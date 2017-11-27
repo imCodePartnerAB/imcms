@@ -29,16 +29,16 @@ public class Loop extends VersionedContent {
             joinColumns = @JoinColumn(name = "loop_id")
     )
     @OrderColumn(name = "order_index")
-    private List<LoopEntry> entries = new LinkedList<>();
+    private List<LoopEntryJPA> entries = new LinkedList<>();
 
-    public Loop(Integer id, Version version, Integer index, List<LoopEntry> entries) {
+    public Loop(Integer id, Version version, Integer index, List<LoopEntryJPA> entries) {
         setId(id);
         setVersion(version);
         this.index = index;
         this.entries = new LinkedList<>(entries);
     }
 
-    public Loop(Version version, Integer index, List<LoopEntry> entries) {
+    public Loop(Version version, Integer index, List<LoopEntryJPA> entries) {
         this(null, version, index, entries);
     }
 
