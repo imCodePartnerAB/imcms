@@ -35,7 +35,7 @@ import java.util.Properties;
         "com.imcode.imcms.persistence.repository",
         "com.imcode.imcms.mapping.jpa"
 })
-public class DBConfig {
+class DBConfig {
 
     private final Properties imcmsProperties;
 

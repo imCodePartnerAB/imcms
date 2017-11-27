@@ -49,7 +49,7 @@ import java.util.Properties;
         "imcode.util",
         "imcode.server"
 })
-public class MainConfig {
+class MainConfig {
 
     private static final Logger LOG = Logger.getLogger(MainConfig.class);
 

@@ -22,7 +22,7 @@ import java.util.Properties;
         "imcode.util",
         "imcode.server"
 })
-public class WebConfig {
+class WebConfig {
 
     @Bean
     public CommonsMultipartResolver multipartResolver(Properties imcmsProperties) {

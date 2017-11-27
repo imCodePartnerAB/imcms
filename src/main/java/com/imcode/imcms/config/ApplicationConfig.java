@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 @Configuration
-public class ApplicationConfig {
+class ApplicationConfig {
 
     @Bean
     public ReloadableResourceBundleMessageSource reloadableResourceBundleMessageSource() {

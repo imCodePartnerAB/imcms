@@ -36,7 +36,7 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
  * Configuration class for mapping DTO -> JPA and vice versa, but not only.
  */
 @Configuration
-public class MappingConfig {
+class MappingConfig {
     private static <C1 extends CommonContentDataHolder<L1>, C2 extends CommonContentDataHolder<L2>, L1, L2>
     void transferCommonContentData(C1 from, C2 to, Function<L1, L2> languageMapper) {
         to.setId(from.getId());
