@@ -47,12 +47,12 @@ public class LoopRepositoryTest {
     public void recreateLoops() {
         loopDataInitializer.cleanRepositories();
 
-        final List<LoopEntryDTO> oneEntry = Collections.singletonList(new LoopEntryDTO(1));
-        final List<LoopEntryDTO> twoEntries = Arrays.asList(new LoopEntryDTO(1), new LoopEntryDTO(2));
+        final List<LoopEntryDTO> oneEntry = Collections.singletonList(LoopEntryDTO.createEnabled(1));
+        final List<LoopEntryDTO> twoEntries = Arrays.asList(LoopEntryDTO.createEnabled(1), LoopEntryDTO.createEnabled(2));
         final List<LoopEntryDTO> threeEntries = Arrays.asList(
-                new LoopEntryDTO(1),
-                new LoopEntryDTO(2),
-                new LoopEntryDTO(3)
+                LoopEntryDTO.createEnabled(1),
+                LoopEntryDTO.createEnabled(2),
+                LoopEntryDTO.createEnabled(3)
         );
 
         loopDataInitializer.createData(new LoopDTO(DOC_ID, 1, oneEntry));

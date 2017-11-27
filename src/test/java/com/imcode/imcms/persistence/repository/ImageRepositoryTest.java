@@ -82,7 +82,7 @@ public class ImageRepositoryTest {
 
     @Test
     public void findByVersionAndLanguageWhereLoopEntryRefIsNotNull() {
-        final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(new LoopEntryDTO(1)));
+        final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
         final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
 
         loopDataInitializer.createData(loopDTO);
@@ -112,7 +112,7 @@ public class ImageRepositoryTest {
 
     @Test
     public void findByVersionAndIndexAndLoopEntryRef() {
-        final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(new LoopEntryDTO(1)));
+        final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
         final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
         loopDataInitializer.createData(loopDTO);
 
@@ -137,7 +137,7 @@ public class ImageRepositoryTest {
 
     @Test
     public void findByVersionAndLanguageAndIndexAndLoopEntryRef() {
-        final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(new LoopEntryDTO(1)));
+        final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
         final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
         loopDataInitializer.createData(loopDTO);
 
@@ -165,7 +165,7 @@ public class ImageRepositoryTest {
 
     @Test
     public void findIdByVersionAndLanguageAndIndexAndLoopEntryRef() {
-        final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(new LoopEntryDTO(1)));
+        final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
         final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
         loopDataInitializer.createData(loopDTO);
 
