@@ -95,6 +95,10 @@ public class TemplateService {
         return Optional.empty();
     }
 
+    File getTemplateDirectory() {
+        return templateDirectory;
+    }
+
     private boolean isTemplateFileExist(String templateName) {
         for (String extension : templateExtensions) {
             final String templateFileName = templateName + "." + extension;
