@@ -9,7 +9,6 @@ import com.imcode.imcms.util.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -18,15 +17,13 @@ public class TemplateDataInitializer extends TestDataCleaner {
 
     private final TextDocumentTemplateRepository textDocumentTemplateRepository;
     private final TemplateRepository templateRepository;
-    private final Function<TemplateJPA, TemplateDTO> templateToTemplateDTO;
 
     public TemplateDataInitializer(TextDocumentTemplateRepository textDocumentTemplateRepository,
-                                   TemplateRepository templateRepository,
-                                   Function<TemplateJPA, TemplateDTO> templateToTemplateDTO) {
+                                   TemplateRepository templateRepository) {
+
         super(templateRepository, textDocumentTemplateRepository);
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
         this.templateRepository = templateRepository;
-        this.templateToTemplateDTO = templateToTemplateDTO;
     }
 
     public List<TemplateDTO> createData(Integer howMuch) {
@@ -36,7 +33,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
                     template.setHidden(Math.random() < 0.5);
                 }))
                 .map(templateRepository::saveAndFlush)
-                .map(templateToTemplateDTO)
+                .map(TemplateDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -46,7 +43,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
             template.setHidden(Math.random() < 0.5);
 
             templateRepository.saveAndFlush(template);
-            return templateToTemplateDTO.apply(template);
+            return new TemplateDTO(template);
         });
     }
 

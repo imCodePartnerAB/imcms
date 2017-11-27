@@ -37,16 +37,6 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
 class MappingConfig {
 
     @Bean
-    public Function<TemplateJPA, TemplateDTO> templateToTemplateDTO() {
-        return TemplateDTO::new;
-    }
-
-    @Bean
-    public Function<TemplateDTO, TemplateJPA> templateDtoToTemplate() {
-        return TemplateJPA::new;
-    }
-
-    @Bean
     public Function<User, UserDTO> userToUserDTO() {
         return user -> new UserDTO(user.getId(), user.getLogin());
     }

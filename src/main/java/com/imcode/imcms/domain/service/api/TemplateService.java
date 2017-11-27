@@ -23,20 +23,17 @@ import java.util.stream.Collectors;
 public class TemplateService {
 
     private final TemplateRepository templateRepository;
-    private final Function<TemplateJPA, TemplateDTO> templateToTemplateDTO;
     private final File templateDirectory;
     private final Function<TemplateDTO, TemplateDTO> templateSaver;
     private final Set<String> templateExtensions = new HashSet<>(Arrays.asList("jsp", "jspx", "html"));
 
-    TemplateService(TemplateRepository templateRepository,
-                    Function<TemplateJPA, TemplateDTO> templateToTemplateDTO,
-                    Function<TemplateDTO, TemplateJPA> templateDtoToTemplate,
-                    @Value("WEB-INF/templates/text") File templateDirectory) {
+    TemplateService(TemplateRepository templateRepository, @Value("WEB-INF/templates/text") File templateDirectory) {
 
         this.templateRepository = templateRepository;
-        this.templateToTemplateDTO = templateToTemplateDTO;
         this.templateDirectory = templateDirectory;
-        this.templateSaver = templateDtoToTemplate.andThen(templateRepository::save).andThen(templateToTemplateDTO);
+        this.templateSaver = ((Function<TemplateDTO, TemplateJPA>) TemplateJPA::new)
+                .andThen(templateRepository::save)
+                .andThen(TemplateDTO::new);
     }
 
     /**
@@ -72,7 +69,7 @@ public class TemplateService {
 
     public List<TemplateDTO> getAll() {
         return templateRepository.findAll().stream()
-                .map(templateToTemplateDTO)
+                .map(TemplateDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -89,7 +86,7 @@ public class TemplateService {
     public Optional<TemplateDTO> getTemplate(String templateName) {
         if (isTemplateFileExist(templateName)) {
             final TemplateJPA template = templateRepository.findByName(templateName);
-            return Optional.ofNullable(template).map(templateToTemplateDTO);
+            return Optional.ofNullable(template).map(TemplateDTO::new);
         }
 
         return Optional.empty();
