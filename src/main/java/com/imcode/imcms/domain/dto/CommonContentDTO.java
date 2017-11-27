@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.persistence.entity.CommonContentDataHolder;
+import com.imcode.imcms.persistence.entity.CommonContent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommonContentDTO implements CommonContentDataHolder<LanguageDTO> {
+public class CommonContentDTO extends CommonContent<LanguageDTO> {
 
     private Integer id;
     private Integer docId;
@@ -19,4 +19,7 @@ public class CommonContentDTO implements CommonContentDataHolder<LanguageDTO> {
     private boolean isEnabled;
     private Integer versionNo;
 
+    public CommonContentDTO(CommonContent from, LanguageDTO language) {
+        super(from, language);
+    }
 }

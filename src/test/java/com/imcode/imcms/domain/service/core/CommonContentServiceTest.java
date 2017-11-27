@@ -7,7 +7,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
-import com.imcode.imcms.persistence.entity.CommonContent;
+import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.util.Value;
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +48,7 @@ public class CommonContentServiceTest {
     private LanguageDataInitializer languageDataInitializer;
 
     @Autowired
-    private Function<CommonContent, CommonContentDTO> commonContentToDto;
+    private Function<CommonContentJPA, CommonContentDTO> commonContentToDto;
 
     @Before
     public void setUp() throws Exception {

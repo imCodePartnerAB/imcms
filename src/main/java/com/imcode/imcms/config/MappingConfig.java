@@ -35,17 +35,6 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
  */
 @Configuration
 class MappingConfig {
-    private static <C1 extends CommonContentDataHolder<L1>, C2 extends CommonContentDataHolder<L2>, L1, L2>
-    void transferCommonContentData(C1 from, C2 to, Function<L1, L2> languageMapper) {
-        to.setId(from.getId());
-        to.setDocId(from.getDocId());
-        to.setHeadline(from.getHeadline());
-        to.setLanguage(languageMapper.apply(from.getLanguage()));
-        to.setMenuText(from.getMenuText());
-        to.setMenuImageURL(from.getMenuImageURL());
-        to.setEnabled(from.isEnabled());
-        to.setVersionNo(from.getVersionNo());
-    }
 
     @Bean
     public Function<LoopEntryDTO, LoopEntry> loopEntryDtoToEntry() {
@@ -297,21 +286,13 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<CommonContentDTO, CommonContent> dtoToCommonContent(Function<LanguageDTO, Language> dtoToLanguage) {
-        return commonContentDTO -> {
-            final CommonContent commonContent = new CommonContent();
-            transferCommonContentData(commonContentDTO, commonContent, dtoToLanguage);
-            return commonContent;
-        };
+    public Function<CommonContentDTO, CommonContentJPA> dtoToCommonContent(Function<LanguageDTO, Language> dtoToLanguage) {
+        return commonContentDTO -> new CommonContentJPA(commonContentDTO, dtoToLanguage.apply(commonContentDTO.getLanguage()));
     }
 
     @Bean
-    public Function<CommonContent, CommonContentDTO> commonContentToDTO(Function<Language, LanguageDTO> languageToDTO) {
-        return commonContent -> {
-            final CommonContentDTO commonContentDTO = new CommonContentDTO();
-            transferCommonContentData(commonContent, commonContentDTO, languageToDTO);
-            return commonContentDTO;
-        };
+    public Function<CommonContentJPA, CommonContentDTO> commonContentToDTO(Function<Language, LanguageDTO> languageToDTO) {
+        return commonContent -> new CommonContentDTO(commonContent, languageToDTO.apply(commonContent.getLanguage()));
     }
 
     @Bean

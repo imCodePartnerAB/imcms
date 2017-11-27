@@ -110,7 +110,7 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Creates new Document which inherits parent doc's meta excluding keywords and properties.
      * <p>
-     * Doc's CommonContent and content (texts, images, urls, files, etc) are not inherited.
+     * Doc's CommonContentJPA and content (texts, images, urls, files, etc) are not inherited.
      */
     public DocumentDomainObject createDocumentOfTypeFromParent(
             int documentTypeId,

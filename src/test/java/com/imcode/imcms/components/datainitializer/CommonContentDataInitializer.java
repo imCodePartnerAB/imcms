@@ -1,6 +1,6 @@
 package com.imcode.imcms.components.datainitializer;
 
-import com.imcode.imcms.persistence.entity.CommonContent;
+import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
@@ -33,7 +33,7 @@ public class CommonContentDataInitializer extends TestDataCleaner {
         versionDataInitializer.cleanRepositories();
     }
 
-    public List<CommonContent> createData(Integer docId, Integer versionIndex) {
+    public List<CommonContentJPA> createData(Integer docId, Integer versionIndex) {
         Language en = languageRepository.findByCode(ENG_CODE);
         Language se = languageRepository.findByCode(SWE_CODE);
         // both langs should be already created
@@ -41,10 +41,10 @@ public class CommonContentDataInitializer extends TestDataCleaner {
         versionDataInitializer.createData(versionIndex, docId);
 
         return Arrays.asList(
-                commonContentRepository.saveAndFlush(new CommonContent(
+                commonContentRepository.saveAndFlush(new CommonContentJPA(
                         docId, en, "headline_en", "menuText_en", "menuImageUrl_en", true, versionIndex
                 )),
-                commonContentRepository.saveAndFlush(new CommonContent(
+                commonContentRepository.saveAndFlush(new CommonContentJPA(
                         docId, se, "headline_se", "menuText_se", "menuImageUrl_se", true, versionIndex
                 ))
         );

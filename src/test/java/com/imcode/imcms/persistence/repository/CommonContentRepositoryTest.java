@@ -3,7 +3,7 @@ package com.imcode.imcms.persistence.repository;
 import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
-import com.imcode.imcms.persistence.entity.CommonContent;
+import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.Language;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class CommonContentRepositoryTest {
 
     @Test
     public void testFindByDocId() throws Exception {
-        List<CommonContent> commonContents = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, VERSION_NO);
+        List<CommonContentJPA> commonContents = commonContentRepository.findByDocIdAndVersionNo(DOC_ID, VERSION_NO);
 
         assertThat(commonContents.size(), is(2));
     }
@@ -56,7 +56,7 @@ public class CommonContentRepositoryTest {
     @Test
     public void testFindByDocIdAndLanguage() throws Exception {
         Language se = languageRepository.findByCode(SWE_CODE);
-        CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(DOC_ID, VERSION_NO, se);
+        CommonContentJPA commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(DOC_ID, VERSION_NO, se);
 
         assertNotNull(commonContent);
         assertEquals("headline_se", commonContent.getHeadline());
@@ -64,7 +64,7 @@ public class CommonContentRepositoryTest {
 
     @Test
     public void testFindByDocIdAndDocLanguageCode() throws Exception {
-        CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(DOC_ID, VERSION_NO, ENG_CODE);
+        CommonContentJPA commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(DOC_ID, VERSION_NO, ENG_CODE);
 
         assertNotNull(commonContent);
         assertEquals("headline_en", commonContent.getHeadline());

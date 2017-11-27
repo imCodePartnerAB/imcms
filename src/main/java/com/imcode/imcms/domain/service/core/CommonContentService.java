@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service.core;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.api.LanguageService;
-import com.imcode.imcms.persistence.entity.CommonContent;
+import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.Language;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
@@ -20,14 +20,14 @@ public class CommonContentService {
     private static final int WORKING_VERSION_INDEX = 0;
 
     private final CommonContentRepository commonContentRepository;
-    private final Function<CommonContent, CommonContentDTO> commonContentToDTO;
+    private final Function<CommonContentJPA, CommonContentDTO> commonContentToDTO;
     private final Function<LanguageDTO, Language> languageDtoToLanguage;
     private final LanguageService languageService;
-    private final Function<CommonContentDTO, CommonContent> commonContentSaver;
+    private final Function<CommonContentDTO, CommonContentJPA> commonContentSaver;
 
     CommonContentService(CommonContentRepository commonContentRepository,
-                         Function<CommonContent, CommonContentDTO> commonContentToDTO,
-                         Function<CommonContentDTO, CommonContent> commonContentDtoToCommonContent,
+                         Function<CommonContentJPA, CommonContentDTO> commonContentToDTO,
+                         Function<CommonContentDTO, CommonContentJPA> commonContentDtoToCommonContent,
                          Function<LanguageDTO, Language> languageDtoToLanguage,
                          LanguageService languageService) {
 
@@ -64,7 +64,7 @@ public class CommonContentService {
      */
     public CommonContentDTO getOrCreate(int docId, int versionNo, LanguageDTO languageDTO) {
         final Language language = languageDtoToLanguage.apply(languageDTO);
-        final CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
+        final CommonContentJPA commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
                 docId, versionNo, language
         );
 
@@ -92,11 +92,11 @@ public class CommonContentService {
     }
 
     private CommonContentDTO createFromWorkingVersion(int docId, int versionNo, Language language) {
-        final CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
+        final CommonContentJPA commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
                 docId, WORKING_VERSION_INDEX, language
         );
 
-        final CommonContent newCommonContent = new CommonContent();
+        final CommonContentJPA newCommonContent = new CommonContentJPA();
         newCommonContent.setVersionNo(versionNo);
         newCommonContent.setDocId(docId);
         newCommonContent.setEnabled(commonContent.isEnabled());
