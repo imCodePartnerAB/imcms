@@ -287,10 +287,10 @@ public class TextDocumentContentSaver {
             loop = new Loop();
             loop.setVersion(version);
             loop.setIndex(loopIndex);
-            loop.getEntries().add(new LoopEntryJPA(entryIndex));
+            loop.getEntries().add(new LoopEntryJPA(entryIndex, true));
         } else {
             if (!loop.containsEntry(entryRef.getLoopEntryIndex())) {
-                loop.getEntries().add(new LoopEntryJPA(entryIndex));
+                loop.getEntries().add(new LoopEntryJPA(entryIndex, true));
             }
         }
         loopRepository.save(loop);
