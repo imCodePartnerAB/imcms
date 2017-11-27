@@ -6,14 +6,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "imcms_languages")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Language implements Serializable, Cloneable {
+public class Language {
 
     private static final long serialVersionUID = -7712182762931242124L;
 
@@ -46,12 +45,4 @@ public class Language implements Serializable, Cloneable {
         this(null, code, name, nativeName, enabled);
     }
 
-    @Override
-    public Language clone() {
-        try {
-            return (Language) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
