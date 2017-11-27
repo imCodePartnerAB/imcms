@@ -7,7 +7,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.api.TextService;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import com.imcode.imcms.util.Value;
@@ -57,7 +57,7 @@ public class TextControllerTest extends AbstractControllerTest {
     @Autowired
     private TextService textService;
 
-    private List<Language> languages;
+    private List<LanguageJPA> languages;
 
     @Override
     protected String controllerPath() {
@@ -87,7 +87,7 @@ public class TextControllerTest extends AbstractControllerTest {
     public void saveText_When_NotInLoop_Expect_CorrectSavedText() throws Exception {
         final List<TextDTO> textDTOS = new ArrayList<>();
 
-        for (Language language : languages) {
+        for (LanguageJPA language : languages) {
             final String languageCode = language.getCode();
 
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
@@ -124,7 +124,7 @@ public class TextControllerTest extends AbstractControllerTest {
         final List<TextDTO> textDTOS = new ArrayList<>();
         final LoopEntryRefDTO loopEntryRef = new LoopEntryRefDTO(1, 1);
 
-        for (Language language : languages) {
+        for (LanguageJPA language : languages) {
             final String languageCode = language.getCode();
 
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {

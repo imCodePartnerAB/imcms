@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "imcms_doc_i18n_meta")
-public class CommonContentJPA extends CommonContent<Language> {
+public class CommonContentJPA extends CommonContent<LanguageJPA> {
 
     private static final int META_HEADLINE_MAX_LENGTH = 255;
     private static final int META_TEXT_MAX_LENGTH = 1000;
@@ -26,7 +26,7 @@ public class CommonContentJPA extends CommonContent<Language> {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
-    private Language language;
+    private LanguageJPA language;
 
     /**
      * Doc's headline label. Mainly used as HTML page title.
@@ -59,7 +59,7 @@ public class CommonContentJPA extends CommonContent<Language> {
     @Column(name = "version_no", nullable = false)
     private Integer versionNo;
 
-    public CommonContentJPA(Integer docId, Language language, String headline, String menuText, String menuImageURL,
+    public CommonContentJPA(Integer docId, LanguageJPA language, String headline, String menuText, String menuImageURL,
                             Boolean isEnabled, Integer versionNo) {
         this.docId = docId;
         this.language = language;
@@ -70,7 +70,7 @@ public class CommonContentJPA extends CommonContent<Language> {
         this.versionNo = versionNo;
     }
 
-    public CommonContentJPA(CommonContent from, Language language) {
+    public CommonContentJPA(CommonContent from, LanguageJPA language) {
         super(from, language);
     }
 }

@@ -54,7 +54,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<Language, LanguageDTO> languageToLanguageDTO() {
+    public Function<LanguageJPA, LanguageDTO> languageToLanguageDTO() {
         return language -> {
             final LanguageDTO languageDTO = new LanguageDTO();
             BeanUtils.copyProperties(language, languageDTO);
@@ -63,9 +63,9 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<LanguageDTO, Language> languageDtoToLanguage() {
+    public Function<LanguageDTO, LanguageJPA> languageDtoToLanguage() {
         return languageDTO -> {
-            final Language language = new Language();
+            final LanguageJPA language = new LanguageJPA();
             BeanUtils.copyProperties(languageDTO, language);
             return language;
         };
@@ -222,7 +222,7 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage(
+    public TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage(
             Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
             Function<CropRegion, ImageCropRegion> cropRegionDtoToImageCropRegion
     ) {
@@ -246,12 +246,12 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<CommonContentDTO, CommonContentJPA> dtoToCommonContent(Function<LanguageDTO, Language> dtoToLanguage) {
+    public Function<CommonContentDTO, CommonContentJPA> dtoToCommonContent(Function<LanguageDTO, LanguageJPA> dtoToLanguage) {
         return commonContentDTO -> new CommonContentJPA(commonContentDTO, dtoToLanguage.apply(commonContentDTO.getLanguage()));
     }
 
     @Bean
-    public Function<CommonContentJPA, CommonContentDTO> commonContentToDTO(Function<Language, LanguageDTO> languageToDTO) {
+    public Function<CommonContentJPA, CommonContentDTO> commonContentToDTO(Function<LanguageJPA, LanguageDTO> languageToDTO) {
         return commonContent -> new CommonContentDTO(commonContent, languageToDTO.apply(commonContent.getLanguage()));
     }
 
@@ -517,7 +517,7 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<TextDTO, Version, Language, Text> textDtoToText(
+    public TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText(
             Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef
     ) {
         return (textDTO, version, language) -> {

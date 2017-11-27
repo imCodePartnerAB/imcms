@@ -4,7 +4,7 @@ import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +55,7 @@ public class CommonContentRepositoryTest {
 
     @Test
     public void testFindByDocIdAndLanguage() throws Exception {
-        Language se = languageRepository.findByCode(SWE_CODE);
+        LanguageJPA se = languageRepository.findByCode(SWE_CODE);
         CommonContentJPA commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(DOC_ID, VERSION_NO, se);
 
         assertNotNull(commonContent);

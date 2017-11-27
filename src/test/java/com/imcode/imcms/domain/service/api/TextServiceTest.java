@@ -5,7 +5,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Text;
 import com.imcode.imcms.persistence.entity.Version;
@@ -58,7 +58,7 @@ public class TextServiceTest {
     private Function<Text, TextDTO> textToTextDTO;
 
     private Version version;
-    private List<Language> languages;
+    private List<LanguageJPA> languages;
 
     @Before
     public void setUp() throws Exception {
@@ -79,7 +79,7 @@ public class TextServiceTest {
     public void getText_When_NotInLoop_Expect_CorrectDTO() {
         final List<TextDTO> textDTOS = new ArrayList<>();
 
-        for (Language language : languages) {
+        for (LanguageJPA language : languages) {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
                 final Text text = new Text();
                 text.setIndex(index);
@@ -104,7 +104,7 @@ public class TextServiceTest {
         final List<TextDTO> textDTOS = new ArrayList<>();
         final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
 
-        for (Language language : languages) {
+        for (LanguageJPA language : languages) {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
                 final Text text = new Text();
                 text.setIndex(index);
@@ -129,7 +129,7 @@ public class TextServiceTest {
     public void saveText_When_NotInLoop_Expect_CorrectDTO() {
         final List<TextDTO> textDTOS = new ArrayList<>();
 
-        for (Language language : languages) {
+        for (LanguageJPA language : languages) {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
                 final TextDTO textDTO = new TextDTO(index, DOC_ID, language.getCode(), null);
                 textDTO.setText("test");
@@ -152,7 +152,7 @@ public class TextServiceTest {
         final List<TextDTO> textDTOS = new ArrayList<>();
         final LoopEntryRefDTO loopEntryRef = new LoopEntryRefDTO(1, 1);
 
-        for (Language language : languages) {
+        for (LanguageJPA language : languages) {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
                 final TextDTO textDTO = new TextDTO(index, DOC_ID, language.getCode(), loopEntryRef);
                 textDTO.setText("test");

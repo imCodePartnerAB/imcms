@@ -2,7 +2,7 @@ package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class LanguageRepositoryTest {
 
     @Test
     public void testSave() throws Exception {
-        Language language = new Language();
+        LanguageJPA language = new LanguageJPA();
 
         language.setId(1);
         language.setCode(ENG_CODE);
@@ -50,12 +50,12 @@ public class LanguageRepositoryTest {
 
     @Test
     public void findByCode() throws Exception {
-        final List<Language> languages = languageRepository.findAll();
+        final List<LanguageJPA> languages = languageRepository.findAll();
         // langs should be already in DB, if this will be changed in future rewrite test with data creation
         assertTrue(!languages.isEmpty());
 
-        final Language language = languages.get(0);
-        final Language testLang = languageRepository.findByCode(language.getCode());
+        final LanguageJPA language = languages.get(0);
+        final LanguageJPA testLang = languageRepository.findByCode(language.getCode());
 
         assertEquals(testLang, language);
     }

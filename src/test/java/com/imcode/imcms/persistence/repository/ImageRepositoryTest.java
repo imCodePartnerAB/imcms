@@ -8,7 +8,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.util.image.Format;
@@ -51,8 +51,8 @@ public class ImageRepositoryTest {
     private LanguageRepository languageRepository;
 
     private Version version;
-    private Language english;
-    private Language swedish;
+    private LanguageJPA english;
+    private LanguageJPA swedish;
 
     @Before
     public void setUp() {

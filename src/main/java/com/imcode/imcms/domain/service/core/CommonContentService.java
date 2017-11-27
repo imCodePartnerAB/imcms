@@ -4,7 +4,7 @@ import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.api.LanguageService;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
 import org.springframework.stereotype.Service;
@@ -21,14 +21,14 @@ public class CommonContentService {
 
     private final CommonContentRepository commonContentRepository;
     private final Function<CommonContentJPA, CommonContentDTO> commonContentToDTO;
-    private final Function<LanguageDTO, Language> languageDtoToLanguage;
+    private final Function<LanguageDTO, LanguageJPA> languageDtoToLanguage;
     private final LanguageService languageService;
     private final Function<CommonContentDTO, CommonContentJPA> commonContentSaver;
 
     CommonContentService(CommonContentRepository commonContentRepository,
                          Function<CommonContentJPA, CommonContentDTO> commonContentToDTO,
                          Function<CommonContentDTO, CommonContentJPA> commonContentDtoToCommonContent,
-                         Function<LanguageDTO, Language> languageDtoToLanguage,
+                         Function<LanguageDTO, LanguageJPA> languageDtoToLanguage,
                          LanguageService languageService) {
 
         this.commonContentRepository = commonContentRepository;
@@ -63,7 +63,7 @@ public class CommonContentService {
      * @return common content of docId, versionNo and user language.
      */
     public CommonContentDTO getOrCreate(int docId, int versionNo, LanguageDTO languageDTO) {
-        final Language language = languageDtoToLanguage.apply(languageDTO);
+        final LanguageJPA language = languageDtoToLanguage.apply(languageDTO);
         final CommonContentJPA commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
                 docId, versionNo, language
         );
@@ -91,7 +91,7 @@ public class CommonContentService {
         commonContentSaver.apply(saveMe);
     }
 
-    private CommonContentDTO createFromWorkingVersion(int docId, int versionNo, Language language) {
+    private CommonContentDTO createFromWorkingVersion(int docId, int versionNo, LanguageJPA language) {
         final CommonContentJPA commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
                 docId, WORKING_VERSION_INDEX, language
         );

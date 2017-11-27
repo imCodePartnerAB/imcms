@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.LanguageDTO;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 public class LanguageService {
 
     private final LanguageRepository languageRepository;
-    private final Function<Language, LanguageDTO> languageToLanguageDTO;
+    private final Function<LanguageJPA, LanguageDTO> languageToLanguageDTO;
 
     LanguageService(LanguageRepository languageRepository,
-                    Function<Language, LanguageDTO> languageToLanguageDTO) {
+                    Function<LanguageJPA, LanguageDTO> languageToLanguageDTO) {
 
         this.languageRepository = languageRepository;
         this.languageToLanguageDTO = languageToLanguageDTO;
@@ -38,7 +38,7 @@ public class LanguageService {
      * @deprecated use {@link com.imcode.imcms.domain.service.api.LanguageService#findByCode(java.lang.String)}
      */
     @Deprecated
-    public Language findEntityByCode(String code) {
+    public LanguageJPA findEntityByCode(String code) {
         return languageRepository.findByCode(code);
     }
 

@@ -1,7 +1,7 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
@@ -28,19 +28,19 @@ public class ImageDataInitializer extends TestDataCleaner {
 
     public Image createData(Integer imageIndex, Integer docId, Integer versionIndex) {
         final Version version = versionDataInitializer.createData(versionIndex, docId);
-        final Language language = languageRepository.findByCode("en");
+        final LanguageJPA language = languageRepository.findByCode("en");
 
         return generateImage(imageIndex, language, version, null);
     }
 
     public Image createData(int imageIndex, int docId, int versionIndex, LoopEntryRef loopEntryRef) {
         final Version version = versionDataInitializer.createData(versionIndex, docId);
-        final Language language = languageRepository.findByCode("en");
+        final LanguageJPA language = languageRepository.findByCode("en");
 
         return generateImage(imageIndex, language, version, loopEntryRef);
     }
 
-    public Image generateImage(int index, Language language, Version version, LoopEntryRef loopEntryRef) {
+    public Image generateImage(int index, LanguageJPA language, Version version, LoopEntryRef loopEntryRef) {
         return Value.with(new Image(), image -> {
             image.setIndex(index);
             image.setLanguage(language);

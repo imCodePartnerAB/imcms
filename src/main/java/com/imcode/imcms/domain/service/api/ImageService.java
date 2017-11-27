@@ -4,7 +4,7 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
@@ -25,14 +25,14 @@ public class ImageService {
     private final VersionService versionService;
     private final LanguageService languageService;
     private final Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef;
-    private final TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage;
+    private final TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage;
     private final Function<Image, ImageDTO> imageToImageDTO;
 
     ImageService(ImageRepository imageRepository,
                  VersionService versionService,
                  LanguageService languageService,
                  Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
-                 TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage,
+                 TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage,
                  Function<Image, ImageDTO> imageToImageDTO) {
 
         this.imageRepository = imageRepository;
@@ -62,7 +62,7 @@ public class ImageService {
 
     public void saveImage(ImageDTO imageDTO) {
         final Version version = versionService.getDocumentWorkingVersion(imageDTO.getDocId());
-        final Language language = languageService.findEntityByCode(imageDTO.getLangCode());
+        final LanguageJPA language = languageService.findEntityByCode(imageDTO.getLangCode());
 
         generateImage(imageDTO);
 
@@ -77,7 +77,7 @@ public class ImageService {
                               Function<Integer, Version> versionReceiver) {
 
         final Version version = versionReceiver.apply(docId);
-        final Language language = languageService.findEntityByCode(langCode);
+        final LanguageJPA language = languageService.findEntityByCode(langCode);
         final Image image = getImage(index, version, language, loopEntryRefDTO);
 
         return Optional.ofNullable(image)
@@ -95,7 +95,7 @@ public class ImageService {
         }
     }
 
-    private Image getImage(int index, Version version, Language language, LoopEntryRefDTO loopEntryRefDTO) {
+    private Image getImage(int index, Version version, LanguageJPA language, LoopEntryRefDTO loopEntryRefDTO) {
         final LoopEntryRef loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
 
         return (loopEntryRef == null)
@@ -103,7 +103,7 @@ public class ImageService {
                 : imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
     }
 
-    private Integer getImageId(ImageDTO imageDTO, Version version, Language language) {
+    private Integer getImageId(ImageDTO imageDTO, Version version, LanguageJPA language) {
         final Integer index = imageDTO.getIndex();
         final LoopEntryRefDTO loopEntryRefDTO = imageDTO.getLoopEntryRef();
         final Image image = getImage(index, version, language, loopEntryRefDTO);

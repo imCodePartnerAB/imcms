@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Language {
+public class LanguageJPA {
 
     private static final long serialVersionUID = -7712182762931242124L;
 
@@ -37,11 +37,11 @@ public class Language {
     @Column(nullable = false, columnDefinition = "tinyint")
     private boolean enabled;
 
-    public Language(String code, String name, String nativeName) {
+    public LanguageJPA(String code, String name, String nativeName) {
         this(null, code, name, nativeName, true);
     }
 
-    public Language(String code, String name, String nativeName, boolean enabled) {
+    public LanguageJPA(String code, String name, String nativeName, boolean enabled) {
         this(null, code, name, nativeName, enabled);
     }
 

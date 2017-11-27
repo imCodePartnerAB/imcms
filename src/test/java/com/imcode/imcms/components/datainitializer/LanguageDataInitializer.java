@@ -1,7 +1,7 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.LanguageDTO;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ public class LanguageDataInitializer extends TestDataCleaner {
     private LanguageRepository languageRepository;
 
     @Autowired
-    private Function<Language, LanguageDTO> languageMapper;
+    private Function<LanguageJPA, LanguageDTO> languageMapper;
 
     public LanguageDataInitializer() {
         super();

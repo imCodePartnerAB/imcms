@@ -38,7 +38,7 @@ public class TextRepositoryTest {
     @Autowired
     private VersionDataInitializer versionDataInitializer;
 
-    private List<Language> languages;
+    private List<LanguageJPA> languages;
     private List<Version> versions;
 
     @Before
@@ -55,7 +55,7 @@ public class TextRepositoryTest {
 
         // texts with odd no have loop entry with the same loop no and entry no
         for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
-            for (Language language : languages) {
+            for (LanguageJPA language : languages) {
                 for (Version version : versions) {
                     Text text = new Text();
 
@@ -79,7 +79,7 @@ public class TextRepositoryTest {
     @Test
     public void testFindByDocVersionAndIndexAndLoopEntryIsNull() throws Exception {
         for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
-            for (Language language : languages) {
+            for (LanguageJPA language : languages) {
                 for (Version version : versions) {
                     Text text = textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
                             version, language, index
@@ -100,7 +100,7 @@ public class TextRepositoryTest {
     public void testFindByDocVersionAndIndexAndLoopEntryRef() throws Exception {
         for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
             final LoopEntryRef loopEntryRef = new LoopEntryRef(index, index);
-            for (Language language : languages) {
+            for (LanguageJPA language : languages) {
                 for (Version version : versions) {
                     Text text = textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
                             version, language, index, loopEntryRef
@@ -119,7 +119,7 @@ public class TextRepositoryTest {
 
     @Test
     public void testDeleteByDocVersionAndLanguage() throws Exception {
-        for (Language language : languages) {
+        for (LanguageJPA language : languages) {
             for (Version version : versions) {
                 int deletedCount = textRepository.deleteByVersionAndLanguage(version, language);
 

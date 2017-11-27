@@ -61,7 +61,7 @@ public class TextDocumentContentSaver {
     public void createContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
         DocRef docRef = doc.getRef();
         Version version = findVersion(docRef);
-        Language language = findLanguage(docRef);
+        LanguageJPA language = findLanguage(docRef);
         User user = findUser(userDomainObject);
 
         // loops must be created before loop items (texts and images)
@@ -85,7 +85,7 @@ public class TextDocumentContentSaver {
     public void createI18nContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
         DocRef docRef = doc.getRef();
         Version version = findVersion(docRef);
-        Language language = findLanguage(docRef);
+        LanguageJPA language = findLanguage(docRef);
         User user = findUser(userDomainObject);
 
         saveTexts(doc, version, language, user, SaveMode.CREATE);
@@ -98,7 +98,7 @@ public class TextDocumentContentSaver {
     public void updateContent(TextDocumentDomainObject doc, UserDomainObject userDomainObject) {
         DocRef docRef = doc.getRef();
         Version version = findVersion(docRef);
-        Language language = findLanguage(docRef);
+        LanguageJPA language = findLanguage(docRef);
         User user = findUser(userDomainObject);
 
         // loop items must be deleted before loops (texts and images)
@@ -130,14 +130,14 @@ public class TextDocumentContentSaver {
         Version version = findVersion(container);
 
         for (Map.Entry<com.imcode.imcms.api.DocumentLanguage, ImageDomainObject> e : container.getImages().entrySet()) {
-            Language language = findLanguage(e.getKey());
+            LanguageJPA language = findLanguage(e.getKey());
             Image image = toJpaObject(e.getValue(), version, language, container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
 
             saveImage(image, SaveMode.UPDATE);
         }
 
         container.getImages().forEach((languageDO, imageDO) -> {
-            Language language = findLanguage(languageDO);
+            LanguageJPA language = findLanguage(languageDO);
             Image image = toJpaObject(imageDO, version, language, container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
 
             saveImage(image, SaveMode.UPDATE);
@@ -156,7 +156,7 @@ public class TextDocumentContentSaver {
         Version version = findVersion(container);
 
         container.getTexts().forEach((languageDO, textDO) -> {
-            Language language = findLanguage(languageDO);
+            LanguageJPA language = findLanguage(languageDO);
             Text text = toJpaObject(textDO, version, language, container.getTextNo(), toJpaObject(container.getLoopEntryRef()));
 
             saveText(text, user, SaveMode.UPDATE);
@@ -211,7 +211,7 @@ public class TextDocumentContentSaver {
         menuRepository.saveAndFlush(menu);
     }
 
-    private void saveImages(TextDocumentDomainObject doc, Version version, Language language, SaveMode saveMode) {
+    private void saveImages(TextDocumentDomainObject doc, Version version, LanguageJPA language, SaveMode saveMode) {
         for (Map.Entry<Integer, ImageDomainObject> entry : doc.getImages().entrySet()) {
             Image image = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
 
@@ -228,7 +228,7 @@ public class TextDocumentContentSaver {
         }
     }
 
-    private void saveTexts(TextDocumentDomainObject doc, Version version, Language language, User user, SaveMode saveMode) {
+    private void saveTexts(TextDocumentDomainObject doc, Version version, LanguageJPA language, User user, SaveMode saveMode) {
         for (Map.Entry<Integer, TextDomainObject> entry : doc.getTexts().entrySet()) {
             Text text = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
 
@@ -297,14 +297,14 @@ public class TextDocumentContentSaver {
     }
 
     private Text toJpaObject(TextDocTextContainer container) {
-        Language language = findLanguage(container);
+        LanguageJPA language = findLanguage(container);
         Version version = findVersion(container);
         LoopEntryRef loopEntryRef = toJpaObject(container.getLoopEntryRef());
 
         return toJpaObject(container.getText(), version, language, container.getTextNo(), loopEntryRef);
     }
 
-    private Text toJpaObject(TextDomainObject textDO, Version version, Language language, int no, LoopEntryRef loopEntryRef) {
+    private Text toJpaObject(TextDomainObject textDO, Version version, LanguageJPA language, int no, LoopEntryRef loopEntryRef) {
         Text text = new Text();
 
         text.setLanguage(language);
@@ -318,14 +318,14 @@ public class TextDocumentContentSaver {
     }
 
     private Image toJpaObject(TextDocImageContainer container) {
-        Language language = findLanguage(container);
+        LanguageJPA language = findLanguage(container);
         Version version = findVersion(container);
         LoopEntryRef loopEntryRef = toJpaObject(container.getLoopEntryRef());
 
         return toJpaObject(container.getImage(), version, language, container.getImageNo(), loopEntryRef);
     }
 
-    private Image toJpaObject(ImageDomainObject imageDO, Version version, Language language, int no, LoopEntryRef loopEntryRef) {
+    private Image toJpaObject(ImageDomainObject imageDO, Version version, LanguageJPA language, int no, LoopEntryRef loopEntryRef) {
         ImageDomainObject.CropRegion cropRegionDO = imageDO.getCropRegion();
         ImageCropRegion cropRegion = cropRegionDO.isValid()
                 ? new ImageCropRegion(cropRegionDO.getCropX1(), cropRegionDO.getCropY1(), cropRegionDO.getCropX2(), cropRegionDO.getCropY2())
@@ -403,11 +403,11 @@ public class TextDocumentContentSaver {
         return userRepository.getOne(userDomainObject.getId());
     }
 
-    private Language findLanguage(LanguageContainer container) {
+    private LanguageJPA findLanguage(LanguageContainer container) {
         return languageRepository.findByCode(container.getLanguageCode());
     }
 
-    private Language findLanguage(com.imcode.imcms.api.DocumentLanguage documentLanguage) {
+    private LanguageJPA findLanguage(com.imcode.imcms.api.DocumentLanguage documentLanguage) {
         return languageRepository.findByCode(documentLanguage.getCode());
     }
 

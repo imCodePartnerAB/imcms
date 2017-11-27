@@ -1,7 +1,7 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import org.springframework.stereotype.Component;
@@ -34,8 +34,8 @@ public class CommonContentDataInitializer extends TestDataCleaner {
     }
 
     public List<CommonContentJPA> createData(Integer docId, Integer versionIndex) {
-        Language en = languageRepository.findByCode(ENG_CODE);
-        Language se = languageRepository.findByCode(SWE_CODE);
+        LanguageJPA en = languageRepository.findByCode(ENG_CODE);
+        LanguageJPA se = languageRepository.findByCode(SWE_CODE);
         // both langs should be already created
 
         versionDataInitializer.createData(versionIndex, docId);

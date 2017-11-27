@@ -8,7 +8,7 @@ import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Version;
@@ -175,7 +175,7 @@ public class DocumentSaver {
             ormDcc.setVersionNo(doc.getVersionNo());
 
             if (ormDcc.getId() == null) {
-                Language ormLanguage = languageRepository.findByCode(language.getCode());
+                LanguageJPA ormLanguage = languageRepository.findByCode(language.getCode());
 
                 ormDcc.setDocId(doc.getId());
                 ormDcc.setLanguage(ormLanguage);
@@ -265,7 +265,7 @@ public class DocumentSaver {
 
         dccMap.forEach((language, dcc) -> {
             CommonContentJPA jpaDcc = new CommonContentJPA();
-            Language jpaLanguage = languageRepository.findByCode(language.getCode());
+            LanguageJPA jpaLanguage = languageRepository.findByCode(language.getCode());
 
             jpaDcc.setDocId(newDocId);
             jpaDcc.setHeadline(dcc.getHeadline());

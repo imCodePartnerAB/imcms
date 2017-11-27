@@ -18,6 +18,6 @@ abstract class VersionedI18nContent extends VersionedContent {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "language_id")
-    private Language language;
+    private LanguageJPA language;
 
 }

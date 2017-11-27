@@ -79,7 +79,7 @@ public class TextDocumentContentLoader {
 
     public Map<Integer, TextDomainObject> getTexts(final DocRef docRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)
                 .stream().collect(toMap(Text::getIndex, this::toDomainObject));
@@ -87,7 +87,7 @@ public class TextDocumentContentLoader {
 
     public Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> getLoopTexts(DocRef docRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         final Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> result = new HashMap<>();
 
@@ -103,31 +103,31 @@ public class TextDocumentContentLoader {
     }
 
     /**
-     * Return text history based on special document {@link Version}, {@link Language}, and text id
+     * Return text history based on special document {@link Version}, {@link LanguageJPA}, and text id
      *
      * @param docRef {@link DocRef} item
      * @param textNo text id
      * @return {@link Set< TextHistory >} of text history
      * @see Version
-     * @see Language
+     * @see LanguageJPA
      * @see DocRef
      * @see imcode.server.document.DocumentDomainObject
      */
     public Collection<TextHistory> getTextHistory(DocRef docRef, int textNo) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return textHistoryRepository.findAllByVersionAndLanguageAndNo(version, language, textNo);
     }
 
     /**
-     * Return text history based on special document {@link Version}, {@link Language},{@link LoopEntryRef} and text id
+     * Return text history based on special document {@link Version}, {@link LanguageJPA},{@link LoopEntryRef} and text id
      *
      * @param docRef {@link DocRef} item
      * @param textNo text id
      * @return {@link Collection<TextHistory>} of text history
      * @see Version
-     * @see Language
+     * @see LanguageJPA
      * @see DocRef
      * @see LoopEntryRef
      * @see imcode.server.document.DocumentDomainObject
@@ -138,7 +138,7 @@ public class TextDocumentContentLoader {
         }
 
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return textHistoryRepository.findAllByVersionAndLanguageAndLoopEntryRefAndNo(version, language, loopEntryRef, textNo);
     }
@@ -146,7 +146,7 @@ public class TextDocumentContentLoader {
 
     public TextDomainObject getText(DocRef docRef, int textNo) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return toDomainObject(
                 textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, textNo)
@@ -155,7 +155,7 @@ public class TextDocumentContentLoader {
 
     public Map<Integer, ImageDomainObject> getImages(DocRef docRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)
                 .stream().collect(toMap(Image::getIndex, ImcmsImageUtils::toDomainObject));
@@ -164,7 +164,7 @@ public class TextDocumentContentLoader {
 
     public Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> getLoopImages(DocRef docRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
         final Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> result = new HashMap<>();
 
         for (Image image : imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
@@ -213,7 +213,7 @@ public class TextDocumentContentLoader {
 
     public ImageDomainObject getImage(DocRef docRef, int imageNo) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return ImcmsImageUtils.toDomainObject(
                 imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, imageNo)
@@ -222,7 +222,7 @@ public class TextDocumentContentLoader {
 
     public ImageDomainObject getLoopImage(DocRef docRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
         LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         return ImcmsImageUtils.toDomainObject(

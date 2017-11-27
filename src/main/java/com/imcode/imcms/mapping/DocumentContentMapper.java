@@ -4,7 +4,7 @@ import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.document.DocumentDomainObject;
@@ -72,7 +72,7 @@ public class DocumentContentMapper {
     }
 
     public void saveCommonContent(DocumentDomainObject doc) {
-        Language language = languageRepository.findByCode(doc.getLanguage().getCode());
+        LanguageJPA language = languageRepository.findByCode(doc.getLanguage().getCode());
         CommonContentJPA dcc = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
                 doc.getId(), doc.getVersionNo(), language);
 

@@ -1,7 +1,7 @@
 package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +12,7 @@ public interface CommonContentRepository extends JpaRepository<CommonContentJPA,
 
     List<CommonContentJPA> findByDocIdAndVersionNo(int docId, int versionNo);
 
-    CommonContentJPA findByDocIdAndVersionNoAndLanguage(int docId, int versionNo, Language language);
+    CommonContentJPA findByDocIdAndVersionNoAndLanguage(int docId, int versionNo, LanguageJPA language);
 
     CommonContentJPA findByDocIdAndVersionNoAndLanguageCode(int docId, int versionNo, String code);
 }

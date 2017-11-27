@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.core.VersionService;
-import com.imcode.imcms.persistence.entity.Language;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Text;
 import com.imcode.imcms.persistence.entity.Version;
@@ -24,14 +24,14 @@ public class TextService {
     private final LanguageService languageService;
     private final VersionService versionService;
     private final Function<Text, TextDTO> textToTextDTO;
-    private final TernaryFunction<TextDTO, Version, Language, Text> textDtoToText;
+    private final TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText;
 
     TextService(TextRepository textRepository,
                 Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
                 LanguageService languageService,
                 VersionService versionService,
                 Function<Text, TextDTO> textToTextDTO,
-                TernaryFunction<TextDTO, Version, Language, Text> textDtoToText) {
+                TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText) {
 
         this.textRepository = textRepository;
         this.loopEntryRefDtoToLoopEntryRef = loopEntryRefDtoToLoopEntryRef;
@@ -60,7 +60,7 @@ public class TextService {
 
     public void save(TextDTO textDTO) {
         final Version version = versionService.getDocumentWorkingVersion(textDTO.getDocId());
-        final Language language = languageService.findEntityByCode(textDTO.getLangCode());
+        final LanguageJPA language = languageService.findEntityByCode(textDTO.getLangCode());
         final Text text = textDtoToText.apply(textDTO, version, language);
         final Integer textId = getTextId(textDTO, version, language);
 
@@ -72,7 +72,7 @@ public class TextService {
                             Function<Integer, Version> versionReceiver) {
 
         final Version version = versionReceiver.apply(docId);
-        final Language language = languageService.findEntityByCode(langCode);
+        final LanguageJPA language = languageService.findEntityByCode(langCode);
         final Text text = getText(index, version, language, loopEntryRefDTO);
 
         return Optional.ofNullable(text)
@@ -80,7 +80,7 @@ public class TextService {
                 .orElse(new TextDTO(index, docId, langCode, loopEntryRefDTO));
     }
 
-    private Text getText(int index, Version version, Language language, LoopEntryRefDTO loopEntryRefDTO) {
+    private Text getText(int index, Version version, LanguageJPA language, LoopEntryRefDTO loopEntryRefDTO) {
         final LoopEntryRef loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
 
         return (loopEntryRef == null)
@@ -88,7 +88,7 @@ public class TextService {
                 : textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
     }
 
-    private Integer getTextId(TextDTO textDTO, Version version, Language language) {
+    private Integer getTextId(TextDTO textDTO, Version version, LanguageJPA language) {
         final Integer index = textDTO.getIndex();
         final LoopEntryRefDTO loopEntryRefDTO = textDTO.getLoopEntryRef();
         final Text text = getText(index, version, language, loopEntryRefDTO);
