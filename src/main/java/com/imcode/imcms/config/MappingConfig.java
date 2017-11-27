@@ -7,6 +7,7 @@ import com.imcode.imcms.domain.service.api.DocumentService;
 import com.imcode.imcms.domain.service.api.RoleService;
 import com.imcode.imcms.domain.service.api.UserService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
+import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.*;
@@ -465,7 +466,8 @@ public class MappingConfig {
             Function<Set<RestrictedPermission>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO,
             Function<Map<Integer, Meta.Permission>, Set<RoleDTO>> roleIdByPermissionToRoleDTOs,
             CategoryService categoryService,
-            UserService userService
+            UserService userService,
+            TextDocumentTemplateService textDocumentTemplateService
     ) {
         final BiFunction<Supplier<Integer>, Supplier<Date>, AuditDTO> auditDtoCreator =
                 (auditorIdSupplier, auditedDateSupplier) -> {
@@ -520,6 +522,8 @@ public class MappingConfig {
 
             dto.setCategories(categories);
             dto.setRestrictedPermissions(restrictedPermissionsToDTO.apply(meta.getRestrictedPermissions()));
+
+            textDocumentTemplateService.get(metaId).ifPresent(dto::setTemplate);
 
             return dto;
         };
