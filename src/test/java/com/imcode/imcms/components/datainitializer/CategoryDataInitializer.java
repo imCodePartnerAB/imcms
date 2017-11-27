@@ -20,7 +20,6 @@ public class CategoryDataInitializer extends TestDataCleaner {
 
     private final CategoryTypeRepository categoryTypeRepository;
     private final CategoryRepository categoryRepository;
-    private final Function<CategoryJPA, CategoryDTO> categoryMapper;
     private final Function<CategoryType, CategoryTypeDTO> categoryTypeMapper;
 
     private List<CategoryType> types;
@@ -30,12 +29,11 @@ public class CategoryDataInitializer extends TestDataCleaner {
 
     public CategoryDataInitializer(CategoryTypeRepository categoryTypeRepository,
                                    CategoryRepository categoryRepository,
-                                   Function<CategoryJPA, CategoryDTO> categoryMapper,
                                    Function<CategoryType, CategoryTypeDTO> categoryTypeMapper) {
+
         super(categoryRepository, categoryTypeRepository);
         this.categoryTypeRepository = categoryTypeRepository;
         this.categoryRepository = categoryRepository;
-        this.categoryMapper = categoryMapper;
         this.categoryTypeMapper = categoryTypeMapper;
     }
 
@@ -53,7 +51,7 @@ public class CategoryDataInitializer extends TestDataCleaner {
 
     public List<CategoryDTO> getCategoriesAsDTO() {
         return categories.stream()
-                .map(categoryMapper)
+                .map(CategoryDTO::new)
                 .collect(Collectors.toList());
     }
 

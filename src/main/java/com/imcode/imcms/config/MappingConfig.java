@@ -37,11 +37,6 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
 class MappingConfig {
 
     @Bean
-    public Function<CategoryJPA, CategoryDTO> categoryToCategoryDTO() {
-        return category -> new CategoryDTO(category.getId(), category.getName());
-    }
-
-    @Bean
     public Function<Role, RoleDTO> roleToRoleDTO() {
         return role -> new RoleDTO(role.getId(), role.getName());
     }
@@ -189,14 +184,14 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<CategoryType, CategoryTypeDTO> categoryTypeToCategoryTypeDTO(Function<CategoryJPA, CategoryDTO> categoryMapper) {
+    public Function<CategoryType, CategoryTypeDTO> categoryTypeToCategoryTypeDTO() {
         return categoryType -> new CategoryTypeDTO(
                 categoryType.getId(),
                 categoryType.getName(),
                 categoryType.isMultiSelect(),
                 categoryType.getCategories()
                         .stream()
-                        .map(categoryMapper)
+                        .map(CategoryDTO::new)
                         .collect(Collectors.toList())
         );
     }

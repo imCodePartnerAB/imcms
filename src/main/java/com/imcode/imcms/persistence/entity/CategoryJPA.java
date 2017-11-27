@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Entity
 @Table(name = "categories")
-public class CategoryJPA {
+public class CategoryJPA extends Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +35,7 @@ public class CategoryJPA {
         this(null, name, description, imageUrl, type);
     }
 
+    public CategoryJPA(Category from) {
+        super(from);
+    }
 }
