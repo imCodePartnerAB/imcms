@@ -17,8 +17,8 @@ public class CategoryService {
     private final Function<Category, CategoryDTO> categoryToCategoryDTO;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository,
-                           Function<Category, CategoryDTO> categoryToCategoryDTO) {
+    CategoryService(CategoryRepository categoryRepository,
+                    Function<Category, CategoryDTO> categoryToCategoryDTO) {
 
         this.categoryRepository = categoryRepository;
         this.categoryToCategoryDTO = categoryToCategoryDTO;

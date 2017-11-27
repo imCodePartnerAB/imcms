@@ -31,12 +31,12 @@ public class MenuService {
     private final Function<Menu, MenuDTO> menuToMenuDTO;
     private final Function<Menu, MenuDTO> menuSaver;
 
-    public MenuService(MenuRepository menuRepository,
-                       VersionService versionService,
-                       DocumentService documentService,
-                       Function<MenuItem, MenuItemDTO> menuItemToDto,
-                       Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList,
-                       Function<Menu, MenuDTO> menuToMenuDTO) {
+    MenuService(MenuRepository menuRepository,
+                VersionService versionService,
+                DocumentService documentService,
+                Function<MenuItem, MenuItemDTO> menuItemToDto,
+                Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList,
+                Function<Menu, MenuDTO> menuToMenuDTO) {
 
         this.menuRepository = menuRepository;
         this.versionService = versionService;

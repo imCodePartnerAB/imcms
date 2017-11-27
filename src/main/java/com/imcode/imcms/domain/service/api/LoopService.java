@@ -27,8 +27,8 @@ public class LoopService {
     private final VersionService versionService;
 
     @Autowired
-    public LoopService(LoopRepository loopRepository, Function<Loop, LoopDTO> loopToDtoMapper,
-                       BiFunction<LoopDTO, Version, Loop> loopDtoToLoop, VersionService versionService) {
+    LoopService(LoopRepository loopRepository, Function<Loop, LoopDTO> loopToDtoMapper,
+                BiFunction<LoopDTO, Version, Loop> loopDtoToLoop, VersionService versionService) {
         this.loopRepository = loopRepository;
         this.loopToDtoMapper = loopToDtoMapper;
         this.loopDtoToLoop = loopDtoToLoop;

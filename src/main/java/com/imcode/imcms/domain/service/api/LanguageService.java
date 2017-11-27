@@ -15,8 +15,8 @@ public class LanguageService {
     private final LanguageRepository languageRepository;
     private final Function<Language, LanguageDTO> languageToLanguageDTO;
 
-    public LanguageService(LanguageRepository languageRepository,
-                           Function<Language, LanguageDTO> languageToLanguageDTO) {
+    LanguageService(LanguageRepository languageRepository,
+                    Function<Language, LanguageDTO> languageToLanguageDTO) {
 
         this.languageRepository = languageRepository;
         this.languageToLanguageDTO = languageToLanguageDTO;

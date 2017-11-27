@@ -25,11 +25,11 @@ public class CommonContentService {
     private final LanguageService languageService;
     private final Function<CommonContentDTO, CommonContent> commonContentSaver;
 
-    public CommonContentService(CommonContentRepository commonContentRepository,
-                                Function<CommonContent, CommonContentDTO> commonContentToDTO,
-                                Function<CommonContentDTO, CommonContent> commonContentDtoToCommonContent,
-                                Function<LanguageDTO, Language> languageDtoToLanguage,
-                                LanguageService languageService) {
+    CommonContentService(CommonContentRepository commonContentRepository,
+                         Function<CommonContent, CommonContentDTO> commonContentToDTO,
+                         Function<CommonContentDTO, CommonContent> commonContentDtoToCommonContent,
+                         Function<LanguageDTO, Language> languageDtoToLanguage,
+                         LanguageService languageService) {
 
         this.commonContentRepository = commonContentRepository;
         this.commonContentToDTO = commonContentToDTO;

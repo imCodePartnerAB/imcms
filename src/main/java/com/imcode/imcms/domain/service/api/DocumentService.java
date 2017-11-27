@@ -34,13 +34,13 @@ public class DocumentService {
     private final TextDocumentTemplateService textDocumentTemplateService;
     private final Function<DocumentDTO, Meta> metaSaver;
 
-    public DocumentService(MetaRepository metaRepository,
-                           Function<Meta, DocumentDTO> metaToDocumentDTO,
-                           Function<DocumentDTO, Meta> documentDtoToMeta,
-                           CommonContentService commonContentService,
-                           VersionService versionService,
-                           LanguageService languageService,
-                           TextDocumentTemplateService textDocumentTemplateService) {
+    DocumentService(MetaRepository metaRepository,
+                    Function<Meta, DocumentDTO> metaToDocumentDTO,
+                    Function<DocumentDTO, Meta> documentDtoToMeta,
+                    CommonContentService commonContentService,
+                    VersionService versionService,
+                    LanguageService languageService,
+                    TextDocumentTemplateService textDocumentTemplateService) {
 
         this.metaRepository = metaRepository;
         this.documentMapping = metaToDocumentDTO;

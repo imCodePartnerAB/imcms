@@ -26,8 +26,8 @@ public class SearchDocumentService {
     private final DocumentService documentService;
     private final DocumentMapper documentMapper;
 
-    public SearchDocumentService(Function<DocumentStoredFields, DocumentDTO> mapper,
-                                 DocumentService documentService, DocumentMapper documentMapper) {
+    SearchDocumentService(Function<DocumentStoredFields, DocumentDTO> mapper,
+                          DocumentService documentService, DocumentMapper documentMapper) {
         this.mapper = mapper;
         this.documentService = documentService;
         this.documentMapper = documentMapper;

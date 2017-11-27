@@ -16,9 +16,9 @@ public class RoleService {
     private final Function<RoleDTO, Role> roleDtoToRole;
     private final Function<Role, RoleDTO> roleToRoleDTO;
 
-    public RoleService(RoleRepository roleRepository,
-                       Function<RoleDTO, Role> roleDtoToRole,
-                       Function<Role, RoleDTO> roleToRoleDTO) {
+    RoleService(RoleRepository roleRepository,
+                Function<RoleDTO, Role> roleDtoToRole,
+                Function<Role, RoleDTO> roleToRoleDTO) {
 
         this.roleRepository = roleRepository;
         this.roleDtoToRole = roleDtoToRole;

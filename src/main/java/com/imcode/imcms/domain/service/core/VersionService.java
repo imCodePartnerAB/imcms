@@ -19,7 +19,7 @@ public class VersionService {
     private final VersionRepository versionRepository;
     private final UserService userService;
 
-    public VersionService(VersionRepository versionRepository, UserService userService) {
+    VersionService(VersionRepository versionRepository, UserService userService) {
         this.versionRepository = versionRepository;
         this.userService = userService;
     }

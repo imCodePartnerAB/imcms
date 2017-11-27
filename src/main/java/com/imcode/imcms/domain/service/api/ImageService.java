@@ -28,12 +28,12 @@ public class ImageService {
     private final TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage;
     private final Function<Image, ImageDTO> imageToImageDTO;
 
-    public ImageService(ImageRepository imageRepository,
-                        VersionService versionService,
-                        LanguageService languageService,
-                        Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
-                        TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage,
-                        Function<Image, ImageDTO> imageToImageDTO) {
+    ImageService(ImageRepository imageRepository,
+                 VersionService versionService,
+                 LanguageService languageService,
+                 Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
+                 TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage,
+                 Function<Image, ImageDTO> imageToImageDTO) {
 
         this.imageRepository = imageRepository;
         this.versionService = versionService;

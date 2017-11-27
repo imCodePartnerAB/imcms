@@ -29,8 +29,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final Function<User, UserDTO> userToUserDTO;
 
-    public UserService(UserRepository userRepository,
-                       Function<User, UserDTO> userToUserDTO) {
+    UserService(UserRepository userRepository,
+                Function<User, UserDTO> userToUserDTO) {
         this.userRepository = userRepository;
         this.userToUserDTO = userToUserDTO;
     }

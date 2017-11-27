@@ -20,7 +20,7 @@ public class CategoryTypeService {
     private final Function<CategoryType, CategoryTypeDTO> mapper;
 
     @Autowired
-    public CategoryTypeService(CategoryTypeRepository categoryTypeRepository, Function<CategoryType, CategoryTypeDTO> mapper) {
+    CategoryTypeService(CategoryTypeRepository categoryTypeRepository, Function<CategoryType, CategoryTypeDTO> mapper) {
         this.categoryTypeRepository = categoryTypeRepository;
         this.mapper = mapper;
     }

@@ -26,12 +26,12 @@ public class TextService {
     private final Function<Text, TextDTO> textToTextDTO;
     private final TernaryFunction<TextDTO, Version, Language, Text> textDtoToText;
 
-    public TextService(TextRepository textRepository,
-                       Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
-                       LanguageService languageService,
-                       VersionService versionService,
-                       Function<Text, TextDTO> textToTextDTO,
-                       TernaryFunction<TextDTO, Version, Language, Text> textDtoToText) {
+    TextService(TextRepository textRepository,
+                Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
+                LanguageService languageService,
+                VersionService versionService,
+                Function<Text, TextDTO> textToTextDTO,
+                TernaryFunction<TextDTO, Version, Language, Text> textDtoToText) {
 
         this.textRepository = textRepository;
         this.loopEntryRefDtoToLoopEntryRef = loopEntryRefDtoToLoopEntryRef;

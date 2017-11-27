@@ -17,7 +17,7 @@ public class TextDocumentTemplateService {
 
     private final TextDocumentTemplateRepository textDocumentTemplateRepository;
 
-    public TextDocumentTemplateService(TextDocumentTemplateRepository textDocumentTemplateRepository) {
+    TextDocumentTemplateService(TextDocumentTemplateRepository textDocumentTemplateRepository) {
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
     }
 

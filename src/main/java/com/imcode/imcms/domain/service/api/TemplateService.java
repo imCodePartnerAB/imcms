@@ -28,10 +28,10 @@ public class TemplateService {
     private final Function<TemplateDTO, TemplateDTO> templateSaver;
     private final Set<String> templateExtensions = new HashSet<>(Arrays.asList("jsp", "jspx", "html"));
 
-    public TemplateService(TemplateRepository templateRepository,
-                           Function<TemplateJPA, TemplateDTO> templateToTemplateDTO,
-                           Function<TemplateDTO, TemplateJPA> templateDtoToTemplate,
-                           @Value("WEB-INF/templates/text") File templateDirectory) {
+    TemplateService(TemplateRepository templateRepository,
+                    Function<TemplateJPA, TemplateDTO> templateToTemplateDTO,
+                    Function<TemplateDTO, TemplateJPA> templateDtoToTemplate,
+                    @Value("WEB-INF/templates/text") File templateDirectory) {
 
         this.templateRepository = templateRepository;
         this.templateToTemplateDTO = templateToTemplateDTO;

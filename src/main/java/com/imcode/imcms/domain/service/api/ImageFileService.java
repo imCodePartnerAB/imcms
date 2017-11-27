@@ -32,7 +32,7 @@ public class ImageFileService {
     @Value("${ImagePath}")
     private File imagesPath;
 
-    public ImageFileService(Function<File, ImageFileDTO> fileToImageFileDTO) {
+    ImageFileService(Function<File, ImageFileDTO> fileToImageFileDTO) {
         this.fileToImageFileDTO = fileToImageFileDTO;
     }
 
