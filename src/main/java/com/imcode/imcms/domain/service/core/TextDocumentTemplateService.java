@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.core;
 
-import com.imcode.imcms.persistence.entity.TextDocumentTemplate;
+import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
+import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
 import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,13 +19,14 @@ public class TextDocumentTemplateService {
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
     }
 
-    public void save(int docId, String templateName) {
-        final TextDocumentTemplate documentTemplate = textDocumentTemplateRepository.findOne(docId);
-        documentTemplate.setTemplateName(templateName);
-        textDocumentTemplateRepository.save(documentTemplate);
+    public TextDocumentTemplateJPA save(TextDocumentTemplateDTO saveMe) {
+        final TextDocumentTemplateJPA documentTemplate = new TextDocumentTemplateJPA(saveMe);
+        return textDocumentTemplateRepository.save(documentTemplate);
     }
 
-    public String getTemplateName(int docId) {
-        return textDocumentTemplateRepository.findOne(docId).getTemplateName();
+    public TextDocumentTemplateDTO get(TextDocumentTemplateDTO getMe) {
+        final Integer docId = getMe.getDocId();
+        final TextDocumentTemplateJPA templateJPA = textDocumentTemplateRepository.findOne(docId);
+        return new TextDocumentTemplateDTO(templateJPA);
     }
 }

@@ -2,7 +2,7 @@ package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
-import com.imcode.imcms.persistence.entity.TextDocumentTemplate;
+import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
 import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import com.imcode.imcms.util.Value;
@@ -51,7 +51,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
     }
 
     public void createData(int docId, String templateName, String childrenTemplate) {
-        final TextDocumentTemplate textDocumentTemplate = new TextDocumentTemplate();
+        final TextDocumentTemplateJPA textDocumentTemplate = new TextDocumentTemplateJPA();
         textDocumentTemplate.setTemplateName(templateName);
         textDocumentTemplate.setChildrenTemplateName(childrenTemplate);
         textDocumentTemplate.setDocId(docId);

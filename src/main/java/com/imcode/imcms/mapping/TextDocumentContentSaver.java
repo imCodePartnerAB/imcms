@@ -164,7 +164,7 @@ public class TextDocumentContentSaver {
     }
 
     private void saveTemplateNames(int docId, TextDocumentDomainObject.TemplateNames templateNamesDO) {
-        TextDocumentTemplate textDocumentTemplate = new TextDocumentTemplate();
+        TextDocumentTemplateJPA textDocumentTemplate = new TextDocumentTemplateJPA();
 
         textDocumentTemplate.setDocId(docId);
         textDocumentTemplate.setChildrenTemplateName(templateNamesDO.getDefaultTemplateName());

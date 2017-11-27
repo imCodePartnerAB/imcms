@@ -1,32 +1,34 @@
 package com.imcode.imcms.persistence.entity;
 
-import lombok.Data;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import lombok.NoArgsConstructor;
 
 /**
  * Text document to template.
  */
-@Data
-@Entity
-@Table(name = "text_docs")
-public class TextDocumentTemplate {
+@NoArgsConstructor
+public abstract class TextDocumentTemplate {
 
-    @Id
-    @Column(name = "meta_id")
-    private Integer docId;
+    public TextDocumentTemplate(TextDocumentTemplate createFrom) {
+        setDocId(createFrom.getDocId());
+        setTemplateName(createFrom.getTemplateName());
+        setChildrenTemplateName(createFrom.getChildrenTemplateName());
+        setTemplateGroupId(createFrom.getTemplateGroupId());
+    }
 
-    @Column(name = "template_name")
-    private String templateName;
+    public abstract Integer getDocId();
 
-    // fixme: not used yet
-    @Column(name = "group_id")
-    private int templateGroupId;
+    public abstract void setDocId(Integer docId);
 
-    @Column(name = "children_template_name")
-    private String childrenTemplateName;
+    public abstract String getTemplateName();
+
+    public abstract void setTemplateName(String templateName);
+
+    public abstract int getTemplateGroupId();
+
+    public abstract void setTemplateGroupId(int templateGroupId);
+
+    public abstract String getChildrenTemplateName();
+
+    public abstract void setChildrenTemplateName(String childrenTemplateName);
 
 }
