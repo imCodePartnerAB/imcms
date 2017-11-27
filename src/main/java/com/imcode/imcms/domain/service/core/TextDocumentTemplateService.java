@@ -19,13 +19,13 @@ public class TextDocumentTemplateService {
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
     }
 
-    public TextDocumentTemplateJPA save(TextDocumentTemplateDTO saveMe) {
-        final TextDocumentTemplateJPA documentTemplate = new TextDocumentTemplateJPA(saveMe);
-        return textDocumentTemplateRepository.save(documentTemplate);
+    public TextDocumentTemplateDTO save(TextDocumentTemplateDTO saveMe) {
+        TextDocumentTemplateJPA documentTemplate = new TextDocumentTemplateJPA(saveMe);
+        documentTemplate = textDocumentTemplateRepository.save(documentTemplate);
+        return new TextDocumentTemplateDTO(documentTemplate);
     }
 
-    public TextDocumentTemplateDTO get(TextDocumentTemplateDTO getMe) {
-        final Integer docId = getMe.getDocId();
+    public TextDocumentTemplateDTO get(int docId) {
         final TextDocumentTemplateJPA templateJPA = textDocumentTemplateRepository.findOne(docId);
         return new TextDocumentTemplateDTO(templateJPA);
     }
