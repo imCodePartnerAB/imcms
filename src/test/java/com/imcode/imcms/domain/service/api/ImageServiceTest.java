@@ -154,7 +154,7 @@ public class ImageServiceTest {
 
     @Test
     public void saveImage_When_CroppingIsNotDefault_Expect_EqualCropping() throws IOException {
-        final ImageData.CropRegion cropRegion = new ImageData.CropRegion(10, 10, 20, 20);
+        final ImageData.ImageCropRegionDTO cropRegion = new ImageData.ImageCropRegionDTO(10, 10, 20, 20);
         final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
             img.setIndex(TEST_IMAGE_INDEX);
             img.setDocId(TEST_DOC_ID);

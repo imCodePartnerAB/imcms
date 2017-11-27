@@ -52,7 +52,7 @@ public class Image extends VersionedI18nContent {
     @Column(nullable = false)
     private Format format;
 
-    private ImageCropRegion cropRegion = new ImageCropRegion();
+    private ImageCropRegionJPA cropRegion = new ImageCropRegionJPA();
 
     @Column(name = "rotate_angle", nullable = false, columnDefinition = "smallint")
     private int rotateAngle;

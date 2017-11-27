@@ -1,7 +1,7 @@
 package imcode.util;
 
 import com.imcode.imcms.domain.dto.ImageData;
-import com.imcode.imcms.domain.dto.ImageData.CropRegion;
+import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.persistence.entity.Image;
@@ -205,7 +205,7 @@ public class ImcmsImageUtils {
     }
 
     private static void generateImage(File imageFile, File destFile, Format format, int width, int height,
-                                      Resize resize, CropRegion cropRegion, RotateDirection rotateDir) {
+                                      Resize resize, ImageCropRegionDTO cropRegion, RotateDirection rotateDir) {
 
         ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
 
@@ -250,7 +250,7 @@ public class ImcmsImageUtils {
         imageDO.setArchiveImageId(image.getArchiveImageId());
         imageDO.setBorder(image.getBorder());
 
-        imageDO.setCropRegion(new CropRegion(image.getCropRegion()));
+        imageDO.setCropRegion(new ImageCropRegionDTO(image.getCropRegion()));
         imageDO.setGeneratedFilename(image.getGeneratedFilename());
         imageDO.setHeight(image.getHeight());
         imageDO.setHorizontalSpace(image.getHorizontalSpace());

@@ -26,7 +26,7 @@ public abstract class ImageData implements Serializable {
     protected volatile int height;
     protected volatile Format format;
     protected volatile String generatedFilename;
-    protected volatile CropRegion cropRegion = new CropRegion();
+    protected volatile ImageCropRegionDTO cropRegion = new ImageCropRegionDTO();
     protected volatile ImageSource source = new NullImageSource();
 
     private volatile Resize resize;
@@ -68,7 +68,7 @@ public abstract class ImageData implements Serializable {
 
     @Data
     @NoArgsConstructor
-    public static class CropRegion extends ImageCropRegionDataHolder implements Serializable {
+    public static class ImageCropRegionDTO extends ImageCropRegionDataHolder implements Serializable {
         private static final long serialVersionUID = -586488435877347784L;
 
         private volatile int cropX1;
@@ -79,7 +79,7 @@ public abstract class ImageData implements Serializable {
         @JsonIgnore
         private volatile boolean valid;
 
-        public CropRegion(int cropX1, int cropY1, int cropX2, int cropY2) {
+        public ImageCropRegionDTO(int cropX1, int cropY1, int cropX2, int cropY2) {
             if (cropX1 > cropX2) {
                 this.cropX1 = cropX2;
                 this.cropX2 = cropX1;
@@ -99,7 +99,7 @@ public abstract class ImageData implements Serializable {
             updateValid();
         }
 
-        public CropRegion(ImageCropRegionDataHolder cropRegionDataHolder) {
+        public ImageCropRegionDTO(ImageCropRegionDataHolder cropRegionDataHolder) {
             super(cropRegionDataHolder);
         }
 

@@ -1,7 +1,7 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
-import com.imcode.imcms.domain.dto.ImageData.CropRegion;
+import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
 import com.imcode.imcms.domain.service.api.CategoryService;
 import com.imcode.imcms.domain.service.api.DocumentService;
 import com.imcode.imcms.domain.service.api.RoleService;
@@ -191,7 +191,7 @@ class MappingConfig {
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
             dto.setLoopEntryRef(loopEntryRefToDTO.apply(image.getLoopEntryRef()));
-            dto.setCropRegion(new CropRegion(image.getCropRegion()));
+            dto.setCropRegion(new ImageCropRegionDTO(image.getCropRegion()));
 
             return dto;
         };
@@ -214,7 +214,7 @@ class MappingConfig {
             image.setGeneratedFilename(imageDTO.getGeneratedFilename());
             image.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(imageDTO.getLoopEntryRef()));
             image.setFormat(imageDTO.getFormat());
-            image.setCropRegion(new ImageCropRegion(imageDTO.getCropRegion()));
+            image.setCropRegion(new ImageCropRegionJPA(imageDTO.getCropRegion()));
 
             return image;
         };
