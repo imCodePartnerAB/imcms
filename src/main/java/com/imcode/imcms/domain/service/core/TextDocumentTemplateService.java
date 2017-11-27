@@ -6,6 +6,8 @@ import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 /**
  * Service for work with templates in relation to text documents.
  */
@@ -25,8 +27,7 @@ public class TextDocumentTemplateService {
         return new TextDocumentTemplateDTO(documentTemplate);
     }
 
-    public TextDocumentTemplateDTO get(int docId) {
-        final TextDocumentTemplateJPA templateJPA = textDocumentTemplateRepository.findOne(docId);
-        return new TextDocumentTemplateDTO(templateJPA);
+    public Optional<TextDocumentTemplateDTO> get(int docId) {
+        return Optional.ofNullable(textDocumentTemplateRepository.findOne(docId)).map(TextDocumentTemplateDTO::new);
     }
 }

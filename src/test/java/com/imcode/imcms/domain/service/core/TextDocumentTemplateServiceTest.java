@@ -14,7 +14,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Transactional
 @WebAppConfiguration
@@ -42,21 +45,27 @@ public class TextDocumentTemplateServiceTest {
 
     @Test
     public void get() throws Exception {
-        final TextDocumentTemplateDTO receivedTextDocumentTemplateDTO = textDocumentTemplateService.get(DOC_ID);
+        final Optional<TextDocumentTemplateDTO> oTemplate = textDocumentTemplateService.get(DOC_ID);
+        assertTrue(oTemplate.isPresent());
 
+        final TextDocumentTemplateDTO receivedTextDocumentTemplateDTO = oTemplate.get();
         assertEquals(receivedTextDocumentTemplateDTO, saved);
     }
 
     @Test
     public void save() throws Exception {
         final String testTemplateName = "test_" + System.currentTimeMillis();
-        final TextDocumentTemplateDTO templateDTO = textDocumentTemplateService.get(DOC_ID);
+        Optional<TextDocumentTemplateDTO> oTemplate = textDocumentTemplateService.get(DOC_ID);
+        assertTrue(oTemplate.isPresent());
+        final TextDocumentTemplateDTO templateDTO = oTemplate.get();
         templateDTO.setTemplateName(testTemplateName);
         templateDTO.setChildrenTemplateName(testTemplateName);
 
         textDocumentTemplateService.save(templateDTO);
 
-        final TextDocumentTemplateDTO receivedTextDocumentTemplateDTO = textDocumentTemplateService.get(DOC_ID);
+        oTemplate = textDocumentTemplateService.get(DOC_ID);
+        assertTrue(oTemplate.isPresent());
+        final TextDocumentTemplateDTO receivedTextDocumentTemplateDTO = oTemplate.get();
 
         assertEquals(receivedTextDocumentTemplateDTO.getChildrenTemplateName(), testTemplateName);
         assertEquals(receivedTextDocumentTemplateDTO.getTemplateName(), testTemplateName);
