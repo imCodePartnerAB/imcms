@@ -4,6 +4,7 @@ import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -67,6 +68,9 @@ public class DocumentServiceTest {
 
     @Autowired
     private TemplateDataInitializer templateDataInitializer;
+
+    @Autowired
+    private TextDocumentTemplateService templateService;
 
     @Before
     public void setUp() throws Exception {
@@ -437,30 +441,21 @@ public class DocumentServiceTest {
 
     @Test
     public void save_When_CustomTemplateSet_Expect_Saved() throws Exception {
-//        final String templateName = "test_" + System.currentTimeMillis();
-//        final File templateFile = new File(TemplateMapper.getTemplateDirectory(), templateName + ".jsp");
-//        final TemplateDTO templateDTO = new TemplateDTO(null, templateName, false);
-//
-//        try {
-//            assertTrue(templateFile.createNewFile());
-//            assertNotNull(templateService.save(templateDTO));
-//
-//            final Optional<TemplateDTO> oTemplate = templateService.getTemplate(templateName);
-//            assertTrue(oTemplate.isPresent());
-//
-//            final TemplateDTO templateDTO1 = oTemplate.get();
-//            final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-//            documentDTO.setTemplate(templateDTO1);
-//
-//            documentService.save(documentDTO);
-//
-//            final DocumentDTO savedDoc = documentService.get(documentDTO.getId());
-//            final TemplateDTO savedTemplate = savedDoc.getTemplate();
-//
-//            assertEquals(savedTemplate, templateDTO1);
-//
-//        } finally {
-//            assertTrue(FileUtility.forceDelete(templateFile));
-//        }
+        final String templateName = "test_" + System.currentTimeMillis();
+        final int docId = createdDoc.getId();
+        final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, 0, templateName);
+
+        final TextDocumentTemplateDTO savedTemplate = templateService.save(templateDTO);
+        assertNotNull(savedTemplate);
+
+        final DocumentDTO documentDTO = documentService.get(docId);
+        documentDTO.setTemplate(templateDTO);
+
+        documentService.save(documentDTO);
+
+        final DocumentDTO savedDoc = documentService.get(documentDTO.getId());
+        final TextDocumentTemplateDTO savedDocTemplate = savedDoc.getTemplate();
+
+        assertEquals(savedDocTemplate, savedTemplate);
     }
 }
