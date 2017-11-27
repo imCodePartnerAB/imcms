@@ -6,14 +6,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "categories")
-public class Category implements Cloneable, Serializable {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,18 +33,6 @@ public class Category implements Cloneable, Serializable {
 
     public Category(String name, String description, String imageUrl, CategoryType type) {
         this(null, name, description, imageUrl, type);
-    }
-
-    @Override
-    public Category clone() {
-        try {
-            Category clone = (Category) super.clone();
-            if (type != null) clone.setType(type.clone());
-
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(e);
-        }
     }
 
 }
