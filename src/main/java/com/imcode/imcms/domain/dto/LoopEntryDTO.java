@@ -12,10 +12,10 @@ import java.io.Serializable;
 public class LoopEntryDTO implements Serializable {
     private static final long serialVersionUID = 8928942908190412349L;
 
-    private Integer index;
+    private int index;
     private boolean enabled;
 
-    public LoopEntryDTO(Integer index) {
+    public LoopEntryDTO(int index) {
         this.index = index;
         this.enabled = true;
     }
