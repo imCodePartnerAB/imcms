@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.RoleDTO;
-import com.imcode.imcms.persistence.entity.Role;
+import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 public class RoleService {
 
     private final RoleRepository roleRepository;
-    private final Function<RoleDTO, Role> roleDtoToRole;
-    private final Function<Role, RoleDTO> roleToRoleDTO;
+    private final Function<RoleDTO, RoleJPA> roleDtoToRole;
+    private final Function<RoleJPA, RoleDTO> roleToRoleDTO;
 
     RoleService(RoleRepository roleRepository,
-                Function<RoleDTO, Role> roleDtoToRole,
-                Function<Role, RoleDTO> roleToRoleDTO) {
+                Function<RoleDTO, RoleJPA> roleDtoToRole,
+                Function<RoleJPA, RoleDTO> roleToRoleDTO) {
 
         this.roleRepository = roleRepository;
         this.roleDtoToRole = roleDtoToRole;

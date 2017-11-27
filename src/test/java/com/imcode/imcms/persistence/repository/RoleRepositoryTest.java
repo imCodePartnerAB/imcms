@@ -2,7 +2,7 @@ package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
-import com.imcode.imcms.persistence.entity.Role;
+import com.imcode.imcms.persistence.entity.RoleJPA;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class RoleRepositoryTest {
 
     @Test
     public void save() throws Exception {
-        final Role role = new Role();
+        final RoleJPA role = new RoleJPA();
         role.setName("test_name");
 
         roleRepository.save(role);
@@ -39,15 +39,15 @@ public class RoleRepositoryTest {
     @Test
     public void saveCollection() throws Exception {
         final int howMuch = 4;
-        final List<Role> forSave = new ArrayList<>();
+        final List<RoleJPA> forSave = new ArrayList<>();
 
         for (int i = 0; i < howMuch; i++) {
-            final Role role = new Role();
+            final RoleJPA role = new RoleJPA();
             role.setName("test_name" + i);
             forSave.add(role);
         }
 
-        final List<Role> saved = roleRepository.save(forSave);
+        final List<RoleJPA> saved = roleRepository.save(forSave);
 
         assertNotNull(saved);
         assertEquals(saved.size(), forSave.size());
@@ -55,7 +55,7 @@ public class RoleRepositoryTest {
 
     @Test
     public void findOne() throws Exception {
-        final Role role = new Role();
+        final RoleJPA role = new RoleJPA();
         role.setName("test_name");
         roleRepository.save(role);
 
@@ -68,12 +68,12 @@ public class RoleRepositoryTest {
         final int howMuch = 4;
 
         for (int i = 0; i < howMuch; i++) {
-            final Role role = new Role();
+            final RoleJPA role = new RoleJPA();
             role.setName("test_name" + i);
             roleRepository.save(role);
         }
 
-        final List<Role> all = roleRepository.findAll();
+        final List<RoleJPA> all = roleRepository.findAll();
 
         assertEquals(all.size(), howMuch + prev);
     }

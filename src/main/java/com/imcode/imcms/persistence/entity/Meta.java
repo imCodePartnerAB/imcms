@@ -99,7 +99,7 @@ public class Meta implements Serializable {
     private Set<Integer> categoryIds = new HashSet<>();
 
     /**
-     * @see com.imcode.imcms.persistence.entity.Role#id as key
+     * @see RoleJPA#id as key
      * @see Permission as value
      */
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Permission.class)

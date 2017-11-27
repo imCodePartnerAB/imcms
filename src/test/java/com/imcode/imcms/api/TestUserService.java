@@ -52,7 +52,7 @@ public class TestUserService extends TestCase {
 //		database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "test"), HIGHEST_USER_ID + 1);
 //
 //		User user = userService.createNewUser("test", "test");
-//		user.addRole(new Role(mockImcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN)));
+//		user.addRole(new RoleJPA(mockImcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN)));
 //		userService.saveUser(user);
 //
 //		database.assertExpectedSqlCalls();
