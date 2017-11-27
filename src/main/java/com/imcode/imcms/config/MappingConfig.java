@@ -401,11 +401,6 @@ class MappingConfig {
             final int docId = documentDTO.getId();
             final int version = documentDTO.getCurrentVersion().getId();
 
-            // todo: save these DTO fields too:
-            // template
-            // childTemplate
-            // also version !
-
             meta.setId(docId);
             meta.setDefaultVersionNo(version); // fixme: save or check version first
             meta.setPublicationStatus(documentDTO.getPublicationStatus());
@@ -491,6 +486,7 @@ class MappingConfig {
             dto.setTarget(meta.getTarget());
             dto.setAlias(meta.getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
             dto.setPublicationStatus(meta.getPublicationStatus());
+            dto.setType(meta.getDocumentType());
 
             final Version latestVersion = versionService.getLatestVersion(metaId);
             final User modifier = latestVersion.getModifiedBy();
