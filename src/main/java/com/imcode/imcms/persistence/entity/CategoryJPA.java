@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Entity
 @Table(name = "categories")
-public class Category {
+public class CategoryJPA {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,7 @@ public class Category {
     @JoinColumn(name = "category_type_id", nullable = false)
     private CategoryType type;
 
-    public Category(String name, String description, String imageUrl, CategoryType type) {
+    public CategoryJPA(String name, String description, String imageUrl, CategoryType type) {
         this(null, name, description, imageUrl, type);
     }
 

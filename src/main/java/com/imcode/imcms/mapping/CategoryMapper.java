@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
-import com.imcode.imcms.persistence.entity.Category;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryType;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
@@ -33,10 +33,10 @@ public class CategoryMapper {
 
     public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
         CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
-        List<Category> categoryList = categoryRepository.findByType(docCategoryType);
+        List<CategoryJPA> categoryList = categoryRepository.findByType(docCategoryType);
         List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(categoryList.size());
 
-        for (Category category : categoryList) {
+        for (CategoryJPA category : categoryList) {
             categoryDomainObjectList.add(toDomainObject(category));
         }
 
@@ -140,7 +140,7 @@ public class CategoryMapper {
 
     public CategoryDomainObject saveCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
         if (category.getId() == 0) {
-            Category docCategory = categoryRepository.findByNameAndType(category.getName(), toJpaObject(category.getType()));
+            CategoryJPA docCategory = categoryRepository.findByNameAndType(category.getName(), toJpaObject(category.getType()));
 
             if (docCategory != null) {
                 throw new CategoryAlreadyExistsException("A category with name \"" + category.getName()
@@ -154,10 +154,10 @@ public class CategoryMapper {
     }
 
     public Set<CategoryDomainObject> getCategories(Collection<Integer> categoryIds) {
-        List<Category> categoryList = categoryRepository.findAll(categoryIds);
+        List<CategoryJPA> categoryList = categoryRepository.findAll(categoryIds);
         Set<CategoryDomainObject> categoryDomainObjectSet = new HashSet<>();
 
-        for (Category category : categoryList) {
+        for (CategoryJPA category : categoryList) {
             categoryDomainObjectSet.add(toDomainObject(category));
         }
 
@@ -165,10 +165,10 @@ public class CategoryMapper {
     }
 
     public List<CategoryDomainObject> getAllCategories() {
-        List<Category> categoryList = categoryRepository.findAll();
+        List<CategoryJPA> categoryList = categoryRepository.findAll();
         List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(categoryList.size());
 
-        for (Category category : categoryList) {
+        for (CategoryJPA category : categoryList) {
             categoryDomainObjectList.add(toDomainObject(category));
         }
 
@@ -195,7 +195,7 @@ public class CategoryMapper {
                 jpaType.isImageArchive());
     }
 
-    private CategoryDomainObject toDomainObject(Category jpaCategory) {
+    private CategoryDomainObject toDomainObject(CategoryJPA jpaCategory) {
         return jpaCategory == null
                 ? null
                 : new CategoryDomainObject(
@@ -212,8 +212,8 @@ public class CategoryMapper {
         );
     }
 
-    private Category toJpaObject(CategoryDomainObject categoryDO) {
-        return new Category(
+    private CategoryJPA toJpaObject(CategoryDomainObject categoryDO) {
+        return new CategoryJPA(
                 categoryDO.getId(), categoryDO.getName(), categoryDO.getDescription(), categoryDO.getImageUrl(), toJpaObject(categoryDO.getType())
         );
     }

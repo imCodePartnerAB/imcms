@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.CategoryDTO;
-import com.imcode.imcms.persistence.entity.Category;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final Function<Category, CategoryDTO> categoryToCategoryDTO;
+    private final Function<CategoryJPA, CategoryDTO> categoryToCategoryDTO;
 
     @Autowired
     CategoryService(CategoryRepository categoryRepository,
-                    Function<Category, CategoryDTO> categoryToCategoryDTO) {
+                    Function<CategoryJPA, CategoryDTO> categoryToCategoryDTO) {
 
         this.categoryRepository = categoryRepository;
         this.categoryToCategoryDTO = categoryToCategoryDTO;

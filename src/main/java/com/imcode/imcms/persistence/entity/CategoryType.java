@@ -39,7 +39,7 @@ public class CategoryType implements Cloneable, Serializable {
     private boolean imageArchive;
 
     @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
-    private List<Category> categories;
+    private List<CategoryJPA> categories;
 
     public CategoryType(String name, int maxChoices, boolean inherited, boolean imageArchive) {
         this(null, name, maxChoices, inherited, imageArchive);

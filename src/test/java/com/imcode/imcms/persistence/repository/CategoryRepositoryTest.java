@@ -3,7 +3,7 @@ package com.imcode.imcms.persistence.repository;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
-import com.imcode.imcms.persistence.entity.Category;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryType;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class CategoryRepositoryTest {
     @Test
     public void findByTypeExpectedCorrectNameTest() throws Exception {
         final List<CategoryType> types = categoryDataInitializer.getTypes();
-        final List<Category> categories = categoryRepository.findByType(types.get(0));
+        final List<CategoryJPA> categories = categoryRepository.findByType(types.get(0));
 
         assertEquals(1, categories.size());
         assertEquals("Category0Name", categories.get(0).getName());
@@ -48,7 +48,7 @@ public class CategoryRepositoryTest {
     public void findByNameAndTypeExpectedExistCategoryWithCorrectNameAndCategoryTypeNameTest() throws Exception {
         final List<CategoryType> types = categoryDataInitializer.getTypes();
 
-        final Category category = categoryRepository.findByNameAndType("Category0Name", types.get(0));
+        final CategoryJPA category = categoryRepository.findByNameAndType("Category0Name", types.get(0));
 
         assertNotNull(category);
         assertEquals("Category0Name", category.getName());
@@ -59,7 +59,7 @@ public class CategoryRepositoryTest {
     public void findByNameAndTypeExpectedNullCategoryTest() throws Exception {
         final List<CategoryType> types = categoryDataInitializer.getTypes();
 
-        final Category category = categoryRepository.findByNameAndType("Category0Name", types.get(1));
+        final CategoryJPA category = categoryRepository.findByNameAndType("Category0Name", types.get(1));
 
         assertNull(category);
     }

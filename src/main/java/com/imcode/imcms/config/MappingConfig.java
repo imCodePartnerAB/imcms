@@ -37,7 +37,7 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
 class MappingConfig {
 
     @Bean
-    public Function<Category, CategoryDTO> categoryToCategoryDTO() {
+    public Function<CategoryJPA, CategoryDTO> categoryToCategoryDTO() {
         return category -> new CategoryDTO(category.getId(), category.getName());
     }
 
@@ -189,7 +189,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<CategoryType, CategoryTypeDTO> categoryTypeToCategoryTypeDTO(Function<Category, CategoryDTO> categoryMapper) {
+    public Function<CategoryType, CategoryTypeDTO> categoryTypeToCategoryTypeDTO(Function<CategoryJPA, CategoryDTO> categoryMapper) {
         return categoryType -> new CategoryTypeDTO(
                 categoryType.getId(),
                 categoryType.getName(),

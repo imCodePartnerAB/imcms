@@ -2,7 +2,7 @@ package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
-import com.imcode.imcms.persistence.entity.Category;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryType;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
@@ -20,17 +20,17 @@ public class CategoryDataInitializer extends TestDataCleaner {
 
     private final CategoryTypeRepository categoryTypeRepository;
     private final CategoryRepository categoryRepository;
-    private final Function<Category, CategoryDTO> categoryMapper;
+    private final Function<CategoryJPA, CategoryDTO> categoryMapper;
     private final Function<CategoryType, CategoryTypeDTO> categoryTypeMapper;
 
     private List<CategoryType> types;
-    private List<Category> categories;
+    private List<CategoryJPA> categories;
 
     private int elementsCount;
 
     public CategoryDataInitializer(CategoryTypeRepository categoryTypeRepository,
                                    CategoryRepository categoryRepository,
-                                   Function<Category, CategoryDTO> categoryMapper,
+                                   Function<CategoryJPA, CategoryDTO> categoryMapper,
                                    Function<CategoryType, CategoryTypeDTO> categoryTypeMapper) {
         super(categoryRepository, categoryTypeRepository);
         this.categoryTypeRepository = categoryTypeRepository;
@@ -39,7 +39,7 @@ public class CategoryDataInitializer extends TestDataCleaner {
         this.categoryTypeMapper = categoryTypeMapper;
     }
 
-    public List<Category> createData(Integer elementsCount) {
+    public List<CategoryJPA> createData(Integer elementsCount) {
         cleanRepositories();
         this.elementsCount = elementsCount;
         types = recreateTypes();
@@ -73,11 +73,11 @@ public class CategoryDataInitializer extends TestDataCleaner {
                 .collect(Collectors.toList());
     }
 
-    private List<Category> recreateCategories() {
+    private List<CategoryJPA> recreateCategories() {
         return IntStream.range(0, elementsCount)
-                .mapToObj(i -> new Category("Category" + i + "Name",
-                        "Category" + i + "Description",
-                        "Category" + i + "ImageUrl",
+                .mapToObj(i -> new CategoryJPA("CategoryJPA" + i + "Name",
+                        "CategoryJPA" + i + "Description",
+                        "CategoryJPA" + i + "ImageUrl",
                         types.get(i)))
                 .map(categoryRepository::saveAndFlush)
                 .collect(Collectors.toList());
