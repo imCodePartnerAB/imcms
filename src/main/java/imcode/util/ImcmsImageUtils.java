@@ -5,7 +5,6 @@ import com.imcode.imcms.domain.dto.ImageData.CropRegion;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.ImageCropRegion;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -251,11 +250,7 @@ public class ImcmsImageUtils {
         imageDO.setArchiveImageId(image.getArchiveImageId());
         imageDO.setBorder(image.getBorder());
 
-        ImageCropRegion cropRegion = image.getCropRegion();
-        ImageDomainObject.CropRegion cropRegionDO = new ImageDomainObject.CropRegion(
-                cropRegion.getCropX1(), cropRegion.getCropY1(), cropRegion.getCropX2(), cropRegion.getCropY2()
-        );
-        imageDO.setCropRegion(cropRegionDO);
+        imageDO.setCropRegion(new CropRegion(image.getCropRegion()));
         imageDO.setGeneratedFilename(image.getGeneratedFilename());
         imageDO.setHeight(image.getHeight());
         imageDO.setHorizontalSpace(image.getHorizontalSpace());

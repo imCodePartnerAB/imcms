@@ -328,7 +328,7 @@ public class TextDocumentContentSaver {
     private Image toJpaObject(ImageDomainObject imageDO, Version version, LanguageJPA language, int no, LoopEntryRef loopEntryRef) {
         ImageDomainObject.CropRegion cropRegionDO = imageDO.getCropRegion();
         ImageCropRegion cropRegion = cropRegionDO.isValid()
-                ? new ImageCropRegion(cropRegionDO.getCropX1(), cropRegionDO.getCropY1(), cropRegionDO.getCropX2(), cropRegionDO.getCropY2())
+                ? new ImageCropRegion(cropRegionDO)
                 : new ImageCropRegion(-1, -1, -1, -1);
 
         Image image = new Image();
