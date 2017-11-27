@@ -75,9 +75,9 @@ public class CategoryDataInitializer extends TestDataCleaner {
 
     private List<CategoryJPA> recreateCategories() {
         return IntStream.range(0, elementsCount)
-                .mapToObj(i -> new CategoryJPA("CategoryJPA" + i + "Name",
-                        "CategoryJPA" + i + "Description",
-                        "CategoryJPA" + i + "ImageUrl",
+                .mapToObj(i -> new CategoryJPA("Category" + i + "Name",
+                        "Category" + i + "Description",
+                        "Category" + i + "ImageUrl",
                         types.get(i)))
                 .map(categoryRepository::saveAndFlush)
                 .collect(Collectors.toList());
