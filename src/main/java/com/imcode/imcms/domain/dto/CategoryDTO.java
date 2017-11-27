@@ -15,7 +15,4 @@ public class CategoryDTO implements Serializable {
 
     private String name;
 
-    public CategoryDTO(Integer id) {
-        this.id = id;
-    }
 }
