@@ -29,7 +29,7 @@ Imcms.define("imcms-templates-tab-builder",
                         var templatesDataMapped = templates.map(function (template) {
                             return {
                                 text: template.name,
-                                "data-value": template.id
+                                "data-value": template.name
                             }
                         });
 
@@ -46,8 +46,8 @@ Imcms.define("imcms-templates-tab-builder",
             fillTabDataFromDocument: function (document) {
                 var templatesTab = this.data;
 
-                templatesTab.$templateSelect.selectValue(document.template);
-                templatesTab.$defaultChildTemplateSelect.selectValue(document.childTemplate);
+                templatesTab.$templateSelect.selectValue(document.template.templateName);
+                templatesTab.$defaultChildTemplateSelect.selectValue(document.template.childrenTemplateName);
             },
             clearTabData: function () {
                 var templatesTab = this.data;
