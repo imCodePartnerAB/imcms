@@ -1,17 +1,30 @@
 package com.imcode.imcms.persistence.entity;
 
-/**
- * Unified interface for image crop region entity and DTO
- *
- * @author Serhii Maksymchuk from Ubrainians for imCode
- * 25.10.17.
- */
-public interface ImageCropRegionDataHolder {
-    int getCropX1();
+import lombok.NoArgsConstructor;
 
-    int getCropY1();
+@NoArgsConstructor
+public abstract class ImageCropRegionDataHolder {
 
-    int getCropX2();
+    protected ImageCropRegionDataHolder(ImageCropRegionDataHolder from) {
+        setCropX1(from.getCropX1());
+        setCropY1(from.getCropY1());
+        setCropX2(from.getCropX2());
+        setCropY2(from.getCropY2());
+    }
 
-    int getCropY2();
+    public abstract int getCropX1();
+
+    public abstract void setCropX1(int cropX1);
+
+    public abstract int getCropY1();
+
+    public abstract void setCropY1(int cropY1);
+
+    public abstract int getCropX2();
+
+    public abstract void setCropX2(int cropX2);
+
+    public abstract int getCropY2();
+
+    public abstract void setCropY2(int cropY2);
 }

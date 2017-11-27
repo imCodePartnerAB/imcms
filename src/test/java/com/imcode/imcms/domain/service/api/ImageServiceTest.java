@@ -12,7 +12,6 @@ import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
 import org.junit.After;
@@ -41,6 +40,9 @@ public class ImageServiceTest {
     private static final int TEST_IMAGE_INDEX = 1;
     private static final ImageDTO TEST_IMAGE_DTO = new ImageDTO(TEST_IMAGE_INDEX, TEST_DOC_ID);
     private static final int VERSION_INDEX = 0;
+
+    @org.springframework.beans.factory.annotation.Value("${ImagePath}")
+    private File imagesPath;
 
     @Autowired
     private ImageService imageService;
@@ -144,7 +146,7 @@ public class ImageServiceTest {
 
         assertNotNull(result);
 
-        final File croppedImage = new File(ImcmsImageUtils.imagesPath, "generated/" + result.getGeneratedFilename());
+        final File croppedImage = new File(imagesPath, "generated/" + result.getGeneratedFilename());
 
         assertTrue(croppedImage.exists());
         assertTrue(FileUtility.forceDelete(croppedImage));
@@ -171,7 +173,7 @@ public class ImageServiceTest {
 
         assertNotNull(result);
 
-        final File croppedImage = new File(ImcmsImageUtils.imagesPath, "generated/" + result.getGeneratedFilename());
+        final File croppedImage = new File(imagesPath, "generated/" + result.getGeneratedFilename());
         assertEquals(result.getCropRegion(), cropRegion);
         assertTrue(FileUtility.forceDelete(croppedImage));
     }

@@ -68,8 +68,7 @@ public abstract class ImageData implements Serializable {
 
     @Data
     @NoArgsConstructor
-    @EqualsAndHashCode
-    public static class CropRegion implements Serializable, ImageCropRegionDataHolder {
+    public static class CropRegion extends ImageCropRegionDataHolder implements Serializable {
         private static final long serialVersionUID = -586488435877347784L;
 
         private volatile int cropX1 = -1;
@@ -100,14 +99,8 @@ public abstract class ImageData implements Serializable {
             updateValid();
         }
 
-        @JsonIgnore
-        public static CropRegion of(ImageCropRegionDataHolder cropRegionDataHolder) {
-            return new CropRegion(
-                    cropRegionDataHolder.getCropX1(),
-                    cropRegionDataHolder.getCropY1(),
-                    cropRegionDataHolder.getCropX2(),
-                    cropRegionDataHolder.getCropY2()
-            );
+        public CropRegion(ImageCropRegionDataHolder cropRegionDataHolder) {
+            super(cropRegionDataHolder);
         }
 
         @JsonIgnore

@@ -9,9 +9,13 @@ import com.imcode.imcms.domain.service.api.UserService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.*;
+import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.Menu;
+import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.document.index.DocumentStoredFields;
+import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import org.apache.commons.io.FilenameUtils;
@@ -19,8 +23,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.awt.*;
 import java.io.File;
 import java.util.*;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -165,19 +171,8 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<ImageCropRegion, CropRegion> imageCropRegionToCropRegionDTO() {
-        return CropRegion::of;
-    }
-
-    @Bean
-    public Function<CropRegion, ImageCropRegion> cropRegionDtoToImageCropRegion() {
-        return ImageCropRegion::of;
-    }
-
-    @Bean
     public Function<Image, ImageDTO> imageToImageDTO(@Value("${ImageUrl}") String imagesPath,
-                                                     Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO,
-                                                     Function<ImageCropRegion, CropRegion> imageCropRegionToCropRegionDTO) {
+                                                     Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO) {
         return image -> {
             final ImageDTO dto = new ImageDTO();
 
@@ -196,7 +191,7 @@ class MappingConfig {
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
             dto.setLoopEntryRef(loopEntryRefToDTO.apply(image.getLoopEntryRef()));
-            dto.setCropRegion(imageCropRegionToCropRegionDTO.apply(image.getCropRegion()));
+            dto.setCropRegion(new CropRegion(image.getCropRegion()));
 
             return dto;
         };
@@ -204,8 +199,7 @@ class MappingConfig {
 
     @Bean
     public TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage(
-            Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
-            Function<CropRegion, ImageCropRegion> cropRegionDtoToImageCropRegion
+            Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef
     ) {
 
         return (imageDTO, version, language) -> {
@@ -220,7 +214,7 @@ class MappingConfig {
             image.setGeneratedFilename(imageDTO.getGeneratedFilename());
             image.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(imageDTO.getLoopEntryRef()));
             image.setFormat(imageDTO.getFormat());
-            image.setCropRegion(cropRegionDtoToImageCropRegion.apply(imageDTO.getCropRegion()));
+            image.setCropRegion(new ImageCropRegion(imageDTO.getCropRegion()));
 
             return image;
         };
@@ -440,8 +434,52 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<File, ImageFileDTO> fileToImageFileDTO() {
-        return ImcmsImageUtils::fileToImageFileDTO;
+    public Function<File, ImageFileDTO> fileToImageFileDTO(@Value("${ImagePath}") File imagesPath) {
+        return imageFile -> {
+            final ImageFileDTO imageFileDTO = new ImageFileDTO();
+            final String fileName = imageFile.getName();
+
+            imageFileDTO.setName(fileName);
+            imageFileDTO.setFormat(Format.findFormat(FilenameUtils.getExtension(fileName)));
+
+            final String relativePath = imageFile.getPath()
+                    .replace(imagesPath.getPath(), "")
+                    .replace("\\", "/");
+
+            imageFileDTO.setPath(relativePath);
+
+            final Date lastModifiedDate = new Date(imageFile.lastModified());
+            final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.format(lastModifiedDate);
+
+            imageFileDTO.setUploaded(formattedDate);
+
+            long fileSize = imageFile.length();
+            String suffix;
+
+            if (fileSize >= (1024L * 1024L)) {
+                suffix = "MB";
+                fileSize /= 1024L * 1024L;
+
+            } else if (fileSize >= 1024L) {
+                suffix = "kB";
+                fileSize /= 1024L;
+
+            } else {
+                suffix = "B";
+            }
+
+            imageFileDTO.setSize(String.valueOf(fileSize) + suffix);
+
+            final Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile);
+
+            if (imageDimension != null) {
+                imageFileDTO.setWidth(imageDimension.width);
+                imageFileDTO.setHeight(imageDimension.height);
+                imageFileDTO.setResolution(String.valueOf(imageDimension.width) + "x" + imageDimension.height);
+            }
+
+            return imageFileDTO;
+        };
     }
 
     @Bean

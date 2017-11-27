@@ -3,7 +3,6 @@ package imcode.util;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.dto.ImageData.CropRegion;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
-import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.ImageCropRegion;
@@ -33,7 +32,6 @@ import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
 import java.io.*;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.UUID;
@@ -74,52 +72,6 @@ public class ImcmsImageUtils {
         return filename + suffix;
     }
 
-    public static ImageFileDTO fileToImageFileDTO(File imageFile) {
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        final String fileName = imageFile.getName();
-
-        imageFileDTO.setName(fileName);
-        imageFileDTO.setFormat(Format.findFormat(FilenameUtils.getExtension(fileName)));
-
-        final String relativePath = imageFile.getPath()
-                .replace(imagesPath.getPath(), "")
-                .replace("\\", "/");
-
-        imageFileDTO.setPath(relativePath);
-
-        final Date lastModifiedDate = new Date(imageFile.lastModified());
-        final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.format(lastModifiedDate);
-
-        imageFileDTO.setUploaded(formattedDate);
-
-        long fileSize = imageFile.length();
-        String suffix;
-
-        if (fileSize >= (1024L * 1024L)) {
-            suffix = "MB";
-            fileSize /= 1024L * 1024L;
-
-        } else if (fileSize >= 1024L) {
-            suffix = "kB";
-            fileSize /= 1024L;
-
-        } else {
-            suffix = "B";
-        }
-
-        imageFileDTO.setSize(String.valueOf(fileSize) + suffix);
-
-        final Dimension imageDimension = getImageDimension(imageFile);
-
-        if (imageDimension != null) {
-            imageFileDTO.setWidth(imageDimension.width);
-            imageFileDTO.setHeight(imageDimension.height);
-            imageFileDTO.setResolution(String.valueOf(imageDimension.width) + "x" + imageDimension.height);
-        }
-
-        return imageFileDTO;
-    }
-
     /**
      * Gets image dimensions for given file
      *
@@ -127,7 +79,7 @@ public class ImcmsImageUtils {
      * @return dimensions of image
      * @see <a href="https://stackoverflow.com/questions/672916/how-to-get-image-height-and-width-using-java#answer-12164026">method source</a>
      */
-    private static Dimension getImageDimension(File imgFile) {
+    public static Dimension getImageDimension(File imgFile) {
         final String suffix = FilenameUtils.getExtension(imgFile.getName());
         final Iterator<ImageReader> imageReaders = ImageIO.getImageReadersBySuffix(suffix);
 
