@@ -70,7 +70,7 @@ public class CommonContentJPA extends CommonContent<LanguageJPA> {
         this.versionNo = versionNo;
     }
 
-    public CommonContentJPA(CommonContent from, LanguageJPA language) {
-        super(from, language);
+    public <L extends Language> CommonContentJPA(CommonContent<L> from) {
+        super(from, new LanguageJPA(from.getLanguage()));
     }
 }

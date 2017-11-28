@@ -162,16 +162,6 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<CommonContentDTO, CommonContentJPA> dtoToCommonContent() {
-        return commonContentDTO -> new CommonContentJPA(commonContentDTO, new LanguageJPA(commonContentDTO.getLanguage()));
-    }
-
-    @Bean
-    public Function<CommonContentJPA, CommonContentDTO> commonContentToDTO() {
-        return commonContent -> new CommonContentDTO(commonContent, new LanguageDTO(commonContent.getLanguage()));
-    }
-
-    @Bean
     public Function<RestrictedPermission, PermissionDTO> restrictedPermissionToPermissionDTO() {
         return restrictedPermission -> PermissionDTO.fromPermission(restrictedPermission.getPermission());
     }

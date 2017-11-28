@@ -7,7 +7,6 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
-import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.util.Value;
 import org.junit.After;
 import org.junit.Before;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -47,9 +45,6 @@ public class CommonContentServiceTest {
     @Autowired
     private LanguageDataInitializer languageDataInitializer;
 
-    @Autowired
-    private Function<CommonContentJPA, CommonContentDTO> commonContentToDto;
-
     @Before
     public void setUp() throws Exception {
         tearDown();
@@ -64,7 +59,7 @@ public class CommonContentServiceTest {
     public void getOrCreateCommonContent_When_Exist_Expect_CorrectDTO() {
         final List<CommonContentDTO> commonContentDTOS = commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX)
                 .stream()
-                .map(commonContentToDto)
+                .map(CommonContentDTO::new)
                 .collect(Collectors.toList());
 
         for (LanguageDTO languageDTO : languageDataInitializer.createData()) {
@@ -85,7 +80,7 @@ public class CommonContentServiceTest {
     public void saveCommonContent_When_ExistBefore_Expect_Saved() {
         final List<CommonContentDTO> contents = commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX)
                 .stream()
-                .map(commonContentToDto)
+                .map(CommonContentDTO::new)
                 .collect(Collectors.toList());
 
         for (CommonContentDTO content : contents) {

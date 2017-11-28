@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,19 +19,13 @@ public class CommonContentService {
     private static final int WORKING_VERSION_INDEX = 0;
 
     private final CommonContentRepository commonContentRepository;
-    private final Function<CommonContentJPA, CommonContentDTO> commonContentToDTO;
     private final LanguageService languageService;
-    private final Function<CommonContentDTO, CommonContentJPA> commonContentSaver;
 
     CommonContentService(CommonContentRepository commonContentRepository,
-                         Function<CommonContentJPA, CommonContentDTO> commonContentToDTO,
-                         Function<CommonContentDTO, CommonContentJPA> commonContentDtoToCommonContent,
                          LanguageService languageService) {
 
         this.commonContentRepository = commonContentRepository;
-        this.commonContentToDTO = commonContentToDTO;
         this.languageService = languageService;
-        this.commonContentSaver = commonContentDtoToCommonContent.andThen(commonContentRepository::save);
     }
 
     /**
@@ -66,7 +59,7 @@ public class CommonContentService {
         );
 
         if (commonContent != null) {
-            return commonContentToDTO.apply(commonContent);
+            return new CommonContentDTO(commonContent);
 
         } else if (versionNo == WORKING_VERSION_INDEX) {
             return Value.with(new CommonContentDTO(), commonContentDTO -> {
@@ -85,7 +78,7 @@ public class CommonContentService {
     }
 
     public void save(CommonContentDTO saveMe) {
-        commonContentSaver.apply(saveMe);
+        commonContentRepository.save(new CommonContentJPA(saveMe));
     }
 
     private CommonContentDTO createFromWorkingVersion(int docId, int versionNo, LanguageJPA language) {
@@ -93,16 +86,10 @@ public class CommonContentService {
                 docId, WORKING_VERSION_INDEX, language
         );
 
-        final CommonContentJPA newCommonContent = new CommonContentJPA();
+        final CommonContentJPA newCommonContent = new CommonContentJPA(commonContent);
         newCommonContent.setVersionNo(versionNo);
-        newCommonContent.setDocId(docId);
-        newCommonContent.setEnabled(commonContent.isEnabled());
-        newCommonContent.setHeadline(commonContent.getHeadline());
-        newCommonContent.setLanguage(commonContent.getLanguage());
-        newCommonContent.setMenuImageURL(commonContent.getMenuImageURL());
-        newCommonContent.setMenuText(commonContent.getMenuText());
 
-        return commonContentToDTO.apply(commonContentRepository.saveAndFlush(commonContent));
+        return new CommonContentDTO(commonContentRepository.saveAndFlush(commonContent));
     }
 
 }
