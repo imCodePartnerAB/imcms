@@ -12,10 +12,10 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 public class TextJPA extends TextJPABase {
 
-    public TextJPA(Text from, Version version, Language language) {
+    public TextJPA(Text from, Version version, LanguageJPA language) {
         super(from, (from.getLoopEntryRef() == null) ? null : new LoopEntryRefJPA(from.getLoopEntryRef()));
         setVersion(version);
-        setLanguage(new LanguageJPA(language));
+        setLanguage(language);
     }
 
 }

@@ -16,8 +16,8 @@ public class TextDTO extends Text<LoopEntryRefDTO> {
     private Integer docId;
     private LoopEntryRefDTO loopEntryRef;
     private String langCode;
-    private Type type = Text.Type.HTML;
-    private String text = "";
+    private Type type;
+    private String text;
 
     public TextDTO(Integer index, Integer docId, String langCode, LoopEntryRefDTO loopEntryRef) {
         this.index = index;
