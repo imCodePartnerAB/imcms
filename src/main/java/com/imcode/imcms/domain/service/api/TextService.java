@@ -20,21 +20,18 @@ import java.util.function.Function;
 public class TextService {
 
     private final TextRepository textRepository;
-    private final Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef;
     private final LanguageService languageService;
     private final VersionService versionService;
     private final Function<Text, TextDTO> textToTextDTO;
     private final TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText;
 
     TextService(TextRepository textRepository,
-                Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef,
                 LanguageService languageService,
                 VersionService versionService,
                 Function<Text, TextDTO> textToTextDTO,
                 TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText) {
 
         this.textRepository = textRepository;
-        this.loopEntryRefDtoToLoopEntryRef = loopEntryRefDtoToLoopEntryRef;
         this.languageService = languageService;
         this.versionService = versionService;
         this.textToTextDTO = textToTextDTO;
@@ -81,11 +78,11 @@ public class TextService {
     }
 
     private Text getText(int index, Version version, LanguageJPA language, LoopEntryRefDTO loopEntryRefDTO) {
-        final LoopEntryRefJPA loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
+        final Optional<LoopEntryRefJPA> oLoopEntryRef = Optional.ofNullable(loopEntryRefDTO).map(LoopEntryRefJPA::new);
 
-        return (loopEntryRef == null)
-                ? textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
-                : textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
+        return (oLoopEntryRef.isPresent())
+                ? textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, oLoopEntryRef.get())
+                : textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index);
     }
 
     private Integer getTextId(TextDTO textDTO, Version version, LanguageJPA language) {

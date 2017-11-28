@@ -115,18 +115,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<LoopEntryRefJPA, LoopEntryRefDTO> loopEntryRefToDTO() {
-        return loopEntryRef -> (loopEntryRef == null) ? null : new LoopEntryRefDTO(loopEntryRef);
-    }
-
-    @Bean
-    public Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef() {
-        return loopEntryRefDTO -> (loopEntryRefDTO == null) ? null : new LoopEntryRefJPA(loopEntryRefDTO);
-    }
-
-    @Bean
-    public Function<Image, ImageDTO> imageToImageDTO(@Value("${ImageUrl}") String imagesPath,
-                                                     Function<LoopEntryRefJPA, LoopEntryRefDTO> loopEntryRefToDTO) {
+    public Function<Image, ImageDTO> imageToImageDTO(@Value("${ImageUrl}") String imagesPath) {
         return image -> {
             final ImageDTO dto = new ImageDTO();
 
@@ -144,7 +133,7 @@ class MappingConfig {
             dto.setFormat(image.getFormat());
             dto.setHeight(image.getHeight());
             dto.setWidth(image.getWidth());
-            dto.setLoopEntryRef(loopEntryRefToDTO.apply(image.getLoopEntryRef()));
+            Optional.ofNullable(image.getLoopEntryRef()).map(LoopEntryRefDTO::new).ifPresent(dto::setLoopEntryRef);
             dto.setCropRegion(new ImageCropRegionDTO(image.getCropRegion()));
 
             return dto;
@@ -152,9 +141,7 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage(
-            Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef
-    ) {
+    public TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage() {
 
         return (imageDTO, version, language) -> {
             final Image image = new Image();
@@ -166,7 +153,7 @@ class MappingConfig {
             image.setUrl(imageDTO.getPath());
             image.setName(imageDTO.getName());
             image.setGeneratedFilename(imageDTO.getGeneratedFilename());
-            image.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(imageDTO.getLoopEntryRef()));
+            Optional.ofNullable(imageDTO.getLoopEntryRef()).map(LoopEntryRefJPA::new).ifPresent(image::setLoopEntryRef);
             image.setFormat(imageDTO.getFormat());
             image.setCropRegion(new ImageCropRegionJPA(imageDTO.getCropRegion()));
 
@@ -474,13 +461,13 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<Text, TextDTO> textToTextDTO(Function<LoopEntryRefJPA, LoopEntryRefDTO> loopEntryRefToDTO) {
+    public Function<Text, TextDTO> textToTextDTO() {
         return text -> {
             final TextDTO textDTO = new TextDTO();
 
             textDTO.setDocId(text.getVersion().getDocId());
             textDTO.setIndex(text.getIndex());
-            textDTO.setLoopEntryRef(loopEntryRefToDTO.apply(text.getLoopEntryRef()));
+            Optional.ofNullable(text.getLoopEntryRef()).map(LoopEntryRefDTO::new).ifPresent(textDTO::setLoopEntryRef);
             textDTO.setLangCode(text.getLanguage().getCode());
             textDTO.setText(text.getText());
             textDTO.setType(text.getType());
@@ -490,15 +477,13 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText(
-            Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef
-    ) {
+    public TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText() {
         return (textDTO, version, language) -> {
             final Text text = new Text();
             text.setIndex(textDTO.getIndex());
             text.setVersion(version);
             text.setLanguage(language);
-            text.setLoopEntryRef(loopEntryRefDtoToLoopEntryRef.apply(textDTO.getLoopEntryRef()));
+            Optional.ofNullable(textDTO.getLoopEntryRef()).map(LoopEntryRefJPA::new).ifPresent(text::setLoopEntryRef);
             text.setType(textDTO.getType());
             text.setText(textDTO.getText());
 

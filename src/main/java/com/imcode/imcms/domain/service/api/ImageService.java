@@ -24,21 +24,18 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final VersionService versionService;
     private final LanguageService languageService;
-    private final Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef;
     private final TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage;
     private final Function<Image, ImageDTO> imageToImageDTO;
 
     ImageService(ImageRepository imageRepository,
                  VersionService versionService,
                  LanguageService languageService,
-                 Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef,
                  TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage,
                  Function<Image, ImageDTO> imageToImageDTO) {
 
         this.imageRepository = imageRepository;
         this.versionService = versionService;
         this.languageService = languageService;
-        this.loopEntryRefDtoToLoopEntryRef = loopEntryRefDtoToLoopEntryRef;
         this.imageDtoToImage = imageDtoToImage;
         this.imageToImageDTO = imageToImageDTO;
     }
@@ -96,11 +93,11 @@ public class ImageService {
     }
 
     private Image getImage(int index, Version version, LanguageJPA language, LoopEntryRefDTO loopEntryRefDTO) {
-        final LoopEntryRefJPA loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
+        final Optional<LoopEntryRefJPA> oLoopEntryRef = Optional.ofNullable(loopEntryRefDTO).map(LoopEntryRefJPA::new);
 
-        return (loopEntryRef == null)
-                ? imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
-                : imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
+        return (oLoopEntryRef.isPresent())
+                ? imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, oLoopEntryRef.get())
+                : imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index);
     }
 
     private Integer getImageId(ImageDTO imageDTO, Version version, LanguageJPA language) {
