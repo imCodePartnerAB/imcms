@@ -419,35 +419,4 @@ class MappingConfig {
         };
     }
 
-    @Bean
-    public TernaryFunction<TextJPA, Version, LanguageDTO, TextDTO> textToTextDTO() {
-        return (text, version, language) -> {
-            final TextDTO textDTO = new TextDTO();
-
-            textDTO.setDocId(version.getDocId());
-            textDTO.setIndex(text.getIndex());
-            Optional.ofNullable(text.getLoopEntryRef()).map(LoopEntryRefDTO::new).ifPresent(textDTO::setLoopEntryRef);
-            textDTO.setLangCode(language.getCode());
-            textDTO.setText(text.getText());
-            textDTO.setType(text.getType());
-
-            return textDTO;
-        };
-    }
-
-    @Bean
-    public TernaryFunction<TextDTO, Version, LanguageJPA, TextJPA> textDtoToText() {
-        return (textDTO, version, language) -> {
-            final TextJPA text = new TextJPA();
-            text.setIndex(textDTO.getIndex());
-            text.setVersion(version);
-            text.setLanguage(language);
-            Optional.ofNullable(textDTO.getLoopEntryRef()).map(LoopEntryRefJPA::new).ifPresent(text::setLoopEntryRef);
-            text.setType(textDTO.getType());
-            text.setText(textDTO.getText());
-
-            return text;
-        };
-    }
-
 }

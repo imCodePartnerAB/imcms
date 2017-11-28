@@ -2,6 +2,7 @@ package com.imcode.imcms.persistence.entity;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -11,7 +12,8 @@ import javax.validation.constraints.NotNull;
 @Setter
 @EqualsAndHashCode
 @MappedSuperclass
-public class TextJPABase {
+@NoArgsConstructor
+class TextJPABase extends Text<LoopEntryRefJPA> {
 
     @NotNull
     @Column(name = "`index`")
@@ -42,7 +44,7 @@ public class TextJPABase {
     })
     private Version version;
 
-    public enum Type {
-        PLAIN_TEXT, HTML
+    TextJPABase(Text from, LoopEntryRefJPA loopEntryRef) {
+        super(from, loopEntryRef);
     }
 }

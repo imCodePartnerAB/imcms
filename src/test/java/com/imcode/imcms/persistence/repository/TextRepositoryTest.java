@@ -60,7 +60,7 @@ public class TextRepositoryTest {
                     TextJPA text = new TextJPA();
 
                     text.setIndex(index);
-                    text.setType(TextJPABase.Type.PLAIN_TEXT);
+                    text.setType(Text.Type.PLAIN_TEXT);
                     text.setLanguage(language);
                     text.setVersion(version);
                     text.setText("test");

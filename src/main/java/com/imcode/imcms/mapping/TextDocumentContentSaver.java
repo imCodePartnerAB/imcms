@@ -311,7 +311,7 @@ public class TextDocumentContentSaver {
         text.setVersion(version);
         text.setIndex(no);
         text.setText(textDO.getText());
-        text.setType(TextJPABase.Type.values()[textDO.getType()]);
+        text.setType(Text.Type.values()[textDO.getType()]);
         text.setLoopEntryRef(loopEntryRef);
 
         return text;

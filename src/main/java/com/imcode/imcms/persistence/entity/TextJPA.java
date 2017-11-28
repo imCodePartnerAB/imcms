@@ -11,4 +11,11 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class TextJPA extends TextJPABase {
+
+    public TextJPA(Text from, Version version, Language language) {
+        super(from, (from.getLoopEntryRef() == null) ? null : new LoopEntryRefJPA(from.getLoopEntryRef()));
+        setVersion(version);
+        setLanguage(new LanguageJPA(language));
+    }
+
 }

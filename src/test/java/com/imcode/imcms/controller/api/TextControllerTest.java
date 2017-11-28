@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.imcode.imcms.persistence.entity.TextJPABase.Type.PLAIN_TEXT;
+import static com.imcode.imcms.persistence.entity.Text.Type.PLAIN_TEXT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @RunWith(SpringJUnit4ClassRunner.class)
