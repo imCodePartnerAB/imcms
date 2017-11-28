@@ -121,7 +121,7 @@ public class TextDocumentContentLoader {
     }
 
     /**
-     * Return text history based on special document {@link Version}, {@link LanguageJPA},{@link LoopEntryRef} and text id
+     * Return text history based on special document {@link Version}, {@link LanguageJPA},{@link LoopEntryRefJPA} and text id
      *
      * @param docRef {@link DocRef} item
      * @param textNo text id
@@ -129,10 +129,10 @@ public class TextDocumentContentLoader {
      * @see Version
      * @see LanguageJPA
      * @see DocRef
-     * @see LoopEntryRef
+     * @see LoopEntryRefJPA
      * @see imcode.server.document.DocumentDomainObject
      */
-    public Collection<TextHistory> getTextHistory(DocRef docRef, LoopEntryRef loopEntryRef, int textNo) {
+    public Collection<TextHistory> getTextHistory(DocRef docRef, LoopEntryRefJPA loopEntryRef, int textNo) {
         if (loopEntryRef == null) {
             return getTextHistory(docRef, textNo);
         }
@@ -197,7 +197,7 @@ public class TextDocumentContentLoader {
     public Map<DocumentLanguage, ImageDomainObject> getLoopImages(VersionRef versionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
-        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
+        LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         for (Image image : imageRepository.findByVersionAndIndexAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
             result.put(languageMapper.toApiObject(image.getLanguage()), ImcmsImageUtils.toDomainObject(image));
@@ -223,7 +223,7 @@ public class TextDocumentContentLoader {
     public ImageDomainObject getLoopImage(DocRef docRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
-        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
+        LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         return ImcmsImageUtils.toDomainObject(
                 imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)

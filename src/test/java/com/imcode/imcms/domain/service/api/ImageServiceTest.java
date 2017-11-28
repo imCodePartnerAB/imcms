@@ -8,7 +8,7 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.LoopEntryRef;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -94,7 +94,7 @@ public class ImageServiceTest {
 
     @Test
     public void getImage_When_LoopEntryRefIsNotNull_Expect_EqualResult() {
-        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
         final ImageDTO resultImage = imageService.getImage(imageDTO);
@@ -116,7 +116,7 @@ public class ImageServiceTest {
 
     @Test
     public void saveImage_When_LoopEntryRefIsNotNull_Expect_EqualResult() {
-        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 

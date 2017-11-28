@@ -24,7 +24,7 @@ public class TextBase extends VersionedI18nContent {
     @Column(columnDefinition = "longtext")
     private String text;
 
-    private LoopEntryRef loopEntryRef;
+    private LoopEntryRefJPA loopEntryRef;
 
     public enum Type {
         PLAIN_TEXT, HTML

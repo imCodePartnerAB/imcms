@@ -8,7 +8,6 @@ import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Menu;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuItem;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
 import com.imcode.imcms.persistence.entity.*;
-import com.imcode.imcms.persistence.entity.LoopEntryRef;
 import com.imcode.imcms.persistence.repository.*;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -221,7 +220,7 @@ public class TextDocumentContentSaver {
 
         for (Map.Entry<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> entry : doc.getLoopImages().entrySet()) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = entry.getKey();
-            LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
+            LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
             Image image = toJpaObject(entry.getValue(), version, language, loopItemRef.getItemNo(), loopEntryRef);
 
@@ -238,7 +237,7 @@ public class TextDocumentContentSaver {
 
         for (Map.Entry<TextDocumentDomainObject.LoopItemRef, TextDomainObject> entry : doc.getLoopTexts().entrySet()) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = entry.getKey();
-            LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
+            LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
             Text text = toJpaObject(entry.getValue(), version, language, loopItemRef.getItemNo(), loopEntryRef);
 
@@ -248,7 +247,7 @@ public class TextDocumentContentSaver {
 
     private void saveImage(Image image, SaveMode saveMode) {
         if (saveMode == SaveMode.UPDATE) {
-            LoopEntryRef loopEntryRef = image.getLoopEntryRef();
+            LoopEntryRefJPA loopEntryRef = image.getLoopEntryRef();
             Integer id = loopEntryRef == null
                     ? imageRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(image.getVersion(), image.getLanguage(), image.getIndex())
                     : imageRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(image.getVersion(), image.getLanguage(), image.getIndex(), loopEntryRef);
@@ -262,7 +261,7 @@ public class TextDocumentContentSaver {
 
     private void saveText(Text text, User user, SaveMode saveMode) {
         if (saveMode == SaveMode.UPDATE) {
-            LoopEntryRef loopEntryRef = text.getLoopEntryRef();
+            LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
             Integer id = loopEntryRef == null
                     ? textRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(text.getVersion(), text.getLanguage(), text.getIndex())
                     : textRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(text.getVersion(), text.getLanguage(), text.getIndex(), loopEntryRef);
@@ -276,7 +275,7 @@ public class TextDocumentContentSaver {
         textHistoryRepository.save(new TextHistory(text, user));
     }
 
-    private void createLoopEntryIfNotExists(Version version, LoopEntryRef entryRef) {
+    private void createLoopEntryIfNotExists(Version version, LoopEntryRefJPA entryRef) {
         if (entryRef == null) return;
 
         Loop loop = loopRepository.findByVersionAndIndex(
@@ -300,12 +299,12 @@ public class TextDocumentContentSaver {
     private Text toJpaObject(TextDocTextContainer container) {
         LanguageJPA language = findLanguage(container);
         Version version = findVersion(container);
-        LoopEntryRef loopEntryRef = toJpaObject(container.getLoopEntryRef());
+        LoopEntryRefJPA loopEntryRef = toJpaObject(container.getLoopEntryRef());
 
         return toJpaObject(container.getText(), version, language, container.getTextNo(), loopEntryRef);
     }
 
-    private Text toJpaObject(TextDomainObject textDO, Version version, LanguageJPA language, int no, LoopEntryRef loopEntryRef) {
+    private Text toJpaObject(TextDomainObject textDO, Version version, LanguageJPA language, int no, LoopEntryRefJPA loopEntryRef) {
         Text text = new Text();
 
         text.setLanguage(language);
@@ -321,12 +320,12 @@ public class TextDocumentContentSaver {
     private Image toJpaObject(TextDocImageContainer container) {
         LanguageJPA language = findLanguage(container);
         Version version = findVersion(container);
-        LoopEntryRef loopEntryRef = toJpaObject(container.getLoopEntryRef());
+        LoopEntryRefJPA loopEntryRef = toJpaObject(container.getLoopEntryRef());
 
         return toJpaObject(container.getImage(), version, language, container.getImageNo(), loopEntryRef);
     }
 
-    private Image toJpaObject(ImageDomainObject imageDO, Version version, LanguageJPA language, int no, LoopEntryRef loopEntryRef) {
+    private Image toJpaObject(ImageDomainObject imageDO, Version version, LanguageJPA language, int no, LoopEntryRefJPA loopEntryRef) {
         ImageCropRegionDTO cropRegionDO = imageDO.getCropRegion();
         ImageCropRegionJPA cropRegion = cropRegionDO.isValid()
                 ? new ImageCropRegionJPA(cropRegionDO)
@@ -362,10 +361,10 @@ public class TextDocumentContentSaver {
         return image;
     }
 
-    private LoopEntryRef toJpaObject(com.imcode.imcms.mapping.container.LoopEntryRef source) {
+    private LoopEntryRefJPA toJpaObject(com.imcode.imcms.mapping.container.LoopEntryRef source) {
         return source == null
                 ? null
-                : new LoopEntryRef(source.getLoopNo(), source.getEntryNo());
+                : new LoopEntryRefJPA(source.getLoopNo(), source.getEntryNo());
     }
 
     private Loop toJpaObject(TextDocLoopContainer container) {

@@ -9,7 +9,7 @@ import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRef;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.util.image.Format;
 import org.junit.Before;
@@ -83,7 +83,7 @@ public class ImageRepositoryTest {
     @Test
     public void findByVersionAndLanguageWhereLoopEntryRefIsNotNull() {
         final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
-        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
 
         loopDataInitializer.createData(loopDTO);
 
@@ -113,7 +113,7 @@ public class ImageRepositoryTest {
     @Test
     public void findByVersionAndIndexAndLoopEntryRef() {
         final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
-        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         loopDataInitializer.createData(loopDTO);
 
         final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, loopEntryRef);
@@ -138,7 +138,7 @@ public class ImageRepositoryTest {
     @Test
     public void findByVersionAndLanguageAndIndexAndLoopEntryRef() {
         final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
-        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         loopDataInitializer.createData(loopDTO);
 
         final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, loopEntryRef);
@@ -166,7 +166,7 @@ public class ImageRepositoryTest {
     @Test
     public void findIdByVersionAndLanguageAndIndexAndLoopEntryRef() {
         final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
-        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         loopDataInitializer.createData(loopDTO);
 
         final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, loopEntryRef);

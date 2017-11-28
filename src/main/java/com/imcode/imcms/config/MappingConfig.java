@@ -159,20 +159,20 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO() {
+    public Function<LoopEntryRefJPA, LoopEntryRefDTO> loopEntryRefToDTO() {
         return loopEntryRef -> (loopEntryRef == null) ? null
                 : new LoopEntryRefDTO(loopEntryRef.getLoopIndex(), loopEntryRef.getLoopEntryIndex());
     }
 
     @Bean
-    public Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef() {
+    public Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef() {
         return loopEntryRefDTO -> (loopEntryRefDTO == null) ? null
-                : new LoopEntryRef(loopEntryRefDTO.getLoopIndex(), loopEntryRefDTO.getLoopEntryIndex());
+                : new LoopEntryRefJPA(loopEntryRefDTO.getLoopIndex(), loopEntryRefDTO.getLoopEntryIndex());
     }
 
     @Bean
     public Function<Image, ImageDTO> imageToImageDTO(@Value("${ImageUrl}") String imagesPath,
-                                                     Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO) {
+                                                     Function<LoopEntryRefJPA, LoopEntryRefDTO> loopEntryRefToDTO) {
         return image -> {
             final ImageDTO dto = new ImageDTO();
 
@@ -199,7 +199,7 @@ class MappingConfig {
 
     @Bean
     public TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage(
-            Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef
+            Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef
     ) {
 
         return (imageDTO, version, language) -> {
@@ -520,7 +520,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<Text, TextDTO> textToTextDTO(Function<LoopEntryRef, LoopEntryRefDTO> loopEntryRefToDTO) {
+    public Function<Text, TextDTO> textToTextDTO(Function<LoopEntryRefJPA, LoopEntryRefDTO> loopEntryRefToDTO) {
         return text -> {
             final TextDTO textDTO = new TextDTO();
 
@@ -537,7 +537,7 @@ class MappingConfig {
 
     @Bean
     public TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText(
-            Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef
+            Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef
     ) {
         return (textDTO, version, language) -> {
             final Text text = new Text();

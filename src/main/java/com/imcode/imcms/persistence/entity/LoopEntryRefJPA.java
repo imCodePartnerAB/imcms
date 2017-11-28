@@ -11,7 +11,7 @@ import javax.persistence.Embeddable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoopEntryRef {
+public class LoopEntryRefJPA {
 
     @Column(name = "loop_index")
     private int loopIndex;

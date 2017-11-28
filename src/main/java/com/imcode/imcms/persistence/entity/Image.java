@@ -60,7 +60,7 @@ public class Image extends VersionedI18nContent {
     @Column(name = "gen_file")
     private String generatedFilename;
 
-    private LoopEntryRef loopEntryRef;
+    private LoopEntryRefJPA loopEntryRef;
 
     private int resize;
 

@@ -8,7 +8,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.LoopEntryRef;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
@@ -112,7 +112,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Test
     public void getImage_When_LoopEntryRefIsNotNull_Expect_OkAndEqualContent() throws Exception {
-        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
@@ -151,7 +151,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Test
     public void postImage_When_LoopEntryRefIsNotNull_Expect_Ok() throws Exception {
-        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 

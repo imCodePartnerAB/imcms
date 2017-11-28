@@ -7,7 +7,7 @@ import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRef;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextHistory;
 import com.jcabi.w3c.Defect;
 import com.jcabi.w3c.ValidationResponse;
@@ -72,7 +72,7 @@ public class TextController {
      * @param loopEntryRefStr {@link com.imcode.imcms.mapping.container.LoopEntryRef} represented in text form
      * @return List of textHistory entities
      * @see TextDocumentContentLoader#getTextHistory(DocRef, int)
-     * @see TextDocumentContentLoader#getTextHistory(DocRef, LoopEntryRef, int)
+     * @see TextDocumentContentLoader#getTextHistory(DocRef, LoopEntryRefJPA, int)
      */
     @RequestMapping
     public List<TextHistoryWebEntity> getTextHistory(@RequestParam("meta") int docId,
@@ -81,7 +81,7 @@ public class TextController {
                                                      @RequestParam(value = "loopentryref", required = false) String loopEntryRefStr) {
 
         final com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRefOpt;
-        LoopEntryRef loopEntryRef = null;
+        LoopEntryRefJPA loopEntryRef = null;
 
         if (!StringUtils.isEmpty(loopEntryRefStr)) {
             final String[] items = loopEntryRefStr.split("_", 2);
@@ -92,7 +92,7 @@ public class TextController {
                         Integer.parseInt(items[1])
                 );
 
-                loopEntryRef = new LoopEntryRef(
+                loopEntryRef = new LoopEntryRefJPA(
                         loopEntryRefOpt.getLoopNo(),
                         loopEntryRefOpt.getEntryNo()
                 );

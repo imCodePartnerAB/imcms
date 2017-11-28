@@ -66,7 +66,7 @@ public class TextRepositoryTest {
                     text.setText("test");
 
                     if ((index & 1) == 1) {
-                        text.setLoopEntryRef(new LoopEntryRef(index, index));
+                        text.setLoopEntryRef(new LoopEntryRefJPA(index, index));
                     }
 
                     textRepository.save(text);
@@ -99,7 +99,7 @@ public class TextRepositoryTest {
     @Test
     public void testFindByDocVersionAndIndexAndLoopEntryRef() throws Exception {
         for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
-            final LoopEntryRef loopEntryRef = new LoopEntryRef(index, index);
+            final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(index, index);
             for (LanguageJPA language : languages) {
                 for (Version version : versions) {
                     Text text = textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(

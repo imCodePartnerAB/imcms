@@ -6,7 +6,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRef;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Text;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
@@ -102,7 +102,7 @@ public class TextServiceTest {
     @Test
     public void getText_When_InLoop_Expect_CorrectDTO() {
         final List<TextDTO> textDTOS = new ArrayList<>();
-        final LoopEntryRef loopEntryRef = new LoopEntryRef(1, 1);
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
 
         for (LanguageJPA language : languages) {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {

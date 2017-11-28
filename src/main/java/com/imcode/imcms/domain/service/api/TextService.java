@@ -4,7 +4,7 @@ import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRef;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Text;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.TextRepository;
@@ -20,14 +20,14 @@ import java.util.function.Function;
 public class TextService {
 
     private final TextRepository textRepository;
-    private final Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef;
+    private final Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef;
     private final LanguageService languageService;
     private final VersionService versionService;
     private final Function<Text, TextDTO> textToTextDTO;
     private final TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText;
 
     TextService(TextRepository textRepository,
-                Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
+                Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef,
                 LanguageService languageService,
                 VersionService versionService,
                 Function<Text, TextDTO> textToTextDTO,
@@ -81,7 +81,7 @@ public class TextService {
     }
 
     private Text getText(int index, Version version, LanguageJPA language, LoopEntryRefDTO loopEntryRefDTO) {
-        final LoopEntryRef loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
+        final LoopEntryRefJPA loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
 
         return (loopEntryRef == null)
                 ? textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)

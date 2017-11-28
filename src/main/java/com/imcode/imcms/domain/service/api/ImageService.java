@@ -5,7 +5,7 @@ import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRef;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
@@ -24,14 +24,14 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final VersionService versionService;
     private final LanguageService languageService;
-    private final Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef;
+    private final Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef;
     private final TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage;
     private final Function<Image, ImageDTO> imageToImageDTO;
 
     ImageService(ImageRepository imageRepository,
                  VersionService versionService,
                  LanguageService languageService,
-                 Function<LoopEntryRefDTO, LoopEntryRef> loopEntryRefDtoToLoopEntryRef,
+                 Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef,
                  TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage,
                  Function<Image, ImageDTO> imageToImageDTO) {
 
@@ -96,7 +96,7 @@ public class ImageService {
     }
 
     private Image getImage(int index, Version version, LanguageJPA language, LoopEntryRefDTO loopEntryRefDTO) {
-        final LoopEntryRef loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
+        final LoopEntryRefJPA loopEntryRef = loopEntryRefDtoToLoopEntryRef.apply(loopEntryRefDTO);
 
         return (loopEntryRef == null)
                 ? imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
