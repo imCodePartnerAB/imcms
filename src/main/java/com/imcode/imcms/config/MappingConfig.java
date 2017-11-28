@@ -18,6 +18,7 @@ import imcode.server.document.index.DocumentStoredFields;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -61,11 +62,10 @@ class MappingConfig {
     @Bean
     public BiFunction<LoopDTO, Version, Loop> loopDtoToLoop() {
         return (loopDTO, version) -> {
-            final List<LoopEntryJPA> entries = Objects.requireNonNull(loopDTO)
-                    .getEntries()
-                    .stream()
-                    .map(LoopEntryJPA::new)
-                    .collect(Collectors.toList());
+
+            final List<LoopEntryJPA> entries = CollectionUtils.collect(
+                    loopDTO.getEntries(), LoopEntryJPA::new, new ArrayList<>(loopDTO.getEntries().size())
+            );
 
             return new Loop(version, loopDTO.getIndex(), entries);
         };
@@ -74,11 +74,10 @@ class MappingConfig {
     @Bean
     public BiFunction<Loop, Version, LoopDTO> loopToLoopDTO() {
         return (loop, version) -> {
-            final List<LoopEntryDTO> loopEntryDTOs = Objects.requireNonNull(loop)
-                    .getEntries()
-                    .stream()
-                    .map(LoopEntryDTO::new)
-                    .collect(Collectors.toList());
+
+            final List<LoopEntryDTO> loopEntryDTOs = CollectionUtils.collect(
+                    loop.getEntries(), LoopEntryDTO::new, new ArrayList<>(loop.getEntries().size())
+            );
 
             return new LoopDTO(version.getDocId(), loop.getIndex(), loopEntryDTOs);
         };
