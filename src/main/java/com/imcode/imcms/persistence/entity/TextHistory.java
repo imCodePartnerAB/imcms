@@ -15,7 +15,7 @@ import java.util.Date;
 @Entity
 @NoArgsConstructor
 @Table(name = "imcms_text_doc_texts_history")
-public class TextHistory extends TextBase {
+public class TextHistory extends TextJPABase {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -25,7 +25,7 @@ public class TextHistory extends TextBase {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
-    public TextHistory(Text text, User modifiedBy) {
+    public TextHistory(TextJPA text, User modifiedBy) {
         setVersion(text.getVersion());
         setLanguage(text.getLanguage());
         setIndex(text.getIndex());

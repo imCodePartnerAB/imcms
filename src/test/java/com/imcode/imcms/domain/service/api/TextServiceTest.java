@@ -8,7 +8,7 @@ import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.Text;
+import com.imcode.imcms.persistence.entity.TextJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.imcode.imcms.persistence.entity.TextBase.Type.PLAIN_TEXT;
+import static com.imcode.imcms.persistence.entity.TextJPABase.Type.PLAIN_TEXT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -56,7 +56,7 @@ public class TextServiceTest {
     private TextRepository textRepository;
 
     @Autowired
-    private TernaryFunction<Text, Version, LanguageDTO, TextDTO> textToTextDTO;
+    private TernaryFunction<TextJPA, Version, LanguageDTO, TextDTO> textToTextDTO;
 
     private Version version;
     private List<LanguageJPA> languages;
@@ -82,7 +82,7 @@ public class TextServiceTest {
 
         for (LanguageJPA language : languages) {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
-                final Text text = new Text();
+                final TextJPA text = new TextJPA();
                 text.setIndex(index);
                 text.setLanguage(language);
                 text.setText("test");
@@ -107,7 +107,7 @@ public class TextServiceTest {
 
         for (LanguageJPA language : languages) {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
-                final Text text = new Text();
+                final TextJPA text = new TextJPA();
                 text.setIndex(index);
                 text.setVersion(version);
                 text.setLanguage(language);

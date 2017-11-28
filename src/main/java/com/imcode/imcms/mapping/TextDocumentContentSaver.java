@@ -146,7 +146,7 @@ public class TextDocumentContentSaver {
 
     public void saveText(TextDocTextContainer container, UserDomainObject userDomainObject) {
         User user = findUser(userDomainObject);
-        Text text = toJpaObject(container);
+        TextJPA text = toJpaObject(container);
 
         saveText(text, user, SaveMode.UPDATE);
     }
@@ -157,7 +157,7 @@ public class TextDocumentContentSaver {
 
         container.getTexts().forEach((languageDO, textDO) -> {
             LanguageJPA language = findLanguage(languageDO);
-            Text text = toJpaObject(textDO, version, language, container.getTextNo(), toJpaObject(container.getLoopEntryRef()));
+            TextJPA text = toJpaObject(textDO, version, language, container.getTextNo(), toJpaObject(container.getLoopEntryRef()));
 
             saveText(text, user, SaveMode.UPDATE);
         });
@@ -230,7 +230,7 @@ public class TextDocumentContentSaver {
 
     private void saveTexts(TextDocumentDomainObject doc, Version version, LanguageJPA language, User user, SaveMode saveMode) {
         for (Map.Entry<Integer, TextDomainObject> entry : doc.getTexts().entrySet()) {
-            Text text = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
+            TextJPA text = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
 
             saveText(text, user, saveMode);
         }
@@ -239,7 +239,7 @@ public class TextDocumentContentSaver {
             TextDocumentDomainObject.LoopItemRef loopItemRef = entry.getKey();
             LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-            Text text = toJpaObject(entry.getValue(), version, language, loopItemRef.getItemNo(), loopEntryRef);
+            TextJPA text = toJpaObject(entry.getValue(), version, language, loopItemRef.getItemNo(), loopEntryRef);
 
             saveText(text, user, saveMode);
         }
@@ -259,7 +259,7 @@ public class TextDocumentContentSaver {
         imageRepository.save(image);
     }
 
-    private void saveText(Text text, User user, SaveMode saveMode) {
+    private void saveText(TextJPA text, User user, SaveMode saveMode) {
         if (saveMode == SaveMode.UPDATE) {
             LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
             Integer id = loopEntryRef == null
@@ -296,7 +296,7 @@ public class TextDocumentContentSaver {
         loopRepository.save(loop);
     }
 
-    private Text toJpaObject(TextDocTextContainer container) {
+    private TextJPA toJpaObject(TextDocTextContainer container) {
         LanguageJPA language = findLanguage(container);
         Version version = findVersion(container);
         LoopEntryRefJPA loopEntryRef = toJpaObject(container.getLoopEntryRef());
@@ -304,14 +304,14 @@ public class TextDocumentContentSaver {
         return toJpaObject(container.getText(), version, language, container.getTextNo(), loopEntryRef);
     }
 
-    private Text toJpaObject(TextDomainObject textDO, Version version, LanguageJPA language, int no, LoopEntryRefJPA loopEntryRef) {
-        Text text = new Text();
+    private TextJPA toJpaObject(TextDomainObject textDO, Version version, LanguageJPA language, int no, LoopEntryRefJPA loopEntryRef) {
+        TextJPA text = new TextJPA();
 
         text.setLanguage(language);
         text.setVersion(version);
         text.setIndex(no);
         text.setText(textDO.getText());
-        text.setType(TextBase.Type.values()[textDO.getType()]);
+        text.setType(TextJPABase.Type.values()[textDO.getType()]);
         text.setLoopEntryRef(loopEntryRef);
 
         return text;

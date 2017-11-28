@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.persistence.entity.TextBase.Type;
+import com.imcode.imcms.persistence.entity.TextJPABase.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

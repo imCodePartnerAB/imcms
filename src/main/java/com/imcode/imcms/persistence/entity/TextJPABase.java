@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @EqualsAndHashCode
 @MappedSuperclass
-public class TextBase {
+public class TextJPABase {
 
     @NotNull
     @Column(name = "`index`")

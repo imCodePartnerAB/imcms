@@ -82,7 +82,7 @@ public class TextDocumentContentLoader {
         LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)
-                .stream().collect(toMap(Text::getIndex, this::toDomainObject));
+                .stream().collect(toMap(TextJPA::getIndex, this::toDomainObject));
     }
 
     public Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> getLoopTexts(DocRef docRef) {
@@ -91,7 +91,7 @@ public class TextDocumentContentLoader {
 
         final Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> result = new HashMap<>();
 
-        for (Text text : textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
+        for (TextJPA text : textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.LoopItemRef.of(
                     text.getLoopEntryRef().getLoopIndex(), text.getLoopEntryRef().getLoopEntryIndex(), text.getIndex()
             );
@@ -243,7 +243,7 @@ public class TextDocumentContentLoader {
         return menuService.findAllByVersion(version).stream().collect(toMap(MenuDTO::getMenuIndex, menu -> menu));
     }
 
-    private TextDomainObject toDomainObject(Text jpaText) {
+    private TextDomainObject toDomainObject(TextJPA jpaText) {
         return (jpaText == null) ? null : new TextDomainObject(jpaText.getText(), jpaText.getType().ordinal());
     }
 

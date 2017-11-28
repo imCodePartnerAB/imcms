@@ -10,5 +10,5 @@ import javax.persistence.Table;
 @Table(name = "imcms_text_doc_texts")
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Text extends TextBase {
+public class TextJPA extends TextJPABase {
 }

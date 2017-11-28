@@ -57,10 +57,10 @@ public class TextRepositoryTest {
         for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
             for (LanguageJPA language : languages) {
                 for (Version version : versions) {
-                    Text text = new Text();
+                    TextJPA text = new TextJPA();
 
                     text.setIndex(index);
-                    text.setType(TextBase.Type.PLAIN_TEXT);
+                    text.setType(TextJPABase.Type.PLAIN_TEXT);
                     text.setLanguage(language);
                     text.setVersion(version);
                     text.setText("test");
@@ -81,7 +81,7 @@ public class TextRepositoryTest {
         for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
             for (LanguageJPA language : languages) {
                 for (Version version : versions) {
-                    Text text = textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
+                    TextJPA text = textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
                             version, language, index
                     );
 
@@ -102,7 +102,7 @@ public class TextRepositoryTest {
             final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(index, index);
             for (LanguageJPA language : languages) {
                 for (Version version : versions) {
-                    Text text = textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
+                    TextJPA text = textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
                             version, language, index, loopEntryRef
                     );
 

@@ -420,7 +420,7 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<Text, Version, LanguageDTO, TextDTO> textToTextDTO() {
+    public TernaryFunction<TextJPA, Version, LanguageDTO, TextDTO> textToTextDTO() {
         return (text, version, language) -> {
             final TextDTO textDTO = new TextDTO();
 
@@ -436,9 +436,9 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText() {
+    public TernaryFunction<TextDTO, Version, LanguageJPA, TextJPA> textDtoToText() {
         return (textDTO, version, language) -> {
-            final Text text = new Text();
+            final TextJPA text = new TextJPA();
             text.setIndex(textDTO.getIndex());
             text.setVersion(version);
             text.setLanguage(language);
