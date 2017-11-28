@@ -160,14 +160,12 @@ class MappingConfig {
 
     @Bean
     public Function<LoopEntryRefJPA, LoopEntryRefDTO> loopEntryRefToDTO() {
-        return loopEntryRef -> (loopEntryRef == null) ? null
-                : new LoopEntryRefDTO(loopEntryRef.getLoopIndex(), loopEntryRef.getLoopEntryIndex());
+        return loopEntryRef -> (loopEntryRef == null) ? null : new LoopEntryRefDTO(loopEntryRef);
     }
 
     @Bean
     public Function<LoopEntryRefDTO, LoopEntryRefJPA> loopEntryRefDtoToLoopEntryRef() {
-        return loopEntryRefDTO -> (loopEntryRefDTO == null) ? null
-                : new LoopEntryRefJPA(loopEntryRefDTO.getLoopIndex(), loopEntryRefDTO.getLoopEntryIndex());
+        return loopEntryRefDTO -> (loopEntryRefDTO == null) ? null : new LoopEntryRefJPA(loopEntryRefDTO);
     }
 
     @Bean

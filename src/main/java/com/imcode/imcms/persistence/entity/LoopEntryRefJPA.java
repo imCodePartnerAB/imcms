@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-@Embeddable
 @Data
+@Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoopEntryRefJPA {
+public class LoopEntryRefJPA extends LoopEntryRef {
 
     @Column(name = "loop_index")
     private int loopIndex;
@@ -19,4 +19,7 @@ public class LoopEntryRefJPA {
     @Column(name = "loop_entry_index")
     private int loopEntryIndex;
 
+    public LoopEntryRefJPA(LoopEntryRef from) {
+        super(from);
+    }
 }
