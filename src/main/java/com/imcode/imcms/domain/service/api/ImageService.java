@@ -93,11 +93,14 @@ public class ImageService {
     }
 
     private Image getImage(int index, Version version, LanguageJPA language, LoopEntryRefDTO loopEntryRefDTO) {
-        final Optional<LoopEntryRefJPA> oLoopEntryRef = Optional.ofNullable(loopEntryRefDTO).map(LoopEntryRefJPA::new);
-
-        return (oLoopEntryRef.isPresent())
-                ? imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, oLoopEntryRef.get())
-                : imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index);
+        return Optional.ofNullable(loopEntryRefDTO)
+                .map(LoopEntryRefJPA::new)
+                .map(loopEntryRef -> imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
+                        version, language, index, loopEntryRef
+                ))
+                .orElseGet(() -> imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
+                        version, language, index
+                ));
     }
 
     private Integer getImageId(ImageDTO imageDTO, Version version, LanguageJPA language) {
