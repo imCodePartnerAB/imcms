@@ -2,9 +2,9 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.api.DocumentService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import imcode.server.Imcms;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by Serhii Maksymchuk from Ubrainians for imCode
@@ -23,5 +23,16 @@ public class DocumentController {
     @GetMapping
     public DocumentDTO getDocument(int docId) {
         return documentService.get(docId);
+    }
+
+    @PostMapping
+    public void saveDocument(@RequestBody DocumentDTO saveMe) {
+
+        // todo: create annotation instead of copying this each time!
+        if (!Imcms.getUser().isSuperAdmin()) {
+            throw new NoPermissionToEditDocumentException("User do not have access to change document structure.");
+        }
+
+        documentService.save(saveMe);
     }
 }
