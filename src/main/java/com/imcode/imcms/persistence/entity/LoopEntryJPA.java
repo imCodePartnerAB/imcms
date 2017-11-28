@@ -20,7 +20,7 @@ public class LoopEntryJPA extends LoopEntry {
 
     private boolean enabled;
 
-    public LoopEntryJPA(LoopEntry from) {
+    LoopEntryJPA(LoopEntry from) {
         super(from);
     }
 
