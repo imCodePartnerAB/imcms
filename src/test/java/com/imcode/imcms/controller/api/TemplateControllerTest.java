@@ -16,9 +16,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.List;
 
+@WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
-@WebAppConfiguration
 public class TemplateControllerTest extends AbstractControllerTest {
 
     @Autowired

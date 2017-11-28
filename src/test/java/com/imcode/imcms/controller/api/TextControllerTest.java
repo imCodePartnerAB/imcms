@@ -33,9 +33,9 @@ import java.util.List;
 import static com.imcode.imcms.persistence.entity.Text.Type.PLAIN_TEXT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+@WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
-@WebAppConfiguration
 public class TextControllerTest extends AbstractControllerTest {
 
     private static final int DOC_ID = 1001;

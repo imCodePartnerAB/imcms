@@ -27,10 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
+@Transactional
+@WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
-@WebAppConfiguration
-@Transactional
 public class LoopControllerTest extends AbstractControllerTest {
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_LOOP_INDEX = 1;

@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
-@WebAppConfiguration
 public class UserControllerTest extends AbstractControllerTest {
 
     @Autowired
