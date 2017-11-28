@@ -6,6 +6,7 @@ import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -64,6 +65,11 @@ public class DocumentServiceTest {
     public void get() throws Exception {
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
         assertEquals(documentDTO, createdDoc);
+    }
+
+    @Test(expected = DocumentNotExistException.class)
+    public void get_When_DocumentNotExist_Expect_CorrectException() throws Exception {
+        documentService.get(((Long) System.currentTimeMillis()).intValue());
     }
 
     @Test
