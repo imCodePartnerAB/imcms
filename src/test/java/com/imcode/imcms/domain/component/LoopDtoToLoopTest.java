@@ -5,7 +5,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.persistence.entity.Loop;
+import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import org.junit.After;
 import org.junit.Before;
@@ -30,7 +30,7 @@ public class LoopDtoToLoopTest {
     private static final int TEST_VERSION_NO = 0;
 
     @Autowired
-    private BiFunction<LoopDTO, Version, Loop> mapper;
+    private BiFunction<LoopDTO, Version, LoopJPA> mapper;
     @Autowired
     private VersionDataInitializer versionDataInitializer;
     @Autowired
@@ -51,7 +51,7 @@ public class LoopDtoToLoopTest {
     public void expectedEqualsMapResult() throws Exception {
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.emptyList());
         final Version workingVersion = versionRepository.findByDocIdAndNo(TEST_DOC_ID, TEST_VERSION_NO);
-        final Loop expected = Loop.emptyLoop(workingVersion, TEST_LOOP_INDEX);
+        final LoopJPA expected = LoopJPA.emptyLoop(workingVersion, TEST_LOOP_INDEX);
 
         assertEquals(expected, mapper.apply(loopDTO, workingVersion));
     }

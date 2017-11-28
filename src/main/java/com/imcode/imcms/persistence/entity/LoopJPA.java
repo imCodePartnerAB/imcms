@@ -16,7 +16,7 @@ import java.util.List;
 @Table(name = "imcms_text_doc_content_loops")
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Loop extends VersionedContent {
+public class LoopJPA extends VersionedContent {
 
     @Min(1)
     @NotNull
@@ -31,19 +31,19 @@ public class Loop extends VersionedContent {
     @OrderColumn(name = "order_index")
     private List<LoopEntryJPA> entries = new LinkedList<>();
 
-    public Loop(Integer id, Version version, Integer index, List<LoopEntryJPA> entries) {
+    public LoopJPA(Integer id, Version version, Integer index, List<LoopEntryJPA> entries) {
         setId(id);
         setVersion(version);
         this.index = index;
         this.entries = new LinkedList<>(entries);
     }
 
-    public Loop(Version version, Integer index, List<LoopEntryJPA> entries) {
+    public LoopJPA(Version version, Integer index, List<LoopEntryJPA> entries) {
         this(null, version, index, entries);
     }
 
-    public static Loop emptyLoop(Version version, Integer index) {
-        return new Loop(version, index, Collections.emptyList());
+    public static LoopJPA emptyLoop(Version version, Integer index) {
+        return new LoopJPA(version, index, Collections.emptyList());
     }
 
     public boolean containsEntry(int entryIndex) {

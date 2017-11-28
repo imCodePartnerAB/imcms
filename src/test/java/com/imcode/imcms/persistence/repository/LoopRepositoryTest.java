@@ -6,7 +6,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.persistence.entity.Loop;
+import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +63,7 @@ public class LoopRepositoryTest {
     @Test
     public void findByDocVersion_Expect_CorrectResultSize() {
         Version version = versionRepository.findByDocIdAndNo(DOC_ID, VERSION_NO);
-        List<Loop> loops = loopRepository.findByVersion(version);
+        List<LoopJPA> loops = loopRepository.findByVersion(version);
 
         assertThat(loops.size(), is(3));
     }
@@ -71,9 +71,9 @@ public class LoopRepositoryTest {
     @Test
     public void findByDocVersionAndIndex_Expect_NotNullResults() {
         Version version = versionRepository.findByDocIdAndNo(DOC_ID, VERSION_NO);
-        Loop loop1 = loopRepository.findByVersionAndIndex(version, 1);
-        Loop loop2 = loopRepository.findByVersionAndIndex(version, 2);
-        Loop loop3 = loopRepository.findByVersionAndIndex(version, 3);
+        LoopJPA loop1 = loopRepository.findByVersionAndIndex(version, 1);
+        LoopJPA loop2 = loopRepository.findByVersionAndIndex(version, 2);
+        LoopJPA loop3 = loopRepository.findByVersionAndIndex(version, 3);
 
         assertNotNull(loop1);
         assertNotNull(loop2);
@@ -83,7 +83,7 @@ public class LoopRepositoryTest {
     @Test
     public void savedData_Expect_EqualIndexAndDocId() {
         Version version = versionRepository.findByDocIdAndNo(DOC_ID, VERSION_NO);
-        Loop loop1 = loopRepository.findByVersionAndIndex(version, 1);
+        LoopJPA loop1 = loopRepository.findByVersionAndIndex(version, 1);
 
         assertEquals(loop1.getIndex(), Integer.valueOf(1));
         assertEquals(loop1.getVersion().getDocId(), Integer.valueOf(DOC_ID));
@@ -92,7 +92,7 @@ public class LoopRepositoryTest {
     @Test
     public void removeOneSavedEntry_Expect_EntriesSizeDecreased() {
         Version version = versionRepository.findByDocIdAndNo(DOC_ID, VERSION_NO);
-        Loop loop = loopRepository.findByVersionAndIndex(version, 3);
+        LoopJPA loop = loopRepository.findByVersionAndIndex(version, 3);
 
         assertEquals(loop.getEntries().size(), 3);
 

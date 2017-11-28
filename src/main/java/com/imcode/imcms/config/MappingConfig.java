@@ -60,19 +60,19 @@ class MappingConfig {
     }
 
     @Bean
-    public BiFunction<LoopDTO, Version, Loop> loopDtoToLoop() {
+    public BiFunction<LoopDTO, Version, LoopJPA> loopDtoToLoop() {
         return (loopDTO, version) -> {
 
             final List<LoopEntryJPA> entries = CollectionUtils.collect(
                     loopDTO.getEntries(), LoopEntryJPA::new, new ArrayList<>(loopDTO.getEntries().size())
             );
 
-            return new Loop(version, loopDTO.getIndex(), entries);
+            return new LoopJPA(version, loopDTO.getIndex(), entries);
         };
     }
 
     @Bean
-    public BiFunction<Loop, Version, LoopDTO> loopToLoopDTO() {
+    public BiFunction<LoopJPA, Version, LoopDTO> loopToLoopDTO() {
         return (loop, version) -> {
 
             final List<LoopEntryDTO> loopEntryDTOs = CollectionUtils.collect(

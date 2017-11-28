@@ -278,13 +278,13 @@ public class TextDocumentContentSaver {
     private void createLoopEntryIfNotExists(Version version, LoopEntryRefJPA entryRef) {
         if (entryRef == null) return;
 
-        Loop loop = loopRepository.findByVersionAndIndex(
+        LoopJPA loop = loopRepository.findByVersionAndIndex(
                 version, entryRef.getLoopIndex());
         int entryIndex = entryRef.getLoopEntryIndex();
         int loopIndex = entryRef.getLoopIndex();
 
         if (loop == null) {
-            loop = new Loop();
+            loop = new LoopJPA();
             loop.setVersion(version);
             loop.setIndex(loopIndex);
             loop.getEntries().add(new LoopEntryJPA(entryIndex, true));
@@ -367,18 +367,18 @@ public class TextDocumentContentSaver {
                 : new LoopEntryRefJPA(source.getLoopNo(), source.getEntryNo());
     }
 
-    private Loop toJpaObject(TextDocLoopContainer container) {
+    private LoopJPA toJpaObject(TextDocLoopContainer container) {
         return toJpaObject(container.getVersionRef(), container.getLoopNo(), container.getLoop());
     }
 
-    private Loop toJpaObject(VersionRef versionRef, int loopNo, com.imcode.imcms.api.Loop loopDO) {
+    private LoopJPA toJpaObject(VersionRef versionRef, int loopNo, com.imcode.imcms.api.Loop loopDO) {
         List<LoopEntryJPA> entries = new LinkedList<>();
         Version version = findVersion(versionRef);
 
         loopDO.getEntries().forEach((entryNo, enabled) -> entries.add(new LoopEntryJPA(entryNo, enabled)));
 
         return Value.with(
-                new Loop(),
+                new LoopJPA(),
                 l -> {
                     l.setEntries(entries);
                     l.setIndex(loopNo);

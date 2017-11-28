@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.core.VersionService;
-import com.imcode.imcms.persistence.entity.Loop;
+import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 public class LoopService {
 
     private final LoopRepository loopRepository;
-    private final BiFunction<Loop, Version, LoopDTO> loopToDtoMapper;
-    private final BiFunction<LoopDTO, Version, Loop> loopDtoToLoop;
+    private final BiFunction<LoopJPA, Version, LoopDTO> loopToDtoMapper;
+    private final BiFunction<LoopDTO, Version, LoopJPA> loopDtoToLoop;
     private final VersionService versionService;
 
     @Autowired
     LoopService(LoopRepository loopRepository,
-                BiFunction<Loop, Version, LoopDTO> loopToDtoMapper,
-                BiFunction<LoopDTO, Version, Loop> loopDtoToLoop,
+                BiFunction<LoopJPA, Version, LoopDTO> loopToDtoMapper,
+                BiFunction<LoopDTO, Version, LoopJPA> loopDtoToLoop,
                 VersionService versionService) {
         this.loopRepository = loopRepository;
         this.loopToDtoMapper = loopToDtoMapper;
@@ -38,7 +38,7 @@ public class LoopService {
 
     public LoopDTO getLoop(int loopIndex, int docId) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(docId);
-        final Loop loop = loopRepository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
+        final LoopJPA loop = loopRepository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
 
         return Optional.ofNullable(loop)
                 .map(loop1 -> loopToDtoMapper.apply(loop1, loop1.getVersion()))
@@ -47,7 +47,7 @@ public class LoopService {
 
     public void saveLoop(LoopDTO loopDTO) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopDTO.getDocId());
-        final Loop loopForSave = loopDtoToLoop.apply(loopDTO, documentWorkingVersion);
+        final LoopJPA loopForSave = loopDtoToLoop.apply(loopDTO, documentWorkingVersion);
         final Integer loopId = getLoopId(documentWorkingVersion, loopDTO.getIndex());
 
         loopForSave.setId(loopId);
@@ -55,7 +55,7 @@ public class LoopService {
     }
 
     private Integer getLoopId(Version version, Integer loopIndex) {
-        final Loop loop = loopRepository.findByVersionAndIndex(version, loopIndex);
+        final LoopJPA loop = loopRepository.findByVersionAndIndex(version, loopIndex);
 
         if (loop == null) {
             return null;

@@ -7,7 +7,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.persistence.entity.Loop;
+import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;
 import imcode.server.Imcms;
@@ -93,7 +93,7 @@ public class LoopControllerTest extends AbstractControllerTest {
     public void postLoop_When_UserIsAdminAndLoopNotExist_Expect_Ok() throws Exception {
         final int nonExistingLoopIndex = 666;
         final Version workingVersion = versionRepository.findWorking(TEST_DOC_ID);
-        final Loop shouldNotExist = loopRepository.findByVersionAndIndex(workingVersion, nonExistingLoopIndex);
+        final LoopJPA shouldNotExist = loopRepository.findByVersionAndIndex(workingVersion, nonExistingLoopIndex);
 
         if (shouldNotExist != null) { // this should never happen, but...
             loopRepository.delete(shouldNotExist);
