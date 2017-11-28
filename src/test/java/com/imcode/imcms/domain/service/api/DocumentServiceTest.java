@@ -1,19 +1,14 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.components.datainitializer.*;
+import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.*;
-import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.Meta;
-import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.persistence.repository.MetaRepository;
-import com.imcode.imcms.util.Value;
-import com.imcode.imcms.util.function.TernaryFunction;
-import imcode.server.Imcms;
-import imcode.server.user.UserDomainObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,24 +32,10 @@ import static org.junit.Assert.*;
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class DocumentServiceTest {
 
-    private static final int TEST_VERSION_INDEX = 0;
-
     private DocumentDTO createdDoc;
 
     @Autowired
     private DocumentService documentService;
-
-    @Autowired
-    private MetaRepository metaRepository;
-
-    @Autowired
-    private TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> metaToDocumentDTO;
-
-    @Autowired
-    private VersionDataInitializer versionDataInitializer;
-
-    @Autowired
-    private CommonContentDataInitializer commonContentDataInitializer;
 
     @Autowired
     private UserDataInitializer userDataInitializer;
@@ -69,53 +50,14 @@ public class DocumentServiceTest {
     private RoleService roleService;
 
     @Autowired
-    private TemplateDataInitializer templateDataInitializer;
-
-    @Autowired
     private TextDocumentTemplateService templateService;
 
     @Autowired
-    private CommonContentService commonContentService;
+    private DocumentDataInitializer documentDataInitializer;
 
     @Before
     public void setUp() throws Exception {
-        templateDataInitializer.cleanRepositories();
-
-        final Meta metaDoc = Value.with(new Meta(), meta -> {
-
-            meta.setArchivedDatetime(new Date());
-            meta.setArchiverId(1);
-            meta.setCategoryIds(new HashSet<>());
-            meta.setCreatedDatetime(new Date());
-            meta.setCreatorId(1);
-            meta.setModifiedDatetime(new Date());
-            meta.setModifierId(1);
-            meta.setDefaultVersionNo(0);
-            meta.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
-            meta.setDocumentType(Meta.DocumentType.TEXT);
-            meta.setKeywords(new HashSet<>());
-            meta.setLinkableByOtherUsers(true);
-            meta.setLinkedForUnauthorizedUsers(true);
-            meta.setPublicationStartDatetime(new Date());
-            meta.setPublicationStatus(Meta.PublicationStatus.APPROVED);
-            meta.setPublisherId(1);
-            meta.setSearchDisabled(false);
-            meta.setTarget("test");
-
-        });
-
-        final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("eng");
-        Imcms.setUser(user);
-
-        metaRepository.save(metaDoc);
-        templateDataInitializer.createData(metaDoc.getId(), "demo", "demo");
-        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, metaDoc.getId());
-        commonContentDataInitializer.createData(metaDoc.getId(), TEST_VERSION_INDEX);
-        final List<CommonContentDTO> commonContents = commonContentService.getOrCreateCommonContents(
-                metaDoc.getId(), version.getNo()
-        );
-        createdDoc = metaToDocumentDTO.apply(metaDoc, version, commonContents);
+        createdDoc = documentDataInitializer.createData();
     }
 
     @Test
