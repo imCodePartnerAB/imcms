@@ -9,7 +9,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -17,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "category_types")
-public class CategoryType implements Cloneable, Serializable {
+public class CategoryType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,15 +46,6 @@ public class CategoryType implements Cloneable, Serializable {
 
     public CategoryType(Integer id, String name, int maxChoices, boolean inherited, boolean imageArchive) {
         this(id, name, maxChoices, inherited, imageArchive, null);
-    }
-
-    @Override
-    public CategoryType clone() {
-        try {
-            return (CategoryType) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(e);
-        }
     }
 
     /**
