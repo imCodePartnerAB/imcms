@@ -9,25 +9,19 @@ import com.imcode.imcms.domain.service.api.UserService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.*;
-import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.Menu;
-import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.document.index.DocumentStoredFields;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.awt.*;
 import java.io.File;
 import java.util.*;
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -56,30 +50,6 @@ class MappingConfig {
             documentDTO.setTitle(documentFields.headline());
             documentDTO.setType(DocumentType.values()[documentFields.documentType()]);
             return documentDTO;
-        };
-    }
-
-    @Bean
-    public BiFunction<LoopDTO, Version, LoopJPA> loopDtoToLoop() {
-        return (loopDTO, version) -> {
-
-            final List<LoopEntryJPA> entries = CollectionUtils.collect(
-                    loopDTO.getEntries(), LoopEntryJPA::new, new ArrayList<>(loopDTO.getEntries().size())
-            );
-
-            return new LoopJPA(version, loopDTO.getIndex(), entries);
-        };
-    }
-
-    @Bean
-    public BiFunction<LoopJPA, Version, LoopDTO> loopToLoopDTO() {
-        return (loop, version) -> {
-
-            final List<LoopEntryDTO> loopEntryDTOs = CollectionUtils.collect(
-                    loop.getEntries(), LoopEntryDTO::new, new ArrayList<>(loop.getEntries().size())
-            );
-
-            return new LoopDTO(version.getDocId(), loop.getIndex(), loopEntryDTOs);
         };
     }
 
@@ -467,7 +437,7 @@ class MappingConfig {
 
             imageFileDTO.setSize(String.valueOf(fileSize) + suffix);
 
-            final Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile);
+            final java.awt.Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile);
 
             if (imageDimension != null) {
                 imageFileDTO.setWidth(imageDimension.width);

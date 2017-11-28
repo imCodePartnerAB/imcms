@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,18 +20,11 @@ import java.util.stream.Collectors;
 public class LoopService {
 
     private final LoopRepository loopRepository;
-    private final BiFunction<LoopJPA, Version, LoopDTO> loopToDtoMapper;
-    private final BiFunction<LoopDTO, Version, LoopJPA> loopDtoToLoop;
     private final VersionService versionService;
 
     @Autowired
-    LoopService(LoopRepository loopRepository,
-                BiFunction<LoopJPA, Version, LoopDTO> loopToDtoMapper,
-                BiFunction<LoopDTO, Version, LoopJPA> loopDtoToLoop,
-                VersionService versionService) {
+    LoopService(LoopRepository loopRepository, VersionService versionService) {
         this.loopRepository = loopRepository;
-        this.loopToDtoMapper = loopToDtoMapper;
-        this.loopDtoToLoop = loopDtoToLoop;
         this.versionService = versionService;
     }
 
@@ -41,13 +33,13 @@ public class LoopService {
         final LoopJPA loop = loopRepository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
 
         return Optional.ofNullable(loop)
-                .map(loop1 -> loopToDtoMapper.apply(loop1, loop1.getVersion()))
+                .map(loop1 -> new LoopDTO(loop1, loop1.getVersion()))
                 .orElse(LoopDTO.empty(docId, loopIndex));
     }
 
     public void saveLoop(LoopDTO loopDTO) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopDTO.getDocId());
-        final LoopJPA loopForSave = loopDtoToLoop.apply(loopDTO, documentWorkingVersion);
+        final LoopJPA loopForSave = new LoopJPA(loopDTO, documentWorkingVersion);
         final Integer loopId = getLoopId(documentWorkingVersion, loopDTO.getIndex());
 
         loopForSave.setId(loopId);
@@ -70,7 +62,7 @@ public class LoopService {
 
     public Collection<LoopDTO> findAllByVersion(Version version) {
         return loopRepository.findByVersion(version).stream()
-                .map(loop1 -> loopToDtoMapper.apply(loop1, loop1.getVersion()))
+                .map(loop1 -> new LoopDTO(loop1, loop1.getVersion()))
                 .collect(Collectors.toSet());
     }
 }

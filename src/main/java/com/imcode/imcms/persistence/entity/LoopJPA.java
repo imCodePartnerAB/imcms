@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -16,7 +16,19 @@ import java.util.List;
 @Table(name = "imcms_text_doc_content_loops")
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class LoopJPA extends VersionedContent {
+public class LoopJPA extends Loop<LoopEntryJPA> {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
+            @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
+    })
+    private Version version;
 
     @Min(1)
     @NotNull
@@ -29,21 +41,22 @@ public class LoopJPA extends VersionedContent {
             joinColumns = @JoinColumn(name = "loop_id")
     )
     @OrderColumn(name = "order_index")
-    private List<LoopEntryJPA> entries = new LinkedList<>();
+    private List<LoopEntryJPA> entries = new ArrayList<>();
 
-    public LoopJPA(Integer id, Version version, Integer index, List<LoopEntryJPA> entries) {
-        setId(id);
-        setVersion(version);
+    private LoopJPA(Integer id, Version version, Integer index, List<LoopEntryJPA> entries) {
+        this.id = id;
+        this.version = version;
         this.index = index;
-        this.entries = new LinkedList<>(entries);
+        this.entries = entries;
     }
 
-    public LoopJPA(Version version, Integer index, List<LoopEntryJPA> entries) {
-        this(null, version, index, entries);
+    public <LE2 extends LoopEntry, L extends Loop<LE2>> LoopJPA(L from, Version version) {
+        super(from, LoopEntryJPA::new);
+        this.version = version;
     }
 
     public static LoopJPA emptyLoop(Version version, Integer index) {
-        return new LoopJPA(version, index, Collections.emptyList());
+        return new LoopJPA(null, version, index, Collections.emptyList());
     }
 
     public boolean containsEntry(int entryIndex) {

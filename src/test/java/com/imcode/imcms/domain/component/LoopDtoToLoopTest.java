@@ -17,20 +17,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Collections;
-import java.util.function.BiFunction;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class LoopDtoToLoopTest {
+
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_LOOP_INDEX = 1;
     private static final int TEST_VERSION_NO = 0;
 
-    @Autowired
-    private BiFunction<LoopDTO, Version, LoopJPA> mapper;
     @Autowired
     private VersionDataInitializer versionDataInitializer;
     @Autowired
@@ -53,6 +51,6 @@ public class LoopDtoToLoopTest {
         final Version workingVersion = versionRepository.findByDocIdAndNo(TEST_DOC_ID, TEST_VERSION_NO);
         final LoopJPA expected = LoopJPA.emptyLoop(workingVersion, TEST_LOOP_INDEX);
 
-        assertEquals(expected, mapper.apply(loopDTO, workingVersion));
+        assertEquals(expected, new LoopJPA(loopDTO, workingVersion));
     }
 }
