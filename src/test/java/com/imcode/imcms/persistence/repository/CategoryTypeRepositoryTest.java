@@ -3,7 +3,7 @@ package com.imcode.imcms.persistence.repository;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
-import com.imcode.imcms.persistence.entity.CategoryType;
+import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,10 +41,10 @@ public class CategoryTypeRepositoryTest {
 
     @Test
     public void findByNameIgnoreCaseExpectedNotNullTest() {
-        final List<CategoryType> types = categoryDataInitializer.getTypes();
+        final List<CategoryTypeJPA> types = categoryDataInitializer.getTypes();
 
         types.stream()
-                .map(CategoryType::getName)
+                .map(CategoryTypeJPA::getName)
                 .map(this::invertCase)
                 .map(categoryTypeRepository::findByNameIgnoreCase)
                 .forEach(Assert::assertNotNull);

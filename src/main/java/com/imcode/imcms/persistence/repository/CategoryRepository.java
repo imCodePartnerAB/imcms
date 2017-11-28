@@ -1,7 +1,7 @@
 package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.persistence.entity.CategoryJPA;
-import com.imcode.imcms.persistence.entity.CategoryType;
+import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,9 +12,9 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<CategoryJPA, Integer> {
 
-    List<CategoryJPA> findByType(CategoryType type);
+    List<CategoryJPA> findByType(CategoryTypeJPA type);
 
-    CategoryJPA findByNameAndType(String name, CategoryType type);
+    CategoryJPA findByNameAndType(String name, CategoryTypeJPA type);
 
     @Query(value = "select meta_id from document_categories where category_id = ?", nativeQuery = true)
     String[] findCategoryDocIds(int categoryId);

@@ -1,12 +1,12 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.persistence.entity.CategoryType;
+import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CategoryTypeRepository extends JpaRepository<CategoryType, Integer> {
+public interface CategoryTypeRepository extends JpaRepository<CategoryTypeJPA, Integer> {
 
-    CategoryType findByNameIgnoreCase(String name);
+    CategoryTypeJPA findByNameIgnoreCase(String name);
 
 }

@@ -29,9 +29,9 @@ public class CategoryJPA extends Category {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "category_type_id", nullable = false)
-    private CategoryType type;
+    private CategoryTypeJPA type;
 
-    public CategoryJPA(String name, String description, String imageUrl, CategoryType type) {
+    public CategoryJPA(String name, String description, String imageUrl, CategoryTypeJPA type) {
         this(null, name, description, imageUrl, type);
     }
 

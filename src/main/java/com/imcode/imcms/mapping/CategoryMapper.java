@@ -2,7 +2,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
-import com.imcode.imcms.persistence.entity.CategoryType;
+import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import imcode.server.document.CategoryDomainObject;
@@ -32,7 +32,7 @@ public class CategoryMapper {
 
 
     public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
-        CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
+        CategoryTypeJPA docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
         List<CategoryJPA> categoryList = categoryRepository.findByType(docCategoryType);
         List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(categoryList.size());
 
@@ -49,10 +49,10 @@ public class CategoryMapper {
     }
 
     public CategoryTypeDomainObject[] getAllCategoryTypes() {
-        List<CategoryType> categoryTypeList = categoryTypeRepository.findAll();
+        List<CategoryTypeJPA> categoryTypeList = categoryTypeRepository.findAll();
         List<CategoryTypeDomainObject> categoryTypeDomainObjectList = new ArrayList<>(categoryTypeList.size());
 
-        for (CategoryType categoryType : categoryTypeList) {
+        for (CategoryTypeJPA categoryType : categoryTypeList) {
             categoryTypeDomainObjectList.add(toDomainObject(categoryType));
         }
 
@@ -61,7 +61,7 @@ public class CategoryMapper {
 
 
     public CategoryDomainObject getCategoryByTypeAndName(CategoryTypeDomainObject categoryType, String categoryName) {
-        CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
+        CategoryTypeJPA docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
         return toDomainObject(categoryRepository.findByNameAndType(categoryName, docCategoryType));
     }
 
@@ -80,13 +80,13 @@ public class CategoryMapper {
 
 
     public void deleteCategoryTypeFromDb(CategoryTypeDomainObject categoryType) {
-        CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
+        CategoryTypeJPA docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
 
         if (docCategoryType != null) categoryTypeRepository.delete(docCategoryType);
     }
 
     public CategoryTypeDomainObject addCategoryTypeToDb(CategoryTypeDomainObject categoryType) {
-        CategoryType docCategoryType = toJpaObject(categoryType);
+        CategoryTypeJPA docCategoryType = toJpaObject(categoryType);
 
         docCategoryType.setId(null);
 
@@ -184,7 +184,7 @@ public class CategoryMapper {
     }
 
 
-    private CategoryTypeDomainObject toDomainObject(CategoryType jpaType) {
+    private CategoryTypeDomainObject toDomainObject(CategoryTypeJPA jpaType) {
         return jpaType == null
                 ? null
                 : new CategoryTypeDomainObject(
@@ -206,8 +206,8 @@ public class CategoryMapper {
                 toDomainObject(jpaCategory.getType()));
     }
 
-    private CategoryType toJpaObject(CategoryTypeDomainObject typeDO) {
-        return new CategoryType(
+    private CategoryTypeJPA toJpaObject(CategoryTypeDomainObject typeDO) {
+        return new CategoryTypeJPA(
                 typeDO.getId(), typeDO.getName(), typeDO.getMaxChoices(), typeDO.isInherited(), typeDO.isImageArchive()
         );
     }

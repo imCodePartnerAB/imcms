@@ -115,7 +115,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<CategoryType, CategoryTypeDTO> categoryTypeToCategoryTypeDTO() {
+    public Function<CategoryTypeJPA, CategoryTypeDTO> categoryTypeToCategoryTypeDTO() {
         return categoryType -> new CategoryTypeDTO(
                 categoryType.getId(),
                 categoryType.getName(),

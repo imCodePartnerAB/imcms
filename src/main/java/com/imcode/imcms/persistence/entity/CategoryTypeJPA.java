@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "category_types")
-public class CategoryType {
+public class CategoryTypeJPA {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,11 +40,11 @@ public class CategoryType {
     @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
     private List<CategoryJPA> categories;
 
-    public CategoryType(String name, int maxChoices, boolean inherited, boolean imageArchive) {
+    public CategoryTypeJPA(String name, int maxChoices, boolean inherited, boolean imageArchive) {
         this(null, name, maxChoices, inherited, imageArchive);
     }
 
-    public CategoryType(Integer id, String name, int maxChoices, boolean inherited, boolean imageArchive) {
+    public CategoryTypeJPA(Integer id, String name, int maxChoices, boolean inherited, boolean imageArchive) {
         this(id, name, maxChoices, inherited, imageArchive, null);
     }
 
