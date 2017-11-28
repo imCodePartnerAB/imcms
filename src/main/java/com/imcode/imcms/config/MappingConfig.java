@@ -171,11 +171,11 @@ class MappingConfig {
         return restrictedPermission -> {
             final RestrictedPermissionDTO permissionDTO = new RestrictedPermissionDTO();
 
-            permissionDTO.setEditDocumentInfo(restrictedPermission.getEditDocInfo());
-            permissionDTO.setEditImage(restrictedPermission.getEditImage());
-            permissionDTO.setEditLoop(restrictedPermission.getEditLoop());
-            permissionDTO.setEditMenu(restrictedPermission.getEditMenu());
-            permissionDTO.setEditText(restrictedPermission.getEditText());
+            permissionDTO.setEditDocumentInfo(restrictedPermission.isEditDocInfo());
+            permissionDTO.setEditImage(restrictedPermission.isEditImage());
+            permissionDTO.setEditLoop(restrictedPermission.isEditLoop());
+            permissionDTO.setEditMenu(restrictedPermission.isEditMenu());
+            permissionDTO.setEditText(restrictedPermission.isEditText());
 
             return permissionDTO;
         };

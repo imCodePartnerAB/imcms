@@ -23,19 +23,19 @@ public class RestrictedPermission {
     @Enumerated(EnumType.STRING)
     private Meta.Permission permission;
 
-    @Column(name = "edit_text", nullable = false)
-    private Boolean editText;
+    @Column(name = "edit_text")
+    private boolean editText;
 
-    @Column(name = "edit_menu", nullable = false)
-    private Boolean editMenu;
+    @Column(name = "edit_menu")
+    private boolean editMenu;
 
-    @Column(name = "edit_image", nullable = false)
-    private Boolean editImage;
+    @Column(name = "edit_image")
+    private boolean editImage;
 
-    @Column(name = "edit_loop", nullable = false)
-    private Boolean editLoop;
+    @Column(name = "edit_loop")
+    private boolean editLoop;
 
-    @Column(name = "edit_doc_info", nullable = false)
-    private Boolean editDocInfo;
+    @Column(name = "edit_doc_info")
+    private boolean editDocInfo;
 
 }
