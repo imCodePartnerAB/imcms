@@ -9,7 +9,6 @@ import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -20,7 +19,6 @@ public class CategoryDataInitializer extends TestDataCleaner {
 
     private final CategoryTypeRepository categoryTypeRepository;
     private final CategoryRepository categoryRepository;
-    private final Function<CategoryTypeJPA, CategoryTypeDTO> categoryTypeMapper;
 
     private List<CategoryTypeJPA> types;
     private List<CategoryJPA> categories;
@@ -28,13 +26,11 @@ public class CategoryDataInitializer extends TestDataCleaner {
     private int elementsCount;
 
     public CategoryDataInitializer(CategoryTypeRepository categoryTypeRepository,
-                                   CategoryRepository categoryRepository,
-                                   Function<CategoryTypeJPA, CategoryTypeDTO> categoryTypeMapper) {
+                                   CategoryRepository categoryRepository) {
 
         super(categoryRepository, categoryTypeRepository);
         this.categoryTypeRepository = categoryTypeRepository;
         this.categoryRepository = categoryRepository;
-        this.categoryTypeMapper = categoryTypeMapper;
     }
 
     public List<CategoryJPA> createData(Integer elementsCount) {
@@ -60,7 +56,7 @@ public class CategoryDataInitializer extends TestDataCleaner {
                 .forEach(i -> types.get(i).setCategories(singletonList(categories.get(i))));
 
         return types.stream()
-                .map(categoryTypeMapper)
+                .map(CategoryTypeDTO::new)
                 .collect(Collectors.toList());
     }
 

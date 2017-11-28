@@ -115,19 +115,6 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<CategoryTypeJPA, CategoryTypeDTO> categoryTypeToCategoryTypeDTO() {
-        return categoryType -> new CategoryTypeDTO(
-                categoryType.getId(),
-                categoryType.getName(),
-                categoryType.isMultiSelect(),
-                categoryType.getCategories()
-                        .stream()
-                        .map(CategoryDTO::new)
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @Bean
     public Function<LoopEntryRefJPA, LoopEntryRefDTO> loopEntryRefToDTO() {
         return loopEntryRef -> (loopEntryRef == null) ? null : new LoopEntryRefDTO(loopEntryRef);
     }

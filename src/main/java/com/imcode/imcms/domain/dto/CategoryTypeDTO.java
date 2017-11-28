@@ -1,5 +1,7 @@
 package com.imcode.imcms.domain.dto;
 
+import com.imcode.imcms.persistence.entity.Category;
+import com.imcode.imcms.persistence.entity.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -8,7 +10,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class CategoryTypeDTO implements Serializable {
+public class CategoryTypeDTO extends CategoryType<CategoryDTO> implements Serializable {
 
     private static final long serialVersionUID = -4636053716188761920L;
 
@@ -20,4 +22,7 @@ public class CategoryTypeDTO implements Serializable {
 
     private List<CategoryDTO> categories;
 
+    public <C2 extends Category, CT extends CategoryType<C2>> CategoryTypeDTO(CT from) {
+        super(from, CategoryDTO::new);
+    }
 }

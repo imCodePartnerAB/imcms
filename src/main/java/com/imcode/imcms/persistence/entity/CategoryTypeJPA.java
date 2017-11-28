@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "category_types")
-public class CategoryTypeJPA {
+public class CategoryTypeJPA extends CategoryType<CategoryJPA> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,10 +55,21 @@ public class CategoryTypeJPA {
      *
      * @return is category type contains one or more categories
      */
+    @Override
     @JsonIgnore
     @Transient
     public boolean isMultiSelect() {
         return maxChoices == 0;
     }
 
+    /**
+     * {@link #maxChoices} = 0 - is multi select
+     * {@link #maxChoices} = 1 - is single select
+     */
+    @Override
+    @JsonIgnore
+    @Transient
+    public void setMultiSelect(boolean multiSelect) {
+        this.maxChoices = (multiSelect) ? 0 : 1;
+    }
 }
