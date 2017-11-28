@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
+import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -11,6 +12,7 @@ import com.imcode.imcms.persistence.entity.Text;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
+import com.imcode.imcms.util.function.TernaryFunction;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 import static com.imcode.imcms.persistence.entity.TextBase.Type.PLAIN_TEXT;
 import static org.junit.Assert.assertEquals;
@@ -55,7 +56,7 @@ public class TextServiceTest {
     private TextRepository textRepository;
 
     @Autowired
-    private Function<Text, TextDTO> textToTextDTO;
+    private TernaryFunction<Text, Version, LanguageDTO, TextDTO> textToTextDTO;
 
     private Version version;
     private List<LanguageJPA> languages;
@@ -89,7 +90,7 @@ public class TextServiceTest {
                 text.setVersion(version);
 
                 textRepository.save(text);
-                textDTOS.add(textToTextDTO.apply(text));
+                textDTOS.add(textToTextDTO.apply(text, text.getVersion(), new LanguageDTO(text.getLanguage())));
             }
         }
 
@@ -115,7 +116,7 @@ public class TextServiceTest {
                 text.setType(PLAIN_TEXT);
 
                 textRepository.save(text);
-                textDTOS.add(textToTextDTO.apply(text));
+                textDTOS.add(textToTextDTO.apply(text, text.getVersion(), new LanguageDTO(text.getLanguage())));
             }
         }
 

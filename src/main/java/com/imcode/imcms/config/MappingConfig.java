@@ -420,14 +420,14 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<Text, TextDTO> textToTextDTO() {
-        return text -> {
+    public TernaryFunction<Text, Version, LanguageDTO, TextDTO> textToTextDTO() {
+        return (text, version, language) -> {
             final TextDTO textDTO = new TextDTO();
 
-            textDTO.setDocId(text.getVersion().getDocId());
+            textDTO.setDocId(version.getDocId());
             textDTO.setIndex(text.getIndex());
             Optional.ofNullable(text.getLoopEntryRef()).map(LoopEntryRefDTO::new).ifPresent(textDTO::setLoopEntryRef);
-            textDTO.setLangCode(text.getLanguage().getCode());
+            textDTO.setLangCode(language.getCode());
             textDTO.setText(text.getText());
             textDTO.setType(text.getType());
 

@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.core.VersionService;
@@ -22,13 +23,13 @@ public class TextService {
     private final TextRepository textRepository;
     private final LanguageService languageService;
     private final VersionService versionService;
-    private final Function<Text, TextDTO> textToTextDTO;
+    private final TernaryFunction<Text, Version, LanguageDTO, TextDTO> textToTextDTO;
     private final TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText;
 
     TextService(TextRepository textRepository,
                 LanguageService languageService,
                 VersionService versionService,
-                Function<Text, TextDTO> textToTextDTO,
+                TernaryFunction<Text, Version, LanguageDTO, TextDTO> textToTextDTO,
                 TernaryFunction<TextDTO, Version, LanguageJPA, Text> textDtoToText) {
 
         this.textRepository = textRepository;
@@ -73,7 +74,7 @@ public class TextService {
         final Text text = getText(index, version, language, loopEntryRefDTO);
 
         return Optional.ofNullable(text)
-                .map(textToTextDTO)
+                .map(text1 -> textToTextDTO.apply(text1, text1.getVersion(), new LanguageDTO(text1.getLanguage())))
                 .orElse(new TextDTO(index, docId, langCode, loopEntryRefDTO));
     }
 

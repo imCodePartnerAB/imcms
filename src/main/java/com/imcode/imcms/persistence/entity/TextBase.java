@@ -4,15 +4,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @MappedSuperclass
-public class TextBase extends VersionedI18nContent {
+public class TextBase {
 
     @NotNull
     @Column(name = "`index`")
@@ -25,6 +24,23 @@ public class TextBase extends VersionedI18nContent {
     private String text;
 
     private LoopEntryRefJPA loopEntryRef;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "language_id")
+    private LanguageJPA language;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
+            @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
+    })
+    private Version version;
 
     public enum Type {
         PLAIN_TEXT, HTML
