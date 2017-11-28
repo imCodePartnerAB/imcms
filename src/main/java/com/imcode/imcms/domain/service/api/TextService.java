@@ -68,11 +68,14 @@ public class TextService {
     }
 
     private TextJPA getText(int index, Version version, LanguageJPA language, LoopEntryRefDTO loopEntryRefDTO) {
-        final Optional<LoopEntryRefJPA> oLoopEntryRef = Optional.ofNullable(loopEntryRefDTO).map(LoopEntryRefJPA::new);
-
-        return (oLoopEntryRef.isPresent())
-                ? textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, oLoopEntryRef.get())
-                : textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index);
+        return Optional.ofNullable(loopEntryRefDTO)
+                .map(LoopEntryRefJPA::new)
+                .map(loopEntryRef -> textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
+                        version, language, index, loopEntryRef
+                ))
+                .orElseGet(() -> textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
+                        version, language, index
+                ));
     }
 
     private Integer getTextId(TextDTO textDTO, Version version, LanguageJPA language) {
