@@ -16,7 +16,7 @@ public class CategoryTypeDTO implements Serializable {
 
     private String name;
 
-    private Boolean multiSelect;
+    private boolean multiSelect;
 
     private List<CategoryDTO> categories;
 
