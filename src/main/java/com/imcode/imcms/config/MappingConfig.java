@@ -162,32 +162,10 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<RestrictedPermissionJPA, PermissionDTO> restrictedPermissionToPermissionDTO() {
-        return restrictedPermission -> PermissionDTO.fromPermission(restrictedPermission.getPermission());
-    }
-
-    @Bean
-    public Function<RestrictedPermissionJPA, RestrictedPermissionDTO> restrictedPermissionToDto() {
-        return restrictedPermission -> {
-            final RestrictedPermissionDTO permissionDTO = new RestrictedPermissionDTO();
-
-            permissionDTO.setEditDocumentInfo(restrictedPermission.isEditDocInfo());
-            permissionDTO.setEditImage(restrictedPermission.isEditImage());
-            permissionDTO.setEditLoop(restrictedPermission.isEditLoop());
-            permissionDTO.setEditMenu(restrictedPermission.isEditMenu());
-            permissionDTO.setEditText(restrictedPermission.isEditText());
-
-            return permissionDTO;
-        };
-    }
-
-    @Bean
-    public Function<Set<RestrictedPermissionJPA>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO(
-            Function<RestrictedPermissionJPA, PermissionDTO> restrictedPermissionToPermissionDTO,
-            Function<RestrictedPermissionJPA, RestrictedPermissionDTO> restrictedPermissionToRestrictedPermissionDTO
-    ) {
+    public Function<Set<RestrictedPermissionJPA>, Map<PermissionDTO, RestrictedPermissionDTO>>
+    restrictedPermissionsToDTO() {
         return restrictedPermissions -> restrictedPermissions.stream().collect(
-                Collectors.toMap(restrictedPermissionToPermissionDTO, restrictedPermissionToRestrictedPermissionDTO)
+                Collectors.toMap(PermissionDTO::fromRestrictedPermission, RestrictedPermissionDTO::new)
         );
     }
 
@@ -197,19 +175,10 @@ class MappingConfig {
         return restrictedPermissions -> restrictedPermissions.entrySet()
                 .stream()
                 .map(permissionDtoToRestrictedDto -> {
-                    final PermissionDTO permissionDTO = permissionDtoToRestrictedDto.getKey();
                     final RestrictedPermissionDTO restrictedPermissionDTO = permissionDtoToRestrictedDto.getValue();
+                    final Meta.Permission permission = permissionDtoToRestrictedDto.getKey().getPermission();
 
-                    final RestrictedPermissionJPA restrictedPermission = new RestrictedPermissionJPA();
-
-                    restrictedPermission.setPermission(permissionDTO.getPermission());
-                    restrictedPermission.setEditDocInfo(restrictedPermissionDTO.isEditDocumentInfo());
-                    restrictedPermission.setEditImage(restrictedPermissionDTO.isEditImage());
-                    restrictedPermission.setEditLoop(restrictedPermissionDTO.isEditLoop());
-                    restrictedPermission.setEditMenu(restrictedPermissionDTO.isEditMenu());
-                    restrictedPermission.setEditText(restrictedPermissionDTO.isEditText());
-
-                    return restrictedPermission;
+                    return new RestrictedPermissionJPA(restrictedPermissionDTO, permission);
                 })
                 .collect(Collectors.toSet());
     }

@@ -420,14 +420,14 @@ public class DocumentServiceTest {
         final HashMap<PermissionDTO, RestrictedPermissionDTO> restrictedPermissions = new HashMap<>();
 
         final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
-        restricted1.setEditDocumentInfo(true);
+        restricted1.setEditDocInfo(true);
         restricted1.setEditImage(false);
         restricted1.setEditLoop(true);
         restricted1.setEditMenu(false);
         restricted1.setEditText(true);
 
         final RestrictedPermissionDTO restricted2 = new RestrictedPermissionDTO();
-        restricted2.setEditDocumentInfo(false);
+        restricted2.setEditDocInfo(false);
         restricted2.setEditImage(true);
         restricted2.setEditLoop(false);
         restricted2.setEditMenu(true);

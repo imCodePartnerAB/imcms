@@ -1,5 +1,6 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.persistence.entity.Meta.Permission;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,18 +11,18 @@ import javax.persistence.*;
  *
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 14.11.17.
- * @see com.imcode.imcms.persistence.entity.Meta.Permission#RESTRICTED_1
- * @see com.imcode.imcms.persistence.entity.Meta.Permission#RESTRICTED_2
+ * @see Permission#RESTRICTED_1
+ * @see Permission#RESTRICTED_2
  */
 @Data
 @Embeddable
 @NoArgsConstructor
 @Table(name = "imcms_doc_restricted_permissions")
-public class RestrictedPermissionJPA {
+public class RestrictedPermissionJPA extends RestrictedPermission {
 
     @Column(columnDefinition = "VARCHAR(16)")
     @Enumerated(EnumType.STRING)
-    private Meta.Permission permission;
+    private Permission permission;
 
     @Column(name = "edit_text")
     private boolean editText;
@@ -38,4 +39,8 @@ public class RestrictedPermissionJPA {
     @Column(name = "edit_doc_info")
     private boolean editDocInfo;
 
+    public RestrictedPermissionJPA(RestrictedPermission from, Permission permission) {
+        super(from);
+        this.permission = permission;
+    }
 }

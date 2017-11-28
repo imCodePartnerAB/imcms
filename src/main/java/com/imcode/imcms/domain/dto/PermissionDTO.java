@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.persistence.entity.Meta.Permission;
+import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 
 import java.io.Serializable;
 
@@ -80,5 +81,9 @@ public enum PermissionDTO implements Serializable {
 
     public boolean isAtLeastAsPrivilegedAs(PermissionDTO type) {
         return this.permission.isAtLeastAsPrivilegedAs(type.permission);
+    }
+
+    public static PermissionDTO fromRestrictedPermission(RestrictedPermissionJPA restrictedPermission) {
+        return fromPermission(restrictedPermission.getPermission());
     }
 }
