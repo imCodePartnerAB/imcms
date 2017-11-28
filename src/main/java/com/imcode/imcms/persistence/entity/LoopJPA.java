@@ -1,21 +1,18 @@
 package com.imcode.imcms.persistence.entity;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Data
 @Entity
-@Table(name = "imcms_text_doc_content_loops")
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@Table(name = "imcms_text_doc_content_loops")
 public class LoopJPA extends Loop<LoopEntryJPA> {
 
     @Id
@@ -41,7 +38,7 @@ public class LoopJPA extends Loop<LoopEntryJPA> {
             joinColumns = @JoinColumn(name = "loop_id")
     )
     @OrderColumn(name = "order_index")
-    private List<LoopEntryJPA> entries = new ArrayList<>();
+    private List<LoopEntryJPA> entries;
 
     private LoopJPA(Integer id, Version version, Integer index, List<LoopEntryJPA> entries) {
         this.id = id;
