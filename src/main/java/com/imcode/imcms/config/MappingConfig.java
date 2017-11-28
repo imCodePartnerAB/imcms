@@ -162,12 +162,12 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<RestrictedPermission, PermissionDTO> restrictedPermissionToPermissionDTO() {
+    public Function<RestrictedPermissionJPA, PermissionDTO> restrictedPermissionToPermissionDTO() {
         return restrictedPermission -> PermissionDTO.fromPermission(restrictedPermission.getPermission());
     }
 
     @Bean
-    public Function<RestrictedPermission, RestrictedPermissionDTO> restrictedPermissionToDto() {
+    public Function<RestrictedPermissionJPA, RestrictedPermissionDTO> restrictedPermissionToDto() {
         return restrictedPermission -> {
             final RestrictedPermissionDTO permissionDTO = new RestrictedPermissionDTO();
 
@@ -182,9 +182,9 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<Set<RestrictedPermission>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO(
-            Function<RestrictedPermission, PermissionDTO> restrictedPermissionToPermissionDTO,
-            Function<RestrictedPermission, RestrictedPermissionDTO> restrictedPermissionToRestrictedPermissionDTO
+    public Function<Set<RestrictedPermissionJPA>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO(
+            Function<RestrictedPermissionJPA, PermissionDTO> restrictedPermissionToPermissionDTO,
+            Function<RestrictedPermissionJPA, RestrictedPermissionDTO> restrictedPermissionToRestrictedPermissionDTO
     ) {
         return restrictedPermissions -> restrictedPermissions.stream().collect(
                 Collectors.toMap(restrictedPermissionToPermissionDTO, restrictedPermissionToRestrictedPermissionDTO)
@@ -192,7 +192,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermission>>
+    public Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermissionJPA>>
     restrictedPermissionsDtoToRestrictedPermissions() {
         return restrictedPermissions -> restrictedPermissions.entrySet()
                 .stream()
@@ -200,7 +200,7 @@ class MappingConfig {
                     final PermissionDTO permissionDTO = permissionDtoToRestrictedDto.getKey();
                     final RestrictedPermissionDTO restrictedPermissionDTO = permissionDtoToRestrictedDto.getValue();
 
-                    final RestrictedPermission restrictedPermission = new RestrictedPermission();
+                    final RestrictedPermissionJPA restrictedPermission = new RestrictedPermissionJPA();
 
                     restrictedPermission.setPermission(permissionDTO.getPermission());
                     restrictedPermission.setEditDocInfo(restrictedPermissionDTO.isEditDocumentInfo());
@@ -238,7 +238,7 @@ class MappingConfig {
     @Bean
     public Function<DocumentDTO, Meta> documentDtoToMeta(
             Function<Set<RoleDTO>, Map<Integer, Meta.Permission>> rolesDtoToRoleIdByPermission,
-            Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermission>>
+            Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermissionJPA>>
                     restrictedPermissionsDtoToRestrictedPermissions
     ) {
         return documentDTO -> {
@@ -301,7 +301,7 @@ class MappingConfig {
 
     @Bean
     public TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> documentMapping(
-            Function<Set<RestrictedPermission>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO,
+            Function<Set<RestrictedPermissionJPA>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO,
             Function<Map<Integer, Meta.Permission>, Set<RoleDTO>> roleIdByPermissionToRoleDTOs,
             CategoryService categoryService,
             UserService userService,

@@ -17,7 +17,7 @@ import javax.persistence.*;
 @Embeddable
 @NoArgsConstructor
 @Table(name = "imcms_doc_restricted_permissions")
-public class RestrictedPermission {
+public class RestrictedPermissionJPA {
 
     @Column(columnDefinition = "VARCHAR(16)")
     @Enumerated(EnumType.STRING)

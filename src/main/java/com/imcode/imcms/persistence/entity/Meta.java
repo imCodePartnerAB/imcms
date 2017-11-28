@@ -120,7 +120,7 @@ public class Meta implements Serializable {
             joinColumns = @JoinColumn(name = "meta_id")
     )
     @OrderColumn(name = "order_index")
-    private Set<RestrictedPermission> restrictedPermissions = new HashSet<>();
+    private Set<RestrictedPermissionJPA> restrictedPermissions = new HashSet<>();
 
     /**
      * DocumentType database column has int value. It takes from {@link Enum#ordinal}.
