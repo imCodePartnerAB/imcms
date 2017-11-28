@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public abstract class CategoryType<C extends Category> {
 
-    public <C2 extends Category, CT extends CategoryType<C2>> CategoryType(CT from, Function<C2, C> categoryMapper) {
+    protected <C2 extends Category, CT extends CategoryType<C2>> CategoryType(CT from, Function<C2, C> categoryMapper) {
         setId(from.getId());
         setName(from.getName());
         setMultiSelect(from.isMultiSelect());

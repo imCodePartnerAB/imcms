@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public abstract class Template {
 
-    public Template(Template templateFrom) {
+    protected Template(Template templateFrom) {
         setId(templateFrom.getId());
         setName(templateFrom.getName());
         setHidden(templateFrom.isHidden());

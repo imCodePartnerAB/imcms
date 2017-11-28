@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public abstract class LoopEntryRef {
 
-    public LoopEntryRef(LoopEntryRef from) {
+    protected LoopEntryRef(LoopEntryRef from) {
         setLoopIndex(from.getLoopIndex());
         setLoopEntryIndex(from.getLoopEntryIndex());
     }

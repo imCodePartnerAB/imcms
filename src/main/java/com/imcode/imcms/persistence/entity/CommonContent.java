@@ -3,9 +3,9 @@ package com.imcode.imcms.persistence.entity;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public abstract class CommonContent<Language> {
+public abstract class CommonContent<Lang extends Language> {
 
-    protected <CommonContent1 extends CommonContent> CommonContent(CommonContent1 from, Language language) {
+    protected <CommonContent1 extends CommonContent> CommonContent(CommonContent1 from, Lang language) {
         setId(from.getId());
         setDocId(from.getDocId());
         setHeadline(from.getHeadline());
@@ -28,9 +28,9 @@ public abstract class CommonContent<Language> {
 
     public abstract void setHeadline(String headline);
 
-    public abstract Language getLanguage();
+    public abstract Lang getLanguage();
 
-    public abstract void setLanguage(Language language);
+    public abstract void setLanguage(Lang language);
 
     public abstract String getMenuText();
 

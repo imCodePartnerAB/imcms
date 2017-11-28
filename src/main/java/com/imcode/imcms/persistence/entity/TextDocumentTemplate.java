@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public abstract class TextDocumentTemplate {
 
-    public TextDocumentTemplate(TextDocumentTemplate createFrom) {
+    protected TextDocumentTemplate(TextDocumentTemplate createFrom) {
         setDocId(createFrom.getDocId());
         setTemplateName(createFrom.getTemplateName());
         setChildrenTemplateName(createFrom.getChildrenTemplateName());

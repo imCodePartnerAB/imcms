@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public abstract class Loop<LE extends LoopEntry> {
 
-    public <LE2 extends LoopEntry, L extends Loop<LE2>> Loop(L from, Function<LE2, LE> entryMapper) {
+    protected <LE2 extends LoopEntry, L extends Loop<LE2>> Loop(L from, Function<LE2, LE> entryMapper) {
         setIndex(from.getIndex());
         setEntries(from.getEntries().stream().map(entryMapper).collect(Collectors.toList()));
     }
