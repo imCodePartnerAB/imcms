@@ -35,13 +35,13 @@ Imcms.define("imcms-page-info-builder",
                 }
             }
 
-            var $tabs = pageInfoTabs.tabBuilders.map(function (tabData, index) {
+            var $tabs = pageInfoTabs.tabBuilders.map(function (tabBuilder, index) {
                 return {
                     tag: "<div>",
                     "class": "imcms-title",
                     attributes: {
                         "data-window-id": index,
-                        text: tabData.name,
+                        text: tabBuilder.name,
                         click: getOnTabClick(index)
                     },
                     modifiers: (index === 0 ? ["active"] : [])
@@ -64,8 +64,8 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function buildPageInfoPanels(docId) {
-            return pageInfoTabs.tabBuilders.map(function (tabData, index) {
-                return tabData.buildTab(index, docId).css("display", (index === 0 ? "block" : "none"));
+            return pageInfoTabs.tabBuilders.map(function (tabBuilder, index) {
+                return tabBuilder.buildTab(index, docId).css("display", (index === 0 ? "block" : "none"));
             });
         }
 
