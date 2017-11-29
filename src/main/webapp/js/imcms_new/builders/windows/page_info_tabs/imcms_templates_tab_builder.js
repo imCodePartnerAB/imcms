@@ -44,18 +44,24 @@ Imcms.define("imcms-templates-tab-builder",
                 return tabContentBuilder.buildFormBlock(blockElements, index);
             },
             fillTabDataFromDocument: function (document) {
-                var templatesTab = this.data;
-
                 if (document.template) {
-                    templatesTab.$templateSelect.selectValue(document.template.templateName);
-                    templatesTab.$defaultChildTemplateSelect.selectValue(document.template.childrenTemplateName);
+                    this.data.$templateSelect.selectValue(document.template.templateName);
+                    this.data.$defaultChildTemplateSelect.selectValue(document.template.childrenTemplateName);
                 }
             },
-            clearTabData: function () {
-                var templatesTab = this.data;
+            saveData: function (documentDTO) {
+                if (!documentDTO.template) {
+                    return documentDTO;
+                }
 
-                templatesTab.$templateSelect.selectFirst();
-                templatesTab.$defaultChildTemplateSelect.selectFirst();
+                documentDTO.template.templateName = this.data.$templateSelect.getSelectedValue();
+                documentDTO.template.childrenTemplateName = this.data.$defaultChildTemplateSelect.getSelectedValue();
+
+                return documentDTO;
+            },
+            clearTabData: function () {
+                this.data.$templateSelect.selectFirst();
+                this.data.$defaultChildTemplateSelect.selectFirst();
             }
         };
     }
