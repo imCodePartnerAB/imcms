@@ -10,18 +10,18 @@ Imcms.define("imcms-permissions-tab-builder",
 
         var restrictedPermissions = [RESTRICTED_1, RESTRICTED_2];
 
-        var edit_text = "edit_text",
-            edit_menu = "edit_menu",
-            edit_image = "edit_image",
-            edit_loop = "edit_loop",
-            edit_doc_info = "edit_doc_info";
+        var editText = "editText",
+            editMenu = "editMenu",
+            editImage = "editImage",
+            editLoop = "editLoop",
+            editDocInfo = "editDocInfo";
 
         var exactPermissions = [
-            edit_text,
-            edit_menu,
-            edit_image,
-            edit_loop,
-            edit_doc_info
+            editText,
+            editMenu,
+            editImage,
+            editLoop,
+            editDocInfo
         ];
 
         var tabData = {};
@@ -31,19 +31,19 @@ Imcms.define("imcms-permissions-tab-builder",
             buildTab: function (index) {
                 function createRestrictedCheckboxesDependingOnIndex(permissionSetName) {
                     return mapCheckboxesFromAttributesArray([{
-                        name: edit_text + "_" + permissionSetName,
+                        name: editText + "_" + permissionSetName,
                         text: "Edit text"
                     }, {
-                        name: edit_menu + "_" + permissionSetName,
+                        name: editMenu + "_" + permissionSetName,
                         text: "Edit menu"
                     }, {
-                        name: edit_image + "_" + permissionSetName,
+                        name: editImage + "_" + permissionSetName,
                         text: "Edit image"
                     }, {
-                        name: edit_loop + "_" + permissionSetName,
+                        name: editLoop + "_" + permissionSetName,
                         text: "Edit loop"
                     }, {
-                        name: edit_doc_info + "_" + permissionSetName,
+                        name: editDocInfo + "_" + permissionSetName,
                         text: "Edit doc info"
                     }]);
                 }
