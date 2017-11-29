@@ -109,7 +109,7 @@ Imcms.define("imcms-selects-builder",
             return selectBEM.makeBlockElement("drop-down-list", $dropDownList);
         }
 
-        function createSelectValue($resultImcmsSelect, $selectedValInput) {
+        function bindSelectValue($resultImcmsSelect, $selectedValInput) {
             return function (value) {
                 var $selectCandidate = $resultImcmsSelect.find("[data-value='" + value + "']");
 
@@ -125,7 +125,7 @@ Imcms.define("imcms-selects-builder",
             }
         }
 
-        function createSelectFirst($resultImcmsSelect) {
+        function bindSelectFirst($resultImcmsSelect) {
             return function () {
                 var $selectCandidate = $resultImcmsSelect.find(DROP_DOWN_LIST__ITEMS__CLASS_$)
                     .find(DROP_DOWN_LIST__ITEM__CLASS_$).first();
@@ -141,25 +141,25 @@ Imcms.define("imcms-selects-builder",
             }
         }
 
-        function createGetSelect($select) {
+        function bindGetSelect($select) {
             return function () {
                 return $select;
             }
         }
 
-        function createGetSelectedValue($input) {
+        function bindGetSelectedValue($input) {
             return function () {
                 return $input.val();
             }
         }
 
-        function createSelectedText($input) {
+        function bindSelectedText($input) {
             return function () {
                 return $input.data("content");
             }
         }
 
-        function createClearSelect($resultImcmsSelect, $input) {
+        function bindClearSelect($resultImcmsSelect, $input) {
             return function () {
                 $input.val("");
                 $input.removeProp("data-content");
@@ -167,14 +167,14 @@ Imcms.define("imcms-selects-builder",
             }
         }
 
-        function createDeleteOption($resultImcmsSelect) {
+        function bindDeleteOption($resultImcmsSelect) {
             return function (optionValue) {
                 return $resultImcmsSelect.find("[data-value='" + optionValue + "']").detach();
 
             }
         }
 
-        function createHasOptions($resultImcmsSelect) {
+        function bindHasOptions($resultImcmsSelect) {
             return function () {
                 return $resultImcmsSelect.find("[data-value]").length > 0;
             }
@@ -216,13 +216,13 @@ Imcms.define("imcms-selects-builder",
                     (attributes["class"] ? {"class": attributes["class"]} : {})
                 ).append($selectElements);
 
-                $resultImcmsSelect.selectValue = createSelectValue($resultImcmsSelect, $selectedValInput);
-                $resultImcmsSelect.selectFirst = createSelectFirst($resultImcmsSelect);
-                $resultImcmsSelect.getSelectedValue = createGetSelectedValue($selectedValInput);
-                $resultImcmsSelect.selectedText = createSelectedText($selectedValInput);
-                $resultImcmsSelect.clearSelect = createClearSelect($resultImcmsSelect, $selectedValInput);
-                $resultImcmsSelect.deleteOption = createDeleteOption($resultImcmsSelect);
-                $resultImcmsSelect.hasOptions = createHasOptions($resultImcmsSelect);
+                $resultImcmsSelect.selectValue = bindSelectValue($resultImcmsSelect, $selectedValInput);
+                $resultImcmsSelect.selectFirst = bindSelectFirst($resultImcmsSelect);
+                $resultImcmsSelect.getSelectedValue = bindGetSelectedValue($selectedValInput);
+                $resultImcmsSelect.selectedText = bindSelectedText($selectedValInput);
+                $resultImcmsSelect.clearSelect = bindClearSelect($resultImcmsSelect, $selectedValInput);
+                $resultImcmsSelect.deleteOption = bindDeleteOption($resultImcmsSelect);
+                $resultImcmsSelect.hasOptions = bindHasOptions($resultImcmsSelect);
 
                 return $resultImcmsSelect;
             },
@@ -243,7 +243,7 @@ Imcms.define("imcms-selects-builder",
                 var $select = this.imcmsSelect("<div>", attributes, options),
                     resultContainer = fieldBEM.buildBlock("<div>", [$select], (clas ? {"class": clas} : {}), "select");
 
-                resultContainer.getSelect = createGetSelect($select);
+                resultContainer.getSelect = bindGetSelect($select);
 
                 return resultContainer;
             }
