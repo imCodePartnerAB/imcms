@@ -9,7 +9,7 @@ Imcms.define("imcms-page-info-builder",
     ],
     function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $) {
 
-        var panels, $title;
+        var panels, $title, documentDTO;
 
         function buildPageInfoHead() {
             return new BEM({
@@ -75,8 +75,8 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function saveAndClose() {
-            // todo: save things
             closePageInfo();
+            documentsRestApi.create(documentDTO);
         }
 
         function saveAndPublish() {
@@ -119,6 +119,7 @@ Imcms.define("imcms-page-info-builder",
 
         function loadPageInfoDataFromDocumentBy(docId) {
             documentsRestApi.read({docId: docId}).done(function (document) {
+                documentDTO = document;
                 $title.text("document " + document.id);
 
                 pageInfoTabs.tabBuilders.forEach(function (tab) {
