@@ -15,6 +15,8 @@ Imcms.define("imcms-appearance-tab-builder",
         var tabData = {};
 
         function buildCommonContents(commonContents) {
+            tabData.commonContents = [];
+
             return commonContents.map(buildDocumentCommonContent).reduce(function (cc1, cc2) {
                 return cc1.concat(cc2);
             });
