@@ -147,7 +147,7 @@ Imcms.define("imcms-selects-builder",
             }
         }
 
-        function createSelectedValue($input) {
+        function createGetSelectedValue($input) {
             return function () {
                 return $input.val();
             }
@@ -211,7 +211,7 @@ Imcms.define("imcms-selects-builder",
 
                 $resultImcmsSelect.selectValue = createSelectValue($resultImcmsSelect, $selectedValInput);
                 $resultImcmsSelect.selectFirst = createSelectFirst($resultImcmsSelect);
-                $resultImcmsSelect.selectedValue = createSelectedValue($selectedValInput);
+                $resultImcmsSelect.getSelectedValue = createGetSelectedValue($selectedValInput);
                 $resultImcmsSelect.selectedText = createSelectedText($selectedValInput);
                 $resultImcmsSelect.clearSelect = createClearSelect($resultImcmsSelect, $selectedValInput);
                 $resultImcmsSelect.deleteOption = createDeleteOption($resultImcmsSelect);

@@ -92,7 +92,7 @@ Imcms.define("imcms-access-tab-builder",
                 var $addRoleButton = components.buttons.neutralButton({
                         text: "Add role",
                         click: function () {
-                            var id = $addRoleSelect.selectedValue();
+                            var id = $addRoleSelect.getSelectedValue();
                             var role = {
                                 id: id,
                                 name: $addRoleSelect.selectedText()
