@@ -3,7 +3,7 @@ Imcms.define("imcms-keywords-tab-builder",
         "imcms-bem-builder", "imcms-components-builder",
         "imcms-page-info-tabs-linker"
     ],
-    function (BEM, components, linker) {
+    function (BEM, components, tabContentBuilder) {
 
         return {
             name: "keywords",
@@ -24,7 +24,7 @@ Imcms.define("imcms-keywords-tab-builder",
                     this.data.$searchDisableCheckbox
                 ]);
 
-                return linker.buildFormBlock([this.data.$keywordsBox, $checkboxField], index);
+                return tabContentBuilder.buildFormBlock([this.data.$keywordsBox, $checkboxField], index);
             },
             fillTabDataFromDocument: function (document) {
                 document.keywords.forEach(this.data.$keywordsBox.addKeyword);
