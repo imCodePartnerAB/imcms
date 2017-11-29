@@ -38,7 +38,7 @@ Imcms.define("imcms-appearance-tab-builder",
                 $pageTitleContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-box": $pageTitle}]),
                 $menuText = components.texts.textArea("<div>", {
                     text: "Menu text",
-                    value: commonContent.menuText,
+                    html: commonContent.menuText,
                     name: "menu-text"
                 }),
                 $menuTextContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-area": $menuText}]),
