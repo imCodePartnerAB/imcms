@@ -104,8 +104,14 @@ Imcms.define("imcms-appearance-tab-builder",
             },
 
             fillTabDataFromDocument: function (document) {
-                var documentCommonContents = buildCommonContents(document.commonContents);
-                tabData.$result.prepend(documentCommonContents);
+                if (tabData.commonContentElements) {
+                    tabData.commonContentElements.forEach(function ($element) {
+                        $element.detach();
+                    });
+                }
+
+                tabData.commonContentElements = buildCommonContents(document.commonContents);
+                tabData.$result.prepend(tabData.commonContentElements);
                 tabData.$showIn.selectValue(document.target);
                 tabData.$documentAlias.setValue(document.alias);
             },
