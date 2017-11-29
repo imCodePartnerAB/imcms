@@ -216,6 +216,30 @@ Imcms.define("imcms-access-tab-builder",
                 }
             },
 
+            saveData: function (documentDTO) {
+                documentDTO.roles = tabData.$rolesBody.find("[data-role-id]")
+                    .toArray()
+                    .map(function (roleRow) {
+                        var $roleRow = $(roleRow);
+
+                        var radios$ = $roleRow.find(".imcms-radio")
+                            .map(function () {
+                                return $(this);
+                            })
+                            .toArray();
+
+                        var permission = components.radios.group.apply(components.radios, radios$).getCheckedValue();
+
+                        return {
+                            id: $roleRow.data("roleId"),
+                            name: $roleRow.text(),
+                            permission: permission
+                        };
+                    });
+
+                return documentDTO;
+            },
+
             clearTabData: function () {
                 tabData.$rolesBody.empty();
                 tabData.$rolesField.css("display", "none");
