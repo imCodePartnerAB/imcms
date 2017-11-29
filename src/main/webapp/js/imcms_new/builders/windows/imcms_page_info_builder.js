@@ -75,6 +75,10 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function saveAndClose() {
+            pageInfoTabs.tabBuilders.forEach(function (tabBuilder) {
+                documentDTO = tabBuilder.saveData(documentDTO);
+            });
+
             closePageInfo();
             documentsRestApi.create(documentDTO);
         }
