@@ -1,9 +1,12 @@
-<%@ page import="com.imcode.imcms.api.DocumentLanguage" %>
-    <%@ page import="com.imcode.imcms.servlet.Version" %>
-    <%@ page import="imcode.server.Imcms "%>
-    <%@ page import="imcode.server.document.DocumentDomainObject" %>
-    <%@ page contentType="text/javascript" pageEncoding="UTF-8"	%>
-    <%
+<%@ page
+     import="com.imcode.imcms.api.DocumentLanguage"
+     import="com.imcode.imcms.servlet.Version"
+     import="imcode.server.Imcms"
+     import="imcode.server.document.DocumentDomainObject"
+     contentType="text/javascript"
+     pageEncoding="UTF-8"
+
+     %><%
 
     final Integer metaId = Integer.parseInt(request.getParameter("meta_id"));
 	final DocumentDomainObject document =  Imcms.getServices().getDocumentMapper().getDocument(metaId);
