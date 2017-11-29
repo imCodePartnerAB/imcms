@@ -142,7 +142,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
             tabData.$showDefaultLang = components.radios.imcmsRadio("<div>", {
                 text: "Show in default language if enabled",
                 name: "langSetting",
-                value: "SHOW_DEFAULT",
+                value: "SHOW_IN_DEFAULT_LANGUAGE",
                 checked: "checked" // default value
             });
             tabData.$doNotShow = components.radios.imcmsRadio("<div>", {
