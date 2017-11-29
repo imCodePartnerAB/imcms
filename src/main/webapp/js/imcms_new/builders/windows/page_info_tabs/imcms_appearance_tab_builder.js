@@ -53,6 +53,7 @@ Imcms.define("imcms-appearance-tab-builder",
             tabData.commonContents = tabData.commonContents || [];
 
             tabData.commonContents.push({
+                name: commonContent.language.name,
                 checkbox: $checkbox,
                 pageTitle: $pageTitle,
                 menuText: $menuText,
@@ -63,7 +64,9 @@ Imcms.define("imcms-appearance-tab-builder",
         }
 
         return {
+
             name: "appearance",
+
             buildTab: function (index) {
                 tabData.$showIn = components.selects.imcmsSelect("<div>", {
                     id: "show-in",
@@ -99,12 +102,34 @@ Imcms.define("imcms-appearance-tab-builder",
 
                 return $result;
             },
+
             fillTabDataFromDocument: function (document) {
                 var documentCommonContents = buildCommonContents(document.commonContents);
                 tabData.$result.prepend(documentCommonContents);
                 tabData.$showIn.selectValue(document.target);
                 tabData.$documentAlias.setValue(document.alias);
             },
+
+            saveData: function (documentDTO) {
+                documentDTO.commonContents.forEach(function (docCommonContent) {
+                    tabData.commonContents.forEach(function (commonContent) {
+
+                        if (docCommonContent.language.name !== commonContent.name) {
+                            // I can't come up with better solution than double forEach
+                            return;
+                        }
+
+                        docCommonContent.enabled = commonContent.checkbox.isChecked();
+                        docCommonContent.headline = commonContent.pageTitle.getValue();
+                        docCommonContent.menuText = commonContent.menuText.getValue();
+                        docCommonContent.menuImageURL = commonContent.linkToImage.getValue();
+                    });
+                });
+
+                documentDTO.alias = tabData.$documentAlias.getValue();
+                documentDTO.target = tabData.$showIn.getSelectedValue();
+            },
+
             clearTabData: function () {
                 var emptyString = '';
 
