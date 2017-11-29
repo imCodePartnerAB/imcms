@@ -89,7 +89,7 @@ Imcms.define("imcms-date-picker",
 
         }
 
-        function getDateSetter($dateBoxContainer) {
+        function bindDateSetter($dateBoxContainer) {
             return function (date) {
                 return $dateBoxContainer.find(".imcms-current-date__input")
                     .val(date)
@@ -97,10 +97,17 @@ Imcms.define("imcms-date-picker",
             }
         }
 
+        function bindDateGetter($dateBoxContainer) {
+            return function () {
+                return $dateBoxContainer.find(".imcms-current-date__input").val();
+            }
+        }
+
         $(document).click(closeCalendar);
 
         return function ($dateBoxContainer, withCalendar) {
-            $dateBoxContainer.setDate = getDateSetter($dateBoxContainer);
+            $dateBoxContainer.setDate = bindDateSetter($dateBoxContainer);
+            $dateBoxContainer.getDate = bindDateGetter($dateBoxContainer);
 
             if (!withCalendar) {
                 return $dateBoxContainer;
