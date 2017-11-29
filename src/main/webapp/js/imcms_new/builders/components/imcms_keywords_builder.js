@@ -33,17 +33,28 @@ Imcms.define("imcms-keywords-builder",
                 keywords = keyword.parent()
             ;
 
-            keyword.remove();
+            keyword.detach();
+
             if (keywords.children().length === 0) {
                 keywords.css({"display": "none"})
             }
         }
 
-        function apiAddKeyword($input, $addKeywordButton, $keywordResult) {
+        function bindAddKeyword($input, $addKeywordButton, $keywordsBlock) {
             return function (keyword) {
                 $input.val(keyword);
                 $addKeywordButton.click();
-                return $keywordResult;
+                return $keywordsBlock;
+            };
+        }
+
+        function bindGetKeywords($keywordsBlock) {
+            return function () {
+                return $keywordsBlock.find(".imcms-keyword__keyword")
+                    .map(function () {
+                        return $(this).text();
+                    })
+                    .toArray();
             };
         }
 
@@ -82,11 +93,12 @@ Imcms.define("imcms-keywords-builder",
                         {"keywords": $keywordsContainer}
                     ])
                 ;
-                var $keywordResult = keywordsContainerBEM.buildBlock("<div>", [{"keywords-box": $keywordsBox}]);
+                var $keywordsBlock = keywordsContainerBEM.buildBlock("<div>", [{"keywords-box": $keywordsBox}]);
 
-                $keywordResult.addKeyword = apiAddKeyword($input, $addKeywordButton, $keywordResult);
+                $keywordsBlock.addKeyword = bindAddKeyword($input, $addKeywordButton, $keywordsBlock);
+                $keywordsBlock.getKeywords = bindGetKeywords($keywordsBlock);
 
-                return $keywordResult;
+                return $keywordsBlock;
             }
         };
     }
