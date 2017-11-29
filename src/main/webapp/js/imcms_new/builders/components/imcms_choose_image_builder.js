@@ -26,6 +26,8 @@ Imcms.define("imcms-choose-image-builder",
                     }).buildBlockStructure("<div>");
 
                 $result.setValue = $textField.setValue;
+                $result.getValue = $textField.getValue;
+
                 return $result;
             }
         }
