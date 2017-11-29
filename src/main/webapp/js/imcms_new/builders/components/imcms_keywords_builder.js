@@ -11,32 +11,32 @@ Imcms.define("imcms-keywords-builder",
 
         function addKeyword() {
             var $btn = $(this),
-                keywordInput = $btn.parent().find(".imcms-keyword__input"),
-                keywordInputVal = keywordInput.val().trim(),
-                keywords = $btn.parent().find(".imcms-keyword__keywords")
+                $keywordInput = $btn.parent().find(".imcms-keyword__input"),
+                keywordInputVal = $keywordInput.val().trim(),
+                $keywords = $btn.parent().find(".imcms-keyword__keywords")
             ;
 
-            keywordInput.val("");
+            $keywordInput.val("");
 
             if (keywordInputVal !== "") {
-                keywords.css({"display": "block"});
+                $keywords.css({"display": "block"});
 
                 keywordsBoxBEM.buildBlockElement("keyword", "<div>", {
                     text: keywordInputVal
-                }).append(createRemoveKeywordButton()).appendTo(keywords);
+                }).append(createRemoveKeywordButton()).appendTo($keywords);
             }
         }
 
         function removeKeyword() {
             var $btn = $(this),
-                keyword = $btn.parents(".imcms-keyword__keyword"),
-                keywords = keyword.parent()
+                $keyword = $btn.parents(".imcms-keyword__keyword"),
+                $keywords = $keyword.parent()
             ;
 
-            keyword.detach();
+            $keyword.detach();
 
-            if (keywords.children().length === 0) {
-                keywords.css({"display": "none"})
+            if ($keywords.children().length === 0) {
+                $keywords.css({"display": "none"})
             }
         }
 
