@@ -6,11 +6,26 @@ Imcms.define("imcms-radio-buttons-builder",
     ["imcms-bem-builder", "imcms-primitives-builder", "imcms-uuid-generator"],
     function (bemBuilder, primitives, uuidGenerator) {
 
-        function apiCheckAmongGroup(args) {
+        function createGetCheckedValue(radioBlocks$) {
+            return function () {
+                return Array.prototype.reduce.call(radioBlocks$, function (prevValue, $radioBlock) {
+                    var $radio = $radioBlock.find("input");
+
+                    if ($radio.is(":checked")) {
+                        return $radio.val();
+                    }
+
+                    return prevValue;
+
+                }, null);
+            }
+        }
+
+        function apiCheckAmongGroup(radioBlocks$) {
             return function (value) {
-                Array.prototype.forEach.call(args, function (radioBlock) {
-                    var $radio = radioBlock.find("input");
-                    $radio.val() === value && $radio.prop("checked", "checked");
+                Array.prototype.forEach.call(radioBlocks$, function ($radioBlock) {
+                    var $radio = $radioBlock.find("input");
+                    ($radio.val() === value) && $radio.prop("checked", "checked");
                 });
             }
         }
@@ -63,6 +78,7 @@ Imcms.define("imcms-radio-buttons-builder",
             },
             group: function () {
                 this.checkAmongGroup = apiCheckAmongGroup(arguments);
+                this.getCheckedValue = createGetCheckedValue(arguments);
                 return this;
             },
             radioContainer: function (tag, elements, attributes) {
