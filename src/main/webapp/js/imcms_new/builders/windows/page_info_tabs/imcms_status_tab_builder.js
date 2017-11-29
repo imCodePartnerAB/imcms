@@ -89,6 +89,9 @@ Imcms.define("imcms-status-tab-builder",
                     setStatusInfoRowDataFromDocument(statusTab.dataTitle, document);
                 });
             },
+            saveData: function (documentDTO) {
+                return documentDTO; // this tab have read-only data, at least yet
+            },
             clearTabData: function () {
                 var emptyString = '';
                 statusTabs.forEach(function (statusTab) {
