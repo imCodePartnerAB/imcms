@@ -136,6 +136,8 @@ Imcms.define("imcms-appearance-tab-builder",
 
                 documentDTO.alias = tabData.$documentAlias.getValue();
                 documentDTO.target = tabData.$showIn.getSelectedValue();
+
+                return documentDTO;
             },
 
             clearTabData: function () {
