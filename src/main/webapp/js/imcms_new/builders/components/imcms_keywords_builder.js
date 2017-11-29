@@ -5,25 +5,37 @@
 Imcms.define("imcms-keywords-builder",
     ["imcms-bem-builder", "imcms-texts-builder", "imcms-buttons-builder", "imcms-primitives-builder", "imcms-uuid-generator", "jquery"],
     function (BEM, texts, buttons, primitives, uuidGenerator, $) {
+
         function createRemoveKeywordButton() {
             return buttons.closeButton({click: removeKeyword});
+        }
+
+        function isUniqueKeyWord(keyWord, $keywordsContainer) {
+            return $keywordsContainer.find(".imcms-keyword__keyword")
+                .map(function () {
+                    return $(this)
+                })
+                .toArray()
+                .reduce(function (isUnique, $keyword) {
+                    return isUnique && ($keyword.text() !== keyWord);
+                }, true);
         }
 
         function addKeyword() {
             var $btn = $(this),
                 $keywordInput = $btn.parent().find(".imcms-keyword__input"),
                 keywordInputVal = $keywordInput.val().trim(),
-                $keywords = $btn.parent().find(".imcms-keyword__keywords")
+                $keywordsContainer = $btn.parent().find(".imcms-keyword__keywords")
             ;
 
             $keywordInput.val("");
 
-            if (keywordInputVal !== "") {
-                $keywords.css({"display": "block"});
+            if ((keywordInputVal !== "") && isUniqueKeyWord(keywordInputVal, $keywordsContainer)) {
+                $keywordsContainer.css({"display": "block"});
 
                 keywordsBoxBEM.buildBlockElement("keyword", "<div>", {
                     text: keywordInputVal
-                }).append(createRemoveKeywordButton()).appendTo($keywords);
+                }).append(createRemoveKeywordButton()).appendTo($keywordsContainer);
             }
         }
 
