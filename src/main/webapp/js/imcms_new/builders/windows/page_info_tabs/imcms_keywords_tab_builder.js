@@ -27,22 +27,20 @@ Imcms.define("imcms-keywords-tab-builder",
                 return linker.buildFormBlock([this.data.$keywordsBox, $checkboxField], index);
             },
             fillTabDataFromDocument: function (document) {
-                var keywordsTab = this.data;
-
-                document.keywords.forEach(keywordsTab.$keywordsBox.addKeyword);
-
-                keywordsTab.$searchDisableCheckbox.setChecked(document.searchDisabled);
-
+                document.keywords.forEach(this.data.$keywordsBox.addKeyword);
+                this.data.$searchDisableCheckbox.setChecked(document.searchDisabled);
+            },
+            saveData: function (documentDTO) {
+                documentDTO.keywords = this.data.$keywordsBox.getKeywords();
+                documentDTO.searchDisabled = this.data.$searchDisableCheckbox.isChecked();
+                return documentDTO;
             },
             clearTabData: function () {
-                var keywordsTab = this.data;
-
-                keywordsTab.$keywordsBox
-                    .find('.imcms-keyword__keywords')
+                this.data.$keywordsBox.find('.imcms-keyword__keywords')
                     .find('.imcms-button--close')
                     .click();
 
-                keywordsTab.$searchDisableCheckbox.setChecked(false);
+                this.data.$searchDisableCheckbox.setChecked(false);
             }
         };
     }
