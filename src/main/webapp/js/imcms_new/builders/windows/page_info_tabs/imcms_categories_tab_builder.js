@@ -3,13 +3,13 @@ Imcms.define("imcms-categories-tab-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-category-types-rest-api",
         "imcms-page-info-tabs-linker"
     ],
-    function (BEM, components, categoriesTypesRestApi, linker) {
+    function (BEM, components, categoriesTypesRestApi, tabContentBuilder) {
 
         return {
             name: "categories",
             data: {},
             buildTab: function (index, docId) {
-                this.data.$categoriesBlock = linker.buildFormBlock([], index);
+                this.data.$categoriesBlock = tabContentBuilder.buildFormBlock([], index);
                 docId || this.fillTabDataFromDocument();
                 return this.data.$categoriesBlock;
             },
