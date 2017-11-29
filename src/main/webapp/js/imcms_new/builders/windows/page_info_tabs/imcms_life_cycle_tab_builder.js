@@ -250,6 +250,10 @@ Imcms.define("imcms-life-cycle-tab-builder",
                     documentDTO[rowName].by = null;
                     documentDTO[rowName].date = tabData["$" + rowName + "Date"].getDate() || null;
                     documentDTO[rowName].time = tabData["$" + rowName + "Time"].getTime() || null;
+
+                    if (!documentDTO[rowName].date || !documentDTO[rowName].time) {
+                        documentDTO[rowName].id = null;
+                    }
                 });
 
                 documentDTO.published.id = tabData.$publisherSelect.getSelectedValue();
