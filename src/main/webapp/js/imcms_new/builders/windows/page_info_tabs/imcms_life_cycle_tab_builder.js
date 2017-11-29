@@ -3,7 +3,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api",
         "imcms-page-info-tabs-linker"
     ],
-    function (BEM, components, usersRestApi, linker) {
+    function (BEM, components, usersRestApi, tabContentBuilder) {
 
         var lifeCycleInnerStructureBEM = new BEM({
                 block: "imcms-field",
@@ -182,15 +182,16 @@ Imcms.define("imcms-life-cycle-tab-builder",
 
         function buildDocVersionsInfoRow() {
             // todo implement appearance logic for this text
-            var $offlineVersionInfo = components.texts.infoText("<div>", "This offline version has changes."),
-                $savingVersionInfo = components.texts.infoText("<div>",
-                    "Please press \"Save and publish this version\" to publish as: version 0000.", {
-                        id: "save-as-new-version-message"
-                    })
-            ;
+            var $offlineVersionInfo = components.texts.infoText("<div>", "This offline version has changes.");
+            var $nextVersionIndex = components.texts.infoText("<span>", "", {id: "document-next-version"});
+
+            tabData.$savingVersionInfo = components.texts.infoText(
+                "<div>", "Please press \"Save and publish this version\" to publish as: version "
+            ).append($nextVersionIndex);
+
             return lifeCycleInnerStructureBEM.buildBlock("<div>", [
                 {"item": $offlineVersionInfo},
-                {"item": $savingVersionInfo}
+                {"item": tabData.$savingVersionInfo}
             ]);
         }
 
@@ -213,7 +214,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
         return {
             name: "life cycle",
             buildTab: function (index) {
-                return linker.buildFormBlock([
+                return tabContentBuilder.buildFormBlock([
                     buildDocStatusSelect(),
                     buildPublishedDateTimeContainer(),
                     buildArchivedDateTimeContainer(),
@@ -225,6 +226,8 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 ], index);
             },
             fillTabDataFromDocument: function (document) {
+                tabData.$savingVersionInfo.find("#document-next-version").html(+document.currentVersion.id + 1);
+
                 tabData.$docStatusSelect.selectValue(document.publicationStatus);
 
                 statusRowsNames.forEach(function (rowName) {
@@ -237,7 +240,25 @@ Imcms.define("imcms-life-cycle-tab-builder",
                     .checkAmongGroup(document.disabledLanguageShowMode);
 
                 tabData.$currentVersionNumber.setValue(document.currentVersion.id);
-                tabData.$docVersionSaveDateTime.setDate(document.currentVersion.date).setTime(document.currentVersion.time);
+                tabData.$docVersionSaveDateTime.setDate(document.currentVersion.date)
+                    .setTime(document.currentVersion.time);
+            },
+            saveData: function (documentDTO) {
+                documentDTO.publicationStatus = tabData.$docStatusSelect.getSelectedValue();
+
+                statusRowsNames.forEach(function (rowName) {
+                    documentDTO[rowName].by = null;
+                    documentDTO[rowName].date = tabData["$" + rowName + "Date"].getDate() || null;
+                    documentDTO[rowName].time = tabData["$" + rowName + "Time"].getTime() || null;
+                });
+
+                documentDTO.published.id = tabData.$publisherSelect.getSelectedValue();
+
+                documentDTO.disabledLanguageShowMode = components.radios
+                    .group(tabData.$showDefaultLang, tabData.$doNotShow)
+                    .getCheckedValue();
+
+                return documentDTO;
             },
             clearTabData: function () {
                 var emptyString = '';
