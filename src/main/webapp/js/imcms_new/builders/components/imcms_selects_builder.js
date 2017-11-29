@@ -96,7 +96,7 @@ Imcms.define("imcms-selects-builder",
 
                 $button = dropDownListBEM.makeBlockElement("button", buttons.dropDownButton()),
                 $selectedValue = dropDownListBEM.buildBlockElement("select-item-value", "<span>", {
-                    text: (options[0] && options[0].text) || ""
+                    text: (options[0] && options[0].text) || "None"
                 }),
                 $selectItem = dropDownListBEM.buildElement("select-item", "<div>", {click: toggleSelect})
                     .append($selectedValue, $button),
@@ -192,6 +192,13 @@ Imcms.define("imcms-selects-builder",
                 }
 
                 var $selectElements = [];
+
+                if (attributes.emptySelect && options) {
+                    options.unshift({
+                        text: "None",
+                        "data-value": null
+                    });
+                }
 
                 if (options && options.length) {
                     $selectElements.push(buildSelectOptions(options, dropDownListBEM));
