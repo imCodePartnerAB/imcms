@@ -3,7 +3,7 @@ Imcms.define("imcms-access-tab-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-roles-rest-api", "imcms-page-info-tabs-linker",
         "imcms-uuid-generator", "jquery"
     ],
-    function (BEM, components, rolesRestApi, linker, uuidGenerator, $) {
+    function (BEM, components, rolesRestApi, tabContentBuilder, uuidGenerator, $) {
 
         var rolesBEM = new BEM({
             block: "imcms-access-role",
@@ -132,7 +132,7 @@ Imcms.define("imcms-access-tab-builder",
                         }
                     }).buildBlockStructure("<div>"),
 
-                    $accessBlock = linker.buildFormBlock([$addRoleContainer], index)
+                    $accessBlock = tabContentBuilder.buildFormBlock([$addRoleContainer], index)
                 ;
 
                 if (!docId) {

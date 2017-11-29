@@ -3,7 +3,7 @@ Imcms.define("imcms-permissions-tab-builder",
         "imcms-bem-builder", "imcms-components-builder",
         "imcms-page-info-tabs-linker"
     ],
-    function (BEM, components, linker) {
+    function (BEM, components, tabContentBuilder) {
 
         var tabData = {};
     
@@ -58,7 +58,7 @@ Imcms.define("imcms-permissions-tab-builder",
                     }
                 }).buildBlockStructure("<div>");
 
-                return linker.buildFormBlock([$permissionsWrapper], index);
+                return tabContentBuilder.buildFormBlock([$permissionsWrapper], index);
             },
             fillTabDataFromDocument: function (document) {
                 var restrictedCheckboxes = {};

@@ -3,7 +3,7 @@ Imcms.define("imcms-templates-tab-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-templates-rest-api",
         "imcms-page-info-tabs-linker"
     ],
-    function (BEM, components, templatesRestApi, linker) {
+    function (BEM, components, templatesRestApi, tabContentBuilder) {
 
         return {
             name: "templates",
@@ -41,7 +41,7 @@ Imcms.define("imcms-templates-tab-builder",
                     $templateSelectContainer,
                     $defaultChildTemplateSelectContainer
                 ];
-                return linker.buildFormBlock(blockElements, index);
+                return tabContentBuilder.buildFormBlock(blockElements, index);
             },
             fillTabDataFromDocument: function (document) {
                 var templatesTab = this.data;

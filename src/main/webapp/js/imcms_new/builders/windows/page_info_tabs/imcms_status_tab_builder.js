@@ -3,7 +3,7 @@ Imcms.define("imcms-status-tab-builder",
         "imcms-date-picker", "imcms-time-picker", "imcms-bem-builder", "imcms-components-builder",
         "imcms-page-info-tabs-linker", "jquery"
     ],
-    function (DatePicker, TimePicker, BEM, components, linker, $) {
+    function (DatePicker, TimePicker, BEM, components, tabContentBuilder, $) {
 
         var tabData = {};
 
@@ -82,7 +82,7 @@ Imcms.define("imcms-status-tab-builder",
         return {
             name: "status",
             buildTab: function (index) {
-                return linker.buildFormBlock(statusTabs.map(buildStatusInfoRow), index);
+                return tabContentBuilder.buildFormBlock(statusTabs.map(buildStatusInfoRow), index);
             },
             fillTabDataFromDocument: function (document) {
                 statusTabs.forEach(function (statusTab) {
