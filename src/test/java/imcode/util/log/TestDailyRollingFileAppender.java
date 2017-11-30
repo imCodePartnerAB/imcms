@@ -43,12 +43,17 @@ public class TestDailyRollingFileAppender extends TestCase {
     }
 
     public void testLogFileCreated() throws IOException {
-        createAppender(tempFile);
-        assertTrue(tempFile.exists());
+        final DailyRollingFileAppender appender = createAppender(tempFile);
+
+        try {
+            assertTrue(tempFile.exists());
+        } finally {
+            appender.close();
+        }
     }
 
     public void testLineLogged() throws IOException {
-        DailyRollingFileAppender appender = createAppender(tempFile);
+        final DailyRollingFileAppender appender = createAppender(tempFile);
         appender.doAppend(getLoggingEvent());
         appender.close();
         assertTrue(tempFile.length() > 0);
