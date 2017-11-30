@@ -150,8 +150,8 @@ Imcms.define("imcms-admin-panel-builder",
             var $body = $("body");
             $(document).mousemove(function (event) {
                 if ((event.clientY >= 0) && (event.clientY <= panelSensitivePixels)) {
-                    if($body.scrollTop() === 0) {
-                        $body.animate({"top": "90px"}, 150)
+                    if ($(window).scrollTop() === 0) {
+                        $body.css({"top": "90px"})
                     } else {
                         $body.css({"padding-top": "0px"})
                     }
@@ -165,7 +165,7 @@ Imcms.define("imcms-admin-panel-builder",
                 if ($(event.target).closest(".imcms-admin").length) {
                     return;
                 }
-                $("body").animate({"top": "0px"}, 150);
+                $("body").css({"top": "0px"});
                 hidePanel();
             });
         }
