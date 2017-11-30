@@ -111,6 +111,8 @@ public class FileAdmin extends HttpServlet {
 
         boolean outputHasBeenHandled = false;
 
+        // holy shit!
+
         if (mp.getParameter("change1") != null) {    //UserDomainObject wants to change dir1
             dir1 = changeDir(files1, dir1, roots);
         } else if (mp.getParameter("change2") != null) {    //UserDomainObject wants to change dir2
