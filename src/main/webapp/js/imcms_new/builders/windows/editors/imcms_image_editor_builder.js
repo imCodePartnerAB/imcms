@@ -8,7 +8,7 @@ Imcms.define("imcms-image-editor-builder",
         "imcms-images-rest-api", "imcms-image-cropper", "jquery"
     ],
     function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $) {
-        var $rightSidePanel, $bottomPanel, $editableImageArea;
+        var $rightSidePanel, $bottomPanel, $editableImageArea, $previewImageArea;
 
         var imageDataContainers = {},
             imageData = {};
@@ -125,7 +125,106 @@ Imcms.define("imcms-image-editor-builder",
             ]);
         }
 
+        function initPreviewImageArea() {
+            var $previewArea = $(".imcms-preview-img-area"),
+                $previewContainer = $previewArea.find(".imcms-preview-img-container"),
+                $previewImg = $previewArea.find(".imcms-preview-img"),
+                $cropArea = $(".imcms-crop-area"),
+                $editableImg = $(".imcms-editable-img-area__img"),
+                imgSrc = $editableImg.attr("src"),
+                previewContainerProp = {},
+                previewImgProp = {}
+            ;
+
+            previewContainerProp.width = parseInt($cropArea.css("width"));
+            previewContainerProp.height = parseInt($cropArea.css("height"));
+            previewContainerProp.ml = -previewContainerProp.width/2;
+            previewContainerProp.mt = -previewContainerProp.height/2;
+
+            previewImgProp.width = parseInt($editableImg.css("width"));
+            previewImgProp.height = parseInt($editableImg.css("height"));
+            previewImgProp.left = parseInt($cropArea.css("left")) - 2;
+            previewImgProp.top = parseInt($cropArea.css("top")) - 2;
+
+            if (previewContainerProp.height > $previewArea.outerHeight()) {
+                $previewContainer.css({
+                    "margin-left": previewContainerProp.ml + "px",
+                    "margin-top": 0,
+                    "left": "50%",
+                    "top": 2 + "px"
+                });
+            } else if (previewContainerProp.width > $previewArea.outerWidth()) {
+                $previewContainer.css({
+                    "margin-left": 0,
+                    "margin-top": previewContainerProp.mt + "px",
+                    "left": 0,
+                    "top": "50%"
+                });
+            } else {
+                $previewContainer.css({
+                    "margin-left": previewContainerProp.ml + "px",
+                    "margin-top": previewContainerProp.mt + "px",
+                    "left": "50%",
+                    "top": "50%"
+                });
+            }
+
+            $previewContainer.css({
+                "width": previewContainerProp.width + "px",
+                "height": previewContainerProp.height + "px"
+            });
+
+            $previewImg.css({
+                "width": previewImgProp.width + "px",
+                "height": previewImgProp.height + "px",
+                "left": -previewImgProp.left + "px",
+                "top": -previewImgProp.top + "px"
+            });
+
+            $previewImg.attr("src", imgSrc);
+        }
+
+        function toggleImgArea() {
+            var $previewImageArea = $(".imcms-preview-img-area"),
+                $controlTabs = $(".imcms-editable-img-control-tabs__tab")
+            ;
+
+            if ($(this).data("tab") === "prev") {
+                initPreviewImageArea();
+                $previewImageArea.css({
+                    "z-index": "50",
+                    "opacity": 1
+                });
+            } else {
+                $previewImageArea.css({
+                    "z-index": "10",
+                    "opacity": 0
+                });
+            }
+            $controlTabs.removeClass("imcms-editable-img-control-tabs__tab--active");
+            $(this).addClass("imcms-editable-img-control-tabs__tab--active");
+        }
+
         function buildLeftSide() {
+
+            function buildPreviewImageArea() {
+                var previewImageAreaBEM = new BEM({
+                    block: "imcms-preview-img-area",
+                    elements: {
+                        "container": "imcms-preview-img-container",
+                        "img": "imcms-preview-img"
+                    }
+                });
+
+                var $previewImgContainer = previewImageAreaBEM.buildElement("container", "<div>");
+                var $previewImg = previewImageAreaBEM.buildElement("img", "<img>");
+                $previewImg.appendTo($previewImgContainer);
+
+
+                return previewImageAreaBEM.buildBlock("<div>", [
+                    {"container": $previewImgContainer}
+                ]);
+            }
 
             function buildEditableImageArea() {
                 var editableImgAreaBEM = new BEM({
@@ -291,8 +390,14 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function buildSwitchViewControls() {
-                var $preview = components.texts.titleText("<div>", "Preview");
-                var $origin = components.texts.titleText("<div>", "Original");
+                var $preview = components.texts.titleText("<div>", "Preview", {
+                    "data-tab": "prev",
+                    click: toggleImgArea
+                });
+                var $origin = components.texts.titleText("<div>", "Original", {
+                    "data-tab": "origin",
+                    click: toggleImgArea
+                });
                 $origin.modifiers = ["active"];
 
                 return new BEM({
@@ -315,9 +420,10 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             $editableImageArea = buildEditableImageArea();
+            $previewImageArea = buildPreviewImageArea();
             $bottomPanel = buildBottomPanel();
 
-            return $("<div>").append($editableImageArea, $bottomPanel);
+            return $("<div>").append($editableImageArea, $previewImageArea, $bottomPanel);
         }
 
         function reloadImageOnPage(imageDTO) {

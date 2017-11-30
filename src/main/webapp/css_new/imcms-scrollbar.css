@@ -50,16 +50,17 @@
     border-radius: 5px;
 }
 
+.imcms-preview-img-area::-webkit-scrollbar-track,
 .imcms-editable-img-area::-webkit-scrollbar-track {
     background-color: transparent;
 }
-
+.imcms-preview-img-area::-webkit-scrollbar,
 .imcms-editable-img-area::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
     height: 6px;
 }
-
+.imcms-preview-img-area::-webkit-scrollbar-thumb,
 .imcms-editable-img-area::-webkit-scrollbar-thumb {
     background-color: #6c7383;
 }
