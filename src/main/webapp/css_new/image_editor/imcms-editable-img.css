@@ -28,8 +28,7 @@
 
 .imcms-preview-img-area {
     background-color: #f3f3fc;
-    display: block;
-    opacity: 0;
+    display: none;
     overflow: auto;
     position: absolute;
     top: 0;

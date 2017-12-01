@@ -452,6 +452,10 @@ Imcms.define("imcms-image-cropper", [], function () {
     }
 
     function destroy() {
+        if (!imageData) {
+            return;
+        }
+
         moveCropArea(0, 0);
 
         [
