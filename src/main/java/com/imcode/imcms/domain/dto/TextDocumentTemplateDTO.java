@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TextDocumentTemplateDTO extends TextDocumentTemplate {
+
     private Integer docId;
 
     private String templateName;
