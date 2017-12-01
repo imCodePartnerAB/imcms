@@ -31,6 +31,7 @@
 .imcms-image-characteristics__img-url {
     font-weight: 400;
     float: right;
+    height: 64px;
 }
 
 .imcms-image-characteristics__img-url span {

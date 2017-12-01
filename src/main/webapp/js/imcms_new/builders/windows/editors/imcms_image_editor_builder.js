@@ -193,12 +193,12 @@ Imcms.define("imcms-image-editor-builder",
                 initPreviewImageArea();
                 $previewImageArea.css({
                     "z-index": "50",
-                    "opacity": 1
+                    "display": "block"
                 });
             } else {
                 $previewImageArea.css({
                     "z-index": "10",
-                    "opacity": 0
+                    "display": "none"
                 });
             }
             $controlTabs.removeClass("imcms-editable-img-control-tabs__tab--active");
@@ -219,7 +219,6 @@ Imcms.define("imcms-image-editor-builder",
                 var $previewImgContainer = previewImageAreaBEM.buildElement("container", "<div>");
                 var $previewImg = previewImageAreaBEM.buildElement("img", "<img>");
                 $previewImg.appendTo($previewImgContainer);
-
 
                 return previewImageAreaBEM.buildBlock("<div>", [
                     {"container": $previewImgContainer}
@@ -399,6 +398,8 @@ Imcms.define("imcms-image-editor-builder",
                     click: toggleImgArea
                 });
                 $origin.modifiers = ["active"];
+
+                imageDataContainers.$tabOriginal = $origin;
 
                 return new BEM({
                     block: "imcms-editable-img-control-tabs",
@@ -753,6 +754,16 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function fillLeftSideData(imageData) {
+
+            imageDataContainers.$shadow.css({
+                width: "100%",
+                height: "100%"
+            });
+
+            if (!imageData.path) {
+                return;
+            }
+
             imageDataContainers.$image.attr("src", Imcms.contextPath + "/" + Imcms.imagesPath + imageData.path);
 
             setTimeout(function () { // to let image src load
@@ -761,11 +772,6 @@ Imcms.define("imcms-image-editor-builder",
                 var angleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) || 0;
                 var imageWidth = imageDataContainers.$image.width();
                 var imageHeight = imageDataContainers.$image.height();
-
-                imageDataContainers.$shadow.css({
-                    width: "100%",
-                    height: "100%"
-                });
 
                 if (imageDataContainers.$shadow.height() < imageHeight) {
                     imageDataContainers.$shadow.height(imageHeight);
@@ -804,6 +810,8 @@ Imcms.define("imcms-image-editor-builder",
             if (!image) {
                 return;
             }
+
+            toggleImgArea.call(imageDataContainers.$tabOriginal);
 
             // direct reassign because $.extend skip 'undefined' but it's needed!
             imageData.cropRegion = image.cropRegion;
