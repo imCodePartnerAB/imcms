@@ -124,7 +124,7 @@ Imcms.define("imcms-page-info-builder",
         function loadPageInfoDataFromDocumentBy(docId) {
             documentsRestApi.read({docId: docId}).done(function (document) {
                 documentDTO = document;
-                $title.text("document " + document.id);
+                $title.text((document.id) ? "document " + document.id : "new document");
 
                 pageInfoTabs.tabBuilders.forEach(function (tab) {
                     tab.fillTabDataFromDocument(document);
@@ -139,7 +139,7 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function loadData(docId) {
-            docId && loadPageInfoDataFromDocumentBy(docId);
+            loadPageInfoDataFromDocumentBy(docId);
         }
 
         var shadowBuilder = new WindowBuilder({
