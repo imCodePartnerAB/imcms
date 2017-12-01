@@ -226,6 +226,9 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 ], index);
             },
             fillTabDataFromDocument: function (document) {
+                /** @namespace document.currentVersion */
+                /** @namespace document.published */
+
                 tabData.$savingVersionInfo.find("#document-next-version").html(+document.currentVersion.id + 1);
 
                 tabData.$docStatusSelect.selectValue(document.publicationStatus);
