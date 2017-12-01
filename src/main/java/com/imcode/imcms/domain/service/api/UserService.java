@@ -23,11 +23,10 @@ import static java.util.Optional.ofNullable;
 @Service
 public class UserService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final UserRepository userRepository;
     private final Function<User, UserDTO> userToUserDTO;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     UserService(UserRepository userRepository,
                 Function<User, UserDTO> userToUserDTO) {

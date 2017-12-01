@@ -11,6 +11,7 @@ public class TextDocMenuContainer extends TextDocVersionedContainer {
 
     private final int menuNo;
     private final MenuDomainObject menu;
+
     public TextDocMenuContainer(VersionRef versionRef, int menuNo, MenuDomainObject menu) {
         super(versionRef);
         this.menu = Objects.requireNonNull(menu);

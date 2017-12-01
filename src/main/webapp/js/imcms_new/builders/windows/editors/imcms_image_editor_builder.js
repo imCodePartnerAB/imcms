@@ -692,6 +692,7 @@ Imcms.define("imcms-image-editor-builder",
                     langCode: imageData.langCode
                 };
 
+                /** @namespace imageData.loopEntryRef */
                 if (imageData.loopEntryRef) {
                     imageRequestData["loopEntryRef.loopEntryIndex"] = imageData["loopEntryRef.loopEntryIndex"];
                     imageRequestData["loopEntryRef.loopIndex"] = imageData["loopEntryRef.loopIndex"];
@@ -813,6 +814,8 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function loadData(opts) {
+            /** @namespace opts.loopEntryIndex */
+            /** @namespace opts.loopIndex */
             if (opts.loopEntryIndex && opts.loopIndex) {
 
                 // note that this data have to be set in such way because of non-JSON GET AJAX call

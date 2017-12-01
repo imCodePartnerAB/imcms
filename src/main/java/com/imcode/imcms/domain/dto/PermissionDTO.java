@@ -59,6 +59,10 @@ public enum PermissionDTO implements Serializable {
         }
     }
 
+    public static PermissionDTO fromRestrictedPermission(RestrictedPermissionJPA restrictedPermission) {
+        return fromPermission(restrictedPermission.getPermission());
+    }
+
     public Permission getPermission() {
         return permission;
     }
@@ -81,9 +85,5 @@ public enum PermissionDTO implements Serializable {
 
     public boolean isAtLeastAsPrivilegedAs(PermissionDTO type) {
         return this.permission.isAtLeastAsPrivilegedAs(type.permission);
-    }
-
-    public static PermissionDTO fromRestrictedPermission(RestrictedPermissionJPA restrictedPermission) {
-        return fromPermission(restrictedPermission.getPermission());
     }
 }

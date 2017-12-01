@@ -16,11 +16,11 @@ public class LoopEntryDTO extends LoopEntry implements Serializable {
     private int index;
     private boolean enabled;
 
-    public static LoopEntryDTO createEnabled(int index) {
-        return new LoopEntryDTO(index, true);
-    }
-
     public LoopEntryDTO(LoopEntry from) {
         super(from);
+    }
+
+    public static LoopEntryDTO createEnabled(int index) {
+        return new LoopEntryDTO(index, true);
     }
 }

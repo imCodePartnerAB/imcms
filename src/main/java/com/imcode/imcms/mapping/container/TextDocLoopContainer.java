@@ -11,6 +11,7 @@ public class TextDocLoopContainer extends TextDocVersionedContainer {
 
     private final int loopNo;
     private final Loop loop;
+
     public TextDocLoopContainer(VersionRef versionRef, int loopNo, Loop loop) {
         super(versionRef);
         this.loop = Objects.requireNonNull(loop);

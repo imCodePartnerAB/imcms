@@ -107,7 +107,7 @@ public class FileController {
             throw new FileAlreadyExistsException(String.format("File '%s.%s' has already exists", filename, extension));
         }
 
-       /* @RequestParam(value = "file", required = false)*/
+        /* @RequestParam(value = "file", required = false)*/
         if (request instanceof MultipartHttpServletRequest) {
             multipartFile = ((MultipartHttpServletRequest) request).getFile("file");
         }

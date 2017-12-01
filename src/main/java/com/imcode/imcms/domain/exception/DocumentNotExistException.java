@@ -2,7 +2,7 @@ package com.imcode.imcms.domain.exception;
 
 /**
  * Is thrown when trying to do smth with non-existing document.
- *
+ * <p>
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 03.10.17.
  */

@@ -191,12 +191,12 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
             return new ExceptionFreeInputStreamSource(inputStreamSource);
         }
 
-        public boolean isFileInputStreamSource() {
-            return inputStreamSource instanceof FileInputStreamSource;
-        }
-
         public void setInputStreamSource(InputStreamSource inputStreamSource) {
             this.inputStreamSource = inputStreamSource;
+        }
+
+        public boolean isFileInputStreamSource() {
+            return inputStreamSource instanceof FileInputStreamSource;
         }
 
         public boolean isCreatedAsImage() {

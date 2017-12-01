@@ -42,6 +42,10 @@ public class TemplateMapper {
         services = service;
     }
 
+    private static File getTemplateDirectory() {
+        return new File(Imcms.getPath(), "WEB-INF/templates/text");
+    }
+
     public void addTemplateToGroup(TemplateDomainObject template, TemplateGroupDomainObject templateGroup) {
         database.execute(new SqlUpdateCommand("INSERT INTO templates_cref (group_id,template_name) VALUES(?,?)",
                 new Object[]{templateGroup.getId(), template.getName()}));
@@ -51,10 +55,6 @@ public class TemplateMapper {
         List<TemplateDomainObject> allTemplates = getAllTemplates();
         allTemplates.remove(template);
         return allTemplates;
-    }
-
-    private static File getTemplateDirectory() {
-        return new File(Imcms.getPath(), "WEB-INF/templates/text");
     }
 
     public String createHtmlOptionListOfTemplateGroups(TemplateGroupDomainObject selectedTemplateGroup) {

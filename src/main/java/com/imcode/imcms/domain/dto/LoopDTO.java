@@ -22,12 +22,12 @@ public class LoopDTO extends Loop<LoopEntryDTO> implements Serializable {
     private Integer index;
     private List<LoopEntryDTO> entries;
 
-    public static LoopDTO empty(int docId, int index) {
-        return new LoopDTO(docId, index, Collections.emptyList());
-    }
-
     public <LE2 extends LoopEntry, L extends Loop<LE2>> LoopDTO(L from, Version version) {
         super(from, LoopEntryDTO::new);
         this.docId = version.getDocId();
+    }
+
+    public static LoopDTO empty(int docId, int index) {
+        return new LoopDTO(docId, index, Collections.emptyList());
     }
 }

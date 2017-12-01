@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 @Service
 public class DocumentSaver {
 
-    private DocumentMapper documentMapper;
     private final DocRepository docRepository;
     private final VersionRepository versionRepository;
     private final VersionService versionService;
@@ -48,6 +47,7 @@ public class DocumentSaver {
     private final PropertyRepository propertyRepository;
     private final DocumentCreatingVisitor documentCreatingVisitor;
     private final DocumentSavingVisitor documentSavingVisitor;
+    private DocumentMapper documentMapper;
 
     @Inject
     public DocumentSaver(DocRepository docRepository, VersionRepository versionRepository,
@@ -93,35 +93,35 @@ public class DocumentSaver {
      */
     @Transactional
     public void saveText(TextDocTextContainer container, UserDomainObject user)
-            throws NoPermissionInternalException, DocumentSaveException {
+            throws NoPermissionInternalException {
         textDocumentContentSaver.saveText(container, user);
         docRepository.touch(container.getDocVersionRef(), user);
     }
 
     @Transactional
     public void saveTexts(TextDocTextsContainer container, UserDomainObject user)
-            throws NoPermissionInternalException, DocumentSaveException {
+            throws NoPermissionInternalException {
         textDocumentContentSaver.saveTexts(container, user);
         docRepository.touch(container.getVersionRef(), user);
     }
 
     @Transactional
     public void saveImages(TextDocImagesContainer container, UserDomainObject user)
-            throws NoPermissionInternalException, DocumentSaveException {
+            throws NoPermissionInternalException {
         textDocumentContentSaver.saveImages(container);
         docRepository.touch(container.getVersionRef(), user);
     }
 
     @Transactional
     public void saveMenu(TextDocMenuContainer container, UserDomainObject user)
-            throws NoPermissionInternalException, DocumentSaveException {
+            throws NoPermissionInternalException {
         textDocumentContentSaver.saveMenu(container);
         docRepository.touch(container.getVersionRef(), user);
     }
 
     @Transactional
     public void saveImage(TextDocImageContainer container, UserDomainObject user)
-            throws NoPermissionInternalException, DocumentSaveException {
+            throws NoPermissionInternalException {
         textDocumentContentSaver.saveImage(container);
         docRepository.touch(container.getDocVersionRef(), user);
     }

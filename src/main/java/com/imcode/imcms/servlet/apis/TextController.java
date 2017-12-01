@@ -41,17 +41,14 @@ import java.util.stream.Collectors;
 //@RestController
 //@RequestMapping("/text")
 public class TextController {
-    private static final Logger log = Logger.getLogger(TextController.class);
-
     public static final String TEXT = "text";
     public static final String HTML = "html";
+    private static final Logger log = Logger.getLogger(TextController.class);
     private static final String SOURCE_FROM_HTML = "source-from-html";
     private static final String CLEAN_SOURCE_FROM_HTML = "clean-source-from-html";
     private static final String CLEAN_HTML = "cleanhtml";
-
-    private ImcmsServices imcmsServices;
-
     private final TextContentFilter textContentFilter;
+    private ImcmsServices imcmsServices;
 
     //    @Autowired
     public TextController(TextContentFilter textContentFilter) {

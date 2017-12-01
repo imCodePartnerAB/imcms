@@ -14,6 +14,7 @@ import java.util.Properties;
  * Text content filter, based on Jsoup's tags whitelist and cleaning text feature.
  * Used to clean non-supported tags from e.g. imcms:text tag.
  * <p>
+ *
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 29.03.17.
  */

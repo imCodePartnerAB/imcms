@@ -15,6 +15,7 @@ public class LoopEntryRef {
     private final int loopNo;
     private final int entryNo;
     private final int cachedHashCode;
+
     public LoopEntryRef(int loopNo, int entryNo) {
         this.loopNo = loopNo;
         this.entryNo = entryNo;
