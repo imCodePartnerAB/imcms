@@ -7,6 +7,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -56,24 +57,38 @@ public class DocumentServiceTest {
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
 
+    @Autowired
+    private CommonContentService commonContentService;
+
     @Before
     public void setUp() throws Exception {
         createdDoc = documentDataInitializer.createData();
     }
 
     @Test
-    public void get() throws Exception {
+    public void get() {
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
         assertEquals(documentDTO, createdDoc);
     }
 
     @Test(expected = DocumentNotExistException.class)
-    public void get_When_DocumentNotExist_Expect_CorrectException() throws Exception {
+    public void get_When_DocumentNotExist_Expect_CorrectException() {
         documentService.get(((Long) System.currentTimeMillis()).intValue());
     }
 
     @Test
-    public void getDocumentTitle() throws Exception {
+    public void get_When_IdIsNull_Expect_DefaultEmptyDtoReturned() {
+        final DocumentDTO documentDTO = documentService.get(null);
+
+        assertNull(documentDTO.getId());
+        assertNotEquals(documentDTO.getCommonContents().size(), 0);
+        assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
+        assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
+        assertEquals(documentDTO.getTemplate(), TextDocumentTemplateDTO.createDefault());
+    }
+
+    @Test
+    public void getDocumentTitle() {
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
         final String testHeadline = "test_headline";
 
@@ -87,7 +102,7 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void getDocumentTarget() throws Exception {
+    public void getDocumentTarget() {
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
         final String testTarget = "_target";
         documentDTO.setTarget(testTarget);
@@ -97,14 +112,14 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void getDocumentLink_When_NoAlias_Expect_DocIdInLink() throws Exception {
+    public void getDocumentLink_When_NoAlias_Expect_DocIdInLink() {
         final int docId = createdDoc.getId();
 
         assertEquals(documentService.getDocumentLink(docId), "/" + createdDoc.getId());
     }
 
     @Test
-    public void getDocumentLink_When_AliasIsSet_Expect_AliasInLink() throws Exception {
+    public void getDocumentLink_When_AliasIsSet_Expect_AliasInLink() {
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
         final String testAlias = "test_alias";
         documentDTO.setAlias(testAlias);
@@ -114,7 +129,7 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void save_With_Target_Expected_Saved() throws Exception {
+    public void save_With_Target_Expected_Saved() {
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
         documentDTO.setTarget("test_target");
 
@@ -396,7 +411,7 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void save_When_CustomTemplateSet_Expect_Saved() throws Exception {
+    public void save_When_CustomTemplateSet_Expect_Saved() {
         final String templateName = "test_" + System.currentTimeMillis();
         final int docId = createdDoc.getId();
         final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, 0, templateName);

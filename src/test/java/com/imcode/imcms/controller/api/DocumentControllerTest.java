@@ -10,6 +10,7 @@ import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.api.CategoryService;
 import com.imcode.imcms.domain.service.api.RoleService;
+import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -33,8 +34,7 @@ import java.util.stream.Collectors;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -58,6 +58,9 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Autowired
     private TextDocumentTemplateService templateService;
+
+    @Autowired
+    private CommonContentService commonContentService;
 
     @Autowired
     private RoleService roleService;
@@ -90,6 +93,19 @@ public class DocumentControllerTest extends AbstractControllerTest {
                 .param("docId", "" + ((Long) System.currentTimeMillis()).intValue());
 
         performRequestBuilderExpectException(DocumentNotExistException.class, requestBuilder);
+    }
+
+    @Test
+    public void get_When_IdIsNull_Expect_DefaultEmptyDtoReturned() throws Exception {
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
+        final String response = getJsonResponse(requestBuilder);
+        final DocumentDTO documentDTO = fromJson(response, DocumentDTO.class);
+
+        assertNull(documentDTO.getId());
+        assertNotEquals(documentDTO.getCommonContents().size(), 0);
+        assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
+        assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
+        assertEquals(documentDTO.getTemplate(), TextDocumentTemplateDTO.createDefault());
     }
 
     @Test
