@@ -11,6 +11,7 @@ import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.LanguageMapper;
@@ -52,7 +53,17 @@ public class DocumentService {
         this.metaSaver = documentDtoToMeta.andThen(metaRepository::save);
     }
 
-    public DocumentDTO get(int docId) {
+    public DocumentDTO get(Integer docId) {
+        return (docId == null) ? buildNewDocument() : getDocument(docId);
+    }
+
+    private DocumentDTO buildNewDocument() {
+        final List<CommonContentDTO> commonContents = commonContentService.createCommonContents();
+
+        return Value.with(DocumentDTO.createNew(), documentDTO -> documentDTO.setCommonContents(commonContents));
+    }
+
+    private DocumentDTO getDocument(int docId) {
         final Version latestVersion = versionService.getLatestVersion(docId);
         final List<CommonContentDTO> commonContents = commonContentService.getOrCreateCommonContents(
                 docId, latestVersion.getNo()

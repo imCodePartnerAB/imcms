@@ -21,7 +21,7 @@ public class DocumentController {
     }
 
     @GetMapping
-    public DocumentDTO getDocument(int docId) {
+    public DocumentDTO getDocument(Integer docId) {
         return documentService.get(docId);
     }
 
