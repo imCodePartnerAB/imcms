@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public abstract class TextDocumentTemplate {
 
+    public static final String DEFAULT_TEMPLATE_NAME = "demo";
+
     protected TextDocumentTemplate(TextDocumentTemplate createFrom) {
         setDocId(createFrom.getDocId());
         setTemplateName(createFrom.getTemplateName());

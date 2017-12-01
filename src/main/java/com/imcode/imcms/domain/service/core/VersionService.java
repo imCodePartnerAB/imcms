@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Service
+@Transactional
 public class VersionService {
 
     private final VersionRepository versionRepository;
@@ -36,7 +37,6 @@ public class VersionService {
         return Optional.ofNullable(versionReceiver.apply(docId)).orElseThrow(DocumentNotExistException::new);
     }
 
-    @Transactional
     public Version create(int docId, int userId) {
         User creator = userService.getUser(userId);
         Integer latestNo = versionRepository.findLatestNoForUpdate(docId);

@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.api.LanguageService;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
+
 @Service
 public class CommonContentService {
-
-    private static final int WORKING_VERSION_INDEX = 0;
 
     private final CommonContentRepository commonContentRepository;
     private final LanguageService languageService;
@@ -92,4 +93,23 @@ public class CommonContentService {
         return new CommonContentDTO(commonContentRepository.saveAndFlush(commonContent));
     }
 
+    /**
+     * Creates empty CommonContent for non-existing document and for all
+     * languages with {@link Version#WORKING_VERSION_INDEX}.
+     * Not saves to DB.
+     */
+    public List<CommonContentDTO> createCommonContents() {
+        return languageService.getAll()
+                .stream()
+                .map(this::create)
+                .collect(Collectors.toList());
+    }
+
+    private CommonContentDTO create(LanguageDTO languageDTO) {
+        return Value.with(new CommonContentDTO(), commonContentDTO -> {
+            commonContentDTO.setEnabled(true);
+            commonContentDTO.setLanguage(languageDTO);
+            commonContentDTO.setVersionNo(WORKING_VERSION_INDEX);
+        });
+    }
 }

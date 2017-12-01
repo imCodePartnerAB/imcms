@@ -13,6 +13,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class Version implements Cloneable, Serializable {
 
+    public static final int WORKING_VERSION_INDEX = 0;
+
     private static final long serialVersionUID = 9090936463043750021L;
     /**
      * @deprecated need to make composite primary key from docId and no
