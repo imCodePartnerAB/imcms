@@ -11,6 +11,10 @@ import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.repository.MetaRepository;
+import imcode.server.Imcms;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +63,9 @@ public class DocumentServiceTest {
 
     @Autowired
     private CommonContentService commonContentService;
+
+    @Autowired
+    private MetaRepository metaRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -129,15 +136,56 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void save_With_Target_Expected_Saved() {
+    public void save_When_NewEmptyDoc_Expect_NoError() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        final DocumentDTO emptyDocumentDTO = documentService.get(null);
+        documentService.save(emptyDocumentDTO);
+    }
+
+    @Test
+    public void save_When_NewEmptyDoc_Expect_Saved() {
+        final int sizeBeforeSave = metaRepository.findAll().size();
+
+        save_When_NewEmptyDoc_Expect_NoError();
+
+        final int sizeAfterSave = metaRepository.findAll().size();
+
+        assertEquals(sizeBeforeSave + 1, sizeAfterSave);
+    }
+
+    @Test
+    public void save_With_Target_Expect_Saved() {
+        final String testTarget = "_test";
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-        documentDTO.setTarget("test_target");
+
+        documentDTO.setTarget(testTarget);
 
         documentService.save(documentDTO);
 
         final DocumentDTO documentDTO1 = documentService.get(documentDTO.getId());
 
         assertEquals(documentDTO1, documentDTO);
+    }
+
+    @Test
+    public void save_When_NewEmptyDocWithTarget_Expect_Saved() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        final String testTarget = "_test";
+
+        final DocumentDTO emptyDocumentDTO = documentService.get(null);
+        emptyDocumentDTO.setTarget(testTarget);
+
+        final int saveDocId = documentService.save(emptyDocumentDTO);
+        emptyDocumentDTO.setId(saveDocId);
+        final DocumentDTO documentDTO = documentService.get(saveDocId);
+
+        assertEquals(documentDTO.getTarget(), testTarget);
     }
 
     @Test
