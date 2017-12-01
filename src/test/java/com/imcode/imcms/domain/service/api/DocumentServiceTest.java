@@ -414,7 +414,7 @@ public class DocumentServiceTest {
     public void save_When_CustomTemplateSet_Expect_Saved() {
         final String templateName = "test_" + System.currentTimeMillis();
         final int docId = createdDoc.getId();
-        final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, 0, templateName);
+        final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, templateName);
 
         final TextDocumentTemplateDTO savedTemplate = templateService.save(templateDTO);
         assertNotNull(savedTemplate);

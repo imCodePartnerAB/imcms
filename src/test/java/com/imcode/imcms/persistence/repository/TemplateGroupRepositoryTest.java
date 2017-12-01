@@ -1,10 +1,9 @@
-package com.imcode.imcms.controller.api;
+package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
-import com.imcode.imcms.controller.AbstractControllerTest;
-import com.imcode.imcms.domain.dto.TemplateDTO;
+import com.imcode.imcms.persistence.entity.TemplateGroupJpa;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,33 +13,33 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
-public class TemplateControllerTest extends AbstractControllerTest {
+public class TemplateGroupRepositoryTest {
 
     @Autowired
-    private TemplateDataInitializer dataInitializer;
-    private List<TemplateDTO> templatesExpected;
+    private TemplateDataInitializer templateDataInitializer;
 
-    @Override
-    protected String controllerPath() {
-        return "/templates";
-    }
+    @Autowired
+    private TemplateGroupRepository templateGroupRepository;
 
     @Before
     public void setUp() throws Exception {
-        dataInitializer.cleanRepositories();
-        templatesExpected = dataInitializer.createData(5);
+        templateDataInitializer.cleanRepositories();
     }
 
     @Test
-    public void getTemplatesTest() throws Exception {
-        final String templatesJson = asJson(templatesExpected);
-        getAllExpectedOkAndJsonContentEquals(templatesJson);
+    public void findByName_When_containsTemplates_Expect_theSameId() throws Exception {
+        final String name = "Top menu group";
+        final TemplateGroupJpa topMenuGroup = templateDataInitializer.createData(name, 5),
+                actualGroup = templateGroupRepository.findByName(name);
+
+        assertEquals(topMenuGroup.getId(), actualGroup.getId());
+        assertEquals(name, actualGroup.getName());
     }
 
 }

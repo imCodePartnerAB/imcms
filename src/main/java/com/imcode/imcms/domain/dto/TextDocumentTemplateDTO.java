@@ -14,8 +14,6 @@ public class TextDocumentTemplateDTO extends TextDocumentTemplate {
 
     private String templateName;
 
-    private int templateGroupId;
-
     private String childrenTemplateName;
 
     public TextDocumentTemplateDTO(TextDocumentTemplate createFrom) {
@@ -26,7 +24,6 @@ public class TextDocumentTemplateDTO extends TextDocumentTemplate {
         return Value.with(new TextDocumentTemplateDTO(), textDocumentTemplateDTO -> {
             textDocumentTemplateDTO.templateName = DEFAULT_TEMPLATE_NAME;
             textDocumentTemplateDTO.childrenTemplateName = DEFAULT_TEMPLATE_NAME;
-            textDocumentTemplateDTO.templateGroupId = 0;
         });
     }
 }

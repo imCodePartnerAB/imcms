@@ -23,10 +23,6 @@ public class TextDocumentTemplateJPA extends TextDocumentTemplate {
     @Column(name = "template_name")
     private String templateName;
 
-    // fixme: not used yet
-    @Column(name = "group_id")
-    private int templateGroupId;
-
     @Column(name = "children_template_name")
     private String childrenTemplateName;
 

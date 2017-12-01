@@ -14,7 +14,6 @@ public abstract class TextDocumentTemplate {
         setDocId(createFrom.getDocId());
         setTemplateName(createFrom.getTemplateName());
         setChildrenTemplateName(createFrom.getChildrenTemplateName());
-        setTemplateGroupId(createFrom.getTemplateGroupId());
     }
 
     public abstract Integer getDocId();
@@ -24,10 +23,6 @@ public abstract class TextDocumentTemplate {
     public abstract String getTemplateName();
 
     public abstract void setTemplateName(String templateName);
-
-    public abstract int getTemplateGroupId();
-
-    public abstract void setTemplateGroupId(int templateGroupId);
 
     public abstract String getChildrenTemplateName();
 

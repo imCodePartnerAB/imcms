@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import com.imcode.imcms.persistence.repository.TemplateRepository;
 import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
@@ -25,6 +26,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
 
     private final MetaRepository metaRepository;
     private final TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> metaToDocumentDTO;
+    private final TemplateRepository templateRepository;
     private final CommonContentDataInitializer commonContentDataInitializer;
     private final VersionDataInitializer versionDataInitializer;
     private final TemplateDataInitializer templateDataInitializer;
@@ -35,6 +37,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
                                    VersionDataInitializer versionDataInitializer,
                                    TemplateDataInitializer templateDataInitializer,
                                    CommonContentService commonContentService,
+                                   TemplateRepository templateRepository,
                                    CommonContentDataInitializer commonContentDataInitializer) {
 
         this.metaRepository = metaRepository;
@@ -42,6 +45,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
         this.versionDataInitializer = versionDataInitializer;
         this.templateDataInitializer = templateDataInitializer;
         this.commonContentService = commonContentService;
+        this.templateRepository = templateRepository;
         this.commonContentDataInitializer = commonContentDataInitializer;
     }
 

@@ -14,8 +14,6 @@ public class TemplateDTO extends Template implements Serializable {
 
     private static final long serialVersionUID = 441290133487733989L;
 
-    private Integer id;
-
     private String name;
 
     private boolean hidden;

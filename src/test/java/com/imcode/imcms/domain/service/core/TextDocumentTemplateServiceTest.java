@@ -37,7 +37,7 @@ public class TextDocumentTemplateServiceTest {
     @Before
     public void setUp() throws Exception {
         final TextDocumentTemplateJPA templateJPA = textDocumentTemplateRepository.save(
-                new TextDocumentTemplateJPA(DOC_ID, "demo", 0, "demo")
+                new TextDocumentTemplateJPA(DOC_ID, "demo", "demo")
         );
 
         saved = new TextDocumentTemplateDTO(templateJPA);
