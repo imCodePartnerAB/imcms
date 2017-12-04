@@ -8,7 +8,8 @@ ALTER TABLE template
   COLLATE utf8_swedish_ci,
   ADD PRIMARY KEY (template_name);
 
-INSERT INTO template (template_name, is_hidden) VALUES ('demo', 0);
+INSERT INTO template (template_name, is_hidden) VALUES ('demo', 0)
+ON DUPLICATE KEY UPDATE template_name = template_name;
 
 ALTER TABLE templategroups
   RENAME imcms_template_group;
