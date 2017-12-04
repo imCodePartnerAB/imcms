@@ -63,7 +63,7 @@ public class TemplateService {
 
         Arrays.stream(templateNamesToBeSaved)
                 .map(FilenameUtils::getBaseName)
-                .map(templateName -> new TemplateJPA(null, templateName, false))
+                .map(templateName -> new TemplateJPA(templateName, false))
                 .forEach(templateRepository::save);
     }
 
@@ -85,7 +85,7 @@ public class TemplateService {
 
     public Optional<TemplateDTO> getTemplate(String templateName) {
         if (isTemplateFileExist(templateName)) {
-            final TemplateJPA template = templateRepository.findByName(templateName);
+            final TemplateJPA template = templateRepository.findOne(templateName);
             return Optional.ofNullable(template).map(TemplateDTO::new);
         }
 

@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Data
 @Entity
@@ -14,9 +17,6 @@ import javax.persistence.*;
 public class TemplateJPA extends Template {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @Column(name = "template_name", unique = true, nullable = false)
     private String name;
 
@@ -26,4 +26,5 @@ public class TemplateJPA extends Template {
     public TemplateJPA(Template templateFrom) {
         super(templateFrom);
     }
+
 }
