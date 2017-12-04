@@ -12,6 +12,7 @@
 <%--@elvariable id="imageService" type="com.imcode.imcms.domain.service.api.ImageService"--%>
 <%--@elvariable id="image" type="com.imcode.imcms.domain.dto.ImageDTO"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
+<%--@elvariable id="isPreviewMode" type="boolean"--%>
 <%--@elvariable id="loopEntryRef" type="com.imcode.imcms.domain.dto.LoopEntryRefDTO"--%>
 <%--@elvariable id="language" type="java.lang.String"--%>
 
@@ -22,7 +23,7 @@
 <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
 <c:set var="imageContent">
-    <c:set var="image" value="${isEditMode
+    <c:set var="image" value="${isEditMode || isPreviewMode
      ? imageService.getImage(targetDocId, index, language, loopEntryRef)
      : imageService.getPublicImage(targetDocId, index, language, loopEntryRef)}"/>
     <c:set var="imgPath" value="${image.generatedFilePath}"/>

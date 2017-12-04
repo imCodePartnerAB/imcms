@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import java.util.Optional;
 
+import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
+
 /**
  * General controller for document viewing in any mode.
  * <p>
@@ -33,6 +35,9 @@ public class ViewDocumentController {
 
     @Value("${imcms.version}")
     private String version;
+
+    @Value("${document.versioning:true}")
+    private boolean isVersioningAllowed;
 
     ViewDocumentController(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
@@ -63,6 +68,7 @@ public class ViewDocumentController {
 
         final String isEditModeStr = Objects.toString(request.getAttribute("isEditMode"), "false");
         final boolean isEditMode = Boolean.parseBoolean(isEditModeStr);
+        final boolean isPreviewMode = Boolean.parseBoolean(request.getParameter(REQUEST_PARAM__WORKING_PREVIEW));
         final String viewName = textDocument.getTemplateName();
 
         mav.setViewName(viewName);
@@ -73,7 +79,8 @@ public class ViewDocumentController {
         mav.addObject("isEditMode", isEditMode);
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("imagesPath", imagesPath);
-        mav.addObject("isVersioningAllowed", Imcms.isVersioningAllowed());
+        mav.addObject("isVersioningAllowed", isVersioningAllowed);
+        mav.addObject("isPreviewMode", isVersioningAllowed && isPreviewMode);
         mav.addObject("version", version);
 
         return mav;
