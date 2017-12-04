@@ -1,7 +1,7 @@
 Imcms.define("imcms-templates-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-templates-rest-api",
-        "imcms-page-info-tabs-linker"
+        "imcms-page-info-tab-form-builder"
     ],
     function (BEM, components, templatesRestApi, tabContentBuilder) {
 

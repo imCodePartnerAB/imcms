@@ -1,6 +1,6 @@
 Imcms.define("imcms-appearance-tab-builder",
-    ["imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tabs-linker", "imcms-choose-image-builder"],
-    function (BEM, components, linker, chooseImage) {
+    ["imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder", "imcms-choose-image-builder"],
+    function (BEM, components, tabFormBuilder, chooseImage) {
         var pageInfoInnerStructureBEM = new BEM({
             block: "imcms-field",
             elements: {
@@ -99,7 +99,7 @@ Imcms.define("imcms-appearance-tab-builder",
 
                 var tabElements = [$showInContainer, $documentAliasContainer];
 
-                var $result = linker.buildFormBlock(tabElements, index);
+                var $result = tabFormBuilder.buildFormBlock(tabElements, index);
                 tabData.$result = $result;
 
                 return $result;

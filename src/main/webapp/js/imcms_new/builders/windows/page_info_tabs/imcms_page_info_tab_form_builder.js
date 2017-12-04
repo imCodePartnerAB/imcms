@@ -1,4 +1,4 @@
-Imcms.define("imcms-page-info-tabs-linker", ["imcms-bem-builder"], function (BEM) {
+Imcms.define("imcms-page-info-tab-form-builder", ["imcms-bem-builder"], function (BEM) {
 
     var formsBEM = new BEM({
         block: "imcms-form",

@@ -106,7 +106,7 @@
             "imcms-page-info-builder": "builders/windows/imcms_page_info_builder.js",
             //  <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/windows/page_info_tabs/imcms_page_info_tabs_builder.js",
-            "imcms-page-info-tabs-linker": "builders/windows/page_info_tabs/imcms_page_info_tabs_linker.js",
+            "imcms-page-info-tab-form-builder": "builders/windows/page_info_tabs/imcms_page_info_tab_form_builder.js",
             "imcms-appearance-tab-builder": "builders/windows/page_info_tabs/imcms_appearance_tab_builder.js",
             "imcms-life-cycle-tab-builder": "builders/windows/page_info_tabs/imcms_life_cycle_tab_builder.js",
             "imcms-keywords-tab-builder": "builders/windows/page_info_tabs/imcms_keywords_tab_builder.js",

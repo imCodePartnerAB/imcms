@@ -1,6 +1,6 @@
 Imcms.define("imcms-access-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-roles-rest-api", "imcms-page-info-tabs-linker",
+        "imcms-bem-builder", "imcms-components-builder", "imcms-roles-rest-api", "imcms-page-info-tab-form-builder",
         "imcms-uuid-generator", "jquery"
     ],
     function (BEM, components, rolesRestApi, tabContentBuilder, uuidGenerator, $) {

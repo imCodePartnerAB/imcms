@@ -1,7 +1,7 @@
 Imcms.define("imcms-status-tab-builder",
     [
         "imcms-date-picker", "imcms-time-picker", "imcms-bem-builder", "imcms-components-builder",
-        "imcms-page-info-tabs-linker", "jquery"
+        "imcms-page-info-tab-form-builder", "jquery"
     ],
     function (DatePicker, TimePicker, BEM, components, tabContentBuilder, $) {
 

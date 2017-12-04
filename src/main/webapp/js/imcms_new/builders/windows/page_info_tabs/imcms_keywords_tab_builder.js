@@ -1,7 +1,7 @@
 Imcms.define("imcms-keywords-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder",
-        "imcms-page-info-tabs-linker"
+        "imcms-page-info-tab-form-builder"
     ],
     function (BEM, components, tabContentBuilder) {
 
