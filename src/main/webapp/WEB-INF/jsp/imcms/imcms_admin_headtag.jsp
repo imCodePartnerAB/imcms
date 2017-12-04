@@ -41,7 +41,7 @@
 <script type="text/javascript" src="${contextPath}/js/jsformbuilder/JSFormBuilder.js"></script>
 
 <script type="text/javascript"
-        src="${contextPath}/js/imcms/imcms.js.jsp?meta_id=${document.id}&amp;language=${user.language.isoCode639_2}&amp;flags=${flags}"></script>
+        src="${contextPath}/js/imcms/imcms_config.js.jsp?meta_id=${document.id}&amp;language=${user.language.isoCode639_2}&amp;flags=${flags}"></script>
 <script type="text/javascript" src="${contextPath}/application.min.js"></script>
 
 <%--<script type="text/javascript" src="${contextPath}/js/imcms/imcms_addons.js"></script>--%>

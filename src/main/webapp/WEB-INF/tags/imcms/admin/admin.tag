@@ -8,7 +8,7 @@
 
 <link rel="stylesheet" href="${contextPath}/css_new/imcms-imports_files.css">
 <script>
-    <jsp:include page="/js/imcms/imcms.js.jsp"/>
+    <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
 </script>
 
 <c:if test="${isAdmin}">
