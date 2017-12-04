@@ -20,7 +20,7 @@ Imcms.define("imcms-choose-image-builder",
                             "text-box": $textField,
                             "button": buttons.neutral("<button>", {
                                 text: attributes["button-text"],
-                                click: attributes.click || contentManager.build
+                                click: attributes.click && contentManager.build.bind(contentManager, attributes.click)
                             })
                         }
                     }).buildBlockStructure("<div>");
