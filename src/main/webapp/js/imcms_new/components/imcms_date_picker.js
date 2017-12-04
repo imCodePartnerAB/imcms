@@ -103,10 +103,17 @@ Imcms.define("imcms-date-picker",
             }
         }
 
+        function bindCurrentDateSetter($dateBoxContainer) {
+            return function () {
+                bindDateSetter($dateBoxContainer)(getCurrentDate());
+            }
+        }
+
         $(document).click(closeCalendar);
 
         return function ($dateBoxContainer, withCalendar) {
             $dateBoxContainer.setDate = bindDateSetter($dateBoxContainer);
+            $dateBoxContainer.setCurrentDate = bindCurrentDateSetter($dateBoxContainer);
             $dateBoxContainer.getDate = bindDateGetter($dateBoxContainer);
 
             if (!withCalendar) {

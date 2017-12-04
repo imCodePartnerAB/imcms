@@ -32,6 +32,10 @@
     float: left;
 }
 
+.imcms-field__item--margin-l {
+    margin-left: 50px;
+}
+
 .imcms-field__title {
     margin-bottom: 10px;
 }

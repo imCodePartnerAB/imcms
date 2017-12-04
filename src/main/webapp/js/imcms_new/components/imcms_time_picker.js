@@ -80,6 +80,13 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
         }
     }
 
+    function bindSetCurrentTime($timePickerContainer) {
+        return function () {
+            var currentTimeObj = getCurrentTimeObj();
+            bindSetTime($timePickerContainer)(currentTimeObj.hours + ':' + currentTimeObj.minutes);
+        }
+    }
+
     function bindGetTime($timePickerContainer) {
         return function () {
             return $timePickerContainer.find(CURRENT_TIME__INPUT__CLASS_$).val();
@@ -216,6 +223,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
 
     return function ($timePickerContainer, withClock) {
         $timePickerContainer.setTime = bindSetTime($timePickerContainer);
+        $timePickerContainer.setCurrentTime = bindSetCurrentTime($timePickerContainer);
         $timePickerContainer.getTime = bindGetTime($timePickerContainer);
 
         if (!withClock) {

@@ -17,14 +17,6 @@ Imcms.define("imcms-life-cycle-tab-builder",
             tabData = {}
         ;
 
-        function onTimeNowButtonClick() {
-            console.log("%c Not implemented feature: set time.", "color: red;")
-        }
-
-        function onTimeClearButtonClick() {
-            console.log("%c Not implemented feature: clear time.", "color: red;")
-        }
-
         function buildDocStatusSelect() {
             tabData.$docStatusSelect = components.selects.imcmsSelect("<div>", {
                 id: "doc-status",
@@ -45,10 +37,10 @@ Imcms.define("imcms-life-cycle-tab-builder",
         }
 
         function buildDateTimeContainerBlock($title, items) {
-            var blockElements = [{"title": $title}].concat(items.map(function ($item) {
+            var blockElements = [{"title": $title}].concat(items.map(function ($item, index) {
                 return {
                     "item": $item,
-                    modifiers: itemModifiers
+                    modifiers: (items.length - 1) === index ? itemModifiers.concat("margin-l") : itemModifiers
                 }
             }));
 
@@ -67,21 +59,27 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 $time = components.dateTime.timePickerClock({title: containerData.timeTitle}),
                 $setDateTimeNowBtn = components.buttons.neutralButton({
                     text: "Now",
-                    click: onTimeNowButtonClick
+                    click: function () {
+                        $date.setCurrentDate();
+                        $time.setCurrentTime();
+                    }
                 }),
                 $setDateTimeNowContainer = components.buttons.buttonsContainer("<div>", [$setDateTimeNowBtn]),
-                $dateTime = components.dateTime.dateTimeReadOnly({title: containerData.savedDateTimeTitle}),
                 $clearDateTimeBtn = components.buttons.neutralButton({
                     text: "Clear",
-                    click: onTimeClearButtonClick
+                    click: function () {
+                        $date.setDate('');
+                        $time.setTime('');
+                    }
                 }),
-                $clearDateTimeContainer = components.buttons.buttonsContainer("<div>", [$clearDateTimeBtn])
+                $clearDateTimeContainer = components.buttons.buttonsContainer("<div>", [$clearDateTimeBtn]),
+                $dateTime = components.dateTime.dateTimeReadOnly({title: containerData.savedDateTimeTitle})
             ;
 
             saveDateTimeContainerData(containerData.dataTitle, $time, $date, $dateTime);
 
             return buildDateTimeContainerBlock($title,
-                [$date, $time, $setDateTimeNowContainer, $dateTime, $clearDateTimeContainer]
+                [$date, $time, $setDateTimeNowContainer, $clearDateTimeContainer, $dateTime]
             );
         }
 
