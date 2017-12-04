@@ -1,7 +1,8 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.TemplateDTO;
-import com.imcode.imcms.persistence.entity.TemplateGroupJpa;
+import com.imcode.imcms.domain.dto.TemplateGroupDTO;
+import com.imcode.imcms.persistence.entity.TemplateGroupJPA;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateGroupRepository;
@@ -64,14 +65,17 @@ public class TemplateDataInitializer extends TestDataCleaner {
         textDocumentTemplateRepository.save(textDocumentTemplate);
     }
 
-    public TemplateGroupJpa createData(String name, int howMuchContainsTemplates) {
-        return Value.apply(new TemplateGroupJpa(), templateGroupJpa -> {
-            createData(howMuchContainsTemplates);
-            final List<TemplateJPA> all = templateRepository.findAll();
+    public TemplateGroupDTO createData(String name, int howMuchContainsTemplates, boolean withoutSaving) {
+        final TemplateGroupJPA templateGroupJPA = Value.apply(new TemplateGroupJPA(), templateGroupJpa -> {
+            final List<TemplateDTO> templates = createData(howMuchContainsTemplates);
             templateGroupJpa.setName(name);
-            templateGroupJpa.setTemplates(all);
+            templateGroupJpa.setTemplates(templates.stream().map(TemplateJPA::new).collect(Collectors.toList()));
+            if (withoutSaving) {
+                return templateGroupJpa;
+            }
             return templateGroupRepository.saveAndFlush(templateGroupJpa);
         });
+        return new TemplateGroupDTO(templateGroupJPA);
     }
 
 

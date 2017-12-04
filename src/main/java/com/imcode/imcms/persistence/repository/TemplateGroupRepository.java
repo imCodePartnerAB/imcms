@@ -1,10 +1,10 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.persistence.entity.TemplateGroupJpa;
+import com.imcode.imcms.persistence.entity.TemplateGroupJPA;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TemplateGroupRepository extends JpaRepository<TemplateGroupJpa, Integer> {
+public interface TemplateGroupRepository extends JpaRepository<TemplateGroupJPA, Integer> {
 
-    public TemplateGroupJpa findByName(String name);
+    public TemplateGroupJPA findByName(String name);
 
 }

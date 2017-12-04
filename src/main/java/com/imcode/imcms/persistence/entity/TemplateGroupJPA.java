@@ -1,6 +1,7 @@
 package com.imcode.imcms.persistence.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.List;
 @Entity
 @Table(name = "imcms_template_group")
 @Data
-public class TemplateGroupJpa extends TemplateGroup<TemplateJPA> {
+@NoArgsConstructor
+public class TemplateGroupJPA extends TemplateGroup<TemplateJPA> {
 
     @Id
     @Column(name = "group_id")
@@ -24,4 +26,8 @@ public class TemplateGroupJpa extends TemplateGroup<TemplateJPA> {
             inverseJoinColumns = @JoinColumn(name = "template_name"))
     private List<TemplateJPA> templates;
 
+    public <T1 extends Template, TG extends TemplateGroup<T1>> TemplateGroupJPA(TG from) {
+        super(from, TemplateJPA::new);
+    }
 }
+
