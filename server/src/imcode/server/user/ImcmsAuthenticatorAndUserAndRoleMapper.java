@@ -929,10 +929,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     /**
      * Checks is user's IP and role in white list and throws Exception if not.
      *
-     * @param user to be checked
+     * @param user    to be checked
      * @param request to get user's IP
-     * @since 4.2.29
      * @throws UserIpIsNotAllowedException if user's IP for role is not in white list
+     * @since 4.2.29
      */
     public void checkUserIpAllowed(UserDomainObject user, HttpServletRequest request) throws UserIpIsNotAllowedException {
 
@@ -959,7 +959,11 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             return true; // only non-default users have to be checked
         }
 
-        final String userIP = request.getRemoteAddr();
+        String userIP = request.getRemoteAddr();
+
+        if ("0:0:0:0:0:0:0:1".equals(userIP)) {
+            userIP = "172.0.0.1"; // localhost handled here
+        }
 
         if (isNotValidInet4Address(userIP)) {
             return false;
@@ -987,10 +991,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     private boolean isNotValidInet4Address(String ip) {
-        if ("0:0:0:0:0:0:0:1".equals(ip)) {
-            ip = "172.0.0.1"; // localhost handled here
-        }
-
         return !InetAddressValidator.getInstance().isValidInet4Address(ip);
     }
 }

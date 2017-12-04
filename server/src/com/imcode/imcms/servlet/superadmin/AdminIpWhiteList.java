@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -45,6 +44,37 @@ public class AdminIpWhiteList extends HttpServlet {
     private static final String IP_RANGE_TO = "ip_range_to";
 
     private final InetAddressValidator ipValidator = InetAddressValidator.getInstance();
+
+    public static List<RoleIpRange> getRoleIpRanges() {
+        final RowTransformer<RoleIpRange> rowTransformer = new RowTransformer<RoleIpRange>() {
+            @Override
+            public RoleIpRange createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
+                final int id = resultSet.getInt("id");
+                final boolean isAdmin = resultSet.getBoolean(IS_ADMIN);
+                final String ipFrom = resultSet.getString(IP_RANGE_FROM);
+                final String ipTo = resultSet.getString(IP_RANGE_TO);
+                return new RoleIpRange(id, isAdmin, ipFrom, ipTo);
+            }
+
+            @Override
+            public Class<RoleIpRange> getClassOfCreatedObjects() {
+                return RoleIpRange.class;
+            }
+        };
+
+        final String sqlCommand = "SELECT id, " + IS_ADMIN + ", " + IP_RANGE_FROM + ", " + IP_RANGE_TO
+                + " FROM " + TABLE_NAME
+                + " ORDER BY id";
+
+        final CollectionHandler<RoleIpRange, List<RoleIpRange>> collectionHandler =
+                new CollectionHandler<RoleIpRange, List<RoleIpRange>>(new ArrayList<RoleIpRange>(), rowTransformer);
+
+        final DatabaseCommand<List<RoleIpRange>> queryCommand = new SqlQueryDatabaseCommand<List<RoleIpRange>>(
+                sqlCommand, new Object[]{}, collectionHandler
+        );
+
+        return Imcms.getServices().getDatabase().execute(queryCommand);
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -230,42 +260,11 @@ public class AdminIpWhiteList extends HttpServlet {
         AdminRoles.printErrorMessage(request, response, header, msg);
     }
 
-    private boolean isIpFromLessThanIpTo(String ipFrom, String ipTo) throws UnknownHostException {
+    private boolean isIpFromLessThanIpTo(String ipFrom, String ipTo) {
         final long ipFromLong = Utility.ipStringToLong(ipFrom);
         final long ipToLong = Utility.ipStringToLong(ipTo);
 
         return ipFromLong <= ipToLong;
-    }
-
-    public static List<RoleIpRange> getRoleIpRanges() {
-        final RowTransformer<RoleIpRange> rowTransformer = new RowTransformer<RoleIpRange>() {
-            @Override
-            public RoleIpRange createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
-                final int id = resultSet.getInt("id");
-                final boolean isAdmin = resultSet.getBoolean(IS_ADMIN);
-                final String ipFrom = resultSet.getString(IP_RANGE_FROM);
-                final String ipTo = resultSet.getString(IP_RANGE_TO);
-                return new RoleIpRange(id, isAdmin, ipFrom, ipTo);
-            }
-
-            @Override
-            public Class<RoleIpRange> getClassOfCreatedObjects() {
-                return RoleIpRange.class;
-            }
-        };
-
-        final String sqlCommand = "SELECT id, " + IS_ADMIN + ", " + IP_RANGE_FROM + ", " + IP_RANGE_TO
-                + " FROM " + TABLE_NAME
-                + " ORDER BY id";
-
-        final CollectionHandler<RoleIpRange, List<RoleIpRange>> collectionHandler =
-                new CollectionHandler<RoleIpRange, List<RoleIpRange>>(new ArrayList<RoleIpRange>(), rowTransformer);
-
-        final DatabaseCommand<List<RoleIpRange>> queryCommand = new SqlQueryDatabaseCommand<List<RoleIpRange>>(
-                sqlCommand, new Object[]{}, collectionHandler
-        );
-
-        return Imcms.getServices().getDatabase().execute(queryCommand);
     }
 
     private String getAdminTemplatePath(String templateFileName, UserDomainObject user) {
