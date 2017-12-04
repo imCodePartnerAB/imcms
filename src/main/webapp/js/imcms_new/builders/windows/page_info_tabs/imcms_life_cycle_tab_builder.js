@@ -37,10 +37,11 @@ Imcms.define("imcms-life-cycle-tab-builder",
         }
 
         function buildDateTimeContainerBlock($title, items) {
+            var lastIndex = items.length - 1;
             var blockElements = [{"title": $title}].concat(items.map(function ($item, index) {
                 return {
                     "item": $item,
-                    modifiers: (items.length - 1) === index ? itemModifiers.concat("margin-l") : itemModifiers
+                    modifiers: (lastIndex === index) ? itemModifiers.concat("margin-l") : itemModifiers
                 }
             }));
 
