@@ -22,22 +22,17 @@ import java.util.stream.Collectors;
 @Service
 public class SearchDocumentService {
 
-    private final Function<DocumentStoredFields, DocumentDTO> mapper;
-    private final DocumentService documentService;
+    private final Function<DocumentStoredFields, DocumentDTO> storedFieldsToDocumentDTO;
     private final DocumentMapper documentMapper;
 
-    SearchDocumentService(Function<DocumentStoredFields, DocumentDTO> mapper,
-                          DocumentService documentService, DocumentMapper documentMapper) {
-        this.mapper = mapper;
-        this.documentService = documentService;
+    SearchDocumentService(Function<DocumentStoredFields, DocumentDTO> documentStoredFieldToDocumentDto,
+                          DocumentMapper documentMapper) {
+
+        this.storedFieldsToDocumentDTO = documentStoredFieldToDocumentDto;
         this.documentMapper = documentMapper;
     }
 
     public List<DocumentDTO> searchDocuments(SearchQueryDTO searchQuery) {
-
-        if (searchQuery.getTerm() == null) {
-            return documentService.getAllDocuments();
-        }
 
         if (searchQuery.getUserId() == null) {
             searchQuery.setUserId(Imcms.getUser().getId());
@@ -72,12 +67,14 @@ public class SearchDocumentService {
         String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + searchQuery.getUserId();
         solrQuery.addFilterQuery(userFilter);
 
-        Sort.Order order = searchQuery.getPage().getSort().iterator().next();
-        solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
+        if (searchQuery.getPage() != null) {
+            Sort.Order order = searchQuery.getPage().getSort().iterator().next();
+            solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
+        }
 
         result = documentMapper.getDocumentIndex()
                 .search(solrQuery, Imcms.getUser())
-                .documentStoredFieldsList().stream().map(mapper)
+                .documentStoredFieldsList().stream().map(storedFieldsToDocumentDTO)
                 .collect(Collectors.toList());
 
         return result;

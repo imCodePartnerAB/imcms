@@ -399,13 +399,13 @@ Imcms.define("imcms-document-editor-builder",
             var $docItemId = components.texts.titleText("<div>", document.id);
             $docItemId.modifiers = ["col-2"];
 
-            var title = document.commonContents.filter(function (commonContent) {
+            var title = (document.commonContents) ? document.commonContents.filter(function (commonContent) {
                 return commonContent.language.code === imcms.language.code;
 
             }).map(function (commonContent) {
                 return commonContent.headline;
 
-            })[0];
+            })[0] : document.title;
 
             var $docItemTitle = components.texts.titleText("<div>", title);
             $docItemTitle.modifiers = ["col-3"];
