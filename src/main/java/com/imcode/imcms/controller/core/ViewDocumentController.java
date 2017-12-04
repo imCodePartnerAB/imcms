@@ -5,6 +5,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,12 @@ import java.util.Optional;
 public class ViewDocumentController {
 
     private final DocumentMapper documentMapper;
+
+    @Value("${ImagePath}")
+    private String imagesPath;
+
+    @Value("${imcms.version}")
+    private String version;
 
     ViewDocumentController(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
@@ -65,6 +72,9 @@ public class ViewDocumentController {
         mav.addObject("isAdmin", Imcms.getUser().isAdmin());
         mav.addObject("isEditMode", isEditMode);
         mav.addObject("contextPath", request.getContextPath());
+        mav.addObject("imagesPath", imagesPath);
+        mav.addObject("isVersioningAllowed", Imcms.isVersioningAllowed());
+        mav.addObject("version", version);
 
         return mav;
     }
