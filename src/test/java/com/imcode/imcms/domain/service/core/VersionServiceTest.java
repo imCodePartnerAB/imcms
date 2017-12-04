@@ -13,8 +13,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -54,4 +55,14 @@ public class VersionServiceTest {
         assertEquals(4, version.getNo());
     }
 
+    @Test
+    public void delete() {
+        final List<Version> versions = versionService.findByDocId(docId);
+        assertTrue(versions.size() > 0);
+
+        versionService.delete(docId);
+
+        final List<Version> emptyList = versionService.findByDocId(docId);
+        assertTrue(emptyList.isEmpty());
+    }
 }

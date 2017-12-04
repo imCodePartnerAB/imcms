@@ -17,6 +17,10 @@ public interface VersionRepository extends JpaRepository<Version, Integer> {
     @Query("SELECT v FROM Version v WHERE v.docId = ?1 ORDER BY v.no")
     List<Version> findByDocId(int docId);
 
+    @Modifying
+    @Query("DELETE FROM Version v WHERE v.docId = ?1")
+    void deleteByDocId(int docId);
+
     //    @Query("SELECT v FROM Version v WHERE v.docId = ?1 AND v.no = ?2")
     Version findByDocIdAndNo(int docId, int no);
 
@@ -39,4 +43,3 @@ public interface VersionRepository extends JpaRepository<Version, Integer> {
                          @Param("no") int no,
                          @Param("publisherId") int userId);
 }
-
