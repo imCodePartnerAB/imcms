@@ -230,8 +230,15 @@ public class AdminIpWhiteList extends HttpServlet {
         final String templatePath = getAdminTemplatePath(templateName, user);
         final String language = user.getLanguageIso639_2();
 
+        String userIP = request.getRemoteAddr();
+
+        if ("0:0:0:0:0:0:0:1".equals(userIP)) {
+            userIP = "172.0.0.1"; // localhost handled here
+        }
+
         request.setAttribute("contextPath", request.getContextPath());
         request.setAttribute("language", language);
+        request.setAttribute("userIP", userIP);
         request.getRequestDispatcher(templatePath).forward(request, response);
     }
 
@@ -244,8 +251,15 @@ public class AdminIpWhiteList extends HttpServlet {
         final List<RoleIpRange> roleIpRanges = getRoleIpRanges();
         final String language = user.getLanguageIso639_2();
 
+        String userIP = request.getRemoteAddr();
+
+        if ("0:0:0:0:0:0:0:1".equals(userIP)) {
+            userIP = "172.0.0.1"; // localhost handled here
+        }
+
         request.setAttribute("contextPath", request.getContextPath());
         request.setAttribute("language", language);
+        request.setAttribute("userIP", userIP);
         request.setAttribute("roleIpRanges", roleIpRanges);
         request.getRequestDispatcher(templatePath).forward(request, response);
     }

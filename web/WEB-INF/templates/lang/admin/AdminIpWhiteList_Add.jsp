@@ -84,6 +84,9 @@
                                     <td colspan="2"><? templates/sv/AdminIpWhiteList_Add.jsp/2 ?></td>
                                 </tr>
                                 <tr>
+                                    <td><? templates/sv/AdminIpAccess.htm/4 ?>${userIP}<br> &nbsp;</td>
+                                </tr>
+                                <tr>
                                     <td colspan="2"><img
                                             src="${contextPath}/imcms/${language}/images/admin/1x1_cccccc.gif"
                                             width="100%" height="1" style="margin: 8px 0;" alt=""/></td>

@@ -100,6 +100,9 @@
                                     <td><? templates/sv/AdminIpAccess.htm/3 ?><br> &nbsp;</td>
                                 </tr>
                                 <tr>
+                                    <td><? templates/sv/AdminIpAccess.htm/4 ?>${userIP}<br> &nbsp;</td>
+                                </tr>
+                                <tr>
                                     <td>
                                         <table border="0" cellspacing="0" cellpadding="2" width="100%">
                                             <tr>
