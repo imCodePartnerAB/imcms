@@ -84,7 +84,7 @@
                                     <td colspan="2"><? templates/sv/AdminIpWhiteList_Add.jsp/2 ?></td>
                                 </tr>
                                 <tr>
-                                    <td><? templates/sv/AdminIpAccess.htm/4 ?>${userIP}<br> &nbsp;</td>
+                                    <td><? templates/sv/AdminIpAccess.htm/4 ?> ${userIP}<br> &nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td colspan="2"><img

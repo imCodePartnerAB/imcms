@@ -100,7 +100,7 @@
                                     <td><? templates/sv/AdminIpAccess.htm/3 ?><br> &nbsp;</td>
                                 </tr>
                                 <tr>
-                                    <td><? templates/sv/AdminIpAccess.htm/4 ?>${userIP}<br> &nbsp;</td>
+                                    <td><? templates/sv/AdminIpAccess.htm/4 ?> ${userIP}<br> &nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td>
