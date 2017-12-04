@@ -136,10 +136,6 @@
     width: 45%;
 }
 
-.demo-text-area--right {
-    float: right;
-}
-
 .demo-text-area__title {
     font-weight: 500;
     font-size: 22px;
