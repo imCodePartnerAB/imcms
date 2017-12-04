@@ -15,9 +15,11 @@
 <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
 <%--@elvariable id="loopService" type="com.imcode.imcms.domain.service.api.LoopService"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
+<%--@elvariable id="isPreviewMode" type="boolean"--%>
 
 <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
-<c:set var="loop" value="${loopService.getLoop(index, targetDocId)}" scope="request"/>
+<c:set var="loop" value="${isEditMode || isPreviewMode
+            ? loopService.getLoop(index, targetDocId) : loopService.getLoopPublic(index, targetDocId)}" scope="request"/>
 <c:set var="loopIndex" value="${index}" scope="request"/>
 
 <c:set var="loopContent" value=""/>
