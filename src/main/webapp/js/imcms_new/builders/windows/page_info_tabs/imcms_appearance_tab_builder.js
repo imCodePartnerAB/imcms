@@ -48,7 +48,10 @@ Imcms.define("imcms-appearance-tab-builder",
                     value: commonContent.menuImageURL,
                     placeholder: "Image path",
                     "label-text": "Link to image",
-                    "button-text": "choose..."
+                    "button-text": "choose...",
+                    click: function (selectedImage) {
+                        $linkToImage.setValue(selectedImage.path);
+                    }
                 }),
                 $linkToImageContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"choose-image": $linkToImage}]);
 
