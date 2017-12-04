@@ -13,6 +13,7 @@
     <title>imcms v2</title>
     <!--style files-->
     <link rel="stylesheet" href="${contextPath}/demo/css/demo.css">
+    <imcms:admin/>
 </head>
 <body>
 
@@ -24,8 +25,7 @@
         <div class="imcms-demo-page__menu imcms-demo-menu">
             <imcms:menuLoop>
                 <div class="imcms-demo-menu__menu-item imcms-demo-menu-item${hasChildren?' imcms-demo-menu__menu-item--parent':''}${isCurrent?' imcms-demo-menu__menu-item--active':''}">
-                    <imcms:menuItemLink
-                            classes="imcms-demo-menu-item__text">${menuItem.title}</imcms:menuItemLink>
+                    <imcms:menuItemLink classes="imcms-demo-menu-item__text">${menuItem.title}</imcms:menuItemLink>
                     <imcms:menuLoop>
                         <div class="imcms-demo-menu__menu-items imcms-demo-menu__menu-items--child">
                             <div class="imcms-demo-menu__menu-item">
@@ -43,36 +43,16 @@
         <imcms:contentLoop index="1">
             <imcms:loop>
                 <div class="imcms-demo-content__loop-content demo-loop-content">
-                    <div class="demo-loop-content__image">Lorem ipsum dolor sit amet, consectetur adipiscing</div>
+                    <imcms:image no="1"/>
                     <div class="demo-loop-content__text-area demo-loop-texts">
                         <div class="demo-loop-texts__text-area demo-text-area demo-text-area--left">
-                            <p>Title Name 1</p>
-
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ultrices dui ac mauris
-                            facilisis ornare. Morbi congue mauris non eros ultrices porta. Suspendisse sed consequat
-                            elit. Proin placerat augue tortor, nec gravida odio tempor a. Duis facilisis erat in
-                            maximus sagittis. Suspendisse potenti. Vivamus rutrum facilisis elit, non ultricies
-                            nulla tincidunt in. Suspendisse commodo tincidunt varius. Duis tincidunt, augue aliquet
-                            tristique scelerisque, mi felis vehicula dui, a rhoncus mi mauris in neque. Maecenas non
-                            elit non lacus blandit volutpat iaculis ac lacus. Sed sed mollis eros. Praesent bibendum
-                            egestas mauris loopEntryid tincidunt. Nulla lectus massa, tempor vel interdum non,
-                            sollicitudin
-                            vitae nunc. Vestibulum nec sapien sit amet orci rutrum iaculis. Quisque sit amet aliquam
-                            lorem.
+                            <imcms:text no="1" label="Demo loop text 1"/>
                         </div>
                         <div class="demo-loop-texts__text-area demo-text-area demo-text-area--right">
-                            <p>Title Name 2</p>
-
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ultrices dui ac mauris
-                            facilisis ornare. Morbi congue mauris non eros ultrices porta. Suspendisse sed consequat
-                            elit. Proin placerat augue tortor, nec gravida odio tempor a. Duis facilisis erat in
-                            maximus sagittis. Suspendisse potenti. Vivamus rutrum facilisis elit, non ultricies
-                            nulla tincidunt in. Suspendisse commodo tincidunt varius. Duis tincidunt, augue aliquet
-                            tristique scelerisque, mi felis vehicula dui, a rhoncus mi mauris in neque.
+                            <imcms:text no="2" label="Demo loop text 2"/>
                         </div>
                     </div>
-                    <imcms:image no="1"/>
-                    <imcms:text no="1" label="Demo loop text"/>
+                    <br>
                 </div>
             </imcms:loop>
         </imcms:contentLoop>
@@ -94,5 +74,4 @@
 </div>
 
 </body>
-<imcms:admin/>
 </html>
