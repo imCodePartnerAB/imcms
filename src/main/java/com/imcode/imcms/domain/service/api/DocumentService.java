@@ -1,9 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.CommonContentDTO;
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.LanguageDTO;
-import com.imcode.imcms.domain.dto.PermissionDTO;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
@@ -30,11 +27,11 @@ public class DocumentService {
 
     private final MetaRepository metaRepository;
     private final TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> documentMapping;
+    private final Function<DocumentDTO, Meta> documentDtoToMeta;
     private final CommonContentService commonContentService;
     private final VersionService versionService;
     private final LanguageService languageService;
     private final TextDocumentTemplateService textDocumentTemplateService;
-    private final Function<DocumentDTO, Meta> metaSaver;
 
     DocumentService(MetaRepository metaRepository,
                     TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> metaToDocumentDTO,
@@ -46,11 +43,11 @@ public class DocumentService {
 
         this.metaRepository = metaRepository;
         this.documentMapping = metaToDocumentDTO;
+        this.documentDtoToMeta = documentDtoToMeta;
         this.commonContentService = commonContentService;
         this.versionService = versionService;
         this.languageService = languageService;
         this.textDocumentTemplateService = textDocumentTemplateService;
-        this.metaSaver = documentDtoToMeta.andThen(metaRepository::save);
     }
 
     public DocumentDTO get(Integer docId) {
@@ -71,10 +68,29 @@ public class DocumentService {
         return documentMapping.apply(metaRepository.findOne(docId), latestVersion, commonContents);
     }
 
-    public void save(DocumentDTO saveMe) {
+    /**
+     * Saves document to DB.
+     *
+     * @param saveMe document to be saved
+     * @return id of saved document
+     */
+    public int save(DocumentDTO saveMe) {
+        final boolean isNew = (saveMe.getId() == null);
+
+        final Optional<TextDocumentTemplateDTO> oTemplate = Optional.ofNullable(saveMe.getTemplate());
+        final Meta metaForSave = documentDtoToMeta.apply(saveMe);
+        final Integer docId = metaRepository.save(metaForSave).getId();
+
+        if (isNew) {
+            versionService.create(docId);
+            oTemplate.ifPresent(textDocumentTemplateDTO -> textDocumentTemplateDTO.setDocId(docId));
+            saveMe.getCommonContents().forEach(commonContentDTO -> commonContentDTO.setDocId(docId));
+        }
+
         commonContentService.save(saveMe.getCommonContents());
-        Optional.ofNullable(saveMe.getTemplate()).ifPresent(textDocumentTemplateService::save);
-        metaSaver.apply(saveMe);
+        oTemplate.ifPresent(textDocumentTemplateService::save);
+
+        return docId;
     }
 
     List<DocumentDTO> getAllDocuments() {

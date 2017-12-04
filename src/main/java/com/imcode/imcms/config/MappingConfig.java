@@ -11,7 +11,9 @@ import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.function.TernaryFunction;
+import imcode.server.Imcms;
 import imcode.server.document.index.DocumentStoredFields;
+import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
@@ -212,16 +214,16 @@ class MappingConfig {
     ) {
         return documentDTO -> {
             final Meta meta = new Meta();
-            final int docId = documentDTO.getId();
-            final int version = documentDTO.getCurrentVersion().getId();
+            final Integer version = documentDTO.getCurrentVersion().getId();
 
-            meta.setId(docId);
+            meta.setId(documentDTO.getId());
             meta.setDefaultVersionNo(version); // fixme: save or check version first
             meta.setPublicationStatus(documentDTO.getPublicationStatus());
             meta.setTarget(documentDTO.getTarget());
             meta.setDocumentType(documentDTO.getType());
             meta.setKeywords(documentDTO.getKeywords());
 
+            // todo: check publication status and save here
             final AuditDTO publication = documentDTO.getPublished();
             meta.setPublisherId(publication.getId());
             meta.setPublicationStartDatetime(publication.getFormattedDate());
@@ -234,14 +236,26 @@ class MappingConfig {
             meta.setArchiverId(archivation.getId());
             meta.setArchivedDatetime(archivation.getFormattedDate());
 
+            final UserDomainObject currentUser = Imcms.getUser();
+
             // save creator to version too
             final AuditDTO creation = documentDTO.getCreated();
-            meta.setCreatorId(creation.getId());
-            meta.setCreatedDatetime(creation.getFormattedDate());
+            final Integer creatorId = Optional.ofNullable(creation.getId()).orElseGet(currentUser::getId);
+            meta.setCreatorId(creatorId);
+
+            final Date createdDatetime = ((creation.getDate() == null) || (creation.getTime() == null))
+                    ? new Date() : creation.getFormattedDate();
+
+            meta.setCreatedDatetime(createdDatetime);
 
             final AuditDTO modification = documentDTO.getModified();
-            meta.setModifierId(modification.getId());
-            meta.setModifiedDatetime(modification.getFormattedDate());
+            final Integer modifierId = Optional.ofNullable(modification.getId()).orElseGet(currentUser::getId);
+            meta.setModifierId(modifierId);
+
+            final Date modifiedDatetime = ((modification.getDate() == null) || (modification.getTime() == null))
+                    ? new Date() : modification.getFormattedDate();
+
+            meta.setModifiedDatetime(modifiedDatetime);
 
             meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
 

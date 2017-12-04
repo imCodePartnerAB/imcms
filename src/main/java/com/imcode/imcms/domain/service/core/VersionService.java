@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.service.api.UserService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Version;
+import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,12 +38,16 @@ public class VersionService {
         return Optional.ofNullable(versionReceiver.apply(docId)).orElseThrow(DocumentNotExistException::new);
     }
 
+    public Version create(int docId) {
+        return create(docId, Imcms.getUser().getId());
+    }
+
     public Version create(int docId, int userId) {
-        User creator = userService.getUser(userId);
-        Integer latestNo = versionRepository.findLatestNoForUpdate(docId);
-        int no = latestNo == null ? 0 : latestNo + 1;
-        Date now = new Date();
-        Version version = new Version();
+        final User creator = userService.getUser(userId);
+        final Integer latestNo = versionRepository.findLatestNoForUpdate(docId);
+        final int no = (latestNo == null) ? 0 : latestNo + 1;
+        final Date now = new Date();
+        final Version version = new Version();
 
         version.setDocId(docId);
         version.setNo(no);

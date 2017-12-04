@@ -19,6 +19,7 @@ import java.util.*;
 public class Meta implements Serializable {
 
     private static final long serialVersionUID = 9024338066876530277L;
+    private static final int MAX_TARGET_LENGTH = 10;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,7 +85,8 @@ public class Meta implements Serializable {
     @Column(name = "disable_search", nullable = false, columnDefinition = "int")
     private boolean searchDisabled;
 
-    @Column(name = "target", nullable = false)
+    // todo: transform to enum because only few values applicable
+    @Column(name = "target", nullable = false, length = MAX_TARGET_LENGTH)
     private String target;
 
     @ElementCollection(fetch = FetchType.EAGER)
