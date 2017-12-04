@@ -461,7 +461,7 @@ Function.prototype.applyAsync = function (args, context) {
         }
 
         var mainScriptPath = imcmsMainScripts[0].attributes["data-main"].value;
-        console.info("%c Founded entry point " + mainScriptPath, "color: blue;");
+        console.info("%c Found entry point " + mainScriptPath, "color: blue;");
         return mainScriptPath;
     }
 
