@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
@@ -54,13 +55,10 @@ public class CommonContentService {
      * @return common content of docId, versionNo and user language.
      */
     public CommonContentDTO getOrCreate(int docId, int versionNo, LanguageDTO languageDTO) {
-        final LanguageJPA language = new LanguageJPA(languageDTO);
-        final CommonContentJPA commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
-                docId, versionNo, language
-        );
+        final Optional<CommonContentDTO> oCommonContent = getCommonContent(docId, versionNo, languageDTO);
 
-        if (commonContent != null) {
-            return new CommonContentDTO(commonContent);
+        if (oCommonContent.isPresent()) {
+            return oCommonContent.get();
 
         } else if (versionNo == WORKING_VERSION_INDEX) {
             return Value.with(new CommonContentDTO(), commonContentDTO -> {
@@ -71,7 +69,15 @@ public class CommonContentService {
             });
         }
 
-        return createFromWorkingVersion(docId, versionNo, language);
+        return createFromWorkingVersion(docId, versionNo, languageDTO);
+    }
+
+    private Optional<CommonContentDTO> getCommonContent(int docId, int versionNo, LanguageDTO language) {
+        final CommonContentJPA commonContentJPA = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
+                docId, versionNo, new LanguageJPA(language)
+        );
+
+        return Optional.ofNullable(commonContentJPA).map(CommonContentDTO::new);
     }
 
     public void save(Collection<CommonContentDTO> saveUs) {
@@ -82,15 +88,19 @@ public class CommonContentService {
         commonContentRepository.save(new CommonContentJPA(saveMe));
     }
 
-    private CommonContentDTO createFromWorkingVersion(int docId, int versionNo, LanguageJPA language) {
-        final CommonContentJPA commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
-                docId, WORKING_VERSION_INDEX, language
-        );
+    private CommonContentDTO createFromWorkingVersion(int docId, int versionNo, LanguageDTO language) {
+        final Optional<CommonContentDTO> oCommonContent = getCommonContent(docId, WORKING_VERSION_INDEX, language);
+        final CommonContentJPA newCommonContent = oCommonContent.map(CommonContentJPA::new)
+                .orElseGet(() -> Value.with(new CommonContentJPA(), commonContentJPA -> {
+                    commonContentJPA.setEnabled(true);
+                    commonContentJPA.setLanguage(new LanguageJPA(language));
+                    commonContentJPA.setDocId(docId);
+                    commonContentJPA.setVersionNo(versionNo);
+                }));
 
-        final CommonContentJPA newCommonContent = new CommonContentJPA(commonContent);
         newCommonContent.setVersionNo(versionNo);
 
-        return new CommonContentDTO(commonContentRepository.saveAndFlush(commonContent));
+        return new CommonContentDTO(commonContentRepository.saveAndFlush(newCommonContent));
     }
 
     /**
