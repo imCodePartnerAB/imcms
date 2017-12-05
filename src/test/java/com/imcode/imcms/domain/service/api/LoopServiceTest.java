@@ -35,7 +35,7 @@ public class LoopServiceTest {
     private static final int TEST_LOOP_INDEX = 1;
     private static final int TEST_LOOP_COUNT = 10;
 
-    private static final LoopDTO TEST_LOOP_DTO_WORKING_VERSION = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.emptyList());
+    private static final LoopDTO TEST_LOOP_DTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.emptyList());
     private static final LoopDTO TEST_LOOP_DTO_LATEST_VERSION = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Arrays.asList(LoopEntryDTO.createEnabled(1),
             LoopEntryDTO.createEnabled(2),
             LoopEntryDTO.createEnabled(3)
@@ -52,13 +52,13 @@ public class LoopServiceTest {
 
     @Before
     public void saveData() {
-        loopDataInitializer.createData(TEST_LOOP_DTO_WORKING_VERSION);
+        loopDataInitializer.createData(TEST_LOOP_DTO);
         for (int i = 1; i < TEST_LOOP_COUNT; i++) {
             final boolean isLast = i == (TEST_LOOP_COUNT - 1);
             if (isLast) {
                 loopDataInitializer.createData(TEST_LOOP_DTO_LATEST_VERSION, i);
             } else {
-                loopDataInitializer.createData(TEST_LOOP_DTO_WORKING_VERSION, i);
+                loopDataInitializer.createData(TEST_LOOP_DTO, i);
             }
         }
     }
@@ -66,7 +66,7 @@ public class LoopServiceTest {
     @Test
     public void getLoop_Expect_correctFieldsData() {
         final LoopDTO loop = loopService.getLoop(TEST_LOOP_INDEX, TEST_DOC_ID);
-        assertEquals(TEST_LOOP_DTO_WORKING_VERSION, loop);
+        assertEquals(TEST_LOOP_DTO, loop);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class LoopServiceTest {
         final LoopDTO loopDTO3 = new LoopDTO(TEST_DOC_ID, 30, Collections.emptyList());
         loopService.saveLoop(loopDTO3);
 
-        final Collection<LoopDTO> loopDTOS = Arrays.asList(TEST_LOOP_DTO_WORKING_VERSION, loopDTO1, loopDTO2, loopDTO3);
+        final Collection<LoopDTO> loopDTOS = Arrays.asList(TEST_LOOP_DTO, loopDTO1, loopDTO2, loopDTO3);
         final Version version = versionRepository.findByDocIdAndNo(TEST_DOC_ID, TEST_VERSION_NO);
         final Collection<LoopDTO> allByVersion = loopService.findAllByVersion(version);
 
