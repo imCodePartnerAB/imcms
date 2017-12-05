@@ -15,6 +15,7 @@ import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.Before;
@@ -109,8 +110,17 @@ public class DocumentControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void saveDocument() throws Exception {
+    public void saveDocument_When_NoChanges_Expect_NoError() throws Exception {
         performPostWithContentExpectOk(createdDoc);
+    }
+
+    @Test
+    public void save_When_UserNotAdmin_Expect_NoPermissionToEditDocumentException() throws Exception {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.USERS);
+        Imcms.setUser(user); // means current user is not admin now
+
+        performPostWithContentExpectException(createdDoc, NoPermissionToEditDocumentException.class);
     }
 
     @Test
