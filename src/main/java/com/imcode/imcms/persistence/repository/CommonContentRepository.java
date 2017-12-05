@@ -3,6 +3,7 @@ package com.imcode.imcms.persistence.repository;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,6 +12,9 @@ import java.util.List;
 public interface CommonContentRepository extends JpaRepository<CommonContentJPA, Integer> {
 
     List<CommonContentJPA> findByDocIdAndVersionNo(int docId, int versionNo);
+
+    @Modifying
+    List<CommonContentJPA> deleteByDocId(int docId);
 
     CommonContentJPA findByDocIdAndVersionNoAndLanguage(int docId, int versionNo, LanguageJPA language);
 
