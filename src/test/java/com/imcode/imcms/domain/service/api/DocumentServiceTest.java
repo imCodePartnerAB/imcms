@@ -479,7 +479,7 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void delete_When_UserAdminAndDocExist_Expect_DocumentNotExistException() {
+    public void delete_When_UserAdminAndDocExist_Expect_DocumentNotExistExceptionAfterDeletion() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user); // means current user is admin now
