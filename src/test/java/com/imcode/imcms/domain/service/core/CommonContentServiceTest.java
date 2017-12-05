@@ -51,7 +51,7 @@ public class CommonContentServiceTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         commonContentDataInitializer.cleanRepositories();
     }
 
@@ -70,9 +70,11 @@ public class CommonContentServiceTest {
 
     @Test
     public void getOrCreateCommonContent_When_NotExist_Expect_CreatedAndCorrectDTO() {
+        final int newVersion = 100;
+        versionDataInitializer.createData(newVersion, DOC_ID);
         commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX);
         for (LanguageDTO languageDTO : languageDataInitializer.createData()) {
-            assertNotNull(commonContentService.getOrCreate(DOC_ID, 100, languageDTO));
+            assertNotNull(commonContentService.getOrCreate(DOC_ID, newVersion, languageDTO));
         }
     }
 
@@ -120,4 +122,12 @@ public class CommonContentServiceTest {
         }
     }
 
+    @Test
+    public void delete() {
+        commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX);
+        assertFalse(commonContentService.getOrCreateCommonContents(DOC_ID, VERSION_INDEX).isEmpty());
+
+        commonContentService.delete(DOC_ID);
+        assertTrue(commonContentService.getCommonContents(DOC_ID, VERSION_INDEX).isEmpty());
+    }
 }

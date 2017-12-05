@@ -72,6 +72,15 @@ public class CommonContentService {
         return createFromWorkingVersion(docId, versionNo, languageDTO);
     }
 
+    public List<CommonContentDTO> getCommonContents(int docId, int versionNo) {
+        return languageService.getAll()
+                .stream()
+                .map(languageDTO -> getCommonContent(docId, versionNo, languageDTO))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
     private Optional<CommonContentDTO> getCommonContent(int docId, int versionNo, LanguageDTO language) {
         final CommonContentJPA commonContentJPA = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
                 docId, versionNo, new LanguageJPA(language)
@@ -121,5 +130,9 @@ public class CommonContentService {
             commonContentDTO.setLanguage(languageDTO);
             commonContentDTO.setVersionNo(WORKING_VERSION_INDEX);
         });
+    }
+
+    public void delete(int docId) {
+        commonContentRepository.deleteByDocId(docId);
     }
 }
