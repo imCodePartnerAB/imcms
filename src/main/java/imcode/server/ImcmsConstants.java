@@ -146,6 +146,9 @@ ImcmsConstants {
     public static final String ENG_CODE = "en";
     public static final String SWE_CODE = "sv";
 
+    public static final String ENG_CODE_ISO_639_2 = "eng";
+    public static final String SWE_CODE_ISO_639_2 = "swe";
+
     private ImcmsConstants() {
         throw new AssertionError();
     }
