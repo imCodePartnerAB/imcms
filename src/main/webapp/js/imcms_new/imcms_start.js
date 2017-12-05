@@ -8,8 +8,18 @@ Imcms.require(["imcms-admin-panel-builder", "imcms", "imcms-tests"], function (p
     Imcms.tests = tests;
     console.info("%c Tests loaded.", "color: green");
 
+    function detectActiveMenuItem() {
+        if (imcms.isEditMode) {
+            return 'edit';
+        } else if (imcms.isPreviewMode) {
+            return 'preview'
+        }
+
+        return 'public';
+    }
+
     panelBuilder.buildPanel({
-        active: imcms.isEditMode ? 'edit' : 'public'
+        active: detectActiveMenuItem()
     });
     imcms.isEditMode && imcms.require("imcms-editors-initializer", function (editorsInit) {
         editorsInit.initEditors();

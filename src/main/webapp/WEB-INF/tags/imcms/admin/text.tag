@@ -14,6 +14,7 @@
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
+<%--@elvariable id="isPreviewMode" type="boolean"--%>
 <%--@elvariable id="textService" type="com.imcode.imcms.domain.service.api.TextService"--%>
 <%--@elvariable id="loopEntryRef" type="com.imcode.imcms.domain.dto.LoopEntryRefDTO"--%>
 <%--@elvariable id="textField" type="com.imcode.imcms.api.TextDocument.TextField"--%>
@@ -25,7 +26,7 @@
 
 <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
-<c:set var="textField" value="${isEditMode
+<c:set var="textField" value="${isEditMode or isPreviewMode
      ? textService.getText(targetDocId, index, language, loopEntryRef)
      : textService.getPublicText(targetDocId, index, language, loopEntryRef)}"/>
 

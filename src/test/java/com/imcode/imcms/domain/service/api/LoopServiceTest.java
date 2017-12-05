@@ -33,8 +33,13 @@ public class LoopServiceTest {
 
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_LOOP_INDEX = 1;
+    private static final int TEST_LOOP_COUNT = 10;
 
     private static final LoopDTO TEST_LOOP_DTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.emptyList());
+    private static final LoopDTO TEST_LOOP_DTO_LATEST_VERSION = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Arrays.asList(LoopEntryDTO.createEnabled(1),
+            LoopEntryDTO.createEnabled(2),
+            LoopEntryDTO.createEnabled(3)
+    ));
 
     @Autowired
     private LoopDataInitializer loopDataInitializer;
@@ -48,6 +53,14 @@ public class LoopServiceTest {
     @Before
     public void saveData() {
         loopDataInitializer.createData(TEST_LOOP_DTO);
+        for (int i = 1; i < TEST_LOOP_COUNT; i++) {
+            final boolean isLast = i == (TEST_LOOP_COUNT - 1);
+            if (isLast) {
+                loopDataInitializer.createData(TEST_LOOP_DTO_LATEST_VERSION, i);
+            } else {
+                loopDataInitializer.createData(TEST_LOOP_DTO, i);
+            }
+        }
     }
 
     @Test
@@ -56,10 +69,22 @@ public class LoopServiceTest {
         assertEquals(TEST_LOOP_DTO, loop);
     }
 
+    @Test
+    public void getLoopPublic_Expect_correctFieldsData() {
+        final LoopDTO loop = loopService.getLoopPublic(TEST_LOOP_INDEX, TEST_DOC_ID);
+        assertEquals(TEST_LOOP_DTO_LATEST_VERSION, loop);
+    }
+
     @Test(expected = DocumentNotExistException.class)
     public void getLoop_When_DocNotExist_Expect_Exception() {
         final int nonExistingDocId = 42;
         loopService.getLoop(TEST_LOOP_INDEX, nonExistingDocId); // should threw exception
+    }
+
+    @Test(expected = DocumentNotExistException.class)
+    public void getLoopPublic_When_DocNotExist_Expect_Exception() {
+        final int nonExistingDocId = 42;
+        loopService.getLoopPublic(TEST_LOOP_INDEX, nonExistingDocId); // should threw exception
     }
 
     @Test
@@ -67,6 +92,16 @@ public class LoopServiceTest {
         final int nonExistingLoopIndex = 42;
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, nonExistingLoopIndex, Collections.emptyList());
         final LoopDTO loop = loopService.getLoop(nonExistingLoopIndex, TEST_DOC_ID);
+
+        assertNotNull(loop);
+        assertEquals(loop, loopDTO);
+    }
+
+    @Test
+    public void getLoopPublic_When_NotExist_ExpectEmptyLoop() {
+        final int nonExistingLoopIndex = 42;
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, nonExistingLoopIndex, Collections.emptyList());
+        final LoopDTO loop = loopService.getLoopPublic(nonExistingLoopIndex, TEST_DOC_ID);
 
         assertNotNull(loop);
         assertEquals(loop, loopDTO);

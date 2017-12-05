@@ -11,12 +11,13 @@
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
+<%--@elvariable id="isPreviewMode" type="boolean"--%>
 <%--@elvariable id="targetDocId" type="java.lang.Integer"--%>
 <%--@elvariable id="menuService" type="com.imcode.imcms.domain.service.api.MenuService"--%>
 
 <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
-<c:set var="menuItems" value="${isEditMode
+<c:set var="menuItems" value="${isEditMode or isPreviewMode
      ? menuService.getMenuItemsOf(index, targetDocId)
      : menuService.getPublicMenuItemsOf(index, targetDocId)}" scope="request"/>
 

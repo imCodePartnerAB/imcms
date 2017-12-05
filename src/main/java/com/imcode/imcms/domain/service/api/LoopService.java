@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +30,17 @@ public class LoopService {
     }
 
     public LoopDTO getLoop(int loopIndex, int docId) {
-        final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(docId);
+        return getLoop(loopIndex, docId, versionService::getDocumentWorkingVersion);
+    }
+
+
+    public LoopDTO getLoopPublic(int loopIndex, int docId) {
+        return getLoop(loopIndex, docId, versionService::getLatestVersion);
+
+    }
+
+    public LoopDTO getLoop(int loopIndex, int docId, Function<Integer, Version> versionGetter) {
+        final Version documentWorkingVersion = versionGetter.apply(docId);
         final LoopJPA loop = loopRepository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
 
         return Optional.ofNullable(loop)

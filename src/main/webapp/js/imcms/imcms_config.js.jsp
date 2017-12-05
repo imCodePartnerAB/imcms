@@ -2,6 +2,7 @@
     <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
     <%--@elvariable id="isVersioningAllowed" type="boolean"--%>
     <%--@elvariable id="isEditMode" type="boolean"--%>
+    <%--@elvariable id="isPreviewMode" type="boolean"--%>
     <%--@elvariable id="version" type="java.lang.String"--%>
     <%--@elvariable id="imagesPath" type="java.lang.String"--%>
 
@@ -10,6 +11,7 @@
         imagesPath: "${imagesPath}",
         version: "${version}",
         isEditMode: ${isEditMode},
+        isPreviewMode: ${isPreviewMode},
         isVersioningAllowed: ${isVersioningAllowed},
         document: {
             id: ${currentDocument.id},
