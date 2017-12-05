@@ -68,6 +68,13 @@ public abstract class AbstractControllerTest {
         performRequestBuilderExpectException(expectedExceptionClass, requestBuilder);
     }
 
+    protected <T> void performDeleteWithContentExpectException(Object contentObject,
+                                                               Class<T> expectedExceptionClass) throws Exception {
+
+        final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(contentObject);
+        performRequestBuilderExpectException(expectedExceptionClass, requestBuilder);
+    }
+
     protected <T> void performRequestBuilderExpectException(Class<T> expectedExceptionClass,
                                                             MockHttpServletRequestBuilder requestBuilder) throws Exception {
         try {
@@ -97,6 +104,12 @@ public abstract class AbstractControllerTest {
 
     protected MockHttpServletRequestBuilder getPostRequestBuilderWithContent(Object content) throws Exception {
         return MockMvcRequestBuilders.post(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJson(content));
+    }
+
+    protected MockHttpServletRequestBuilder getDeleteRequestBuilderWithContent(Object content) throws Exception {
+        return MockMvcRequestBuilders.delete(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(content));
     }

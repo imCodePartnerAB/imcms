@@ -408,4 +408,29 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
     }
+
+    @Test
+    public void delete_When_UserIsNotAdmin_Expect_NoPermissionToEditDocumentException() throws Exception {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.USERS);
+        Imcms.setUser(user); // means current user is not admin now
+
+        performDeleteWithContentExpectException(createdDoc, NoPermissionToEditDocumentException.class);
+    }
+
+    @Test
+    public void delete_When_DocumentExistAndUserIsAdmin_Expect_NoError() throws Exception {
+        final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(createdDoc);
+        performRequestBuilderExpectedOk(requestBuilder);
+    }
+
+    @Test
+    public void delete_When_DocumentExistAndUserIsAdmin_Expect_DocumentNotExistExceptionAfterDeletion() throws Exception {
+        delete_When_DocumentExistAndUserIsAdmin_Expect_NoError();
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + createdDoc.getId());
+
+        performRequestBuilderExpectException(DocumentNotExistException.class, requestBuilder);
+    }
 }

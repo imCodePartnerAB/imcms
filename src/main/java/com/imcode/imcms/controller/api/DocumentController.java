@@ -21,12 +21,12 @@ public class DocumentController {
     }
 
     @GetMapping
-    public DocumentDTO getDocument(Integer docId) {
+    public DocumentDTO get(Integer docId) {
         return documentService.get(docId);
     }
 
     @PostMapping
-    public void saveDocument(@RequestBody DocumentDTO saveMe) {
+    public void save(@RequestBody DocumentDTO saveMe) {
 
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {
@@ -34,5 +34,16 @@ public class DocumentController {
         }
 
         documentService.save(saveMe);
+    }
+
+    @DeleteMapping
+    public void delete(@RequestBody DocumentDTO deleteMe) {
+
+        // todo: create annotation instead of copying this each time!
+        if (!Imcms.getUser().isSuperAdmin()) {
+            throw new NoPermissionToEditDocumentException("User do not have access to change document structure.");
+        }
+
+        documentService.delete(deleteMe);
     }
 }
