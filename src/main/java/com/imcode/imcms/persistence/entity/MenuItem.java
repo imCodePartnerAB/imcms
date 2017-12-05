@@ -20,10 +20,6 @@ public class MenuItem {
     @Column(name = "document_id", nullable = false)
     private Integer documentId;
 
-    @ManyToOne
-    @JoinColumn(name = "menu_id")
-    private Menu menu;
-
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "parent_item_id")
     @OrderBy("sortOrder")

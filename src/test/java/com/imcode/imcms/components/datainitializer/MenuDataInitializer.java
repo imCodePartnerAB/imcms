@@ -113,7 +113,7 @@ public class MenuDataInitializer extends TestDataCleaner {
         final MenuItem menuItem = new MenuItem();
         menuItem.setSortOrder(sortOrder);
         menuItem.setDocumentId(DOC_ID);
-        menuItem.setMenu(menu);
+//        menuItem.setMenu(menu);
         return menuItem;
     }
 

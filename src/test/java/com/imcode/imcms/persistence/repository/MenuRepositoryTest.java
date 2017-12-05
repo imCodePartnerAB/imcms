@@ -22,8 +22,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -48,7 +46,7 @@ public class MenuRepositoryTest {
     private JdbcTemplate jdbcTemplate;
 
     @Before
-    public void setUpJdbcTemplate() throws SQLException {
+    public void setUpJdbcTemplate() {
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.execute("DELETE FROM imcms_menu");
         jdbcTemplate.execute("DELETE FROM imcms_menu_item");
@@ -59,14 +57,14 @@ public class MenuRepositoryTest {
     }
 
     @After
-    public void cleanUpData() throws SQLException {
+    public void cleanUpData() {
         menuDataInitializer.cleanRepositories();
         jdbcTemplate.execute("DELETE FROM imcms_menu");
         jdbcTemplate.execute("DELETE FROM imcms_menu_item");
     }
 
     @Test
-    public void findOne_When_menuWithoutMenuItems_Expect_theSameMenuNoAndVersion() throws Exception {
+    public void findOne_When_menuWithoutMenuItems_Expect_theSameMenuNoAndVersion() {
         final MenuDTO menu = menuDataInitializer.createData(false);
         final Version version = menuDataInitializer.getVersion();
 
@@ -89,8 +87,7 @@ public class MenuRepositoryTest {
     }
 
     @Test
-    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_Expect_correctItemsCapacity()
-            throws Exception {
+    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_Expect_correctItemsCapacity() {
         final MenuDTO menu = menuDataInitializer.createData(true);
         final Version version = menuDataInitializer.getVersion();
 
@@ -104,8 +101,7 @@ public class MenuRepositoryTest {
     }
 
     @Test
-    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_Expect_correctItemsOrder()
-            throws Exception {
+    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_Expect_correctItemsOrder() {
         final MenuDTO menu = menuDataInitializer.createData(true);
         final Version version = menuDataInitializer.getVersion();
 
@@ -121,17 +117,12 @@ public class MenuRepositoryTest {
     }
 
     @Test
-    public void deleteMenuItems()
-            throws Exception {
+    public void deleteMenuItems() {
         final MenuDTO menu = menuDataInitializer.createData(true);
         final Version version = menuDataInitializer.getVersion();
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
-        for (Iterator<MenuItem> iterator = menuPersisted.getMenuItems().iterator(); iterator.hasNext(); ) {
-            MenuItem projectEntity = iterator.next();
-            projectEntity.setMenu(null);
-            iterator.remove();
-        }
+        menuPersisted.getMenuItems().clear();
 
         menuRepository.saveAndFlush(menuPersisted);
 

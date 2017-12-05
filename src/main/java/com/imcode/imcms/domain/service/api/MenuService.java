@@ -12,10 +12,7 @@ import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -57,12 +54,8 @@ public class MenuService {
 
     public MenuDTO saveFrom(MenuDTO menuDTO) {
 
-        Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuIndex(), menuDTO.getDocId()))
+        final Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuIndex(), menuDTO.getDocId()))
                 .orElseGet(() -> createMenu(menuDTO));
-
-        if (!menu.getMenuItems().isEmpty()) {
-            menu = deleteAllMenuItemsAndFlush(menu);
-        }
 
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
@@ -83,7 +76,7 @@ public class MenuService {
         final Menu menu = new Menu();
         menu.setNo(menuDTO.getMenuIndex());
         menu.setVersion(workingVersion);
-        return menuRepository.saveAndFlush(menu);
+        return menu;
     }
 
     private List<MenuItemDTO> getMenuItemsOf(int menuIndex, int docId, MenuItemsStatus status) {
@@ -94,8 +87,8 @@ public class MenuService {
         final UserDomainObject user = Imcms.getUser();
 
         return Optional.ofNullable(menu)
-                .orElseGet(Menu::new)
-                .getMenuItems()
+                .map(Menu::getMenuItems)
+                .orElseGet(ArrayList::new)
                 .stream()
                 .map(menuItemToDto)
                 .filter(menuItemDTO -> (status == MenuItemsStatus.ALL) || isMenuItemVisibleToUser(menuItemDTO, user))
@@ -120,7 +113,7 @@ public class MenuService {
     private Menu deleteAllMenuItemsAndFlush(Menu menu) {
         for (Iterator<MenuItem> iterator = menu.getMenuItems().iterator(); iterator.hasNext(); ) {
             MenuItem projectEntity = iterator.next();
-            projectEntity.setMenu(null);
+//            projectEntity.setMenu(null);
             iterator.remove();
         }
         return menuRepository.saveAndFlush(menu);
