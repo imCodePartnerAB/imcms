@@ -6,10 +6,10 @@ Imcms.define("imcms-document-editor-builder",
     [
         "imcms-bem-builder", "imcms-page-info-builder", "imcms-components-builder", "imcms-primitives-builder",
         "imcms-documents-rest-api", "imcms-documents-search-rest-api", "imcms-controls-builder", "imcms-users-rest-api",
-        "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms"
+        "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms", "imcms-modal-window-builder"
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, controlsBuilder, usersRestApi,
-              categoriesRestApi, WindowBuilder, $, imcms) {
+              categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder) {
 
         var isMouseDown = false,
             mouseCoords = {
@@ -500,10 +500,16 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function removeDocument(documentId) {
-            var $documentRow = $(this).parent().parent();
+            var question = "Do you want to remove document " + documentId + "?";
 
-            docRestApi.remove(documentId).done(function (responseCode) {
-                responseCode === 200 && $documentRow.remove();
+            imcmsModalWindowBuilder.buildModalWindow(question, function (answer) {
+                if (!answer) {
+                    return;
+                }
+
+                docRestApi.remove({docId: documentId}).done(function () {
+                    $(this).parent().parent().remove();
+                })
             });
         }
 
