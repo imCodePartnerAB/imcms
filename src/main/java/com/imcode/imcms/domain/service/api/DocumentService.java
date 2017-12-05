@@ -15,10 +15,10 @@ import imcode.server.LanguageMapper;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
@@ -74,6 +74,7 @@ public class DocumentService {
      * @param saveMe document to be saved
      * @return id of saved document
      */
+    @Transactional
     public int save(DocumentDTO saveMe) {
         final boolean isNew = (saveMe.getId() == null);
 
@@ -91,21 +92,6 @@ public class DocumentService {
         oTemplate.ifPresent(textDocumentTemplateService::save);
 
         return docId;
-    }
-
-    List<DocumentDTO> getAllDocuments() {
-        return metaRepository.findAll()
-                .stream()
-                .sorted(Comparator.comparingInt(Meta::getId))
-                .map(meta -> {
-                    final Integer docId = meta.getId();
-                    final Version latestVersion = versionService.getLatestVersion(docId);
-                    final List<CommonContentDTO> commonContents = commonContentService.getOrCreateCommonContents(
-                            docId, latestVersion.getNo()
-                    );
-                    return documentMapping.apply(meta, latestVersion, commonContents);
-                })
-                .collect(Collectors.toList());
     }
 
     boolean hasUserAccessToDoc(int docId, UserDomainObject user) {
@@ -152,5 +138,12 @@ public class DocumentService {
                 .get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
 
         return "/" + (alias == null ? documentId : alias);
+    }
+
+    @Transactional
+    public void delete(DocumentDTO deleteMe) {
+        versionService.delete(deleteMe.getId());
+        commonContentService.delete(deleteMe.getId());
+        metaRepository.delete(deleteMe.getId());
     }
 }

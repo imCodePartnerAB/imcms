@@ -477,4 +477,24 @@ public class DocumentServiceTest {
 
         assertEquals(savedDocTemplate, savedTemplate);
     }
+
+    @Test
+    public void delete_When_UserAdminAndDocExist_Expect_DocumentNotExistException() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        assertNotNull(documentDTO);
+
+        documentService.delete(documentDTO);
+
+        try {
+            documentService.get(createdDoc.getId());
+            fail("Expected exception wasn't thrown!");
+
+        } catch (DocumentNotExistException e) {
+            // expected exception
+        }
+    }
 }
