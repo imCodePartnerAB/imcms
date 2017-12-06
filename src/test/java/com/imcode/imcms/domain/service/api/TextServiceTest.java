@@ -23,10 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static com.imcode.imcms.persistence.entity.Text.Type.PLAIN_TEXT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -164,5 +164,35 @@ public class TextServiceTest {
             final TextDTO savedText = textService.getText(textDTO);
             assertEquals(savedText, textDTO);
         }
+    }
+
+    @Test
+    public void deleteByDocId() {
+        for (LanguageJPA language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                final TextJPA text = new TextJPA();
+                text.setIndex(index);
+                text.setLanguage(language);
+                text.setText("test");
+                text.setType(PLAIN_TEXT);
+                text.setVersion(version);
+
+                textRepository.save(text);
+            }
+        }
+
+        final long prevNumberOfTextsForDoc = textRepository.findAll().stream()
+                .filter(textJPA -> Objects.equals(DOC_ID, textJPA.getVersion().getDocId()))
+                .count();
+
+        assertNotEquals(prevNumberOfTextsForDoc, 0L);
+
+        textService.deleteByDocId(DOC_ID);
+
+        final long newNumberOfTextsForDoc = textRepository.findAll().stream()
+                .filter(textJPA -> Objects.equals(DOC_ID, textJPA.getVersion().getDocId()))
+                .count();
+
+        assertEquals(newNumberOfTextsForDoc, 0L);
     }
 }

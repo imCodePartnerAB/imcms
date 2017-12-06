@@ -89,4 +89,8 @@ public class TextService {
 
         return text.getId();
     }
+
+    public void deleteByDocId(Integer docIdToDelete) {
+        textRepository.deleteByDocId(docIdToDelete);
+    }
 }
