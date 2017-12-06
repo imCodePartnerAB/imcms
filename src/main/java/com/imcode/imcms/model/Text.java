@@ -3,9 +3,9 @@ package com.imcode.imcms.model;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public abstract class Text<LoopEntryReference extends LoopEntryRef> {
+public abstract class Text {
 
-    protected Text(Text from, LoopEntryReference loopEntryRef) {
+    protected Text(Text from, LoopEntryRef loopEntryRef) {
         setIndex(from.getIndex());
         setType(from.getType());
         setText(from.getText());
@@ -16,6 +16,10 @@ public abstract class Text<LoopEntryReference extends LoopEntryRef> {
 
     public abstract void setIndex(Integer index);
 
+    public abstract Integer getDocId();
+
+    public abstract String getLangCode();
+
     public abstract Type getType();
 
     public abstract void setType(Type type);
@@ -24,9 +28,9 @@ public abstract class Text<LoopEntryReference extends LoopEntryRef> {
 
     public abstract void setText(String text);
 
-    public abstract LoopEntryReference getLoopEntryRef();
+    public abstract LoopEntryRef getLoopEntryRef();
 
-    public abstract void setLoopEntryRef(LoopEntryReference loopEntryRef);
+    public abstract void setLoopEntryRef(LoopEntryRef loopEntryRef);
 
     public enum Type {
         PLAIN_TEXT, HTML

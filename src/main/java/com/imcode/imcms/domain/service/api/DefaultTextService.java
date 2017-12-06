@@ -1,9 +1,10 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.core.VersionService;
+import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextJPA;
@@ -30,7 +31,7 @@ class DefaultTextService implements TextService {
     }
 
     @Override
-    public TextDTO getText(TextDTO textRequestData) {
+    public Text getText(Text textRequestData) {
         return getText(
                 textRequestData.getDocId(),
                 textRequestData.getIndex(),
@@ -40,24 +41,24 @@ class DefaultTextService implements TextService {
     }
 
     @Override
-    public TextDTO getText(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
+    public Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getText(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
     }
 
     @Override
-    public TextDTO getPublicText(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
+    public Text getPublicText(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getText(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
     }
 
     @Override
-    public void save(TextDTO textDTO) {
-        final Version version = versionService.getDocumentWorkingVersion(textDTO.getDocId());
-        final LanguageJPA language = languageService.findEntityByCode(textDTO.getLangCode());
-        final TextJPA text = new TextJPA(textDTO, version, language);
-        final Integer textId = getTextId(textDTO, version, language);
+    public void save(Text text) {
+        final Version version = versionService.getDocumentWorkingVersion(text.getDocId());
+        final LanguageJPA language = languageService.findEntityByCode(text.getLangCode());
+        final TextJPA textJPA = new TextJPA(text, version, language);
+        final Integer textId = getTextId(text, version, language);
 
-        text.setId(textId);
-        textRepository.save(text);
+        textJPA.setId(textId);
+        textRepository.save(textJPA);
     }
 
     @Override
@@ -65,38 +66,38 @@ class DefaultTextService implements TextService {
         textRepository.deleteByDocId(docIdToDelete);
     }
 
-    private TextDTO getText(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRefDTO,
-                            Function<Integer, Version> versionReceiver) {
+    private Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
+                         Function<Integer, Version> versionReceiver) {
 
         final Version version = versionReceiver.apply(docId);
         final LanguageJPA language = languageService.findEntityByCode(langCode);
-        final TextJPA text = getText(index, version, language, loopEntryRefDTO);
+        final TextJPA text = getText(index, version, language, loopEntryRef);
 
         return Optional.ofNullable(text)
                 .map(text1 -> new TextDTO(text1, text1.getVersion(), text1.getLanguage()))
-                .orElse(new TextDTO(index, docId, langCode, loopEntryRefDTO));
+                .orElse(new TextDTO(index, docId, langCode, loopEntryRef));
     }
 
-    private TextJPA getText(int index, Version version, LanguageJPA language, LoopEntryRefDTO loopEntryRefDTO) {
-        return Optional.ofNullable(loopEntryRefDTO)
+    private TextJPA getText(int index, Version version, LanguageJPA language, LoopEntryRef loopEntryRef) {
+        return Optional.ofNullable(loopEntryRef)
                 .map(LoopEntryRefJPA::new)
-                .map(loopEntryRef -> textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
-                        version, language, index, loopEntryRef
+                .map(loopEntryRefJPA -> textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
+                        version, language, index, loopEntryRefJPA
                 ))
                 .orElseGet(() -> textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
                         version, language, index
                 ));
     }
 
-    private Integer getTextId(TextDTO textDTO, Version version, LanguageJPA language) {
-        final Integer index = textDTO.getIndex();
-        final LoopEntryRefDTO loopEntryRefDTO = textDTO.getLoopEntryRef();
-        final TextJPA text = getText(index, version, language, loopEntryRefDTO);
+    private Integer getTextId(Text text, Version version, LanguageJPA language) {
+        final Integer index = text.getIndex();
+        final LoopEntryRef loopEntryRef = text.getLoopEntryRef();
+        final TextJPA textJPA = getText(index, version, language, loopEntryRef);
 
-        if (text == null) {
+        if (textJPA == null) {
             return null;
         }
 
-        return text.getId();
+        return textJPA.getId();
     }
 }

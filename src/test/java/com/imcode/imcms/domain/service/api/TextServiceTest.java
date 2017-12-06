@@ -6,6 +6,8 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextJPA;
@@ -74,7 +76,7 @@ public class TextServiceTest {
 
     @Test
     public void getText_When_NotInLoop_Expect_CorrectDTO() {
-        final List<TextDTO> textDTOS = new ArrayList<>();
+        final List<Text> textDTOS = new ArrayList<>();
 
         for (LanguageJPA language : languages) {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
@@ -90,15 +92,15 @@ public class TextServiceTest {
             }
         }
 
-        for (TextDTO textDTO : textDTOS) {
-            final TextDTO savedText = textService.getText(textDTO);
+        for (Text textDTO : textDTOS) {
+            final Text savedText = textService.getText(textDTO);
             assertEquals(savedText, textDTO);
         }
     }
 
     @Test
     public void getText_When_InLoop_Expect_CorrectDTO() {
-        final List<TextDTO> textDTOS = new ArrayList<>();
+        final List<Text> textDTOS = new ArrayList<>();
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
 
         for (LanguageJPA language : languages) {
@@ -116,19 +118,19 @@ public class TextServiceTest {
             }
         }
 
-        for (TextDTO textDTO : textDTOS) {
-            final TextDTO savedText = textService.getText(textDTO);
+        for (Text textDTO : textDTOS) {
+            final Text savedText = textService.getText(textDTO);
             assertEquals(savedText, textDTO);
         }
     }
 
     @Test
     public void saveText_When_NotInLoop_Expect_CorrectDTO() {
-        final List<TextDTO> textDTOS = new ArrayList<>();
+        final List<Text> textDTOS = new ArrayList<>();
 
         for (LanguageJPA language : languages) {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
-                final TextDTO textDTO = new TextDTO(index, DOC_ID, language.getCode(), null);
+                final Text textDTO = new TextDTO(index, DOC_ID, language.getCode(), null);
                 textDTO.setText("test");
                 textDTO.setType(PLAIN_TEXT);
 
@@ -138,20 +140,20 @@ public class TextServiceTest {
             }
         }
 
-        for (TextDTO textDTO : textDTOS) {
-            final TextDTO savedText = textService.getText(textDTO);
+        for (Text textDTO : textDTOS) {
+            final Text savedText = textService.getText(textDTO);
             assertEquals(savedText, textDTO);
         }
     }
 
     @Test
     public void saveText_When_InLoop_Expect_CorrectDTO() {
-        final List<TextDTO> textDTOS = new ArrayList<>();
-        final LoopEntryRefDTO loopEntryRef = new LoopEntryRefDTO(1, 1);
+        final List<Text> textDTOS = new ArrayList<>();
+        final LoopEntryRef loopEntryRef = new LoopEntryRefDTO(1, 1);
 
         for (LanguageJPA language : languages) {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
-                final TextDTO textDTO = new TextDTO(index, DOC_ID, language.getCode(), loopEntryRef);
+                final Text textDTO = new TextDTO(index, DOC_ID, language.getCode(), loopEntryRef);
                 textDTO.setText("test");
                 textDTO.setType(PLAIN_TEXT);
 
@@ -161,8 +163,8 @@ public class TextServiceTest {
             }
         }
 
-        for (TextDTO textDTO : textDTOS) {
-            final TextDTO savedText = textService.getText(textDTO);
+        for (Text textDTO : textDTOS) {
+            final Text savedText = textService.getText(textDTO);
             assertEquals(savedText, textDTO);
         }
     }

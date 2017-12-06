@@ -14,7 +14,7 @@ import javax.persistence.Table;
 public class TextJPA extends TextJPABase {
 
     public TextJPA(Text from, Version version, LanguageJPA language) {
-        super(from, (from.getLoopEntryRef() == null) ? null : new LoopEntryRefJPA(from.getLoopEntryRef()));
+        super(from, from.getLoopEntryRef());
         setVersion(version);
         setLanguage(language);
     }

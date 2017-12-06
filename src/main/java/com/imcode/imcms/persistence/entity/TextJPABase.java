@@ -1,5 +1,6 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode
 @MappedSuperclass
 @NoArgsConstructor
-class TextJPABase extends Text<LoopEntryRefJPA> {
+class TextJPABase extends Text {
 
     @NotNull
     @Column(name = "`index`")
@@ -45,7 +46,22 @@ class TextJPABase extends Text<LoopEntryRefJPA> {
     })
     private Version version;
 
-    TextJPABase(Text from, LoopEntryRefJPA loopEntryRef) {
+    TextJPABase(Text from, LoopEntryRef loopEntryRef) {
         super(from, loopEntryRef);
+    }
+
+    @Override
+    public Integer getDocId() {
+        return version.getDocId();
+    }
+
+    @Override
+    public String getLangCode() {
+        return language.getCode();
+    }
+
+    @Override
+    public void setLoopEntryRef(LoopEntryRef loopEntryRef) {
+        this.loopEntryRef = (loopEntryRef == null) ? null : new LoopEntryRefJPA(loopEntryRef);
     }
 }

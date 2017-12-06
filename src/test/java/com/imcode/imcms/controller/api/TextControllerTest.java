@@ -7,6 +7,8 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
@@ -85,7 +87,7 @@ public class TextControllerTest extends AbstractControllerTest {
 
     @Test
     public void saveText_When_NotInLoop_Expect_CorrectSavedText() throws Exception {
-        final List<TextDTO> textDTOS = new ArrayList<>();
+        final List<Text> texts = new ArrayList<>();
 
         for (LanguageJPA language : languages) {
             final String languageCode = language.getCode();
@@ -93,7 +95,7 @@ public class TextControllerTest extends AbstractControllerTest {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
                 final int finalIndex = index;
 
-                textDTOS.add(Value.with(new TextDTO(), text -> {
+                texts.add(Value.with(new TextDTO(), text -> {
                     text.setDocId(DOC_ID);
                     text.setIndex(finalIndex);
                     text.setLangCode(languageCode);
@@ -103,26 +105,26 @@ public class TextControllerTest extends AbstractControllerTest {
             }
         }
 
-        for (TextDTO textDTO : textDTOS) {
+        for (Text text : texts) {
             final MockHttpServletRequestBuilder requestBuilder = post(controllerPath())
-                    .param("docId", "" + textDTO.getDocId())
-                    .param("index", "" + textDTO.getIndex())
-                    .param("langCode", textDTO.getLangCode())
-                    .param("type", textDTO.getType().name())
-                    .param("text", textDTO.getText());
+                    .param("docId", "" + text.getDocId())
+                    .param("index", "" + text.getIndex())
+                    .param("langCode", text.getLangCode())
+                    .param("type", text.getType().name())
+                    .param("text", text.getText());
 
             performRequestBuilderExpectedOk(requestBuilder);
 
-            final TextDTO savedText = textService.getText(textDTO);
-            Assert.assertEquals(savedText, textDTO);
+            final Text savedText = textService.getText(text);
+            Assert.assertEquals(savedText, text);
         }
 
     }
 
     @Test
     public void saveText_When_InLoop_Expect_CorrectSavedText() throws Exception {
-        final List<TextDTO> textDTOS = new ArrayList<>();
-        final LoopEntryRefDTO loopEntryRef = new LoopEntryRefDTO(1, 1);
+        final List<Text> textDTOS = new ArrayList<>();
+        final LoopEntryRef loopEntryRef = new LoopEntryRefDTO(1, 1);
 
         for (LanguageJPA language : languages) {
             final String languageCode = language.getCode();
@@ -141,7 +143,7 @@ public class TextControllerTest extends AbstractControllerTest {
             }
         }
 
-        for (TextDTO textDTO : textDTOS) {
+        for (Text textDTO : textDTOS) {
             final MockHttpServletRequestBuilder requestBuilder = post(controllerPath())
                     .param("docId", "" + textDTO.getDocId())
                     .param("index", "" + textDTO.getIndex())
@@ -153,7 +155,7 @@ public class TextControllerTest extends AbstractControllerTest {
 
             performRequestBuilderExpectedOk(requestBuilder);
 
-            final TextDTO savedText = textService.getText(textDTO);
+            final Text savedText = textService.getText(textDTO);
             Assert.assertEquals(savedText, textDTO);
         }
 

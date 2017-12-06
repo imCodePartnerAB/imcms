@@ -1,16 +1,16 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
-import com.imcode.imcms.domain.dto.TextDTO;
+import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.model.Text;
 
 public interface TextService extends DeleterByDocumentId {
 
-    TextDTO getText(TextDTO textRequestData);
+    Text getText(Text textRequestData);
 
-    TextDTO getText(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef);
+    Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
 
-    TextDTO getPublicText(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef);
+    Text getPublicText(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
 
-    void save(TextDTO textDTO);
+    void save(Text textDTO);
 
 }
