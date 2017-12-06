@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.TemplateDTO;
+import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.persistence.entity.Template;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
@@ -20,20 +21,46 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional
-public class TemplateService {
+public class DefaultTemplateService implements TemplateService {
 
     private final TemplateRepository templateRepository;
     private final File templateDirectory;
-    private final Function<TemplateDTO, TemplateDTO> templateSaver;
+    private final Function<TemplateDTO, TemplateJPA> templateSaver;
     private final Set<String> templateExtensions = new HashSet<>(Arrays.asList("jsp", "jspx", "html"));
 
-    TemplateService(TemplateRepository templateRepository, @Value("WEB-INF/templates/text") File templateDirectory) {
+    DefaultTemplateService(TemplateRepository templateRepository,
+                           @Value("WEB-INF/templates/text") File templateDirectory) {
 
         this.templateRepository = templateRepository;
         this.templateDirectory = templateDirectory;
         this.templateSaver = ((Function<TemplateDTO, TemplateJPA>) TemplateJPA::new)
-                .andThen(templateRepository::save)
-                .andThen(TemplateDTO::new);
+                .andThen(templateRepository::save);
+    }
+
+    @Override
+    public List<TemplateDTO> getAll() {
+        return templateRepository.findAll().stream()
+                .map(TemplateDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void save(TemplateDTO saveMe) {
+        final String templateName = saveMe.getName();
+
+        if (isTemplateFileExist(templateName)) {
+            templateSaver.apply(saveMe);
+        }
+    }
+
+    @Override
+    public Optional<TemplateDTO> getTemplate(String templateName) {
+        if (isTemplateFileExist(templateName)) {
+            final TemplateJPA template = templateRepository.findOne(templateName);
+            return Optional.ofNullable(template).map(TemplateDTO::new);
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -65,35 +92,6 @@ public class TemplateService {
                 .map(FilenameUtils::getBaseName)
                 .map(templateName -> new TemplateJPA(templateName, false))
                 .forEach(templateRepository::save);
-    }
-
-    public List<TemplateDTO> getAll() {
-        return templateRepository.findAll().stream()
-                .map(TemplateDTO::new)
-                .collect(Collectors.toList());
-    }
-
-    public Optional<TemplateDTO> save(TemplateDTO saveMe) {
-        final String templateName = saveMe.getName();
-
-        if (isTemplateFileExist(templateName)) {
-            return templateSaver.andThen(Optional::of).apply(saveMe);
-        }
-
-        return Optional.empty();
-    }
-
-    public Optional<TemplateDTO> getTemplate(String templateName) {
-        if (isTemplateFileExist(templateName)) {
-            final TemplateJPA template = templateRepository.findOne(templateName);
-            return Optional.ofNullable(template).map(TemplateDTO::new);
-        }
-
-        return Optional.empty();
-    }
-
-    File getTemplateDirectory() {
-        return templateDirectory;
     }
 
     private boolean isTemplateFileExist(String templateName) {

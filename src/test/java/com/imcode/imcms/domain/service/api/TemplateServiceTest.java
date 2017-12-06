@@ -4,6 +4,7 @@ import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.TemplateDTO;
+import com.imcode.imcms.domain.service.TemplateService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,7 +77,8 @@ public class TemplateServiceTest {
             assertTrue(templateFile.createNewFile());
 
             TemplateDTO templateDTO = new TemplateDTO(templateName, false);
-            final Optional<TemplateDTO> oTemplate = templateService.save(templateDTO);
+            templateService.save(templateDTO);
+            final Optional<TemplateDTO> oTemplate = templateService.getTemplate(templateName);
             assertTrue(oTemplate.isPresent());
 
             templateDTO = oTemplate.get();
@@ -92,10 +94,13 @@ public class TemplateServiceTest {
     }
 
     @Test
-    public void save_When_NoTemplate_Expect_Null() throws Exception {
+    public void save_When_NoTemplate_Expect_Null() {
         final String dummyName = "test_" + System.currentTimeMillis();
         final TemplateDTO templateDTO = new TemplateDTO(dummyName, false);
-        assertFalse(templateService.save(templateDTO).isPresent());
+
+        templateService.save(templateDTO);
+
+        assertFalse(templateService.getTemplate(dummyName).isPresent());
     }
 
 }

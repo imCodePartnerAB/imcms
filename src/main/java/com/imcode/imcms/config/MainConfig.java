@@ -6,7 +6,7 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.domain.service.api.TemplateService;
+import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
