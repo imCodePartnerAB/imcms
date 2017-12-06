@@ -14,7 +14,7 @@ public interface CommonContentRepository extends JpaRepository<CommonContentJPA,
     List<CommonContentJPA> findByDocIdAndVersionNo(int docId, int versionNo);
 
     @Modifying
-    List<CommonContentJPA> deleteByDocId(int docId);
+    void deleteByDocId(int docId);
 
     CommonContentJPA findByDocIdAndVersionNoAndLanguage(int docId, int versionNo, LanguageJPA language);
 
