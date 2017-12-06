@@ -4,6 +4,7 @@ import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.TemplateGroupDTO;
+import com.imcode.imcms.domain.service.TemplateGroupService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +38,7 @@ public class TemplateGroupServiceTest {
     }
 
     @Test
-    public void getAll_When_templateGroupsWithTemplates_Expect_theyAllPersisted() throws Exception {
+    public void getAll_When_templateGroupsWithTemplates_Expect_theyAllPersisted() {
         int i = 1;
         final List<TemplateGroupDTO> expected = Arrays.asList(dataInitializer.createData("test " + i++, i++, false),
                 dataInitializer.createData("test " + i++, i++, false),
@@ -50,7 +51,7 @@ public class TemplateGroupServiceTest {
     }
 
     @Test
-    public void get() throws Exception {
+    public void get() {
         final String name = "TEST";
         final TemplateGroupDTO test = dataInitializer.createData(name, 5, false);
         final TemplateGroupDTO persistedByName = templateGroupService.get(name);
@@ -59,7 +60,7 @@ public class TemplateGroupServiceTest {
     }
 
     @Test
-    public void save() throws Exception {
+    public void save() {
         final TemplateGroupDTO test = dataInitializer.createData("test", 5, true);
 
         templateGroupService.save(test);
