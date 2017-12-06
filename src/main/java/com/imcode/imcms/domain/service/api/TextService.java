@@ -55,6 +55,10 @@ public class TextService {
         textRepository.save(text);
     }
 
+    public void deleteByDocId(Integer docIdToDelete) {
+        textRepository.deleteByDocId(docIdToDelete);
+    }
+
     private TextDTO getText(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRefDTO,
                             Function<Integer, Version> versionReceiver) {
 
@@ -88,9 +92,5 @@ public class TextService {
         }
 
         return text.getId();
-    }
-
-    public void deleteByDocId(Integer docIdToDelete) {
-        textRepository.deleteByDocId(docIdToDelete);
     }
 }
