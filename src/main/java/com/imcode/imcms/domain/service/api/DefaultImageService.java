@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -21,7 +22,7 @@ import java.util.function.Function;
 
 @Service
 @Transactional
-public class ImageService {
+class DefaultImageService implements ImageService {
 
     private final ImageRepository imageRepository;
     private final VersionService versionService;
@@ -29,11 +30,11 @@ public class ImageService {
     private final TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage;
     private final Function<Image, ImageDTO> imageToImageDTO;
 
-    ImageService(ImageRepository imageRepository,
-                 VersionService versionService,
-                 LanguageService languageService,
-                 TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage,
-                 Function<Image, ImageDTO> imageToImageDTO) {
+    DefaultImageService(ImageRepository imageRepository,
+                        VersionService versionService,
+                        LanguageService languageService,
+                        TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage,
+                        Function<Image, ImageDTO> imageToImageDTO) {
 
         this.imageRepository = imageRepository;
         this.versionService = versionService;
@@ -42,6 +43,7 @@ public class ImageService {
         this.imageToImageDTO = imageToImageDTO;
     }
 
+    @Override
     public ImageDTO getImage(ImageDTO dataHolder) {
         return getImage(
                 dataHolder.getDocId(),
@@ -51,14 +53,17 @@ public class ImageService {
         );
     }
 
+    @Override
     public ImageDTO getImage(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
         return getImage(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
     }
 
+    @Override
     public ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
         return getImage(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
     }
 
+    @Override
     public void saveImage(ImageDTO imageDTO) {
         final Version version = versionService.getDocumentWorkingVersion(imageDTO.getDocId());
         final LanguageJPA language = languageService.findEntityByCode(imageDTO.getLangCode());

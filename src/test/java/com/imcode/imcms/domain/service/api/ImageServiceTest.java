@@ -7,6 +7,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.util.Value;
@@ -65,7 +66,7 @@ public class ImageServiceTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Imcms.removeUser();
     }
 

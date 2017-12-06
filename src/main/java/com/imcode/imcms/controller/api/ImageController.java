@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
-import com.imcode.imcms.domain.service.api.ImageService;
+import com.imcode.imcms.domain.service.ImageService;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import org.apache.log4j.Logger;
