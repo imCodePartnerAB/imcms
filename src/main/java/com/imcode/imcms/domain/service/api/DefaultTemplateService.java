@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional
-public class DefaultTemplateService implements TemplateService {
+class DefaultTemplateService implements TemplateService {
 
     private final TemplateRepository templateRepository;
     private final File templateDirectory;

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import static java.util.Optional.ofNullable;
 
 @Service
-public class DefaultUserService implements UserService {
+class DefaultUserService implements UserService {
 
     private final UserRepository userRepository;
     private final Function<User, UserDTO> userToUserDTO;
