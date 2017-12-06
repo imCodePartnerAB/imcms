@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.core.VersionService;
@@ -31,6 +32,7 @@ public class DocumentService {
     private final CommonContentService commonContentService;
     private final VersionService versionService;
     private final LanguageService languageService;
+    private final TextService textService;
     private final TextDocumentTemplateService textDocumentTemplateService;
 
     DocumentService(MetaRepository metaRepository,
@@ -39,6 +41,7 @@ public class DocumentService {
                     CommonContentService commonContentService,
                     VersionService versionService,
                     LanguageService languageService,
+                    TextService textService,
                     TextDocumentTemplateService textDocumentTemplateService) {
 
         this.metaRepository = metaRepository;
@@ -47,25 +50,12 @@ public class DocumentService {
         this.commonContentService = commonContentService;
         this.versionService = versionService;
         this.languageService = languageService;
+        this.textService = textService;
         this.textDocumentTemplateService = textDocumentTemplateService;
     }
 
     public DocumentDTO get(Integer docId) {
         return (docId == null) ? buildNewDocument() : getDocument(docId);
-    }
-
-    private DocumentDTO buildNewDocument() {
-        final List<CommonContentDTO> commonContents = commonContentService.createCommonContents();
-
-        return Value.with(DocumentDTO.createNew(), documentDTO -> documentDTO.setCommonContents(commonContents));
-    }
-
-    private DocumentDTO getDocument(int docId) {
-        final Version latestVersion = versionService.getLatestVersion(docId);
-        final List<CommonContentDTO> commonContents = commonContentService.getOrCreateCommonContents(
-                docId, latestVersion.getNo()
-        );
-        return documentMapping.apply(metaRepository.findOne(docId), latestVersion, commonContents);
     }
 
     /**
@@ -92,24 +82,6 @@ public class DocumentService {
         oTemplate.ifPresent(textDocumentTemplateService::save);
 
         return docId;
-    }
-
-    boolean hasUserAccessToDoc(int docId, UserDomainObject user) {
-        final Meta meta = Optional.ofNullable(metaRepository.findOne(docId))
-                .orElseThrow(() -> new DocumentNotExistException(docId));
-
-        if (meta.getLinkedForUnauthorizedUsers()) {
-            return true;
-        }
-
-        final Map<Integer, Meta.Permission> docPermissions = meta.getRoleIdToPermission();
-
-        return Arrays.stream(user.getRoleIds())
-                .map(RoleId::getRoleId)
-                .map(docPermissions::get)
-                .filter(Objects::nonNull)
-                .map(PermissionDTO::fromPermission)
-                .anyMatch(permissionDTO -> permissionDTO.isAtLeastAsPrivilegedAs(PermissionDTO.VIEW));
     }
 
     public String getDocumentTitle(int documentId) {
@@ -141,8 +113,48 @@ public class DocumentService {
 
     @Transactional
     public void delete(DocumentDTO deleteMe) {
+//        final Integer docIdToDelete = deleteMe.getId();
+//
+//        textService.deleteByDocId(docIdToDelete);
+////        imageService.deleteByDocId(docIdToDelete);
+//        commonContentService.deleteByDocId(docIdToDelete);
+//        versionService.deleteByDocId(docIdToDelete);
+//        metaRepository.delete(docIdToDelete);
+
         versionService.deleteByDocId(deleteMe.getId());
         commonContentService.deleteByDocId(deleteMe.getId());
         metaRepository.delete(deleteMe.getId());
+    }
+
+    boolean hasUserAccessToDoc(int docId, UserDomainObject user) {
+        final Meta meta = Optional.ofNullable(metaRepository.findOne(docId))
+                .orElseThrow(() -> new DocumentNotExistException(docId));
+
+        if (meta.getLinkedForUnauthorizedUsers()) {
+            return true;
+        }
+
+        final Map<Integer, Meta.Permission> docPermissions = meta.getRoleIdToPermission();
+
+        return Arrays.stream(user.getRoleIds())
+                .map(RoleId::getRoleId)
+                .map(docPermissions::get)
+                .filter(Objects::nonNull)
+                .map(PermissionDTO::fromPermission)
+                .anyMatch(permissionDTO -> permissionDTO.isAtLeastAsPrivilegedAs(PermissionDTO.VIEW));
+    }
+
+    private DocumentDTO buildNewDocument() {
+        final List<CommonContentDTO> commonContents = commonContentService.createCommonContents();
+
+        return Value.with(DocumentDTO.createNew(), documentDTO -> documentDTO.setCommonContents(commonContents));
+    }
+
+    private DocumentDTO getDocument(int docId) {
+        final Version latestVersion = versionService.getLatestVersion(docId);
+        final List<CommonContentDTO> commonContents = commonContentService.getOrCreateCommonContents(
+                docId, latestVersion.getNo()
+        );
+        return documentMapping.apply(metaRepository.findOne(docId), latestVersion, commonContents);
     }
 }

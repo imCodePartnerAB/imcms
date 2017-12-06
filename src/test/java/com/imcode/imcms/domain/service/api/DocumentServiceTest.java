@@ -7,15 +7,21 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Text;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
+import imcode.util.image.Format;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +69,18 @@ public class DocumentServiceTest {
 
     @Autowired
     private CommonContentService commonContentService;
+
+    @Autowired
+    private TextService textService;
+
+    @Autowired
+    private MenuService menuService;
+
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private LoopService loopService;
 
     @Autowired
     private MetaRepository metaRepository;
@@ -479,18 +497,64 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void delete_When_UserAdminAndDocExist_Expect_DocumentNotExistExceptionAfterDeletion() {
+    @Ignore
+    public void delete_When_UserAdminAndDocExistWithContent_Expect_DocumentNotExistExceptionAfterDeletion() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(RoleId.SUPERADMIN);
+        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
         Imcms.setUser(user); // means current user is admin now
 
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final Integer createdDocId = createdDoc.getId();
+        final DocumentDTO documentDTO = documentService.get(createdDocId);
         assertNotNull(documentDTO);
+
+        final int testIndex = 1;
+
+        final LoopEntryRefDTO[] loopEntryRefDTOS = {
+                new LoopEntryRefDTO(testIndex, testIndex),
+                null,
+        };
+
+        final List<LoopEntryDTO> loopEntryDTOS = new ArrayList<>(Collections.singletonList(
+                LoopEntryDTO.createEnabled(testIndex)
+        ));
+        final LoopDTO loopDTO = new LoopDTO(createdDocId, testIndex, loopEntryDTOS);
+        loopService.saveLoop(loopDTO);
+
+        for (LoopEntryRefDTO loopEntryRefDTO : loopEntryRefDTOS) {
+
+            documentDTO.getCommonContents().forEach(commonContentDTO -> {
+                final String langCode = commonContentDTO.getLanguage().getCode();
+                final TextDTO textDTO = new TextDTO();
+                textDTO.setText("test");
+                textDTO.setType(Text.Type.PLAIN_TEXT);
+                textDTO.setDocId(createdDocId);
+                textDTO.setIndex(testIndex);
+                textDTO.setLoopEntryRef(loopEntryRefDTO);
+                textDTO.setLangCode(langCode);
+                textService.save(textDTO);
+
+                final ImageDTO imageDTO = new ImageDTO(testIndex, createdDocId, loopEntryRefDTO);
+                imageDTO.setFormat(Format.JPEG);
+                imageDTO.setLangCode(langCode);
+
+                imageService.saveImage(imageDTO);
+            });
+        }
+
+        final MenuDTO menuDTO = new MenuDTO();
+        menuDTO.setDocId(createdDocId);
+        menuDTO.setMenuIndex(testIndex);
+        final MenuItemDTO menuItemDTO = new MenuItemDTO();
+        menuItemDTO.setDocumentId(createdDocId);
+        menuDTO.setMenuItems(new ArrayList<>(Collections.singletonList(menuItemDTO)));
+
+        menuService.saveFrom(menuDTO);
 
         documentService.delete(documentDTO);
 
         try {
-            documentService.get(createdDoc.getId());
+            documentService.get(createdDocId);
             fail("Expected exception wasn't thrown!");
 
         } catch (DocumentNotExistException e) {
