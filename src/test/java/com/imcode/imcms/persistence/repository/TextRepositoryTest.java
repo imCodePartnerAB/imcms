@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
@@ -77,7 +78,7 @@ public class TextRepositoryTest {
     }
 
     @Test
-    public void testFindByDocVersionAndIndexAndLoopEntryIsNull() throws Exception {
+    public void testFindByDocVersionAndIndexAndLoopEntryIsNull() {
         for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
             for (LanguageJPA language : languages) {
                 for (Version version : versions) {
@@ -97,7 +98,7 @@ public class TextRepositoryTest {
     }
 
     @Test
-    public void testFindByDocVersionAndIndexAndLoopEntryRef() throws Exception {
+    public void testFindByDocVersionAndIndexAndLoopEntryRef() {
         for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
             final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(index, index);
             for (LanguageJPA language : languages) {
@@ -118,7 +119,7 @@ public class TextRepositoryTest {
     }
 
     @Test
-    public void testDeleteByDocVersionAndLanguage() throws Exception {
+    public void testDeleteByDocVersionAndLanguage() {
         for (LanguageJPA language : languages) {
             for (Version version : versions) {
                 int deletedCount = textRepository.deleteByVersionAndLanguage(version, language);
@@ -126,5 +127,22 @@ public class TextRepositoryTest {
                 assertThat(deletedCount, equalTo(TEXTS_COUNT__PER_VERSION__PER_LANGUAGE));
             }
         }
+    }
+
+    @Test
+    public void deleteByDocId() {
+        final long prevNumberOfTextsForDoc = textRepository.findAll().stream()
+                .filter(textJPA -> Objects.equals(DOC_ID, textJPA.getVersion().getDocId()))
+                .count();
+
+        assertNotEquals(prevNumberOfTextsForDoc, 0L);
+
+        textRepository.deleteByDocId(DOC_ID);
+
+        final long newNumberOfTextsForDoc = textRepository.findAll().stream()
+                .filter(textJPA -> Objects.equals(DOC_ID, textJPA.getVersion().getDocId()))
+                .count();
+
+        assertEquals(newNumberOfTextsForDoc, 0L);
     }
 }

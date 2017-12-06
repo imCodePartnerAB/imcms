@@ -36,4 +36,8 @@ public interface TextRepository extends JpaRepository<TextJPA, Integer> {
     @Modifying
     @Query("DELETE FROM TextJPA t WHERE t.version = ?1 AND t.language = ?2")
     int deleteByVersionAndLanguage(Version version, LanguageJPA language);
+
+    @Modifying
+    @Query(value = "DELETE FROM imcms_text_doc_texts WHERE doc_id = ?1", nativeQuery = true)
+    void deleteByDocId(Integer docId);
 }
