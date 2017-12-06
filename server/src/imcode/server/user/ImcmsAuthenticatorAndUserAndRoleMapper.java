@@ -981,7 +981,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 final long ipFromLong = Utility.ipStringToLong(ipFrom);
                 final long ipToLong = Utility.ipStringToLong(ipTo);
 
-                if (ipFromLong < userIpLong && userIpLong < ipToLong) {
+                if (ipFromLong <= userIpLong && userIpLong <= ipToLong) {
                     atLeastOnceInWhiteList = true;
                 }
             }
