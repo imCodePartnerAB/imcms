@@ -4,6 +4,7 @@ import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.service.TemplateGroupService;
+import com.imcode.imcms.model.Template;
 import com.imcode.imcms.model.TemplateGroup;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +62,7 @@ public class TemplateGroupServiceTest {
 
     @Test
     public void save() {
-        final TemplateGroup test = dataInitializer.createData("test", 5, true);
+        final TemplateGroup<? extends Template> test = dataInitializer.createData("test", 5, true);
 
         templateGroupService.save(test);
 

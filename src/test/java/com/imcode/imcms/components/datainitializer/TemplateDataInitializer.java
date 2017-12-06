@@ -2,6 +2,7 @@ package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.dto.TemplateGroupDTO;
+import com.imcode.imcms.model.Template;
 import com.imcode.imcms.model.TemplateGroup;
 import com.imcode.imcms.persistence.entity.TemplateGroupJPA;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
@@ -66,7 +67,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
         textDocumentTemplateRepository.save(textDocumentTemplate);
     }
 
-    public TemplateGroup createData(String name, int howMuchContainsTemplates, boolean withoutSaving) {
+    public TemplateGroup<? extends Template> createData(String name, int howMuchContainsTemplates, boolean withoutSaving) {
         final TemplateGroupJPA templateGroupJPA = Value.apply(new TemplateGroupJPA(), templateGroupJpa -> {
             final List<TemplateDTO> templates = createData(howMuchContainsTemplates);
             templateGroupJpa.setName(name);
