@@ -2,12 +2,6 @@ package com.imcode.imcms.persistence.entity;
 
 import lombok.NoArgsConstructor;
 
-/**
- * Super class for both JPA and DTO realisation
- *
- * @author Serhii Maksymchuk from Ubrainians for imCode
- * 23.11.17.
- */
 @NoArgsConstructor
 public abstract class Template {
 
