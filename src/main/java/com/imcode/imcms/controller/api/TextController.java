@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.TextDTO;
-import com.imcode.imcms.domain.service.api.TextService;
+import com.imcode.imcms.domain.service.TextService;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import org.springframework.beans.factory.annotation.Autowired;

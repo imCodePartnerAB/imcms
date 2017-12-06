@@ -15,9 +15,9 @@
 <%--@elvariable id="currentDocument" type="com.imcode.imcms.api.TextDocument"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
 <%--@elvariable id="isPreviewMode" type="boolean"--%>
-<%--@elvariable id="textService" type="com.imcode.imcms.domain.service.api.TextService"--%>
+<%--@elvariable id="textService" type="com.imcode.imcms.domain.service.TextService"--%>
 <%--@elvariable id="loopEntryRef" type="com.imcode.imcms.domain.dto.LoopEntryRefDTO"--%>
-<%--@elvariable id="textField" type="com.imcode.imcms.api.TextDocument.TextField"--%>
+<%--@elvariable id="textField" type="com.imcode.imcms.persistence.entity.Text"--%>
 <%--@elvariable id="language" type="java.lang.String"--%>
 
 <c:if test="${empty index}">

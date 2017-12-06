@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
+import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
@@ -16,18 +17,19 @@ import java.util.function.Function;
 
 @Service
 @Transactional
-public class TextService {
+class DefaultTextService implements TextService {
 
     private final TextRepository textRepository;
     private final LanguageService languageService;
     private final VersionService versionService;
 
-    TextService(TextRepository textRepository, LanguageService languageService, VersionService versionService) {
+    DefaultTextService(TextRepository textRepository, LanguageService languageService, VersionService versionService) {
         this.textRepository = textRepository;
         this.languageService = languageService;
         this.versionService = versionService;
     }
 
+    @Override
     public TextDTO getText(TextDTO textRequestData) {
         return getText(
                 textRequestData.getDocId(),
@@ -37,14 +39,17 @@ public class TextService {
         );
     }
 
+    @Override
     public TextDTO getText(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
         return getText(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
     }
 
+    @Override
     public TextDTO getPublicText(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
         return getText(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
     }
 
+    @Override
     public void save(TextDTO textDTO) {
         final Version version = versionService.getDocumentWorkingVersion(textDTO.getDocId());
         final LanguageJPA language = languageService.findEntityByCode(textDTO.getLangCode());
@@ -55,6 +60,7 @@ public class TextService {
         textRepository.save(text);
     }
 
+    @Override
     public void deleteByDocId(Integer docIdToDelete) {
         textRepository.deleteByDocId(docIdToDelete);
     }
