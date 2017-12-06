@@ -1,4 +1,4 @@
-package com.imcode.imcms.persistence.entity;
+package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
 

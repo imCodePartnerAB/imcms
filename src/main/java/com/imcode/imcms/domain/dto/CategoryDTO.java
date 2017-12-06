@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.persistence.entity.Category;
+import com.imcode.imcms.model.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

@@ -1,6 +1,7 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.imcode.imcms.model.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

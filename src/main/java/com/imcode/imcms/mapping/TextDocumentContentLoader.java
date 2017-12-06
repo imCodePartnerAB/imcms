@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.service.api.MenuService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.*;
 import imcode.server.document.textdocument.ImageDomainObject;

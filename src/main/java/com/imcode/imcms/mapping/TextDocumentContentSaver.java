@@ -7,6 +7,7 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Menu;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuItem;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
+import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.*;
 import com.imcode.imcms.util.Value;

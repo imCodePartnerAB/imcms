@@ -1,11 +1,11 @@
-package com.imcode.imcms.persistence.entity;
+package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public abstract class Category {
+public abstract class Role {
 
-    protected Category(Category from) {
+    protected Role(Role from) {
         setId(from.getId());
         setName(from.getName());
     }
@@ -17,4 +17,5 @@ public abstract class Category {
     public abstract String getName();
 
     public abstract void setName(String name);
+
 }

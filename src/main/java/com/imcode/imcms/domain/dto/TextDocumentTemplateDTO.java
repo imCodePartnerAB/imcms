@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.persistence.entity.TextDocumentTemplate;
+import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.util.Value;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.persistence.entity.Loop;
-import com.imcode.imcms.persistence.entity.LoopEntry;
+import com.imcode.imcms.model.Loop;
+import com.imcode.imcms.model.LoopEntry;
 import com.imcode.imcms.persistence.entity.Version;
 import lombok.AllArgsConstructor;
 import lombok.Data;

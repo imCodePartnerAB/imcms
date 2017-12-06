@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.persistence.entity.Language;
-import com.imcode.imcms.persistence.entity.Text;
+import com.imcode.imcms.model.Language;
+import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.Version;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,5 +1,7 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.model.Loop;
+import com.imcode.imcms.model.LoopEntry;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

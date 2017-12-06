@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static com.imcode.imcms.persistence.entity.Text.Type.PLAIN_TEXT;
+import static com.imcode.imcms.model.Text.Type.PLAIN_TEXT;
 import static org.junit.Assert.*;
 
 @Transactional

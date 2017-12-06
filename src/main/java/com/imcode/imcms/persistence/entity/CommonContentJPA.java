@@ -1,5 +1,7 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Language;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

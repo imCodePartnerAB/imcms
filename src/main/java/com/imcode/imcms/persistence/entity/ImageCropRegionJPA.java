@@ -1,5 +1,6 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.model.ImageCropRegion;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
