@@ -1,14 +1,14 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.TemplateDTO;
+import com.imcode.imcms.model.Template;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface TemplateService {
-    List<TemplateDTO> getAll();
+    List<Template> getAll();
 
-    void save(TemplateDTO saveMe);
+    void save(Template saveMe);
 
-    Optional<TemplateDTO> getTemplate(String templateName);
+    Optional<Template> getTemplate(String templateName);
 }

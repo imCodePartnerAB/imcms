@@ -5,6 +5,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.model.Template;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +38,7 @@ public class TemplateServiceTest {
     @Autowired
     private TemplateDataInitializer dataInitializer;
 
-    private List<TemplateDTO> templatesExpected;
+    private List<Template> templatesExpected;
 
     @Before
     public void setUp() throws Exception {
@@ -57,10 +58,10 @@ public class TemplateServiceTest {
         templateFile.createNewFile();
 
         try {
-            final TemplateDTO templateDTO = dataInitializer.createData(templateName);
-            final Optional<TemplateDTO> templateOptional = templateService.getTemplate(templateName);
+            final Template templateDTO = dataInitializer.createData(templateName);
+            final Optional<Template> templateOptional = templateService.getTemplate(templateName);
             assertTrue(templateOptional.isPresent());
-            final TemplateDTO templateResult = templateOptional.get();
+            final Template templateResult = templateOptional.get();
             assertEquals(templateDTO, templateResult);
 
         } finally {
@@ -76,15 +77,15 @@ public class TemplateServiceTest {
         try {
             assertTrue(templateFile.createNewFile());
 
-            TemplateDTO templateDTO = new TemplateDTO(templateName, false);
+            Template templateDTO = new TemplateDTO(templateName, false);
             templateService.save(templateDTO);
-            final Optional<TemplateDTO> oTemplate = templateService.getTemplate(templateName);
+            final Optional<Template> oTemplate = templateService.getTemplate(templateName);
             assertTrue(oTemplate.isPresent());
 
             templateDTO = oTemplate.get();
-            final Optional<TemplateDTO> templateOptional = templateService.getTemplate(templateName);
+            final Optional<Template> templateOptional = templateService.getTemplate(templateName);
             assertTrue(templateOptional.isPresent());
-            final TemplateDTO templateResult = templateOptional.get();
+            final Template templateResult = templateOptional.get();
             assertEquals(templateDTO.getName(), templateResult.getName());
             assertEquals(templateDTO.isHidden(), templateResult.isHidden());
 
@@ -96,7 +97,7 @@ public class TemplateServiceTest {
     @Test
     public void save_When_NoTemplate_Expect_Null() {
         final String dummyName = "test_" + System.currentTimeMillis();
-        final TemplateDTO templateDTO = new TemplateDTO(dummyName, false);
+        final Template templateDTO = new TemplateDTO(dummyName, false);
 
         templateService.save(templateDTO);
 

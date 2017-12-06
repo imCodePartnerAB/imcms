@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -25,7 +24,6 @@ class DefaultTemplateService implements TemplateService {
 
     private final TemplateRepository templateRepository;
     private final File templateDirectory;
-    private final Function<TemplateDTO, TemplateJPA> templateSaver;
     private final Set<String> templateExtensions = new HashSet<>(Arrays.asList("jsp", "jspx", "html"));
 
     DefaultTemplateService(TemplateRepository templateRepository,
@@ -33,30 +31,28 @@ class DefaultTemplateService implements TemplateService {
 
         this.templateRepository = templateRepository;
         this.templateDirectory = templateDirectory;
-        this.templateSaver = ((Function<TemplateDTO, TemplateJPA>) TemplateJPA::new)
-                .andThen(templateRepository::save);
     }
 
     @Override
-    public List<TemplateDTO> getAll() {
+    public List<Template> getAll() {
         return templateRepository.findAll().stream()
                 .map(TemplateDTO::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void save(TemplateDTO saveMe) {
+    public void save(Template saveMe) {
         final String templateName = saveMe.getName();
 
         if (isTemplateFileExist(templateName)) {
-            templateSaver.apply(saveMe);
+            templateRepository.save(new TemplateJPA(saveMe));
         }
     }
 
     @Override
-    public Optional<TemplateDTO> getTemplate(String templateName) {
+    public Optional<Template> getTemplate(String templateName) {
         if (isTemplateFileExist(templateName)) {
-            final TemplateJPA template = templateRepository.findOne(templateName);
+            final Template template = templateRepository.findOne(templateName);
             return Optional.ofNullable(template).map(TemplateDTO::new);
         }
 

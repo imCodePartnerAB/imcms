@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.model.Template;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ public class TemplateController {
     }
 
     @GetMapping
-    public List<TemplateDTO> getAll() {
+    public List<Template> getAll() {
         return templateService.getAll();
     }
 

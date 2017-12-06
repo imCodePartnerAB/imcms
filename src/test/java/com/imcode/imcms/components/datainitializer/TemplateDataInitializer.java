@@ -34,7 +34,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
         this.templateGroupRepository = templateGroupRepository;
     }
 
-    public List<TemplateDTO> createData(Integer howMuch) {
+    public List<Template> createData(Integer howMuch) {
         return IntStream.range(0, howMuch)
                 .mapToObj(i -> Value.with(new TemplateJPA(), template -> {
                     template.setName("template" + i);
@@ -45,7 +45,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
                 .collect(Collectors.toList());
     }
 
-    public TemplateDTO createData(final String name) {
+    public Template createData(final String name) {
         return Value.apply(new TemplateJPA(), template -> {
             template.setName(name);
             template.setHidden(Math.random() < 0.5);
@@ -69,7 +69,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
 
     public TemplateGroup<? extends Template> createData(String name, int howMuchContainsTemplates, boolean withoutSaving) {
         final TemplateGroupJPA templateGroupJPA = Value.apply(new TemplateGroupJPA(), templateGroupJpa -> {
-            final List<TemplateDTO> templates = createData(howMuchContainsTemplates);
+            final List<Template> templates = createData(howMuchContainsTemplates);
             templateGroupJpa.setName(name);
             templateGroupJpa.setTemplates(templates.stream().map(TemplateJPA::new).collect(Collectors.toList()));
             if (withoutSaving) {

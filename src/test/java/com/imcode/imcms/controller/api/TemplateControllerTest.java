@@ -4,7 +4,7 @@ import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
-import com.imcode.imcms.domain.dto.TemplateDTO;
+import com.imcode.imcms.model.Template;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +24,7 @@ public class TemplateControllerTest extends AbstractControllerTest {
 
     @Autowired
     private TemplateDataInitializer dataInitializer;
-    private List<TemplateDTO> templatesExpected;
+    private List<Template> templatesExpected;
 
     @Override
     protected String controllerPath() {
