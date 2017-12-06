@@ -51,6 +51,9 @@ public class MenuDataInitializer extends TestDataCleaner {
 
         if (withMenuItems) {
             addMenuItemsTo(savedMenu);
+
+        } else {
+            savedMenu.setMenuItems(new ArrayList<>());
         }
 
         return menuToMenuDTO.apply(savedMenu);
