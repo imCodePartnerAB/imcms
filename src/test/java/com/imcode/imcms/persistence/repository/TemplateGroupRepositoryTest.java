@@ -3,8 +3,7 @@ package com.imcode.imcms.persistence.repository;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
-import com.imcode.imcms.domain.dto.TemplateGroupDTO;
-import com.imcode.imcms.persistence.entity.TemplateGroupJPA;
+import com.imcode.imcms.model.TemplateGroup;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,10 +33,10 @@ public class TemplateGroupRepositoryTest {
     }
 
     @Test
-    public void findByName_When_containsTemplates_Expect_theSameId() throws Exception {
+    public void findByName_When_containsTemplates_Expect_theSameId() {
         final String name = "Top menu group";
-        final TemplateGroupDTO topMenuGroup = templateDataInitializer.createData(name, 5, false);
-        final TemplateGroupJPA actualGroup = templateGroupRepository.findByName(name);
+        final TemplateGroup topMenuGroup = templateDataInitializer.createData(name, 5, false);
+        final TemplateGroup actualGroup = templateGroupRepository.findByName(name);
 
         assertEquals(topMenuGroup.getId(), actualGroup.getId());
         assertEquals(name, actualGroup.getName());

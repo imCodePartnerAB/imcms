@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.TemplateGroupDTO;
 import com.imcode.imcms.domain.service.TemplateGroupService;
+import com.imcode.imcms.model.TemplateGroup;
 import com.imcode.imcms.persistence.entity.TemplateGroupJPA;
 import com.imcode.imcms.persistence.repository.TemplateGroupRepository;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ class DefaultTemplateGroupService implements TemplateGroupService {
     }
 
     @Override
-    public List<TemplateGroupDTO> getAll() {
+    public List<TemplateGroup> getAll() {
         return templateGroupRepository.findAll()
                 .stream()
                 .map(TemplateGroupDTO::new)
@@ -30,13 +31,13 @@ class DefaultTemplateGroupService implements TemplateGroupService {
     }
 
     @Override
-    public void save(TemplateGroupDTO templateGroupDTO) {
-        final TemplateGroupJPA templateGroupJpa = new TemplateGroupJPA(templateGroupDTO);
+    public void save(TemplateGroup templateGroup) {
+        final TemplateGroupJPA templateGroupJpa = new TemplateGroupJPA(templateGroup);
         templateGroupRepository.saveAndFlush(templateGroupJpa);
     }
 
     @Override
-    public TemplateGroupDTO get(String name) {
+    public TemplateGroup get(String name) {
         final TemplateGroupJPA templateGroupJPA = templateGroupRepository.findByName(name);
         return new TemplateGroupDTO(templateGroupJPA);
     }

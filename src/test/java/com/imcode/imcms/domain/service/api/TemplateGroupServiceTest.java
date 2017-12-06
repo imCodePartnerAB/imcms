@@ -3,8 +3,8 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
-import com.imcode.imcms.domain.dto.TemplateGroupDTO;
 import com.imcode.imcms.domain.service.TemplateGroupService;
+import com.imcode.imcms.model.TemplateGroup;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,7 @@ public class TemplateGroupServiceTest {
     @Test
     public void getAll_When_templateGroupsWithTemplates_Expect_theyAllPersisted() {
         int i = 1;
-        final List<TemplateGroupDTO> expected = Arrays.asList(dataInitializer.createData("test " + i++, i++, false),
+        final List<TemplateGroup> expected = Arrays.asList(dataInitializer.createData("test " + i++, i++, false),
                 dataInitializer.createData("test " + i++, i++, false),
                 dataInitializer.createData("test " + i++, i++, false),
                 dataInitializer.createData("test " + i++, i++, false),
@@ -53,19 +53,19 @@ public class TemplateGroupServiceTest {
     @Test
     public void get() {
         final String name = "TEST";
-        final TemplateGroupDTO test = dataInitializer.createData(name, 5, false);
-        final TemplateGroupDTO persistedByName = templateGroupService.get(name);
+        final TemplateGroup test = dataInitializer.createData(name, 5, false);
+        final TemplateGroup persistedByName = templateGroupService.get(name);
 
         assertEquals(test, persistedByName);
     }
 
     @Test
     public void save() {
-        final TemplateGroupDTO test = dataInitializer.createData("test", 5, true);
+        final TemplateGroup test = dataInitializer.createData("test", 5, true);
 
         templateGroupService.save(test);
 
-        final TemplateGroupDTO persisted = templateGroupService.get("test");
+        final TemplateGroup persisted = templateGroupService.get("test");
         persisted.setId(null);
         assertEquals(test, persisted);
     }

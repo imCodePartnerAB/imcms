@@ -1,15 +1,15 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.TemplateGroupDTO;
+import com.imcode.imcms.model.TemplateGroup;
 
 import java.util.List;
 
 public interface TemplateGroupService {
 
-    List<TemplateGroupDTO> getAll();
+    List<TemplateGroup> getAll();
 
-    void save(TemplateGroupDTO templateGroupDTO);
+    void save(TemplateGroup templateGroupDTO);
 
-    TemplateGroupDTO get(String name);
+    TemplateGroup get(String name);
 
 }
