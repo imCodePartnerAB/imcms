@@ -12,6 +12,7 @@ import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Service
+@Transactional
 public class ImageService {
 
     private final ImageRepository imageRepository;
