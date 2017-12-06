@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
+import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.user.RoleId;
@@ -14,40 +15,38 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 
 @Service
-public class UserService {
+public class DefaultUserService implements UserService {
 
     private final UserRepository userRepository;
     private final Function<User, UserDTO> userToUserDTO;
     @PersistenceContext
     private EntityManager entityManager;
 
-    UserService(UserRepository userRepository,
-                Function<User, UserDTO> userToUserDTO) {
+    DefaultUserService(UserRepository userRepository,
+                       Function<User, UserDTO> userToUserDTO) {
         this.userRepository = userRepository;
         this.userToUserDTO = userToUserDTO;
     }
 
+    @Override
     public User getUser(int id) {
         return ofNullable(userRepository.findById(id))
                 .orElseThrow(() -> new UserNotExistsException(id));
     }
 
-    public List<User> getUsers(Set<Integer> ids) {
-        return userRepository.findByIdIn(ids);
-    }
-
+    @Override
     public User getUser(String login) {
         return ofNullable(userRepository.findByLogin(login))
                 .orElseThrow(() -> new UserNotExistsException(login));
     }
 
+    @Override
     public List<UserDTO> getAdminUsers() {
         return userRepository.findUsersWithRoleIds(RoleId.USERADMIN_ID, RoleId.SUPERADMIN_ID).stream()
                 .map(userToUserDTO)
@@ -55,6 +54,7 @@ public class UserService {
     }
 
     // TODO: 13.10.17 Was moved. Rewrite to human code.
+    @Override
     public List<User> findAll(boolean includeExternal, boolean includeInactive) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> c = cb.createQuery(User.class);
@@ -76,6 +76,7 @@ public class UserService {
     }
 
     // TODO: 13.10.17 Was moved. Rewrite to human code.
+    @Override
     public List<User> findByNamePrefix(String prefix, boolean includeInactive) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> c = cb.createQuery(User.class);

@@ -4,6 +4,7 @@ import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.UserDTO;
+import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.mapping.jpa.User;
 import imcode.server.user.RoleId;
 import org.junit.After;
@@ -74,7 +75,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testFindAll() throws Exception {
+    public void testFindAll() {
         assertNotNull(userService.findAll(true, true));
         assertNotNull(userService.findAll(true, false));
         assertNotNull(userService.findAll(false, false));
@@ -82,7 +83,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void findByNamePrefix() throws Exception {
+    public void findByNamePrefix() {
         assertNotNull(userService.findByNamePrefix("prefix", true));
         assertNotNull(userService.findByNamePrefix("prefix", false));
     }

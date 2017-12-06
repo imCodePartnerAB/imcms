@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.UserDTO;
-import com.imcode.imcms.domain.service.api.UserService;
+import com.imcode.imcms.domain.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

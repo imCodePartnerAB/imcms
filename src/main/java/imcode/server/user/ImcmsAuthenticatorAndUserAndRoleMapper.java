@@ -7,7 +7,7 @@ import com.imcode.db.commands.*;
 import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
-import com.imcode.imcms.domain.service.api.UserService;
+import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import com.imcode.imcms.servlet.LoginPasswordManager;
