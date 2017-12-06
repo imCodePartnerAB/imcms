@@ -209,7 +209,7 @@ Imcms.define("imcms-document-editor-builder",
                 });
         }
 
-        function buildDocItemControls(documentId, opts) {
+        function buildDocItemControls(document, opts) {
             var controls = [];
 
             if (opts) {
@@ -220,13 +220,13 @@ Imcms.define("imcms-document-editor-builder",
 
                 if (opts.removeEnable) {
                     var $controlRemove = controlsBuilder.remove(function () {
-                        removeDocument.call(this, documentId);
+                        removeDocument.call(this, document);
                     });
                     controls.push($controlRemove);
                 }
 
                 if (opts.editEnable) {
-                    var $controlEdit = controlsBuilder.edit(pageInfoBuilder.build.bind(pageInfoBuilder, documentId));
+                    var $controlEdit = controlsBuilder.edit(pageInfoBuilder.build.bind(pageInfoBuilder, document.id));
                     controls.push($controlEdit);
                 }
             }
@@ -425,7 +425,7 @@ Imcms.define("imcms-document-editor-builder",
                         $docItemAlias,
                         $docItemType
                     ],
-                    "controls": buildDocItemControls(document.id, opts)
+                    "controls": buildDocItemControls(document, opts)
                 }
             }).buildBlockStructure("<div>");
         }
@@ -499,15 +499,15 @@ Imcms.define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>", {"class": "imcms-editor-window"});
         }
 
-        function removeDocument(documentId) {
-            var question = "Do you want to remove document " + documentId + "?";
+        function removeDocument(document) {
+            var question = "Do you want to remove document " + document.id + "?";
 
             imcmsModalWindowBuilder.buildModalWindow(question, function (answer) {
                 if (!answer) {
                     return;
                 }
 
-                docRestApi.remove({docId: documentId}).done(function () {
+                docRestApi.remove(document).done(function () {
                     $(this).parent().parent().remove();
                 })
             });
