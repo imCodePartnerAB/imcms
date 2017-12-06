@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -210,4 +209,34 @@ public class ImageRepositoryTest {
         assertTrue(images.isEmpty());
     }
 
+    @Test
+    public void deleteByDocId() {
+        assertTrue(imageRepository.findAll().isEmpty());
+
+        final Version newVersion = versionDataInitializer.createData(VERSION_INDEX + 1, DOC_ID);
+
+        final LoopDTO loopDTO = new LoopDTO(DOC_ID, 1, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+        loopDataInitializer.createData(loopDTO);
+
+        final LanguageJPA[] languages = {english, swedish};
+        final Version[] versions = {version, newVersion};
+        final LoopEntryRefJPA[] loops = {loopEntryRef, null};
+
+        for (int i = IMAGE_INDEX; i < IMAGE_INDEX + 20; i++) {
+            for (LanguageJPA language : languages) {
+                for (Version vers : versions) {
+                    for (LoopEntryRefJPA loopEntryRefJPA : loops) {
+                        imageDataInitializer.generateImage(i, language, vers, loopEntryRefJPA);
+                    }
+                }
+            }
+        }
+
+        assertFalse(imageRepository.findAll().isEmpty());
+
+        imageRepository.deleteByDocId(DOC_ID);
+
+        assertTrue(imageRepository.findAll().isEmpty());
+    }
 }

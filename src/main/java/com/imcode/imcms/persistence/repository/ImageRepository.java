@@ -48,4 +48,8 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
     @Modifying
     @Query("DELETE FROM Image i WHERE i.version = ?1 AND i.language = ?2")
     void deleteByVersionAndLanguage(Version version, LanguageJPA language);
+
+    @Modifying
+    @Query(value = "DELETE FROM imcms_text_doc_images WHERE doc_id = ?1", nativeQuery = true)
+    void deleteByDocId(Integer docId);
 }
