@@ -127,7 +127,7 @@ public class CommonContentServiceTest {
         commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX);
         assertFalse(commonContentService.getOrCreateCommonContents(DOC_ID, VERSION_INDEX).isEmpty());
 
-        commonContentService.delete(DOC_ID);
+        commonContentService.deleteByDocId(DOC_ID);
         assertTrue(commonContentService.getCommonContents(DOC_ID, VERSION_INDEX).isEmpty());
     }
 }

@@ -109,8 +109,7 @@ public class DocumentService {
                 .map(docPermissions::get)
                 .filter(Objects::nonNull)
                 .map(PermissionDTO::fromPermission)
-                .anyMatch(documentPermissionSetTypeDomainObject
-                        -> documentPermissionSetTypeDomainObject.isAtLeastAsPrivilegedAs(PermissionDTO.VIEW));
+                .anyMatch(permissionDTO -> permissionDTO.isAtLeastAsPrivilegedAs(PermissionDTO.VIEW));
     }
 
     public String getDocumentTitle(int documentId) {
@@ -142,8 +141,8 @@ public class DocumentService {
 
     @Transactional
     public void delete(DocumentDTO deleteMe) {
-        versionService.delete(deleteMe.getId());
-        commonContentService.delete(deleteMe.getId());
+        versionService.deleteByDocId(deleteMe.getId());
+        commonContentService.deleteByDocId(deleteMe.getId());
         metaRepository.delete(deleteMe.getId());
     }
 }

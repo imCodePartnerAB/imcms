@@ -132,7 +132,7 @@ public class CommonContentService {
         });
     }
 
-    public void delete(int docId) {
+    public void deleteByDocId(int docId) {
         commonContentRepository.deleteByDocId(docId);
     }
 }

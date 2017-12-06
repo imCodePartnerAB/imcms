@@ -77,7 +77,7 @@ public class VersionService {
         return versionRepository.findWorking(docId);
     }
 
-    public void delete(Integer docId) {
+    public void deleteByDocId(Integer docId) {
         versionRepository.deleteByDocId(docId);
     }
 }

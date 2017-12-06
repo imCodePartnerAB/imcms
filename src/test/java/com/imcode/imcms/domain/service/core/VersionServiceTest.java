@@ -60,7 +60,7 @@ public class VersionServiceTest {
         final List<Version> versions = versionService.findByDocId(docId);
         assertTrue(versions.size() > 0);
 
-        versionService.delete(docId);
+        versionService.deleteByDocId(docId);
 
         final List<Version> emptyList = versionService.findByDocId(docId);
         assertTrue(emptyList.isEmpty());
