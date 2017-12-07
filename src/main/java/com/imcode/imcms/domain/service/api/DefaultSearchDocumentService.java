@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
+import com.imcode.imcms.domain.service.SearchDocumentService;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
@@ -16,22 +17,20 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * Created by dmizem from Ubrainians for imCode on 19.10.17.
- */
 @Service
-public class SearchDocumentService {
+public class DefaultSearchDocumentService implements SearchDocumentService {
 
     private final Function<DocumentStoredFields, DocumentDTO> storedFieldsToDocumentDTO;
     private final DocumentMapper documentMapper;
 
-    SearchDocumentService(Function<DocumentStoredFields, DocumentDTO> documentStoredFieldToDocumentDto,
-                          DocumentMapper documentMapper) {
+    DefaultSearchDocumentService(Function<DocumentStoredFields, DocumentDTO> documentStoredFieldToDocumentDto,
+                                 DocumentMapper documentMapper) {
 
         this.storedFieldsToDocumentDTO = documentStoredFieldToDocumentDto;
         this.documentMapper = documentMapper;
     }
 
+    @Override
     public List<DocumentDTO> searchDocuments(SearchQueryDTO searchQuery) {
 
         if (searchQuery.getUserId() == null) {

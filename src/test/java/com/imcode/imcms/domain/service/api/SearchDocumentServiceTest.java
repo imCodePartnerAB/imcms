@@ -4,6 +4,7 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
+import com.imcode.imcms.domain.service.SearchDocumentService;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.index.DocumentIndex;
