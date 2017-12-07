@@ -28,7 +28,7 @@ public class TextDTO extends Text {
     }
 
     public TextDTO(Text from, Version version, Language language) {
-        super(from, from.getLoopEntryRef());
+        super(from);
         this.langCode = language.getCode();
         this.docId = version.getDocId();
     }

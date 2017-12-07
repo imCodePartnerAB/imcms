@@ -5,11 +5,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public abstract class Text {
 
-    protected Text(Text from, LoopEntryRef loopEntryRef) {
+    protected Text(Text from) {
         setIndex(from.getIndex());
         setType(from.getType());
         setText(from.getText());
-        setLoopEntryRef(loopEntryRef);
+        setLoopEntryRef(from.getLoopEntryRef());
     }
 
     public abstract Integer getIndex();

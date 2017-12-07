@@ -46,8 +46,8 @@ class TextJPABase extends Text {
     })
     private Version version;
 
-    TextJPABase(Text from, LoopEntryRef loopEntryRef) {
-        super(from, loopEntryRef);
+    TextJPABase(Text from) {
+        super(from);
     }
 
     @Override
