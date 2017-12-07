@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.CommonContentDTO;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Version;
 
@@ -16,7 +16,7 @@ public interface CommonContentService {
      * @param versionNo version no
      * @return a {@code List} of all common contents
      */
-    List<CommonContentDTO> getOrCreateCommonContents(int docId, int versionNo);
+    List<CommonContent> getOrCreateCommonContents(int docId, int versionNo);
 
     /**
      * Gets common content for working or published versions.
@@ -27,20 +27,20 @@ public interface CommonContentService {
      * @param language  to get language code
      * @return common content of docId, versionNo and user language.
      */
-    CommonContentDTO getOrCreate(int docId, int versionNo, Language language);
+    CommonContent getOrCreate(int docId, int versionNo, Language language);
 
-    List<CommonContentDTO> getCommonContents(int docId, int versionNo);
+    List<CommonContent> getCommonContents(int docId, int versionNo);
 
-    void save(Collection<CommonContentDTO> saveUs);
+    void save(Collection<CommonContent> saveUs);
 
-    void save(CommonContentDTO saveMe);
+    void save(CommonContent saveMe);
 
     /**
      * Creates empty CommonContent for non-existing document and for all
      * languages with {@link Version#WORKING_VERSION_INDEX}.
      * Not saves to DB.
      */
-    List<CommonContentDTO> createCommonContents();
+    List<CommonContent> createCommonContents();
 
     void deleteByDocId(int docId);
 }

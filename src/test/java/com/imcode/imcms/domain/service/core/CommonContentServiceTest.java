@@ -8,6 +8,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.util.Value;
 import org.junit.After;
 import org.junit.Before;
@@ -58,13 +59,13 @@ public class CommonContentServiceTest {
 
     @Test
     public void getOrCreateCommonContent_When_Exist_Expect_CorrectDTO() {
-        final List<CommonContentDTO> commonContentDTOS = commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX)
+        final List<CommonContent> commonContentDTOS = commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX)
                 .stream()
                 .map(CommonContentDTO::new)
                 .collect(Collectors.toList());
 
         for (LanguageDTO languageDTO : languageDataInitializer.createData()) {
-            final CommonContentDTO commonContentDTO = commonContentService.getOrCreate(DOC_ID, VERSION_INDEX, languageDTO);
+            final CommonContent commonContentDTO = commonContentService.getOrCreate(DOC_ID, VERSION_INDEX, languageDTO);
             assertTrue(commonContentDTOS.contains(commonContentDTO));
         }
     }
@@ -81,17 +82,17 @@ public class CommonContentServiceTest {
 
     @Test
     public void saveCommonContent_When_ExistBefore_Expect_Saved() {
-        final List<CommonContentDTO> contents = commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX)
+        final List<CommonContent> contents = commonContentDataInitializer.createData(DOC_ID, VERSION_INDEX)
                 .stream()
                 .map(CommonContentDTO::new)
                 .collect(Collectors.toList());
 
-        for (CommonContentDTO content : contents) {
+        for (CommonContent content : contents) {
             content.setHeadline("test_content_headline");
             commonContentService.save(content);
         }
 
-        final List<CommonContentDTO> commonContents = new ArrayList<>();
+        final List<CommonContent> commonContents = new ArrayList<>();
 
         for (LanguageDTO languageDTO : languageDataInitializer.createData()) {
             commonContents.add(commonContentService.getOrCreate(DOC_ID, VERSION_INDEX, languageDTO));
@@ -105,7 +106,7 @@ public class CommonContentServiceTest {
         versionDataInitializer.createData(VERSION_INDEX, DOC_ID);
 
         for (LanguageDTO languageDTO : languageDataInitializer.createData()) {
-            final CommonContentDTO commonContentDTO = Value.with(new CommonContentDTO(), contentDTO -> {
+            final CommonContent commonContentDTO = Value.with(new CommonContentDTO(), contentDTO -> {
                 contentDTO.setVersionNo(VERSION_INDEX);
                 contentDTO.setEnabled(true);
                 contentDTO.setMenuImageURL("menu_image_url_test");
@@ -116,7 +117,7 @@ public class CommonContentServiceTest {
             });
 
             commonContentService.save(commonContentDTO);
-            final CommonContentDTO savedContent = commonContentService.getOrCreate(DOC_ID, VERSION_INDEX, languageDTO);
+            final CommonContent savedContent = commonContentService.getOrCreate(DOC_ID, VERSION_INDEX, languageDTO);
             commonContentDTO.setId(savedContent.getId());
 
             assertEquals(savedContent, commonContentDTO);

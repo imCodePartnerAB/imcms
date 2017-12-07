@@ -1,8 +1,8 @@
 package com.imcode.imcms.components.datainitializer;
 
-import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -25,7 +25,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
     private static final int TEST_VERSION_INDEX = 0;
 
     private final MetaRepository metaRepository;
-    private final TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> metaToDocumentDTO;
+    private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
     private final TemplateRepository templateRepository;
     private final CommonContentDataInitializer commonContentDataInitializer;
     private final VersionDataInitializer versionDataInitializer;
@@ -33,7 +33,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
     private final CommonContentService commonContentService;
 
     public DocumentDataInitializer(MetaRepository metaRepository,
-                                   TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> metaToDocumentDTO,
+                                   TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
                                    VersionDataInitializer versionDataInitializer,
                                    TemplateDataInitializer templateDataInitializer,
                                    CommonContentService commonContentService,
@@ -85,7 +85,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
         final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, metaDoc.getId());
         commonContentDataInitializer.createData(metaDoc.getId(), TEST_VERSION_INDEX);
 
-        final List<CommonContentDTO> commonContents = commonContentService.getOrCreateCommonContents(
+        final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
                 metaDoc.getId(), version.getNo()
         );
         return metaToDocumentDTO.apply(metaDoc, version, commonContents);

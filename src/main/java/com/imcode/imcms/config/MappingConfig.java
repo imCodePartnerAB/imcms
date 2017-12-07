@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.function.TernaryFunction;
@@ -278,7 +279,7 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> documentMapping(
+    public TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping(
             Function<Set<RestrictedPermissionJPA>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO,
             Function<Map<Integer, Meta.Permission>, Map<Integer, PermissionDTO>> roleIdByPermissionDtoToRoleIdByPermission,
             CategoryService categoryService,
@@ -308,7 +309,11 @@ class MappingConfig {
             dto.setAlias(meta.getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
             dto.setPublicationStatus(meta.getPublicationStatus());
             dto.setType(meta.getDocumentType());
-            dto.setCommonContents(commonContents);
+
+            Optional.ofNullable(commonContents).map(commonContents1
+                    -> commonContents1.stream().map(CommonContentDTO::new).collect(Collectors.toList()))
+                    .ifPresent(dto::setCommonContents);
+
             dto.setPublished(auditDtoCreator.apply(meta::getPublisherId, meta::getPublicationStartDatetime));
             dto.setPublicationEnd(auditDtoCreator.apply(meta::getDepublisherId, meta::getPublicationEndDatetime));
             dto.setArchived(auditDtoCreator.apply(meta::getArchiverId, meta::getArchivedDatetime));

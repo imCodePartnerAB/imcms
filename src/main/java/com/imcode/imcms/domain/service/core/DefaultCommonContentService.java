@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.core;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -31,7 +32,7 @@ public class DefaultCommonContentService implements CommonContentService {
     }
 
     @Override
-    public List<CommonContentDTO> getOrCreateCommonContents(int docId, int versionNo) {
+    public List<CommonContent> getOrCreateCommonContents(int docId, int versionNo) {
         return languageService.getAll()
                 .stream()
                 .map(language -> getOrCreate(docId, versionNo, language))
@@ -39,8 +40,8 @@ public class DefaultCommonContentService implements CommonContentService {
     }
 
     @Override
-    public CommonContentDTO getOrCreate(int docId, int versionNo, Language language) {
-        final Optional<CommonContentDTO> oCommonContent = getCommonContent(docId, versionNo, language);
+    public CommonContent getOrCreate(int docId, int versionNo, Language language) {
+        final Optional<CommonContent> oCommonContent = getCommonContent(docId, versionNo, language);
 
         if (oCommonContent.isPresent()) {
             return oCommonContent.get();
@@ -58,7 +59,7 @@ public class DefaultCommonContentService implements CommonContentService {
     }
 
     @Override
-    public List<CommonContentDTO> getCommonContents(int docId, int versionNo) {
+    public List<CommonContent> getCommonContents(int docId, int versionNo) {
         return languageService.getAll()
                 .stream()
                 .map(languageDTO -> getCommonContent(docId, versionNo, languageDTO))
@@ -67,7 +68,7 @@ public class DefaultCommonContentService implements CommonContentService {
                 .collect(Collectors.toList());
     }
 
-    private Optional<CommonContentDTO> getCommonContent(int docId, int versionNo, Language language) {
+    private Optional<CommonContent> getCommonContent(int docId, int versionNo, Language language) {
         final CommonContentJPA commonContentJPA = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
                 docId, versionNo, new LanguageJPA(language)
         );
@@ -76,17 +77,17 @@ public class DefaultCommonContentService implements CommonContentService {
     }
 
     @Override
-    public void save(Collection<CommonContentDTO> saveUs) {
+    public void save(Collection<CommonContent> saveUs) {
         saveUs.forEach(this::save);
     }
 
     @Override
-    public void save(CommonContentDTO saveMe) {
+    public void save(CommonContent saveMe) {
         commonContentRepository.save(new CommonContentJPA(saveMe));
     }
 
     private CommonContentDTO createFromWorkingVersion(int docId, int versionNo, Language language) {
-        final Optional<CommonContentDTO> oCommonContent = getCommonContent(docId, WORKING_VERSION_INDEX, language);
+        final Optional<CommonContent> oCommonContent = getCommonContent(docId, WORKING_VERSION_INDEX, language);
         final CommonContentJPA newCommonContent = oCommonContent.map(CommonContentJPA::new)
                 .orElseGet(() -> Value.with(new CommonContentJPA(), commonContentJPA -> {
                     commonContentJPA.setEnabled(true);
@@ -101,14 +102,14 @@ public class DefaultCommonContentService implements CommonContentService {
     }
 
     @Override
-    public List<CommonContentDTO> createCommonContents() {
+    public List<CommonContent> createCommonContents() {
         return languageService.getAll()
                 .stream()
                 .map(this::createFrom)
                 .collect(Collectors.toList());
     }
 
-    private CommonContentDTO createFrom(Language languageDTO) {
+    private CommonContent createFrom(Language languageDTO) {
         return Value.with(new CommonContentDTO(), commonContentDTO -> {
             commonContentDTO.setEnabled(true);
             commonContentDTO.setLanguage(languageDTO);

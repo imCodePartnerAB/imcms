@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
@@ -28,7 +30,7 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
 class DefaultDocumentService implements DocumentService {
 
     private final MetaRepository metaRepository;
-    private final TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> documentMapping;
+    private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping;
     private final Function<DocumentDTO, Meta> documentDtoToMeta;
     private final CommonContentService commonContentService;
     private final VersionService versionService;
@@ -37,7 +39,7 @@ class DefaultDocumentService implements DocumentService {
     private final TextDocumentTemplateService textDocumentTemplateService;
 
     DefaultDocumentService(MetaRepository metaRepository,
-                           TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> metaToDocumentDTO,
+                           TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
                            Function<DocumentDTO, Meta> documentDtoToMeta,
                            CommonContentService commonContentService,
                            VersionService versionService,
@@ -81,7 +83,7 @@ class DefaultDocumentService implements DocumentService {
             saveMe.getCommonContents().forEach(commonContentDTO -> commonContentDTO.setDocId(docId));
         }
 
-        commonContentService.save(saveMe.getCommonContents());
+        commonContentService.save(new ArrayList<>(saveMe.getCommonContents()));
         oTemplate.ifPresent(textDocumentTemplateService::save);
 
         return docId;
@@ -96,7 +98,7 @@ class DefaultDocumentService implements DocumentService {
         final Language language = languageService.findByCode(code);
 
         // fixme: what if such content is disabled?
-        final CommonContentDTO commonContent = commonContentService.getOrCreate(
+        final CommonContent commonContent = commonContentService.getOrCreate(
                 documentId, latestVersion.getNo(), language
         );
 
@@ -153,14 +155,17 @@ class DefaultDocumentService implements DocumentService {
     }
 
     private DocumentDTO buildNewDocument() {
-        final List<CommonContentDTO> commonContents = commonContentService.createCommonContents();
+        final List<CommonContentDTO> commonContents = commonContentService.createCommonContents()
+                .stream()
+                .map(CommonContentDTO::new)
+                .collect(Collectors.toList());
 
         return Value.with(DocumentDTO.createNew(), documentDTO -> documentDTO.setCommonContents(commonContents));
     }
 
     private DocumentDTO getDocument(int docId) {
         final Version latestVersion = versionService.getLatestVersion(docId);
-        final List<CommonContentDTO> commonContents = commonContentService.getOrCreateCommonContents(
+        final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
                 docId, latestVersion.getNo()
         );
         return documentMapping.apply(metaRepository.findOne(docId), latestVersion, commonContents);
