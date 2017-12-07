@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
-import com.imcode.imcms.domain.service.api.ImageFolderService;
+import com.imcode.imcms.domain.service.ImageFolderService;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import org.springframework.beans.factory.annotation.Autowired;

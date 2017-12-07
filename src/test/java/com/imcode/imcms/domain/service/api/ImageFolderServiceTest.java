@@ -5,6 +5,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import com.imcode.imcms.domain.service.ImageFolderService;
 import imcode.util.io.FileUtility;
 import org.junit.Test;
 import org.junit.runner.RunWith;
