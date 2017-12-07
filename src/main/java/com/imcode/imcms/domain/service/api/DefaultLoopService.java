@@ -16,8 +16,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Service
 @Transactional
+@Service("loopService")
 public class DefaultLoopService implements LoopService {
 
     private final LoopRepository loopRepository;
