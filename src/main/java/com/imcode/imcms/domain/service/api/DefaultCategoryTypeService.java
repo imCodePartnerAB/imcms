@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRES_NEW)
-public class DefaultCategoryTypeService implements CategoryTypeService {
+class DefaultCategoryTypeService implements CategoryTypeService {
 
     private final CategoryTypeRepository categoryTypeRepository;
 

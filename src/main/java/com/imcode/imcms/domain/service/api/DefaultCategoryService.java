@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class DefaultCategoryService implements CategoryService {
+class DefaultCategoryService implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
