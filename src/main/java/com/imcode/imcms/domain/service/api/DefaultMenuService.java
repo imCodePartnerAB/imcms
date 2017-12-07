@@ -19,7 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service("menuService")
-public class DefaultMenuService implements MenuService {
+class DefaultMenuService implements MenuService {
 
     @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository")
     private final MenuRepository menuRepository;

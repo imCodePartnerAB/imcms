@@ -18,7 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class DefaultSearchDocumentService implements SearchDocumentService {
+class DefaultSearchDocumentService implements SearchDocumentService {
 
     private final Function<DocumentStoredFields, DocumentDTO> storedFieldsToDocumentDTO;
     private final DocumentMapper documentMapper;

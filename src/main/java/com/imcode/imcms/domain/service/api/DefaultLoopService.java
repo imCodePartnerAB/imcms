@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Transactional
 @Service("loopService")
-public class DefaultLoopService implements LoopService {
+class DefaultLoopService implements LoopService {
 
     private final LoopRepository loopRepository;
     private final VersionService versionService;
