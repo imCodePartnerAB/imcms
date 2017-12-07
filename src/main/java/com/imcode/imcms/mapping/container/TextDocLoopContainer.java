@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping.container;
 
-import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.model.Loop;
 
 import java.util.Objects;
 

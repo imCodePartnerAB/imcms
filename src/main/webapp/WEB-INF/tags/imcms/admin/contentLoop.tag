@@ -7,11 +7,11 @@
 <%@ attribute name="pre"%>
 <%@ attribute name="post"%>
 
-<%@ variable name-given="loop" scope="NESTED" variable-class="com.imcode.imcms.domain.dto.LoopDTO" %>
+<%@ variable name-given="loop" scope="NESTED" variable-class="com.imcode.imcms.model.Loop" %>
 <%@ variable name-given="loopIndex" scope="NESTED" variable-class="java.lang.Integer" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
-<%--@elvariable id="loop" type="com.imcode.imcms.domain.dto.LoopDTO"--%>
+<%--@elvariable id="loop" type="com.imcode.imcms.model.Loop"--%>
 <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
 <%--@elvariable id="loopService" type="com.imcode.imcms.domain.service.LoopService"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>

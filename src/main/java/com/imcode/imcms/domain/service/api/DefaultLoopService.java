@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
@@ -31,17 +32,17 @@ class DefaultLoopService implements LoopService {
     }
 
     @Override
-    public LoopDTO getLoop(int loopIndex, int docId) {
+    public Loop getLoop(int loopIndex, int docId) {
         return getLoop(loopIndex, docId, versionService::getDocumentWorkingVersion);
     }
 
     @Override
-    public LoopDTO getLoopPublic(int loopIndex, int docId) {
+    public Loop getLoopPublic(int loopIndex, int docId) {
         return getLoop(loopIndex, docId, versionService::getLatestVersion);
     }
 
     @Override
-    public LoopDTO getLoop(int loopIndex, int docId, Function<Integer, Version> versionGetter) {
+    public Loop getLoop(int loopIndex, int docId, Function<Integer, Version> versionGetter) {
         final Version documentWorkingVersion = versionGetter.apply(docId);
         final LoopJPA loop = loopRepository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
 
@@ -51,7 +52,7 @@ class DefaultLoopService implements LoopService {
     }
 
     @Override
-    public void saveLoop(LoopDTO loopDTO) {
+    public void saveLoop(Loop loopDTO) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopDTO.getDocId());
         final LoopJPA loopForSave = new LoopJPA(loopDTO, documentWorkingVersion);
         final Integer loopId = getLoopId(documentWorkingVersion, loopDTO.getIndex());
@@ -76,7 +77,7 @@ class DefaultLoopService implements LoopService {
     }
 
     @Override
-    public Collection<LoopDTO> findAllByVersion(Version version) {
+    public Collection<Loop> findAllByVersion(Version version) {
         return loopRepository.findByVersion(version).stream()
                 .map(loop1 -> new LoopDTO(loop1, loop1.getVersion()))
                 .collect(Collectors.toSet());

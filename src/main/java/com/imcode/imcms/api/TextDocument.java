@@ -1,8 +1,8 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.mapping.DocumentGetter;
+import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.Template;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -144,7 +144,7 @@ public class TextDocument extends Document {
         return contentManagementSystem;
     }
 
-    public LoopDTO getLoop(int no) {
+    public Loop getLoop(int no) {
         return getInternal().getLoop(no);
     }
 

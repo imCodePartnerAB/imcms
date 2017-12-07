@@ -2,10 +2,10 @@ package imcode.server.document.textdocument;
 
 import com.google.common.base.Strings;
 import com.google.common.primitives.Ints;
-import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
+import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.LoopEntry;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
@@ -58,7 +58,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * <p/>
      * Map key is a content's no in this document.
      */
-    private volatile ConcurrentHashMap<Integer, LoopDTO> loops = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<Integer, Loop> loops = new ConcurrentHashMap<>();
 
     public TextDocumentDomainObject() {
         this(ID_NEW);
@@ -324,7 +324,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return templateNames.clone();
     }
 
-    private ConcurrentHashMap<Integer, LoopDTO> cloneLoopsMap() {
+    private ConcurrentHashMap<Integer, Loop> cloneLoopsMap() {
         return new ConcurrentHashMap<>(loops);
     }
 
@@ -344,16 +344,16 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         this.menus = new ConcurrentHashMap<>(menus);
     }
 
-    public Map<Integer, LoopDTO> getLoops() {
+    public Map<Integer, Loop> getLoops() {
         return Collections.unmodifiableMap(loops);
     }
 
-    public void setLoops(Map<Integer, LoopDTO> loops) {
+    public void setLoops(Map<Integer, Loop> loops) {
         this.loops = new ConcurrentHashMap<>(loops);
         updateLoopsContent();
     }
 
-    public LoopDTO getLoop(int loopIndex) {
+    public Loop getLoop(int loopIndex) {
         return loops.get(loopIndex);
     }
 
@@ -361,7 +361,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         loops.forEach(this::updateLoopContent);
     }
 
-    private void updateLoopContent(Integer loopNo, LoopDTO loop) {
+    private void updateLoopContent(Integer loopNo, Loop loop) {
         Set<Integer> entriesNo = loop.getEntries().stream().map(LoopEntry::getIndex).collect(Collectors.toSet());
         loopTexts.keySet().stream()
                 .filter(loopItemRef -> (loopItemRef.getLoopNo() == loopNo) && (!entriesNo.contains(loopItemRef.getEntryNo())))

@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.persistence.entity.Version;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +37,8 @@ public class LoopServiceTest {
     private static final int TEST_LOOP_INDEX = 1;
     private static final int TEST_LOOP_COUNT = 10;
 
-    private static final LoopDTO TEST_LOOP_DTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.emptyList());
-    private static final LoopDTO TEST_LOOP_DTO_LATEST_VERSION = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Arrays.asList(LoopEntryDTO.createEnabled(1),
+    private static final Loop TEST_LOOP_DTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.emptyList());
+    private static final Loop TEST_LOOP_DTO_LATEST_VERSION = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Arrays.asList(LoopEntryDTO.createEnabled(1),
             LoopEntryDTO.createEnabled(2),
             LoopEntryDTO.createEnabled(3)
     ));
@@ -66,13 +67,13 @@ public class LoopServiceTest {
 
     @Test
     public void getLoop_Expect_correctFieldsData() {
-        final LoopDTO loop = loopService.getLoop(TEST_LOOP_INDEX, TEST_DOC_ID);
+        final Loop loop = loopService.getLoop(TEST_LOOP_INDEX, TEST_DOC_ID);
         assertEquals(TEST_LOOP_DTO, loop);
     }
 
     @Test
     public void getLoopPublic_Expect_correctFieldsData() {
-        final LoopDTO loop = loopService.getLoopPublic(TEST_LOOP_INDEX, TEST_DOC_ID);
+        final Loop loop = loopService.getLoopPublic(TEST_LOOP_INDEX, TEST_DOC_ID);
         assertEquals(TEST_LOOP_DTO_LATEST_VERSION, loop);
     }
 
@@ -92,7 +93,7 @@ public class LoopServiceTest {
     public void getLoop_When_NotExist_ExpectEmptyLoop() {
         final int nonExistingLoopIndex = 42;
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, nonExistingLoopIndex, Collections.emptyList());
-        final LoopDTO loop = loopService.getLoop(nonExistingLoopIndex, TEST_DOC_ID);
+        final Loop loop = loopService.getLoop(nonExistingLoopIndex, TEST_DOC_ID);
 
         assertNotNull(loop);
         assertEquals(loop, loopDTO);
@@ -102,7 +103,7 @@ public class LoopServiceTest {
     public void getLoopPublic_When_NotExist_ExpectEmptyLoop() {
         final int nonExistingLoopIndex = 42;
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, nonExistingLoopIndex, Collections.emptyList());
-        final LoopDTO loop = loopService.getLoopPublic(nonExistingLoopIndex, TEST_DOC_ID);
+        final Loop loop = loopService.getLoopPublic(nonExistingLoopIndex, TEST_DOC_ID);
 
         assertNotNull(loop);
         assertEquals(loop, loopDTO);
@@ -111,10 +112,10 @@ public class LoopServiceTest {
     @Test
     public void saveLoop_Expect_NotNullAndCorrectFieldsData() {
         final int testLoopIndex = 23;
-        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, testLoopIndex, Collections.emptyList());
+        final Loop loopDTO = new LoopDTO(TEST_DOC_ID, testLoopIndex, Collections.emptyList());
 
         loopService.saveLoop(loopDTO);
-        final LoopDTO savedLoop = loopService.getLoop(loopDTO.getIndex(), loopDTO.getDocId());
+        final Loop savedLoop = loopService.getLoop(loopDTO.getIndex(), loopDTO.getDocId());
 
         assertNotNull(savedLoop);
         assertEquals(savedLoop, loopDTO);
@@ -127,26 +128,26 @@ public class LoopServiceTest {
                 new LoopEntryDTO(2, false),
                 new LoopEntryDTO(3, true)
         );
-        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, 42, entries);
+        final Loop loopDTO = new LoopDTO(TEST_DOC_ID, 42, entries);
 
         loopService.saveLoop(loopDTO);
-        final LoopDTO savedLoop = loopService.getLoop(loopDTO.getIndex(), loopDTO.getDocId());
+        final Loop savedLoop = loopService.getLoop(loopDTO.getIndex(), loopDTO.getDocId());
 
         assertEquals(savedLoop, loopDTO);
     }
 
     @Test
     public void getLoopsByVersion() {
-        final LoopDTO loopDTO1 = new LoopDTO(TEST_DOC_ID, 10, Collections.emptyList());
+        final Loop loopDTO1 = new LoopDTO(TEST_DOC_ID, 10, Collections.emptyList());
         loopService.saveLoop(loopDTO1);
-        final LoopDTO loopDTO2 = new LoopDTO(TEST_DOC_ID, 20, Collections.emptyList());
+        final Loop loopDTO2 = new LoopDTO(TEST_DOC_ID, 20, Collections.emptyList());
         loopService.saveLoop(loopDTO2);
-        final LoopDTO loopDTO3 = new LoopDTO(TEST_DOC_ID, 30, Collections.emptyList());
+        final Loop loopDTO3 = new LoopDTO(TEST_DOC_ID, 30, Collections.emptyList());
         loopService.saveLoop(loopDTO3);
 
-        final Collection<LoopDTO> loopDTOS = Arrays.asList(TEST_LOOP_DTO, loopDTO1, loopDTO2, loopDTO3);
+        final Collection<Loop> loopDTOS = Arrays.asList(TEST_LOOP_DTO, loopDTO1, loopDTO2, loopDTO3);
         final Version version = versionRepository.findByDocIdAndNo(TEST_DOC_ID, TEST_VERSION_NO);
-        final Collection<LoopDTO> allByVersion = loopService.findAllByVersion(version);
+        final Collection<Loop> allByVersion = loopService.findAllByVersion(version);
 
         assertEquals(loopDTOS.size(), allByVersion.size());
         assertTrue(allByVersion.containsAll(loopDTOS));

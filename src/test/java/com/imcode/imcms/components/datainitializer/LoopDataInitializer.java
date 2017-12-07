@@ -1,6 +1,6 @@
 package com.imcode.imcms.components.datainitializer;
 
-import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;
@@ -19,15 +19,15 @@ public class LoopDataInitializer extends TestDataCleaner {
         this.versionDataInitializer = versionDataInitializer;
     }
 
-    public LoopJPA createData(LoopDTO loopDTO) {
-        return createData(loopDTO, TEST_VERSION_NO);
+    public void createData(Loop loopDTO) {
+        createData(loopDTO, TEST_VERSION_NO);
     }
 
-    public LoopJPA createData(LoopDTO loopDTO, int versionNo) {
+    public void createData(Loop loopDTO, int versionNo) {
         final Version testVersion = versionDataInitializer.createData(versionNo, loopDTO.getDocId());
 
         final LoopJPA testLoop = new LoopJPA(loopDTO, testVersion);
-        return loopRepository.saveAndFlush(testLoop);
+        loopRepository.saveAndFlush(testLoop);
     }
 
     @Override

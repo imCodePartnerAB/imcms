@@ -7,11 +7,10 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Menu;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuItem;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
-import com.imcode.imcms.model.LoopEntry;
+import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.*;
-import com.imcode.imcms.util.Value;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -22,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -369,23 +366,13 @@ public class TextDocumentContentSaver {
     }
 
     private LoopJPA toJpaObject(TextDocLoopContainer container) {
-        return toJpaObject(container.getVersionRef(), container.getLoopNo(), container.getLoop());
+        return toJpaObject(container.getVersionRef(), container.getLoop());
     }
 
-    private LoopJPA toJpaObject(VersionRef versionRef, int loopNo, com.imcode.imcms.api.Loop loopDO) {
-        List<LoopEntry> entries = new LinkedList<>();
+    private LoopJPA toJpaObject(VersionRef versionRef, Loop loop) {
         Version version = findVersion(versionRef);
 
-        loopDO.getEntries().forEach((entryNo, enabled) -> entries.add(new LoopEntryJPA(entryNo, enabled)));
-
-        return Value.with(
-                new LoopJPA(),
-                l -> {
-                    l.setEntries(entries);
-                    l.setIndex(loopNo);
-                    l.setVersion(version);
-                }
-        );
+        return new LoopJPA(loop, version);
     }
 
     private Version findVersion(DocRef docRef) {

@@ -1,13 +1,13 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.*;
@@ -230,10 +230,10 @@ public class TextDocumentContentLoader {
         );
     }
 
-    public Map<Integer, LoopDTO> getLoops(VersionRef versionRef) {
+    public Map<Integer, Loop> getLoops(VersionRef versionRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
-        return loopService.findAllByVersion(version).stream().collect(toMap(LoopDTO::getIndex, loop -> loop));
+        return loopService.findAllByVersion(version).stream().collect(toMap(Loop::getIndex, loop -> loop));
     }
 
 

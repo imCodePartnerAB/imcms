@@ -73,4 +73,9 @@ public class LoopJPA extends Loop {
         this.entries = (entries == null) ? null
                 : entries.stream().map(LoopEntryJPA::new).collect(Collectors.toList());
     }
+
+    @Override
+    public Integer getDocId() {
+        return (version == null) ? null : version.getDocId();
+    }
 }

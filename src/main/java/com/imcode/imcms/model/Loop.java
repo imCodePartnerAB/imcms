@@ -20,4 +20,5 @@ public abstract class Loop {
 
     public abstract void setEntries(List<LoopEntry> entries);
 
+    public abstract Integer getDocId();
 }
