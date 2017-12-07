@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface LanguageService {
     /**
-     * Get language DTO by it's two-letter ISO-639-1 code
+     * Get language by it's two-letter ISO-639-1 code like "en" or "sv"
      *
      * @param code ISO-639-1 code
      * @return language DTO
