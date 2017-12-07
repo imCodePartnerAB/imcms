@@ -15,6 +15,10 @@ public class ImageDTO extends ImageData {
     private static final long serialVersionUID = -3103155597832120014L;
     private Integer index;
     private Integer docId;
+
+    /**
+     * Two-letter language code ISO-639-1
+     */
     private String langCode;
     private String name;
     private String path;
