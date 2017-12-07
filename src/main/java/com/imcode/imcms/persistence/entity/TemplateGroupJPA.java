@@ -6,13 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "imcms_template_group")
 @Data
 @NoArgsConstructor
-public class TemplateGroupJPA extends TemplateGroup<TemplateJPA> {
+public class TemplateGroupJPA extends TemplateGroup {
 
     @Id
     @Column(name = "group_id")
@@ -28,8 +30,18 @@ public class TemplateGroupJPA extends TemplateGroup<TemplateJPA> {
             inverseJoinColumns = @JoinColumn(name = "template_name"))
     private List<TemplateJPA> templates;
 
-    public <T1 extends Template, TG extends TemplateGroup<T1>> TemplateGroupJPA(TG from) {
-        super(from, TemplateJPA::new);
+    public TemplateGroupJPA(TemplateGroup from) {
+        super(from);
+    }
+
+    @Override
+    public List<Template> getTemplates() {
+        return (templates == null) ? null : new ArrayList<>(templates);
+    }
+
+    @Override
+    public void setTemplates(List<Template> templates) {
+        this.templates = templates.stream().map(TemplateJPA::new).collect(Collectors.toList());
     }
 }
 

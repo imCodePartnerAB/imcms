@@ -67,7 +67,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
         textDocumentTemplateRepository.save(textDocumentTemplate);
     }
 
-    public TemplateGroup<? extends Template> createData(String name, int howMuchContainsTemplates, boolean withoutSaving) {
+    public TemplateGroup createData(String name, int howMuchContainsTemplates, boolean withoutSaving) {
         final TemplateGroupJPA templateGroupJPA = Value.apply(new TemplateGroupJPA(), templateGroupJpa -> {
             final List<Template> templates = createData(howMuchContainsTemplates);
             templateGroupJpa.setName(name);

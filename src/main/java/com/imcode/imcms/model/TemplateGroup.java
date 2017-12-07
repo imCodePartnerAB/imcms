@@ -3,16 +3,14 @@ package com.imcode.imcms.model;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor
-public abstract class TemplateGroup<T extends Template> {
+public abstract class TemplateGroup {
 
-    protected <T1 extends Template, TG extends TemplateGroup<T1>> TemplateGroup(TG from, Function<T1, T> templateMapper) {
+    protected TemplateGroup(TemplateGroup from) {
         setId(from.getId());
         setName(from.getName());
-        setTemplates(from.getTemplates().stream().map(templateMapper).collect(Collectors.toList()));
+        setTemplates(from.getTemplates());
     }
 
     public abstract Integer getId();
@@ -23,8 +21,8 @@ public abstract class TemplateGroup<T extends Template> {
 
     public abstract void setName(String name);
 
-    public abstract List<T> getTemplates();
+    public abstract List<Template> getTemplates();
 
-    public abstract void setTemplates(List<T> templates);
+    public abstract void setTemplates(List<Template> templates);
 
 }
