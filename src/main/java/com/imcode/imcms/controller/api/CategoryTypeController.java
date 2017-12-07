@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.service.CategoryTypeService;
+import com.imcode.imcms.model.CategoryType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +21,7 @@ public class CategoryTypeController {
     }
 
     @GetMapping
-    public List<CategoryTypeDTO> getCategoryTypes() {
+    public List<CategoryType> getCategoryTypes() {
         return categoryTypeService.getAll();
     }
 

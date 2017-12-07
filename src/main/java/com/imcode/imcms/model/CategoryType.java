@@ -3,17 +3,15 @@ package com.imcode.imcms.model;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor
-public abstract class CategoryType<C extends Category> {
+public abstract class CategoryType {
 
-    protected <C2 extends Category, CT extends CategoryType<C2>> CategoryType(CT from, Function<C2, C> categoryMapper) {
+    protected CategoryType(CategoryType from) {
         setId(from.getId());
         setName(from.getName());
         setMultiSelect(from.isMultiSelect());
-        setCategories(from.getCategories().stream().map(categoryMapper).collect(Collectors.toList()));
+        setCategories(from.getCategories());
     }
 
     public abstract boolean isMultiSelect();
@@ -28,8 +26,8 @@ public abstract class CategoryType<C extends Category> {
 
     public abstract void setName(String name);
 
-    public abstract List<C> getCategories();
+    public abstract List<Category> getCategories();
 
-    public abstract void setCategories(List<C> categories);
+    public abstract void setCategories(List<Category> categories);
 
 }

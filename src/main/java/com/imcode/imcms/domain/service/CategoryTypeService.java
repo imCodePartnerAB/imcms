@@ -1,11 +1,11 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.CategoryTypeDTO;
+import com.imcode.imcms.model.CategoryType;
 
 import java.util.List;
 
 public interface CategoryTypeService {
 
-    List<CategoryTypeDTO> getAll();
+    List<CategoryType> getAll();
 
 }
