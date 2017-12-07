@@ -3,13 +3,13 @@ package com.imcode.imcms.model;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public abstract class CommonContent<Lang extends Language> {
+public abstract class CommonContent {
 
-    protected <CommonContent1 extends CommonContent> CommonContent(CommonContent1 from, Lang language) {
+    protected CommonContent(CommonContent from) {
         setId(from.getId());
         setDocId(from.getDocId());
         setHeadline(from.getHeadline());
-        setLanguage(language);
+        setLanguage(from.getLanguage());
         setMenuText(from.getMenuText());
         setMenuImageURL(from.getMenuImageURL());
         setEnabled(from.isEnabled());
@@ -28,9 +28,9 @@ public abstract class CommonContent<Lang extends Language> {
 
     public abstract void setHeadline(String headline);
 
-    public abstract Lang getLanguage();
+    public abstract Language getLanguage();
 
-    public abstract void setLanguage(Lang language);
+    public abstract void setLanguage(Language language);
 
     public abstract String getMenuText();
 

@@ -1,6 +1,9 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.dto.CommonContentDTO;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.PermissionDTO;
+import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.LanguageService;
@@ -8,6 +11,7 @@ import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.core.VersionService;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -94,11 +98,11 @@ class DefaultDocumentService implements DocumentService {
 
         // note: for current user language, may be wong!
         final String code = LanguageMapper.convert639_2to639_1(Imcms.getUser().getLanguageIso639_2());
-        final LanguageDTO languageDTO = languageService.findByCode(code);
+        final Language language = languageService.findByCode(code);
 
         // fixme: what if such content is disabled?
         final CommonContentDTO commonContent = commonContentService.getOrCreate(
-                documentId, latestVersion.getNo(), languageDTO
+                documentId, latestVersion.getNo(), language
         );
 
         return commonContent.getHeadline();

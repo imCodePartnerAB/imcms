@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.model.Language;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ public class LanguageController {
     }
 
     @GetMapping
-    public List<LanguageDTO> getLanguages() {
+    public List<Language> getLanguages() {
         return languageService.getAll();
     }
 

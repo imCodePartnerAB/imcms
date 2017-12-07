@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "imcms_doc_i18n_meta")
-public class CommonContentJPA extends CommonContent<LanguageJPA> {
+public class CommonContentJPA extends CommonContent {
 
     private static final int META_HEADLINE_MAX_LENGTH = 255;
     private static final int META_TEXT_MAX_LENGTH = 1000;
@@ -72,7 +72,12 @@ public class CommonContentJPA extends CommonContent<LanguageJPA> {
         this.versionNo = versionNo;
     }
 
-    public <L extends Language> CommonContentJPA(CommonContent<L> from) {
-        super(from, new LanguageJPA(from.getLanguage()));
+    public CommonContentJPA(CommonContent from) {
+        super(from);
+    }
+
+    @Override
+    public void setLanguage(Language language) {
+        this.language = (language == null) ? null : new LanguageJPA(language);
     }
 }

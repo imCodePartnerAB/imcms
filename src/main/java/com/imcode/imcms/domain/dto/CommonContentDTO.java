@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommonContentDTO extends CommonContent<LanguageDTO> {
+public class CommonContentDTO extends CommonContent {
 
     private Integer id;
     private Integer docId;
@@ -20,7 +20,13 @@ public class CommonContentDTO extends CommonContent<LanguageDTO> {
     private boolean isEnabled;
     private Integer versionNo;
 
-    public <L extends Language> CommonContentDTO(CommonContent<L> from) {
-        super(from, new LanguageDTO(from.getLanguage()));
+    public CommonContentDTO(CommonContent from) {
+        super(from);
     }
+
+    @Override
+    public void setLanguage(Language language) {
+        this.language = (language == null) ? null : new LanguageDTO(language);
+    }
+
 }

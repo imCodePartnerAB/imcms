@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.LanguageDTO;
+import com.imcode.imcms.model.Language;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ public interface LanguageService {
      *
      * @param code ISO-639-1 code
      */
-    LanguageDTO findByCode(String code);
+    Language findByCode(String code);
 
-    List<LanguageDTO> getAll();
+    List<Language> getAll();
 }

@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +19,12 @@ class DefaultLanguageService implements LanguageService {
     }
 
     @Override
-    public LanguageDTO findByCode(String code) {
+    public Language findByCode(String code) {
         return new LanguageDTO(languageRepository.findByCode(code));
     }
 
     @Override
-    public List<LanguageDTO> getAll() {
+    public List<Language> getAll() {
         return languageRepository.findAll()
                 .stream()
                 .map(LanguageDTO::new)
