@@ -11,6 +11,8 @@ import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
+import imcode.server.Imcms;
+import imcode.server.LanguageMapper;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -82,6 +84,10 @@ class DefaultImageService implements ImageService {
                               Function<Integer, Version> versionReceiver) {
 
         final Version version = versionReceiver.apply(docId);
+
+        langCode = Optional.ofNullable(langCode).orElseGet(() -> Imcms.getUser().getLanguageIso639_2());
+        langCode = LanguageMapper.convert639_2to639_1(langCode);
+
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
         final Image image = getImage(index, version, language, loopEntryRefDTO);
 
