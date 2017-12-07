@@ -34,7 +34,6 @@ public class DefaultLoopService implements LoopService {
         return getLoop(loopIndex, docId, versionService::getDocumentWorkingVersion);
     }
 
-
     @Override
     public LoopDTO getLoopPublic(int loopIndex, int docId) {
         return getLoop(loopIndex, docId, versionService::getLatestVersion);
