@@ -6,6 +6,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.model.LoopEntry;
 import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import org.junit.Before;
@@ -94,9 +95,13 @@ public class LoopRepositoryTest {
         Version version = versionRepository.findByDocIdAndNo(DOC_ID, VERSION_NO);
         LoopJPA loop = loopRepository.findByVersionAndIndex(version, 3);
 
-        assertEquals(loop.getEntries().size(), 3);
+        final List<LoopEntry> loopEntries = loop.getEntries();
 
-        loop.getEntries().remove(1);
+        assertEquals(loopEntries.size(), 3);
+
+        loopEntries.remove(1);
+        loop.setEntries(loopEntries);
+
         loopRepository.save(loop);
         loop = loopRepository.findByVersionAndIndex(version, 3);
 
