@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;

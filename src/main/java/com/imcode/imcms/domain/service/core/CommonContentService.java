@@ -2,7 +2,7 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
-import com.imcode.imcms.domain.service.api.LanguageService;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.Version;
