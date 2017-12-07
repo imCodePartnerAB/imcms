@@ -9,7 +9,6 @@ public interface LanguageService {
      * Get language by it's two-letter ISO-639-1 code like "en" or "sv"
      *
      * @param code ISO-639-1 code
-     * @return language DTO
      */
     LanguageDTO findByCode(String code);
 
