@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Service
 @Transactional
+@Service("imageService")
 class DefaultImageService implements ImageService {
 
     private final ImageRepository imageRepository;

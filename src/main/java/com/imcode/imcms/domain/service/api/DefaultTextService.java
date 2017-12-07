@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Service
 @Transactional
+@Service("textService")
 class DefaultTextService implements TextService {
 
     private final TextRepository textRepository;
