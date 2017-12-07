@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.service.api.DocumentService;
 import com.imcode.imcms.domain.service.api.RoleService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.function.TernaryFunction;
@@ -264,7 +265,7 @@ class MappingConfig {
 
             final Set<Integer> categoryIds = documentDTO.getCategories()
                     .stream()
-                    .map(CategoryDTO::getId)
+                    .map(Category::getId)
                     .collect(Collectors.toSet());
 
             meta.setCategoryIds(categoryIds);
@@ -333,7 +334,7 @@ class MappingConfig {
             final Set<RoleDTO> rolesDTO = roleIdByPermissionToRoleDTOs.apply(meta.getRoleIdToPermission());
             dto.setRoles(rolesDTO);
 
-            final Set<CategoryDTO> categories = meta.getCategoryIds()
+            final Set<Category> categories = meta.getCategoryIds()
                     .stream()
                     .map(categoryService::getById)
                     .collect(Collectors.toSet());

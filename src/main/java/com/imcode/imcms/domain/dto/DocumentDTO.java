@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
@@ -52,7 +53,7 @@ public class DocumentDTO implements Serializable {
 
     private boolean searchDisabled;
 
-    private Set<CategoryDTO> categories;
+    private Set<Category> categories;
 
     private Map<PermissionDTO, RestrictedPermissionDTO> restrictedPermissions;
 

@@ -13,6 +13,7 @@ import com.imcode.imcms.domain.service.api.RoleService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -308,7 +309,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
     public void save_When_CategoriesIsSet_Expect_Saved() throws Exception {
         categoryDataInitializer.createData(50);
 
-        final Set<CategoryDTO> categories = categoryService.getAll().stream()
+        final Set<Category> categories = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 0)
                 .collect(Collectors.toSet());
 
@@ -321,7 +322,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
 
-        final Set<CategoryDTO> categories1 = categoryService.getAll().stream()
+        final Set<Category> categories1 = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 1)
                 .collect(Collectors.toSet());
 

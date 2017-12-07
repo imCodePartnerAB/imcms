@@ -13,6 +13,7 @@ import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -393,7 +394,7 @@ public class DocumentServiceTest {
 
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
 
-        final Set<CategoryDTO> categories = categoryService.getAll().stream()
+        final Set<Category> categories = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 0)
                 .collect(Collectors.toSet());
 
@@ -404,7 +405,7 @@ public class DocumentServiceTest {
 
         assertEquals(categories, savedDocumentDTO.getCategories());
 
-        final Set<CategoryDTO> categories1 = categoryService.getAll().stream()
+        final Set<Category> categories1 = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 1)
                 .collect(Collectors.toSet());
 
