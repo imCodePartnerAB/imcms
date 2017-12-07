@@ -9,6 +9,7 @@ import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;

@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.RoleDTO;
+import com.imcode.imcms.domain.service.RoleService;
 import imcode.server.user.RoleId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +42,7 @@ public class RoleServiceTest {
     }
 
     @Test
-    public void save() throws Exception {
+    public void save() {
         final RoleDTO saveMe = new RoleDTO(null, "test_name_role");
         final RoleDTO saved = roleService.save(saveMe);
         final RoleDTO received = roleService.getById(saved.getId());
