@@ -14,6 +14,7 @@ import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Role;
+import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -398,7 +399,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
         final int docId = createdDoc.getId();
         final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, templateName);
 
-        final TextDocumentTemplateDTO savedTemplate = templateService.save(templateDTO);
+        final TextDocumentTemplate savedTemplate = templateService.save(templateDTO);
         assertNotNull(savedTemplate);
 
         createdDoc.setTemplate(templateDTO);

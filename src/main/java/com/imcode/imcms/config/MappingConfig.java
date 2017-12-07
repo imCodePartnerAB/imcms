@@ -343,7 +343,7 @@ class MappingConfig {
             dto.setCategories(categories);
             dto.setRestrictedPermissions(restrictedPermissionsToDTO.apply(meta.getRestrictedPermissions()));
 
-            textDocumentTemplateService.get(metaId).ifPresent(dto::setTemplate);
+            textDocumentTemplateService.get(metaId).map(TextDocumentTemplateDTO::new).ifPresent(dto::setTemplate);
 
             return dto;
         };

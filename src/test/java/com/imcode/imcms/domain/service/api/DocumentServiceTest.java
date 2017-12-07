@@ -11,6 +11,7 @@ import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.Text;
+import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
@@ -481,7 +482,7 @@ public class DocumentServiceTest {
         final int docId = createdDoc.getId();
         final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, templateName);
 
-        final TextDocumentTemplateDTO savedTemplate = templateService.save(templateDTO);
+        final TextDocumentTemplate savedTemplate = templateService.save(templateDTO);
         assertNotNull(savedTemplate);
 
         final DocumentDTO documentDTO = documentService.get(docId);
@@ -490,7 +491,7 @@ public class DocumentServiceTest {
         documentService.save(documentDTO);
 
         final DocumentDTO savedDoc = documentService.get(documentDTO.getId());
-        final TextDocumentTemplateDTO savedDocTemplate = savedDoc.getTemplate();
+        final TextDocumentTemplate savedDocTemplate = savedDoc.getTemplate();
 
         assertEquals(savedDocTemplate, savedTemplate);
     }

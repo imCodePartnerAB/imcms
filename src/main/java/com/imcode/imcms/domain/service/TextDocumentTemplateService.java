@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
+import com.imcode.imcms.model.TextDocumentTemplate;
 
 import java.util.Optional;
 
@@ -9,8 +9,8 @@ import java.util.Optional;
  */
 public interface TextDocumentTemplateService {
 
-    TextDocumentTemplateDTO save(TextDocumentTemplateDTO saveMe);
+    TextDocumentTemplate save(TextDocumentTemplate saveMe);
 
-    Optional<TextDocumentTemplateDTO> get(int docId);
+    Optional<TextDocumentTemplate> get(int docId);
 
 }

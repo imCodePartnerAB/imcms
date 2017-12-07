@@ -4,6 +4,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
 import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import org.junit.Before;
@@ -33,7 +34,7 @@ public class TextDocumentTemplateServiceTest {
     @Autowired
     private TextDocumentTemplateRepository textDocumentTemplateRepository;
 
-    private TextDocumentTemplateDTO saved;
+    private TextDocumentTemplate saved;
 
     @Before
     public void setUp() throws Exception {
@@ -46,19 +47,19 @@ public class TextDocumentTemplateServiceTest {
 
     @Test
     public void get() {
-        final Optional<TextDocumentTemplateDTO> oTemplate = textDocumentTemplateService.get(DOC_ID);
+        final Optional<TextDocumentTemplate> oTemplate = textDocumentTemplateService.get(DOC_ID);
         assertTrue(oTemplate.isPresent());
 
-        final TextDocumentTemplateDTO receivedTextDocumentTemplateDTO = oTemplate.get();
+        final TextDocumentTemplate receivedTextDocumentTemplateDTO = oTemplate.get();
         assertEquals(receivedTextDocumentTemplateDTO, saved);
     }
 
     @Test
     public void save() {
         final String testTemplateName = "test_" + System.currentTimeMillis();
-        Optional<TextDocumentTemplateDTO> oTemplate = textDocumentTemplateService.get(DOC_ID);
+        Optional<TextDocumentTemplate> oTemplate = textDocumentTemplateService.get(DOC_ID);
         assertTrue(oTemplate.isPresent());
-        final TextDocumentTemplateDTO templateDTO = oTemplate.get();
+        final TextDocumentTemplate templateDTO = oTemplate.get();
         templateDTO.setTemplateName(testTemplateName);
         templateDTO.setChildrenTemplateName(testTemplateName);
 
@@ -66,7 +67,7 @@ public class TextDocumentTemplateServiceTest {
 
         oTemplate = textDocumentTemplateService.get(DOC_ID);
         assertTrue(oTemplate.isPresent());
-        final TextDocumentTemplateDTO receivedTextDocumentTemplateDTO = oTemplate.get();
+        final TextDocumentTemplate receivedTextDocumentTemplateDTO = oTemplate.get();
 
         assertEquals(receivedTextDocumentTemplateDTO.getChildrenTemplateName(), testTemplateName);
         assertEquals(receivedTextDocumentTemplateDTO.getTemplateName(), testTemplateName);

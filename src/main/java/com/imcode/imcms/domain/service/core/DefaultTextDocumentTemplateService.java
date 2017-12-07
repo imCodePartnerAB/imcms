@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
 import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import org.springframework.stereotype.Service;
@@ -20,14 +21,14 @@ public class DefaultTextDocumentTemplateService implements TextDocumentTemplateS
     }
 
     @Override
-    public TextDocumentTemplateDTO save(TextDocumentTemplateDTO saveMe) {
+    public TextDocumentTemplate save(TextDocumentTemplate saveMe) {
         TextDocumentTemplateJPA documentTemplate = new TextDocumentTemplateJPA(saveMe);
         documentTemplate = textDocumentTemplateRepository.save(documentTemplate);
         return new TextDocumentTemplateDTO(documentTemplate);
     }
 
     @Override
-    public Optional<TextDocumentTemplateDTO> get(int docId) {
+    public Optional<TextDocumentTemplate> get(int docId) {
         return Optional.ofNullable(textDocumentTemplateRepository.findOne(docId)).map(TextDocumentTemplateDTO::new);
     }
 }
