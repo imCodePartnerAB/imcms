@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.core.VersionService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;

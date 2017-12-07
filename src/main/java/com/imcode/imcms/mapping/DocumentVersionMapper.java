@@ -3,7 +3,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
-import com.imcode.imcms.domain.service.core.VersionService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.beans.factory.annotation.Autowired;

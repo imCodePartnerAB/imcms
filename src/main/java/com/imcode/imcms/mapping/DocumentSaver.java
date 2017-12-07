@@ -2,7 +2,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.domain.service.core.VersionService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;

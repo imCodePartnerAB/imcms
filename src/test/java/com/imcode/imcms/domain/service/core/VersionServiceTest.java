@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.core;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.persistence.entity.Version;
 import org.junit.After;
 import org.junit.Before;

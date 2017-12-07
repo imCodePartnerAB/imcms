@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.core.VersionService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
