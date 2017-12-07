@@ -36,6 +36,7 @@ class DefaultRoleService implements RoleService {
 
     /**
      * Saves role by it's data holder.
+     *
      * @return saved Role in DTO form.
      */
     @Override
