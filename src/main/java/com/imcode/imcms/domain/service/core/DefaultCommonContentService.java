@@ -1,11 +1,11 @@
 package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.dto.CommonContentDTO;
+import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
 import org.springframework.stereotype.Service;
@@ -18,26 +18,19 @@ import java.util.stream.Collectors;
 import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
 
 @Service
-public class CommonContentService {
+public class DefaultCommonContentService implements CommonContentService {
 
     private final CommonContentRepository commonContentRepository;
     private final LanguageService languageService;
 
-    CommonContentService(CommonContentRepository commonContentRepository,
-                         LanguageService languageService) {
+    DefaultCommonContentService(CommonContentRepository commonContentRepository,
+                                LanguageService languageService) {
 
         this.commonContentRepository = commonContentRepository;
         this.languageService = languageService;
     }
 
-    /**
-     * Get document's common contents for all languages
-     * If common content of non working version is {@code null} it creates new common content based on working.
-     *
-     * @param docId     of document
-     * @param versionNo version no
-     * @return a {@code List} of all common contents
-     */
+    @Override
     public List<CommonContentDTO> getOrCreateCommonContents(int docId, int versionNo) {
         return languageService.getAll()
                 .stream()
@@ -45,15 +38,7 @@ public class CommonContentService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Gets common content for working or published versions.
-     * If common content of non working version is {@code null} it creates new common content based on working.
-     *
-     * @param docId       of document
-     * @param versionNo   version no
-     * @param language to get language code
-     * @return common content of docId, versionNo and user language.
-     */
+    @Override
     public CommonContentDTO getOrCreate(int docId, int versionNo, Language language) {
         final Optional<CommonContentDTO> oCommonContent = getCommonContent(docId, versionNo, language);
 
@@ -72,6 +57,7 @@ public class CommonContentService {
         return createFromWorkingVersion(docId, versionNo, language);
     }
 
+    @Override
     public List<CommonContentDTO> getCommonContents(int docId, int versionNo) {
         return languageService.getAll()
                 .stream()
@@ -89,10 +75,12 @@ public class CommonContentService {
         return Optional.ofNullable(commonContentJPA).map(CommonContentDTO::new);
     }
 
+    @Override
     public void save(Collection<CommonContentDTO> saveUs) {
         saveUs.forEach(this::save);
     }
 
+    @Override
     public void save(CommonContentDTO saveMe) {
         commonContentRepository.save(new CommonContentJPA(saveMe));
     }
@@ -112,11 +100,7 @@ public class CommonContentService {
         return new CommonContentDTO(commonContentRepository.saveAndFlush(newCommonContent));
     }
 
-    /**
-     * Creates empty CommonContent for non-existing document and for all
-     * languages with {@link Version#WORKING_VERSION_INDEX}.
-     * Not saves to DB.
-     */
+    @Override
     public List<CommonContentDTO> createCommonContents() {
         return languageService.getAll()
                 .stream()
@@ -132,6 +116,7 @@ public class CommonContentService {
         });
     }
 
+    @Override
     public void deleteByDocId(int docId) {
         commonContentRepository.deleteByDocId(docId);
     }

@@ -2,7 +2,7 @@ package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.service.core.CommonContentService;
+import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;

@@ -6,7 +6,6 @@ import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.*;
-import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
