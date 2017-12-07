@@ -3,10 +3,10 @@ package imcode.server.document.textdocument;
 import com.google.common.base.Strings;
 import com.google.common.primitives.Ints;
 import com.imcode.imcms.domain.dto.LoopDTO;
-import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
+import com.imcode.imcms.model.LoopEntry;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
@@ -362,7 +362,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     private void updateLoopContent(Integer loopNo, LoopDTO loop) {
-        Set<Integer> entriesNo = loop.getEntries().stream().map(LoopEntryDTO::getIndex).collect(Collectors.toSet());
+        Set<Integer> entriesNo = loop.getEntries().stream().map(LoopEntry::getIndex).collect(Collectors.toSet());
         loopTexts.keySet().stream()
                 .filter(loopItemRef -> (loopItemRef.getLoopNo() == loopNo) && (!entriesNo.contains(loopItemRef.getEntryNo())))
                 .forEach(loopItemRef -> loopTexts.remove(loopItemRef));

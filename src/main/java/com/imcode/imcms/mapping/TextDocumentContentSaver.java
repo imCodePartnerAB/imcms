@@ -7,6 +7,7 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Menu;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuItem;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
+import com.imcode.imcms.model.LoopEntry;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.*;
@@ -372,7 +373,7 @@ public class TextDocumentContentSaver {
     }
 
     private LoopJPA toJpaObject(VersionRef versionRef, int loopNo, com.imcode.imcms.api.Loop loopDO) {
-        List<LoopEntryJPA> entries = new LinkedList<>();
+        List<LoopEntry> entries = new LinkedList<>();
         Version version = findVersion(versionRef);
 
         loopDO.getEntries().forEach((entryNo, enabled) -> entries.add(new LoopEntryJPA(entryNo, enabled)));

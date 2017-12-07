@@ -8,14 +8,15 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Table(name = "imcms_text_doc_content_loops")
-public class LoopJPA extends Loop<LoopEntryJPA> {
+public class LoopJPA extends Loop {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,17 +50,27 @@ public class LoopJPA extends Loop<LoopEntryJPA> {
         this.entries = entries;
     }
 
-    public <LE2 extends LoopEntry, L extends Loop<LE2>> LoopJPA(L from, Version version) {
-        super(from, LoopEntryJPA::new);
+    public LoopJPA(Loop from, Version version) {
+        super(from);
         this.version = version;
     }
 
     public static LoopJPA emptyLoop(Version version, Integer index) {
-        return new LoopJPA(null, version, index, Collections.emptyList());
+        return new LoopJPA(null, version, index, new ArrayList<>());
     }
 
     public boolean containsEntry(int entryIndex) {
         return entries.stream().anyMatch(entry -> entry.getIndex() == entryIndex);
     }
 
+    @Override
+    public List<LoopEntry> getEntries() {
+        return (entries == null) ? null : new ArrayList<>(entries);
+    }
+
+    @Override
+    public void setEntries(List<LoopEntry> entries) {
+        this.entries = (entries == null) ? null
+                : entries.stream().map(LoopEntryJPA::new).collect(Collectors.toList());
+    }
 }
