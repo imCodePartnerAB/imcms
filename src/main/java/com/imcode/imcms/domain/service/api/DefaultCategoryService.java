@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.CategoryDTO;
+import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,16 +10,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CategoryService {
+public class DefaultCategoryService implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
     @Autowired
-    CategoryService(CategoryRepository categoryRepository) {
+    DefaultCategoryService(CategoryRepository categoryRepository) {
 
         this.categoryRepository = categoryRepository;
     }
 
+    @Override
     public List<CategoryDTO> getAll() {
         return categoryRepository.findAll()
                 .stream()
@@ -26,6 +28,7 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public CategoryDTO getById(int id) {
         return new CategoryDTO(categoryRepository.findOne(id));
     }
