@@ -3,7 +3,7 @@
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="loop" type="com.imcode.imcms.domain.dto.LoopDTO"--%>
-<%--@elvariable id="loopService" type="com.imcode.imcms.domain.service.api.LoopService"--%>
+<%--@elvariable id="loopService" type="com.imcode.imcms.domain.service.LoopService"--%>
 <%--@elvariable id="loopIndex" type="java.lang.Integer"--%>
 
 <%@ variable name-given="entryIndex" scope="NESTED" variable-class="java.lang.Integer" %>

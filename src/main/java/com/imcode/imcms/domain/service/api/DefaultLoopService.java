@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
@@ -17,27 +18,30 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class LoopService {
+public class DefaultLoopService implements LoopService {
 
     private final LoopRepository loopRepository;
     private final VersionService versionService;
 
     @Autowired
-    LoopService(LoopRepository loopRepository, VersionService versionService) {
+    DefaultLoopService(LoopRepository loopRepository, VersionService versionService) {
         this.loopRepository = loopRepository;
         this.versionService = versionService;
     }
 
+    @Override
     public LoopDTO getLoop(int loopIndex, int docId) {
         return getLoop(loopIndex, docId, versionService::getDocumentWorkingVersion);
     }
 
 
+    @Override
     public LoopDTO getLoopPublic(int loopIndex, int docId) {
         return getLoop(loopIndex, docId, versionService::getLatestVersion);
 
     }
 
+    @Override
     public LoopDTO getLoop(int loopIndex, int docId, Function<Integer, Version> versionGetter) {
         final Version documentWorkingVersion = versionGetter.apply(docId);
         final LoopJPA loop = loopRepository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
@@ -47,6 +51,7 @@ public class LoopService {
                 .orElse(LoopDTO.empty(docId, loopIndex));
     }
 
+    @Override
     public void saveLoop(LoopDTO loopDTO) {
         final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopDTO.getDocId());
         final LoopJPA loopForSave = new LoopJPA(loopDTO, documentWorkingVersion);
@@ -66,10 +71,12 @@ public class LoopService {
         return loop.getId();
     }
 
+    @Override
     public LoopEntryRefDTO buildLoopEntryRef(int loopIndex, int entryIndex) {
         return new LoopEntryRefDTO(loopIndex, entryIndex);
     }
 
+    @Override
     public Collection<LoopDTO> findAllByVersion(Version version) {
         return loopRepository.findByVersion(version).stream()
                 .map(loop1 -> new LoopDTO(loop1, loop1.getVersion()))
