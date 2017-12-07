@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.core.VersionService;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
@@ -18,7 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class MenuService {
+public class DefaultMenuService implements MenuService {
 
     @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository")
     private final MenuRepository menuRepository;
@@ -29,12 +30,12 @@ public class MenuService {
     private final Function<Menu, MenuDTO> menuToMenuDTO;
     private final Function<Menu, MenuDTO> menuSaver;
 
-    MenuService(MenuRepository menuRepository,
-                VersionService versionService,
-                DocumentService documentService,
-                Function<MenuItem, MenuItemDTO> menuItemToDto,
-                Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList,
-                Function<Menu, MenuDTO> menuToMenuDTO) {
+    DefaultMenuService(MenuRepository menuRepository,
+                       VersionService versionService,
+                       DocumentService documentService,
+                       Function<MenuItem, MenuItemDTO> menuItemToDto,
+                       Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList,
+                       Function<Menu, MenuDTO> menuToMenuDTO) {
 
         this.menuRepository = menuRepository;
         this.versionService = versionService;
@@ -45,14 +46,17 @@ public class MenuService {
         this.menuSaver = menuToMenuDTO.compose(menuRepository::saveAndFlush);
     }
 
+    @Override
     public List<MenuItemDTO> getMenuItemsOf(int menuIndex, int docId) {
         return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL);
     }
 
+    @Override
     public List<MenuItemDTO> getPublicMenuItemsOf(int menuIndex, int docId) {
         return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC);
     }
 
+    @Override
     public MenuDTO saveFrom(MenuDTO menuDTO) {
 
         final Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuIndex(), menuDTO.getDocId()))
@@ -63,6 +67,7 @@ public class MenuService {
         return menuSaver.apply(menu);
     }
 
+    @Override
     public Collection<MenuDTO> findAllByVersion(Version version) {
         return menuRepository.findByVersion(version).stream().map(menuToMenuDTO).collect(Collectors.toList());
     }
@@ -118,11 +123,6 @@ public class MenuService {
             iterator.remove();
         }
         return menuRepository.saveAndFlush(menu);
-    }
-
-    private enum MenuItemsStatus {
-        PUBLIC,
-        ALL
     }
 
 }

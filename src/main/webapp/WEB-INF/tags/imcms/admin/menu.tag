@@ -13,7 +13,7 @@
 <%--@elvariable id="isEditMode" type="boolean"--%>
 <%--@elvariable id="isPreviewMode" type="boolean"--%>
 <%--@elvariable id="targetDocId" type="java.lang.Integer"--%>
-<%--@elvariable id="menuService" type="com.imcode.imcms.domain.service.api.MenuService"--%>
+<%--@elvariable id="menuService" type="com.imcode.imcms.domain.service.MenuService"--%>
 
 <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
