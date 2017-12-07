@@ -53,7 +53,7 @@ class DefaultTextService implements TextService {
     @Override
     public void save(Text text) {
         final Version version = versionService.getDocumentWorkingVersion(text.getDocId());
-        final LanguageJPA language = languageService.findEntityByCode(text.getLangCode());
+        final LanguageJPA language = new LanguageJPA(languageService.findByCode(text.getLangCode()));
         final TextJPA textJPA = new TextJPA(text, version, language);
         final Integer textId = getTextId(text, version, language);
 
@@ -70,7 +70,7 @@ class DefaultTextService implements TextService {
                          Function<Integer, Version> versionReceiver) {
 
         final Version version = versionReceiver.apply(docId);
-        final LanguageJPA language = languageService.findEntityByCode(langCode);
+        final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
         final TextJPA text = getText(index, version, language, loopEntryRef);
 
         return Optional.ofNullable(text)

@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.LanguageDTO;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import org.springframework.stereotype.Service;
 
@@ -25,16 +24,6 @@ public class LanguageService {
      */
     public LanguageDTO findByCode(String code) {
         return new LanguageDTO(languageRepository.findByCode(code));
-    }
-
-    /**
-     * @param code ISO-639-1 code
-     * @return language entity
-     * @deprecated use {@link com.imcode.imcms.domain.service.api.LanguageService#findByCode(java.lang.String)}
-     */
-    @Deprecated
-    public LanguageJPA findEntityByCode(String code) {
-        return languageRepository.findByCode(code);
     }
 
     public List<LanguageDTO> getAll() {

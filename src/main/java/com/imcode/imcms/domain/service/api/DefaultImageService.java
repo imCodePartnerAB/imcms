@@ -66,7 +66,7 @@ class DefaultImageService implements ImageService {
     @Override
     public void saveImage(ImageDTO imageDTO) {
         final Version version = versionService.getDocumentWorkingVersion(imageDTO.getDocId());
-        final LanguageJPA language = languageService.findEntityByCode(imageDTO.getLangCode());
+        final LanguageJPA language = new LanguageJPA(languageService.findByCode(imageDTO.getLangCode()));
 
         generateImage(imageDTO);
 
@@ -81,7 +81,7 @@ class DefaultImageService implements ImageService {
                               Function<Integer, Version> versionReceiver) {
 
         final Version version = versionReceiver.apply(docId);
-        final LanguageJPA language = languageService.findEntityByCode(langCode);
+        final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
         final Image image = getImage(index, version, language, loopEntryRefDTO);
 
         return Optional.ofNullable(image)
