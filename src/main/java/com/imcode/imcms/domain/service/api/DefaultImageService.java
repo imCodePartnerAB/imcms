@@ -85,8 +85,9 @@ class DefaultImageService implements ImageService {
 
         final Version version = versionReceiver.apply(docId);
 
-        langCode = Optional.ofNullable(langCode).orElseGet(() -> Imcms.getUser().getLanguageIso639_2());
-        langCode = LanguageMapper.convert639_2to639_1(langCode);
+        langCode = Optional.ofNullable(langCode).orElseGet(
+                () -> LanguageMapper.convert639_2to639_1(Imcms.getUser().getLanguageIso639_2())
+        );
 
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
         final Image image = getImage(index, version, language, loopEntryRefDTO);

@@ -66,7 +66,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Imcms.removeUser();
     }
 
@@ -128,6 +128,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     @Test
     public void postImage_When_UserIsNotAdmin_Expect_NoPermissionToEditDocumentException() throws Exception {
         final UserDomainObject user = new UserDomainObject(2);
+        user.setLanguageIso639_2("eng"); // user lang should exist in common content
         Imcms.setUser(user); // means current user is default user
 
         performPostWithContentExpectException(TEST_IMAGE_DTO, NoPermissionToEditDocumentException.class);
