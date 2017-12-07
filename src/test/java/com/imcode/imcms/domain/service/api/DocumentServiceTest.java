@@ -9,7 +9,6 @@ import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.domain.service.core.CommonContentService;
-import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.Text;
