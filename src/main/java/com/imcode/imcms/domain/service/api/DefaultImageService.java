@@ -1,10 +1,10 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
@@ -57,12 +57,12 @@ class DefaultImageService implements ImageService {
     }
 
     @Override
-    public ImageDTO getImage(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
+    public ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getImage(docId, index, langCode, loopEntryRef, versionService::getDocumentWorkingVersion);
     }
 
     @Override
-    public ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRef) {
+    public ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getImage(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
     }
 
@@ -80,7 +80,7 @@ class DefaultImageService implements ImageService {
         imageRepository.save(image);
     }
 
-    private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRefDTO loopEntryRefDTO,
+    private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
                               Function<Integer, Version> versionReceiver) {
 
         final Version version = versionReceiver.apply(docId);
@@ -90,11 +90,11 @@ class DefaultImageService implements ImageService {
         );
 
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(langCode));
-        final Image image = getImage(index, version, language, loopEntryRefDTO);
+        final Image image = getImage(index, version, language, loopEntryRef);
 
         return Optional.ofNullable(image)
                 .map(imageToImageDTO)
-                .orElse(new ImageDTO(index, docId, loopEntryRefDTO));
+                .orElse(new ImageDTO(index, docId, loopEntryRef));
     }
 
     private void generateImage(ImageDTO imageDTO) {
@@ -107,11 +107,11 @@ class DefaultImageService implements ImageService {
         }
     }
 
-    private Image getImage(int index, Version version, LanguageJPA language, LoopEntryRefDTO loopEntryRefDTO) {
-        return Optional.ofNullable(loopEntryRefDTO)
+    private Image getImage(int index, Version version, LanguageJPA language, LoopEntryRef loopEntryRef) {
+        return Optional.ofNullable(loopEntryRef)
                 .map(LoopEntryRefJPA::new)
-                .map(loopEntryRef -> imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
-                        version, language, index, loopEntryRef
+                .map(loopEntryRefJPA -> imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
+                        version, language, index, loopEntryRefJPA
                 ))
                 .orElseGet(() -> imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
                         version, language, index
@@ -120,7 +120,7 @@ class DefaultImageService implements ImageService {
 
     private Integer getImageId(ImageDTO imageDTO, Version version, LanguageJPA language) {
         final Integer index = imageDTO.getIndex();
-        final LoopEntryRefDTO loopEntryRefDTO = imageDTO.getLoopEntryRef();
+        final LoopEntryRef loopEntryRefDTO = imageDTO.getLoopEntryRef();
         final Image image = getImage(index, version, language, loopEntryRefDTO);
 
         if (image == null) {

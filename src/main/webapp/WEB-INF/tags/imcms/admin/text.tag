@@ -16,7 +16,7 @@
 <%--@elvariable id="isEditMode" type="boolean"--%>
 <%--@elvariable id="isPreviewMode" type="boolean"--%>
 <%--@elvariable id="textService" type="com.imcode.imcms.domain.service.TextService"--%>
-<%--@elvariable id="loopEntryRef" type="com.imcode.imcms.domain.dto.LoopEntryRefDTO"--%>
+<%--@elvariable id="loopEntryRef" type="com.imcode.imcms.model.LoopEntryRef"--%>
 <%--@elvariable id="textField" type="com.imcode.imcms.model.Text"--%>
 <%--@elvariable id="language" type="java.lang.String"--%>
 

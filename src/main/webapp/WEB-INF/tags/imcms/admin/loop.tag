@@ -8,7 +8,7 @@
 
 <%@ variable name-given="entryIndex" scope="NESTED" variable-class="java.lang.Integer" %>
 <%@ variable name-given="loopItem" scope="NESTED" variable-class="com.imcode.imcms.domain.dto.LoopEntryDTO" %>
-<%@ variable name-given="loopEntryRef" scope="NESTED" variable-class="com.imcode.imcms.domain.dto.LoopEntryRefDTO" %>
+<%@ variable name-given="loopEntryRef" scope="NESTED" variable-class="com.imcode.imcms.model.LoopEntryRef" %>
 
 <c:forEach var="loopEntry" items="${loop.entries}" varStatus="status">
     <c:if test="${loopEntry.enabled}">

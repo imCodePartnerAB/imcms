@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Version;
 
 import java.util.Collection;
@@ -17,7 +17,7 @@ public interface LoopService {
 
     void saveLoop(LoopDTO loopDTO);
 
-    LoopEntryRefDTO buildLoopEntryRef(int loopIndex, int entryIndex);
+    LoopEntryRef buildLoopEntryRef(int loopIndex, int entryIndex);
 
     Collection<LoopDTO> findAllByVersion(Version version);
 

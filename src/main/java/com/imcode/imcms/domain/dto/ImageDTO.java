@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.imcode.imcms.model.LoopEntryRef;
 import imcode.util.image.Format;
 import lombok.*;
 
@@ -26,10 +27,10 @@ public class ImageDTO extends ImageData {
     private LoopEntryRefDTO loopEntryRef;
     private String generatedFilePath;
 
-    public ImageDTO(Integer index, Integer docId, LoopEntryRefDTO loopEntryRef) {
+    public ImageDTO(Integer index, Integer docId, LoopEntryRef loopEntryRef) {
         this.index = index;
         this.docId = docId;
-        this.loopEntryRef = loopEntryRef;
+        this.loopEntryRef = (loopEntryRef == null) ? null : new LoopEntryRefDTO(loopEntryRef);
         this.name = "";
         this.path = "";
         this.url = "";

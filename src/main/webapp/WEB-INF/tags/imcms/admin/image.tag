@@ -13,7 +13,7 @@
 <%--@elvariable id="image" type="com.imcode.imcms.domain.dto.ImageDTO"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
 <%--@elvariable id="isPreviewMode" type="boolean"--%>
-<%--@elvariable id="loopEntryRef" type="com.imcode.imcms.domain.dto.LoopEntryRefDTO"--%>
+<%--@elvariable id="loopEntryRef" type="com.imcode.imcms.model.LoopEntryRef"--%>
 <%--@elvariable id="language" type="java.lang.String"--%>
 
 <c:if test="${empty index}">

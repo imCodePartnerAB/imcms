@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;
@@ -70,7 +71,7 @@ class DefaultLoopService implements LoopService {
     }
 
     @Override
-    public LoopEntryRefDTO buildLoopEntryRef(int loopIndex, int entryIndex) {
+    public LoopEntryRef buildLoopEntryRef(int loopIndex, int entryIndex) {
         return new LoopEntryRefDTO(loopIndex, entryIndex);
     }
 
