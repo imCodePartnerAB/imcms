@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class DefaultRoleService implements RoleService {
+class DefaultRoleService implements RoleService {
 
     private final RoleRepository roleRepository;
     private Function<Role, Role> roleSaver;

@@ -25,7 +25,7 @@ import java.util.function.Function;
 import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
 @Service
-public class DefaultDocumentService implements DocumentService {
+class DefaultDocumentService implements DocumentService {
 
     private final MetaRepository metaRepository;
     private final TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> documentMapping;
