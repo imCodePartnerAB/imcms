@@ -9,9 +9,11 @@ import java.util.Optional;
  * Service for work with templates in relation to template files.
  */
 public interface TemplateService {
+
     List<Template> getAll();
 
     void save(Template saveMe);
 
     Optional<Template> getTemplate(String templateName);
+
 }
