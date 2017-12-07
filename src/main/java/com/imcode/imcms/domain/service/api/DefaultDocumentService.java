@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
@@ -24,7 +25,7 @@ import java.util.function.Function;
 import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
 @Service
-public class DocumentService {
+public class DefaultDocumentService implements DocumentService {
 
     private final MetaRepository metaRepository;
     private final TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> documentMapping;
@@ -35,14 +36,14 @@ public class DocumentService {
     private final TextService textService;
     private final TextDocumentTemplateService textDocumentTemplateService;
 
-    DocumentService(MetaRepository metaRepository,
-                    TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> metaToDocumentDTO,
-                    Function<DocumentDTO, Meta> documentDtoToMeta,
-                    CommonContentService commonContentService,
-                    VersionService versionService,
-                    LanguageService languageService,
-                    TextService textService,
-                    TextDocumentTemplateService textDocumentTemplateService) {
+    DefaultDocumentService(MetaRepository metaRepository,
+                           TernaryFunction<Meta, Version, List<CommonContentDTO>, DocumentDTO> metaToDocumentDTO,
+                           Function<DocumentDTO, Meta> documentDtoToMeta,
+                           CommonContentService commonContentService,
+                           VersionService versionService,
+                           LanguageService languageService,
+                           TextService textService,
+                           TextDocumentTemplateService textDocumentTemplateService) {
 
         this.metaRepository = metaRepository;
         this.documentMapping = metaToDocumentDTO;
@@ -54,6 +55,7 @@ public class DocumentService {
         this.textDocumentTemplateService = textDocumentTemplateService;
     }
 
+    @Override
     public DocumentDTO get(Integer docId) {
         return (docId == null) ? buildNewDocument() : getDocument(docId);
     }
@@ -64,6 +66,7 @@ public class DocumentService {
      * @param saveMe document to be saved
      * @return id of saved document
      */
+    @Override
     @Transactional
     public int save(DocumentDTO saveMe) {
         final boolean isNew = (saveMe.getId() == null);
@@ -84,6 +87,7 @@ public class DocumentService {
         return docId;
     }
 
+    @Override
     public String getDocumentTitle(int documentId) {
         final Version latestVersion = versionService.getLatestVersion(documentId);
 
@@ -99,10 +103,12 @@ public class DocumentService {
         return commonContent.getHeadline();
     }
 
+    @Override
     public String getDocumentTarget(int documentId) {
         return metaRepository.findTarget(documentId);
     }
 
+    @Override
     public String getDocumentLink(int documentId) {
         final String alias = metaRepository.findOne(documentId)
                 .getProperties()
@@ -111,6 +117,7 @@ public class DocumentService {
         return "/" + (alias == null ? documentId : alias);
     }
 
+    @Override
     @Transactional
     public void delete(DocumentDTO deleteMe) {
 //        final Integer docIdToDelete = deleteMe.getId();
@@ -126,7 +133,8 @@ public class DocumentService {
         metaRepository.delete(deleteMe.getId());
     }
 
-    boolean hasUserAccessToDoc(int docId, UserDomainObject user) {
+    @Override
+    public boolean hasUserAccessToDoc(int docId, UserDomainObject user) {
         final Meta meta = Optional.ofNullable(metaRepository.findOne(docId))
                 .orElseThrow(() -> new DocumentNotExistException(docId));
 
