@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import com.imcode.imcms.domain.service.ImageFileService;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FilenameUtils;
@@ -16,26 +17,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * Service for Images Content Manager.
- * CRUD operations with image files.
- *
- * @author Serhii Maksymchuk from Ubrainians for imCode
- * 31.10.17.
- */
 @Service
 @Transactional
-public class ImageFileService {
+class DefaultImageFileService implements ImageFileService {
 
     private final Function<File, ImageFileDTO> fileToImageFileDTO;
 
     @Value("${ImagePath}")
     private File imagesPath;
 
-    ImageFileService(Function<File, ImageFileDTO> fileToImageFileDTO) {
+    DefaultImageFileService(Function<File, ImageFileDTO> fileToImageFileDTO) {
         this.fileToImageFileDTO = fileToImageFileDTO;
     }
 
+    @Override
     public List<ImageFileDTO> saveNewImageFiles(String folder, List<MultipartFile> files) throws IOException {
 
         final File targetFolder = getTargetFolder(folder);
@@ -85,6 +80,7 @@ public class ImageFileService {
         return targetFolder;
     }
 
+    @Override
     public boolean deleteImage(ImageFileDTO imageFileDTO) throws IOException {
         final String imageFileDTOPath = imageFileDTO.getPath();
         final File imageFile = new File(imagesPath, imageFileDTOPath);

@@ -4,6 +4,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import com.imcode.imcms.domain.service.ImageFileService;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;

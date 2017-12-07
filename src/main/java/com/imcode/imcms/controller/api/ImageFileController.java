@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageFileDTO;
-import com.imcode.imcms.domain.service.api.ImageFileService;
+import com.imcode.imcms.domain.service.ImageFileService;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import org.springframework.web.bind.annotation.*;
