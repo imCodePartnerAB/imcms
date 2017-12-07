@@ -4,6 +4,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.service.RoleService;
+import com.imcode.imcms.model.Role;
 import imcode.server.user.RoleId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,7 @@ public class RoleServiceTest {
 
     @Test
     public void getAllTest() {
-        final List<RoleDTO> roles = roleService.getAll();
+        final List<Role> roles = roleService.getAll();
         assertLike(RoleId.SUPERADMIN, roles.get(0));
         assertLike(RoleId.USERADMIN, roles.get(1));
         assertLike(RoleId.USERS, roles.get(2));
@@ -43,16 +44,16 @@ public class RoleServiceTest {
 
     @Test
     public void save() {
-        final RoleDTO saveMe = new RoleDTO(null, "test_name_role");
-        final RoleDTO saved = roleService.save(saveMe);
-        final RoleDTO received = roleService.getById(saved.getId());
+        final Role saveMe = new RoleDTO(null, "test_name_role");
+        final Role saved = roleService.save(saveMe);
+        final Role received = roleService.getById(saved.getId());
 
         assertEquals(received, saved);
     }
 
-    private void assertLike(RoleId roleId, RoleDTO roleDTO) {
-        assertEquals((Integer) roleId.getRoleId(), roleDTO.getId());
-        assertEquals(roleId.getName(), roleDTO.getName());
+    private void assertLike(RoleId roleId, Role role) {
+        assertEquals((Integer) roleId.getRoleId(), role.getId());
+        assertEquals(roleId.getName(), role.getName());
     }
 
 }

@@ -13,7 +13,7 @@ import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
-import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -309,8 +309,9 @@ public class DocumentControllerTest extends AbstractControllerTest {
     public void save_When_CategoriesIsSet_Expect_Saved() throws Exception {
         categoryDataInitializer.createData(50);
 
-        final Set<Category> categories = categoryService.getAll().stream()
+        final Set<CategoryDTO> categories = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 0)
+                .map(CategoryDTO::new)
                 .collect(Collectors.toSet());
 
         createdDoc.setCategories(categories);
@@ -322,8 +323,9 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
 
-        final Set<Category> categories1 = categoryService.getAll().stream()
+        final Set<CategoryDTO> categories1 = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 1)
+                .map(CategoryDTO::new)
                 .collect(Collectors.toSet());
 
         createdDoc.setCategories(categories1);
@@ -335,15 +337,14 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void save_When_CustomAccessRulesSet_Expect_Saved() throws Exception {
-        final Set<RoleDTO> roles = new HashSet<>();
+        final Map<Integer, PermissionDTO> roleIdToPermissionDTO = new HashMap<>();
 
         for (PermissionDTO permissionDTO : PermissionDTO.values()) {
-            final RoleDTO roleDTO = roleService.save(new RoleDTO(null, "test_role_" + permissionDTO));
-            roleDTO.setPermission(permissionDTO);
-            roles.add(roleDTO);
+            final Role role = roleService.save(new RoleDTO(null, "test_role_" + permissionDTO));
+            roleIdToPermissionDTO.put(role.getId(), permissionDTO);
         }
 
-        createdDoc.setRoles(roles);
+        createdDoc.setRoleIdToPermission(roleIdToPermissionDTO);
 
         performPostWithContentExpectOk(createdDoc);
 
@@ -352,8 +353,8 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
 
-        final Set<RoleDTO> roles1 = new HashSet<>();
-        createdDoc.setRoles(roles1);
+        final Map<Integer, PermissionDTO> roleIdToPermissionDTO1 = new HashMap<>();
+        createdDoc.setRoleIdToPermission(roleIdToPermissionDTO1);
 
         performPostWithContentExpectOk(createdDoc);
 

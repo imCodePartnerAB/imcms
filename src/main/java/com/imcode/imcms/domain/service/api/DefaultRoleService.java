@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.service.RoleService;
+import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.repository.RoleRepository;
 import org.springframework.stereotype.Service;
@@ -14,18 +15,20 @@ import java.util.stream.Collectors;
 public class DefaultRoleService implements RoleService {
 
     private final RoleRepository roleRepository;
+    private Function<Role, Role> roleSaver;
 
     DefaultRoleService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
+        this.roleSaver = ((Function<Role, RoleJPA>) RoleJPA::new).andThen(roleRepository::save).andThen(RoleDTO::new);
     }
 
     @Override
-    public RoleDTO getById(int id) {
+    public Role getById(int id) {
         return new RoleDTO(roleRepository.findOne(id));
     }
 
     @Override
-    public List<RoleDTO> getAll() {
+    public List<Role> getAll() {
         return roleRepository.findAll().stream()
                 .map(RoleDTO::new)
                 .collect(Collectors.toList());
@@ -33,16 +36,11 @@ public class DefaultRoleService implements RoleService {
 
     /**
      * Saves role by it's data holder.
-     * <b>Note that {@link RoleDTO#permission} is * omitted while save and in
-     * return value.</b>
-     *
      * @return saved Role in DTO form.
      */
     @Override
-    public RoleDTO save(RoleDTO saveMe) {
-        return ((Function<RoleDTO, RoleJPA>) RoleJPA::new).andThen(roleRepository::save)
-                .andThen(RoleDTO::new)
-                .apply(saveMe);
+    public Role save(Role saveMe) {
+        return roleSaver.apply(saveMe);
     }
 
 }

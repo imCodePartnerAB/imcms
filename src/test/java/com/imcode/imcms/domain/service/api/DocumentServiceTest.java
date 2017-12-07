@@ -14,7 +14,7 @@ import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.core.CommonContentService;
 import com.imcode.imcms.domain.service.core.TextDocumentTemplateService;
 import com.imcode.imcms.mapping.jpa.User;
-import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -395,8 +395,9 @@ public class DocumentServiceTest {
 
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
 
-        final Set<Category> categories = categoryService.getAll().stream()
+        final Set<CategoryDTO> categories = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 0)
+                .map(CategoryDTO::new)
                 .collect(Collectors.toSet());
 
         documentDTO.setCategories(categories);
@@ -406,8 +407,9 @@ public class DocumentServiceTest {
 
         assertEquals(categories, savedDocumentDTO.getCategories());
 
-        final Set<Category> categories1 = categoryService.getAll().stream()
+        final Set<CategoryDTO> categories1 = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 1)
+                .map(CategoryDTO::new)
                 .collect(Collectors.toSet());
 
         documentDTO.setCategories(categories1);
@@ -421,28 +423,27 @@ public class DocumentServiceTest {
 
     @Test
     public void save_When_CustomAccessRulesSet_Expect_Saved() {
-        final Set<RoleDTO> roles = new HashSet<>();
+        final Map<Integer, PermissionDTO> roleIdToPermissionDTO = new HashMap<>();
 
         for (PermissionDTO permissionDTO : PermissionDTO.values()) {
-            final RoleDTO roleDTO = roleService.save(new RoleDTO(null, "test_role_" + permissionDTO));
-            roleDTO.setPermission(permissionDTO);
-            roles.add(roleDTO);
+            final Role role = roleService.save(new RoleDTO(null, "test_role_" + permissionDTO));
+            roleIdToPermissionDTO.put(role.getId(), permissionDTO);
         }
 
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-        documentDTO.setRoles(roles);
+        documentDTO.setRoleIdToPermission(roleIdToPermissionDTO);
 
         documentService.save(documentDTO);
         final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
 
-        assertTrue(savedDocumentDTO.getRoles().containsAll(roles));
+        assertTrue(savedDocumentDTO.getRoleIdToPermission().entrySet().containsAll(roleIdToPermissionDTO.entrySet()));
 
-        final Set<RoleDTO> roles1 = new HashSet<>();
-        savedDocumentDTO.setRoles(roles1);
+        final Map<Integer, PermissionDTO> roleIdToPermissionDTO1 = new HashMap<>();
+        savedDocumentDTO.setRoleIdToPermission(roleIdToPermissionDTO1);
         documentService.save(savedDocumentDTO);
 
         final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
-        assertEquals(savedDocumentDTO1.getRoles(), roles1);
+        assertEquals(savedDocumentDTO1.getRoleIdToPermission(), roleIdToPermissionDTO1);
     }
 
     @Test

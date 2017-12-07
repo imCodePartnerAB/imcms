@@ -1,15 +1,15 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.RoleDTO;
+import com.imcode.imcms.model.Role;
 
 import java.util.List;
 
 public interface RoleService {
 
-    RoleDTO getById(int id);
+    Role getById(int id);
 
-    List<RoleDTO> getAll();
+    List<Role> getAll();
 
-    RoleDTO save(RoleDTO saveMe);
+    Role save(Role saveMe);
 
 }

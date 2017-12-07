@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
@@ -53,11 +52,11 @@ public class DocumentDTO implements Serializable {
 
     private boolean searchDisabled;
 
-    private Set<Category> categories;
+    private Set<CategoryDTO> categories;
 
     private Map<PermissionDTO, RestrictedPermissionDTO> restrictedPermissions;
 
-    private Set<RoleDTO> roles;
+    private Map<Integer, PermissionDTO> roleIdToPermission;
 
     private TextDocumentTemplateDTO template;
 
@@ -74,7 +73,7 @@ public class DocumentDTO implements Serializable {
             documentDTO.disabledLanguageShowMode = SHOW_IN_DEFAULT_LANGUAGE;
             documentDTO.keywords = new HashSet<>();
             documentDTO.categories = new HashSet<>();
-            documentDTO.roles = new HashSet<>();
+            documentDTO.roleIdToPermission = new HashMap<>();
             documentDTO.restrictedPermissions = new HashMap<>();
             documentDTO.restrictedPermissions.put(PermissionDTO.RESTRICTED_1, new RestrictedPermissionDTO());
             documentDTO.restrictedPermissions.put(PermissionDTO.RESTRICTED_2, new RestrictedPermissionDTO());

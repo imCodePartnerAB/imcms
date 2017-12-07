@@ -18,13 +18,6 @@ public class RoleDTO extends Role implements Serializable {
 
     private String name;
 
-    private PermissionDTO permission;
-
-    public RoleDTO(Integer id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
     public RoleDTO(Role from) {
         super(from);
     }

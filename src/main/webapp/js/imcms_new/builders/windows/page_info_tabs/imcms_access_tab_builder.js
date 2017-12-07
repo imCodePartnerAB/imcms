@@ -5,6 +5,9 @@ Imcms.define("imcms-access-tab-builder",
     ],
     function (BEM, components, rolesRestApi, tabContentBuilder, uuidGenerator, $) {
 
+        var storedRoleIdsPerRoles;
+        var storedRoles;
+
         var rolesBEM = new BEM({
             block: "imcms-access-role",
             elements: {
@@ -17,6 +20,15 @@ Imcms.define("imcms-access-tab-builder",
                 "button": "imcms-button"
             }
         });
+
+        function storeRoles(roles) {
+            storedRoles = roles;
+            storedRoleIdsPerRoles = {};
+
+            roles.forEach(function (role) {
+                storedRoleIdsPerRoles[role.id] = role;
+            });
+        }
 
         function mapRoleOnSelectOption(role) {
             return {
@@ -136,9 +148,14 @@ Imcms.define("imcms-access-tab-builder",
                 ;
 
                 if (!docId) {
-                    rolesRestApi.read(null).done(function (roles) {
+                    function mapRoles(roles) {
                         var rolesDataMapped = roles.map(mapRoleOnSelectOption);
                         components.selects.addOptionsToSelect(rolesDataMapped, $addRoleSelect);
+                    }
+
+                    storedRoles ? mapRoles(storedRoles) : rolesRestApi.read(null).done(function (roles) {
+                        storeRoles(roles);
+                        mapRoles(roles);
                     });
                 }
 
@@ -173,55 +190,54 @@ Imcms.define("imcms-access-tab-builder",
             },
 
             fillTabDataFromDocument: function (document) {
-
-                var $addRoleSelect = tabData.$addRoleSelect;
-                var $rolesBody = tabData.$rolesBody;
-
-                var roles = createRolesRows($addRoleSelect, document);
-                if (roles.length) {
-                    $rolesBody.prepend(roles);
-                    tabData.$rolesField.css("display", "block");
+                function documentContainsRole(document, role) {
+                    return document.roleIdToPermission[role.id];
                 }
 
-                function createRolesRows($addRoleSelect, document) {
+                function buildRolesRows(roles) {
+                    var rolesDataMapped = roles.filter(function (role) {
+                        return !documentContainsRole(document, role);
+                    }).map(mapRoleOnSelectOption);
 
-                    function documentContainsRole(document, role) {
-                        return document.roles.some(function (docRole) {
-                            return role.id === docRole.id;
-                        });
+                    tabData.$addRoleSelect.clearSelect();
+
+                    var addRoleDisplay = "none",
+                        $addRoleBtn = tabData.$addRoleSelect.next();
+
+                    if (rolesDataMapped.length) {
+                        addRoleDisplay = "block";
+                        components.selects.addOptionsToSelect(rolesDataMapped, tabData.$addRoleSelect);
                     }
 
-                    rolesRestApi.read(null).done(function (roles) {
-                        var rolesDataMapped = roles.filter(function (role) {
-                            return !documentContainsRole(document, role);
-                        }).map(mapRoleOnSelectOption);
+                    tabData.$addRoleSelect.css("display", addRoleDisplay);
+                    $addRoleBtn.css("display", addRoleDisplay);
 
-                        $addRoleSelect.clearSelect();
+                    var $roles = Object.keys(document.roleIdToPermission).map(function (roleId) {
+                        var role = storedRoleIdsPerRoles[roleId];
+                        role.permission = document.roleIdToPermission[roleId];
 
-                        var addRoleDisplay = "none",
-                            $addRoleBtn = $addRoleSelect.next();
-
-                        if (rolesDataMapped.length) {
-                            addRoleDisplay = "block";
-                            components.selects.addOptionsToSelect(rolesDataMapped, $addRoleSelect);
-                        }
-
-                        $addRoleSelect.css("display", addRoleDisplay);
-                        $addRoleBtn.css("display", addRoleDisplay);
+                        return generateRoleRow(role, tabData.$addRoleSelect);
                     });
 
-                    return document.roles.map(function (docRole) {
-                        return generateRoleRow(docRole, $addRoleSelect);
-                    });
+                    if ($roles.length) {
+                        tabData.$rolesBody.prepend($roles);
+                        tabData.$rolesField.css("display", "block");
+                    }
                 }
+
+                (storedRoles) ? buildRolesRows(storedRoles) : rolesRestApi.read(null).done(function (roles) {
+                    storeRoles(roles);
+                    buildRolesRows(roles);
+                });
             },
 
             saveData: function (documentDTO) {
-                documentDTO.roles = tabData.$rolesBody.find("[data-role-id]")
-                    .toArray()
-                    .map(function (roleRow) {
-                        var $roleRow = $(roleRow);
+                documentDTO.roleIdToPermission = {};
 
+                tabData.$rolesBody.find("[data-role-id]")
+                    .toArray()
+                    .forEach(function (roleRow) {
+                        var $roleRow = $(roleRow);
                         var radios$ = $roleRow.find(".imcms-radio")
                             .map(function () {
                                 return $(this);
@@ -229,12 +245,9 @@ Imcms.define("imcms-access-tab-builder",
                             .toArray();
 
                         var permission = components.radios.group.apply(components.radios, radios$).getCheckedValue();
+                        var id = $roleRow.data("roleId");
 
-                        return {
-                            id: $roleRow.data("roleId"),
-                            name: $roleRow.text(),
-                            permission: permission
-                        };
+                        documentDTO.roleIdToPermission[id] = permission;
                     });
 
                 return documentDTO;

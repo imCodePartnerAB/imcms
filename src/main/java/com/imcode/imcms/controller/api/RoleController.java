@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.service.RoleService;
+import com.imcode.imcms.model.Role;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ public class RoleController {
     }
 
     @GetMapping
-    public List<RoleDTO> getRoles() {
+    public List<Role> getRoles() {
         return roleService.getAll();
     }
 
