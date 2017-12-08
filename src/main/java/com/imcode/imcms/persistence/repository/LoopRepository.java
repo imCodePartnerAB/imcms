@@ -11,7 +11,6 @@ import java.util.List;
 @Repository
 public interface LoopRepository extends JpaRepository<LoopJPA, Integer>, VersionedContentRepository<LoopJPA> {
 
-    // TODO: 06.12.17 Investigate why it works with query only
     @Query("SELECT l FROM LoopJPA l WHERE l.version = ?1")
     List<LoopJPA> findByVersion(Version version);
 
