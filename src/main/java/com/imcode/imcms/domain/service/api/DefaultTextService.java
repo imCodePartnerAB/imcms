@@ -80,14 +80,14 @@ class DefaultTextService implements TextService {
     }
 
     private TextJPA getText(int index, Version version, LanguageJPA language, LoopEntryRef loopEntryRef) {
-        return Optional.ofNullable(loopEntryRef)
-                .map(LoopEntryRefJPA::new)
-                .map(loopEntryRefJPA -> textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
-                        version, language, index, loopEntryRefJPA
-                ))
-                .orElseGet(() -> textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
-                        version, language, index
-                ));
+        if (loopEntryRef == null) {
+            return textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index);
+
+        } else {
+            return textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
+                    version, language, index, new LoopEntryRefJPA(loopEntryRef)
+            );
+        }
     }
 
     private Integer getTextId(Text text, Version version, LanguageJPA language) {
