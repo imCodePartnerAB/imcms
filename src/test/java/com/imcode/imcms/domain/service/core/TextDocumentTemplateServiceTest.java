@@ -18,8 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -73,4 +72,14 @@ public class TextDocumentTemplateServiceTest {
         assertEquals(receivedTextDocumentTemplateDTO.getTemplateName(), testTemplateName);
     }
 
+    @Test
+    public void deleteByDocId() {
+        Optional<TextDocumentTemplate> oTemplate = textDocumentTemplateService.get(DOC_ID);
+        assertTrue(oTemplate.isPresent());
+
+        textDocumentTemplateService.deleteByDocId(DOC_ID);
+
+        oTemplate = textDocumentTemplateService.get(DOC_ID);
+        assertFalse(oTemplate.isPresent());
+    }
 }

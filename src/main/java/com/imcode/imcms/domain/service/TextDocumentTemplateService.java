@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * Service for work with templates in relation to text documents.
  */
-public interface TextDocumentTemplateService {
+public interface TextDocumentTemplateService extends DeleterByDocumentId {
 
     TextDocumentTemplate save(TextDocumentTemplate saveMe);
 

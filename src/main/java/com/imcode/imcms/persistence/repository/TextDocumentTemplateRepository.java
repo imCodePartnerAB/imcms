@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TextDocumentTemplateRepository extends JpaRepository<TextDocumentTemplateJPA, Integer> {
+
+    void deleteByDocId(Integer docId);
+
 }
