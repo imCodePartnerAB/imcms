@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
@@ -106,5 +107,33 @@ public class LoopRepositoryTest {
         loop = loopRepository.findByVersionAndIndex(version, 3);
 
         assertEquals(loop.getEntries().size(), 2);
+    }
+
+    @Test
+    public void findByDocId() {
+        loopDataInitializer.cleanRepositories();
+
+        assertTrue(loopRepository.findAll().isEmpty());
+
+        final List<LoopEntryDTO> oneEntry = Collections.singletonList(LoopEntryDTO.createEnabled(1));
+        final List<LoopEntryDTO> twoEntries = Arrays.asList(LoopEntryDTO.createEnabled(1), LoopEntryDTO.createEnabled(2));
+        final List<LoopEntryDTO> threeEntries = Arrays.asList(
+                LoopEntryDTO.createEnabled(1),
+                LoopEntryDTO.createEnabled(2),
+                LoopEntryDTO.createEnabled(3)
+        );
+
+        final LoopDTO loop1 = new LoopDTO(DOC_ID, 1, oneEntry);
+        final LoopDTO loop2 = new LoopDTO(DOC_ID, 2, twoEntries);
+        final LoopDTO loop3 = new LoopDTO(DOC_ID, 3, threeEntries);
+
+        IntStream.range(0, 10).forEach(versionIndex -> {
+            loopDataInitializer.createData(loop1, versionIndex);
+            loopDataInitializer.createData(loop2, versionIndex);
+            loopDataInitializer.createData(loop3, versionIndex);
+        });
+
+        assertFalse(loopRepository.findAll().isEmpty());
+        assertEquals(loopRepository.findAll().size(), loopRepository.findByDocId(DOC_ID).size());
     }
 }

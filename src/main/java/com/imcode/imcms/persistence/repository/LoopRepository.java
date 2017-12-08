@@ -20,4 +20,6 @@ public interface LoopRepository extends JpaRepository<LoopJPA, Integer> {
     @Query("SELECT l.id FROM LoopJPA l WHERE l.version = ?1 AND l.index = ?2")
     Integer findIdByVersionAndIndex(Version version, int index);
 
+    @Query(value = "SELECT l.* FROM imcms_text_doc_content_loops l WHERE doc_id = ?1", nativeQuery = true)
+    List<LoopJPA> findByDocId(Integer docId);
 }
