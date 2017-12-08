@@ -37,9 +37,22 @@ public class MenuDataInitializer extends TestDataCleaner {
         this.menuToMenuDTO = menuToMenuDTO;
     }
 
+    public MenuDTO createData(boolean withMenuItems) {
+        cleanRepositories();
+        return createData(withMenuItems, MENU_INDEX);
+    }
+
+    public MenuDTO createData(boolean withMenuItems, int menuIndex) {
+        return createData(withMenuItems, menuIndex, VERSION_INDEX, DOC_ID);
+    }
+
     public MenuDTO createData(boolean withMenuItems, int menuIndex, int versionIndex, int docId) {
-        final Menu menu = new Menu();
         version = versionDataInitializer.createData(versionIndex, docId);
+        return createData(withMenuItems, menuIndex, version);
+    }
+
+    public MenuDTO createData(boolean withMenuItems, int menuIndex, Version version) {
+        final Menu menu = new Menu();
         menu.setVersion(version);
         menu.setNo(menuIndex);
         savedMenu = menuRepository.saveAndFlush(menu);
@@ -52,15 +65,6 @@ public class MenuDataInitializer extends TestDataCleaner {
         }
 
         return menuToMenuDTO.apply(savedMenu);
-    }
-
-    public MenuDTO createData(boolean withMenuItems) {
-        cleanRepositories();
-        return createData(withMenuItems, MENU_INDEX);
-    }
-
-    public MenuDTO createData(boolean withMenuItems, int menuIndex) {
-        return createData(withMenuItems, menuIndex, VERSION_INDEX, DOC_ID);
     }
 
     public Version getVersion() {
@@ -93,21 +97,21 @@ public class MenuDataInitializer extends TestDataCleaner {
 
     private void addMenuItemsTo(Menu menu) {
         final List<MenuItem> menuItems = new ArrayList<>();
-        menuItems.add(createMenuItem(1, menu));
-        menuItems.add(createMenuItem(2, menu));
+        menuItems.add(createMenuItem(1));
+        menuItems.add(createMenuItem(2));
 
         final MenuItem menuItem0 = menuItems.get(0);
 
         menuItem0.setChildren(Arrays.asList(
-                createMenuItem(1, null),
-                createMenuItem(2, null),
-                createMenuItem(3, null)
+                createMenuItem(1),
+                createMenuItem(2),
+                createMenuItem(3)
         ));
 
         menuItem0.getChildren().get(0).setChildren(Arrays.asList(
-                createMenuItem(1, null),
-                createMenuItem(2, null),
-                createMenuItem(3, null)
+                createMenuItem(1),
+                createMenuItem(2),
+                createMenuItem(3)
         ));
 
 
@@ -116,11 +120,10 @@ public class MenuDataInitializer extends TestDataCleaner {
         menuRepository.saveAndFlush(menu);
     }
 
-    private MenuItem createMenuItem(int sortOrder, Menu menu) {
+    private MenuItem createMenuItem(int sortOrder) {
         final MenuItem menuItem = new MenuItem();
         menuItem.setSortOrder(sortOrder);
         menuItem.setDocumentId(DOC_ID);
-//        menuItem.setMenu(menu);
         return menuItem;
     }
 

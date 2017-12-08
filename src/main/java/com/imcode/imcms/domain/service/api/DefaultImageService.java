@@ -83,7 +83,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageDT
 
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
-        imageRepository.deleteByDocId(docIdToDelete);
+        repository.deleteByDocId(docIdToDelete);
     }
 
     private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef,

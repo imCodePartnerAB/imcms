@@ -2,7 +2,10 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
+import com.imcode.imcms.domain.service.DocumentMenuService;
+import com.imcode.imcms.domain.service.MenuService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
@@ -13,7 +16,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -72,7 +78,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuDTO, 
     @Override
     @Transactional
     public void deleteByDocId(Integer docIdToDelete) {
-        menuRepository.deleteByDocId(docIdToDelete);
+        repository.deleteByDocId(docIdToDelete);
     }
 
     private Menu getMenu(int menuNo, int docId) {
