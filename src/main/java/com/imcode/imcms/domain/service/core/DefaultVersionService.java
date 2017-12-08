@@ -91,4 +91,12 @@ public class DefaultVersionService implements VersionService {
     public void deleteByDocId(Integer docId) {
         versionRepository.deleteByDocId(docId);
     }
+
+    @Override
+    public boolean hasNewerVersion(int docId) {
+        final Version latestVersion = getLatestVersion(docId);
+        final Version workingVersion = getDocumentWorkingVersion(docId);
+        return latestVersion.equals(workingVersion)
+                || latestVersion.getCreatedDt().before(workingVersion.getModifiedDt());
+    }
 }
