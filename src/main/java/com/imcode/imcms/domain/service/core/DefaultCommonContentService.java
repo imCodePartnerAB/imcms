@@ -118,7 +118,7 @@ public class DefaultCommonContentService implements CommonContentService {
     }
 
     @Override
-    public void deleteByDocId(int docId) {
+    public void deleteByDocId(Integer docId) {
         commonContentRepository.deleteByDocId(docId);
     }
 }
