@@ -2,9 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
@@ -19,27 +17,25 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service("menuService")
-class DefaultMenuService implements MenuService {
+class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuDTO, MenuRepository> implements MenuService {
 
-    @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository")
-    private final MenuRepository menuRepository;
     private final VersionService versionService;
-    private final DocumentService documentService;
+    private final DocumentMenuService documentMenuService;
     private final Function<MenuItem, MenuItemDTO> menuItemToDto;
     private final Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList;
     private final Function<Menu, MenuDTO> menuToMenuDTO;
     private final Function<Menu, MenuDTO> menuSaver;
 
-    DefaultMenuService(MenuRepository menuRepository,
+    DefaultMenuService(@Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
                        VersionService versionService,
-                       DocumentService documentService,
+                       DocumentMenuService documentMenuService,
                        Function<MenuItem, MenuItemDTO> menuItemToDto,
                        Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList,
                        Function<Menu, MenuDTO> menuToMenuDTO) {
 
-        this.menuRepository = menuRepository;
+        super(menuRepository);
         this.versionService = versionService;
-        this.documentService = documentService;
+        this.documentMenuService = documentMenuService;
         this.menuItemToDto = menuItemToDto;
         this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
         this.menuToMenuDTO = menuToMenuDTO;
@@ -69,19 +65,23 @@ class DefaultMenuService implements MenuService {
 
     @Override
     public Collection<MenuDTO> findAllByVersion(Version version) {
-        return menuRepository.findByVersion(version).stream().map(menuToMenuDTO).collect(Collectors.toList());
+        return repository.findByVersion(version).stream().map(menuToMenuDTO).collect(Collectors.toList());
     }
 
     private Menu getMenu(int menuNo, int docId) {
         final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
-        return menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, workingVersion);
+        return repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, workingVersion);
     }
 
     private Menu createMenu(MenuDTO menuDTO) {
         final Version workingVersion = versionService.getDocumentWorkingVersion(menuDTO.getDocId());
+        return createMenu(menuDTO, workingVersion);
+    }
+
+    private Menu createMenu(MenuDTO menuDTO, Version version) {
         final Menu menu = new Menu();
         menu.setNo(menuDTO.getMenuIndex());
-        menu.setVersion(workingVersion);
+        menu.setVersion(version);
         return menu;
     }
 
@@ -89,7 +89,7 @@ class DefaultMenuService implements MenuService {
         final Version version = versionService.getVersion(docId, status.equals(MenuItemsStatus.ALL)
                 ? versionService::getDocumentWorkingVersion : versionService::getLatestVersion);
 
-        final Menu menu = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
+        final Menu menu = repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
         final UserDomainObject user = Imcms.getUser();
 
         return Optional.ofNullable(menu)
@@ -102,7 +102,7 @@ class DefaultMenuService implements MenuService {
     }
 
     private boolean isMenuItemVisibleToUser(MenuItemDTO menuItemDTO, UserDomainObject user) {
-        final boolean hasAccess = documentService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user);
+        final boolean hasAccess = documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user);
 
         if (hasAccess) {
             final List<MenuItemDTO> children = menuItemDTO.getChildren()
@@ -116,13 +116,16 @@ class DefaultMenuService implements MenuService {
         return hasAccess;
     }
 
-    private Menu deleteAllMenuItemsAndFlush(Menu menu) {
-        for (Iterator<MenuItem> iterator = menu.getMenuItems().iterator(); iterator.hasNext(); ) {
-            MenuItem projectEntity = iterator.next();
-//            projectEntity.setMenu(null);
-            iterator.remove();
-        }
-        return menuRepository.saveAndFlush(menu);
+    @Override
+    protected MenuDTO mapping(Menu jpa, Version version) {
+        return menuToMenuDTO.apply(jpa);
+    }
+
+    @Override
+    protected Menu mappingWithoutId(MenuDTO dto, Version version) {
+        final Menu menu = createMenu(dto, version);
+        menu.setMenuItems(menuItemDtoListToMenuItemList.apply(dto.getMenuItems()));
+        return menu;
     }
 
 }

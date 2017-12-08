@@ -7,6 +7,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.MenuService;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -30,7 +31,7 @@ import static org.junit.Assert.*;
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class MenuServiceTest {
 
-    private static final int VERSION_NO = 0;
+    private static final int WORKING_VERSION_NO = 0;
     private static final int DOC_ID = 1001;
 
     @Autowired
@@ -41,6 +42,9 @@ public class MenuServiceTest {
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
+
+    @Autowired
+    private VersionRepository versionRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -99,7 +103,7 @@ public class MenuServiceTest {
                 })
                 .collect(Collectors.toList());
 
-        final Collection<MenuDTO> allByVersion = menuService.findAllByVersion(new ArrayList<>(versions).get(0));
+        final Set<MenuDTO> allByVersion = menuService.getByVersion(new ArrayList<>(versions).get(0));
         assertEquals(menuDTOS.size(), allByVersion.size());
         assertTrue(allByVersion.containsAll(menuDTOS));
     }
@@ -107,7 +111,7 @@ public class MenuServiceTest {
     @Test
     public void saveMenu_When_ExistBefore_Expect_NoDuplicatedDataAndCorrectSave() {
         menuDataInitializer.cleanRepositories();
-        versionDataInitializer.createData(VERSION_NO, DOC_ID);
+        versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
 
         final MenuDTO menuDTO = menuDataInitializer.createData(true);
         final List<MenuItemDTO> menuItemBefore = menuDTO.getMenuItems();
@@ -128,6 +132,26 @@ public class MenuServiceTest {
         assertEquals(newSize, menuItemAfter.size());
     }
 
+    @Test
+    public void createVersionedContent() {
+        final boolean withMenuItems = true;
+        final MenuDTO workingVersionMenu = menuDataInitializer.createData(withMenuItems);
+
+        final Version workingVersion = versionRepository.findByDocIdAndNo(DOC_ID, WORKING_VERSION_NO);
+
+        final int latestVersionNo = WORKING_VERSION_NO + 1;
+        final Version latestVersion = versionDataInitializer.createData(latestVersionNo, DOC_ID);
+
+        menuService.createVersionedContent(workingVersion, latestVersion);
+
+        final Set<MenuDTO> menuByVersion = menuService.getByVersion(latestVersion);
+
+        assertEquals(1, menuByVersion.size());
+        assertEquals(workingVersionMenu, menuByVersion.iterator().next());
+
+    }
+
+
     private void getMenuItemsOf_When_MenuNoAndDocId_Expect_ResultEqualsExpectedMenuItems(boolean isAll) {
         final MenuDTO menu = menuDataInitializer.createData(true);
 
@@ -141,10 +165,10 @@ public class MenuServiceTest {
     }
 
     private void getMenuItemsOf_When_MenuDoesntExist_Expect_EmptyList(boolean isAll) {
-        versionDataInitializer.createData(VERSION_NO, DOC_ID);
+        versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
         final List<MenuItemDTO> menuItems = isAll
-                ? menuService.getMenuItemsOf(VERSION_NO, DOC_ID)
-                : menuService.getPublicMenuItemsOf(VERSION_NO, DOC_ID);
+                ? menuService.getMenuItemsOf(WORKING_VERSION_NO, DOC_ID)
+                : menuService.getPublicMenuItemsOf(WORKING_VERSION_NO, DOC_ID);
         assertTrue(menuItems.isEmpty());
     }
 
@@ -154,7 +178,7 @@ public class MenuServiceTest {
 
         if (!menuExist) {
             menuDataInitializer.cleanRepositories();
-            versionDataInitializer.createData(VERSION_NO, DOC_ID);
+            versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
         }
 
         final MenuDTO savedMenu = menuService.saveFrom(menuDTO);
