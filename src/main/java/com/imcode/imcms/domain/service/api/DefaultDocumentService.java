@@ -2,29 +2,22 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
-import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.CommonContent;
-import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
-import imcode.server.Imcms;
-import imcode.server.LanguageMapper;
-import imcode.server.user.RoleId;
-import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
 @Service
 class DefaultDocumentService implements DocumentService {
@@ -34,6 +27,10 @@ class DefaultDocumentService implements DocumentService {
     private final Function<DocumentDTO, Meta> documentDtoToMeta;
     private final CommonContentService commonContentService;
     private final VersionService versionService;
+    private final TextService textService;
+    private final ImageService imageService;
+    private final MenuService menuService;
+    private final LoopService loopService;
     private final TextDocumentTemplateService textDocumentTemplateService;
     private final List<VersionedContentService> versionedContentServices;
 
@@ -42,6 +39,10 @@ class DefaultDocumentService implements DocumentService {
                            Function<DocumentDTO, Meta> documentDtoToMeta,
                            CommonContentService commonContentService,
                            VersionService versionService,
+                           TextService textService,
+                           ImageService imageService,
+                           MenuService menuService,
+                           LoopService loopService,
                            TextDocumentTemplateService textDocumentTemplateService,
                            List<VersionedContentService> versionedContentServices) {
 
@@ -50,6 +51,10 @@ class DefaultDocumentService implements DocumentService {
         this.documentDtoToMeta = documentDtoToMeta;
         this.commonContentService = commonContentService;
         this.versionService = versionService;
+        this.textService = textService;
+        this.imageService = imageService;
+        this.menuService = menuService;
+        this.loopService = loopService;
         this.textDocumentTemplateService = textDocumentTemplateService;
         this.versionedContentServices = versionedContentServices;
     }
@@ -89,17 +94,7 @@ class DefaultDocumentService implements DocumentService {
     @Override
     @Transactional
     public void delete(DocumentDTO deleteMe) {
-//        final Integer docIdToDelete = deleteMe.getId();
-//
-//        textService.deleteByDocId(docIdToDelete);
-////        imageService.deleteByDocId(docIdToDelete);
-//        commonContentService.deleteByDocId(docIdToDelete);
-//        versionService.deleteByDocId(docIdToDelete);
-//        metaRepository.delete(docIdToDelete);
-
-        versionService.deleteByDocId(deleteMe.getId());
-        commonContentService.deleteByDocId(deleteMe.getId());
-        metaRepository.delete(deleteMe.getId());
+        deleteByDocId(deleteMe.getId());
     }
 
     @Override
@@ -116,9 +111,13 @@ class DefaultDocumentService implements DocumentService {
         return true;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteByDocId(Integer docIdToDelete) {
+        textService.deleteByDocId(docIdToDelete);
+        imageService.deleteByDocId(docIdToDelete);
+        menuService.deleteByDocId(docIdToDelete);
+        loopService.deleteByDocId(docIdToDelete);
         textDocumentTemplateService.deleteByDocId(docIdToDelete);
         commonContentService.deleteByDocId(docIdToDelete);
         metaRepository.delete(docIdToDelete);
