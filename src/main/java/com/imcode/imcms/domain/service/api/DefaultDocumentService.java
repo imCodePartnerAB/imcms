@@ -154,6 +154,15 @@ class DefaultDocumentService implements DocumentService {
                 .anyMatch(permissionDTO -> permissionDTO.isAtLeastAsPrivilegedAs(PermissionDTO.VIEW));
     }
 
+    @Transactional
+    @Override
+    public void deleteByDocId(Integer docIdToDelete) {
+        textDocumentTemplateService.deleteByDocId(docIdToDelete);
+        commonContentService.deleteByDocId(docIdToDelete);
+        metaRepository.delete(docIdToDelete);
+        versionService.deleteByDocId(docIdToDelete);
+    }
+
     private DocumentDTO buildNewDocument() {
         final List<CommonContentDTO> commonContents = commonContentService.createCommonContents()
                 .stream()

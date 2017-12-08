@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import imcode.server.user.UserDomainObject;
 
-public interface DocumentService {
+public interface DocumentService extends DeleterByDocumentId {
 
     DocumentDTO get(Integer docId);
 

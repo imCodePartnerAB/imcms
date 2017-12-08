@@ -497,6 +497,20 @@ public class DocumentServiceTest {
     }
 
     @Test
+    public void deleteById_Expect_Deleted() {
+        final int docId = createdDoc.getId();
+        documentService.deleteByDocId(docId);
+
+        try {
+            documentService.get(docId);
+            fail("Expected exception wasn't thrown!");
+
+        } catch (DocumentNotExistException e) {
+            // expected exception
+        }
+    }
+
+    @Test
     @Ignore
     public void delete_When_UserAdminAndDocExistWithContent_Expect_DocumentNotExistExceptionAfterDeletion() {
         final UserDomainObject user = new UserDomainObject(1);
