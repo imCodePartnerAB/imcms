@@ -61,16 +61,6 @@ class DefaultLoopService implements LoopService {
         loopRepository.save(loopForSave);
     }
 
-    private Integer getLoopId(Version version, Integer loopIndex) {
-        final LoopJPA loop = loopRepository.findByVersionAndIndex(version, loopIndex);
-
-        if (loop == null) {
-            return null;
-        }
-
-        return loop.getId();
-    }
-
     @Override
     public LoopEntryRef buildLoopEntryRef(int loopIndex, int entryIndex) {
         return new LoopEntryRefDTO(loopIndex, entryIndex);
@@ -81,5 +71,15 @@ class DefaultLoopService implements LoopService {
         return loopRepository.findByVersion(version).stream()
                 .map(loop1 -> new LoopDTO(loop1, loop1.getVersion()))
                 .collect(Collectors.toSet());
+    }
+
+    private Integer getLoopId(Version version, Integer loopIndex) {
+        final LoopJPA loop = loopRepository.findByVersionAndIndex(version, loopIndex);
+
+        if (loop == null) {
+            return null;
+        }
+
+        return loop.getId();
     }
 }
