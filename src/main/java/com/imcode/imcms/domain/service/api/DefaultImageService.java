@@ -80,6 +80,11 @@ class DefaultImageService implements ImageService {
         imageRepository.save(image);
     }
 
+    @Override
+    public void deleteByDocId(Integer docIdToDelete) {
+        imageRepository.deleteByDocId(docIdToDelete);
+    }
+
     private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
                               Function<Integer, Version> versionReceiver) {
 

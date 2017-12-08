@@ -1,15 +1,22 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
+import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.ImageDTO;
-import com.imcode.imcms.domain.dto.ImageData;
+import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
+import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.ImageRepository;
+import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -27,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 import static org.junit.Assert.*;
@@ -56,6 +65,15 @@ public class ImageServiceTest {
 
     @Autowired
     private ImageDataInitializer imageDataInitializer;
+
+    @Autowired
+    private ImageRepository imageRepository;
+
+    @Autowired
+    private LoopDataInitializer loopDataInitializer;
+
+    @Autowired
+    private LanguageRepository languageRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -156,7 +174,7 @@ public class ImageServiceTest {
 
     @Test
     public void saveImage_When_CroppingIsNotDefault_Expect_EqualCropping() throws IOException {
-        final ImageData.ImageCropRegionDTO cropRegion = new ImageData.ImageCropRegionDTO(10, 10, 20, 20);
+        final ImageCropRegionDTO cropRegion = new ImageCropRegionDTO(10, 10, 20, 20);
         final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
             img.setIndex(TEST_IMAGE_INDEX);
             img.setDocId(TEST_DOC_ID);
@@ -186,5 +204,38 @@ public class ImageServiceTest {
             }
         }
 
+    }
+
+    @Test
+    public void deleteByDocId_Expect_Deleted() {
+        imageDataInitializer.cleanRepositories();
+        assertTrue(imageRepository.findAll().isEmpty());
+
+        final Version version = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
+        final Version newVersion = versionDataInitializer.createData(VERSION_INDEX + 1, TEST_DOC_ID);
+
+        final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, 1, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+        loopDataInitializer.createData(loopDTO);
+
+        final List<LanguageJPA> languages = languageRepository.findAll();
+        final Version[] versions = {version, newVersion};
+        final LoopEntryRefJPA[] loops = {loopEntryRef, null};
+
+        for (int i = 0; i < 20; i++) {
+            for (LanguageJPA language : languages) {
+                for (Version vers : versions) {
+                    for (LoopEntryRefJPA loopEntryRefJPA : loops) {
+                        imageDataInitializer.generateImage(i, language, vers, loopEntryRefJPA);
+                    }
+                }
+            }
+        }
+
+        assertFalse(imageRepository.findAll().isEmpty());
+
+        imageRepository.deleteByDocId(TEST_DOC_ID);
+
+        assertTrue(imageRepository.findAll().isEmpty());
     }
 }
