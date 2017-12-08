@@ -22,4 +22,13 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
             "GROUP BY m.id")
     List<Menu> findByVersion(Version version);
 
+    @Query(value = "SELECT m.* FROM imcms_menu m WHERE doc_id = ?1", nativeQuery = true)
+    List<Menu> findByDocId(Integer docId);
+
+    @SuppressWarnings("SpringDataMethodInconsistencyInspection")
+    default void deleteByDocId(Integer docId) {
+        final List<Menu> menus = findByDocId(docId);
+        deleteInBatch(menus);
+    }
+
 }

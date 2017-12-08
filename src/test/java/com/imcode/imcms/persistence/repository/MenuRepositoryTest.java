@@ -2,6 +2,7 @@ package com.imcode.imcms.persistence.repository;
 
 
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
+import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.MenuDTO;
@@ -23,9 +24,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -44,6 +45,9 @@ public class MenuRepositoryTest {
     private DataSource dataSource;
 
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private VersionDataInitializer versionDataInitializer;
 
     @Before
     public void setUpJdbcTemplate() {
@@ -131,5 +135,44 @@ public class MenuRepositoryTest {
         assertEquals(0, menuItemsCount.longValue());
     }
 
+    @Test
+    public void findByDocId() {
+        assertTrue(menuRepository.findAll().isEmpty());
+
+        final int docId = 1001;
+
+        IntStream.range(0, 10).forEach((versionIndex) -> {
+            versionDataInitializer.createData(versionIndex, docId);
+
+            IntStream.range(1, 10).forEach((menuIndex) ->
+                    menuDataInitializer.createData(true, menuIndex, versionIndex, docId)
+            );
+        });
+
+        final List<Menu> all = menuRepository.findAll();
+        assertFalse(all.isEmpty());
+        assertEquals(menuRepository.findByDocId(docId).size(), all.size());
+    }
+
+    @Test
+    public void deleteByDocId() {
+        assertTrue(menuRepository.findAll().isEmpty());
+
+        final int docId = 1001;
+
+        IntStream.range(0, 10).forEach((versionIndex) -> {
+            versionDataInitializer.createData(versionIndex, docId);
+
+            IntStream.range(1, 10).forEach((menuIndex) ->
+                    menuDataInitializer.createData(true, menuIndex, versionIndex, docId)
+            );
+        });
+
+        assertFalse(menuRepository.findAll().isEmpty());
+
+        menuRepository.deleteByDocId(docId);
+
+        assertTrue(menuRepository.findAll().isEmpty());
+    }
 
 }
