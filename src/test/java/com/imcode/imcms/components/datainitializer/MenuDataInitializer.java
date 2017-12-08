@@ -37,14 +37,9 @@ public class MenuDataInitializer extends TestDataCleaner {
         this.menuToMenuDTO = menuToMenuDTO;
     }
 
-    public MenuDTO createData(Boolean withMenuItems) {
-        cleanRepositories();
-        return createData(withMenuItems, MENU_INDEX);
-    }
-
-    public MenuDTO createData(Boolean withMenuItems, int menuIndex) {
+    public MenuDTO createData(boolean withMenuItems, int menuIndex, int versionIndex, int docId) {
         final Menu menu = new Menu();
-        version = versionDataInitializer.createData(VERSION_INDEX, DOC_ID);
+        version = versionDataInitializer.createData(versionIndex, docId);
         menu.setVersion(version);
         menu.setNo(menuIndex);
         savedMenu = menuRepository.saveAndFlush(menu);
@@ -57,6 +52,15 @@ public class MenuDataInitializer extends TestDataCleaner {
         }
 
         return menuToMenuDTO.apply(savedMenu);
+    }
+
+    public MenuDTO createData(boolean withMenuItems) {
+        cleanRepositories();
+        return createData(withMenuItems, MENU_INDEX);
+    }
+
+    public MenuDTO createData(boolean withMenuItems, int menuIndex) {
+        return createData(withMenuItems, menuIndex, VERSION_INDEX, DOC_ID);
     }
 
     public Version getVersion() {
