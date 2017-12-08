@@ -10,6 +10,7 @@ import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.LoopRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static com.imcode.imcms.components.datainitializer.LoopDataInitializer.TEST_VERSION_NO;
 import static org.junit.Assert.*;
@@ -45,6 +47,9 @@ public class LoopServiceTest {
 
     @Autowired
     private LoopDataInitializer loopDataInitializer;
+
+    @Autowired
+    private LoopRepository loopRepository;
 
     @Autowired
     private LoopService loopService;
@@ -151,5 +156,36 @@ public class LoopServiceTest {
 
         assertEquals(loopDTOS.size(), allByVersion.size());
         assertTrue(allByVersion.containsAll(loopDTOS));
+    }
+
+    @Test
+    public void deleteByDocId() {
+        loopDataInitializer.cleanRepositories();
+
+        assertTrue(loopRepository.findAll().isEmpty());
+
+        final List<LoopEntryDTO> oneEntry = Collections.singletonList(LoopEntryDTO.createEnabled(1));
+        final List<LoopEntryDTO> twoEntries = Arrays.asList(LoopEntryDTO.createEnabled(1), LoopEntryDTO.createEnabled(2));
+        final List<LoopEntryDTO> threeEntries = Arrays.asList(
+                LoopEntryDTO.createEnabled(1),
+                LoopEntryDTO.createEnabled(2),
+                LoopEntryDTO.createEnabled(3)
+        );
+
+        final LoopDTO loop1 = new LoopDTO(TEST_DOC_ID, 1, oneEntry);
+        final LoopDTO loop2 = new LoopDTO(TEST_DOC_ID, 2, twoEntries);
+        final LoopDTO loop3 = new LoopDTO(TEST_DOC_ID, 3, threeEntries);
+
+        IntStream.range(0, 10).forEach(versionIndex -> {
+            loopDataInitializer.createData(loop1, versionIndex);
+            loopDataInitializer.createData(loop2, versionIndex);
+            loopDataInitializer.createData(loop3, versionIndex);
+        });
+
+        assertFalse(loopRepository.findAll().isEmpty());
+
+        loopService.deleteByDocId(TEST_DOC_ID);
+
+        assertTrue(loopRepository.findAll().isEmpty());
     }
 }

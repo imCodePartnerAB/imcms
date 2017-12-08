@@ -73,6 +73,11 @@ class DefaultLoopService implements LoopService {
                 .collect(Collectors.toSet());
     }
 
+    @Override
+    public void deleteByDocId(Integer docIdToDelete) {
+        loopRepository.delete(loopRepository.findByDocId(docIdToDelete));
+    }
+
     private Integer getLoopId(Version version, Integer loopIndex) {
         final LoopJPA loop = loopRepository.findByVersionAndIndex(version, loopIndex);
 
