@@ -76,6 +76,7 @@ class DefaultLoopService implements LoopService {
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
         loopRepository.delete(loopRepository.findByDocId(docIdToDelete));
+        loopRepository.flush();
     }
 
     private Integer getLoopId(Version version, Integer loopIndex) {
