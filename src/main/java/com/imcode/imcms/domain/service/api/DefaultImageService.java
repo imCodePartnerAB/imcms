@@ -114,14 +114,14 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageDT
     }
 
     private Image getImage(int index, Version version, LanguageJPA language, LoopEntryRef loopEntryRef) {
-        return Optional.ofNullable(loopEntryRef)
-                .map(LoopEntryRefJPA::new)
-                .map(loopEntryRefJPA -> repository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
-                        version, language, index, loopEntryRefJPA
-                ))
-                .orElseGet(() -> repository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
-                        version, language, index
-                ));
+        if (loopEntryRef == null) {
+            return repository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index);
+
+        } else {
+            return repository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
+                    version, language, index, new LoopEntryRefJPA(loopEntryRef)
+            );
+        }
     }
 
     private Integer getImageId(ImageDTO imageDTO, Version version, LanguageJPA language) {
