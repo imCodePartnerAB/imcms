@@ -1,9 +1,11 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -25,21 +27,20 @@ import java.util.function.Function;
 
 @Transactional
 @Service("imageService")
-class DefaultImageService implements ImageService {
+class DefaultImageService extends AbstractVersionedContentService<Image, ImageDTO, ImageRepository> implements ImageService {
 
-    private final ImageRepository imageRepository;
     private final VersionService versionService;
     private final LanguageService languageService;
-    private final TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage;
+    private final TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage;
     private final Function<Image, ImageDTO> imageToImageDTO;
 
     DefaultImageService(ImageRepository imageRepository,
                         VersionService versionService,
                         LanguageService languageService,
-                        TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage,
+                        TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage,
                         Function<Image, ImageDTO> imageToImageDTO) {
 
-        this.imageRepository = imageRepository;
+        super(imageRepository);
         this.versionService = versionService;
         this.languageService = languageService;
         this.imageDtoToImage = imageDtoToImage;
@@ -77,7 +78,7 @@ class DefaultImageService implements ImageService {
         final Integer imageId = getImageId(imageDTO, version, language);
 
         image.setId(imageId);
-        imageRepository.save(image);
+        repository.save(image);
     }
 
     private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
@@ -110,10 +111,10 @@ class DefaultImageService implements ImageService {
     private Image getImage(int index, Version version, LanguageJPA language, LoopEntryRef loopEntryRef) {
         return Optional.ofNullable(loopEntryRef)
                 .map(LoopEntryRefJPA::new)
-                .map(loopEntryRefJPA -> imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
+                .map(loopEntryRefJPA -> repository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
                         version, language, index, loopEntryRefJPA
                 ))
-                .orElseGet(() -> imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
+                .orElseGet(() -> repository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(
                         version, language, index
                 ));
     }
@@ -131,7 +132,7 @@ class DefaultImageService implements ImageService {
     }
 
     private Collection<Image> getAllGeneratedImages() {
-        return imageRepository.findAllGeneratedImages();
+        return repository.findAllGeneratedImages();
     }
 
     @PostConstruct
@@ -139,5 +140,16 @@ class DefaultImageService implements ImageService {
         getAllGeneratedImages().forEach((img) -> ImcmsImageUtils.generateImage(
                 imageToImageDTO.apply(img), false)
         );
+    }
+
+    @Override
+    protected ImageDTO mapping(Image jpa, Version version) {
+        return imageToImageDTO.apply(jpa);
+    }
+
+    @Override
+    protected Image mappingWithoutId(ImageDTO dto, Version version) {
+        final Language language = languageService.findByCode(dto.getLangCode());
+        return imageDtoToImage.apply(dto, version, language);
     }
 }
