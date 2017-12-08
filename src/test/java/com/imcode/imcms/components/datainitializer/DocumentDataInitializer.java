@@ -93,6 +93,6 @@ public class DocumentDataInitializer extends TestDataCleaner {
 
     @Override
     public void cleanRepositories() {
-        commonContentDataInitializer.cleanRepositories();
+        Imcms.setUser(null);
     }
 }

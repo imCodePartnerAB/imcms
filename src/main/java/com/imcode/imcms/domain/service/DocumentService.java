@@ -9,14 +9,8 @@ public interface DocumentService {
 
     int save(DocumentDTO saveMe);
 
-    String getDocumentTitle(int documentId);
-
-    String getDocumentTarget(int documentId);
-
-    String getDocumentLink(int documentId);
-
     void delete(DocumentDTO deleteMe);
 
-    boolean hasUserAccessToDoc(int docId, UserDomainObject user);
+    boolean publishDocument(int docId, int userId);
 
 }
