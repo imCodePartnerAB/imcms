@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
@@ -15,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -38,6 +40,10 @@ public class MenuServiceTest {
 
     @Autowired
     private MenuDataInitializer menuDataInitializer;
+
+    @Autowired
+    @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository")
+    private MenuRepository menuRepository;
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
@@ -126,6 +132,27 @@ public class MenuServiceTest {
 
         menuItemAfter = savedMenu.getMenuItems();
         assertEquals(newSize, menuItemAfter.size());
+    }
+
+    @Test
+    public void deleteByDocId() {
+        assertTrue(menuRepository.findAll().isEmpty());
+
+        final int docId = 1001;
+
+        IntStream.range(0, 10).forEach((versionIndex) -> {
+            versionDataInitializer.createData(versionIndex, docId);
+
+            IntStream.range(1, 10).forEach((menuIndex) ->
+                    menuDataInitializer.createData(true, menuIndex, versionIndex, docId)
+            );
+        });
+
+        assertFalse(menuRepository.findAll().isEmpty());
+
+        menuService.deleteByDocId(docId);
+
+        assertTrue(menuRepository.findAll().isEmpty());
     }
 
     private void getMenuItemsOf_When_MenuNoAndDocId_Expect_ResultEqualsExpectedMenuItems(boolean isAll) {

@@ -7,7 +7,8 @@ import com.imcode.imcms.persistence.entity.Version;
 import java.util.Collection;
 import java.util.List;
 
-public interface MenuService {
+public interface MenuService extends DeleterByDocumentId {
+
     List<MenuItemDTO> getMenuItemsOf(int menuIndex, int docId);
 
     List<MenuItemDTO> getPublicMenuItemsOf(int menuIndex, int docId);
@@ -20,4 +21,5 @@ public interface MenuService {
         PUBLIC,
         ALL
     }
+
 }

@@ -13,6 +13,7 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
@@ -70,6 +71,12 @@ class DefaultMenuService implements MenuService {
     @Override
     public Collection<MenuDTO> findAllByVersion(Version version) {
         return menuRepository.findByVersion(version).stream().map(menuToMenuDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void deleteByDocId(Integer docIdToDelete) {
+        menuRepository.deleteByDocId(docIdToDelete);
     }
 
     private Menu getMenu(int menuNo, int docId) {
