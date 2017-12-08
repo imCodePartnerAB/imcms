@@ -1,19 +1,17 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
-import com.imcode.imcms.components.datainitializer.UserDataInitializer;
+import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.User;
-import com.imcode.imcms.model.Role;
-import com.imcode.imcms.model.Text;
-import com.imcode.imcms.model.TextDocumentTemplate;
-import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.model.*;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import com.imcode.imcms.persistence.repository.TextRepository;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.user.RoleId;
@@ -33,6 +31,7 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.imcode.imcms.model.Text.Type.PLAIN_TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static org.junit.Assert.*;
@@ -84,6 +83,24 @@ public class DocumentServiceTest {
     @Autowired
     private MetaRepository metaRepository;
 
+    @Autowired
+    private LoopDataInitializer loopDataInitializer;
+
+    @Autowired
+    private VersionRepository versionRepository;
+
+    @Autowired
+    private MenuDataInitializer menuDataInitializer;
+
+    @Autowired
+    private ImageDataInitializer imageDataInitializer;
+
+    @Autowired
+    private TextRepository textRepository;// instead of initializer :)
+
+    @Autowired
+    private VersionService versionService;
+
     @Before
     public void setUp() throws Exception {
         createdDoc = documentDataInitializer.createData();
@@ -109,47 +126,6 @@ public class DocumentServiceTest {
         assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
         assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
         assertEquals(documentDTO.getTemplate(), TextDocumentTemplateDTO.createDefault());
-    }
-
-    @Test
-    public void getDocumentTitle() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-        final String testHeadline = "test_headline";
-
-        for (CommonContentDTO commonContentDTO : documentDTO.getCommonContents()) {
-            commonContentDTO.setHeadline(testHeadline);
-        }
-
-        documentService.save(documentDTO);
-
-        assertEquals(documentService.getDocumentTitle(createdDoc.getId()), testHeadline);
-    }
-
-    @Test
-    public void getDocumentTarget() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-        final String testTarget = "_target";
-        documentDTO.setTarget(testTarget);
-        documentService.save(documentDTO);
-
-        assertEquals(documentService.getDocumentTarget(createdDoc.getId()), testTarget);
-    }
-
-    @Test
-    public void getDocumentLink_When_NoAlias_Expect_DocIdInLink() {
-        final int docId = createdDoc.getId();
-
-        assertEquals(documentService.getDocumentLink(docId), "/" + createdDoc.getId());
-    }
-
-    @Test
-    public void getDocumentLink_When_AliasIsSet_Expect_AliasInLink() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-        final String testAlias = "test_alias";
-        documentDTO.setAlias(testAlias);
-        documentService.save(documentDTO);
-
-        assertEquals(documentService.getDocumentLink(createdDoc.getId()), "/" + testAlias);
     }
 
     @Test
@@ -527,7 +503,7 @@ public class DocumentServiceTest {
                 final String langCode = commonContentDTO.getLanguage().getCode();
                 final TextDTO textDTO = new TextDTO();
                 textDTO.setText("test");
-                textDTO.setType(Text.Type.PLAIN_TEXT);
+                textDTO.setType(PLAIN_TEXT);
                 textDTO.setDocId(createdDocId);
                 textDTO.setIndex(testIndex);
                 textDTO.setLoopEntryRef(loopEntryRefDTO);
@@ -561,4 +537,151 @@ public class DocumentServiceTest {
             // expected exception
         }
     }
+
+    @Test
+    public void publishDocument_When_hasOnlyWorkingVersion() {
+        // initial data
+        final Version workingVersion = versionRepository.findWorking(createdDoc.getId());
+
+        final Integer index = 1;
+        final LoopDTO testLoop = new LoopDTO(createdDoc.getId(), index, Collections.emptyList());
+        loopDataInitializer.createData(testLoop, workingVersion);
+
+        menuDataInitializer.createData(false, index, workingVersion);
+
+        final Image image = imageDataInitializer.createData(index, workingVersion);
+
+        //get language from image to not use repo.
+        createText(index, image.getLanguage(), workingVersion);
+
+        //already created with doc
+        //commonContentDataInitializer.createData(workingVersion);
+
+        //invoke test
+
+        final boolean isPublished = documentService.publishDocument(createdDoc.getId(), Imcms.getUser().getId());
+
+        //checking
+
+        assertTrue(isPublished);
+
+        final Version latestVersion = versionRepository.findLatest(createdDoc.getId());
+
+        assertNotEquals(workingVersion, latestVersion);
+
+        final Set<Loop> loopByVersion = loopService.getByVersion(latestVersion);
+        assertNotNull(loopByVersion);
+        assertEquals(1, loopByVersion.size());
+        assertEquals(index, new ArrayList<>(loopByVersion).get(0).getIndex());
+
+        final Set<MenuDTO> menuByVersion = menuService.getByVersion(latestVersion);
+        assertNotNull(menuByVersion);
+        assertEquals(1, menuByVersion.size());
+        assertEquals(index, new ArrayList<>(menuByVersion).get(0).getMenuIndex());
+
+        final Set<ImageDTO> imageByVersion = imageService.getByVersion(latestVersion);
+        assertNotNull(imageByVersion);
+        assertEquals(1, imageByVersion.size());
+        assertEquals(index, new ArrayList<>(imageByVersion).get(0).getIndex());
+
+        final Set<Text> textByVersion = textService.getByVersion(latestVersion);
+        assertNotNull(textByVersion);
+        assertEquals(1, textByVersion.size());
+        assertEquals(index, new ArrayList<>(textByVersion).get(0).getIndex());
+
+        final Set<CommonContent> commonContentByVersion = commonContentService.getByVersion(latestVersion);
+        assertNotNull(commonContentByVersion);
+        assertEquals(2, commonContentByVersion.size());
+        assertEquals(Integer.valueOf(1), new ArrayList<>(commonContentByVersion).get(0).getVersionNo());
+        assertEquals(Integer.valueOf(1), new ArrayList<>(commonContentByVersion).get(1).getVersionNo());
+
+    }
+
+    @Test
+    public void publishDocument_When_oneVersionAndWorkingVersionModifiedBeforeLatestVersionCreated() {
+        // initial data
+        final Version workingVersion = versionRepository.findWorking(createdDoc.getId());
+        workingVersion.setCreatedDt(new Date(0L));
+        versionRepository.save(workingVersion);
+        versionService.create(createdDoc.getId(), Imcms.getUser().getId());
+        final boolean isPublished = documentService.publishDocument(createdDoc.getId(), Imcms.getUser().getId());
+        assertFalse(isPublished);
+    }
+
+    @Test
+    public void publishDocument_When_oneVersionAndWorkingVersionModifiedAfterLatestVersionCreated() {
+        // initial data
+        final Version workingVersion = versionRepository.findWorking(createdDoc.getId());
+
+        final Version latestVersion = versionService.create(createdDoc.getId(), Imcms.getUser().getId());
+        latestVersion.setCreatedDt(new Date(0L));
+        versionRepository.save(latestVersion);
+
+        final Integer index = 1;
+        final LoopDTO testLoop = new LoopDTO(createdDoc.getId(), index, Collections.emptyList());
+        loopDataInitializer.createData(testLoop, workingVersion);
+
+        menuDataInitializer.createData(false, index, workingVersion);
+
+        final Image image = imageDataInitializer.createData(index, workingVersion);
+
+        //get language from image to not use repo.
+        createText(index, image.getLanguage(), workingVersion);
+
+        //already created with doc
+        //commonContentDataInitializer.createData(workingVersion);
+
+        //invoke test
+
+        final boolean isPublished = documentService.publishDocument(createdDoc.getId(), Imcms.getUser().getId());
+
+        //checking
+
+        assertTrue(isPublished);
+
+        final Version newVersion = versionRepository.findLatest(createdDoc.getId());
+
+        assertNotEquals(workingVersion, latestVersion);
+        assertNotEquals(latestVersion, newVersion);
+
+        final Set<Loop> loopByVersion = loopService.getByVersion(newVersion);
+        assertNotNull(loopByVersion);
+        assertEquals(1, loopByVersion.size());
+        assertEquals(index, new ArrayList<>(loopByVersion).get(0).getIndex());
+
+        final Set<MenuDTO> menuByVersion = menuService.getByVersion(newVersion);
+        assertNotNull(menuByVersion);
+        assertEquals(1, menuByVersion.size());
+        assertEquals(index, new ArrayList<>(menuByVersion).get(0).getMenuIndex());
+
+        final Set<ImageDTO> imageByVersion = imageService.getByVersion(newVersion);
+        assertNotNull(imageByVersion);
+        assertEquals(1, imageByVersion.size());
+        assertEquals(index, new ArrayList<>(imageByVersion).get(0).getIndex());
+
+        final Set<Text> textByVersion = textService.getByVersion(newVersion);
+        assertNotNull(textByVersion);
+        assertEquals(1, textByVersion.size());
+        assertEquals(index, new ArrayList<>(textByVersion).get(0).getIndex());
+
+        final Set<CommonContent> commonContentByVersion = commonContentService.getByVersion(newVersion);
+        assertNotNull(commonContentByVersion);
+        assertEquals(2, commonContentByVersion.size());
+        assertEquals(Integer.valueOf(2), new ArrayList<>(commonContentByVersion).get(0).getVersionNo());
+        assertEquals(Integer.valueOf(2), new ArrayList<>(commonContentByVersion).get(1).getVersionNo());
+
+    }
+
+    private Text createText(int index, LanguageJPA language, Version version) {
+        final TextJPA text = new TextJPA();
+        text.setIndex(index);
+        text.setLanguage(language);
+        text.setText("test");
+        text.setType(PLAIN_TEXT);
+        text.setVersion(version);
+
+        return textRepository.saveAndFlush(text);
+    }
+
+
 }

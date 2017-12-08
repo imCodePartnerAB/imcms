@@ -4,10 +4,12 @@ import com.imcode.util.ImageSize;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
+import lombok.EqualsAndHashCode;
 
 import java.io.IOException;
 import java.util.Date;
 
+@EqualsAndHashCode
 public abstract class ImageSource extends AbstractFileSource {
     public static final int IMAGE_TYPE_ID__NULL = -1;
     public static final int IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH = 0;

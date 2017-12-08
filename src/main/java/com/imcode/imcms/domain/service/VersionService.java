@@ -27,4 +27,5 @@ public interface VersionService {
 
     void deleteByDocId(Integer docId);
 
+    boolean hasNewerVersion(int docId);
 }

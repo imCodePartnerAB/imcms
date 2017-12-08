@@ -1,7 +1,10 @@
 package imcode.util.image;
 
+import lombok.EqualsAndHashCode;
+
 import java.io.Serializable;
 
+@EqualsAndHashCode
 public class ImageInfo implements Serializable {
     private static final long serialVersionUID = 8901634883271727973L;
 

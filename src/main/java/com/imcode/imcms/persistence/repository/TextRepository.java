@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TextRepository extends JpaRepository<TextJPA, Integer> {
+public interface TextRepository extends JpaRepository<TextJPA, Integer>, VersionedContentRepository<TextJPA> {
 
     @Query("SELECT t FROM TextJPA t WHERE t.version = ?1 AND t.language = ?2 AND t.loopEntryRef IS NULL")
     List<TextJPA> findByVersionAndLanguageWhereLoopEntryRefIsNull(Version version, LanguageJPA language);
@@ -32,6 +32,9 @@ public interface TextRepository extends JpaRepository<TextJPA, Integer> {
     @Query("SELECT t.id FROM TextJPA t WHERE t.version = ?1 AND t.language = ?2 AND t.index = ?3 AND t.loopEntryRef = ?4")
     Integer findIdByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, LanguageJPA language, int no, LoopEntryRefJPA loopEntryRef);
 
+    @Override
+    @Query("SELECT t FROM TextJPA t WHERE t.version = ?1")
+    List<TextJPA> findByVersion(Version version);
 
     @Modifying
     @Query("DELETE FROM TextJPA t WHERE t.version = ?1 AND t.language = ?2")

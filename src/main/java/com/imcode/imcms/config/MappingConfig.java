@@ -2,13 +2,11 @@ package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
-import com.imcode.imcms.domain.service.CategoryService;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.TextDocumentTemplateService;
-import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.function.TernaryFunction;
@@ -57,7 +55,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<MenuItem, MenuItemDTO> menuItemToDTO(DocumentService documentService) {
+    public Function<MenuItem, MenuItemDTO> menuItemToDTO(DocumentMenuService documentMenuService) {
         return new Function<MenuItem, MenuItemDTO>() {
             @Override
             public MenuItemDTO apply(MenuItem menuItem) {
@@ -65,9 +63,9 @@ class MappingConfig {
 
                 final MenuItemDTO menuItemDTO = new MenuItemDTO();
                 menuItemDTO.setDocumentId(documentId);
-                menuItemDTO.setTitle(documentService.getDocumentTitle(documentId));
-                menuItemDTO.setLink(documentService.getDocumentLink(documentId));
-                menuItemDTO.setTarget(documentService.getDocumentTarget(documentId));
+                menuItemDTO.setTitle(documentMenuService.getDocumentTitle(documentId));
+                menuItemDTO.setLink(documentMenuService.getDocumentLink(documentId));
+                menuItemDTO.setTarget(documentMenuService.getDocumentTarget(documentId));
 
                 final List<MenuItemDTO> children = menuItem.getChildren()
                         .stream()
@@ -144,13 +142,13 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<ImageDTO, Version, LanguageJPA, Image> imageDtoToImage() {
+    public TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage() {
 
         return (imageDTO, version, language) -> {
             final Image image = new Image();
             image.setIndex(imageDTO.getIndex());
             image.setVersion(version);
-            image.setLanguage(language);
+            image.setLanguage(new LanguageJPA(language));
             image.setHeight(imageDTO.getHeight());
             image.setWidth(imageDTO.getWidth());
             image.setUrl(imageDTO.getPath());

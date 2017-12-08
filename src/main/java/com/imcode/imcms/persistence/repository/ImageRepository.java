@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface ImageRepository extends JpaRepository<Image, Integer> {
+public interface ImageRepository extends JpaRepository<Image, Integer>, VersionedContentRepository<Image> {
 
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef IS NULL")
     List<Image> findByVersionAndLanguageWhereLoopEntryRefIsNull(Version version, LanguageJPA language);
@@ -44,6 +44,10 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
 
     @Query("SELECT i FROM Image i WHERE i.generatedFilename != null AND i.generatedFilename != '' ORDER BY i.id DESC")
     Collection<Image> findAllGeneratedImages();
+
+    @Override
+    @Query("SELECT i FROM Image i WHERE i.version = ?1")
+    List<Image> findByVersion(Version version);
 
     @Modifying
     @Query("DELETE FROM Image i WHERE i.version = ?1 AND i.language = ?2")

@@ -3,6 +3,7 @@
     <%--@elvariable id="isVersioningAllowed" type="boolean"--%>
     <%--@elvariable id="isEditMode" type="boolean"--%>
     <%--@elvariable id="isPreviewMode" type="boolean"--%>
+    <%--@elvariable id="hasNewerVersion" type="boolean"--%>
     <%--@elvariable id="version" type="java.lang.String"--%>
     <%--@elvariable id="imagesPath" type="java.lang.String"--%>
 
@@ -13,6 +14,7 @@
         isEditMode: ${isEditMode},
         isPreviewMode: ${isPreviewMode},
         isVersioningAllowed: ${isVersioningAllowed},
+        hasNewerVersion: ${hasNewerVersion},
         document: {
             id: ${currentDocument.id},
             type: ${currentDocument.documentTypeId},

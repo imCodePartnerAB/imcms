@@ -240,7 +240,7 @@ public class TextDocumentContentLoader {
     public Map<Integer, MenuDTO> getMenus(VersionRef versionRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
-        return menuService.findAllByVersion(version).stream().collect(toMap(MenuDTO::getMenuIndex, menu -> menu));
+        return menuService.getByVersion(version).stream().collect(toMap(MenuDTO::getMenuIndex, menu -> menu));
     }
 
     private TextDomainObject toDomainObject(TextJPA jpaText) {

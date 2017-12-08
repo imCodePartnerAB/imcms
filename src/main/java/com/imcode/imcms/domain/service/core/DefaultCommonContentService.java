@@ -1,12 +1,14 @@
 package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.dto.CommonContentDTO;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
 import org.springframework.stereotype.Service;
@@ -19,15 +21,14 @@ import java.util.stream.Collectors;
 import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
 
 @Service
-public class DefaultCommonContentService implements CommonContentService {
+public class DefaultCommonContentService extends AbstractVersionedContentService<CommonContentJPA, CommonContent, CommonContentRepository> implements CommonContentService {
 
-    private final CommonContentRepository commonContentRepository;
     private final LanguageService languageService;
 
     DefaultCommonContentService(CommonContentRepository commonContentRepository,
                                 LanguageService languageService) {
 
-        this.commonContentRepository = commonContentRepository;
+        super(commonContentRepository);
         this.languageService = languageService;
     }
 
@@ -69,7 +70,7 @@ public class DefaultCommonContentService implements CommonContentService {
     }
 
     private Optional<CommonContent> getCommonContent(int docId, int versionNo, Language language) {
-        final CommonContentJPA commonContentJPA = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
+        final CommonContentJPA commonContentJPA = repository.findByDocIdAndVersionNoAndLanguage(
                 docId, versionNo, new LanguageJPA(language)
         );
 
@@ -83,7 +84,7 @@ public class DefaultCommonContentService implements CommonContentService {
 
     @Override
     public void save(CommonContent saveMe) {
-        commonContentRepository.save(new CommonContentJPA(saveMe));
+        repository.save(new CommonContentJPA(saveMe));
     }
 
     private CommonContentDTO createFromWorkingVersion(int docId, int versionNo, Language language) {
@@ -98,7 +99,7 @@ public class DefaultCommonContentService implements CommonContentService {
 
         newCommonContent.setVersionNo(versionNo);
 
-        return new CommonContentDTO(commonContentRepository.saveAndFlush(newCommonContent));
+        return new CommonContentDTO(repository.saveAndFlush(newCommonContent));
     }
 
     @Override
@@ -119,6 +120,18 @@ public class DefaultCommonContentService implements CommonContentService {
 
     @Override
     public void deleteByDocId(int docId) {
-        commonContentRepository.deleteByDocId(docId);
+        repository.deleteByDocId(docId);
+    }
+
+    @Override
+    protected CommonContent mapping(CommonContentJPA jpa, Version version) {
+        return new CommonContentDTO(jpa);
+    }
+
+    @Override
+    protected CommonContentJPA mappingWithoutId(CommonContent dto, Version version) {
+        dto.setId(null);
+        dto.setVersionNo(version.getNo());
+        return new CommonContentJPA(dto);
     }
 }

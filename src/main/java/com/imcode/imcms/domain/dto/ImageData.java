@@ -14,9 +14,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class ImageData implements Serializable {
 
