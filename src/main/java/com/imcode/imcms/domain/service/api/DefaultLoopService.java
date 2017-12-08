@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.LoopJPA;
@@ -20,14 +21,13 @@ import java.util.stream.Collectors;
 
 @Transactional
 @Service("loopService")
-class DefaultLoopService implements LoopService {
+class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, Loop, LoopRepository> implements LoopService {
 
-    private final LoopRepository loopRepository;
     private final VersionService versionService;
 
     @Autowired
     DefaultLoopService(LoopRepository loopRepository, VersionService versionService) {
-        this.loopRepository = loopRepository;
+        super(loopRepository);
         this.versionService = versionService;
     }
 
@@ -44,7 +44,7 @@ class DefaultLoopService implements LoopService {
     @Override
     public Loop getLoop(int loopIndex, int docId, Function<Integer, Version> versionGetter) {
         final Version documentWorkingVersion = versionGetter.apply(docId);
-        final LoopJPA loop = loopRepository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
+        final LoopJPA loop = repository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
 
         return Optional.ofNullable(loop)
                 .map(loop1 -> new LoopDTO(loop1, loop1.getVersion()))
@@ -58,11 +58,11 @@ class DefaultLoopService implements LoopService {
         final Integer loopId = getLoopId(documentWorkingVersion, loopDTO.getIndex());
 
         loopForSave.setId(loopId);
-        loopRepository.save(loopForSave);
+        repository.save(loopForSave);
     }
 
     private Integer getLoopId(Version version, Integer loopIndex) {
-        final LoopJPA loop = loopRepository.findByVersionAndIndex(version, loopIndex);
+        final LoopJPA loop = repository.findByVersionAndIndex(version, loopIndex);
 
         if (loop == null) {
             return null;
@@ -78,8 +78,18 @@ class DefaultLoopService implements LoopService {
 
     @Override
     public Collection<Loop> findAllByVersion(Version version) {
-        return loopRepository.findByVersion(version).stream()
+        return repository.findByVersion(version).stream()
                 .map(loop1 -> new LoopDTO(loop1, loop1.getVersion()))
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    protected Loop mapping(LoopJPA jpa, Version version) {
+        return new LoopDTO(jpa, version);
+    }
+
+    @Override
+    protected LoopJPA mappingWithoutId(Loop dto, Version version) {
+        return new LoopJPA(dto, version);
     }
 }

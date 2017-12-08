@@ -19,15 +19,18 @@ public class LoopDataInitializer extends TestDataCleaner {
         this.versionDataInitializer = versionDataInitializer;
     }
 
-    public void createData(Loop loopDTO) {
-        createData(loopDTO, TEST_VERSION_NO);
+    public Loop createData(Loop loopDTO) {
+        return createData(loopDTO, TEST_VERSION_NO);
     }
 
-    public void createData(Loop loopDTO, int versionNo) {
+    public Loop createData(Loop loopDTO, int versionNo) {
         final Version testVersion = versionDataInitializer.createData(versionNo, loopDTO.getDocId());
+        return createData(loopDTO, testVersion);
+    }
 
+    public Loop createData(Loop loopDTO, Version testVersion) {
         final LoopJPA testLoop = new LoopJPA(loopDTO, testVersion);
-        loopRepository.saveAndFlush(testLoop);
+        return loopRepository.saveAndFlush(testLoop);
     }
 
     @Override

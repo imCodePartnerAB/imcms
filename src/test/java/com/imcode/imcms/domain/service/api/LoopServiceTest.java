@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
+import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
@@ -52,6 +53,11 @@ public class LoopServiceTest {
     @Autowired
     private VersionRepository versionRepository;
 
+    @Autowired
+    private VersionDataInitializer versionDataInitializer;
+
+    private int lastVersionIndex;
+
     @Before
     public void saveData() {
         loopDataInitializer.createData(TEST_LOOP_DTO);
@@ -59,8 +65,10 @@ public class LoopServiceTest {
             final boolean isLast = i == (TEST_LOOP_COUNT - 1);
             if (isLast) {
                 loopDataInitializer.createData(TEST_LOOP_DTO_LATEST_VERSION, i);
+                lastVersionIndex = i;
             } else {
-                loopDataInitializer.createData(TEST_LOOP_DTO, i);
+                final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
+                loopDataInitializer.createData(loopDTO, i);
             }
         }
     }
@@ -151,5 +159,19 @@ public class LoopServiceTest {
 
         assertEquals(loopDTOS.size(), allByVersion.size());
         assertTrue(allByVersion.containsAll(loopDTOS));
+    }
+
+    @Test
+    public void createVersionedContent() {
+
+        final Version workingVersion = versionRepository.findByDocIdAndNo(TEST_DOC_ID, TEST_VERSION_NO);
+        final int newVersionIndex = lastVersionIndex + 1;
+        final Version newVersion = versionDataInitializer.createData(newVersionIndex, TEST_DOC_ID);
+
+        loopService.createVersionedContent(workingVersion, newVersion);
+
+        final Loop loopLatest = loopService.getLoopPublic(TEST_LOOP_DTO_LATEST_VERSION.getIndex(), TEST_LOOP_DTO_LATEST_VERSION.getDocId());
+        assertNotNull(loopLatest);
+        assertEquals(TEST_LOOP_DTO, loopLatest);
     }
 }

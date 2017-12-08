@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.Version;
@@ -7,7 +8,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import java.util.Collection;
 import java.util.function.Function;
 
-public interface LoopService {
+public interface LoopService extends VersionedContentService<Loop> {
 
     Loop getLoop(int loopIndex, int docId);
 
