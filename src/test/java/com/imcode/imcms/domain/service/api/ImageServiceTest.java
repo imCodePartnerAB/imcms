@@ -9,14 +9,19 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
+import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
+import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -36,7 +41,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -66,6 +76,8 @@ public class ImageServiceTest {
     @Autowired
     private ImageDataInitializer imageDataInitializer;
 
+    private Version workingVersion;
+
     @Autowired
     private ImageRepository imageRepository;
 
@@ -77,7 +89,7 @@ public class ImageServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
+        workingVersion = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng"); // user lang should exist in common content
@@ -204,6 +216,40 @@ public class ImageServiceTest {
             }
         }
 
+    }
+
+    @Test
+    public void getByVersion() {
+        int i = TEST_IMAGE_INDEX;
+
+        final Set<ImageDTO> expected = Stream.of(
+                imageDataInitializer.createData(++i, TEST_DOC_ID, VERSION_INDEX),
+                imageDataInitializer.createData(++i, TEST_DOC_ID, VERSION_INDEX),
+                imageDataInitializer.createData(++i, TEST_DOC_ID, VERSION_INDEX),
+                imageDataInitializer.createData(++i, TEST_DOC_ID, VERSION_INDEX))
+                .map(imageToImageDTO)
+                .collect(Collectors.toSet());
+
+        final Set<ImageDTO> actual = imageService.getByVersion(workingVersion);
+
+        assertEquals(actual.size(), expected.size());
+        assertEquals(actual, expected);
+    }
+
+    @Test
+    public void createVersionedContent() {
+        int testImageIndex = TEST_IMAGE_INDEX;
+        final ImageDTO workingVersionImage = imageToImageDTO.apply(
+                imageDataInitializer.createData(++testImageIndex, TEST_DOC_ID, VERSION_INDEX));
+
+        final Version latestVersion = versionDataInitializer.createData(VERSION_INDEX + 1, TEST_DOC_ID);
+
+        imageService.createVersionedContent(workingVersion, latestVersion);
+
+        final Set<ImageDTO> latestVersionImages = imageService.getByVersion(latestVersion);
+
+        assertEquals(1, latestVersionImages.size());
+        assertTrue(latestVersionImages.contains(workingVersionImage));
     }
 
     @Test

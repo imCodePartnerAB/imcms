@@ -5,9 +5,7 @@ import com.imcode.imcms.model.LoopEntryRef;
 import imcode.util.image.Format;
 import lombok.*;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)

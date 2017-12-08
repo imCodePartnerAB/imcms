@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.model.LoopEntryRef;
 
-public interface ImageService extends DeleterByDocumentId {
+public interface ImageService extends VersionedContentService<ImageDTO>, DeleterByDocumentId {
 
     ImageDTO getImage(ImageDTO dataHolder);
 

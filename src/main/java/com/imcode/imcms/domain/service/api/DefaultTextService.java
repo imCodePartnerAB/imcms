@@ -1,9 +1,11 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.TextDTO;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -19,14 +21,13 @@ import java.util.function.Function;
 
 @Transactional
 @Service("textService")
-class DefaultTextService implements TextService {
+class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, TextRepository> implements TextService {
 
-    private final TextRepository textRepository;
     private final LanguageService languageService;
     private final VersionService versionService;
 
     DefaultTextService(TextRepository textRepository, LanguageService languageService, VersionService versionService) {
-        this.textRepository = textRepository;
+        super(textRepository);
         this.languageService = languageService;
         this.versionService = versionService;
     }
@@ -59,12 +60,12 @@ class DefaultTextService implements TextService {
         final Integer textId = getTextId(text, version, language);
 
         textJPA.setId(textId);
-        textRepository.save(textJPA);
+        repository.save(textJPA);
     }
 
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
-        textRepository.deleteByDocId(docIdToDelete);
+        repository.deleteByDocId(docIdToDelete);
     }
 
     private Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
@@ -81,10 +82,10 @@ class DefaultTextService implements TextService {
 
     private TextJPA getText(int index, Version version, LanguageJPA language, LoopEntryRef loopEntryRef) {
         if (loopEntryRef == null) {
-            return textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index);
+            return repository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index);
 
         } else {
-            return textRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
+            return repository.findByVersionAndLanguageAndIndexAndLoopEntryRef(
                     version, language, index, new LoopEntryRefJPA(loopEntryRef)
             );
         }
@@ -100,5 +101,16 @@ class DefaultTextService implements TextService {
         }
 
         return textJPA.getId();
+    }
+
+    @Override
+    protected Text mapping(TextJPA entity, Version version) {
+        return new TextDTO(entity, version, entity.getLanguage());
+    }
+
+    @Override
+    protected TextJPA mappingWithoutId(Text entity, Version version) {
+        final LanguageJPA languageJPA = new LanguageJPA(languageService.findByCode(entity.getLangCode()));
+        return new TextJPA(entity, version, languageJPA);
     }
 }

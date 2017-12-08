@@ -34,27 +34,24 @@ class DefaultDocumentService implements DocumentService {
     private final Function<DocumentDTO, Meta> documentDtoToMeta;
     private final CommonContentService commonContentService;
     private final VersionService versionService;
-    private final LanguageService languageService;
-    private final TextService textService;
     private final TextDocumentTemplateService textDocumentTemplateService;
+    private final List<VersionedContentService> versionedContentServices;
 
     DefaultDocumentService(MetaRepository metaRepository,
                            TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
                            Function<DocumentDTO, Meta> documentDtoToMeta,
                            CommonContentService commonContentService,
                            VersionService versionService,
-                           LanguageService languageService,
-                           TextService textService,
-                           TextDocumentTemplateService textDocumentTemplateService) {
+                           TextDocumentTemplateService textDocumentTemplateService,
+                           List<VersionedContentService> versionedContentServices) {
 
         this.metaRepository = metaRepository;
         this.documentMapping = metaToDocumentDTO;
         this.documentDtoToMeta = documentDtoToMeta;
         this.commonContentService = commonContentService;
         this.versionService = versionService;
-        this.languageService = languageService;
-        this.textService = textService;
         this.textDocumentTemplateService = textDocumentTemplateService;
+        this.versionedContentServices = versionedContentServices;
     }
 
     @Override
@@ -90,36 +87,6 @@ class DefaultDocumentService implements DocumentService {
     }
 
     @Override
-    public String getDocumentTitle(int documentId) {
-        final Version latestVersion = versionService.getLatestVersion(documentId);
-
-        // note: for current user language, may be wong!
-        final String code = LanguageMapper.convert639_2to639_1(Imcms.getUser().getLanguageIso639_2());
-        final Language language = languageService.findByCode(code);
-
-        // fixme: what if such content is disabled?
-        final CommonContent commonContent = commonContentService.getOrCreate(
-                documentId, latestVersion.getNo(), language
-        );
-
-        return commonContent.getHeadline();
-    }
-
-    @Override
-    public String getDocumentTarget(int documentId) {
-        return metaRepository.findTarget(documentId);
-    }
-
-    @Override
-    public String getDocumentLink(int documentId) {
-        final String alias = metaRepository.findOne(documentId)
-                .getProperties()
-                .get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
-
-        return "/" + (alias == null ? documentId : alias);
-    }
-
-    @Override
     @Transactional
     public void delete(DocumentDTO deleteMe) {
 //        final Integer docIdToDelete = deleteMe.getId();
@@ -136,22 +103,17 @@ class DefaultDocumentService implements DocumentService {
     }
 
     @Override
-    public boolean hasUserAccessToDoc(int docId, UserDomainObject user) {
-        final Meta meta = Optional.ofNullable(metaRepository.findOne(docId))
-                .orElseThrow(() -> new DocumentNotExistException(docId));
-
-        if (meta.getLinkedForUnauthorizedUsers()) {
-            return true;
+    public boolean publishDocument(int docId, int userId) {
+        if (!versionService.hasNewerVersion(docId)) {
+            return false;
         }
 
-        final Map<Integer, Meta.Permission> docPermissions = meta.getRoleIdToPermission();
+        final Version workingVersion = versionService.getDocumentWorkingVersion(docId),
+                newVersion = versionService.create(docId, userId);
 
-        return Arrays.stream(user.getRoleIds())
-                .map(RoleId::getRoleId)
-                .map(docPermissions::get)
-                .filter(Objects::nonNull)
-                .map(PermissionDTO::fromPermission)
-                .anyMatch(permissionDTO -> permissionDTO.isAtLeastAsPrivilegedAs(PermissionDTO.VIEW));
+        versionedContentServices.forEach(vcs -> vcs.createVersionedContent(workingVersion, newVersion));
+
+        return true;
     }
 
     @Transactional

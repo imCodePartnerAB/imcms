@@ -1,7 +1,9 @@
 package com.imcode.imcms.components.datainitializer;
 
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import org.springframework.stereotype.Component;
@@ -33,19 +35,21 @@ public class CommonContentDataInitializer extends TestDataCleaner {
         versionDataInitializer.cleanRepositories();
     }
 
-    public List<CommonContentJPA> createData(Integer docId, Integer versionIndex) {
+    public List<CommonContent> createData(Integer docId, Integer versionIndex) {
+        return createData(versionDataInitializer.createData(versionIndex, docId));
+    }
+
+    public List<CommonContent> createData(Version version) {
         LanguageJPA en = languageRepository.findByCode(ENG_CODE);
         LanguageJPA se = languageRepository.findByCode(SWE_CODE);
         // both langs should be already created
 
-        versionDataInitializer.createData(versionIndex, docId);
-
         return Arrays.asList(
                 commonContentRepository.saveAndFlush(new CommonContentJPA(
-                        docId, en, "headline_en", "menuText_en", "menuImageUrl_en", true, versionIndex
+                        version.getDocId(), en, "headline_en", "menuText_en", "menuImageUrl_en", true, version.getNo()
                 )),
                 commonContentRepository.saveAndFlush(new CommonContentJPA(
-                        docId, se, "headline_se", "menuText_se", "menuImageUrl_se", true, versionIndex
+                        version.getDocId(), se, "headline_se", "menuText_se", "menuImageUrl_se", true, version.getNo()
                 ))
         );
     }

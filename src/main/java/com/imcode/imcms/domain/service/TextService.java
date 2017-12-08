@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
 
-public interface TextService extends DeleterByDocumentId {
+public interface TextService extends DeleterByDocumentId, VersionedContentService<Text> {
 
     Text getText(Text textRequestData);
 

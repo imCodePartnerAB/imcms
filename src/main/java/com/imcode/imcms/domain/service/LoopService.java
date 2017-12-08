@@ -7,7 +7,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import java.util.Collection;
 import java.util.function.Function;
 
-public interface LoopService extends DeleterByDocumentId {
+public interface LoopService extends VersionedContentService<Loop>, DeleterByDocumentId {
 
     Loop getLoop(int loopIndex, int docId);
 

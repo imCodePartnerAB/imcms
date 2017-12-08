@@ -33,6 +33,12 @@ public class ImageDataInitializer extends TestDataCleaner {
         return generateImage(imageIndex, language, version, null);
     }
 
+    public Image createData(Integer imageIndex, Version version) {
+        final LanguageJPA language = languageRepository.findByCode("en");
+
+        return generateImage(imageIndex, language, version, null);
+    }
+
     public Image createData(int imageIndex, int docId, int versionIndex, LoopEntryRefJPA loopEntryRef) {
         final Version version = versionDataInitializer.createData(versionIndex, docId);
         final LanguageJPA language = languageRepository.findByCode("en");

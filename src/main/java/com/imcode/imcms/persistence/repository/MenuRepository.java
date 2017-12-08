@@ -1,5 +1,6 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.domain.service.VersionedContentService;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository("com.imcode.imcms.persistence.repository.MenuRepository")
-public interface MenuRepository extends JpaRepository<Menu, Integer> {
+public interface MenuRepository extends JpaRepository<Menu, Integer>, VersionedContentRepository<Menu> {
 
     @Query("select menu from com.imcode.imcms.persistence.entity.Menu menu " +
             "left join fetch menu.menuItems " +
