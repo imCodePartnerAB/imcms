@@ -23,10 +23,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.imcode.imcms.model.Text.Type.PLAIN_TEXT;
 import static org.junit.Assert.*;
@@ -38,7 +36,8 @@ import static org.junit.Assert.*;
 public class TextServiceTest {
 
     private static final int DOC_ID = 1001;
-    private static final int VERSION_NO = 0;
+    private static final int WORKING_VERSION_NO = 0;
+    private static final int LATEST_VERSION_NO = 1;
     private static final String ENG_CODE = "en";
     private static final String SWE_CODE = "sv";
     private static final int MIN_TEXT_INDEX = 1;
@@ -56,7 +55,8 @@ public class TextServiceTest {
     @Autowired
     private TextRepository textRepository;
 
-    private Version version;
+    private Version workingVersion;
+    private Version latestVersion;
     private List<LanguageJPA> languages;
 
     @Before
@@ -64,7 +64,9 @@ public class TextServiceTest {
         textRepository.deleteAll();
         textRepository.flush();
 
-        version = versionDataInitializer.createData(VERSION_NO, DOC_ID);
+        workingVersion = versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
+        latestVersion = versionDataInitializer.createData(LATEST_VERSION_NO, DOC_ID);
+
         languages = Arrays.asList(languageRepository.findByCode(ENG_CODE), languageRepository.findByCode(SWE_CODE));
         // both langs should already be created
     }
@@ -85,7 +87,7 @@ public class TextServiceTest {
                 text.setLanguage(language);
                 text.setText("test");
                 text.setType(PLAIN_TEXT);
-                text.setVersion(version);
+                text.setVersion(workingVersion);
 
                 textRepository.save(text);
                 textDTOS.add(new TextDTO(text, text.getVersion(), text.getLanguage()));
@@ -107,7 +109,7 @@ public class TextServiceTest {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
                 final TextJPA text = new TextJPA();
                 text.setIndex(index);
-                text.setVersion(version);
+                text.setVersion(workingVersion);
                 text.setLanguage(language);
                 text.setLoopEntryRef(loopEntryRef);
                 text.setText("test");
@@ -171,18 +173,7 @@ public class TextServiceTest {
 
     @Test
     public void deleteByDocId() {
-        for (LanguageJPA language : languages) {
-            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
-                final TextJPA text = new TextJPA();
-                text.setIndex(index);
-                text.setLanguage(language);
-                text.setText("test");
-                text.setType(PLAIN_TEXT);
-                text.setVersion(version);
-
-                textRepository.save(text);
-            }
-        }
+        createTexts();
 
         final long prevNumberOfTextsForDoc = textRepository.findAll().stream()
                 .filter(textJPA -> Objects.equals(DOC_ID, textJPA.getVersion().getDocId()))
@@ -197,5 +188,55 @@ public class TextServiceTest {
                 .count();
 
         assertEquals(newNumberOfTextsForDoc, 0L);
+    }
+
+    @Test
+    public void getByVersion() {
+        final Set<Text> expected = createTexts(),
+                actual = textService.getByVersion(workingVersion);
+
+        assertEquals(expected.size(), actual.size());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void createVersionedContent() {
+        final int index = 1;
+        final TextJPA text = createText(index, languages.get(0), workingVersion);
+        textRepository.saveAndFlush(text);
+
+        final TextDTO workingVersionText = new TextDTO(text, workingVersion, languages.get(0));
+
+        textService.createVersionedContent(workingVersion, latestVersion);
+
+        final Set<Text> byVersion = textService.getByVersion(latestVersion);
+
+        assertNotNull(byVersion);
+        assertEquals(1, byVersion.size());
+        assertTrue(byVersion.contains(workingVersionText));
+    }
+
+    private Set<Text> createTexts() {
+        final ArrayList<TextJPA> texts = new ArrayList<>(MAX_TEXT_INDEX - MIN_TEXT_INDEX);
+        for (LanguageJPA language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                texts.add(createText(index, language, workingVersion));
+            }
+        }
+
+        return textRepository.save(texts).stream()
+                .map(jpa -> new TextDTO(jpa, workingVersion, jpa.getLanguage()))
+                .collect(Collectors.toSet());
+    }
+
+    private TextJPA createText(int index, LanguageJPA language, Version version) {
+        final TextJPA text = new TextJPA();
+        text.setIndex(index);
+        text.setLanguage(language);
+        text.setText("test");
+        text.setType(PLAIN_TEXT);
+        text.setVersion(version);
+
+        return text;
     }
 }
