@@ -34,9 +34,9 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     private final CommonContentService commonContentService;
 
     DefaultDocumentMenuService(MetaRepository metaRepository,
-                        LanguageService languageService,
-                        VersionService versionService,
-                        CommonContentService commonContentService) {
+                               LanguageService languageService,
+                               VersionService versionService,
+                               CommonContentService commonContentService) {
         this.metaRepository = metaRepository;
         this.languageService = languageService;
         this.versionService = versionService;

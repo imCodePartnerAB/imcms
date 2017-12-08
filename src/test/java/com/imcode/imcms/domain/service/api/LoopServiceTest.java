@@ -160,7 +160,7 @@ public class LoopServiceTest {
 
         final Collection<Loop> loopDTOS = Arrays.asList(TEST_LOOP_DTO, loopDTO1, loopDTO2, loopDTO3);
         final Version version = versionRepository.findByDocIdAndNo(TEST_DOC_ID, TEST_VERSION_NO);
-        final Collection<Loop> allByVersion = loopService.findAllByVersion(version);
+        final Collection<Loop> allByVersion = loopService.getByVersion(version);
 
         assertEquals(loopDTOS.size(), allByVersion.size());
         assertTrue(allByVersion.containsAll(loopDTOS));

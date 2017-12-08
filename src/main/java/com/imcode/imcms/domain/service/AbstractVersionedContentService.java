@@ -19,6 +19,7 @@ public abstract class AbstractVersionedContentService<JPA, DTO, R extends Versio
     }
 
     protected abstract DTO mapping(JPA jpa, Version version);
+
     protected abstract JPA mappingWithoutId(DTO dto, Version version);
 
     @Override

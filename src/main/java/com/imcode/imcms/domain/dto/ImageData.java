@@ -9,7 +9,10 @@ import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.image.Format;
 import imcode.util.image.Resize;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Objects;

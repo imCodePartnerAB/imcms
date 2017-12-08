@@ -81,6 +81,18 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuDTO, 
         repository.deleteByDocId(docIdToDelete);
     }
 
+    @Override
+    protected MenuDTO mapping(Menu jpa, Version version) {
+        return menuToMenuDTO.apply(jpa);
+    }
+
+    @Override
+    protected Menu mappingWithoutId(MenuDTO dto, Version version) {
+        final Menu menu = createMenu(dto, version);
+        menu.setMenuItems(menuItemDtoListToMenuItemList.apply(dto.getMenuItems()));
+        return menu;
+    }
+
     private Menu getMenu(int menuNo, int docId) {
         final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
         return repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuNo, workingVersion);
@@ -127,18 +139,6 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuDTO, 
         }
 
         return hasAccess;
-    }
-
-    @Override
-    protected MenuDTO mapping(Menu jpa, Version version) {
-        return menuToMenuDTO.apply(jpa);
-    }
-
-    @Override
-    protected Menu mappingWithoutId(MenuDTO dto, Version version) {
-        final Menu menu = createMenu(dto, version);
-        menu.setMenuItems(menuItemDtoListToMenuItemList.apply(dto.getMenuItems()));
-        return menu;
     }
 
 }

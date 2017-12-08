@@ -54,12 +54,11 @@ public class PropertyManager {
      * @param newRoot the root path of web application
      */
     @NotNull
-    public static void setRoot(File newRoot) {
-        if (null == newRoot) {
-            throw new NullPointerException(ERR_MESSAGE);
+    public static void setRoot(String newRoot) {
+        if (StringUtils.isEmpty(newRoot)) {
+            throw new NullPointerException();
         } else {
-            root = newRoot;
-            serverPropertiesFile = new File(root, SERVER_PROPERTIES_FILE);
+            setRoot(new File(newRoot));
         }
     }
 
@@ -69,11 +68,12 @@ public class PropertyManager {
      * @param newRoot the root path of web application
      */
     @NotNull
-    public static void setRoot(String newRoot) {
-        if (StringUtils.isEmpty(newRoot)) {
-            throw new NullPointerException();
+    public static void setRoot(File newRoot) {
+        if (null == newRoot) {
+            throw new NullPointerException(ERR_MESSAGE);
         } else {
-            setRoot(new File(newRoot));
+            root = newRoot;
+            serverPropertiesFile = new File(root, SERVER_PROPERTIES_FILE);
         }
     }
 

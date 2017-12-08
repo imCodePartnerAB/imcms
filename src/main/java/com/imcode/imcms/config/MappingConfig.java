@@ -2,7 +2,10 @@ package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.CategoryService;
+import com.imcode.imcms.domain.service.DocumentMenuService;
+import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;

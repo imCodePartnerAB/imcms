@@ -233,7 +233,7 @@ public class TextDocumentContentLoader {
     public Map<Integer, Loop> getLoops(VersionRef versionRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
-        return loopService.findAllByVersion(version).stream().collect(toMap(Loop::getIndex, loop -> loop));
+        return loopService.getByVersion(version).stream().collect(toMap(Loop::getIndex, loop -> loop));
     }
 
 

@@ -3,7 +3,9 @@ package com.imcode.imcms.domain.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.imcode.imcms.model.LoopEntryRef;
 import imcode.util.image.Format;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor

@@ -1,6 +1,5 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.domain.service.VersionedContentService;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.data.jpa.repository.JpaRepository;

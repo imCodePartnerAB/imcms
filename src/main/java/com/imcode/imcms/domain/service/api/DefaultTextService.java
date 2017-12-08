@@ -5,7 +5,6 @@ import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.LanguageJPA;

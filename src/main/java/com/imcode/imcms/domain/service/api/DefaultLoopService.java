@@ -2,9 +2,9 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.LoopJPA;
@@ -14,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Transactional
 @Service("loopService")
@@ -64,13 +62,6 @@ class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, Loop, 
     @Override
     public LoopEntryRef buildLoopEntryRef(int loopIndex, int entryIndex) {
         return new LoopEntryRefDTO(loopIndex, entryIndex);
-    }
-
-    @Override
-    public Collection<Loop> findAllByVersion(Version version) {
-        return repository.findByVersion(version).stream()
-                .map(loop1 -> new LoopDTO(loop1, loop1.getVersion()))
-                .collect(Collectors.toSet());
     }
 
     @Override
