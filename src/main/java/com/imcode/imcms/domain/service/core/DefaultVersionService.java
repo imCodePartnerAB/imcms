@@ -88,6 +88,7 @@ public class DefaultVersionService implements VersionService {
     }
 
     @Override
+    @Transactional
     public void deleteByDocId(Integer docId) {
         versionRepository.deleteByDocId(docId);
     }
