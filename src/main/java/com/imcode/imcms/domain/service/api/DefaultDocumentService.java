@@ -10,6 +10,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
+import imcode.server.document.index.DocumentIndex;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ class DefaultDocumentService implements DocumentService {
     private final TextService textService;
     private final ImageService imageService;
     private final LoopService loopService;
+    private final DocumentIndex documentIndex;
     private final TextDocumentTemplateService textDocumentTemplateService;
     private final List<VersionedContentService> versionedContentServices;
 
@@ -44,6 +46,7 @@ class DefaultDocumentService implements DocumentService {
                            TextService textService,
                            ImageService imageService,
                            LoopService loopService,
+                           DocumentIndex documentIndex,
                            TextDocumentTemplateService textDocumentTemplateService,
                            List<VersionedContentService> versionedContentServices) {
 
@@ -55,6 +58,7 @@ class DefaultDocumentService implements DocumentService {
         this.textService = textService;
         this.imageService = imageService;
         this.loopService = loopService;
+        this.documentIndex = documentIndex;
         this.textDocumentTemplateService = textDocumentTemplateService;
         this.versionedContentServices = versionedContentServices;
     }
@@ -67,6 +71,7 @@ class DefaultDocumentService implements DocumentService {
                 loopService,
                 textDocumentTemplateService,
                 commonContentService,
+                versionService
         };
     }
 
@@ -127,6 +132,7 @@ class DefaultDocumentService implements DocumentService {
     public void deleteByDocId(Integer docIdToDelete) {
         deleteDocumentContent(docIdToDelete);
         metaRepository.delete(docIdToDelete);
+        documentIndex.removeDocument(docIdToDelete);
     }
 
     @Transactional
