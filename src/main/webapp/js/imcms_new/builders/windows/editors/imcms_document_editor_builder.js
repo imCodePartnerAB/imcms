@@ -35,8 +35,12 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function refreshDocumentInList(document) {
-            console.log("refresh");
-            console.log(document);
+            var $oldDocumentElement = $documentsList.find("[data-doc-id=" + document.id + "]");
+
+            if ($oldDocumentElement.length === 1) {
+                var $newDocumentElement = buildDocument(document, documentEditorOptions);
+                $oldDocumentElement.replaceWith($newDocumentElement);
+            }
         }
 
         function buildBodyHeadTools() {
