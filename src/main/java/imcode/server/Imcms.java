@@ -3,7 +3,6 @@ package imcode.server;
 import imcode.server.user.UserDomainObject;
 import imcode.util.PropertyManager;
 import org.apache.log4j.Logger;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -11,7 +10,6 @@ import javax.servlet.ServletContext;
 import java.io.File;
 import java.util.Properties;
 
-@Component
 public class Imcms {
 
     public static final String ASCII_ENCODING = "US-ASCII";
