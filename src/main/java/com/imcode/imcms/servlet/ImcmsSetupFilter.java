@@ -15,7 +15,6 @@ import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
@@ -91,13 +90,13 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    public void init(FilterConfig filterConfig) {
 
         try {
             logger.info("Starting CMS.");
             Imcms.invokeStart();
             filterDelegate = this::doFilterNormally;
+
         } catch (Exception e) {
             logger.error("Error starting CMS.", e);
             filterDelegate = this::doFilterSendError;
