@@ -13,6 +13,7 @@ import com.imcode.imcms.util.function.TernaryFunction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,10 +30,11 @@ class DefaultDocumentService implements DocumentService {
     private final VersionService versionService;
     private final TextService textService;
     private final ImageService imageService;
-    private final MenuService menuService;
     private final LoopService loopService;
     private final TextDocumentTemplateService textDocumentTemplateService;
     private final List<VersionedContentService> versionedContentServices;
+
+    private DeleterByDocumentId[] docContentServices = {};
 
     DefaultDocumentService(MetaRepository metaRepository,
                            TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
@@ -41,7 +43,6 @@ class DefaultDocumentService implements DocumentService {
                            VersionService versionService,
                            TextService textService,
                            ImageService imageService,
-                           MenuService menuService,
                            LoopService loopService,
                            TextDocumentTemplateService textDocumentTemplateService,
                            List<VersionedContentService> versionedContentServices) {
@@ -53,10 +54,20 @@ class DefaultDocumentService implements DocumentService {
         this.versionService = versionService;
         this.textService = textService;
         this.imageService = imageService;
-        this.menuService = menuService;
         this.loopService = loopService;
         this.textDocumentTemplateService = textDocumentTemplateService;
         this.versionedContentServices = versionedContentServices;
+    }
+
+    @PostConstruct
+    private void init() {
+        docContentServices = new DeleterByDocumentId[]{
+                textService,
+                imageService,
+                loopService,
+                textDocumentTemplateService,
+                commonContentService,
+        };
     }
 
     @Override
@@ -114,14 +125,15 @@ class DefaultDocumentService implements DocumentService {
     @Override
     @Transactional
     public void deleteByDocId(Integer docIdToDelete) {
-        textService.deleteByDocId(docIdToDelete);
-        imageService.deleteByDocId(docIdToDelete);
-        menuService.deleteByDocId(docIdToDelete);
-        loopService.deleteByDocId(docIdToDelete);
-        textDocumentTemplateService.deleteByDocId(docIdToDelete);
-        commonContentService.deleteByDocId(docIdToDelete);
+        deleteDocumentContent(docIdToDelete);
         metaRepository.delete(docIdToDelete);
-        versionService.deleteByDocId(docIdToDelete);
+    }
+
+    @Transactional
+    protected void deleteDocumentContent(Integer docIdToDelete) {
+        for (DeleterByDocumentId docContentService : docContentServices) {
+            docContentService.deleteByDocId(docIdToDelete);
+        }
     }
 
     private DocumentDTO buildNewDocument() {
