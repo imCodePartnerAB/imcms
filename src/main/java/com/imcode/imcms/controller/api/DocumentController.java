@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -39,11 +40,13 @@ public class DocumentController {
     @DeleteMapping
     public void delete(@RequestBody DocumentDTO deleteMe) {
 
-        // todo: create annotation instead of copying this each time!
-        if (!Imcms.getUser().isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to change document structure.");
-        }
+        throw new NotImplementedException("Document deletion is disabled for now...");
 
-        documentService.delete(deleteMe);
+        // todo: create annotation instead of copying this each time!
+//        if (!Imcms.getUser().isSuperAdmin()) {
+//            throw new NoPermissionToEditDocumentException("User do not have access to change document structure.");
+//        }
+//
+//        documentService.delete(deleteMe);
     }
 }

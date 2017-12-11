@@ -20,6 +20,7 @@ import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -418,22 +419,27 @@ public class DocumentControllerTest extends AbstractControllerTest {
         user.addRoleId(RoleId.USERS);
         Imcms.setUser(user); // means current user is not admin now
 
-        performDeleteWithContentExpectException(createdDoc, NoPermissionToEditDocumentException.class);
+        performDeleteWithContentExpectException(createdDoc, NotImplementedException.class);
+        // todo: change when will be implemented to this: NoPermissionToEditDocumentException.class);
     }
 
     @Test
     public void delete_When_DocumentExistAndUserIsAdmin_Expect_NoError() throws Exception {
-        final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(createdDoc);
-        performRequestBuilderExpectedOk(requestBuilder);
+
+        performDeleteWithContentExpectException(createdDoc, NotImplementedException.class);
+        // todo: change when will be implemented to this:
+//        final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(createdDoc);
+//        performRequestBuilderExpectedOk(requestBuilder);
     }
 
-    @Test
-    public void delete_When_DocumentExistAndUserIsAdmin_Expect_DocumentNotExistExceptionAfterDeletion() throws Exception {
-        delete_When_DocumentExistAndUserIsAdmin_Expect_NoError();
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
-
-        performRequestBuilderExpectException(DocumentNotExistException.class, requestBuilder);
-    }
+    // todo: uncomment when docs deletion will be needed
+//    @Test
+//    public void delete_When_DocumentExistAndUserIsAdmin_Expect_DocumentNotExistExceptionAfterDeletion() throws Exception {
+//        delete_When_DocumentExistAndUserIsAdmin_Expect_NoError();
+//
+//        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+//                .param("docId", "" + createdDoc.getId());
+//
+//        performRequestBuilderExpectException(DocumentNotExistException.class, requestBuilder);
+//    }
 }
