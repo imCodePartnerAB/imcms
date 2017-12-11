@@ -5,12 +5,14 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.SearchDocumentService;
+import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.index.DocumentIndex;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +37,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class SearchDocumentServiceTest {
-    private File testSolrFolder;
+
+    private static File testSolrFolder;
 
     @Value("WEB-INF/solr")
     private File defaultSolrFolder;
@@ -52,14 +55,24 @@ public class SearchDocumentServiceTest {
     @Autowired
     private Imcms imcms;
 
+    @Autowired
+    private Config config;
+
+    @AfterClass
+    public static void shutDownSolr() throws Exception {
+        Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr shut down, not sure 2 sec is exact time
+        assertTrue(FileUtility.forceDelete(testSolrFolder));
+    }
+
     @Before
     public void setUp() throws Exception {
         versionDataInitializer.cleanRepositories();
 
-        testSolrFolder = new File(defaultSolrFolder.getParentFile().getAbsolutePath() + "/test-solr");
-        testSolrFolder.mkdirs();
-        FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
-        imcmsServices.getConfig().setSolrHome(testSolrFolder.getAbsolutePath());
+        testSolrFolder = new File(config.getSolrHome());
+
+        if (testSolrFolder.mkdirs()) {
+            FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
+        }
 
         versionDataInitializer.createData(0, 1001);
         versionDataInitializer.createData(1, 1001);
@@ -71,11 +84,9 @@ public class SearchDocumentServiceTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         imcms.stop();
-        Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr shut down, not sure 2 sec is exact time
         versionDataInitializer.cleanRepositories();
-        assertTrue(FileUtility.forceDelete(testSolrFolder));
     }
 
     @Test

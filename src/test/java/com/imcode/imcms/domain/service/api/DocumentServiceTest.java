@@ -12,21 +12,28 @@ import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
+import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
+import imcode.util.io.FileUtility;
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -40,6 +47,8 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class DocumentServiceTest {
+
+    private static File testSolrFolder;
 
     private DocumentDTO createdDoc;
 
@@ -100,9 +109,27 @@ public class DocumentServiceTest {
     @Autowired
     private VersionService versionService;
 
+    @Autowired
+    private Config config;
+
+    @Value("WEB-INF/solr")
+    private File defaultSolrFolder;
+
+    @AfterClass
+    public static void shutDownSolr() throws Exception {
+        Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr shut down, not sure 2 sec is exact time
+        FileUtility.forceDelete(testSolrFolder);
+    }
+
     @Before
     public void setUp() throws Exception {
         createdDoc = documentDataInitializer.createData();
+
+        testSolrFolder = new File(config.getSolrHome());
+
+        if (testSolrFolder.mkdirs()) {
+            FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
+        }
     }
 
     @Test
