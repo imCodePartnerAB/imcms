@@ -3,7 +3,6 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.SearchDocumentService;
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentStoredFields;
@@ -21,13 +20,13 @@ import java.util.stream.Collectors;
 class DefaultSearchDocumentService implements SearchDocumentService {
 
     private final Function<DocumentStoredFields, DocumentDTO> storedFieldsToDocumentDTO;
-    private final DocumentMapper documentMapper;
+    private final DocumentIndex documentIndex;
 
     DefaultSearchDocumentService(Function<DocumentStoredFields, DocumentDTO> documentStoredFieldToDocumentDto,
-                                 DocumentMapper documentMapper) {
+                                 DocumentIndex documentIndex) {
 
         this.storedFieldsToDocumentDTO = documentStoredFieldToDocumentDto;
-        this.documentMapper = documentMapper;
+        this.documentIndex = documentIndex;
     }
 
     @Override
@@ -71,8 +70,7 @@ class DefaultSearchDocumentService implements SearchDocumentService {
             solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
         }
 
-        result = documentMapper.getDocumentIndex()
-                .search(solrQuery, Imcms.getUser())
+        result = documentIndex.search(solrQuery, Imcms.getUser())
                 .documentStoredFieldsList().stream().map(storedFieldsToDocumentDTO)
                 .collect(Collectors.toList());
 

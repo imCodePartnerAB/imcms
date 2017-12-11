@@ -11,9 +11,9 @@ import com.imcode.imcms.mapping.*;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import imcode.server.Config;
-import imcode.server.DefaultImcmsServices;
-import imcode.server.ImcmsServices;
+import imcode.server.*;
+import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.DocumentIndexFactory;
 import imcode.util.CachingFileLoader;
 import imcode.util.io.FileUtility;
 import org.apache.commons.beanutils.BeanUtils;
@@ -165,5 +165,15 @@ class MainConfig {
                 documentMapper,
                 procedureExecutor
         );
+    }
+
+    @Bean
+    public DocumentIndex documentIndex(Database database, ImcmsServices services, DocumentMapper documentMapper) {
+        final LoggingDocumentIndex documentIndex = new LoggingDocumentIndex(database,
+                new PhaseQueryFixingDocumentIndex(DocumentIndexFactory.create(services)));
+
+        documentMapper.setDocumentIndex(documentIndex);
+
+        return documentIndex;
     }
 }

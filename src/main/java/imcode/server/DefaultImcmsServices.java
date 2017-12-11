@@ -14,8 +14,6 @@ import com.imcode.imcms.servlet.LoginPasswordManager;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.DocumentIndexFactory;
 import imcode.server.kerberos.KerberosLoginService;
 import imcode.server.user.*;
 import imcode.util.CachingFileLoader;
@@ -106,7 +104,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         initSysData();
         initSessionCounter();
         initAuthenticatorsAndUserAndRoleMappers(properties);
-        initDocumentMapper();
         initTemplateMapper();
     }
 
@@ -435,15 +432,6 @@ public class DefaultImcmsServices implements ImcmsServices {
     private int getSessionCounterFromDb() {
         final Object[] parameters = new String[0];
         return Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 1", parameters, Utility.SINGLE_STRING_HANDLER)));
-    }
-
-    // todo: implement rebuild scheduler ...getConfig().getIndexingSchedulePeriodInMinutes()...
-    // todo: Search Terms Logging: Do not parse and write query term into db every time - queue and write in a separate worker
-    private void initDocumentMapper() {
-        DocumentIndex documentIndexService = new LoggingDocumentIndex(database,
-                new PhaseQueryFixingDocumentIndex(DocumentIndexFactory.create(this)));
-
-        documentMapper.setDocumentIndex(documentIndexService);
     }
 
     private void initTemplateMapper() {

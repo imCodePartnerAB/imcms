@@ -1,16 +1,15 @@
 package imcode.server.document.index
 
 import _root_.java.util.function.Predicate
-import com.imcode._
-import _root_.imcode.server.ImcmsServices
-import _root_.imcode.server.document.index.service.impl._
-import _root_.imcode.server.document.FileDocumentDomainObject
-import org.apache.commons.lang3.StringUtils
-import org.apache.commons.io.FilenameUtils
 
-/**
- *
- */
+import _root_.imcode.server.ImcmsServices
+import _root_.imcode.server.document.FileDocumentDomainObject
+import _root_.imcode.server.document.index.service.impl._
+import com.imcode._
+import org.apache.commons.io.FilenameUtils
+import org.apache.commons.lang3.StringUtils
+
+// todo: rewrite to java class!
 object DocumentIndexFactory extends Log4jLogger {
 
   def create(services: ImcmsServices): DocumentIndex = services.getConfig |> {
