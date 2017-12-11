@@ -31,7 +31,7 @@ Imcms.define("imcms-document-editor-builder",
 
         function addDocumentToList(document) {
             var $document = buildDocument(document, documentEditorOptions);
-            $documentsList.append($document);
+            $documentsList.append($document); // todo: replace append by pasting into correct position in sorted list
         }
 
         function refreshDocumentInList(document) {
@@ -450,7 +450,7 @@ Imcms.define("imcms-document-editor-builder",
                 elements: {
                     "document-item": buildDocItem(document, opts)
                 }
-            }).buildBlockStructure("<div>");
+            }).buildBlockStructure("<div>", {"data-doc-id": document.id});
         }
 
         var documentsListBEM = new BEM({
