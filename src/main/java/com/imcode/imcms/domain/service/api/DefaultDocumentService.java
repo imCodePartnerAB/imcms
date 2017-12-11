@@ -104,6 +104,8 @@ class DefaultDocumentService implements DocumentService {
         commonContentService.save(new ArrayList<>(saveMe.getCommonContents()));
         oTemplate.ifPresent(textDocumentTemplateService::save);
 
+        documentIndex.indexDocument(docId);
+
         return docId;
     }
 
