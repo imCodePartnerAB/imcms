@@ -516,7 +516,7 @@ Imcms.define("imcms-document-editor-builder",
         function loadData() {
             loadDocumentEditorContent($documentsContainer, {
                 editEnable: true,
-                removeEnable: true
+                removeEnable: false // todo: maybe should be replaced with archivationEnable in future
             });
         }
 
