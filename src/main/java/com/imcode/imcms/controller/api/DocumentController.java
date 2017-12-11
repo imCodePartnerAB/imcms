@@ -27,14 +27,14 @@ public class DocumentController {
     }
 
     @PostMapping
-    public void save(@RequestBody DocumentDTO saveMe) {
+    public int save(@RequestBody DocumentDTO saveMe) {
 
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {
             throw new NoPermissionToEditDocumentException("User do not have access to change document structure.");
         }
 
-        documentService.save(saveMe);
+        return documentService.save(saveMe);
     }
 
     @DeleteMapping

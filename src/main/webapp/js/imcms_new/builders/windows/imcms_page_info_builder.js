@@ -9,7 +9,7 @@ Imcms.define("imcms-page-info-builder",
     ],
     function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $) {
 
-        var panels, $title, documentDTO;
+        var panels, $title, documentDTO, onDocumentSaved;
 
         function buildPageInfoHead() {
             return new BEM({
@@ -80,7 +80,10 @@ Imcms.define("imcms-page-info-builder",
             });
 
             closePageInfo();
-            documentsRestApi.create(documentDTO);
+            documentsRestApi.create(documentDTO).done(function (savedDocId) {
+                documentDTO.id = savedDocId;
+                onDocumentSaved && onDocumentSaved(documentDTO);
+            });
         }
 
         function saveAndPublish() {
@@ -155,7 +158,8 @@ Imcms.define("imcms-page-info-builder",
         });
 
         return {
-            build: function (docId) {
+            build: function (docId, onDocumentSavedCallback) {
+                onDocumentSaved = onDocumentSavedCallback;
                 shadowBuilder.buildWindow();
                 pageInfoWindowBuilder.buildWindow.applyAsync(arguments, pageInfoWindowBuilder);
             }

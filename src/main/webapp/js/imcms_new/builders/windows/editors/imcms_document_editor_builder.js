@@ -27,11 +27,23 @@ Imcms.define("imcms-document-editor-builder",
             }
         ;
 
+        var $documentsContainer, $editorBody, $documentsList;
+
+        function addDocumentToList(document) {
+            var $document = buildDocument(document, documentEditorOptions);
+            $documentsList.append($document);
+        }
+
+        function refreshDocumentInList(document) {
+            console.log("refresh");
+            console.log(document);
+        }
+
         function buildBodyHeadTools() {
 
             function onNewDocButtonClick(e) {
                 e.preventDefault();
-                pageInfoBuilder.build();
+                pageInfoBuilder.build(null, addDocumentToList);
             }
 
             function buildNewDocButton() {
@@ -226,7 +238,9 @@ Imcms.define("imcms-document-editor-builder",
                 }
 
                 if (opts.editEnable) {
-                    var $controlEdit = controlsBuilder.edit(pageInfoBuilder.build.bind(pageInfoBuilder, document.id));
+                    var $controlEdit = controlsBuilder.edit(function () {
+                        pageInfoBuilder.build(document.id, refreshDocumentInList);
+                    });
                     controls.push($controlEdit);
                 }
             }
@@ -439,6 +453,18 @@ Imcms.define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
+        var documentsListBEM = new BEM({
+            block: "imcms-document-items-list",
+            elements: {
+                "document-items": ""
+            }
+        });
+
+        function buildDocument(document, opts) {
+            var $documentItem = buildDocumentItemContainer(document, opts);
+            return documentsListBEM.makeBlockElement("document-items", $documentItem);
+        }
+
         function buildDocumentList(documentList, opts) {
             var $blockElements = documentList.map(function (document) {
                 return buildDocumentItemContainer(document, opts);
@@ -457,12 +483,10 @@ Imcms.define("imcms-document-editor-builder",
                 block: "imcms-document-list",
                 elements: {
                     "titles": buildDocumentListTitlesRow(),
-                    "items": buildDocumentList(documentList, opts)
+                    "items": ($documentsList = buildDocumentList(documentList, opts))
                 }
             }).buildBlockStructure("<div>");
         }
-
-        var $documentsContainer, $editorBody;
 
         function buildHead() {
             return documentWindowBuilder.buildHead("Document editor");
@@ -513,11 +537,13 @@ Imcms.define("imcms-document-editor-builder",
             });
         }
 
+        var documentEditorOptions = {
+            editEnable: true,
+            removeEnable: false // todo: maybe should be replaced with archivationEnable in future
+        };
+
         function loadData() {
-            loadDocumentEditorContent($documentsContainer, {
-                editEnable: true,
-                removeEnable: false // todo: maybe should be replaced with archivationEnable in future
-            });
+            loadDocumentEditorContent($documentsContainer, documentEditorOptions);
         }
 
         function clearData() {
