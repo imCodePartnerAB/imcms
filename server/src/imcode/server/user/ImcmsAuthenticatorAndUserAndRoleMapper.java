@@ -969,12 +969,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             return false;
         }
 
-        final boolean isUserSuperAdmin = user.isSuperAdmin();
+        final boolean isUserNotSuperAdmin = !user.isSuperAdmin();
         final long userIpLong = Utility.ipStringToLong(userIP);
         boolean atLeastOnceInWhiteList = false;
 
         for (RoleIpRange roleIpRange : roleIpRanges) {
-            if ((roleIpRange.isAdmin() && isUserSuperAdmin) || (!roleIpRange.isAdmin() && !isUserSuperAdmin)) {
+            if (roleIpRange.isAdmin() || (!roleIpRange.isAdmin() && isUserNotSuperAdmin)) {
                 final String ipFrom = roleIpRange.getIpFrom();
                 final String ipTo = roleIpRange.getIpTo();
 
