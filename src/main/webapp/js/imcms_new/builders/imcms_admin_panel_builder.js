@@ -20,7 +20,7 @@ Imcms.define("imcms-admin-panel-builder",
         }
 
         function showPageInfo() {
-            pageInfoBuilder.build(Imcms.document.id);
+            pageInfoBuilder.build(imcms.document.id);
         }
 
         function initDocumentEditor() {
@@ -132,7 +132,7 @@ Imcms.define("imcms-admin-panel-builder",
             var $logo = adminPanelBEM.buildBlockElement("logo", "<a>", {href: ""}); // fixme: link to start doc?
             var $logoItem = $("<div>").append($logo);
 
-            var $title = adminPanelBEM.buildBlockElement("title", "<div>", {text: Imcms.version});
+            var $title = adminPanelBEM.buildBlockElement("title", "<div>", {text: imcms.version});
             var $titleItem = $("<div>").append($title);
 
             var $flagsItem = buildFlags();
