@@ -8,7 +8,6 @@ import com.imcode.imcms.mapping.jpa.doc.content.FileDocFile;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.util.io.FileInputStreamSource;
@@ -32,18 +31,20 @@ class DocumentStoringVisitor extends DocumentVisitor {
 
     private static final int FILE_BUFFER_LENGTH = 2048;
     private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
-    protected ImcmsServices services;
     protected VersionRepository versionRepository;
     protected LanguageRepository languageRepository;
     DocRepository docRepository;
     TextDocumentContentSaver textDocumentContentSaver;
 
-    DocumentStoringVisitor(ImcmsServices services) {
-        this.services = services;
-        this.docRepository = services.getManagedBean(DocRepository.class);
-        this.versionRepository = services.getManagedBean(VersionRepository.class);
-        this.languageRepository = services.getManagedBean(LanguageRepository.class);
-        this.textDocumentContentSaver = services.getManagedBean(TextDocumentContentSaver.class);
+    DocumentStoringVisitor(DocRepository docRepository,
+                           VersionRepository versionRepository,
+                           LanguageRepository languageRepository,
+                           TextDocumentContentSaver textDocumentContentSaver) {
+
+        this.docRepository = docRepository;
+        this.versionRepository = versionRepository;
+        this.languageRepository = languageRepository;
+        this.textDocumentContentSaver = textDocumentContentSaver;
     }
 
     /**

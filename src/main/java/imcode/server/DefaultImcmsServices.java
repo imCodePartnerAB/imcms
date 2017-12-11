@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.springframework.context.ApplicationContext;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -79,7 +80,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, ApplicationContext applicationContext, Config config,
                                 DocumentLanguages documentLanguages, DatabaseService databaseService,
-                                MailService mailService, TemplateService templateService,
+                                MailService mailService, TemplateService templateService, DocumentMapper documentMapper,
                                 ProcedureExecutor procedureExecutor) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
@@ -92,12 +93,14 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.mailService = mailService;
         this.templateService = templateService;
         this.procedureExecutor = procedureExecutor;
+        this.documentMapper = documentMapper;
 
         this.languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
         this.kerberosLoginService = new KerberosLoginService(config);
     }
 
-    public void init() {
+    @PostConstruct
+    private void init() {
         initSso();
         initKeyStore();
         initSysData();
@@ -437,9 +440,6 @@ public class DefaultImcmsServices implements ImcmsServices {
     // todo: implement rebuild scheduler ...getConfig().getIndexingSchedulePeriodInMinutes()...
     // todo: Search Terms Logging: Do not parse and write query term into db every time - queue and write in a separate worker
     private void initDocumentMapper() {
-        documentMapper = getManagedBean(DocumentMapper.class);
-        documentMapper.init(database, config, documentLanguages);
-
         DocumentIndex documentIndexService = new LoggingDocumentIndex(database,
                 new PhaseQueryFixingDocumentIndex(DocumentIndexFactory.create(this)));
 

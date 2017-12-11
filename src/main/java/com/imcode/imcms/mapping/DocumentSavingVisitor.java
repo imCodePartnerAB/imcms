@@ -1,10 +1,12 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.mapping.jpa.doc.DocRepository;
+import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -18,8 +20,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
-    public DocumentSavingVisitor(ImcmsServices services) {
-        super(services);
+    public DocumentSavingVisitor(DocRepository docRepository,
+                                 VersionRepository versionRepository,
+                                 LanguageRepository languageRepository,
+                                 TextDocumentContentSaver textDocumentContentSaver) {
+
+        super(docRepository, versionRepository, languageRepository, textDocumentContentSaver);
     }
 
     // todo: check and (if needs) prepare like #visitUrlDocument()

@@ -9,7 +9,6 @@ import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.NativeQueries;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
-import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
@@ -26,6 +25,7 @@ import org.apache.oro.text.perl.Perl5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -36,10 +36,6 @@ import java.util.stream.Stream;
 
 import static imcode.server.ImcmsConstants.*;
 
-/**
- * Spring is used to instantiate but not to initialize the instance.
- * Init must be called to complete initialization.
- */
 @Component
 public class DocumentMapper implements DocumentGetter {
 
@@ -55,23 +51,30 @@ public class DocumentMapper implements DocumentGetter {
     private DocumentSaver documentSaver;
     private CategoryMapper categoryMapper;
     private DocumentContentMapper documentContentMapper;
-    private DocumentVersionMapper documentVersionMapper;
     private MenuRepository menuRepository;
     private PropertyRepository propertyRepository;
     private DocumentLanguages documentLanguages;
 
     @Inject
-    public DocumentMapper(NativeQueries nativeQueries, DocumentSaver documentSaver,
-                          CategoryMapper categoryMapper, DocumentContentMapper documentContentMapper,
-                          DocumentVersionMapper documentVersionMapper, MenuRepository menuRepository,
-                          PropertyRepository propertyRepository) {
+    public DocumentMapper(NativeQueries nativeQueries,
+                          DocumentSaver documentSaver,
+                          CategoryMapper categoryMapper,
+                          DocumentContentMapper documentContentMapper,
+                          MenuRepository menuRepository,
+                          Database database,
+                          DocumentLanguages languages,
+                          PropertyRepository propertyRepository,
+                          DocumentLoaderCachingProxy documentLoaderCachingProxy) {
+
         this.nativeQueries = nativeQueries;
         this.documentSaver = documentSaver;
         this.categoryMapper = categoryMapper;
         this.documentContentMapper = documentContentMapper;
-        this.documentVersionMapper = documentVersionMapper;
         this.menuRepository = menuRepository;
         this.propertyRepository = propertyRepository;
+        this.database = database;
+        this.documentLanguages = languages;
+        this.documentLoaderCachingProxy = documentLoaderCachingProxy;
     }
 
     private static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
@@ -88,14 +91,8 @@ public class DocumentMapper implements DocumentGetter {
         deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
     }
 
-    public void init(Database database, Config config, DocumentLanguages languages) {
-        this.database = database;
-        this.documentLanguages = languages;
-
-        int documentCacheMaxSize = config.getDocumentCacheMaxSize();
-
-        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, languages, documentCacheMaxSize);
-
+    @PostConstruct
+    public void init() {
         documentSaver.setDocumentMapper(this);
     }
 
@@ -304,8 +301,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return new document version.
      * @since 6.0
      */
-    DocumentVersion makeDocumentVersion(int docId, UserDomainObject user)
-            throws DocumentSaveException {
+    DocumentVersion makeDocumentVersion(int docId, UserDomainObject user) {
 
         List<DocumentDomainObject> docs = new LinkedList<>();
 
@@ -658,7 +654,7 @@ public class DocumentMapper implements DocumentGetter {
      * @throws IllegalStateException if text 'docNo', 'versionNo', 'no' or 'language' is not set
      */
     public synchronized void saveTextDocText(TextDocTextContainer container, UserDomainObject user)
-            throws NoPermissionInternalException, DocumentSaveException {
+            throws NoPermissionInternalException {
         try {
             documentSaver.saveText(container, user);
         } finally {
@@ -783,7 +779,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         @Override
-        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
             Imcms.getServices().getDocumentMapper().changeDocumentDefaultVersion(document.getId(), docVersionNo, user);
         }
     }

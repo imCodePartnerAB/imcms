@@ -7,7 +7,7 @@ import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.service.TemplateService;
-import com.imcode.imcms.mapping.DocumentLanguageMapper;
+import com.imcode.imcms.mapping.*;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
@@ -135,11 +135,21 @@ class MainConfig {
     }
 
     @Bean
-    public ImcmsServices createServices(Properties imcmsProperties, Database database, DocumentLanguages languages,
-                                        LocalizedMessageProvider localizedMessageProvider, Config config,
-                                        ApplicationContext applicationContext, CachingFileLoader fileLoader,
-                                        DatabaseService databaseService, MailService mailService,
-                                        TemplateService templateService, ProcedureExecutor procedureExecutor) {
+    public DocumentLoaderCachingProxy documentLoaderCachingProxy(DocumentVersionMapper documentVersionMapper,
+                                                                 DocumentLoader documentLoader,
+                                                                 DocumentLanguages languages,
+                                                                 Config config) {
+
+        return new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, languages, config);
+    }
+
+    @Bean
+    public ImcmsServices imcmsServices(Properties imcmsProperties, Database database, DocumentLanguages languages,
+                                       LocalizedMessageProvider localizedMessageProvider, Config config,
+                                       ApplicationContext applicationContext, CachingFileLoader fileLoader,
+                                       DatabaseService databaseService, MailService mailService,
+                                       TemplateService templateService, ProcedureExecutor procedureExecutor,
+                                       DocumentMapper documentMapper) {
 
         return new DefaultImcmsServices(
                 database,
@@ -152,6 +162,7 @@ class MainConfig {
                 databaseService,
                 mailService,
                 templateService,
+                documentMapper,
                 procedureExecutor
         );
     }

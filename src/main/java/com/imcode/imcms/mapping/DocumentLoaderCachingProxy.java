@@ -4,6 +4,7 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.mapping.container.DocRef;
+import imcode.server.Config;
 import imcode.server.document.DocumentDomainObject;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration;
@@ -26,11 +27,11 @@ public class DocumentLoaderCachingProxy {
     private final CacheWrapper<Integer, String> idsToAliases;
 //    private final CacheManager cacheManager = CacheManager.create();
 
-    public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper, DocumentLoader loader, DocumentLanguages documentLanguages, int size) {
+    public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper, DocumentLoader loader, DocumentLanguages documentLanguages, Config config) {
         this.versionMapper = versionMapper;
         this.loader = loader;
         this.documentLanguages = documentLanguages;
-        this.size = size;
+        this.size = config.getDocumentCacheMaxSize();
 
 //        metas = CacheWrapper.of(cacheConfiguration("meats"));
 //        versionInfos = CacheWrapper.of(cacheConfiguration("versionInfos"));
