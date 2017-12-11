@@ -115,4 +115,10 @@ public interface DocumentIndex {
      * @since 6.0
      */
     DocumentIndexService getService();
+
+    default void reindexDocument(int docId) {
+        removeDocument(docId);
+        indexDocument(docId);
+    }
+
 }
