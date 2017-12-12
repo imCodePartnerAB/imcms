@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 @Transactional
@@ -78,6 +79,16 @@ class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, Loop, 
     @Override
     protected LoopJPA mappingWithoutId(Loop dto, Version version) {
         return new LoopJPA(dto, version);
+    }
+
+    @Override
+    public Set<Loop> getByVersion(Version version) {
+        return super.getByVersion(version); // note: to make method transactional
+    }
+
+    @Override
+    public void createVersionedContent(Version workingVersion, Version newVersion) {
+        super.createVersionedContent(workingVersion, newVersion); // note: to make method transactional
     }
 
     private Integer getLoopId(Version version, Integer loopIndex) {
