@@ -67,14 +67,21 @@
                             <td><a name="alias" href="<%= request.getContextPath() + "/" + document.getAlias() %>" title="<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %></a></td>
                             <% }else { %>
                             <td>&nbsp;</td> <%}%>
-                            <td><%
-							if (user.canEditDocumentInformationFor(document)) {
-								%><a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%
-							}
-                            %><ui:statusIcon lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/><%
-							if (user.canEditDocumentInformationFor(document)) {
-								%></a><%
-							} %></td>
+                            <td>
+                                <%--<%--%>
+                                <%--if (user.canEditDocumentInformationFor(document)) {%>--%>
+                                <a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>">
+                                    <%--<%--%>
+                                    <%--}--%>
+                                    <%--%>--%>
+                                    <ui:statusIcon lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/>
+                                    <%--<%--%>
+                                    <%--if (user.canEditDocumentInformationFor(document)) {--%>
+                                    <%--%>--%>
+                                </a>
+                                <%--<%--%>
+                                <%--} %>--%>
+                            </td>
 							<td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br><%
 							if (user.canEdit(document)) {
 								%><a href="AdminDoc?meta_id=<%= document.getId() %>" title="AdminDoc?meta_id=<%= document.getId() %>"><%
