@@ -4,8 +4,10 @@ import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.mapping.jpa.doc.Property;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class DefaultPropertyService implements PropertyService {
 
     private final PropertyRepository propertyRepository;
@@ -15,8 +17,13 @@ public class DefaultPropertyService implements PropertyService {
     }
 
     @Override
-    public Property findByDocIdAndName(int docId, String name) {
+    public Property getByDocIdAndName(int docId, String name) {
         return propertyRepository.findByDocIdAndName(docId, name);
+    }
+
+    @Override
+    public Integer getDocIdByAlias(String alias) {
+        return propertyRepository.findDocIdByAlias(alias);
     }
 
 }
