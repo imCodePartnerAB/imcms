@@ -42,7 +42,8 @@ public final class DB {
     }
 
     private synchronized void updateVersion(Version newVersion) {
-        logger.info("Updating database version from {} to {}.", getVersion(), newVersion);
+        final Version currentVersion = getVersion();
+        logger.info("Updating database version from {} to {}.", currentVersion, newVersion);
         jdbcTemplate.update("UPDATE database_version SET major=?, minor=?", newVersion.getMajor(), newVersion.getMinor());
     }
 
