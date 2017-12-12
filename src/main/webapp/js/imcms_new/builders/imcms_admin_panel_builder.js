@@ -12,11 +12,8 @@ Imcms.define("imcms-admin-panel-builder",
 
         var panelSensitivePixels = 15;
 
-        function getNotImplementedButtonClick(feature) {
-            return function (e) {
-                e.preventDefault();
-                console.log("%c Not implemented feature: " + feature, "color: red;");
-            }
+        function publishDoc() {
+            window.location.href = imcms.contextPath + "/api/publish-document/" + imcms.document.id;
         }
 
         function showPageInfo() {
@@ -74,7 +71,7 @@ Imcms.define("imcms-admin-panel-builder",
                     name: 'publish_offline',
                     tag: "<li>",
                     content: "publish offline",
-                    onClick: getNotImplementedButtonClick("publish offline version click"),
+                        onClick: publishDoc,
                         modifiers: ["publish-of", versionedContentModifier]
                 }, {
                     name: 'page_info',
