@@ -111,7 +111,8 @@ Imcms.define("imcms-page-info-builder",
 
             var $saveAndPublishBtn = components.buttons.saveButton({
                 text: "save and publish this version",
-                click: saveAndPublish
+                click: saveAndPublish,
+                style: "display: none;"
             });
 
             return [$saveAndPublishBtn, $cancelBtn, $saveBtn];
