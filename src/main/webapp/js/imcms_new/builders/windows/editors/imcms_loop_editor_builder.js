@@ -5,9 +5,9 @@
 Imcms.define("imcms-loop-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-loops-rest-api", "imcms-window-builder",
-        "imcms-controls-builder", "jquery"
+        "imcms-controls-builder", "jquery", "imcms-events"
     ],
-    function (BEM, components, loopREST, WindowBuilder, controls, $) {
+    function (BEM, components, loopREST, WindowBuilder, controls, $, events) {
         var $title, $body, $listItems;
 
         var modifiers = {
@@ -79,11 +79,17 @@ Imcms.define("imcms-loop-editor-builder",
                 return currentLoop;
             }
 
+            function onLoopSaved() {
+                // todo: implement reloading saved loop on page
+                loopWindowBuilder.closeWindow();
+                events.trigger("imcms-version-modified");
+            }
+
             function onSaveAndCloseClicked() {
                 var loopElement = getLoopData();
 
                 loopREST.create(loopElement)
-                    .success(loopWindowBuilder.closeWindow.bind(loopWindowBuilder))
+                    .success(onLoopSaved)
                     .error(console.error.bind(console));
             }
 
