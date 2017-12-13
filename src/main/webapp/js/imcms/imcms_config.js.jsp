@@ -14,11 +14,11 @@
         isEditMode: ${isEditMode},
         isPreviewMode: ${isPreviewMode},
         isVersioningAllowed: ${isVersioningAllowed},
-        hasNewerVersion: ${hasNewerVersion},
         document: {
             id: ${currentDocument.id},
             type: ${currentDocument.documentTypeId},
-            label: "${currentDocument.headline}"
+            hasNewerVersion: ${hasNewerVersion},
+            headline: "${currentDocument.headline}"
         },
         language: {
             name: "${currentDocument.language.name}",
