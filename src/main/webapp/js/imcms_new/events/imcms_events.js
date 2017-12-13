@@ -27,6 +27,8 @@ Imcms.define("imcms-events", [], function () {
          * @param name event's name
          */
         trigger: function (name) {
+            console.log("%c Imcms event " + name + " triggered.", "color: blue;");
+
             getEventHandlers(name).forEach(function (eventHandler) {
                 setTimeout(eventHandler);
             });
