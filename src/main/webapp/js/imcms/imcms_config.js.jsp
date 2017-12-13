@@ -64,6 +64,8 @@
                 }
             },
             "imcms-tests": "imcms_tests.js",
+            // events
+            "imcms-events": "events/imcms_events.js",
             // components
             "imcms-calendar": "components/imcms_calendar.js",
             "imcms-date-picker": "components/imcms_date_picker.js",
