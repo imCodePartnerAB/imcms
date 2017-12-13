@@ -228,7 +228,8 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 /** @namespace document.currentVersion */
                 /** @namespace document.published */
 
-                var displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion) ? "block" : "none";
+                var displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion)
+                    ? "block" : "none";
 
                 tabData.$hasNewerVersionInfoBlock.css("display", displayRule);
                 tabData.$savingVersionInfo.find("#document-next-version").html(+document.currentVersion.id + 1);
