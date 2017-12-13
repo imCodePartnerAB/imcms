@@ -6,16 +6,21 @@ Imcms.define("imcms-menu-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-controls-builder", "imcms-page-info-builder", "jquery",
-        "imcms-primitives-builder", "imcms-jquery-element-reload"
+        "imcms-primitives-builder", "imcms-jquery-element-reload", "imcms-events"
     ],
     function (BEM, components, documentEditorBuilder, imcmsModalWindow, WindowBuilder, menusRestApi,
-              controls, pageInfoBuilder, $, primitivesBuilder, reloadElement) {
+              controls, pageInfoBuilder, $, primitivesBuilder, reloadElement, events) {
 
         var $title, $menuElementsContainer, $documentsContainer;
         var docId, menuIndex;
 
         function reloadMenuOnPage() {
             reloadElement($tag.find(".imcms-editor-content"));
+        }
+
+        function onMenuSaved() {
+            events.trigger("imcms-version-modified");
+            reloadMenuOnPage();
         }
 
         function saveMenuElements() {
@@ -34,7 +39,7 @@ Imcms.define("imcms-menu-editor-builder",
                 menuItems: menuItems
             };
 
-            menusRestApi.create(menuDTO).done(reloadMenuOnPage);
+            menusRestApi.create(menuDTO).success(onMenuSaved);
         }
 
         function saveAndClose() {
