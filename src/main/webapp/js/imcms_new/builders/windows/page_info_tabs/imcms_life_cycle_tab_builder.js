@@ -282,7 +282,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
 
                 tabData.$currentVersionNumber.setValue(emptyString);
                 tabData.$docVersionSaveDateTime.setDate(emptyString).setTime(emptyString);
-
+                tabData.$hasNewerVersionInfoBlock.css("display", "none");
             }
         };
     }
