@@ -5,9 +5,9 @@
 Imcms.define("imcms-page-info-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-documents-rest-api", "imcms-window-builder",
-        "imcms-page-info-tabs-builder", "jquery"
+        "imcms-page-info-tabs-builder", "jquery", "imcms-events"
     ],
-    function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $) {
+    function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events) {
 
         var panels, $title, documentDTO, onDocumentSaved;
 
@@ -80,8 +80,15 @@ Imcms.define("imcms-page-info-builder",
             });
 
             closePageInfo();
-            documentsRestApi.create(documentDTO).done(function (savedDocId) {
-                documentDTO.id = savedDocId;
+            documentsRestApi.create(documentDTO).success(function (savedDocId) {
+
+                if (documentDTO.id) {
+                    events.trigger("imcms-version-modified");
+
+                } else {
+                    documentDTO.id = savedDocId;
+                }
+
                 onDocumentSaved && onDocumentSaved(documentDTO);
             });
         }
