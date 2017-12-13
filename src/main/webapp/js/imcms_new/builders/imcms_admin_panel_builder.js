@@ -5,9 +5,9 @@
 Imcms.define("imcms-admin-panel-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder",
-        "jquery", "imcms"
+        "jquery", "imcms", "imcms-events"
     ],
-    function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms) {
+    function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events) {
         var $panel;
 
         var panelSensitivePixels = 15;
@@ -181,6 +181,10 @@ Imcms.define("imcms-admin-panel-builder",
             $panel.css({"top": "" + px + "px"});
         }
 
+        function highlightPublishButton() {
+            $panel.find(".imcms-menu__item--publish-of").addClass("imcms-menu__item--has-newer-version");
+        }
+
         return {
             buildPanel: function (opts) {
                 if ($panel) {
@@ -195,6 +199,8 @@ Imcms.define("imcms-admin-panel-builder",
                 setShowPanelRule();
                 setHidePanelRule();
                 $("body").prepend($panel);
+
+                events.on("imcms-version-modified", highlightPublishButton)
             }
         }
     }
