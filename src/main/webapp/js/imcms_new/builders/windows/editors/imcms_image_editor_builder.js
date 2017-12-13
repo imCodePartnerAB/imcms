@@ -5,9 +5,9 @@
 Imcms.define("imcms-image-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder", "imcms-content-manager-builder",
-        "imcms-images-rest-api", "imcms-image-cropper", "jquery"
+        "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events"
     ],
-    function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $) {
+    function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $, events) {
         var $rightSidePanel, $bottomPanel, $editableImageArea, $previewImageArea;
 
         var imageDataContainers = {},
@@ -687,6 +687,8 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function onImageSaved() {
+                events.trigger("imcms-version-modified");
+
                 var imageRequestData = {
                     docId: imageData.docId,
                     index: imageData.index,
