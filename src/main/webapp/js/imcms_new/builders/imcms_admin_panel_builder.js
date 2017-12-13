@@ -47,7 +47,7 @@ Imcms.define("imcms-admin-panel-builder",
                 return panelButtonsBEM.buildBlockElement("item", buttonData.tag, attributes, buttonData.modifiers);
             }
 
-            var versionedContentModifier = imcms.isVersioningAllowed ? undefined : "versioning-off",
+            var versionedContentModifiers = imcms.isVersioningAllowed ? [] : ["versioning-off"],
                 buttons = [
                 {
                     name: 'public',
@@ -66,13 +66,13 @@ Imcms.define("imcms-admin-panel-builder",
                         tag: "<a>",
                         href: imcms.contextPath + '/api/viewDoc/' + imcms.document.id + "?working-preview=true",
                     content: "preview",
-                        modifiers: ["preview", versionedContentModifier]
+                        modifiers: ["preview"].concat(versionedContentModifiers)
                 }, {
                     name: 'publish_offline',
                     tag: "<li>",
                     content: "publish offline",
                         onClick: publishDoc,
-                        modifiers: ["publish-of", versionedContentModifier]
+                        modifiers: ["publish-of"].concat(versionedContentModifiers)
                 }, {
                     name: 'page_info',
                     tag: "<li>",
