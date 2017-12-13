@@ -73,6 +73,10 @@
     display: none;
 }
 
+.imcms-menu__item--has-newer-version {
+    background-color: #FF756F;
+}
+
 .imcms-menu__item--admin {
     background-image: url("../../images_new/admin_panel/icon_admin.png");
 }

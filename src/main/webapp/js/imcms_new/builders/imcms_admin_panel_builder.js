@@ -48,6 +48,8 @@ Imcms.define("imcms-admin-panel-builder",
             }
 
             var versionedContentModifiers = imcms.isVersioningAllowed ? [] : ["versioning-off"],
+                publishVersionButtonModifiers = imcms.isVersioningAllowed && imcms.document.hasNewerVersion
+                    ? ["has-newer-version"] : [],
                 buttons = [
                 {
                     name: 'public',
@@ -72,7 +74,7 @@ Imcms.define("imcms-admin-panel-builder",
                     tag: "<li>",
                     content: "publish offline",
                         onClick: publishDoc,
-                        modifiers: ["publish-of"].concat(versionedContentModifiers)
+                        modifiers: ["publish-of"].concat(versionedContentModifiers, publishVersionButtonModifiers)
                 }, {
                     name: 'page_info',
                     tag: "<li>",
