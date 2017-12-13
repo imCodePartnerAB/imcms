@@ -1,9 +1,9 @@
 Imcms.define("imcms-life-cycle-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api",
-        "imcms-page-info-tab-form-builder"
+        "imcms-page-info-tab-form-builder", "imcms", "imcms-events"
     ],
-    function (BEM, components, usersRestApi, tabContentBuilder) {
+    function (BEM, components, usersRestApi, tabContentBuilder, imcms, events) {
 
         var lifeCycleInnerStructureBEM = new BEM({
                 block: "imcms-field",
@@ -188,7 +188,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 "<div>", "Please press \"Save and publish this version\" to publish as: version "
             ).append($nextVersionIndex);
 
-            return lifeCycleInnerStructureBEM.buildBlock("<div>", [
+            return tabData.$hasNewerVersionInfoBlock = lifeCycleInnerStructureBEM.buildBlock("<div>", [
                 {"item": $offlineVersionInfo},
                 {"item": tabData.$savingVersionInfo}
             ]);
@@ -228,8 +228,10 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 /** @namespace document.currentVersion */
                 /** @namespace document.published */
 
-                tabData.$savingVersionInfo.find("#document-next-version").html(+document.currentVersion.id + 1);
+                var displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion) ? "block" : "none";
 
+                tabData.$hasNewerVersionInfoBlock.css("display", displayRule);
+                tabData.$savingVersionInfo.find("#document-next-version").html(+document.currentVersion.id + 1);
                 tabData.$docStatusSelect.selectValue(document.publicationStatus);
 
                 statusRowsNames.forEach(function (rowName) {
