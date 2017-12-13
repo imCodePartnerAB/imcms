@@ -3,15 +3,17 @@
  * 01.09.17
  */
 Imcms.define("imcms-text-editor-initializer",
-    ["tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api"],
-    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi) {
+    ["tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events"],
+    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events) {
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
         function saveContent(editor) {
             var textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
 
-            textsRestApi.create(textDTO); // todo: unfocus current editor, maybe
+            textsRestApi.create(textDTO).success(function () { // todo: unfocus current editor, maybe
+                events.trigger("imcms-version-modified");
+            });
         }
 
         var inlineEditorConfig = {
