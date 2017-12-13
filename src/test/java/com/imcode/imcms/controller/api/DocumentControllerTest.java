@@ -8,10 +8,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.domain.service.CategoryService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.RoleService;
-import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.TextDocumentTemplate;
@@ -32,6 +29,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -61,7 +59,10 @@ public class DocumentControllerTest extends AbstractControllerTest {
     private CategoryService categoryService;
 
     @Autowired
-    private TextDocumentTemplateService templateService;
+    private TextDocumentTemplateService textDocumentTemplateService;
+
+    @Autowired
+    private TemplateService templateService;
 
     @Autowired
     private CommonContentService commonContentService;
@@ -128,7 +129,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void save_With_Target_Expected_Saved() throws Exception {
-        createdDoc.setTarget("test_target");
+        createdDoc.setTarget("test");
         performPostWithContentExpectOk(createdDoc);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
@@ -396,21 +397,36 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void save_When_CustomTemplateSet_Expect_Saved() throws Exception {
+
         final String templateName = "test_" + System.currentTimeMillis();
         final int docId = createdDoc.getId();
-        final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, templateName);
 
-        final TextDocumentTemplate savedTemplate = templateService.save(templateDTO);
-        assertNotNull(savedTemplate);
+        final File templateDirectory = templateService.getTemplateDirectory();
+        final File templateFile = new File(templateDirectory, templateName + ".jsp");
 
-        createdDoc.setTemplate(templateDTO);
+        try {
+            assertTrue(templateFile.createNewFile());
 
-        performPostWithContentExpectOk(createdDoc);
+            final TemplateDTO template = new TemplateDTO(templateName, false);
+            templateService.save(template);
 
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+            final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, templateName);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+            final TextDocumentTemplate savedTemplate = textDocumentTemplateService.save(templateDTO);
+            assertNotNull(savedTemplate);
+
+            createdDoc.setTemplate(templateDTO);
+
+            performPostWithContentExpectOk(createdDoc);
+
+            final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                    .param("docId", "" + createdDoc.getId());
+
+            performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+
+        } finally {
+            assertTrue(templateFile.delete());
+        }
     }
 
     @Test

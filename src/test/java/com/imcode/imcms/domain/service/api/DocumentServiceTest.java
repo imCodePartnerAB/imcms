@@ -32,8 +32,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -68,7 +68,10 @@ public class DocumentServiceTest {
     private RoleService roleService;
 
     @Autowired
-    private TextDocumentTemplateService templateService;
+    private TextDocumentTemplateService textDocumentTemplateService;
+
+    @Autowired
+    private TemplateService templateService;
 
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
@@ -117,7 +120,6 @@ public class DocumentServiceTest {
 
     @AfterClass
     public static void shutDownSolr() throws Exception {
-        Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr shut down, not sure 2 sec is exact time
         FileUtility.forceDelete(testSolrFolder);
     }
 
@@ -479,23 +481,36 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void save_When_CustomTemplateSet_Expect_Saved() {
+    public void save_When_CustomTemplateSet_Expect_Saved() throws IOException {
         final String templateName = "test_" + System.currentTimeMillis();
         final int docId = createdDoc.getId();
-        final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, templateName);
 
-        final TextDocumentTemplate savedTemplate = templateService.save(templateDTO);
-        assertNotNull(savedTemplate);
+        final File templateDirectory = templateService.getTemplateDirectory();
+        final File templateFile = new File(templateDirectory, templateName + ".jsp");
 
-        final DocumentDTO documentDTO = documentService.get(docId);
-        documentDTO.setTemplate(templateDTO);
+        try {
+            assertTrue(templateFile.createNewFile());
 
-        documentService.save(documentDTO);
+            final TemplateDTO template = new TemplateDTO(templateName, false);
+            templateService.save(template);
 
-        final DocumentDTO savedDoc = documentService.get(documentDTO.getId());
-        final TextDocumentTemplate savedDocTemplate = savedDoc.getTemplate();
+            final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, templateName);
+            final TextDocumentTemplate savedTemplate = textDocumentTemplateService.save(templateDTO);
+            assertNotNull(savedTemplate);
 
-        assertEquals(savedDocTemplate, savedTemplate);
+            final DocumentDTO documentDTO = documentService.get(docId);
+            documentDTO.setTemplate(templateDTO);
+
+            documentService.save(documentDTO);
+
+            final DocumentDTO savedDoc = documentService.get(documentDTO.getId());
+            final TextDocumentTemplate savedDocTemplate = savedDoc.getTemplate();
+
+            assertEquals(savedDocTemplate, savedTemplate);
+
+        } finally {
+            assertTrue(templateFile.delete());
+        }
     }
 
     @Test
@@ -711,7 +726,7 @@ public class DocumentServiceTest {
 
     }
 
-    private Text createText(int index, LanguageJPA language, Version version) {
+    private void createText(int index, LanguageJPA language, Version version) {
         final TextJPA text = new TextJPA();
         text.setIndex(index);
         text.setLanguage(language);
@@ -719,7 +734,7 @@ public class DocumentServiceTest {
         text.setType(PLAIN_TEXT);
         text.setVersion(version);
 
-        return textRepository.saveAndFlush(text);
+        textRepository.saveAndFlush(text);
     }
 
 
