@@ -1,7 +1,11 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.domain.dto.PermissionDTO;
+import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
@@ -9,7 +13,6 @@ import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.user.RoleId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -20,15 +23,27 @@ import java.util.Map;
 @Component
 public class DocumentLoader {
 
-    @Autowired
-    private PropertyRepository propertyRepository;
-    @Autowired
-    private MetaRepository metaRepository;
+    private final DocumentVersionMapper versionMapper;
+    private final DocumentLanguages documentLanguages;
+    private final PropertyRepository propertyRepository;
+    private final MetaRepository metaRepository;
+    private final DocumentContentMapper contentMapper;
+    private final DocumentContentInitializingVisitor documentContentInitializingVisitor;
 
-    @Autowired
-    private DocumentContentMapper contentMapper;
-    @Autowired
-    private DocumentContentInitializingVisitor documentContentInitializingVisitor;
+    public DocumentLoader(DocumentVersionMapper versionMapper,
+                          DocumentLanguages documentLanguages,
+                          PropertyRepository propertyRepository,
+                          MetaRepository metaRepository,
+                          DocumentContentMapper contentMapper,
+                          DocumentContentInitializingVisitor documentContentInitializingVisitor) {
+
+        this.versionMapper = versionMapper;
+        this.documentLanguages = documentLanguages;
+        this.propertyRepository = propertyRepository;
+        this.metaRepository = metaRepository;
+        this.contentMapper = contentMapper;
+        this.documentContentInitializingVisitor = documentContentInitializingVisitor;
+    }
 
     /**
      * Loads document's meta.
@@ -53,6 +68,76 @@ public class DocumentLoader {
         document.accept(documentContentInitializingVisitor);
 
         return document;
+    }
+
+    /**
+     * @return doc's id or null if doc does not exists or alias is not set
+     */
+    public Integer getDocIdByAlias(final String docAlias) {
+        return propertyRepository.findDocIdByAlias(docAlias);
+    }
+
+    /**
+     * @return custom doc or null if doc does not exists
+     */
+    public <T extends DocumentDomainObject> T getCustomDoc(DocRef docRef) {
+        DocumentMeta meta = loadMeta(docRef.getId());
+
+        if (meta == null) {
+            return null;
+        }
+
+        DocumentVersionInfo versionInfo = versionMapper.getInfo(docRef.getId());
+        DocumentVersion version = versionInfo.getVersion(docRef.getVersionNo());
+        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+
+        doc.setMeta(meta.clone());
+        doc.setVersionNo(version.getNo());
+        doc.setLanguage(documentLanguages.getByCode(docRef.getLanguageCode()));
+
+        return loadAndInitContent(doc);
+    }
+
+    /**
+     * @return default doc or null if doc does not exists
+     */
+    public <T extends DocumentDomainObject> T getDefaultDoc(int docId, String docLanguageCode) {
+        DocumentMeta meta = loadMeta(docId);
+
+        if (meta == null) {
+            return null;
+        }
+
+        DocumentVersionInfo versionInfo = versionMapper.getInfo(docId);
+        DocumentVersion version = versionInfo.getDefaultVersion();
+        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+
+        doc.setMeta(meta.clone());
+        doc.setVersionNo(version.getNo());
+        doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
+
+        return loadAndInitContent(doc);
+    }
+
+    /**
+     * @return working doc or null if doc does not exists
+     */
+    public <T extends DocumentDomainObject> T getWorkingDoc(int docId, String docLanguageCode) {
+        DocumentMeta meta = loadMeta(docId);
+
+        if (meta == null) {
+            return null;
+        }
+
+        DocumentVersionInfo versionInfo = versionMapper.getInfo(docId);
+        DocumentVersion version = versionInfo.getWorkingVersion();
+        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+
+        doc.setMeta(meta.clone());
+        doc.setVersionNo(version.getNo());
+        doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
+
+        return loadAndInitContent(doc);
     }
 
     private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
@@ -110,10 +195,6 @@ public class DocumentLoader {
         initRoleIdToPermissionSetIdMap(metaDO, meta);
 
         return metaDO;
-    }
-
-    PropertyRepository getPropertyRepository() {
-        return propertyRepository;
     }
 
 }

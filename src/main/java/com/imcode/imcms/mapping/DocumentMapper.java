@@ -41,10 +41,7 @@ public class DocumentMapper implements DocumentGetter {
 
     private Database database;
     private DocumentIndex documentIndex;
-    /**
-     * Document loader caching proxy. Intercepts calls to DocumentLoader.
-     */
-    private DocumentLoaderCachingProxy documentLoaderCachingProxy;
+    private final DocumentVersionMapper versionMapper;
     private NativeQueries nativeQueries;
     @Autowired
     private DocumentLoader documentLoader;
@@ -64,7 +61,8 @@ public class DocumentMapper implements DocumentGetter {
                           Database database,
                           DocumentLanguages languages,
                           PropertyRepository propertyRepository,
-                          DocumentLoaderCachingProxy documentLoaderCachingProxy) {
+                          DocumentVersionMapper versionMapper,
+                          DocumentLoader documentLoader) {
 
         this.nativeQueries = nativeQueries;
         this.documentSaver = documentSaver;
@@ -74,7 +72,8 @@ public class DocumentMapper implements DocumentGetter {
         this.propertyRepository = propertyRepository;
         this.database = database;
         this.documentLanguages = languages;
-        this.documentLoaderCachingProxy = documentLoaderCachingProxy;
+        this.versionMapper = versionMapper;
+        this.documentLoader = documentLoader;
     }
 
     private static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
@@ -101,7 +100,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return version info for a given document or null if document does not exist.
      */
     public DocumentVersionInfo getDocumentVersionInfo(int documentId) {
-        return documentLoaderCachingProxy.getDocVersionInfo(documentId);
+        return versionMapper.getInfo(documentId);
     }
 
     /**
@@ -341,7 +340,6 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     private void invalidateDocument(int docId) {
-        documentLoaderCachingProxy.removeDocFromCache(docId);
         documentIndex.indexDocument(docId);
     }
 
@@ -365,7 +363,6 @@ public class DocumentMapper implements DocumentGetter {
         documentSaver.getDocRepository().deleteDocument(document.getId());
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
-        documentLoaderCachingProxy.removeDocFromCache(document.getId());
     }
 
     public Map<Integer, String> getAllDocumentTypeIdsAndNamesInUsersLanguage(UserDomainObject user) {
@@ -434,7 +431,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             return Integer.valueOf(documentIdentity);
         } catch (NumberFormatException e) {
-            return documentLoaderCachingProxy.getDocIdByAlias(documentIdentity);
+            return documentLoader.getDocIdByAlias(documentIdentity);
         }
     }
 
@@ -580,7 +577,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     private <T extends DocumentDomainObject> T getWorkingDocument(int docId, String docLanguageCode) {
-        return documentLoaderCachingProxy.getWorkingDoc(docId, docLanguageCode);
+        return documentLoader.getWorkingDoc(docId, docLanguageCode);
     }
 
     /**
@@ -591,8 +588,8 @@ public class DocumentMapper implements DocumentGetter {
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language) {
         return (Imcms.isVersioningAllowed())
-                ? documentLoaderCachingProxy.getDefaultDoc(docId, language.getCode())
-                : documentLoaderCachingProxy.getWorkingDoc(docId, language.getCode());
+                ? documentLoader.getDefaultDoc(docId, language.getCode())
+                : documentLoader.getWorkingDoc(docId, language.getCode());
     }
 
     /**
@@ -603,8 +600,8 @@ public class DocumentMapper implements DocumentGetter {
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId, String languageCode) {
         return (Imcms.isVersioningAllowed())
-                ? documentLoaderCachingProxy.getDefaultDoc(docId, languageCode)
-                : documentLoaderCachingProxy.getWorkingDoc(docId, languageCode);
+                ? documentLoader.getDefaultDoc(docId, languageCode)
+                : documentLoader.getWorkingDoc(docId, languageCode);
     }
 
     /**
@@ -620,7 +617,7 @@ public class DocumentMapper implements DocumentGetter {
             // force version changing to working
             docRef = DocRef.of(docRef.getId(), DocumentVersion.WORKING_VERSION_NO, docRef.getLanguageCode());
         }
-        return documentLoaderCachingProxy.getCustomDoc(docRef);
+        return documentLoader.getCustomDoc(docRef);
     }
 
     public CategoryMapper getCategoryMapper() {
@@ -794,7 +791,7 @@ public class DocumentMapper implements DocumentGetter {
         private static final long serialVersionUID = -8230649834443025925L;
 
         @Override
-        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException {
             final DocumentMapper mapper = Imcms.getServices().getDocumentMapper();
             final DocumentVersion newVersion = mapper.makeDocumentVersion(document.getId(), user);
             mapper.changeDocumentDefaultVersion(document.getId(), newVersion.getNo(), user);

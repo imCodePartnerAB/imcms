@@ -7,7 +7,8 @@ import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.service.TemplateService;
-import com.imcode.imcms.mapping.*;
+import com.imcode.imcms.mapping.DocumentLanguageMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
@@ -132,15 +133,6 @@ class MainConfig {
     public ProcedureExecutor procedureExecutor(Database database, CachingFileLoader fileLoader,
                                                @Value("classpath:sql") Resource sqlResource) {
         return new DefaultProcedureExecutor(database, fileLoader, sqlResource);
-    }
-
-    @Bean
-    public DocumentLoaderCachingProxy documentLoaderCachingProxy(DocumentVersionMapper documentVersionMapper,
-                                                                 DocumentLoader documentLoader,
-                                                                 DocumentLanguages languages,
-                                                                 Config config) {
-
-        return new DocumentLoaderCachingProxy(documentVersionMapper, documentLoader, languages, config);
     }
 
     @Bean
