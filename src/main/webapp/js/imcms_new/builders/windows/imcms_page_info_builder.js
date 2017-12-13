@@ -5,11 +5,11 @@
 Imcms.define("imcms-page-info-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-documents-rest-api", "imcms-window-builder",
-        "imcms-page-info-tabs-builder", "jquery", "imcms-events"
+        "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms"
     ],
-    function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events) {
+    function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms) {
 
-        var panels, $title, documentDTO, onDocumentSaved;
+        var panels, $title, documentDTO, onDocumentSaved, $saveAndPublishBtn;
 
         function buildPageInfoHead() {
             return new BEM({
@@ -109,7 +109,7 @@ Imcms.define("imcms-page-info-builder",
                 click: closePageInfo
             });
 
-            var $saveAndPublishBtn = components.buttons.saveButton({
+            $saveAndPublishBtn = components.buttons.saveButton({
                 text: "save and publish this version",
                 click: saveAndPublish,
                 style: "display: none;"
@@ -133,6 +133,11 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function loadPageInfoDataFromDocumentBy(docId) {
+
+            if ((docId === imcms.document.id) && imcms.document.hasNewerVersion) {
+                $saveAndPublishBtn.css("display", "block");
+            }
+
             documentsRestApi.read({docId: docId}).done(function (document) {
                 documentDTO = document;
                 $title.text((document.id) ? "document " + document.id : "new document");
@@ -144,6 +149,8 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function clearPageInfoData() {
+            $saveAndPublishBtn.css("display", "none");
+
             pageInfoTabs.tabBuilders.forEach(function (tab) {
                 tab.clearTabData();
             });
