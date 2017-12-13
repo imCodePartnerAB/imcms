@@ -1,9 +1,9 @@
 Imcms.define("imcms-life-cycle-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api",
-        "imcms-page-info-tab-form-builder", "imcms", "imcms-events"
+        "imcms-page-info-tab-form-builder", "imcms"
     ],
-    function (BEM, components, usersRestApi, tabContentBuilder, imcms, events) {
+    function (BEM, components, usersRestApi, tabContentBuilder, imcms) {
 
         var lifeCycleInnerStructureBEM = new BEM({
                 block: "imcms-field",
