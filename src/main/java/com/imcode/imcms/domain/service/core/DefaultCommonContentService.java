@@ -12,16 +12,18 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
 
 @Service
-public class DefaultCommonContentService extends AbstractVersionedContentService<CommonContentJPA, CommonContent, CommonContentRepository> implements CommonContentService {
+@Transactional
+public class DefaultCommonContentService
+        extends AbstractVersionedContentService<CommonContentJPA, CommonContent, CommonContentRepository>
+        implements CommonContentService {
 
     private final LanguageService languageService;
 
@@ -78,13 +80,19 @@ public class DefaultCommonContentService extends AbstractVersionedContentService
     }
 
     @Override
-    public void save(Collection<CommonContent> saveUs) {
-        saveUs.forEach(this::save);
+    public void save(int docId, Collection<CommonContent> saveUs) {
+        final Set<CommonContentJPA> toSave = saveUs.stream().map(CommonContentJPA::new).collect(Collectors.toSet());
+        saveAll(docId, toSave);
     }
 
     @Override
     public void save(CommonContent saveMe) {
-        repository.save(new CommonContentJPA(saveMe));
+        saveAll(saveMe.getDocId(), Collections.singleton(new CommonContentJPA(saveMe)));
+    }
+
+    private void saveAll(int docId, Iterable<CommonContentJPA> saveUs) {
+        repository.save(saveUs);
+        super.updateWorkingVersion(docId);
     }
 
     private CommonContentDTO createFromWorkingVersion(int docId, int versionNo, Language language) {

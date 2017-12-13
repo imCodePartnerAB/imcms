@@ -33,7 +33,8 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuDTO, 
     private final Function<Menu, MenuDTO> menuToMenuDTO;
     private final Function<Menu, MenuDTO> menuSaver;
 
-    DefaultMenuService(@Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
+    DefaultMenuService(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+                       @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
                        VersionService versionService,
                        DocumentMenuService documentMenuService,
                        Function<MenuItem, MenuItemDTO> menuItemToDto,
@@ -62,12 +63,17 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuDTO, 
     @Override
     public MenuDTO saveFrom(MenuDTO menuDTO) {
 
-        final Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuIndex(), menuDTO.getDocId()))
+        final Integer docId = menuDTO.getDocId();
+        final Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuIndex(), docId))
                 .orElseGet(() -> createMenu(menuDTO));
 
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
-        return menuSaver.apply(menu);
+        final MenuDTO savedMenu = menuSaver.apply(menu);
+
+        super.updateWorkingVersion(docId);
+
+        return savedMenu;
     }
 
     @Override

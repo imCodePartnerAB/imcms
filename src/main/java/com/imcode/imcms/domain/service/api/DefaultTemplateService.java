@@ -56,6 +56,10 @@ class DefaultTemplateService implements TemplateService {
         return Optional.empty();
     }
 
+    public File getTemplateDirectory() {
+        return templateDirectory;
+    }
+
     /**
      * Will save to DB all templates if not yet for files in directory.
      */

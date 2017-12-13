@@ -101,7 +101,7 @@ class DefaultDocumentService implements DocumentService {
             saveMe.getCommonContents().forEach(commonContentDTO -> commonContentDTO.setDocId(docId));
         }
 
-        commonContentService.save(new ArrayList<>(saveMe.getCommonContents()));
+        commonContentService.save(docId, new ArrayList<>(saveMe.getCommonContents()));
         oTemplate.ifPresent(textDocumentTemplateService::save);
 
         documentIndex.reindexDocument(docId);
@@ -121,8 +121,8 @@ class DefaultDocumentService implements DocumentService {
             return false;
         }
 
-        final Version workingVersion = versionService.getDocumentWorkingVersion(docId),
-                newVersion = versionService.create(docId, userId);
+        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
+        final Version newVersion = versionService.create(docId, userId);
 
         versionedContentServices.forEach(vcs -> vcs.createVersionedContent(workingVersion, newVersion));
 

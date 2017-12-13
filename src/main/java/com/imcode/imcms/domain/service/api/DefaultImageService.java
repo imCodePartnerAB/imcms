@@ -69,7 +69,8 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageDT
 
     @Override
     public void saveImage(ImageDTO imageDTO) {
-        final Version version = versionService.getDocumentWorkingVersion(imageDTO.getDocId());
+        final Integer docId = imageDTO.getDocId();
+        final Version version = versionService.getDocumentWorkingVersion(docId);
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(imageDTO.getLangCode()));
 
         generateImage(imageDTO);
@@ -79,6 +80,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageDT
 
         image.setId(imageId);
         repository.save(image);
+        super.updateWorkingVersion(docId);
     }
 
     @Override

@@ -53,13 +53,15 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, 
 
     @Override
     public void save(Text text) {
-        final Version version = versionService.getDocumentWorkingVersion(text.getDocId());
+        final Integer docId = text.getDocId();
+        final Version version = versionService.getDocumentWorkingVersion(docId);
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(text.getLangCode()));
         final TextJPA textJPA = new TextJPA(text, version, language);
         final Integer textId = getTextId(text, version, language);
 
         textJPA.setId(textId);
         repository.save(textJPA);
+        super.updateWorkingVersion(docId);
     }
 
     @Override

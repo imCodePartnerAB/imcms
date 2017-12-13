@@ -52,12 +52,14 @@ class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, Loop, 
 
     @Override
     public void saveLoop(Loop loopDTO) {
-        final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(loopDTO.getDocId());
+        final Integer docId = loopDTO.getDocId();
+        final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(docId);
         final LoopJPA loopForSave = new LoopJPA(loopDTO, documentWorkingVersion);
         final Integer loopId = getLoopId(documentWorkingVersion, loopDTO.getIndex());
 
         loopForSave.setId(loopId);
         repository.save(loopForSave);
+        super.updateWorkingVersion(docId);
     }
 
     @Override

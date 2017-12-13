@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.VersionedContentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -13,6 +14,9 @@ import static java.util.stream.Collectors.toList;
 public abstract class AbstractVersionedContentService<JPA, DTO, R extends VersionedContentRepository<JPA> & JpaRepository<JPA, Integer>> implements VersionedContentService<DTO> {
 
     protected final R repository;
+
+    @Autowired
+    private VersionService versionService;
 
     protected AbstractVersionedContentService(R repository) {
         this.repository = repository;
@@ -36,6 +40,10 @@ public abstract class AbstractVersionedContentService<JPA, DTO, R extends Versio
                 .collect(toList());
 
         repository.save(forSave);
+    }
+
+    protected void updateWorkingVersion(int docId) {
+        versionService.updateWorkingVersion(docId);
     }
 
 }

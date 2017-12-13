@@ -27,4 +27,5 @@ public interface VersionService extends DeleterByDocumentId {
 
     boolean hasNewerVersion(int docId);
 
+    void updateWorkingVersion(int docId);
 }

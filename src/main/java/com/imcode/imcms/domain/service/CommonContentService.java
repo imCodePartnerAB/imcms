@@ -31,7 +31,7 @@ public interface CommonContentService extends VersionedContentService<CommonCont
 
     List<CommonContent> getCommonContents(int docId, int versionNo);
 
-    void save(Collection<CommonContent> saveUs);
+    void save(int docId, Collection<CommonContent> saveUs);
 
     void save(CommonContent saveMe);
 

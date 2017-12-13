@@ -100,4 +100,11 @@ public class DefaultVersionService implements VersionService {
         return latestVersion.equals(workingVersion)
                 || latestVersion.getCreatedDt().before(workingVersion.getModifiedDt());
     }
+
+    @Override
+    public void updateWorkingVersion(int docId) {
+        final Version workingVersion = getDocumentWorkingVersion(docId);
+        workingVersion.setModifiedDt(new Date());
+        versionRepository.save(workingVersion);
+    }
 }
