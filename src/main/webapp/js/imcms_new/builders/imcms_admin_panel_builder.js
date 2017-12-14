@@ -13,7 +13,7 @@ Imcms.define("imcms-admin-panel-builder",
         var panelSensitivePixels = 15;
 
         function publishDoc() {
-            window.location.href = imcms.contextPath + "/api/publish-document/" + imcms.document.id;
+            events.trigger("imcms-publish-new-version-current-doc");
         }
 
         function showPageInfo() {

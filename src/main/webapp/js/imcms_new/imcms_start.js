@@ -14,6 +14,10 @@ Imcms.require(
             imcms.document.hasNewerVersion = true;
         });
 
+        events.on("imcms-publish-new-version-current-doc", function () {
+            window.location.href = imcms.contextPath + "/api/publish-document/" + imcms.document.id;
+        });
+
         function detectActiveMenuItem() {
             if (imcms.isEditMode) {
                 return 'edit';

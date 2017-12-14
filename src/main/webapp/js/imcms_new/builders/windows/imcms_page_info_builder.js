@@ -80,6 +80,7 @@ Imcms.define("imcms-page-info-builder",
             });
 
             closePageInfo();
+
             documentsRestApi.create(documentDTO).success(function (savedDocId) {
 
                 if (documentDTO.id) {
@@ -94,8 +95,10 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function saveAndPublish() {
-            // todo: save and publish
-            closePageInfo();
+            onDocumentSaved = function () {
+                events.trigger("imcms-publish-new-version-current-doc");
+            };
+            saveAndClose();
         }
 
         function buildPageInfoFooterButtons() {
