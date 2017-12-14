@@ -43,7 +43,7 @@
 	<groupId>com.imcode.imcms</groupId>
 	<artifactId>imcms</artifactId>
 	<packaging>war</packaging>
-    <version>4.2.29-SNAPSHOT</version>
+    <version>4.2.29</version>
 	<name>imCMS</name>
 
 	<properties>
@@ -379,7 +379,7 @@
 		<dependency>
 			<groupId>com.imcode.db</groupId>
 			<artifactId>imcode-db</artifactId>
-			<version>0.4-SNAPSHOT</version>
+            <version>0.4</version>
 		</dependency>
 
 		<dependency>
