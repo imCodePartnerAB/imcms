@@ -8,7 +8,9 @@ Imcms.define("imcms-appearance-tab-builder",
                 "text-box": "imcms-text-box",
                 "text-area": "imcms-text-area",
                 "choose-image": "imcms-choose-image",
-                "select": "imcms-select"
+                "select": "imcms-select",
+                "title": "imcms-title",
+                "item": ""
             }
         });
 
@@ -68,44 +70,71 @@ Imcms.define("imcms-appearance-tab-builder",
             return [$checkboxContainer, $pageTitleContainer, $menuTextContainer, $linkToImageContainer];
         }
 
+        function buildSelectTargetForDocumentLink() {
+            tabData.$showIn = components.selects.imcmsSelect("<div>", {
+                id: "show-in",
+                text: "Show in",
+                name: "show-in"
+            }, [{
+                text: "Same frame",
+                "data-value": "_self"
+            }, {
+                text: "New window",
+                "data-value": "_blank"
+            }, {
+                text: "Replace all",
+                "data-value": "_top"
+            }]);
+
+            return pageInfoInnerStructureBEM.buildBlock("<div>", [{"select": tabData.$showIn}]);
+        }
+
+        function buildDocumentAliasBlock() {
+            tabData.$documentAlias = components.texts.textBox("<div>", {
+                name: "alias",
+                text: "Document alias",
+                placeholder: "this-doc-alias"
+            });
+
+            return pageInfoInnerStructureBEM.buildBlock("<div>", [
+                {"text-box": tabData.$documentAlias}
+            ]);
+        }
+
+        function buildBlockForMissingLangSetting() {
+            var $languagesTitle = components.texts.titleText("<div>", "If requested language is missing:");
+
+            tabData.$showDefaultLang = components.radios.imcmsRadio("<div>", {
+                text: "Show in default language if enabled",
+                name: "langSetting",
+                value: "SHOW_IN_DEFAULT_LANGUAGE",
+                checked: "checked" // default value
+            });
+            tabData.$doNotShow = components.radios.imcmsRadio("<div>", {
+                text: "Don't show at all",
+                name: "langSetting",
+                value: "DO_NOT_SHOW"
+            });
+
+            return pageInfoInnerStructureBEM.buildBlock("<div>", [
+                {"title": $languagesTitle},
+                {"item": tabData.$showDefaultLang},
+                {"item": tabData.$doNotShow}
+            ]);
+        }
+
         return {
 
             name: "appearance",
 
             buildTab: function (index) {
-                tabData.$showIn = components.selects.imcmsSelect("<div>", {
-                    id: "show-in",
-                    text: "Show in",
-                    name: "show-in"
-                }, [{
-                    text: "Same frame",
-                    "data-value": "_self"
-                }, {
-                    text: "New window",
-                    "data-value": "_blank"
-                }, {
-                    text: "Replace all",
-                    "data-value": "_top"
-                }]);
+                var tabElements = [
+                    buildSelectTargetForDocumentLink(),
+                    buildDocumentAliasBlock(),
+                    buildBlockForMissingLangSetting()
+                ];
 
-                var $showInContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"select": tabData.$showIn}]);
-
-                tabData.$documentAlias = components.texts.textBox("<div>", {
-                    name: "alias",
-                    text: "Document alias",
-                    placeholder: "this-doc-alias"
-                });
-
-                var $documentAliasContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [
-                    {"text-box": tabData.$documentAlias}
-                ]);
-
-                var tabElements = [$showInContainer, $documentAliasContainer];
-
-                var $result = tabFormBuilder.buildFormBlock(tabElements, index);
-                tabData.$result = $result;
-
-                return $result;
+                return tabData.$result = tabFormBuilder.buildFormBlock(tabElements, index);
             },
 
             fillTabDataFromDocument: function (document) {
@@ -119,6 +148,9 @@ Imcms.define("imcms-appearance-tab-builder",
                 tabData.$result.prepend(tabData.commonContentElements);
                 tabData.$showIn.selectValue(document.target);
                 tabData.$documentAlias.setValue(document.alias);
+
+                components.radios.group(tabData.$showDefaultLang, tabData.$doNotShow)
+                    .checkAmongGroup(document.disabledLanguageShowMode);
             },
 
             saveData: function (documentDTO) {
@@ -140,6 +172,10 @@ Imcms.define("imcms-appearance-tab-builder",
                 documentDTO.alias = tabData.$documentAlias.getValue();
                 documentDTO.target = tabData.$showIn.getSelectedValue();
 
+                documentDTO.disabledLanguageShowMode = components.radios
+                    .group(tabData.$showDefaultLang, tabData.$doNotShow)
+                    .getCheckedValue();
+
                 return documentDTO;
             },
 
@@ -155,6 +191,7 @@ Imcms.define("imcms-appearance-tab-builder",
 
                 tabData.$showIn.selectFirst();
                 tabData.$documentAlias.setValue(emptyString);
+                tabData.$showDefaultLang.setChecked(true); //default value
             }
         };
     }

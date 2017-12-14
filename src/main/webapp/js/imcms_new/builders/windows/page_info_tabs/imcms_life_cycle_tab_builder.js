@@ -135,28 +135,6 @@ Imcms.define("imcms-life-cycle-tab-builder",
             return lifeCycleInnerStructureBEM.buildBlock("<div>", [{"select": tabData.$publisherSelect}]);
         }
 
-        function buildLanguagesContainer() {
-            var $languagesTitle = components.texts.titleText("<div>", "If requested language is missing:");
-
-            tabData.$showDefaultLang = components.radios.imcmsRadio("<div>", {
-                text: "Show in default language if enabled",
-                name: "langSetting",
-                value: "SHOW_IN_DEFAULT_LANGUAGE",
-                checked: "checked" // default value
-            });
-            tabData.$doNotShow = components.radios.imcmsRadio("<div>", {
-                text: "Don't show at all",
-                name: "langSetting",
-                value: "DO_NOT_SHOW"
-            });
-
-            return lifeCycleInnerStructureBEM.buildBlock("<div>", [
-                {"title": $languagesTitle},
-                {"item": tabData.$showDefaultLang},
-                {"item": tabData.$doNotShow}
-            ]);
-        }
-
         function buildCurrentVersionRow() {
             var $currentVersionRowTitle = components.texts.titleText("<div>", "Current version:"),
                 $docVersionSaveDateTime = components.dateTime.dateTimeReadOnly();
@@ -219,7 +197,6 @@ Imcms.define("imcms-life-cycle-tab-builder",
                     buildArchivedDateTimeContainer(),
                     buildPublishEndDateTimeContainer(),
                     buildPublisherSelectRow(),
-                    buildLanguagesContainer(),
                     buildCurrentVersionRow(),
                     buildDocVersionsInfoRow()
                 ], index);
@@ -241,9 +218,6 @@ Imcms.define("imcms-life-cycle-tab-builder",
 
                 tabData.$publisherSelect.selectValue(document.published.id);
 
-                components.radios.group(tabData.$showDefaultLang, tabData.$doNotShow)
-                    .checkAmongGroup(document.disabledLanguageShowMode);
-
                 tabData.$currentVersionNumber.setValue(document.currentVersion.id);
                 tabData.$docVersionSaveDateTime.setDate(document.currentVersion.date)
                     .setTime(document.currentVersion.time);
@@ -263,10 +237,6 @@ Imcms.define("imcms-life-cycle-tab-builder",
 
                 documentDTO.published.id = tabData.$publisherSelect.getSelectedValue();
 
-                documentDTO.disabledLanguageShowMode = components.radios
-                    .group(tabData.$showDefaultLang, tabData.$doNotShow)
-                    .getCheckedValue();
-
                 return documentDTO;
             },
             clearTabData: function () {
@@ -279,7 +249,6 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 });
 
                 tabData.$publisherSelect.selectFirst();
-                tabData.$showDefaultLang.setChecked(true); //default value
 
                 tabData.$currentVersionNumber.setValue(emptyString);
                 tabData.$docVersionSaveDateTime.setDate(emptyString).setTime(emptyString);
