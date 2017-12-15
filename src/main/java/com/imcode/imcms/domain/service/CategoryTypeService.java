@@ -8,6 +8,6 @@ public interface CategoryTypeService {
 
     List<CategoryType> getAll();
 
-    void save(CategoryType saveMe);
+    CategoryType save(CategoryType saveMe);
 
 }

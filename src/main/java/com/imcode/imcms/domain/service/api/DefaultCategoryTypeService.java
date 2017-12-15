@@ -33,7 +33,8 @@ class DefaultCategoryTypeService implements CategoryTypeService {
     }
 
     @Override
-    public void save(CategoryType saveMe) {
-        categoryTypeRepository.save(new CategoryTypeJPA(saveMe));
+    public CategoryType save(CategoryType saveMe) {
+        final CategoryTypeJPA savedCategoryType = categoryTypeRepository.save(new CategoryTypeJPA(saveMe));
+        return new CategoryTypeDTO(savedCategoryType);
     }
 }
