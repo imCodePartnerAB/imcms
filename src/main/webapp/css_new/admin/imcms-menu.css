@@ -73,8 +73,16 @@
     display: none;
 }
 
-.imcms-menu__item--has-newer-version {
+.imcms-menu__item.imcms-menu__item--has-newer-version:before,
+.imcms-menu__item.imcms-menu__item--has-newer-version:hover:before {
+    content: "";
     background-color: #FF756F;
+    display: block;
+    position: absolute;
+    bottom: -17px;
+    left: 0;
+    width: 100%;
+    height: 3px
 }
 
 .imcms-menu__item--admin {

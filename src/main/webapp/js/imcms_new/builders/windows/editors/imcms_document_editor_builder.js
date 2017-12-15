@@ -190,6 +190,8 @@ Imcms.define("imcms-document-editor-builder",
                 return
             }
 
+
+
             isMouseDown = true;
             mouseCoords = {
                 pageX: event.clientX,
@@ -283,7 +285,7 @@ Imcms.define("imcms-document-editor-builder",
                 originalId = parseInt(original.find(".imcms-title").first().text())
             ;
             $(".imcms-menu-items").each(function () {
-                if (parseInt($(this).attr("data-menu-id")) === originalId) {
+                if (parseInt($(this).attr("data-document-id")) === originalId) {
                     status = false;
                 }
             });
@@ -301,7 +303,7 @@ Imcms.define("imcms-document-editor-builder",
             ;
 
             menuDocs.each(function () {
-                if ($(this).attr("data-menu-id") === obj) {
+                if ($(this).attr("data-document-id") === obj) {
                     menuDoc = $(this)
                 }
             });
@@ -329,6 +331,7 @@ Imcms.define("imcms-document-editor-builder",
                         "border-top": "1px solid #51aeea",
                         "border-bottom": "1px solid #51aeea"
                     });
+                    // todo copyframe append
                 } else {
                     elem.css({
                         "border-bottom": "1px solid #51aeea"
@@ -362,7 +365,7 @@ Imcms.define("imcms-document-editor-builder",
         function getDocumentParent() {
             var allMenuDocObjArray = {},
                 itemTree = $(".imcms-menu-items-tree"),
-                menuDocs = itemTree.find(".imcms-menu-items"),
+                menuDocs = itemTree.find(".imcms-menu-item"),
                 $frame = $(".imcms-document-items--frame"),
                 frameTop = $frame.offset().top
             ;
@@ -372,7 +375,7 @@ Imcms.define("imcms-document-editor-builder",
 
             // get all menu doc coords
             menuDocs.each(function () {
-                allMenuDocObjArray[$(this).attr("data-menu-id")] = {
+                allMenuDocObjArray[$(this).closest(".imcms-menu-items").attr("data-document-id")] = {
                     top: $(this).offset().top,
                     bottom: $(this).offset().top + $(this).outerHeight()
                 };
@@ -395,7 +398,7 @@ Imcms.define("imcms-document-editor-builder",
             if (detectTargetArea(event)) {
                 insertedParent = getDocumentParent();
                 if (insertedParent.parent !== null) {
-                    dataInput.attr("data-parent-id", insertedParent.parent.attr("data-menu-id"));
+                    dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
                     dataInput.attr("data-insert-place", insertedParent.status);
                 } else {
                     dataInput.attr("data-parent-id", "");

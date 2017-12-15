@@ -105,6 +105,7 @@
     text-transform: none;
     text-align: left;
     float: left;
+    height: 45px;
 }
 
 .imcms-document-item__controls {

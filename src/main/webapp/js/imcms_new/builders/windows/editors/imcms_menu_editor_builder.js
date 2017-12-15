@@ -72,7 +72,7 @@ Imcms.define("imcms-menu-editor-builder",
                     title: $dataInput.attr("data-title")
                 },
                 level = ($dataInput.attr("data-parent-id") !== "")
-                    ? parseInt($menuElementsContainer.find("[data-menu-id=" + parentId + "]").attr("data-menu-items-lvl"))
+                    ? parseInt($menuElementsContainer.find("[data-document-id=" + parentId + "]").attr("data-menu-items-lvl"))
                     : 1,
                 $menuElement
             ;
@@ -80,7 +80,7 @@ Imcms.define("imcms-menu-editor-builder",
             if ($dataInput.attr("data-parent-id") !== "") {
                 if ($dataInput.attr("data-insert-place") === "true") {
                     $menuElement = buildMenuItemTree(menuElementsTree, level + 1);
-                    $menuElementsContainer.find("[data-menu-id=" + parentId + "]").append($menuElement);
+                    $menuElementsContainer.find("[data-document-id=" + parentId + "]").append($menuElement);
 
                     var parent = $menuElement.parent();
                     if (parent.find(".children-triangle").length === 0) {
@@ -88,7 +88,7 @@ Imcms.define("imcms-menu-editor-builder",
                     }
                 } else {
                     $menuElement = buildMenuItemTree(menuElementsTree, level);
-                    $menuElementsContainer.find("[data-menu-id=" + parentId + "]").after($menuElement);
+                    $menuElementsContainer.find("[data-document-id=" + parentId + "]").after($menuElement);
                 }
             } else {
                 $menuElement = buildMenuItemTree(menuElementsTree, level);
