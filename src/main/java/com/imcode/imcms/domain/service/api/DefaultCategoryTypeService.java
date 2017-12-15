@@ -25,6 +25,11 @@ class DefaultCategoryTypeService implements CategoryTypeService {
     }
 
     @Override
+    public CategoryType get(int id) {
+        return new CategoryTypeDTO(categoryTypeRepository.findOne(id));
+    }
+
+    @Override
     public List<CategoryType> getAll() {
         return categoryTypeRepository.findAll()
                 .stream()
