@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,6 +16,12 @@ public class CategoryDTO extends Category implements Serializable {
     private Integer id;
 
     private String name;
+
+    private String description;
+
+    private String imageUrl;
+
+    private CategoryType type;
 
     public CategoryDTO(Category from) {
         super(from);

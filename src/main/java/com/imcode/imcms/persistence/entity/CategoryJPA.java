@@ -1,6 +1,7 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,10 +24,10 @@ public class CategoryJPA extends Category {
     @NotNull
     private String name;
 
-    private String description = "";
+    private String description;
 
-    @Column(name = "image")
-    private String imageUrl = "";
+    @Column(name = "image", nullable = false)
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "category_type_id", nullable = false)
@@ -39,4 +40,16 @@ public class CategoryJPA extends Category {
     public CategoryJPA(Category from) {
         super(from);
     }
+
+    @Override
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = (imageUrl == null) ? "" : imageUrl;
+    }
+
+    @Override
+    public void setType(CategoryType type) {
+        this.type = new CategoryTypeJPA(type);
+    }
+
+
 }
