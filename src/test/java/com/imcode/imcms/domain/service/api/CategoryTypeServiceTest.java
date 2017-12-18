@@ -16,11 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+@Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
@@ -53,7 +57,11 @@ public class CategoryTypeServiceTest {
         );
         final CategoryType saved = new CategoryTypeDTO(categoryTypeRepository.save(categoryType));
 
-        final CategoryType found = categoryTypeService.get(saved.getId());
+        final Optional<CategoryType> oFound = categoryTypeService.get(saved.getId());
+
+        assertTrue(oFound.isPresent());
+
+        final CategoryType found = oFound.get();
 
         assertEquals(found, saved);
     }
@@ -71,7 +79,11 @@ public class CategoryTypeServiceTest {
         );
         final CategoryType saved = categoryTypeService.save(categoryType);
 
-        final CategoryType found = categoryTypeService.get(saved.getId());
+        final Optional<CategoryType> oFound = categoryTypeService.get(saved.getId());
+
+        assertTrue(oFound.isPresent());
+
+        final CategoryType found = oFound.get();
 
         assertEquals(found, saved);
     }

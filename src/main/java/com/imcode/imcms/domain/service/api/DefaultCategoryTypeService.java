@@ -7,14 +7,15 @@ import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRES_NEW)
+@Transactional
+//(propagation = Propagation.REQUIRES_NEW)
 class DefaultCategoryTypeService implements CategoryTypeService {
 
     private final CategoryTypeRepository categoryTypeRepository;
@@ -25,8 +26,8 @@ class DefaultCategoryTypeService implements CategoryTypeService {
     }
 
     @Override
-    public CategoryType get(int id) {
-        return new CategoryTypeDTO(categoryTypeRepository.findOne(id));
+    public Optional<CategoryType> get(int id) {
+        return Optional.ofNullable(categoryTypeRepository.findOne(id)).map(CategoryTypeDTO::new);
     }
 
     @Override
