@@ -113,7 +113,7 @@ public class CategoryMapper {
         categoryRepository.delete(category.getId());
     }
 
-    public String[] getAllDocumentsOfOneCategory(CategoryDomainObject category) {
+    public List<Integer> getAllDocumentsOfOneCategory(CategoryDomainObject category) {
         return categoryRepository.findCategoryDocIds(category.getId());
     }
 

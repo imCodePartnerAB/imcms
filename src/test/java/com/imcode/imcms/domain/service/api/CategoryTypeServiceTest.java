@@ -18,7 +18,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -52,7 +51,7 @@ public class CategoryTypeServiceTest {
     public void get_When_Exist_Expect_Found() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryTypeJPA categoryType = new CategoryTypeJPA(
-                null, testTypeName, 0, false, false, new ArrayList<>()
+                null, testTypeName, 0, false, false
         );
         final CategoryType saved = new CategoryTypeDTO(categoryTypeRepository.save(categoryType));
 
@@ -74,7 +73,7 @@ public class CategoryTypeServiceTest {
     public void save_When_NotExitBefore_Expect_Saved() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryType categoryType = new CategoryTypeJPA(
-                null, testTypeName, 0, false, false, new ArrayList<>()
+                null, testTypeName, 0, false, false
         );
         final CategoryType saved = categoryTypeService.save(categoryType);
 
@@ -91,7 +90,7 @@ public class CategoryTypeServiceTest {
     public void delete_When_Exist_Expect_Deleted() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryType categoryType = new CategoryTypeJPA(
-                null, testTypeName, 0, false, false, new ArrayList<>()
+                null, testTypeName, 0, false, false
         );
         final CategoryType saved = categoryTypeService.save(categoryType);
 

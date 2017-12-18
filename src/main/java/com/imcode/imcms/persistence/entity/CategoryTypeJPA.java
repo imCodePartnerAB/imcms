@@ -1,7 +1,6 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,9 +10,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -41,16 +37,16 @@ public class CategoryTypeJPA extends CategoryType {
     @Column(name = "is_image_archive", nullable = false)
     private boolean imageArchive;
 
-    @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
-    private List<CategoryJPA> categories;
+//    @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
+//    private List<CategoryJPA> categories;
 
     public CategoryTypeJPA(String name, int maxChoices, boolean inherited, boolean imageArchive) {
         this(null, name, maxChoices, inherited, imageArchive);
     }
 
-    public CategoryTypeJPA(Integer id, String name, int maxChoices, boolean inherited, boolean imageArchive) {
-        this(id, name, maxChoices, inherited, imageArchive, null);
-    }
+//    public CategoryTypeJPA(Integer id, String name, int maxChoices, boolean inherited, boolean imageArchive) {
+//        this(id, name, maxChoices, inherited, imageArchive);
+//    }
 
     public CategoryTypeJPA(CategoryType from) {
         super(from);
@@ -81,14 +77,14 @@ public class CategoryTypeJPA extends CategoryType {
         this.maxChoices = (multiSelect) ? 0 : 1;
     }
 
-    @Override
-    public List<Category> getCategories() {
-        return (categories == null) ? null : new ArrayList<>(categories);
-    }
-
-    @Override
-    public void setCategories(List<Category> categories) {
-        this.categories = (categories == null) ? null
-                : categories.stream().map(CategoryJPA::new).collect(Collectors.toList());
-    }
+//    @Override
+//    public List<Category> getCategories() {
+//        return (categories == null) ? null : new ArrayList<>(categories);
+//    }
+//
+//    @Override
+//    public void setCategories(List<Category> categories) {
+//        this.categories = (categories == null) ? null
+//                : categories.stream().map(CategoryJPA::new).collect(Collectors.toList());
+//    }
 }

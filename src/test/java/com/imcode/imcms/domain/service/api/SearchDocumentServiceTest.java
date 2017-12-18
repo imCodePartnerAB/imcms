@@ -11,9 +11,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.index.DocumentIndex;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +37,11 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
 public class SearchDocumentServiceTest {
 
-    private static File testSolrFolder;
+    private static final int DOC_ID = 1001;
+
+    private static Imcms imcmsStatic;
+
+    private static VersionDataInitializer versionDataInitializerStatic;
 
     @Value("WEB-INF/solr")
     private File defaultSolrFolder;
@@ -59,45 +62,43 @@ public class SearchDocumentServiceTest {
     private Config config;
 
     @AfterClass
-    public static void shutDownSolr() throws Exception {
-        Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr shut down, not sure 2 sec is exact time
-        assertTrue(FileUtility.forceDelete(testSolrFolder));
+    public static void shutDownSolr() {
+        imcmsStatic.stop();
+        Imcms.removeUser();
+        versionDataInitializerStatic.cleanRepositories();
     }
 
-    @Before
-    public void setUp() throws Exception {
-        versionDataInitializer.cleanRepositories();
+    @PostConstruct
+    public void initSolr() throws Exception {
+        imcmsStatic = imcms;
+        versionDataInitializerStatic = versionDataInitializer;
 
-        testSolrFolder = new File(config.getSolrHome());
+        final File testSolrFolder = new File(config.getSolrHome());
 
-        if (testSolrFolder.mkdirs()) {
-            FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
+        if (!testSolrFolder.mkdirs()) {
+            assertTrue(FileUtility.forceDelete(testSolrFolder));
         }
 
-        versionDataInitializer.createData(0, 1001);
-        versionDataInitializer.createData(1, 1001);
-        versionDataInitializer.createData(2, 1001);
+        FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
+
+        versionDataInitializer.cleanRepositories();
+
+        versionDataInitializer.createData(0, DOC_ID);
+        versionDataInitializer.createData(1, DOC_ID);
+        versionDataInitializer.createData(2, DOC_ID);
 
         Imcms.invokeStart();
-
+        Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr init, not sure 2 sec is exact time
         Imcms.setUser(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper().getDefaultUser());
     }
 
-    @After
-    public void tearDown() {
-        imcms.stop();
-        versionDataInitializer.cleanRepositories();
-    }
-
     @Test
-    public void searchDocuments() throws Exception {
-        Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr init, not sure 2 sec is exact time
+    public void searchDocuments_When_DocId1001Requested_Expect_Found() {
         PageRequest pageRequest = new PageRequest(0, 10, new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID)));
 
         SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
-        searchQueryDTO.setUserId(1);
-        searchQueryDTO.setTerm("1001");
+        searchQueryDTO.setTerm(String.valueOf(DOC_ID));
         searchQueryDTO.setPage(pageRequest);
 
         assertEquals(1, searchDocumentService.searchDocuments(searchQueryDTO).size());

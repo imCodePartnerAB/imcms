@@ -415,10 +415,10 @@
 
                         } // ------------  delete category -------------------
                         else if (inDeleteCategoryMode) {
-                            if (adminCategoriesPage.getDocumentsOfOneCategory() != null && adminCategoriesPage.getDocumentsOfOneCategory().length > 0) {
+                            if ((adminCategoriesPage.getDocumentsOfOneCategory() != null) && !adminCategoriesPage.getDocumentsOfOneCategory().isEmpty()) {
                                 messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_delete_category/1 ?> \"");
                                 messageToUser.append(adminCategoriesPage.getCategoryToEdit().getName() + "\" <? install/htdocs/sv/jsp/category_admin/message_delete_category/2 ?> ");
-                                messageToUser.append(adminCategoriesPage.getDocumentsOfOneCategory().length + "");
+                                messageToUser.append(adminCategoriesPage.getDocumentsOfOneCategory().size() + "");
                                 messageToUser.append(" <? global/document ?>. ");
                                 messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_delete_category/3 ?>?");
                             }

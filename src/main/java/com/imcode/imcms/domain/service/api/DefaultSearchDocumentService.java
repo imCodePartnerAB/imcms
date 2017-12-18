@@ -32,11 +32,6 @@ class DefaultSearchDocumentService implements SearchDocumentService {
     @Override
     public List<DocumentDTO> searchDocuments(SearchQueryDTO searchQuery) {
 
-        if (searchQuery.getUserId() == null) {
-            searchQuery.setUserId(Imcms.getUser().getId());
-        }
-
-        List<DocumentDTO> result;
         StringBuilder indexQuery = new StringBuilder();
 
         indexQuery.append(
@@ -54,26 +49,26 @@ class DefaultSearchDocumentService implements SearchDocumentService {
         );
 
         if (searchQuery.getCategoriesId() != null) {
-            indexQuery = indexQuery.insert(0, indexQuery)
+            indexQuery = indexQuery.insert(0, "(")
                     .append(") AND (" + DocumentIndex.FIELD__CATEGORY_ID + ":(") // don't be so sad
                     .append(searchQuery.getCategoriesId().stream().map(Object::toString).collect(Collectors.joining(" AND ")))
                     .append("))");
         }
 
-        SolrQuery solrQuery = new SolrQuery(indexQuery.toString());
+        final SolrQuery solrQuery = new SolrQuery(indexQuery.toString());
 
-        String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + searchQuery.getUserId();
-        solrQuery.addFilterQuery(userFilter);
+        if (searchQuery.getUserId() != null) {
+            final String userFilter = DocumentIndex.FIELD__CREATOR_ID + ":" + searchQuery.getUserId();
+            solrQuery.addFilterQuery(userFilter);
+        }
 
         if (searchQuery.getPage() != null) {
-            Sort.Order order = searchQuery.getPage().getSort().iterator().next();
+            final Sort.Order order = searchQuery.getPage().getSort().iterator().next();
             solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
         }
 
-        result = documentIndex.search(solrQuery, Imcms.getUser())
+        return documentIndex.search(solrQuery, Imcms.getUser())
                 .documentStoredFieldsList().stream().map(storedFieldsToDocumentDTO)
                 .collect(Collectors.toList());
-
-        return result;
     }
 }

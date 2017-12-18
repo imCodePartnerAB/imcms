@@ -21,9 +21,19 @@ public class CategoryDTO extends Category implements Serializable {
 
     private String imageUrl;
 
-    private CategoryType type;
+    private CategoryTypeDTO type;
 
     public CategoryDTO(Category from) {
         super(from);
+    }
+
+    @Override
+    public CategoryType getType() {
+        return type;
+    }
+
+    @Override
+    public void setType(CategoryType type) {
+        this.type = new CategoryTypeDTO(type);
     }
 }

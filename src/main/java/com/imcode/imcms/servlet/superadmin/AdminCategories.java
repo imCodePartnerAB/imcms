@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 public class AdminCategories extends HttpServlet {
@@ -235,16 +236,21 @@ public class AdminCategories extends HttpServlet {
                                 HttpServletRequest req, AdminCategoriesPage adminCategoriesPage,
                                 CategoryMapper categoryMapper,
                                 DocumentMapper documentMapper) {
+
         adminCategoriesPage.setMode(PARAMETER_MODE__DELETE_CATEGORY);
-        String[] documentsOfOneCategory = null;
+        List<Integer> documentsOfOneCategory = null;
+
         if (categoryToEdit != null) {
             documentsOfOneCategory = categoryMapper.getAllDocumentsOfOneCategory(categoryToEdit);
+
             if (req.getParameter(PARAMETER__CATEGORY_DELETE) != null) {
                 DocumentDomainObject document;
-                for (int i = 0; i < documentsOfOneCategory.length; i++) {
-                    document = documentMapper.getDocument(Integer.parseInt(documentsOfOneCategory[i]));
+
+                for (Integer documentsCategoryId : documentsOfOneCategory) {
+                    document = documentMapper.getDocument(documentsCategoryId);
                     categoryMapper.deleteOneCategoryFromDocument(document, categoryToEdit);
                 }
+
                 categoryMapper.deleteCategoryFromDb(categoryToEdit);
                 categoryToEdit = null;
                 documentsOfOneCategory = null;
@@ -343,7 +349,7 @@ public class AdminCategories extends HttpServlet {
         private CategoryTypeDomainObject categoryTypeToEdit;
         private CategoryDomainObject categoryToEdit;
         private int numberOfCategories;
-        private String[] documentsOfOneCategory;
+        private List<Integer> documentsOfOneCategory;
         private boolean uniqueCategoryName;
         private String mode;
         private boolean uniqueCategoryTypeName;
@@ -380,11 +386,11 @@ public class AdminCategories extends HttpServlet {
             this.numberOfCategories = numberOfCategories;
         }
 
-        public String[] getDocumentsOfOneCategory() {
+        public List<Integer> getDocumentsOfOneCategory() {
             return documentsOfOneCategory;
         }
 
-        private void setDocumentsOfOneCategory(String[] documentsOfOneCategory) {
+        private void setDocumentsOfOneCategory(List<Integer> documentsOfOneCategory) {
             this.documentsOfOneCategory = documentsOfOneCategory;
         }
 

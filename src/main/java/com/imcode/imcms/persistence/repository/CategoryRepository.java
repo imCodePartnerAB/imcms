@@ -16,10 +16,22 @@ public interface CategoryRepository extends JpaRepository<CategoryJPA, Integer> 
 
     CategoryJPA findByNameAndType(String name, CategoryTypeJPA type);
 
-    @Query(value = "select meta_id from document_categories where category_id = ?", nativeQuery = true)
-    String[] findCategoryDocIds(int categoryId);
+    @Query(value = "select meta_id from document_categories where category_id = ?1", nativeQuery = true)
+    List<Integer> findCategoryDocIds(int categoryId);
 
+    /**
+     * Note: method will delete document->category relation but not the category itself
+     */
+    // todo: cover by tests
     @Modifying
-    @Query(value = "DELETE FROM document_categories WHERE meta_id = ? and category_id = ?", nativeQuery = true)
+    @Query(value = "DELETE FROM document_categories WHERE meta_id = ?1 and category_id = ?2", nativeQuery = true)
     void deleteByDocIdAndCategoryId(int docId, int categoryId);
+
+    /**
+     * Note: method will delete document->category relation but not the category itself
+     */
+    // todo: cover by tests
+    @Modifying
+    @Query(value = "DELETE FROM document_categories WHERE category_id = ?1", nativeQuery = true)
+    void deleteDocumentCategory(int categoryId);
 }

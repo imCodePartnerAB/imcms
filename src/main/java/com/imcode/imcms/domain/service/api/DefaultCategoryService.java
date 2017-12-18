@@ -7,12 +7,14 @@ import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 class DefaultCategoryService implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -43,6 +45,7 @@ class DefaultCategoryService implements CategoryService {
 
     @Override
     public void delete(int id) {
+        categoryRepository.deleteDocumentCategory(id);
         categoryRepository.delete(id);
     }
 }
