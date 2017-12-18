@@ -21,5 +21,5 @@ public interface CategoryRepository extends JpaRepository<CategoryJPA, Integer> 
 
     @Modifying
     @Query(value = "DELETE FROM document_categories WHERE meta_id = ? and category_id = ?", nativeQuery = true)
-    String[] deleteByDocIdAndCategoryId(int docId, int categoryId);
+    void deleteByDocIdAndCategoryId(int docId, int categoryId);
 }
