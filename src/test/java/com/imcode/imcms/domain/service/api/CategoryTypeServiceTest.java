@@ -21,8 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -88,4 +87,23 @@ public class CategoryTypeServiceTest {
         assertEquals(found, saved);
     }
 
+    @Test
+    public void delete_When_Exist_Expect_Deleted() {
+        final String testTypeName = "test_type_name" + System.currentTimeMillis();
+        final CategoryType categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false, new ArrayList<>()
+        );
+        final CategoryType saved = categoryTypeService.save(categoryType);
+
+        final Integer savedId = saved.getId();
+        Optional<CategoryType> oFound = categoryTypeService.get(savedId);
+
+        assertTrue(oFound.isPresent());
+
+        categoryTypeService.delete(savedId);
+
+        oFound = categoryTypeService.get(savedId);
+
+        assertFalse(oFound.isPresent());
+    }
 }

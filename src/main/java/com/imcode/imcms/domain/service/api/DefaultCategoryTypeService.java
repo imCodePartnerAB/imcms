@@ -43,4 +43,10 @@ class DefaultCategoryTypeService implements CategoryTypeService {
         final CategoryTypeJPA savedCategoryType = categoryTypeRepository.save(new CategoryTypeJPA(saveMe));
         return new CategoryTypeDTO(savedCategoryType);
     }
+
+    @Override
+    public void delete(int id) {
+        categoryTypeRepository.delete(id);
+    }
+
 }
