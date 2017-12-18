@@ -338,6 +338,8 @@ class MappingConfig {
             final Set<CategoryDTO> categories = meta.getCategoryIds()
                     .stream()
                     .map(categoryService::getById)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .map(CategoryDTO::new)
                     .collect(Collectors.toSet());
 

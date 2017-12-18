@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,12 +32,17 @@ class DefaultCategoryService implements CategoryService {
     }
 
     @Override
-    public Category getById(int id) {
-        return new CategoryDTO(categoryRepository.findOne(id));
+    public Optional<Category> getById(int id) {
+        return Optional.ofNullable(categoryRepository.findOne(id)).map(CategoryDTO::new);
     }
 
     @Override
     public Category save(Category saveMe) {
         return new CategoryDTO(categoryRepository.save(new CategoryJPA(saveMe)));
+    }
+
+    @Override
+    public void delete(int id) {
+        categoryRepository.delete(id);
     }
 }
