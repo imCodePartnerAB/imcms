@@ -10,12 +10,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface TextRepository extends JpaRepository<TextJPA, Integer>, VersionedContentRepository<TextJPA> {
 
     @Query("SELECT t FROM TextJPA t WHERE t.version = ?1 AND t.language = ?2 AND t.loopEntryRef IS NULL")
     List<TextJPA> findByVersionAndLanguageWhereLoopEntryRefIsNull(Version version, LanguageJPA language);
+
+    @Query("SELECT t FROM TextJPA t WHERE t.version = ?1 AND t.language = ?2")
+    Set<TextJPA> findByVersionAndLanguage(Version version, LanguageJPA language);
 
     @Query("SELECT t FROM TextJPA t WHERE t.version = ?1 AND t.language = ?2 AND t.loopEntryRef IS NOT NULL")
     List<TextJPA> findByVersionAndLanguageWhereLoopEntryRefIsNotNull(Version version, LanguageJPA language);
