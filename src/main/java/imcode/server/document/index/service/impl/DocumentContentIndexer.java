@@ -1,5 +1,9 @@
 package imcode.server.document.index.service.impl;
 
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.model.Language;
+import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.util.Value;
 import imcode.server.Config;
 import imcode.server.document.DocumentDomainObject;
@@ -25,12 +29,16 @@ public class DocumentContentIndexer {
 
     private final Logger logger = Logger.getLogger(getClass());
     private final Predicate<FileDocumentDomainObject.FileDocumentFile> fileDocFileFilter;
+    private final TextService textService;
+    private final LanguageService languageService;
 
     private Tika tika = Value.with(new Tika(), t -> t.setMaxStringLength(-1));
 
     @Autowired
-    public DocumentContentIndexer(Config config) {
+    public DocumentContentIndexer(Config config, TextService textService, LanguageService languageService) {
         this.fileDocFileFilter = buildFileDocFilter(config);
+        this.textService = textService;
+        this.languageService = languageService;
     }
 
     private static String getExtension(String filename) {
@@ -56,9 +64,9 @@ public class DocumentContentIndexer {
     }
 
     public SolrInputDocument index(DocumentDomainObject doc, SolrInputDocument indexDoc) {
-        return doc instanceof TextDocumentDomainObject
+        return (doc instanceof TextDocumentDomainObject)
                 ? indexTextDoc((TextDocumentDomainObject) doc, indexDoc)
-                : doc instanceof FileDocumentDomainObject
+                : (doc instanceof FileDocumentDomainObject)
                 ? indexFileDoc((FileDocumentDomainObject) doc, indexDoc)
                 : indexDoc;
     }
@@ -69,21 +77,20 @@ public class DocumentContentIndexer {
     private SolrInputDocument indexTextDoc(TextDocumentDomainObject doc, SolrInputDocument indexDoc) {
         indexDoc.addField(DocumentIndex.FIELD__TEMPLATE, doc.getTemplateName());
 
-        doc.getTexts().forEach((no, textDO) -> {
-            String textValue = textDO.getText();
+        final int docId = doc.getId();
+        final String langCode = doc.getLanguage().getCode();
 
-            indexDoc.addField(DocumentIndex.FIELD__NONSTRIPPED_TEXT, textValue);
+        final Language language = languageService.findByCode(langCode);
+
+        textService.getPublicTexts(docId, language).forEach(indexMe -> {
+            final String textValue = indexMe.getText();
+
+            final Integer textIndex = Optional.ofNullable(indexMe.getLoopEntryRef())
+                    .map(LoopEntryRef::getLoopEntryIndex)
+                    .orElseGet(indexMe::getIndex);
+
             indexDoc.addField(DocumentIndex.FIELD__TEXT, textValue);
-            indexDoc.addField(DocumentIndex.FIELD__TEXT + no, textValue);
-        });
-
-        doc.getLoopTexts().forEach((loopItemRef, textDO) -> {
-            int no = loopItemRef.getItemNo();
-            String textValue = textDO.getText();
-
-            indexDoc.addField(DocumentIndex.FIELD__NONSTRIPPED_TEXT, textValue);
-            indexDoc.addField(DocumentIndex.FIELD__TEXT, textValue);
-            indexDoc.addField(DocumentIndex.FIELD__TEXT + no, textValue);
+            indexDoc.addField(DocumentIndex.FIELD__TEXT + textIndex, textValue);
         });
 
         doc.getImages().forEach((no, imageDO) -> {
