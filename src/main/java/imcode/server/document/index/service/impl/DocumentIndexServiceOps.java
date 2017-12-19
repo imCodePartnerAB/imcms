@@ -57,7 +57,7 @@ public class DocumentIndexServiceOps {
 
     private Collection<SolrInputDocument> mkSolrInputDocs(int docId, Collection<DocumentLanguage> languages) {
         Collection<SolrInputDocument> solrInputDocs = languages.stream()
-                .map(language -> (DocumentDomainObject) documentMapper.getDefaultDocument(docId, language)) //
+                .map(language -> (DocumentDomainObject) documentMapper.getDefaultDocument(docId, language))
                 .filter(Objects::nonNull)
                 .map(doc -> {
                     try {
