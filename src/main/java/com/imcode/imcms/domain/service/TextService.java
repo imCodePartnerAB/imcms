@@ -1,7 +1,10 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
+
+import java.util.Set;
 
 public interface TextService extends DeleterByDocumentId, VersionedContentService<Text> {
 
@@ -11,6 +14,7 @@ public interface TextService extends DeleterByDocumentId, VersionedContentServic
 
     Text getPublicText(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
 
-    void save(Text textDTO);
+    void save(Text text);
 
+    Set<Text> getPublicTexts(int docId, Language language);
 }

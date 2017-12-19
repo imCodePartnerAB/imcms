@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service("textService")
@@ -67,6 +70,17 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, 
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
         repository.deleteByDocId(docIdToDelete);
+    }
+
+    @Override
+    public Set<Text> getPublicTexts(int docId, Language language) {
+        final Version latestVersion = versionService.getLatestVersion(docId);
+        final LanguageJPA languageJPA = new LanguageJPA(language);
+
+        return repository.findByVersionAndLanguage(latestVersion, languageJPA)
+                .stream()
+                .map(text1 -> new TextDTO(text1, latestVersion, languageJPA))
+                .collect(Collectors.toSet());
     }
 
     private Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
