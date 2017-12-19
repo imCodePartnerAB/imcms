@@ -215,7 +215,7 @@ Imcms.define("imcms-document-editor-builder",
                 "background-color": "#e9e9f5",
                 "position": "absolute",
                 "z-index": 11001,
-                "width": "450px", //$(".imcms-document-list__items").outerWidth(),
+                "width": "450px",
                 "top": mouseCoords.top,
                 "left": mouseCoords.left
             });

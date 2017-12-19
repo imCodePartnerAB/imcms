@@ -13,6 +13,23 @@ Imcms.define("imcms-menu-editor-builder",
 
         var $title, $menuElementsContainer, $documentsContainer;
         var docId, menuIndex;
+        // variables for drag
+        var mouseCoords = {
+                pageX: undefined,
+                pageY: undefined,
+                newPageX: undefined,
+                newPageY: undefined
+            },
+            menuAreaProp = {
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0
+            },
+            $menuArea,
+            isMouseDown = false,
+            isPasted = false
+        ;
 
         function reloadMenuOnPage() {
             reloadElement($tag.find(".imcms-editor-content"));
@@ -62,6 +79,260 @@ Imcms.define("imcms-menu-editor-builder",
                     "right-side": $documentsContainer = $("<div>", {"class": "imcms-right-side"})
                 }
             }).buildBlockStructure("<div>");
+        }
+
+        function disableDrag($frame) {
+            var $originItem = $(".imcms-menu-items--is-drag");
+            $frame.remove();
+            isMouseDown = false;
+            if (isPasted) {
+                $originItem.remove()
+            } else {
+                $originItem.removeClass("imcms-menu-items--is-drag");
+                $originItem.find(".children-triangle").first().trigger("click");
+            }
+        }
+
+        function detectTargetArea(event) {
+            return (event.pageY > menuAreaProp.top) && (event.pageY < menuAreaProp.bottom) && (event.pageX > menuAreaProp.left) && (event.pageX < menuAreaProp.right);
+        }
+
+        function toggleUserSelect(flag) {
+            if (flag) {
+                $("body").find("*").css({"user-select": "none"});
+            } else {
+                $("body").find("*").css({"user-select": "auto"});
+            }
+        }
+
+        function getMenuDocByObjId(obj) {
+            var menuDocs = $(".imcms-menu-items-tree").find(".imcms-menu-items"),
+                menuDoc = null
+            ;
+
+            menuDocs.each(function () {
+                if ($(this).attr("data-document-id") === obj) {
+                    menuDoc = $(this)
+                }
+            });
+
+            return menuDoc;
+        }
+
+        function getMenuItemsParam(menuDocs) {
+            var allMenuDocObjArray = {};
+            menuDocs.each(function () {
+                if (!$(this).closest(".imcms-menu-items").hasClass("imcms-menu-items--is-drag")) {
+                    allMenuDocObjArray[$(this).closest(".imcms-menu-items").attr("data-document-id")] = {
+                        top: $(this).offset().top,
+                        bottom: $(this).offset().top + $(this).outerHeight()
+                    };
+                }
+            });
+            return allMenuDocObjArray;
+        }
+
+        function disableHighlightingMenuDoc() {
+            $(".imcms-menu-items-tree").find(".imcms-menu-items").css({
+                "border": "none"
+            });
+        }
+
+        function highlightMenuDoc(param, elem) {
+            disableHighlightingMenuDoc();
+            if (param) {
+                elem.css({
+                    "border-top": "1px solid #51aeea",
+                    "border-bottom": "1px solid #51aeea"
+                });
+            } else {
+                elem.css({
+                    "border-bottom": "1px solid #51aeea"
+                })
+            }
+        }
+
+        function setDataInputParams(insertedParent, $frame) {
+            var dataInput = $("#dataInput");
+
+            var frameDocumentId = $frame.attr("data-document-id");
+            var frameDocumentTitle =$frame.find(".imcms-menu-item").first().find(".imcms-title").text();
+
+            frameDocumentTitle = frameDocumentTitle.split(" - ");
+
+            if (insertedParent.parent !== null) {
+                dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
+                dataInput.attr("data-insert-place", insertedParent.status);
+            } else {
+                dataInput.attr("data-parent-id", "");
+                dataInput.attr("data-insert-place", "");
+            }
+
+            dataInput.attr("data-id", frameDocumentId);
+            dataInput.attr("data-title", frameDocumentTitle[1]).trigger("change");
+        }
+
+        function removedPreviousItemFrame() {
+            var $menuTree = $(".imcms-menu-items-tree"),
+                $frame = $(".imcms-menu-items--frame"),
+                $frameParent = $menuTree.find("[data-document-id=" + $frame.attr("data-document-id") + "]")
+                    .parent("[data-menu-items-lvl]"),
+                frameCopies
+            ;
+
+            if ($frameParent.find("[data-menu-items-lvl]").length === 1 ||
+                !$frameParent.hasClass("imcms-menu-items--is-drag")) {
+                $frameParent
+                    .find(".children-triangle")
+                    .remove()
+            }
+            frameCopies = $menuTree.find("[data-document-id=" + $frame.attr("data-document-id") + "]");
+
+            frameCopies.each(function () {
+                if (!$(this).hasClass("imcms-menu-items--is-drag")) {
+                    $(this).remove();
+                }
+            });
+
+        }
+
+        function insertMenuCopyFrame(menuDoc, placeStatus) {
+            var insertedParent = {
+                    parent: menuDoc,
+                    status: placeStatus
+                },
+                $frame = $(".imcms-menu-items--frame")
+            ;
+
+            removedPreviousItemFrame();
+
+            if (menuDoc.attr("data-document-id") === $frame.attr("data-document-id")) {
+                isPasted = false;
+                return
+            }
+
+            setDataInputParams(insertedParent, $frame);
+            isPasted = true;
+        }
+
+        function detectPasteArea($frame) {
+            var allMenuDocObjArray = {},
+                itemTree = $(".imcms-menu-items-tree"),
+                menuDocs = itemTree.find(".imcms-menu-item"),
+                frameTop = $frame.position().top
+            ;
+
+            // get all menu doc coords
+            allMenuDocObjArray = getMenuItemsParam(menuDocs, allMenuDocObjArray);
+
+            var menuDoc = null,
+                placeStatus = null
+            ;
+
+            $.each(allMenuDocObjArray, function (obj, param) {
+                if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
+                    menuDoc = getMenuDocByObjId(obj);
+                    placeStatus = true;
+                    // todo copy-frame append
+                    insertMenuCopyFrame(menuDoc, placeStatus);
+                } else if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
+                    menuDoc = getMenuDocByObjId(obj);
+                    placeStatus = false;
+                    insertMenuCopyFrame(menuDoc, placeStatus);
+                }
+            });
+
+            // highlightingMenuDoc
+            if (placeStatus !== null) {
+                highlightMenuDoc(placeStatus, menuDoc);
+            } else {
+                disableHighlightingMenuDoc();
+            }
+        }
+
+        function moveFrame(event) {
+            var $frame = $(".imcms-menu-items--frame");
+            mouseCoords.newPageX = event.clientX;
+            mouseCoords.newPageY = event.clientY;
+
+            if (isMouseDown && detectTargetArea(event)) {
+                toggleUserSelect(true);
+                $frame.css({
+                    "top": (mouseCoords.newPageY - mouseCoords.pageY) + mouseCoords.top,
+                    "left": (mouseCoords.newPageX - mouseCoords.pageX) + mouseCoords.left
+                });
+                detectPasteArea($frame);
+            } else {
+                disableDrag($frame);
+                disableHighlightingMenuDoc();
+                toggleUserSelect(false);
+            }
+            console.log("isPasted: ", isPasted);
+        }
+
+        function closeSubItems(elem) {
+            var btnTriangle = elem.find(".children-triangle").first();
+            if (btnTriangle.hasClass("imcms-menu-item-btn--open")) {
+                btnTriangle.trigger("click");
+            }
+        }
+
+        function dragMenuItem(event) {
+            var $this = $(this);
+
+            var $originItem = $this.closest(".imcms-menu-items"),
+                originItemLvl = parseInt($originItem.attr("data-menu-items-lvl"))
+            ;
+
+            if (originItemLvl === 1 && $("[data-menu-items-lvl='1']").length === 1) {
+                return;
+            }
+
+            var $frame = $originItem.clone(true);
+
+            $originItem.addClass("imcms-menu-items--is-drag");
+
+            closeSubItems($originItem);
+
+            mouseCoords = {
+                pageX: event.clientX,
+                pageY: event.clientY,
+                top: $originItem.position().top,
+                left: $originItem.position().left + 510
+            };
+            $menuArea = $(".imcms-menu-items-tree");
+            menuAreaProp = {
+                top: $menuArea.position().top,
+                left: $menuArea.position().left,
+                right: menuAreaProp.left + $menuArea.outerWidth(),
+                bottom: menuAreaProp.top + $menuArea.outerHeight()
+            };
+
+            $frame.css({
+                "background-color": "#e9e9f5",
+                "position": "absolute",
+                "z-index": 11001,
+                "width": "450px",
+                "top": mouseCoords.top,
+                "left": mouseCoords.left
+            });
+
+            $frame.addClass("imcms-menu-items--frame");
+
+            $frame.appendTo("body");
+
+            closeSubItems($frame);
+
+            isMouseDown = true;
+
+            $(document).on("mousemove", moveFrame)
+                .on("dragstart", "imcms-menu-item__info", function () {
+                    return false;
+                });
+
+            $(document).on("mouseup", function () {
+                disableDrag($frame);
+            });
         }
 
         function createItem() {
@@ -147,6 +418,8 @@ Imcms.define("imcms-menu-editor-builder",
             var $controlEdit = controls.edit(function () {
                 pageInfoBuilder.build(menuItemDocId);
             });
+
+            $controlMove.on("mousedown", dragMenuItem);
 
             return controls.buildControlsBlock("<div>", [
                 $controlMove,
