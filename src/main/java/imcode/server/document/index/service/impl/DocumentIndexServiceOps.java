@@ -12,6 +12,8 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.util.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
  * An instance of this class is thread save.
  */
 // todo: document search might return doc which is not present in db (deleted) - return stub instead
+@Component
 public class DocumentIndexServiceOps {
 
     private static final Logger logger = Logger.getLogger(DocumentIndexServiceOps.class);
@@ -38,6 +41,7 @@ public class DocumentIndexServiceOps {
     private final DocumentIndexer documentIndexer;
     private final DocumentLanguages documentLanguages;
 
+    @Autowired
     public DocumentIndexServiceOps(DocumentMapper documentMapper,
                                    DocumentIndexer documentIndexer,
                                    DocumentLanguages documentLanguages) {
@@ -53,7 +57,7 @@ public class DocumentIndexServiceOps {
 
     private Collection<SolrInputDocument> mkSolrInputDocs(int docId, Collection<DocumentLanguage> languages) {
         Collection<SolrInputDocument> solrInputDocs = languages.stream()
-                .map(language -> (DocumentDomainObject) documentMapper.getDefaultDocument(docId, language))
+                .map(language -> (DocumentDomainObject) documentMapper.getDefaultDocument(docId, language)) //
                 .filter(Objects::nonNull)
                 .map(doc -> {
                     try {

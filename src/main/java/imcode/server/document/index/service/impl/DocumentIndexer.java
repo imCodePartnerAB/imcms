@@ -7,11 +7,13 @@ import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.function.BiConsumer;
 
-// todo: ??? Truncate date fields to minute ???
+@Component
 public class DocumentIndexer {
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -19,6 +21,7 @@ public class DocumentIndexer {
     private CategoryMapper categoryMapper;
     private DocumentContentIndexer contentIndexer;
 
+    @Autowired
     public DocumentIndexer(CategoryMapper categoryMapper, DocumentContentIndexer contentIndexer) {
         this.categoryMapper = categoryMapper;
         this.contentIndexer = contentIndexer;

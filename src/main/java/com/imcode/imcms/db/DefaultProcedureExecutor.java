@@ -10,7 +10,9 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Component
 public class DefaultProcedureExecutor implements ProcedureExecutor {
 
     private final static Logger log = Logger.getLogger(DefaultProcedureExecutor.class.getName());
@@ -29,7 +32,10 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
     private final Map<String, Procedure> procedureCache = CachingFileLoader.createSynchronizedMapDefaultInitialSize();
     private final Resource sqlResource;
 
-    public DefaultProcedureExecutor(Database database, CachingFileLoader fileLoader, Resource sqlResource) {
+    public DefaultProcedureExecutor(Database database,
+                                    CachingFileLoader fileLoader,
+                                    @Value("classpath:sql") Resource sqlResource) {
+
         this.database = database;
         this.fileLoader = fileLoader;
         this.sqlResource = sqlResource;

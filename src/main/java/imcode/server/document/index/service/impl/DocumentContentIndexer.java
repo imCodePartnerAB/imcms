@@ -13,11 +13,14 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.tika.Tika;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
+@Component
 public class DocumentContentIndexer {
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -25,6 +28,7 @@ public class DocumentContentIndexer {
 
     private Tika tika = Value.with(new Tika(), t -> t.setMaxStringLength(-1));
 
+    @Autowired
     public DocumentContentIndexer(Config config) {
         this.fileDocFileFilter = buildFileDocFilter(config);
     }

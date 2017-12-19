@@ -3,6 +3,7 @@ package imcode.util;
 import imcode.server.Imcms;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.IOUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -11,6 +12,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
+@Component
 public class CachingFileLoader {
 
     private static final int FILE_CACHE_SIZE = 100;
