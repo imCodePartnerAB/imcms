@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+// todo: move to LanguageService
 public class DocumentLanguageMapper {
 
     private final LanguageRepository languageRepository;
