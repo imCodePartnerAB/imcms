@@ -1,10 +1,12 @@
 package imcode.server.document.index.service.impl;
 
 import com.imcode.imcms.util.Value;
+import imcode.server.Config;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
@@ -13,6 +15,7 @@ import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class DocumentContentIndexer {
@@ -22,10 +25,31 @@ public class DocumentContentIndexer {
 
     private Tika tika = Value.with(new Tika(), t -> t.setMaxStringLength(-1));
 
-    public DocumentContentIndexer(Predicate<FileDocumentDomainObject.FileDocumentFile> fileDocFileFilter) {
-        this.fileDocFileFilter = fileDocFileFilter;
+    public DocumentContentIndexer(Config config) {
+        this.fileDocFileFilter = buildFileDocFilter(config);
     }
 
+    private static String getExtension(String filename) {
+        return FilenameUtils.getExtension(org.apache.commons.lang3.StringUtils.trimToEmpty(filename)).toLowerCase();
+    }
+
+    private Predicate<FileDocumentDomainObject.FileDocumentFile> buildFileDocFilter(Config config) {
+        final Set<String> disabledFileExtensions = config.getIndexDisabledFileExtensionsAsSet();
+        final Set<String> disabledFileMimes = config.getIndexDisabledFileMimesAsSet();
+        final boolean noIgnoredFileNamesAndExtensions = disabledFileExtensions.isEmpty() && disabledFileMimes.isEmpty();
+
+        return fileDocumentFile -> {
+            if (noIgnoredFileNamesAndExtensions) {
+                return true;
+
+            } else {
+                final String ext = getExtension(fileDocumentFile.getFilename());
+                final String mime = getExtension(fileDocumentFile.getMimeType());
+
+                return !(disabledFileExtensions.contains(ext) || disabledFileMimes.contains(mime));
+            }
+        };
+    }
 
     public SolrInputDocument index(DocumentDomainObject doc, SolrInputDocument indexDoc) {
         return doc instanceof TextDocumentDomainObject
@@ -35,11 +59,10 @@ public class DocumentContentIndexer {
                 : indexDoc;
     }
 
-
     /**
      * Texts and images are not taken from textDocument. Instead they are queried from DB.
      */
-    public SolrInputDocument indexTextDoc(TextDocumentDomainObject doc, SolrInputDocument indexDoc) {
+    private SolrInputDocument indexTextDoc(TextDocumentDomainObject doc, SolrInputDocument indexDoc) {
         indexDoc.addField(DocumentIndex.FIELD__TEMPLATE, doc.getTemplateName());
 
         doc.getTexts().forEach((no, textDO) -> {
@@ -72,8 +95,7 @@ public class DocumentContentIndexer {
         return indexDoc;
     }
 
-
-    public SolrInputDocument indexFileDoc(FileDocumentDomainObject doc, SolrInputDocument indexDoc) {
+    private SolrInputDocument indexFileDoc(FileDocumentDomainObject doc, SolrInputDocument indexDoc) {
         Optional.ofNullable(doc.getDefaultFile()).filter(fileDocFileFilter).ifPresent(file -> {
 
             if (file.isFileInputStreamSource() && !file.getFile().exists()) {

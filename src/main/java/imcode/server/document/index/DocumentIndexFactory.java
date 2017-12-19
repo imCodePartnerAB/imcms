@@ -2,17 +2,12 @@ package imcode.server.document.index;
 
 import imcode.server.Config;
 import imcode.server.ImcmsServices;
-import imcode.server.document.FileDocumentDomainObject.FileDocumentFile;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.document.index.service.impl.*;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 // translated from scala...
 public class DocumentIndexFactory {
@@ -61,32 +56,11 @@ public class DocumentIndexFactory {
     private static DocumentIndexServiceOps createDocumentIndexServiceOps(ImcmsServices services) {
 
         final Config config = services.getConfig();
-        final Set<String> disabledFileExtensions = config.getIndexDisabledFileExtensionsAsSet();
-        final Set<String> disabledFileMimes = config.getIndexDisabledFileMimesAsSet();
-        final boolean noIgnoredFileNamesAndExtensions = disabledFileExtensions.isEmpty() && disabledFileMimes.isEmpty();
 
-        final Predicate<FileDocumentFile> fileDocFileFilter = fileDocumentFile -> {
-            if (noIgnoredFileNamesAndExtensions) {
-                return true;
-
-            } else {
-                final String ext = getExtension(fileDocumentFile.getFilename());
-                final String mime = getExtension(fileDocumentFile.getMimeType());
-
-                return !(disabledFileExtensions.contains(ext) || disabledFileMimes.contains(mime));
-            }
-        };
-
-        return new DocumentIndexServiceOps(services.getDocumentMapper(),
-                new DocumentIndexer(
-                        services.getCategoryMapper(),
-                        new DocumentContentIndexer(fileDocFileFilter)
-                )
+        return new DocumentIndexServiceOps(
+                services.getDocumentMapper(),
+                new DocumentIndexer(services.getCategoryMapper(), new DocumentContentIndexer(config))
         );
-    }
-
-    private static String getExtension(String filename) {
-        return FilenameUtils.getExtension(StringUtils.trimToEmpty(filename)).toLowerCase();
     }
 
     static class RemoteDocumentIndexServiceScheduler extends RemoteDocumentIndexService implements IndexRebuildScheduler {
