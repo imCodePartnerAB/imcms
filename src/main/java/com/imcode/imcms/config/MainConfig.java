@@ -7,6 +7,7 @@ import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
@@ -15,6 +16,9 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexFactory;
+import imcode.server.document.index.service.impl.DocumentContentIndexer;
+import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
+import imcode.server.document.index.service.impl.DocumentIndexer;
 import imcode.util.CachingFileLoader;
 import imcode.util.io.FileUtility;
 import org.apache.commons.beanutils.BeanUtils;
@@ -160,9 +164,27 @@ class MainConfig {
     }
 
     @Bean
-    public DocumentIndex documentIndex(Database database, ImcmsServices services, DocumentMapper documentMapper) {
-        final LoggingDocumentIndex documentIndex = new LoggingDocumentIndex(database,
-                new PhaseQueryFixingDocumentIndex(DocumentIndexFactory.create(services)));
+    public DocumentIndexer documentIndexer(CategoryMapper categoryMapper, Config config) {
+        return new DocumentIndexer(categoryMapper, new DocumentContentIndexer(config));
+    }
+
+    @Bean
+    public DocumentIndexServiceOps documentIndexServiceOps(DocumentMapper documentMapper,
+                                                           DocumentIndexer documentIndexer,
+                                                           DocumentLanguages documentLanguages) {
+
+        return new DocumentIndexServiceOps(documentMapper, documentIndexer, documentLanguages);
+    }
+
+    @Bean
+    public DocumentIndex documentIndex(Database database, Config config, DocumentMapper documentMapper,
+                                       DocumentIndexServiceOps documentIndexServiceOps) {
+
+        final DocumentIndex index = DocumentIndexFactory.create(config, documentIndexServiceOps);
+        final LoggingDocumentIndex documentIndex = new LoggingDocumentIndex(
+                database,
+                new PhaseQueryFixingDocumentIndex(index)
+        );
 
         documentMapper.setDocumentIndex(documentIndex);
 

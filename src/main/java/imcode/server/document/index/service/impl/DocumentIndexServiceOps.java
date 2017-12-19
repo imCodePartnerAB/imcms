@@ -1,6 +1,7 @@
 package imcode.server.document.index.service.impl;
 
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
@@ -34,16 +35,20 @@ public class DocumentIndexServiceOps {
     private static final Logger logger = Logger.getLogger(DocumentIndexServiceOps.class);
 
     private final DocumentMapper documentMapper;
-
     private final DocumentIndexer documentIndexer;
+    private final DocumentLanguages documentLanguages;
 
-    public DocumentIndexServiceOps(DocumentMapper documentMapper, DocumentIndexer documentIndexer) {
+    public DocumentIndexServiceOps(DocumentMapper documentMapper,
+                                   DocumentIndexer documentIndexer,
+                                   DocumentLanguages documentLanguages) {
+
         this.documentMapper = documentMapper;
         this.documentIndexer = documentIndexer;
+        this.documentLanguages = documentLanguages;
     }
 
     private Collection<SolrInputDocument> mkSolrInputDocs(int docId) {
-        return mkSolrInputDocs(docId, documentMapper.getDocumentLanguages().getAll());
+        return mkSolrInputDocs(docId, documentLanguages.getAll());
     }
 
     private Collection<SolrInputDocument> mkSolrInputDocs(int docId, Collection<DocumentLanguage> languages) {
@@ -117,7 +122,7 @@ public class DocumentIndexServiceOps {
         logger.debug("Rebuilding index.");
 
         List<Integer> ids = documentMapper.getAllDocumentIds();
-        List<DocumentLanguage> languages = documentMapper.getDocumentLanguages().getAll();
+        List<DocumentLanguage> languages = documentLanguages.getAll();
 
         int docsCount = ids.size();
         int docNo = 0;

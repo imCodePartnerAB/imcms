@@ -1,9 +1,11 @@
 package imcode.server.document.index;
 
 import imcode.server.Config;
-import imcode.server.ImcmsServices;
 import imcode.server.document.index.service.DocumentIndexService;
-import imcode.server.document.index.service.impl.*;
+import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
+import imcode.server.document.index.service.impl.IndexRebuildScheduler;
+import imcode.server.document.index.service.impl.InternalDocumentIndexService;
+import imcode.server.document.index.service.impl.RemoteDocumentIndexService;
 import org.apache.log4j.Logger;
 
 import java.util.Optional;
@@ -14,8 +16,7 @@ public class DocumentIndexFactory {
 
     private static Logger logger = Logger.getLogger(DocumentIndexFactory.class);
 
-    public static DocumentIndex create(ImcmsServices services) {
-        final Config config = services.getConfig();
+    public static DocumentIndex create(Config config, DocumentIndexServiceOps documentIndexServiceOps) {
         final Function<String, Optional<String>> trimToOption = s -> Optional.ofNullable(s)
                 .map(String::trim)
                 .filter(str -> str.length() > 0);
@@ -30,14 +31,14 @@ public class DocumentIndexFactory {
             final String solrUrl = oSolrUrl.get();
 
             service = new RemoteDocumentIndexServiceScheduler(
-                    solrUrl, solrUrl, createDocumentIndexServiceOps(services), periodInMinutes
+                    solrUrl, solrUrl, documentIndexServiceOps, periodInMinutes
             );
 
         } else if (oSolrHome.isPresent()) {
             final String solrHome = oSolrHome.get();
 
             service = new InternalDocumentIndexServiceScheduler(
-                    solrHome, createDocumentIndexServiceOps(services), periodInMinutes
+                    solrHome, documentIndexServiceOps, periodInMinutes
             );
 
         } else {
@@ -51,16 +52,6 @@ public class DocumentIndexFactory {
         }
 
         return new DocumentIndexImpl(service);
-    }
-
-    private static DocumentIndexServiceOps createDocumentIndexServiceOps(ImcmsServices services) {
-
-        final Config config = services.getConfig();
-
-        return new DocumentIndexServiceOps(
-                services.getDocumentMapper(),
-                new DocumentIndexer(services.getCategoryMapper(), new DocumentContentIndexer(config))
-        );
     }
 
     static class RemoteDocumentIndexServiceScheduler extends RemoteDocumentIndexService implements IndexRebuildScheduler {
