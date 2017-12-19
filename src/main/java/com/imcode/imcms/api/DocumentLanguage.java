@@ -1,25 +1,14 @@
 package com.imcode.imcms.api;
 
 import java.io.Serializable;
-import java.util.Comparator;
 import java.util.Objects;
 
+/**
+ * @deprecated use {@link com.imcode.imcms.model.Language}
+ */
+@Deprecated
 public final class DocumentLanguage implements Serializable {
 
-    public static Comparator<DocumentLanguage> NATIVE_NAME_COMPARATOR = (d1, d2) -> {
-        String n1 = d1.getNativeName();
-        String n2 = d2.getNativeName();
-
-        if (n1 == null && n2 == null) {
-            return 0;
-        } else if (n1 == null) {
-            return 1;
-        } else if (n2 == null) {
-            return -1;
-        }
-
-        return n1.compareToIgnoreCase(n2);
-    };
     private final String code;
     private final String name;
     private final String nativeName;
