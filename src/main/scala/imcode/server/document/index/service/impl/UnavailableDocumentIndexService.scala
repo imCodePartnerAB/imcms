@@ -1,10 +1,11 @@
 package imcode.server.document.index.service.impl
 
-import _root_.imcode.server.document.index.service.{IndexRebuildTask, IndexUpdateOp, DocumentIndexService}
-import org.apache.solr.client.solrj.response.QueryResponse
-import org.apache.solr.client.solrj.SolrQuery
-import scala.util.{Try, Failure}
+import _root_.imcode.server.document.index.service.{DocumentIndexService, IndexRebuildTask, IndexUpdateOp}
 import com.imcode.imcms.api.ServiceUnavailableException
+import org.apache.solr.client.solrj.SolrQuery
+import org.apache.solr.client.solrj.response.QueryResponse
+
+import scala.util.{Failure, Try}
 
 object UnavailableDocumentIndexService extends DocumentIndexService {
 
@@ -12,7 +13,7 @@ object UnavailableDocumentIndexService extends DocumentIndexService {
 
   override def update(request: IndexUpdateOp) {}
 
-  override def rebuild(): Try[IndexRebuildTask] = Failure(new ServiceUnavailableException())
+  override def rebuild(): IndexRebuildTask = throw new ServiceUnavailableException()
 
   override def currentRebuildTaskOpt(): Option[IndexRebuildTask] = None
 

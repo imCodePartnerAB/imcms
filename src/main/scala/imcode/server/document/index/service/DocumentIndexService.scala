@@ -1,11 +1,10 @@
 package imcode.server.document.index.service
 
 import com.imcode._
-import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.client.solrj.SolrQuery
-import _root_.imcode.server.user.UserDomainObject
-import _root_.imcode.server.document.DocumentDomainObject
-import scala.util.{Failure, Success, Try}
+import org.apache.solr.client.solrj.response.QueryResponse
+
+import scala.util.{Success, Try}
 
 /**
  *
@@ -26,16 +25,16 @@ trait DocumentIndexService extends Log4jLogger {
    *
    * @return current or a new rebuild task.
    */
-  def rebuild(): Try[IndexRebuildTask]
+  def rebuild(): IndexRebuildTask
 
   /**
    * @return None if index is not empty or Some(attempt to rebuild).
    */
-  final def rebuildIfEmpty(): Option[Try[IndexRebuildTask]] = {
+  final def rebuildIfEmpty(): Option[IndexRebuildTask] = {
     count match {
       case Success(0) => Some(rebuild())
       case Success(_) => None
-      case Failure(throwable) => Some(Failure(throwable))
+      //      case Failure(throwable) => Some(throwable)
     }
   }
 

@@ -23,7 +23,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-
 /**
  * Document index service low level operations.
  * <p>
@@ -43,12 +42,11 @@ public class DocumentIndexServiceOps {
         this.documentIndexer = documentIndexer;
     }
 
-    public Collection<SolrInputDocument> mkSolrInputDocs(int docId) {
+    private Collection<SolrInputDocument> mkSolrInputDocs(int docId) {
         return mkSolrInputDocs(docId, documentMapper.getDocumentLanguages().getAll());
     }
 
-
-    public Collection<SolrInputDocument> mkSolrInputDocs(int docId, Collection<DocumentLanguage> languages) {
+    private Collection<SolrInputDocument> mkSolrInputDocs(int docId, Collection<DocumentLanguage> languages) {
         Collection<SolrInputDocument> solrInputDocs = languages.stream()
                 .map(language -> (DocumentDomainObject) documentMapper.getDefaultDocument(docId, language))
                 .filter(Objects::nonNull)
@@ -77,7 +75,7 @@ public class DocumentIndexServiceOps {
 
     }
 
-    public String mkSolrDocsDeleteQuery(int docId) {
+    private String mkSolrDocsDeleteQuery(int docId) {
         return String.format("%s:%d", DocumentIndex.FIELD__META_ID, docId);
     }
 
@@ -96,7 +94,6 @@ public class DocumentIndexServiceOps {
         return solrServer.query(solrQuery);
     }
 
-
     public void addDocsToIndex(SolrServer solrServer, int docId) throws SolrServerException, IOException {
         Collection<SolrInputDocument> solrInputDocs = mkSolrInputDocs(docId);
 
@@ -108,14 +105,12 @@ public class DocumentIndexServiceOps {
         }
     }
 
-
     public void deleteDocsFromIndex(SolrServer solrServer, int docId) throws SolrServerException, IOException {
         String query = mkSolrDocsDeleteQuery(docId);
 
         solrServer.deleteByQuery(query);
         solrServer.commit();
     }
-
 
     public void rebuildIndex(SolrServer solrServer, Consumer<IndexRebuildProgress> progressCallback)
             throws SolrServerException, IOException, InterruptedException {

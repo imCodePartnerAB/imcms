@@ -3,7 +3,7 @@ package imcode.server.document.index.service.impl
 import java.io.IOException
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
 
-import _root_.imcode.server.document.index.service.{IndexRebuildTask, IndexUpdateOp, SolrServerFactory, DocumentIndexService}
+import _root_.imcode.server.document.index.service.{DocumentIndexService, IndexRebuildTask, IndexUpdateOp, SolrServerFactory}
 import com.imcode._
 import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.client.solrj.{SolrQuery, SolrServerException}
@@ -21,8 +21,7 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
   private val shutdownRef: AtomicBoolean = new AtomicBoolean(false)
   private val serviceRef: AtomicReference[DocumentIndexService] = new AtomicReference(UnavailableDocumentIndexService)
   private val failureHandler: (ServiceFailure => Unit) = { failure: ServiceFailure =>
-    import org.apache.solr.common.SolrException.ErrorCode.getErrorCode
-    import org.apache.solr.common.SolrException.ErrorCode.{SERVER_ERROR, FORBIDDEN, UNAUTHORIZED, NOT_FOUND, BAD_REQUEST}
+    import org.apache.solr.common.SolrException.ErrorCode._
 
     failure.getException match {
       case e: SolrException if Set(BAD_REQUEST).contains(getErrorCode(e.code)) => logger.warn("Bad search request", e)
@@ -72,7 +71,7 @@ class InternalDocumentIndexService(solrHome: String, serviceOps: DocumentIndexSe
 
   override def update(request: IndexUpdateOp): Unit = serviceRef.get.update(request)
 
-  override def rebuild(): Try[IndexRebuildTask] = serviceRef.get.rebuild()
+  override def rebuild(): IndexRebuildTask = serviceRef.get.rebuild()
 
   override def currentRebuildTaskOpt(): Option[IndexRebuildTask] = serviceRef.get.currentRebuildTaskOpt()
 
