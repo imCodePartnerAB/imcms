@@ -21,11 +21,11 @@ public class TextDocumentContentInitializer {
         initContentLoops(document);
         initTexts(document);
         initImages(document);
-        initMenus(document);
+//        initMenus(document);
         initTemplateNames(document);
     }
 
-    public void initTexts(TextDocumentDomainObject document) {
+    private void initTexts(TextDocumentDomainObject document) {
         for (Map.Entry<Integer, TextDomainObject> e : contentLoader.getTexts(document.getRef()).entrySet()) {
             document.setText(e.getKey(), e.getValue());
         }
@@ -36,7 +36,7 @@ public class TextDocumentContentInitializer {
     }
 
 
-    public void initTemplateNames(TextDocumentDomainObject document) {
+    private void initTemplateNames(TextDocumentDomainObject document) {
         TextDocumentDomainObject.TemplateNames templateNames = contentLoader.getTemplateNames(document.getMeta().getId());
 
         if (templateNames == null) {
@@ -47,7 +47,7 @@ public class TextDocumentContentInitializer {
     }
 
 
-    public void initImages(TextDocumentDomainObject document) {
+    private void initImages(TextDocumentDomainObject document) {
         for (Map.Entry<Integer, ImageDomainObject> e : contentLoader.getImages(document.getRef()).entrySet()) {
             document.setImage(e.getKey(), e.getValue());
         }
@@ -62,7 +62,7 @@ public class TextDocumentContentInitializer {
         document.setMenus(contentLoader.getMenus(document.getVersionRef()));
     }
 
-    public void initContentLoops(TextDocumentDomainObject document) {
+    private void initContentLoops(TextDocumentDomainObject document) {
         document.setLoops(contentLoader.getLoops(document.getVersionRef()));
     }
 }
