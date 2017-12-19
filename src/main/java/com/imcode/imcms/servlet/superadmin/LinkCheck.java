@@ -114,8 +114,8 @@ public class LinkCheck extends HttpServlet {
     private void addTextAndImageLinks(List<Link> links, DocumentIndex reindexingIndex, UserDomainObject user,
                                       HttpServletRequest request, IntRange range) {
         BooleanQuery query = new BooleanQuery();
-        query.add(new PrefixQuery(new Term(DocumentIndex.FIELD__NONSTRIPPED_TEXT, "http")), Occur.SHOULD);
-        query.add(new PrefixQuery(new Term(DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href")), Occur.SHOULD);
+        query.add(new PrefixQuery(new Term(DocumentIndex.FIELD__TEXT, "http")), Occur.SHOULD);
+        query.add(new PrefixQuery(new Term(DocumentIndex.FIELD__TEXT, "href")), Occur.SHOULD);
         query.add(new PrefixQuery(new Term(DocumentIndex.FIELD__IMAGE_LINK_URL, "http")), Occur.SHOULD);
 
         List textDocuments = reindexingIndex.search(new SimpleDocumentQuery(query), user);
