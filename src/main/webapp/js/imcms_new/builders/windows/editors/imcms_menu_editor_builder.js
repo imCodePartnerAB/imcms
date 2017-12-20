@@ -13,6 +13,23 @@ Imcms.define("imcms-menu-editor-builder",
 
         var $title, $menuElementsContainer, $documentsContainer;
         var docId, menuIndex;
+        // variables for drag
+        var mouseCoords = {
+                pageX: undefined,
+                pageY: undefined,
+                newPageX: undefined,
+                newPageY: undefined
+            },
+            menuAreaProp = {
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0
+            },
+            $menuArea,
+            isMouseDown = false,
+            isPasted = false
+        ;
 
         function reloadMenuOnPage() {
             reloadElement($tag.find(".imcms-editor-content"));
@@ -62,6 +79,279 @@ Imcms.define("imcms-menu-editor-builder",
                     "right-side": $documentsContainer = $("<div>", {"class": "imcms-right-side"})
                 }
             }).buildBlockStructure("<div>");
+        }
+
+        function disableDrag($frame) {
+            var $originItem = $(".imcms-menu-items--is-drag");
+            var $originItemParent = $originItem.parent("[data-menu-items-lvl]");
+            var $originDropItem = $(".imcms-menu-items--is-drop");
+            $frame.remove();
+            isMouseDown = false;
+            if (isPasted) {
+                $originItem.remove();
+                if ($originItemParent.find("[data-menu-items-lvl]").length === 0) {
+                    $originItemParent.find(".children-triangle").remove();
+                }
+                $originDropItem.find(".children-triangle").first().trigger("click");
+                $originDropItem.removeClass("imcms-menu-items--is-drop");
+            } else {
+                $originItem.removeClass("imcms-menu-items--is-drag");
+                $originItem.find(".children-triangle").first().trigger("click");
+            }
+        }
+
+        function detectTargetArea(event) {
+            return (event.pageY > menuAreaProp.top) && (event.pageY < menuAreaProp.bottom) && (event.pageX > menuAreaProp.left) && (event.pageX < menuAreaProp.right);
+        }
+
+        function toggleUserSelect(flag) {
+            if (flag) {
+                $("body").find("*").css({"user-select": "none"});
+            } else {
+                $("body").find("*").css({"user-select": "auto"});
+            }
+        }
+
+        function getMenuDocByObjId(obj) {
+            var menuDocs = $(".imcms-menu-items-tree").find(".imcms-menu-items"),
+                menuDoc = null
+            ;
+
+            menuDocs.each(function () {
+                if ($(this).attr("data-document-id") === obj) {
+                    menuDoc = $(this)
+                }
+            });
+
+            return menuDoc;
+        }
+
+        function getMenuItemsParam(menuDocs) {
+            var allMenuDocObjArray = {};
+            menuDocs.each(function () {
+                if (!$(this).closest(".imcms-menu-items").hasClass("imcms-menu-items--is-drag")) {
+                    allMenuDocObjArray[$(this).closest(".imcms-menu-items").attr("data-document-id")] = {
+                        top: $(this).offset().top,
+                        bottom: $(this).offset().top + $(this).outerHeight()
+                    };
+                }
+            });
+            return allMenuDocObjArray;
+        }
+
+        function disableHighlightingMenuDoc() {
+            $(".imcms-menu-items-tree").find(".imcms-menu-items").css({
+                "border": "none"
+            });
+        }
+
+        function highlightMenuDoc(param, elem) {
+            disableHighlightingMenuDoc();
+            if (param) {
+                elem.css({
+                    "border-top": "1px solid #51aeea",
+                    "border-bottom": "1px solid #51aeea"
+                });
+            } else {
+                elem.css({
+                    "border-bottom": "1px solid #51aeea"
+                })
+            }
+        }
+
+        function removedPreviousItemFrame() {
+            var $menuTree = $(".imcms-menu-items-tree"),
+                $frame = $(".imcms-menu-items--frame"),
+                $frameParent = $(".imcms-menu-items--is-drop").closest("[data-menu-items-lvl]"),
+                frameCopies
+            ;
+
+            //if ($frameParent.attr("data-menu-items-lvl") === "1") {
+                if ($frameParent.find("[data-menu-items-lvl]").length === 1 || !$frameParent.hasClass("imcms-menu-items--is-drag")) {
+                    $frameParent.find(".children-triangle").remove();
+                }
+            //}
+
+            frameCopies = $menuTree.find("[data-document-id=" + $frame.attr("data-document-id") + "]");
+
+            frameCopies.each(function () {
+                if (!$(this).hasClass("imcms-menu-items--is-drag")) {
+                    $(this).remove();
+                }
+            });
+
+            $menuTree.find("[data-menu-items-lvl]").each(function () {
+                if ($(this).find("[data-menu-items-lvl]").length === 0) {
+                    $(this).find(".children-triangle").remove();
+                }
+            });
+
+        }
+
+        function addShowHideBtn(menuDoc) {
+            if (menuDoc.find(".imcms-menu-item").first().find(".children-triangle").length === 0) {
+                menuDoc.find(".imcms-menu-item").first().prepend(buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open"));
+            }
+        }
+
+        function changeDataDocumentLevel(menuDoc, $origin, placeStatus) {
+            var menuDocLvl = parseInt(menuDoc.attr("data-menu-items-lvl"));
+
+            if (placeStatus) {
+                menuDocLvl++
+            }
+            $origin.attr("data-menu-items-lvl", menuDocLvl);
+            $origin.children().each(function () {
+                if ($(this).attr("data-menu-items-lvl")) {
+                    changeDataDocumentLevel($origin, $(this), true);
+                }
+            });
+        }
+
+        function insertMenuCopyFrame(menuDoc, placeStatus) {
+            var $frame = $(".imcms-menu-items--frame"),
+                $origin = $(".imcms-menu-items--is-drag").clone(true)
+            ;
+
+            removedPreviousItemFrame();
+
+            if (menuDoc.attr("data-document-id") === $frame.attr("data-document-id")) {
+                isPasted = false;
+                return
+            }
+
+            $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
+
+            if (placeStatus) {
+                menuDoc.append($origin);
+                changeDataDocumentLevel(menuDoc, $origin, placeStatus);
+                addShowHideBtn(menuDoc);
+                console.log("placeStatus: ", placeStatus);
+            } else {
+                menuDoc.after($origin);
+                changeDataDocumentLevel(menuDoc, $origin, placeStatus);
+                console.log("placeStatus: ", placeStatus);
+            }
+
+            isPasted = true;
+        }
+
+        function detectPasteArea($frame) {
+            var allMenuDocObjArray = {},
+                itemTree = $(".imcms-menu-items-tree"),
+                menuDocs = itemTree.find(".imcms-menu-item"),
+                frameTop = $frame.position().top
+            ;
+
+            // get all menu doc coords
+            allMenuDocObjArray = getMenuItemsParam(menuDocs, allMenuDocObjArray);
+
+            var menuDoc = null,
+                placeStatus = null
+            ;
+
+            $.each(allMenuDocObjArray, function (obj, param) {
+                if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
+                    menuDoc = getMenuDocByObjId(obj);
+                    placeStatus = true;
+                    insertMenuCopyFrame(menuDoc, placeStatus);
+                } else if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
+                    menuDoc = getMenuDocByObjId(obj);
+                    placeStatus = false;
+                    insertMenuCopyFrame(menuDoc, placeStatus);
+                }
+            });
+
+            // highlightingMenuDoc
+            if (placeStatus !== null) {
+                highlightMenuDoc(placeStatus, menuDoc);
+            } else {
+                disableHighlightingMenuDoc();
+            }
+        }
+
+        function moveFrame(event) {
+            var $frame = $(".imcms-menu-items--frame");
+            mouseCoords.newPageX = event.clientX;
+            mouseCoords.newPageY = event.clientY;
+
+            if (isMouseDown && detectTargetArea(event)) {
+                toggleUserSelect(true);
+                $frame.css({
+                    "top": (mouseCoords.newPageY - mouseCoords.pageY) + mouseCoords.top,
+                    "left": (mouseCoords.newPageX - mouseCoords.pageX) + mouseCoords.left
+                });
+                detectPasteArea($frame);
+            } else {
+                disableDrag($frame);
+                disableHighlightingMenuDoc();
+                toggleUserSelect(false);
+            }
+        }
+
+        function closeSubItems(elem) {
+            var btnTriangle = elem.find(".children-triangle").first();
+            if (btnTriangle.hasClass("imcms-menu-item-btn--open")) {
+                btnTriangle.trigger("click");
+            }
+        }
+
+        function dragMenuItem(event) {
+            var $this = $(this);
+
+            var $originItem = $this.closest(".imcms-menu-items"),
+                originItemLvl = parseInt($originItem.attr("data-menu-items-lvl"))
+            ;
+
+            if (originItemLvl === 1 && $("[data-menu-items-lvl='1']").length === 1) {
+                return;
+            }
+
+            var $frame = $originItem.clone(true);
+
+            $originItem.addClass("imcms-menu-items--is-drag");
+
+            closeSubItems($originItem);
+
+            mouseCoords = {
+                pageX: event.clientX,
+                pageY: event.clientY,
+                top: $originItem.position().top,
+                left: $originItem.position().left + 510
+            };
+            $menuArea = $(".imcms-menu-items-tree");
+            menuAreaProp = {
+                top: $menuArea.position().top,
+                left: $menuArea.position().left,
+                right: menuAreaProp.left + $menuArea.outerWidth(),
+                bottom: menuAreaProp.top + $menuArea.outerHeight()
+            };
+
+            $frame.css({
+                "background-color": "#e9e9f5",
+                "position": "absolute",
+                "z-index": 11001,
+                "width": "450px",
+                "top": mouseCoords.top,
+                "left": mouseCoords.left
+            });
+
+            $frame.addClass("imcms-menu-items--frame");
+
+            $frame.appendTo("body");
+
+            closeSubItems($frame);
+
+            isMouseDown = true;
+
+            $(document).on("mousemove", moveFrame)
+                .on("dragstart", "imcms-menu-item__info", function () {
+                    return false;
+                });
+
+            $(document).on("mouseup", function () {
+                disableDrag($frame);
+            });
         }
 
         function createItem() {
@@ -147,6 +437,8 @@ Imcms.define("imcms-menu-editor-builder",
             var $controlEdit = controls.edit(function () {
                 pageInfoBuilder.build(menuItemDocId);
             });
+
+            $controlMove.on("mousedown", dragMenuItem);
 
             return controls.buildControlsBlock("<div>", [
                 $controlMove,

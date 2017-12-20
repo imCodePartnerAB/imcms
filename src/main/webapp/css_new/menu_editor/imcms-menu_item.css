@@ -43,3 +43,8 @@
 .imcms-menu-item:hover .imcms-menu-item__controls {
     display: block;
 }
+
+.imcms-menu-items--is-drag {
+    background: #d0e9f9;
+    opacity: .5;
+}
