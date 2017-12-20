@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Integer>, VersionedContentRepository<Image> {
@@ -21,6 +22,9 @@ public interface ImageRepository extends JpaRepository<Image, Integer>, Versione
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef IS NOT NULL")
     List<Image> findByVersionAndLanguageWhereLoopEntryRefIsNotNull(Version version, LanguageJPA language);
 
+    @SuppressWarnings("SpringDataRepositoryMethodReturnTypeInspection")
+    @Query("select i.linkUrl from Image i where i.version = ?1 and i.language = ?2 and i.linkUrl > ''")
+    Set<String> findNonEmptyImageLinkUrlByVersionAndLanguage(Version version, LanguageJPA language);
 
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.index = ?2 AND i.loopEntryRef IS NULL")
     List<Image> findByVersionAndIndexWhereLoopEntryRefIsNull(Version version, int index);

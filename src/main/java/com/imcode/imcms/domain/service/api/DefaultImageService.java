@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 @Transactional
@@ -86,6 +87,12 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageDT
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
         repository.deleteByDocId(docIdToDelete);
+    }
+
+    @Override
+    public Set<String> getPublicImageLinks(int docId, Language language) {
+        final Version latestVersion = versionService.getLatestVersion(docId);
+        return repository.findNonEmptyImageLinkUrlByVersionAndLanguage(latestVersion, new LanguageJPA(language));
     }
 
     private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef,

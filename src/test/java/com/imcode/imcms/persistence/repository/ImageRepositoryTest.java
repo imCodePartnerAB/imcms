@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -225,9 +227,9 @@ public class ImageRepositoryTest {
 
         for (int i = IMAGE_INDEX; i < IMAGE_INDEX + 20; i++) {
             for (LanguageJPA language : languages) {
-                for (Version vers : versions) {
+                for (Version version : versions) {
                     for (LoopEntryRefJPA loopEntryRefJPA : loops) {
-                        imageDataInitializer.generateImage(i, language, vers, loopEntryRefJPA);
+                        imageDataInitializer.generateImage(i, language, version, loopEntryRefJPA);
                     }
                 }
             }
@@ -238,5 +240,62 @@ public class ImageRepositoryTest {
         imageRepository.deleteByDocId(DOC_ID);
 
         assertTrue(imageRepository.findAll().isEmpty());
+    }
+
+    @Test
+    public void findImageLinkUrlByVersionAndLanguage() {
+        assertTrue(imageRepository.findAll().isEmpty());
+
+        final Version newVersion = versionDataInitializer.createData(VERSION_INDEX + 1, DOC_ID);
+        final int loopIndex = 1;
+        final int loopEntryIndex = 1;
+        final LoopDTO loopDTO = new LoopDTO(
+                DOC_ID, loopIndex, Collections.singletonList(LoopEntryDTO.createEnabled(loopEntryIndex))
+        );
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(loopIndex, loopEntryIndex);
+        loopDataInitializer.createData(loopDTO);
+
+        final LanguageJPA[] languages = {english, swedish};
+        final Version[] versions = {version, newVersion};
+        final int imagesPerVersionPerLanguage = 20;
+        final String testLinkUrl = "link_url";
+
+        for (Version version : versions) {
+            for (LanguageJPA language : languages) {
+                IntStream.range(IMAGE_INDEX, IMAGE_INDEX + imagesPerVersionPerLanguage)
+                        .forEach(index -> {
+                            final Image image = new Image();
+                            image.setIndex(index);
+                            image.setLanguage(language);
+                            image.setVersion(version);
+                            image.setLoopEntryRef((index % 2 == 0) ? loopEntryRef : null);
+                            image.setFormat(Format.JPEG);
+                            image.setLinkUrl(testLinkUrl + index);
+                            imageRepository.save(image);
+                        });
+                IntStream.range(IMAGE_INDEX + imagesPerVersionPerLanguage, IMAGE_INDEX + (2 * imagesPerVersionPerLanguage))
+                        .forEach(index -> {
+                            final Image image = new Image();
+                            image.setIndex(index);
+                            image.setLanguage(language);
+                            image.setVersion(version);
+                            image.setLoopEntryRef((index % 2 == 0) ? loopEntryRef : null);
+                            image.setFormat(Format.JPEG);
+                            image.setLinkUrl("");
+                            imageRepository.save(image);
+                        });
+            }
+        }
+
+        assertFalse(imageRepository.findAll().isEmpty());
+
+        for (Version version : versions) {
+            for (LanguageJPA language : languages) {
+                final Set<String> links = imageRepository.findNonEmptyImageLinkUrlByVersionAndLanguage(version, language);
+
+                links.forEach(s -> assertTrue(s.startsWith(testLinkUrl)));
+            }
+        }
+
     }
 }

@@ -1,98 +1,127 @@
 Imcms.define("imcms-categories-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-category-types-rest-api",
+        "imcms-bem-builder", "imcms-components-builder", "imcms-categories-rest-api",
         "imcms-page-info-tab-form-builder"
     ],
-    function (BEM, components, categoriesTypesRestApi, tabContentBuilder) {
+    function (BEM, components, categoriesRestApi, tabContentBuilder) {
+
+        var tabData = {};
+
+        function isDocumentContainsCategory(document, category) {
+            if (!document) {
+                return false;
+            }
+
+            var docCategoriesIds = document.categories.map(function (category) {
+                return category.id;
+            });
+
+            return docCategoriesIds.indexOf(category.id) !== -1;
+        }
+
+        function createMultiSelectCategoryType(categoryType, document, selectWareHouse) {
+
+            var categoryTypeAsCheckboxGroup = categoryType.categories.map(function (category) {
+                var $imcmsCheckbox = components.checkboxes.imcmsCheckbox("<div>", {
+                    name: "category-type-" + categoryType.id,
+                    value: category.id,
+                    text: category.name
+                });
+
+                selectWareHouse.push($imcmsCheckbox);
+
+                return $imcmsCheckbox.setChecked(isDocumentContainsCategory(document, category));
+            });
+
+            return components.checkboxes.checkboxContainerField("<div>",
+                categoryTypeAsCheckboxGroup,
+                {title: categoryType.name}
+            );
+        }
+
+        function createSingleSelectCategoryType(categoryType, document, selectWareHouse) {
+            var mappedCategoriesForSelectContainer = categoryType.categories.map(function (category) {
+                return {
+                    text: category.name,
+                    "data-value": category.id
+                };
+            });
+
+            var $selectContainer = components.selects.selectContainer("<div>", {
+                id: "category-type-" + categoryType.id,
+                text: categoryType.name,
+                emptySelect: true
+            }, mappedCategoriesForSelectContainer);
+
+            var $imcmsSelect = $selectContainer.getSelect();
+            selectWareHouse.push($imcmsSelect);
+
+            var category = categoryType.categories.filter(function (category) {
+                return isDocumentContainsCategory(document, category);
+            })[0];
+
+            category && $imcmsSelect.selectValue(category.id);
+
+            return $selectContainer;
+        }
+
+        function buildCategoryTypes(categoryTypes, document) {
+            var categoriesBlockElements = [];
+
+            categoryTypes.forEach(function (categoryType) {
+                var $categoryType = (categoryType.multiSelect)
+                    ? createMultiSelectCategoryType(categoryType, document, tabData.multiSelects$)
+                    : createSingleSelectCategoryType(categoryType, document, tabData.singleSelects$);
+
+                categoriesBlockElements.push($categoryType);
+            });
+
+            tabData.$categoriesBlock.append(categoriesBlockElements);
+        }
+
+        function extractCategoryTypes(categories) {
+            var categoryTypeIdsPerType = {};
+
+            categories.forEach(function (category) {
+                var categoryTypeId = category.type.id;
+
+                if (!categoryTypeIdsPerType[categoryTypeId]) {
+                    categoryTypeIdsPerType[categoryTypeId] = category.type;
+                    categoryTypeIdsPerType[categoryTypeId].categories = [];
+                }
+
+                delete category.type;
+                categoryTypeIdsPerType[categoryTypeId].categories.push(category);
+            });
+
+            var categoryTypes = [];
+
+            for (var categoryType in categoryTypeIdsPerType) {
+                categoryTypes.push(categoryTypeIdsPerType[categoryType]);
+            }
+
+            return categoryTypes;
+        }
 
         return {
             name: "categories",
-            data: {},
             buildTab: function (index, docId) {
-                this.data.$categoriesBlock = tabContentBuilder.buildFormBlock([], index);
+                tabData.$categoriesBlock = tabContentBuilder.buildFormBlock([], index);
                 docId || this.fillTabDataFromDocument();
-                return this.data.$categoriesBlock;
+                return tabData.$categoriesBlock;
             },
             fillTabDataFromDocument: function (document) {
-                this.data.$categoriesBlock && this.data.$categoriesBlock.empty();
-                this.data.multiSelects$ = [];
-                this.data.singleSelects$ = [];
+                tabData.$categoriesBlock && tabData.$categoriesBlock.empty();
+                tabData.multiSelects$ = [];
+                tabData.singleSelects$ = [];
 
-                var categoriesBlockElements = [],
-                    parentContext = this;
-
-                categoriesTypesRestApi.read(null).done(function (categoriesTypes) {
-                    categoriesTypes.forEach(function (categoryType) {
-                        var $categoryType = (categoryType.multiSelect)
-                            ? createMultiSelectCategoryType(categoryType, document, parentContext.data.multiSelects$)
-                            : createSingleSelectCategoryType(categoryType, document, parentContext.data.singleSelects$);
-
-                        categoriesBlockElements.push($categoryType);
-                    });
-
-                    parentContext.data.$categoriesBlock.append(categoriesBlockElements);
+                categoriesRestApi.read(null).done(function (categories) {
+                    var categoryTypes = extractCategoryTypes(categories);
+                    buildCategoryTypes(categoryTypes, document);
                 });
-
-                function isDocumentContainsCategory(document, category) {
-                    if (!document) {
-                        return false;
-                    }
-
-                    var docCategoriesIds = document.categories.map(function (category) {
-                        return category.id;
-                    });
-
-                    return docCategoriesIds.indexOf(category.id) !== -1;
-                }
-
-                function createMultiSelectCategoryType(categoryType, document, selectWareHouse) {
-
-                    var categoryTypeAsCheckboxGroup = categoryType.categories.map(function (category) {
-                        var $imcmsCheckbox = components.checkboxes.imcmsCheckbox("<div>", {
-                            name: "category-type-" + categoryType.id,
-                            value: category.id,
-                            text: category.name
-                        });
-
-                        selectWareHouse.push($imcmsCheckbox);
-
-                        return $imcmsCheckbox.setChecked(isDocumentContainsCategory(document, category));
-                    });
-
-                    return components.checkboxes.checkboxContainerField("<div>",
-                        categoryTypeAsCheckboxGroup,
-                        {title: categoryType.name}
-                    );
-                }
-
-                function createSingleSelectCategoryType(categoryType, document, selectWareHouse) {
-                    var mappedCategoriesForSelectContainer = categoryType.categories.map(function (category) {
-                        return {
-                            text: category.name,
-                            "data-value": category.id
-                        };
-                    });
-
-                    var $selectContainer = components.selects.selectContainer("<div>", {
-                        id: "category-type-" + categoryType.id,
-                        text: categoryType.name,
-                        emptySelect: true
-                    }, mappedCategoriesForSelectContainer);
-
-                    var $imcmsSelect = $selectContainer.getSelect();
-                    selectWareHouse.push($imcmsSelect);
-
-                    var category = categoryType.categories.filter(function (category) {
-                        return isDocumentContainsCategory(document, category);
-                    })[0];
-
-                    category && $imcmsSelect.selectValue(category.id);
-
-                    return $selectContainer;
-                }
             },
             saveData: function (documentDTO) {
-                var multiSelectCategories = this.data.multiSelects$
+                var multiSelectCategories = tabData.multiSelects$
                     .filter(function ($categoryCheckbox) {
                         return $categoryCheckbox.isChecked();
                     })
@@ -102,7 +131,7 @@ Imcms.define("imcms-categories-tab-builder",
                         };
                     });
 
-                var singleSelectCategories = this.data.singleSelects$
+                var singleSelectCategories = tabData.singleSelects$
                     .map(function ($categorySelect) {
                         return {
                             id: $categorySelect.getSelectedValue()
@@ -117,7 +146,7 @@ Imcms.define("imcms-categories-tab-builder",
                 return documentDTO;
             },
             clearTabData: function () {
-                this.data.$categoriesBlock && this.data.$categoriesBlock.empty();
+                tabData.$categoriesBlock && tabData.$categoriesBlock.empty();
             }
         };
     }
