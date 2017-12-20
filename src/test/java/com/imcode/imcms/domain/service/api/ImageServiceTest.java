@@ -9,19 +9,14 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
-import com.imcode.imcms.domain.dto.LoopDTO;
-import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
-import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -42,10 +37,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
@@ -283,5 +277,60 @@ public class ImageServiceTest {
         imageRepository.deleteByDocId(TEST_DOC_ID);
 
         assertTrue(imageRepository.findAll().isEmpty());
+    }
+
+    @Test
+    public void getPublicImageLinks_When_FewVersionExist_Expect_Found() {
+        assertTrue(imageRepository.findAll().isEmpty());
+
+        final Version workingVersion = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
+        final Version newVersion = versionDataInitializer.createData(VERSION_INDEX + 1, TEST_DOC_ID);
+        final int loopIndex = 1;
+        final int loopEntryIndex = 1;
+        final LoopDTO loopDTO = new LoopDTO(
+                TEST_DOC_ID, loopIndex, Collections.singletonList(LoopEntryDTO.createEnabled(loopEntryIndex))
+        );
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(loopIndex, loopEntryIndex);
+        loopDataInitializer.createData(loopDTO);
+
+        final List<LanguageJPA> languages = languageRepository.findAll();
+        final Version[] versions = {workingVersion, newVersion};
+        final int imagesPerVersionPerLanguage = 20;
+        final String testLinkUrl = "link_url";
+
+        for (Version version : versions) {
+            for (LanguageJPA language : languages) {
+                IntStream.range(TEST_IMAGE_INDEX, TEST_IMAGE_INDEX + imagesPerVersionPerLanguage)
+                        .forEach(index -> {
+                            final Image image = new Image();
+                            image.setIndex(index);
+                            image.setLanguage(language);
+                            image.setVersion(version);
+                            image.setLoopEntryRef((index % 2 == 0) ? loopEntryRef : null);
+                            image.setFormat(Format.JPEG);
+                            image.setLinkUrl(testLinkUrl + index);
+                            imageRepository.save(image);
+                        });
+                IntStream.range(TEST_IMAGE_INDEX + imagesPerVersionPerLanguage, TEST_IMAGE_INDEX + (2 * imagesPerVersionPerLanguage))
+                        .forEach(index -> {
+                            final Image image = new Image();
+                            image.setIndex(index);
+                            image.setLanguage(language);
+                            image.setVersion(version);
+                            image.setLoopEntryRef((index % 2 == 0) ? loopEntryRef : null);
+                            image.setFormat(Format.JPEG);
+                            image.setLinkUrl("");
+                            imageRepository.save(image);
+                        });
+            }
+        }
+
+        assertFalse(imageRepository.findAll().isEmpty());
+
+        for (LanguageJPA language : languages) {
+            final Set<String> links = imageService.getPublicImageLinks(TEST_DOC_ID, language);
+
+            links.forEach(s -> assertTrue(s.startsWith(testLinkUrl)));
+        }
     }
 }
