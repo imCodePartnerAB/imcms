@@ -6,6 +6,12 @@ Imcms.define("imcms-document-type-select-window-builder",
     ["imcms-page-info-builder", "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder"],
     function (pageInfoBuilder, WindowBuilder, BEM, components) {
 
+        var documentTypesToTexts = {
+            file: "FILE",
+            text: "TEXT",
+            url: "URL"
+        };
+
         function buildBody(onDocTypeSelected) {
             function buildButton(type, text) {
                 return components.buttons.negativeButton({
@@ -20,10 +26,9 @@ Imcms.define("imcms-document-type-select-window-builder",
             return new BEM({
                 block: "imcms-document-type",
                 elements: {
-                    "text-doc": buildButton("text", "Text Document"),
-                    "internal-link": buildButton("internal-link", "Internal Link"),
-                    "external-link": buildButton("external-link", "External Link"),
-                    "file-doc": buildButton("file", "File Document")
+                    "text-doc": buildButton(documentTypesToTexts.text, "Text Document"),
+                    "url-doc": buildButton(documentTypesToTexts.url, "URL document"),
+                    "file-doc": buildButton(documentTypesToTexts.file, "File Document")
                 }
             }).buildBlockStructure("<div>");
         }
