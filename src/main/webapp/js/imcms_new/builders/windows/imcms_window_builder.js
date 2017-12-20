@@ -31,13 +31,23 @@ Imcms.define("imcms-window-builder", ["imcms-window-components-builder", "jquery
     WindowBuilder.prototype = {
         _scrollTop: 0,
         _pageOverflow: "auto",
+        buildWindowWithShadow: function (windowInitData) {
+            this.shadowBuilder = new WindowBuilder({
+                factory: function () {
+                    return $("<div>", {"class": "imcms-modal-layout"});
+                }
+            });
+
+            this.shadowBuilder.buildWindow();
+            this.buildWindow.applyAsync(arguments, this);
+        },
         buildWindow: function (windowInitData) {
             this._scrollTop = getScrollTopAndDisable();
             this._pageOverflow = $("body").css("overflow") || "auto";
             setBodyScrollingRule("hidden");
 
             if (!this.$editor) {
-                this.$editor = this.factory(windowInitData).appendTo("body");
+                this.$editor = this.factory.apply(null, arguments).appendTo("body");
             }
 
             this.loadDataStrategy && this.loadDataStrategy.applyAsync(arguments);
@@ -47,6 +57,8 @@ Imcms.define("imcms-window-builder", ["imcms-window-components-builder", "jquery
             enableBackgroundPageScrolling(this._pageOverflow, this._scrollTop);
             this._scrollTop = 0;
             this.$editor.css("display", "none");
+
+            this.shadowBuilder && this.shadowBuilder.closeWindow();
 
             if (this.clearDataStrategy) {
                 try {
