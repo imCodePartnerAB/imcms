@@ -1,5 +1,6 @@
 package imcode.server.document.index.service.impl;
 
+import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.Language;
@@ -11,7 +12,6 @@ import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.tika.Tika;
@@ -30,14 +30,20 @@ public class DocumentContentIndexer {
     private final Logger logger = Logger.getLogger(getClass());
     private final Predicate<FileDocumentDomainObject.FileDocumentFile> fileDocFileFilter;
     private final TextService textService;
+    private final ImageService imageService;
     private final LanguageService languageService;
 
     private Tika tika = Value.with(new Tika(), t -> t.setMaxStringLength(-1));
 
     @Autowired
-    public DocumentContentIndexer(Config config, TextService textService, LanguageService languageService) {
+    public DocumentContentIndexer(Config config,
+                                  TextService textService,
+                                  ImageService imageService,
+                                  LanguageService languageService) {
+
         this.fileDocFileFilter = buildFileDocFilter(config);
         this.textService = textService;
+        this.imageService = imageService;
         this.languageService = languageService;
     }
 
@@ -93,15 +99,9 @@ public class DocumentContentIndexer {
             indexDoc.addField(DocumentIndex.FIELD__TEXT + textIndex, textValue);
         });
 
-        doc.getImages().forEach((no, imageDO) -> {
-            Optional.ofNullable(StringUtils.trimToNull(imageDO.getLinkUrl())).ifPresent(imageLinkUrl ->
-                    indexDoc.addField(DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl));
-        });
-
-        doc.getLoopImages().forEach((loopItemRef, imageDO) -> {
-            Optional.ofNullable(StringUtils.trimToNull(imageDO.getLinkUrl())).ifPresent(imageLinkUrl ->
-                    indexDoc.addField(DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl));
-        });
+        imageService.getPublicImageLinks(docId, language).forEach(
+                imageLinkUrl -> indexDoc.addField(DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl)
+        );
 
         return indexDoc;
     }
