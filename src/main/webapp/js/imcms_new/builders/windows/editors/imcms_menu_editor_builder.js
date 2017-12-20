@@ -83,10 +83,13 @@ Imcms.define("imcms-menu-editor-builder",
 
         function disableDrag($frame) {
             var $originItem = $(".imcms-menu-items--is-drag");
+            var $originDropItem = $(".imcms-menu-items--is-drop");
             $frame.remove();
             isMouseDown = false;
             if (isPasted) {
-                $originItem.remove()
+                $originItem.remove();
+                $originDropItem.find(".children-triangle").first().trigger("click");
+                $originDropItem.removeClass("imcms-menu-items--is-drop");
             } else {
                 $originItem.removeClass("imcms-menu-items--is-drag");
                 $originItem.find(".children-triangle").first().trigger("click");
@@ -152,26 +155,6 @@ Imcms.define("imcms-menu-editor-builder",
             }
         }
 
-        function setDataInputParams(insertedParent, $frame) {
-            var dataInput = $("#dataInput");
-
-            var frameDocumentId = $frame.attr("data-document-id");
-            var frameDocumentTitle =$frame.find(".imcms-menu-item").first().find(".imcms-title").text();
-
-            frameDocumentTitle = frameDocumentTitle.split(" - ");
-
-            if (insertedParent.parent !== null) {
-                dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
-                dataInput.attr("data-insert-place", insertedParent.status);
-            } else {
-                dataInput.attr("data-parent-id", "");
-                dataInput.attr("data-insert-place", "");
-            }
-
-            dataInput.attr("data-id", frameDocumentId);
-            dataInput.attr("data-title", frameDocumentTitle[1]).trigger("change");
-        }
-
         function removedPreviousItemFrame() {
             var $menuTree = $(".imcms-menu-items-tree"),
                 $frame = $(".imcms-menu-items--frame"),
@@ -180,12 +163,14 @@ Imcms.define("imcms-menu-editor-builder",
                 frameCopies
             ;
 
-            if ($frameParent.find("[data-menu-items-lvl]").length === 1 ||
-                !$frameParent.hasClass("imcms-menu-items--is-drag")) {
-                $frameParent
-                    .find(".children-triangle")
-                    .remove()
+            if ($(".imcms-menu-items--is-drop").closest("[data-menu-items-lvl]").attr("data-menu-items-lvl") === "1") {
+                if ($frameParent.find("[data-menu-items-lvl]").length === 1 || !$frameParent.hasClass("imcms-menu-items--is-drag")) {
+
+                    $frameParent.find(".children-triangle").remove();
+
+                }
             }
+
             frameCopies = $menuTree.find("[data-document-id=" + $frame.attr("data-document-id") + "]");
 
             frameCopies.each(function () {
@@ -196,12 +181,29 @@ Imcms.define("imcms-menu-editor-builder",
 
         }
 
+        function addShowHideBtn(menuDoc) {
+            if (menuDoc.find(".imcms-menu-item").first().find(".children-triangle").length === 0) {
+                menuDoc.find(".imcms-menu-item").first().prepend(buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open"));
+            }
+        }
+
+        function changeDataDocumentLevel(menuDoc, $origin, placeStatus) {
+            var menuDocLvl = parseInt(menuDoc.attr("data-menu-items-lvl"));
+
+            if (placeStatus) {
+                menuDocLvl++
+            }
+            $origin.attr("data-menu-items-lvl", menuDocLvl);
+            $origin.children().each(function () {
+                if ($(this).attr("data-menu-items-lvl")) {
+                    changeDataDocumentLevel($origin, $(this), true);
+                }
+            });
+        }
+
         function insertMenuCopyFrame(menuDoc, placeStatus) {
-            var insertedParent = {
-                    parent: menuDoc,
-                    status: placeStatus
-                },
-                $frame = $(".imcms-menu-items--frame")
+            var $frame = $(".imcms-menu-items--frame"),
+                $origin = $(".imcms-menu-items--is-drag").clone(true)
             ;
 
             removedPreviousItemFrame();
@@ -211,7 +213,19 @@ Imcms.define("imcms-menu-editor-builder",
                 return
             }
 
-            setDataInputParams(insertedParent, $frame);
+            $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
+
+            if (placeStatus) {
+                menuDoc.append($origin);
+                changeDataDocumentLevel(menuDoc, $origin, placeStatus);
+                addShowHideBtn(menuDoc);
+                console.log("placeStatus: ", placeStatus);
+            } else {
+                menuDoc.after($origin);
+                changeDataDocumentLevel(menuDoc, $origin, placeStatus);
+                console.log("placeStatus: ", placeStatus);
+            }
+
             isPasted = true;
         }
 
@@ -233,7 +247,6 @@ Imcms.define("imcms-menu-editor-builder",
                 if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = true;
-                    // todo copy-frame append
                     insertMenuCopyFrame(menuDoc, placeStatus);
                 } else if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
                     menuDoc = getMenuDocByObjId(obj);
@@ -267,7 +280,6 @@ Imcms.define("imcms-menu-editor-builder",
                 disableHighlightingMenuDoc();
                 toggleUserSelect(false);
             }
-            console.log("isPasted: ", isPasted);
         }
 
         function closeSubItems(elem) {
