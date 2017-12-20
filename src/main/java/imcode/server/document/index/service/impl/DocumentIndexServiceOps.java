@@ -55,6 +55,7 @@ public class DocumentIndexServiceOps {
         return mkSolrInputDocs(docId, documentLanguages.getAll());
     }
 
+    // todo: rewrite using DocumentDTO
     private Collection<SolrInputDocument> mkSolrInputDocs(int docId, Collection<DocumentLanguage> languages) {
         Collection<SolrInputDocument> solrInputDocs = languages.stream()
                 .map(language -> (DocumentDomainObject) documentMapper.getDefaultDocument(docId, language))
