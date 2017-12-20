@@ -587,9 +587,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language) {
-        return (Imcms.isVersioningAllowed())
-                ? documentLoader.getDefaultDoc(docId, language.getCode())
-                : documentLoader.getWorkingDoc(docId, language.getCode());
+        return getDefaultDocument(docId, language.getCode());
     }
 
     /**
