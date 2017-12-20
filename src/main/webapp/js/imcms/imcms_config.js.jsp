@@ -110,6 +110,7 @@
             "imcms-modal-window-builder": "builders/windows/imcms_modal_window_builder.js",
             "imcms-content-manager-builder": "builders/windows/imcms_content_manager_builder.js",
             "imcms-page-info-builder": "builders/windows/imcms_page_info_builder.js",
+            "imcms-document-type-select-window-builder": "builders/windows/imcms_document_type_select_window_builder.js",
             //  <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/windows/page_info_tabs/imcms_page_info_tabs_builder.js",
             "imcms-page-info-tab-form-builder": "builders/windows/page_info_tabs/imcms_page_info_tab_form_builder.js",

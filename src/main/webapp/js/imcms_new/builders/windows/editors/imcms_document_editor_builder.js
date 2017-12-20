@@ -6,10 +6,11 @@ Imcms.define("imcms-document-editor-builder",
     [
         "imcms-bem-builder", "imcms-page-info-builder", "imcms-components-builder", "imcms-primitives-builder",
         "imcms-documents-rest-api", "imcms-documents-search-rest-api", "imcms-controls-builder", "imcms-users-rest-api",
-        "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms", "imcms-modal-window-builder"
+        "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms", "imcms-modal-window-builder",
+        "imcms-document-type-select-window-builder"
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, controlsBuilder, usersRestApi,
-              categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder) {
+              categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder) {
 
         var isMouseDown = false,
             mouseCoords = {
@@ -29,25 +30,15 @@ Imcms.define("imcms-document-editor-builder",
 
         var $documentsContainer, $editorBody, $documentsList;
 
-        function addDocumentToList(document) {
-            var $document = buildDocument(document, documentEditorOptions);
-            $documentsList.append($document); // todo: replace append by pasting into correct position in sorted list
-        }
-
-        function refreshDocumentInList(document) {
-            var $oldDocumentElement = $documentsList.find("[data-doc-id=" + document.id + "]");
-
-            if ($oldDocumentElement.length === 1) {
-                var $newDocumentElement = buildDocument(document, documentEditorOptions);
-                $oldDocumentElement.replaceWith($newDocumentElement);
-            }
-        }
-
         function buildBodyHeadTools() {
+            function addDocumentToList(document) {
+                var $document = buildDocument(document, documentEditorOptions);
+                $documentsList.append($document); // todo: replace append by pasting into correct position in sorted list
+            }
 
             function onNewDocButtonClick(e) {
                 e.preventDefault();
-                pageInfoBuilder.build(null, addDocumentToList);
+                docTypeSelectBuilder.build(addDocumentToList);
             }
 
             function buildNewDocButton() {
@@ -226,6 +217,15 @@ Imcms.define("imcms-document-editor-builder",
                 .on("dragstart", function () {
                     return false;
                 });
+        }
+
+        function refreshDocumentInList(document) {
+            var $oldDocumentElement = $documentsList.find("[data-doc-id=" + document.id + "]");
+
+            if ($oldDocumentElement.length === 1) {
+                var $newDocumentElement = buildDocument(document, documentEditorOptions);
+                $oldDocumentElement.replaceWith($newDocumentElement);
+            }
         }
 
         function buildDocItemControls(document, opts) {
