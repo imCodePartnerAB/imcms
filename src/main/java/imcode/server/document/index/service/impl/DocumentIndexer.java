@@ -1,54 +1,29 @@
 package imcode.server.document.index.service.impl;
 
 import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.List;
 import java.util.function.BiConsumer;
 
-// todo: ??? Truncate date fields to minute ???
+@Component
 public class DocumentIndexer {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private DocumentMapper documentMapper;
     private CategoryMapper categoryMapper;
     private DocumentContentIndexer contentIndexer;
 
-    public DocumentIndexer(DocumentMapper documentMapper, CategoryMapper categoryMapper, DocumentContentIndexer contentIndexer) {
-        this.documentMapper = documentMapper;
+    @Autowired
+    public DocumentIndexer(CategoryMapper categoryMapper, DocumentContentIndexer contentIndexer) {
         this.categoryMapper = categoryMapper;
-        this.contentIndexer = contentIndexer;
-    }
-
-    public DocumentMapper getDocumentMapper() {
-        return documentMapper;
-    }
-
-    public void setDocumentMapper(DocumentMapper documentMapper) {
-        this.documentMapper = documentMapper;
-    }
-
-    public CategoryMapper getCategoryMapper() {
-        return categoryMapper;
-    }
-
-    public void setCategoryMapper(CategoryMapper categoryMapper) {
-        this.categoryMapper = categoryMapper;
-    }
-
-    public DocumentContentIndexer getContentIndexer() {
-        return contentIndexer;
-    }
-
-    public void setContentIndexer(DocumentContentIndexer contentIndexer) {
         this.contentIndexer = contentIndexer;
     }
 
@@ -110,19 +85,6 @@ public class DocumentIndexer {
         });
 
         doc.getKeywords().forEach(documentKeyword -> indexDoc.addField(DocumentIndex.FIELD__KEYWORD, documentKeyword));
-
-        List<Object[]> parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument(doc);
-
-        parentDocumentAndMenuIds.forEach(tuple -> {
-            int parentId = (Integer) tuple[0];
-            int menuId = (Integer) tuple[1];
-                    indexDoc.addField(DocumentIndex.FIELD__PARENT_ID, parentId);
-                    indexDoc.addField(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId);
-                }
-        );
-
-        indexDoc.addField(DocumentIndex.FIELD__HAS_PARENTS, !parentDocumentAndMenuIds.isEmpty());
-        indexDoc.addField(DocumentIndex.FIELD__PARENTS_COUNT, parentDocumentAndMenuIds.size());
 
         addFieldIfNotNull.accept(DocumentIndex.FIELD__ALIAS, doc.getAlias());
 

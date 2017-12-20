@@ -20,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 
 @Transactional
@@ -128,7 +128,18 @@ public class TextRepositoryTest {
             for (Version version : versions) {
                 int deletedCount = textRepository.deleteByVersionAndLanguage(version, language);
 
-                assertThat(deletedCount, equalTo(TEXTS_COUNT__PER_VERSION__PER_LANGUAGE));
+                assertEquals(deletedCount, TEXTS_COUNT__PER_VERSION__PER_LANGUAGE);
+            }
+        }
+    }
+
+    @Test
+    public void testFindByDocVersionAndLanguage() {
+        for (LanguageJPA language : languages) {
+            for (Version version : versions) {
+                final Set<TextJPA> texts = textRepository.findByVersionAndLanguage(version, language);
+
+                assertEquals(texts.size(), TEXTS_COUNT__PER_VERSION__PER_LANGUAGE);
             }
         }
     }

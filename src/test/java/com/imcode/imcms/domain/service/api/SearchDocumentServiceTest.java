@@ -1,10 +1,20 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
+import com.imcode.imcms.domain.dto.CategoryDTO;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
+import com.imcode.imcms.domain.service.CategoryService;
+import com.imcode.imcms.domain.service.CategoryTypeService;
+import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.SearchDocumentService;
+import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CategoryType;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
+import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -12,6 +22,7 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +32,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by dmizem from Ubrainians for imCode on 20.10.17.
@@ -60,6 +72,18 @@ public class SearchDocumentServiceTest {
 
     @Autowired
     private Config config;
+
+    @Autowired
+    private CategoryTypeService categoryTypeService;
+
+    @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
+
+    @Autowired
+    private DocumentService documentService;
 
     @AfterClass
     public static void shutDownSolr() {
@@ -104,4 +128,48 @@ public class SearchDocumentServiceTest {
         assertEquals(1, searchDocumentService.searchDocuments(searchQueryDTO).size());
     }
 
+    @Test
+    @Ignore
+    @Transactional
+    public void search_When_CategorySpecified_Expect_Found() {
+        final String testTypeName = "test_type_name" + System.currentTimeMillis();
+        final CategoryType categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        final CategoryTypeJPA savedType = new CategoryTypeJPA(categoryTypeService.save(categoryType));
+
+        final String testCategoryName = "test_category_name" + System.currentTimeMillis();
+        final Category category = new CategoryJPA(testCategoryName, "dummy", "", savedType);
+        final Category saved = categoryService.save(category);
+        final Integer savedId = saved.getId();
+        final DocumentDTO documentDTO = documentDataInitializer.createData();
+
+        try {
+            documentDTO.getCategories().add(new CategoryDTO(saved));
+
+            documentService.save(documentDTO);
+
+            final Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+            final PageRequest pageRequest = new PageRequest(0, 10, sort);
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+
+            try {
+                Thread.sleep(TimeUnit.MINUTES.toMillis(2));
+            } catch (InterruptedException e) {
+                // don't really care
+            }
+
+            searchQueryDTO.setPage(pageRequest);
+            searchQueryDTO.setCategoriesId(Collections.singletonList(savedId));
+
+            assertEquals(1, searchDocumentService.searchDocuments(searchQueryDTO).size());
+
+        } finally {
+            categoryService.delete(savedId);
+            categoryTypeService.delete(savedType.getId());
+
+            assertFalse(categoryService.getById(savedId).isPresent());
+            assertFalse(categoryTypeService.get(savedType.getId()).isPresent());
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package imcode.server.document.index.service.impl;
 
 import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
@@ -11,6 +12,8 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.util.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -23,32 +26,36 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-
 /**
  * Document index service low level operations.
  * <p>
  * An instance of this class is thread save.
  */
 // todo: document search might return doc which is not present in db (deleted) - return stub instead
+@Component
 public class DocumentIndexServiceOps {
 
     private static final Logger logger = Logger.getLogger(DocumentIndexServiceOps.class);
 
     private final DocumentMapper documentMapper;
-
     private final DocumentIndexer documentIndexer;
+    private final DocumentLanguages documentLanguages;
 
-    public DocumentIndexServiceOps(DocumentMapper documentMapper, DocumentIndexer documentIndexer) {
+    @Autowired
+    public DocumentIndexServiceOps(DocumentMapper documentMapper,
+                                   DocumentIndexer documentIndexer,
+                                   DocumentLanguages documentLanguages) {
+
         this.documentMapper = documentMapper;
         this.documentIndexer = documentIndexer;
+        this.documentLanguages = documentLanguages;
     }
 
-    public Collection<SolrInputDocument> mkSolrInputDocs(int docId) {
-        return mkSolrInputDocs(docId, documentMapper.getDocumentLanguages().getAll());
+    private Collection<SolrInputDocument> mkSolrInputDocs(int docId) {
+        return mkSolrInputDocs(docId, documentLanguages.getAll());
     }
 
-
-    public Collection<SolrInputDocument> mkSolrInputDocs(int docId, Collection<DocumentLanguage> languages) {
+    private Collection<SolrInputDocument> mkSolrInputDocs(int docId, Collection<DocumentLanguage> languages) {
         Collection<SolrInputDocument> solrInputDocs = languages.stream()
                 .map(language -> (DocumentDomainObject) documentMapper.getDefaultDocument(docId, language))
                 .filter(Objects::nonNull)
@@ -77,7 +84,7 @@ public class DocumentIndexServiceOps {
 
     }
 
-    public String mkSolrDocsDeleteQuery(int docId) {
+    private String mkSolrDocsDeleteQuery(int docId) {
         return String.format("%s:%d", DocumentIndex.FIELD__META_ID, docId);
     }
 
@@ -96,7 +103,6 @@ public class DocumentIndexServiceOps {
         return solrServer.query(solrQuery);
     }
 
-
     public void addDocsToIndex(SolrServer solrServer, int docId) throws SolrServerException, IOException {
         Collection<SolrInputDocument> solrInputDocs = mkSolrInputDocs(docId);
 
@@ -108,7 +114,6 @@ public class DocumentIndexServiceOps {
         }
     }
 
-
     public void deleteDocsFromIndex(SolrServer solrServer, int docId) throws SolrServerException, IOException {
         String query = mkSolrDocsDeleteQuery(docId);
 
@@ -116,13 +121,12 @@ public class DocumentIndexServiceOps {
         solrServer.commit();
     }
 
-
     public void rebuildIndex(SolrServer solrServer, Consumer<IndexRebuildProgress> progressCallback)
             throws SolrServerException, IOException, InterruptedException {
         logger.debug("Rebuilding index.");
 
         List<Integer> ids = documentMapper.getAllDocumentIds();
-        List<DocumentLanguage> languages = documentMapper.getDocumentLanguages().getAll();
+        List<DocumentLanguage> languages = documentLanguages.getAll();
 
         int docsCount = ids.size();
         int docNo = 0;

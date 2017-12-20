@@ -2,6 +2,7 @@ package imcode.server;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
+import com.imcode.imcms.api.SearchResult;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexWrapper;
@@ -19,13 +20,13 @@ import java.util.*;
  */
 public class LoggingDocumentIndex extends DocumentIndexWrapper {
 
-    private final static Set<String> LOGGED_FIELDS = new HashSet<>(Arrays.asList(new String[]{
+    private final static Set<String> LOGGED_FIELDS = new HashSet<>(Arrays.asList(
             DocumentIndex.FIELD__META_HEADLINE,
             DocumentIndex.FIELD__META_TEXT,
             DocumentIndex.FIELD__TEXT,
             DocumentIndex.FIELD__ALIAS,
-            DocumentIndex.FIELD__KEYWORD,
-    }));
+            DocumentIndex.FIELD__KEYWORD)
+    );
     private final Database database;
 
     public LoggingDocumentIndex(Database database, DocumentIndex documentIndex) {
@@ -40,8 +41,8 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
     }
 
     @Override
-    public com.imcode.imcms.api.SearchResult<DocumentDomainObject> search(DocumentQuery documentQuery, UserDomainObject searchingUser, int startPosition,
-                                                                          int maxResults) throws IndexException {
+    public SearchResult<DocumentDomainObject> search(DocumentQuery documentQuery, UserDomainObject searchingUser,
+                                                     int startPosition, int maxResults) throws IndexException {
 
         Query query = documentQuery.getQuery();
         logTerms(getTerms(query));

@@ -216,8 +216,34 @@ public class TextServiceTest {
         assertTrue(byVersion.contains(workingVersionText));
     }
 
+    @Test
+    public void getPublicTexts_When_FewVersionsExist_Expect_AllTextsForLatestVersionFound() {
+        final Version middleVersion = latestVersion;
+        final Version newLatestVersion = versionDataInitializer.createData(LATEST_VERSION_NO + 1, DOC_ID);
+
+        final List<Text> latestVersionTexts = new ArrayList<>();
+
+        for (LanguageJPA language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                textRepository.save(createText(index, language, workingVersion));
+                textRepository.save(createText(index, language, middleVersion));
+                final TextJPA latestVersionText = createText(index, language, newLatestVersion);
+                textRepository.save(latestVersionText);
+                latestVersionTexts.add(new TextDTO(latestVersionText, newLatestVersion, language));
+            }
+        }
+
+        final List<Text> foundLatestVersionTexts = new ArrayList<>();
+
+        for (LanguageJPA language : languages) {
+            foundLatestVersionTexts.addAll(textService.getPublicTexts(DOC_ID, language));
+        }
+
+        assertTrue(foundLatestVersionTexts.containsAll(latestVersionTexts));
+    }
+
     private Set<Text> createTexts() {
-        final ArrayList<TextJPA> texts = new ArrayList<>(MAX_TEXT_INDEX - MIN_TEXT_INDEX);
+        final ArrayList<TextJPA> texts = new ArrayList<>();
         for (LanguageJPA language : languages) {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
                 texts.add(createText(index, language, workingVersion));

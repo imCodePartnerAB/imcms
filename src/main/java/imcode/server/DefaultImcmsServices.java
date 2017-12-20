@@ -27,7 +27,9 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -40,6 +42,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Service
 public class DefaultImcmsServices implements ImcmsServices {
 
     private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
@@ -72,21 +75,27 @@ public class DefaultImcmsServices implements ImcmsServices {
     private MailService mailService;
     private TemplateService templateService;
 
-    /**
-     * Constructs an DefaultImcmsServices object.
-     */
-    public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
-                                CachingFileLoader fileLoader, ApplicationContext applicationContext, Config config,
-                                DocumentLanguages documentLanguages, DatabaseService databaseService,
-                                MailService mailService, TemplateService templateService, DocumentMapper documentMapper,
+    @Autowired
+    public DefaultImcmsServices(Database database,
+                                Properties imcmsProperties,
+                                LocalizedMessageProvider localizedMessageProvider,
+                                CachingFileLoader fileLoader,
+                                ApplicationContext applicationContext,
+                                Config config,
+                                DocumentLanguages documentLanguages,
+                                DatabaseService databaseService,
+                                MailService mailService,
+                                TemplateService templateService,
+                                DocumentMapper documentMapper,
                                 ProcedureExecutor procedureExecutor) {
+
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.fileLoader = fileLoader;
         this.applicationContext = applicationContext;
         this.documentLanguages = documentLanguages;
         this.config = config;
-        this.properties = props;
+        this.properties = imcmsProperties;
         this.databaseService = databaseService;
         this.mailService = mailService;
         this.templateService = templateService;

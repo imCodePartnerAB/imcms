@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.mapping.jpa.SystemProperty;
@@ -16,9 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
+// todo: move to LanguageService
 public class DocumentLanguageMapper {
 
     private final LanguageRepository languageRepository;
@@ -32,7 +33,7 @@ public class DocumentLanguageMapper {
     }
 
     public List<DocumentLanguage> getAll() {
-        return Lists.transform(languageRepository.findAll(), this::toApiObject);
+        return languageRepository.findAll().stream().map(this::toApiObject).collect(Collectors.toList());
     }
 
     public DocumentLanguage findByCode(String code) {

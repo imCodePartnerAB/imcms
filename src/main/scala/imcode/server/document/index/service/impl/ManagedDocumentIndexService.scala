@@ -1,18 +1,19 @@
 package imcode.server.document.index.service.impl
 
-import _root_.imcode.server.document.index.service._
-import java.util.function.Consumer
 import java.util.Optional
-import com.imcode._
-import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
-import org.apache.solr.client.solrj.response.QueryResponse
-import java.lang.{InterruptedException, Thread}
-import java.util.concurrent.atomic.{AtomicReference, AtomicBoolean}
 import java.util.concurrent._
-import com.imcode.util.Threads
-import scala.util.{Failure, Success, Try}
+import java.util.concurrent.atomic.{AtomicBoolean, AtomicReference}
+import java.util.function.Consumer
+
+import _root_.imcode.server.document.index.service._
+import com.imcode._
 import com.imcode.imcms.api.ServiceUnavailableException
+import com.imcode.util.Threads
+import org.apache.solr.client.solrj.response.QueryResponse
+import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
+
 import scala.util.control.NonFatal
+import scala.util.{Failure, Success, Try}
 
 /**
  * Implements all DocumentIndexService functionality.
@@ -44,25 +45,25 @@ class ManagedDocumentIndexService(
    * An existing index-update-thread is stopped before rebuilding happens and a new index-update-thread is started
    * immediately after running index-rebuild-thread is terminated without errors.
    */
-  override def rebuild(): Try[IndexRebuildTask] = lock.synchronized {
+  override def rebuild(): IndexRebuildTask = {
     logger.info("attempting to start new document-index-rebuild thread.")
 
     (shutdownRef.get, indexWriteFailureRef.get, indexRebuildThreadRef.get, indexRebuildTaskRef.get()) match {
       case (shutdown@true, _, _, _) =>
         val errorMsg = "new document-index-rebuild thread can not be started - service is shut down."
         logger.error(errorMsg)
-        Failure(new ServiceUnavailableException(errorMsg))
+        throw new ServiceUnavailableException(errorMsg)
 
       case (_, indexWriteFailure, _, _) if indexWriteFailure != null =>
         logger.error(s"new document-index-rebuild thread can not be started - previous index write attempt has failed with error [$indexWriteFailure].")
-        Failure(indexWriteFailure.getException)
+        throw indexWriteFailure.getException
 
       case (_, _, indexRebuildThread, indexRebuildTask) if Threads.notTerminated(indexRebuildThread) =>
         logger.info(s"new document-index-rebuild thread can not be started - document-index-rebuild thread [$indexRebuildThread] is already running.")
-        Success(indexRebuildTask)
+        indexRebuildTask
 
       case _ =>
-        Try(startNewIndexRebuildThread())
+        startNewIndexRebuildThread()
     }
   }
 
