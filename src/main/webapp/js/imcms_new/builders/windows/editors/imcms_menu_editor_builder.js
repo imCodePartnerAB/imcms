@@ -83,11 +83,15 @@ Imcms.define("imcms-menu-editor-builder",
 
         function disableDrag($frame) {
             var $originItem = $(".imcms-menu-items--is-drag");
+            var $originItemParent = $originItem.parent("[data-menu-items-lvl]");
             var $originDropItem = $(".imcms-menu-items--is-drop");
             $frame.remove();
             isMouseDown = false;
             if (isPasted) {
                 $originItem.remove();
+                if ($originItemParent.find("[data-menu-items-lvl]").length === 0) {
+                    $originItemParent.find(".children-triangle").remove();
+                }
                 $originDropItem.find(".children-triangle").first().trigger("click");
                 $originDropItem.removeClass("imcms-menu-items--is-drop");
             } else {
@@ -158,24 +162,27 @@ Imcms.define("imcms-menu-editor-builder",
         function removedPreviousItemFrame() {
             var $menuTree = $(".imcms-menu-items-tree"),
                 $frame = $(".imcms-menu-items--frame"),
-                $frameParent = $menuTree.find("[data-document-id=" + $frame.attr("data-document-id") + "]")
-                    .parent("[data-menu-items-lvl]"),
+                $frameParent = $(".imcms-menu-items--is-drop").closest("[data-menu-items-lvl]"),
                 frameCopies
             ;
 
-            if ($(".imcms-menu-items--is-drop").closest("[data-menu-items-lvl]").attr("data-menu-items-lvl") === "1") {
+            //if ($frameParent.attr("data-menu-items-lvl") === "1") {
                 if ($frameParent.find("[data-menu-items-lvl]").length === 1 || !$frameParent.hasClass("imcms-menu-items--is-drag")) {
-
                     $frameParent.find(".children-triangle").remove();
-
                 }
-            }
+            //}
 
             frameCopies = $menuTree.find("[data-document-id=" + $frame.attr("data-document-id") + "]");
 
             frameCopies.each(function () {
                 if (!$(this).hasClass("imcms-menu-items--is-drag")) {
                     $(this).remove();
+                }
+            });
+
+            $menuTree.find("[data-menu-items-lvl]").each(function () {
+                if ($(this).find("[data-menu-items-lvl]").length === 0) {
+                    $(this).find(".children-triangle").remove();
                 }
             });
 
