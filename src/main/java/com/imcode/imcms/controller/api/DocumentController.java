@@ -2,6 +2,7 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import org.apache.commons.lang3.NotImplementedException;
@@ -22,8 +23,8 @@ public class DocumentController {
     }
 
     @GetMapping
-    public DocumentDTO get(Integer docId) {
-        return documentService.get(docId);
+    public DocumentDTO get(Integer docId, DocumentType type) {
+        return documentService.getOrEmpty(docId, type);
     }
 
     @PostMapping

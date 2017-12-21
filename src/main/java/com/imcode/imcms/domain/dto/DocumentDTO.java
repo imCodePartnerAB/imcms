@@ -60,12 +60,12 @@ public class DocumentDTO implements Serializable {
 
     private TextDocumentTemplateDTO template;
 
-    public static DocumentDTO createNew() {
+    public static DocumentDTO createNew(DocumentType type) {
         return Value.with(new DocumentDTO(), documentDTO -> {
             documentDTO.title = "";
             documentDTO.target = "";
             documentDTO.alias = "";
-            documentDTO.type = DocumentType.TEXT; // for now text is default type
+            documentDTO.type = type;
 
             // common contents have to be set by service
 

@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
@@ -76,8 +77,17 @@ class DefaultDocumentService implements DocumentService {
     }
 
     @Override
-    public DocumentDTO get(Integer docId) {
-        return (docId == null) ? buildNewDocument() : getDocument(docId);
+    public DocumentDTO getOrEmpty(Integer docId, DocumentType type) {
+        return (docId == null) ? buildNewDocument(type) : get(docId);
+    }
+
+    @Override
+    public DocumentDTO get(int docId) {
+        final Version latestVersion = versionService.getLatestVersion(docId);
+        final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
+                docId, latestVersion.getNo()
+        );
+        return documentMapping.apply(metaRepository.findOne(docId), latestVersion, commonContents);
     }
 
     /**
@@ -144,20 +154,13 @@ class DefaultDocumentService implements DocumentService {
         }
     }
 
-    private DocumentDTO buildNewDocument() {
+    private DocumentDTO buildNewDocument(DocumentType type) {
         final List<CommonContentDTO> commonContents = commonContentService.createCommonContents()
                 .stream()
                 .map(CommonContentDTO::new)
                 .collect(Collectors.toList());
 
-        return Value.with(DocumentDTO.createNew(), documentDTO -> documentDTO.setCommonContents(commonContents));
+        return Value.with(DocumentDTO.createNew(type), documentDTO -> documentDTO.setCommonContents(commonContents));
     }
 
-    private DocumentDTO getDocument(int docId) {
-        final Version latestVersion = versionService.getLatestVersion(docId);
-        final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
-                docId, latestVersion.getNo()
-        );
-        return documentMapping.apply(metaRepository.findOne(docId), latestVersion, commonContents);
-    }
 }
