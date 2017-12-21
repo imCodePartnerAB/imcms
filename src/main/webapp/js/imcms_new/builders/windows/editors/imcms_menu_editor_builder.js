@@ -40,14 +40,16 @@ Imcms.define("imcms-menu-editor-builder",
             reloadMenuOnPage();
         }
 
+        function mapToMenuItem() {
+            return {
+                documentId: $(this).data("documentId"),
+                children: $(this).children("[data-menu-items-lvl]").map(mapToMenuItem).toArray()
+            }
+        }
+
         function saveMenuElements() {
             var menuItems = $menuElementsContainer.find("[data-menu-items-lvl=1]")
-                .map(function () {
-                    return {
-                        documentId: $(this).data("documentId"),
-                        children: [] // todo: get children too!
-                    }
-                })
+                .map(mapToMenuItem)
                 .toArray();
 
             var menuDTO = {
