@@ -1,6 +1,6 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.SearchDocumentService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +23,7 @@ public class SearchDocumentController {
     }
 
     @GetMapping
-    public List<DocumentDTO> getDocuments(SearchQueryDTO searchQuery) {
+    public List<DocumentStoredFieldsDTO> getDocuments(SearchQueryDTO searchQuery) {
         return searchDocumentService.searchDocuments(searchQuery);
     }
 

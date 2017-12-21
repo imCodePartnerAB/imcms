@@ -11,10 +11,8 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.*;
-import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
-import imcode.server.document.index.DocumentStoredFields;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
@@ -43,18 +41,6 @@ class MappingConfig {
     @Bean
     public Function<User, UserDTO> userToUserDTO() {
         return user -> new UserDTO(user.getId(), user.getLogin());
-    }
-
-    @Bean
-    public Function<DocumentStoredFields, DocumentDTO> documentStoredFieldToDocumentDto() {
-        return documentFields -> {
-            final DocumentDTO documentDTO = new DocumentDTO();
-            documentDTO.setId(documentFields.id());
-            documentDTO.setAlias(documentFields.alias());
-            documentDTO.setTitle(documentFields.headline());
-            documentDTO.setType(DocumentType.values()[documentFields.documentType()]);
-            return documentDTO;
-        };
     }
 
     @Bean

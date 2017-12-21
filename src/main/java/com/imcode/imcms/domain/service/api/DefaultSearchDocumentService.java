@@ -1,11 +1,10 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.SearchDocumentService;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.DocumentStoredFields;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.data.domain.Sort;
@@ -13,24 +12,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 class DefaultSearchDocumentService implements SearchDocumentService {
 
-    private final Function<DocumentStoredFields, DocumentDTO> storedFieldsToDocumentDTO;
     private final DocumentIndex documentIndex;
 
-    DefaultSearchDocumentService(Function<DocumentStoredFields, DocumentDTO> documentStoredFieldToDocumentDto,
-                                 DocumentIndex documentIndex) {
+    DefaultSearchDocumentService(DocumentIndex documentIndex) {
 
-        this.storedFieldsToDocumentDTO = documentStoredFieldToDocumentDto;
         this.documentIndex = documentIndex;
     }
 
     @Override
-    public List<DocumentDTO> searchDocuments(SearchQueryDTO searchQuery) {
+    public List<DocumentStoredFieldsDTO> searchDocuments(SearchQueryDTO searchQuery) {
 
         StringBuilder indexQuery = new StringBuilder();
 
@@ -68,7 +63,7 @@ class DefaultSearchDocumentService implements SearchDocumentService {
         }
 
         return documentIndex.search(solrQuery, Imcms.getUser())
-                .documentStoredFieldsList().stream().map(storedFieldsToDocumentDTO)
+                .documentStoredFieldsList().stream().map(DocumentStoredFieldsDTO::new)
                 .collect(Collectors.toList());
     }
 }
