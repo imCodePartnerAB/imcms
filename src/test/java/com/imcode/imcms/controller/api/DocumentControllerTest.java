@@ -369,6 +369,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
         final HashMap<PermissionDTO, RestrictedPermissionDTO> restrictedPermissions = new HashMap<>();
 
         final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
+        restricted1.setPermission(Meta.Permission.RESTRICTED_1);
         restricted1.setEditDocInfo(true);
         restricted1.setEditImage(false);
         restricted1.setEditLoop(true);
@@ -376,6 +377,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
         restricted1.setEditText(true);
 
         final RestrictedPermissionDTO restricted2 = new RestrictedPermissionDTO();
+        restricted2.setPermission(Meta.Permission.RESTRICTED_2);
         restricted2.setEditDocInfo(false);
         restricted2.setEditImage(true);
         restricted2.setEditLoop(false);

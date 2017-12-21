@@ -12,6 +12,7 @@ import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
+import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentStoredFields;
@@ -178,25 +179,21 @@ class MappingConfig {
     restrictedPermissionsDtoToRestrictedPermissions() {
         return restrictedPermissions -> restrictedPermissions.entrySet()
                 .stream()
-                .map(permissionDtoToRestrictedDto -> {
-                    final RestrictedPermissionDTO restrictedPermissionDTO = permissionDtoToRestrictedDto.getValue();
-                    final Meta.Permission permission = permissionDtoToRestrictedDto.getKey().getPermission();
-
-                    return new RestrictedPermissionJPA(restrictedPermissionDTO, permission);
-                })
+                .map(permissionDtoToRestrictedDto -> new RestrictedPermissionJPA(permissionDtoToRestrictedDto.getValue()))
                 .collect(Collectors.toSet());
     }
 
     @Bean
-    public Function<Map<Integer, Meta.Permission>, Map<Integer, PermissionDTO>> roleIdByPermissionToRoleIdByPermissionDTO() {
+    public Function<Map<Integer, Permission>, Map<Integer, PermissionDTO>> roleIdByPermissionToRoleIdByPermissionDTO() {
         return roleIdByPermissionMap -> roleIdByPermissionMap.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
                         roleIdToPermission -> PermissionDTO.fromPermission(roleIdToPermission.getValue())
                 ));
     }
 
     @Bean
-    public Function<Map<Integer, PermissionDTO>, Map<Integer, Meta.Permission>> roleIdByPermissionDtoToRoleIdByPermission() {
+    public Function<Map<Integer, PermissionDTO>, Map<Integer, Permission>> roleIdByPermissionDtoToRoleIdByPermission() {
         return roleIdByPermissionDtoMap -> roleIdByPermissionDtoMap.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         roleIdByPermissionDtoEntry -> roleIdByPermissionDtoEntry.getValue().getPermission()
@@ -205,7 +202,7 @@ class MappingConfig {
 
     @Bean
     public Function<DocumentDTO, Meta> documentDtoToMeta(
-            Function<Map<Integer, PermissionDTO>, Map<Integer, Meta.Permission>> roleIdByPermissionDtoToRoleIdByPermission,
+            Function<Map<Integer, PermissionDTO>, Map<Integer, Permission>> roleIdByPermissionDtoToRoleIdByPermission,
             Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermissionJPA>>
                     restrictedPermissionsDtoToRestrictedPermissions
     ) {
@@ -282,7 +279,7 @@ class MappingConfig {
     @Bean
     public TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping(
             Function<Set<RestrictedPermissionJPA>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO,
-            Function<Map<Integer, Meta.Permission>, Map<Integer, PermissionDTO>> roleIdByPermissionDtoToRoleIdByPermission,
+            Function<Map<Integer, Permission>, Map<Integer, PermissionDTO>> roleIdByPermissionDtoToRoleIdByPermission,
             CategoryService categoryService,
             UserService userService,
             TextDocumentTemplateService textDocumentTemplateService

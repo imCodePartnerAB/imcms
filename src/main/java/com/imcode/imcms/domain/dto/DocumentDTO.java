@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
@@ -75,8 +76,14 @@ public class DocumentDTO implements Serializable {
             documentDTO.categories = new HashSet<>();
             documentDTO.roleIdToPermission = new HashMap<>();
             documentDTO.restrictedPermissions = new HashMap<>();
-            documentDTO.restrictedPermissions.put(PermissionDTO.RESTRICTED_1, new RestrictedPermissionDTO());
-            documentDTO.restrictedPermissions.put(PermissionDTO.RESTRICTED_2, new RestrictedPermissionDTO());
+
+            final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
+            final RestrictedPermissionDTO restricted2 = new RestrictedPermissionDTO();
+            restricted1.setPermission(Meta.Permission.RESTRICTED_1);
+            restricted2.setPermission(Meta.Permission.RESTRICTED_2);
+
+            documentDTO.restrictedPermissions.put(PermissionDTO.RESTRICTED_1, restricted1);
+            documentDTO.restrictedPermissions.put(PermissionDTO.RESTRICTED_2, restricted2);
 
             documentDTO.published = new AuditDTO();
             documentDTO.archived = new AuditDTO();

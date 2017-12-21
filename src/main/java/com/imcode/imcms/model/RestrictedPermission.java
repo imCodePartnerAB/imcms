@@ -1,17 +1,23 @@
 package com.imcode.imcms.model;
 
+import com.imcode.imcms.persistence.entity.Meta.Permission;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public abstract class RestrictedPermission {
 
     protected RestrictedPermission(RestrictedPermission from) {
+        setPermission(from.getPermission());
         setEditText(from.isEditText());
         setEditMenu(from.isEditMenu());
         setEditImage(from.isEditImage());
         setEditLoop(from.isEditLoop());
         setEditDocInfo(from.isEditDocInfo());
     }
+
+    public abstract Permission getPermission();
+
+    public abstract void setPermission(Permission permission);
 
     public abstract boolean isEditText();
 

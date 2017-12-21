@@ -9,12 +9,9 @@ import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.*;
-import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
-import com.imcode.imcms.persistence.entity.TextJPA;
-import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import imcode.server.Config;
@@ -458,6 +455,7 @@ public class DocumentServiceTest {
         final HashMap<PermissionDTO, RestrictedPermissionDTO> restrictedPermissions = new HashMap<>();
 
         final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
+        restricted1.setPermission(Meta.Permission.RESTRICTED_1);
         restricted1.setEditDocInfo(true);
         restricted1.setEditImage(false);
         restricted1.setEditLoop(true);
@@ -465,6 +463,7 @@ public class DocumentServiceTest {
         restricted1.setEditText(true);
 
         final RestrictedPermissionDTO restricted2 = new RestrictedPermissionDTO();
+        restricted2.setPermission(Meta.Permission.RESTRICTED_2);
         restricted2.setEditDocInfo(false);
         restricted2.setEditImage(true);
         restricted2.setEditLoop(false);
