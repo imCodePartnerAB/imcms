@@ -16,6 +16,7 @@ import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings.Mapping;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -362,13 +363,9 @@ public class DocumentSaver {
         meta.setPublicationStatus(metaDO.getPublicationStatus().asEnum());
         meta.setPublisherId(metaDO.getPublisherId());
         meta.setRoleIdToPermission(
-                Stream.of(metaDO.getRoleIdToDocumentPermissionSetTypeMappings().getMappings())
-                        .collect(
-                                Collectors.toMap(
-                                        it -> it.getRoleId().getRoleId(),
-                                        it -> it.getDocumentPermissionSetType().getPermission()
-                                )
-                        )
+                Stream.of(metaDO.getRoleIdToDocumentPermissionSetTypeMappings().getMappings()).collect(
+                        Collectors.toMap(it -> it.getRoleId().getRoleId(), Mapping::getDocumentPermissionSetType)
+                )
         );
         meta.setSearchDisabled(metaDO.getSearchDisabled());
         meta.setTarget(metaDO.getTarget());

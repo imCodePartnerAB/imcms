@@ -72,8 +72,8 @@ Imcms.define("imcms-bem-builder", ["jquery"], function ($) {
 
     BemBuilder.prototype = {
         makeBlockElement: function (elementName, $baseElement, modifiersArr) {
-            var modifiersClass = getElementClassWithModifiers(this.elements[elementName], modifiersArr),
-                blockClass = this.block + BLOCK_SEPARATOR + elementName
+            var blockClass = this.block + BLOCK_SEPARATOR + elementName,
+                modifiersClass = getElementClassWithModifiers(blockClass, modifiersArr)
             ;
 
             return $baseElement.addClass(blockClass).addClass(modifiersClass);

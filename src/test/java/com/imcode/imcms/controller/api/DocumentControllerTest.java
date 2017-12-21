@@ -13,6 +13,7 @@ import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Meta.Permission;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
@@ -340,14 +341,14 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void save_When_CustomAccessRulesSet_Expect_Saved() throws Exception {
-        final Map<Integer, PermissionDTO> roleIdToPermissionDTO = new HashMap<>();
+        final Map<Integer, Permission> roleIdToPermission = new HashMap<>();
 
-        for (PermissionDTO permissionDTO : PermissionDTO.values()) {
-            final Role role = roleService.save(new RoleDTO(null, "test_role_" + permissionDTO));
-            roleIdToPermissionDTO.put(role.getId(), permissionDTO);
+        for (Permission permission : Permission.values()) {
+            final Role role = roleService.save(new RoleDTO(null, "test_role_" + permission));
+            roleIdToPermission.put(role.getId(), permission);
         }
 
-        createdDoc.setRoleIdToPermission(roleIdToPermissionDTO);
+        createdDoc.setRoleIdToPermission(roleIdToPermission);
 
         performPostWithContentExpectOk(createdDoc);
 
@@ -356,8 +357,8 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
 
-        final Map<Integer, PermissionDTO> roleIdToPermissionDTO1 = new HashMap<>();
-        createdDoc.setRoleIdToPermission(roleIdToPermissionDTO1);
+        final Map<Integer, Permission> roleIdToPermission1 = new HashMap<>();
+        createdDoc.setRoleIdToPermission(roleIdToPermission1);
 
         performPostWithContentExpectOk(createdDoc);
 
@@ -366,10 +367,10 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void save_When_RestrictedPermissionsSet_Expect_Saved() throws Exception {
-        final HashMap<PermissionDTO, RestrictedPermissionDTO> restrictedPermissions = new HashMap<>();
+        final Set<RestrictedPermissionDTO> restrictedPermissions = new HashSet<>();
 
         final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
-        restricted1.setPermission(Meta.Permission.RESTRICTED_1);
+        restricted1.setPermission(Permission.RESTRICTED_1);
         restricted1.setEditDocInfo(true);
         restricted1.setEditImage(false);
         restricted1.setEditLoop(true);
@@ -377,15 +378,15 @@ public class DocumentControllerTest extends AbstractControllerTest {
         restricted1.setEditText(true);
 
         final RestrictedPermissionDTO restricted2 = new RestrictedPermissionDTO();
-        restricted2.setPermission(Meta.Permission.RESTRICTED_2);
+        restricted2.setPermission(Permission.RESTRICTED_2);
         restricted2.setEditDocInfo(false);
         restricted2.setEditImage(true);
         restricted2.setEditLoop(false);
         restricted2.setEditMenu(true);
         restricted2.setEditText(false);
 
-        restrictedPermissions.put(PermissionDTO.RESTRICTED_1, restricted1);
-        restrictedPermissions.put(PermissionDTO.RESTRICTED_2, restricted2);
+        restrictedPermissions.add(restricted1);
+        restrictedPermissions.add(restricted2);
 
         createdDoc.setRestrictedPermissions(restrictedPermissions);
 

@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.apis;
 
-import com.imcode.imcms.domain.dto.PermissionDTO;
+import com.imcode.imcms.persistence.entity.Meta.Permission;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,11 +18,11 @@ public class PermissionController {
     @RequestMapping
     protected Object getPermissionsList() {
         return Stream
-                .of(PermissionDTO.values())
+                .of(Permission.values())
                 .collect(
                         Collectors.toMap(
-                                PermissionDTO::getId,
-                                PermissionDTO::getName
+                                Permission::getId,
+                                Permission::getName
                         )
                 );
     }

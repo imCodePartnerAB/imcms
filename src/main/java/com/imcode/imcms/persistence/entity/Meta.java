@@ -190,7 +190,7 @@ public class Meta implements Serializable {
         }
 
         public String getName() {
-            return toString().toLowerCase();
+            return toString().toLowerCase().replace('_', ' ');
         }
 
         public boolean isMorePrivilegedThan(Permission type) {

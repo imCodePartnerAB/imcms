@@ -4,7 +4,7 @@ import com.imcode.imcms.persistence.entity.Meta.Permission;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public abstract class RestrictedPermission {
+public abstract class RestrictedPermission implements Comparable<RestrictedPermission> {
 
     protected RestrictedPermission(RestrictedPermission from) {
         setPermission(from.getPermission());
@@ -38,4 +38,9 @@ public abstract class RestrictedPermission {
     public abstract boolean isEditDocInfo();
 
     public abstract void setEditDocInfo(boolean editDocInfo);
+
+    @Override
+    public int compareTo(RestrictedPermission o) {
+        return this.getPermission().compareTo(o.getPermission());
+    }
 }
