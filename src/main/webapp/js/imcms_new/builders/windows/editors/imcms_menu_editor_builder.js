@@ -166,11 +166,9 @@ Imcms.define("imcms-menu-editor-builder",
                 frameCopies
             ;
 
-            //if ($frameParent.attr("data-menu-items-lvl") === "1") {
-                if ($frameParent.find("[data-menu-items-lvl]").length === 1 || !$frameParent.hasClass("imcms-menu-items--is-drag")) {
-                    $frameParent.find(".children-triangle").remove();
-                }
-            //}
+            if ($frameParent.find("[data-menu-items-lvl]").length === 1 || !$frameParent.hasClass("imcms-menu-items--is-drag")) {
+                $frameParent.find(".children-triangle").remove();
+            }
 
             frameCopies = $menuTree.find("[data-document-id=" + $frame.attr("data-document-id") + "]");
 
@@ -235,11 +233,9 @@ Imcms.define("imcms-menu-editor-builder",
                 menuDoc.append($origin);
                 changeDataDocumentLevel(menuDoc, $origin, placeStatus);
                 addShowHideBtn(menuDoc);
-                console.log("placeStatus: ", placeStatus);
             } else {
                 menuDoc.after($origin);
                 changeDataDocumentLevel(menuDoc, $origin, placeStatus);
-                console.log("placeStatus: ", placeStatus);
             }
 
             isPasted = true;
