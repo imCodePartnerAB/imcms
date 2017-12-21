@@ -19,7 +19,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @WebAppConfiguration
@@ -32,9 +31,6 @@ public class UserControllerTest extends AbstractControllerTest {
 
     @Autowired
     private UserDataInitializer userDataInitializer;
-
-    @Autowired
-    private Function<User, UserDTO> userToUserDTO;
 
     private List<User> users;
 
@@ -63,7 +59,7 @@ public class UserControllerTest extends AbstractControllerTest {
         adminUsers.addAll(admins);
 
         expectedUsers = adminUsers.stream()
-                .map(userToUserDTO)
+                .map(UserDTO::new)
                 .collect(Collectors.toList());
     }
 

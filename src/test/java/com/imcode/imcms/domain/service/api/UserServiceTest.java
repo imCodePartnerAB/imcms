@@ -18,7 +18,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -34,9 +33,6 @@ public class UserServiceTest {
 
     @Autowired
     private UserDataInitializer userDataInitializer;
-
-    @Autowired
-    private Function<User, UserDTO> userToUserDTO;
 
     private List<User> users;
 
@@ -60,7 +56,7 @@ public class UserServiceTest {
         adminUsers.addAll(admins);
 
         expectedUsers = adminUsers.stream()
-                .map(userToUserDTO)
+                .map(UserDTO::new)
                 .collect(Collectors.toList());
     }
 

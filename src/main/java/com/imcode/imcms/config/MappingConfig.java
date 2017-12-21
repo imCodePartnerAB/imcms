@@ -6,7 +6,6 @@ import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
@@ -37,11 +36,6 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
  */
 @Configuration
 class MappingConfig {
-
-    @Bean
-    public Function<User, UserDTO> userToUserDTO() {
-        return user -> new UserDTO(user.getId(), user.getLogin());
-    }
 
     @Bean
     public Function<MenuItem, MenuItemDTO> menuItemToDTO(DocumentMenuService documentMenuService) {
