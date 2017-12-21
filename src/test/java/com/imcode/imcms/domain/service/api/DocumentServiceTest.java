@@ -9,7 +9,13 @@ import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.*;
-import com.imcode.imcms.persistence.entity.*;
+import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.Meta.DocumentType;
+import com.imcode.imcms.persistence.entity.Meta.Permission;
+import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
+import com.imcode.imcms.persistence.entity.TextJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import imcode.server.Config;
@@ -147,12 +153,12 @@ public class DocumentServiceTest {
 
     @Test
     public void get_When_IdIsNull_Expect_DefaultEmptyDtoReturned() {
-        final DocumentDTO documentDTO = documentService.get(null);
+        final DocumentDTO documentDTO = documentService.getOrEmpty(null, DocumentType.TEXT);
 
         assertNull(documentDTO.getId());
-        assertNotEquals(documentDTO.getCommonContents().size(), 0);
+        assertFalse(documentDTO.getCommonContents().isEmpty());
         assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
-        assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
+        assertEquals(documentDTO.getPublicationStatus(), PublicationStatus.NEW);
         assertEquals(documentDTO.getTemplate(), TextDocumentTemplateDTO.createDefault());
     }
 
@@ -162,7 +168,7 @@ public class DocumentServiceTest {
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user); // means current user is admin now
 
-        final DocumentDTO emptyDocumentDTO = documentService.get(null);
+        final DocumentDTO emptyDocumentDTO = documentService.getOrEmpty(null, DocumentType.TEXT);
         documentService.save(emptyDocumentDTO);
     }
 
@@ -199,7 +205,7 @@ public class DocumentServiceTest {
 
         final String testTarget = "_test";
 
-        final DocumentDTO emptyDocumentDTO = documentService.get(null);
+        final DocumentDTO emptyDocumentDTO = documentService.getOrEmpty(null, DocumentType.TEXT);
         emptyDocumentDTO.setTarget(testTarget);
 
         final int saveDocId = documentService.save(emptyDocumentDTO);
@@ -248,9 +254,9 @@ public class DocumentServiceTest {
     @Test
     public void save_When_DifferentPublicationStatusSet_Expect_Saved() {
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-        final Meta.PublicationStatus statusApproved = Meta.PublicationStatus.APPROVED;
-        final Meta.PublicationStatus statusDisapproved = Meta.PublicationStatus.DISAPPROVED;
-        final Meta.PublicationStatus statusNew = Meta.PublicationStatus.NEW;
+        final PublicationStatus statusApproved = PublicationStatus.APPROVED;
+        final PublicationStatus statusDisapproved = PublicationStatus.DISAPPROVED;
+        final PublicationStatus statusNew = PublicationStatus.NEW;
 
         // approved
         documentDTO.setPublicationStatus(statusApproved);
@@ -423,36 +429,37 @@ public class DocumentServiceTest {
 
     @Test
     public void save_When_CustomAccessRulesSet_Expect_Saved() {
-        final Map<Integer, PermissionDTO> roleIdToPermissionDTO = new HashMap<>();
+        final Map<Integer, Permission> roleIdToPermission = new HashMap<>();
 
-        for (PermissionDTO permissionDTO : PermissionDTO.values()) {
-            final Role role = roleService.save(new RoleDTO(null, "test_role_" + permissionDTO));
-            roleIdToPermissionDTO.put(role.getId(), permissionDTO);
+        for (Permission permission : Permission.values()) {
+            final Role role = roleService.save(new RoleDTO(null, "test_role_" + permission));
+            roleIdToPermission.put(role.getId(), permission);
         }
 
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-        documentDTO.setRoleIdToPermission(roleIdToPermissionDTO);
+        documentDTO.setRoleIdToPermission(roleIdToPermission);
 
         documentService.save(documentDTO);
         final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
 
-        assertTrue(savedDocumentDTO.getRoleIdToPermission().entrySet().containsAll(roleIdToPermissionDTO.entrySet()));
+        assertTrue(savedDocumentDTO.getRoleIdToPermission().entrySet().containsAll(roleIdToPermission.entrySet()));
 
-        final Map<Integer, PermissionDTO> roleIdToPermissionDTO1 = new HashMap<>();
-        savedDocumentDTO.setRoleIdToPermission(roleIdToPermissionDTO1);
+        final Map<Integer, Permission> roleIdToPermission1 = new HashMap<>();
+        savedDocumentDTO.setRoleIdToPermission(roleIdToPermission1);
         documentService.save(savedDocumentDTO);
 
         final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
-        assertEquals(savedDocumentDTO1.getRoleIdToPermission(), roleIdToPermissionDTO1);
+        assertEquals(savedDocumentDTO1.getRoleIdToPermission(), roleIdToPermission1);
     }
 
     @Test
     public void save_When_RestrictedPermissionsSet_Expect_Saved() {
 
         final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
-        final HashMap<PermissionDTO, RestrictedPermissionDTO> restrictedPermissions = new HashMap<>();
+        final Set<RestrictedPermissionDTO> restrictedPermissions = new HashSet<>();
 
         final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
+        restricted1.setPermission(Permission.RESTRICTED_1);
         restricted1.setEditDocInfo(true);
         restricted1.setEditImage(false);
         restricted1.setEditLoop(true);
@@ -460,14 +467,15 @@ public class DocumentServiceTest {
         restricted1.setEditText(true);
 
         final RestrictedPermissionDTO restricted2 = new RestrictedPermissionDTO();
+        restricted2.setPermission(Permission.RESTRICTED_2);
         restricted2.setEditDocInfo(false);
         restricted2.setEditImage(true);
         restricted2.setEditLoop(false);
         restricted2.setEditMenu(true);
         restricted2.setEditText(false);
 
-        restrictedPermissions.put(PermissionDTO.RESTRICTED_1, restricted1);
-        restrictedPermissions.put(PermissionDTO.RESTRICTED_2, restricted2);
+        restrictedPermissions.add(restricted1);
+        restrictedPermissions.add(restricted2);
 
         documentDTO.setRestrictedPermissions(restrictedPermissions);
 
@@ -475,8 +483,7 @@ public class DocumentServiceTest {
 
         final DocumentDTO documentDTO1 = documentService.get(documentDTO.getId());
 
-        assertEquals(restricted1, documentDTO1.getRestrictedPermissions().get(PermissionDTO.RESTRICTED_1));
-        assertEquals(restricted2, documentDTO1.getRestrictedPermissions().get(PermissionDTO.RESTRICTED_2));
+        assertTrue(restrictedPermissions.containsAll(documentDTO1.getRestrictedPermissions()));
         assertEquals(documentDTO1, documentDTO);
     }
 

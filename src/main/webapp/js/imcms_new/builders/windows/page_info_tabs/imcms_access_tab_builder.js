@@ -46,6 +46,17 @@ Imcms.define("imcms-access-tab-builder",
                 }));
             }
 
+            function displayAddRoleSelectAndBtn($addRoleSelect) {
+                $addRoleSelect.css("display", "block");
+                var $addRoleBtn = $addRoleSelect.next();
+                $addRoleBtn.css("display", "block");
+            }
+
+            function hideRolesField($rolesBody) {
+                var $rolesField = $rolesBody.parent().parent();
+                $rolesField.css("display", "none");
+            }
+
             var $roleTitle = rolesBEM.buildBlockElement("column-title", "<div>", mapRoleOnSelectOption(role)),
                 radioName = uuidGenerator.generateUUID(),
                 $roleView = buildRole("VIEW", role, radioName),
@@ -53,35 +64,25 @@ Imcms.define("imcms-access-tab-builder",
                 $roleRestricted1 = buildRole("RESTRICTED_1", role, radioName),
                 $roleRestricted2 = buildRole("RESTRICTED_2", role, radioName),
                 $row = rolesBEM.buildBlockElement("row", "<div>", {"data-role-id": role.id}),
-                $deleteRoleButton = rolesBEM.makeBlockElement("button", components.buttons.closeButton({
-                    click: function () {
-                        components.selects.addOptionsToSelect([mapRoleOnSelectOption(role)], $addRoleSelect);
+                onDeleteRoleClick = function () {
+                    components.selects.addOptionsToSelect([mapRoleOnSelectOption(role)], $addRoleSelect);
 
-                        if ($addRoleSelect.hasOptions()) {
-                            displayAddRoleSelectAndBtn($addRoleSelect);
-                        }
-
-                        var $rolesBody = $row.parent();
-
-                        $row.detach();
-
-                        var tableContainsRows = $rolesBody.find("[data-role-id]").length;
-                        if (!tableContainsRows) {
-                            hideRolesField($rolesBody);
-                        }
-
-                        function displayAddRoleSelectAndBtn($addRoleSelect) {
-                            $addRoleSelect.css("display", "block");
-                            var $addRoleBtn = $addRoleSelect.next();
-                            $addRoleBtn.css("display", "block");
-                        }
-
-                        function hideRolesField($rolesBody) {
-                            var $rolesField = $rolesBody.parent().parent();
-                            $rolesField.css("display", "none");
-                        }
+                    if ($addRoleSelect.hasOptions()) {
+                        displayAddRoleSelectAndBtn($addRoleSelect);
                     }
-                }))
+
+                    var $rolesBody = $row.parent();
+
+                    $row.detach();
+
+                    var tableContainsRows = $rolesBody.find("[data-role-id]").length;
+                    if (!tableContainsRows) {
+                        hideRolesField($rolesBody);
+                    }
+                },
+                $deleteRoleButton = rolesBEM.makeBlockElement(
+                    "button", components.buttons.closeButton({click: onDeleteRoleClick})
+                )
             ;
 
             return $row.append([

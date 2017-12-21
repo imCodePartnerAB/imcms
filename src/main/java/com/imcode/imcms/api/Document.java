@@ -1,6 +1,8 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
@@ -136,14 +138,14 @@ public class Document implements Serializable {
     }
 
     public void addCategory(Category category) {
-        internalDocument.addCategoryId(category.getId());
+        internalDocument.addCategory(category);
     }
 
     /**
      * @return An array of Categories, an empty if no one found.
      */
     public Category[] getCategories() {
-        Set<CategoryDomainObject> categories = contentManagementSystem.getInternal().getCategoryMapper().getCategories(internalDocument.getCategoryIds());
+        Set<CategoryDomainObject> categories = contentManagementSystem.getInternal().getCategoryMapper().getCategories(internalDocument.getCategories());
         CategoryDomainObject[] categoryDomainObjects = categories.toArray(new CategoryDomainObject[categories.size()]);
         return getCategoryArrayFromCategoryDomainObjectArray(categoryDomainObjects);
     }
@@ -153,7 +155,7 @@ public class Document implements Serializable {
 
         for (int i = 0; i < categories.length; i++) {
             CategoryDomainObject categoryDomainObject = categoryDomainObjects[i];
-            categories[i] = new Category(categoryDomainObject);
+            categories[i] = new CategoryDTO(categoryDomainObject);
         }
         return categories;
     }
@@ -261,7 +263,7 @@ public class Document implements Serializable {
     @SuppressWarnings("unused")
     public Category[] getCategoriesOfType(CategoryType categoryType) {
         CategoryMapper categoryMapper = contentManagementSystem.getInternal().getCategoryMapper();
-        Set<CategoryDomainObject> categoriesOfType = categoryMapper.getCategoriesOfType(categoryType.getInternal(), internalDocument.getCategoryIds());
+        Set<CategoryDomainObject> categoriesOfType = categoryMapper.getCategoriesOfType(categoryType.getInternal(), internalDocument.getCategories());
         CategoryDomainObject[] categories = categoriesOfType.toArray(new CategoryDomainObject[categoriesOfType.size()]);
         return getCategoryArrayFromCategoryDomainObjectArray(categories);
     }

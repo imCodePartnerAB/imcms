@@ -4,7 +4,6 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
-import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -158,7 +157,7 @@ public class DocumentLoader {
         for (Map.Entry<Integer, Permission> roleIdToPermissionSetId : jpaMeta.getRoleIdToPermission().entrySet()) {
             rolePermissionMappings.setPermissionSetTypeForRole(
                     new RoleId(roleIdToPermissionSetId.getKey()),
-                    PermissionDTO.fromPermission(roleIdToPermissionSetId.getValue()));
+                    roleIdToPermissionSetId.getValue());
         }
 
         metaDO.setRoleIdToDocumentPermissionSetTypeMappings(rolePermissionMappings);
@@ -171,7 +170,7 @@ public class DocumentLoader {
 
         metaDO.setArchivedDatetime(meta.getArchivedDatetime());
         metaDO.setArchiverId(meta.getArchiverId());
-        metaDO.setCategoryIds(meta.getCategoryIds());
+        metaDO.setCategories(meta.getCategories());
         metaDO.setCreatedDatetime(meta.getCreatedDatetime());
         metaDO.setCreatorId(meta.getCreatorId());
         metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());

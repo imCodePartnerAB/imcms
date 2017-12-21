@@ -40,8 +40,7 @@ public class RestrictedPermissionJPA extends RestrictedPermission {
     @Column(name = "edit_doc_info")
     private boolean editDocInfo;
 
-    public RestrictedPermissionJPA(RestrictedPermission from, Permission permission) {
+    public RestrictedPermissionJPA(RestrictedPermission from) {
         super(from);
-        this.permission = permission;
     }
 }

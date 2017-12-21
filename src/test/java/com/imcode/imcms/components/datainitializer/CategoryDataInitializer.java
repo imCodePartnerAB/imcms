@@ -50,9 +50,6 @@ public class CategoryDataInitializer extends TestDataCleaner {
     }
 
     public List<CategoryTypeDTO> getCategoryTypesAsDTO() {
-//        IntStream.range(0, elementsCount)
-//                .forEach(i -> types.get(i).setCategories(singletonList(categories.get(i))));
-
         return types.stream()
                 .map(CategoryTypeDTO::new)
                 .collect(Collectors.toList());

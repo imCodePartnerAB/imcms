@@ -37,19 +37,16 @@ public class CategoryTypeJPA extends CategoryType {
     @Column(name = "is_image_archive", nullable = false)
     private boolean imageArchive;
 
-//    @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
-//    private List<CategoryJPA> categories;
-
     public CategoryTypeJPA(String name, int maxChoices, boolean inherited, boolean imageArchive) {
         this(null, name, maxChoices, inherited, imageArchive);
     }
 
-//    public CategoryTypeJPA(Integer id, String name, int maxChoices, boolean inherited, boolean imageArchive) {
-//        this(id, name, maxChoices, inherited, imageArchive);
-//    }
-
     public CategoryTypeJPA(CategoryType from) {
         super(from);
+    }
+
+    public CategoryTypeJPA(int id, String name, boolean multiselect, boolean inherited, boolean imageArchive) {
+        this(id, name, multiselect ? 0 : 1, inherited, imageArchive);
     }
 
     /**
@@ -77,14 +74,4 @@ public class CategoryTypeJPA extends CategoryType {
         this.maxChoices = (multiSelect) ? 0 : 1;
     }
 
-//    @Override
-//    public List<Category> getCategories() {
-//        return (categories == null) ? null : new ArrayList<>(categories);
-//    }
-//
-//    @Override
-//    public void setCategories(List<Category> categories) {
-//        this.categories = (categories == null) ? null
-//                : categories.stream().map(CategoryJPA::new).collect(Collectors.toList());
-//    }
 }

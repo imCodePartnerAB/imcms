@@ -154,7 +154,7 @@ public class SearchDocumentServiceTest {
             final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
             try {
-                Thread.sleep(TimeUnit.MINUTES.toMillis(2));
+                Thread.sleep(TimeUnit.SECONDS.toMillis(2));
             } catch (InterruptedException e) {
                 // don't really care
             }

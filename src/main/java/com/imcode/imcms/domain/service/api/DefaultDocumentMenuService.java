@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.PermissionDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
@@ -58,8 +57,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
                 .map(RoleId::getRoleId)
                 .map(docPermissions::get)
                 .filter(Objects::nonNull)
-                .map(PermissionDTO::fromPermission)
-                .anyMatch(permissionDTO -> permissionDTO.isAtLeastAsPrivilegedAs(PermissionDTO.VIEW));
+                .anyMatch(permission -> permission.isAtLeastAsPrivilegedAs(Permission.VIEW));
     }
 
     @Override

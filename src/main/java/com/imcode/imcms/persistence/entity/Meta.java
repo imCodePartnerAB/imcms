@@ -1,11 +1,13 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.model.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Document's meta.
@@ -90,29 +92,41 @@ public class Meta implements Serializable {
     private String target;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "document_properties", joinColumns = @JoinColumn(name = "meta_id"))
+    @CollectionTable(
+            name = "document_properties",
+            joinColumns = @JoinColumn(name = "meta_id")
+    )
     @MapKeyColumn(name = "key_name")
     @Column(name = "value", nullable = false)
     private Map<String, String> properties = new HashMap<>();
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "document_categories", joinColumns = @JoinColumn(name = "meta_id"))
-    @Column(name = "category_id", nullable = false)
-    private Set<Integer> categoryIds = new HashSet<>();
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "document_categories",
+            joinColumns = @JoinColumn(name = "meta_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id", nullable = false)
+    )
+    private Set<CategoryJPA> categories = new HashSet<>();
 
     /**
      * @see RoleJPA#id as key
      * @see Permission as value
      */
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Permission.class)
-    @CollectionTable(name = "roles_rights", joinColumns = @JoinColumn(name = "meta_id"))
+    @CollectionTable(
+            name = "roles_rights",
+            joinColumns = @JoinColumn(name = "meta_id")
+    )
     @MapKeyColumn(name = "role_id")
     @Column(name = "permission", columnDefinition = "VARCHAR(16)")
     @Enumerated(EnumType.STRING)
     private Map<Integer, Permission> roleIdToPermission = new HashMap<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "imcms_doc_keywords", joinColumns = @JoinColumn(name = "doc_id"))
+    @CollectionTable(
+            name = "imcms_doc_keywords",
+            joinColumns = @JoinColumn(name = "doc_id")
+    )
     @Column(name = "value")
     private Set<String> keywords = new HashSet<>();
 
@@ -154,7 +168,29 @@ public class Meta implements Serializable {
     }
 
     /**
-     * Permissions for document access.
+     * Permission set type for document access.
+     * <p/>
+     * Permission set is assigned per role per document.
+     *
+     * @see imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings
+     * <p/>
+     * Permission set with lower type id (EDIT) is most privileged.
+     * Any new permission defined in the system is automatically included into that set.
+     * <p/>
+     * Permission set with higher type id (NONE) has no privileges at all.
+     * This set is always empty.
+     * <p/>
+     * VIEW permission set defines permissions only for document viewing.
+     * <p/>
+     * EDIT, VIEW and NONE sets are sealed - i.e each of them contains predefined and unmodifiable permissions.
+     * Those sets are shared by all documents in a system.
+     * <p/>
+     * RESTRICTED_1 and RESTRICTED_2 are sets customizable per document,
+     * however, they also contain the fixed subset of permissions - VIEW.
+     * Additionally any document may extend a restricted set of permissions with permissions from the EDIT set.
+     * <p/>
+     * Please note:
+     * By definition RESTRICTED_2 is more restrictive than RESTRICTED_1 but this can be changed at a document level (why?).
      */
     public enum Permission {
         EDIT,
@@ -168,7 +204,7 @@ public class Meta implements Serializable {
         }
 
         public String getName() {
-            return toString().toLowerCase();
+            return toString().toLowerCase().replace('_', ' ');
         }
 
         public boolean isMorePrivilegedThan(Permission type) {
@@ -178,5 +214,13 @@ public class Meta implements Serializable {
         public boolean isAtLeastAsPrivilegedAs(Permission type) {
             return ordinal() <= type.ordinal();
         }
+    }
+
+    public Set<Category> getCategories() {
+        return new HashSet<>(this.categories);
+    }
+
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories.stream().map(CategoryJPA::new).collect(Collectors.toSet());
     }
 }

@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
+import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.Value;
@@ -54,18 +55,18 @@ public class DocumentDTO implements Serializable {
 
     private Set<CategoryDTO> categories;
 
-    private Map<PermissionDTO, RestrictedPermissionDTO> restrictedPermissions;
+    private Set<RestrictedPermissionDTO> restrictedPermissions;
 
-    private Map<Integer, PermissionDTO> roleIdToPermission;
+    private Map<Integer, Permission> roleIdToPermission;
 
     private TextDocumentTemplateDTO template;
 
-    public static DocumentDTO createNew() {
+    public static DocumentDTO createNew(DocumentType type) {
         return Value.with(new DocumentDTO(), documentDTO -> {
             documentDTO.title = "";
             documentDTO.target = "";
             documentDTO.alias = "";
-            documentDTO.type = DocumentType.TEXT; // for now text is default type
+            documentDTO.type = type;
 
             // common contents have to be set by service
 
@@ -74,9 +75,15 @@ public class DocumentDTO implements Serializable {
             documentDTO.keywords = new HashSet<>();
             documentDTO.categories = new HashSet<>();
             documentDTO.roleIdToPermission = new HashMap<>();
-            documentDTO.restrictedPermissions = new HashMap<>();
-            documentDTO.restrictedPermissions.put(PermissionDTO.RESTRICTED_1, new RestrictedPermissionDTO());
-            documentDTO.restrictedPermissions.put(PermissionDTO.RESTRICTED_2, new RestrictedPermissionDTO());
+            documentDTO.restrictedPermissions = new HashSet<>();
+
+            final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
+            final RestrictedPermissionDTO restricted2 = new RestrictedPermissionDTO();
+            restricted1.setPermission(Permission.RESTRICTED_1);
+            restricted2.setPermission(Permission.RESTRICTED_2);
+
+            documentDTO.restrictedPermissions.add(restricted1);
+            documentDTO.restrictedPermissions.add(restricted2);
 
             documentDTO.published = new AuditDTO();
             documentDTO.archived = new AuditDTO();
@@ -87,5 +94,9 @@ public class DocumentDTO implements Serializable {
             documentDTO.currentVersion.setId(Version.WORKING_VERSION_INDEX);
             documentDTO.template = TextDocumentTemplateDTO.createDefault();
         });
+    }
+
+    public Set<RestrictedPermissionDTO> getRestrictedPermissions() {
+        return (this.restrictedPermissions == null) ? null : new TreeSet<>(this.restrictedPermissions);
     }
 }

@@ -166,49 +166,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<Set<RestrictedPermissionJPA>, Map<PermissionDTO, RestrictedPermissionDTO>>
-    restrictedPermissionsToDTO() {
-        return restrictedPermissions -> restrictedPermissions.stream().collect(
-                Collectors.toMap(PermissionDTO::fromRestrictedPermission, RestrictedPermissionDTO::new)
-        );
-    }
-
-    @Bean
-    public Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermissionJPA>>
-    restrictedPermissionsDtoToRestrictedPermissions() {
-        return restrictedPermissions -> restrictedPermissions.entrySet()
-                .stream()
-                .map(permissionDtoToRestrictedDto -> {
-                    final RestrictedPermissionDTO restrictedPermissionDTO = permissionDtoToRestrictedDto.getValue();
-                    final Meta.Permission permission = permissionDtoToRestrictedDto.getKey().getPermission();
-
-                    return new RestrictedPermissionJPA(restrictedPermissionDTO, permission);
-                })
-                .collect(Collectors.toSet());
-    }
-
-    @Bean
-    public Function<Map<Integer, Meta.Permission>, Map<Integer, PermissionDTO>> roleIdByPermissionToRoleIdByPermissionDTO() {
-        return roleIdByPermissionMap -> roleIdByPermissionMap.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        roleIdToPermission -> PermissionDTO.fromPermission(roleIdToPermission.getValue())
-                ));
-    }
-
-    @Bean
-    public Function<Map<Integer, PermissionDTO>, Map<Integer, Meta.Permission>> roleIdByPermissionDtoToRoleIdByPermission() {
-        return roleIdByPermissionDtoMap -> roleIdByPermissionDtoMap.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        roleIdByPermissionDtoEntry -> roleIdByPermissionDtoEntry.getValue().getPermission()
-                ));
-    }
-
-    @Bean
-    public Function<DocumentDTO, Meta> documentDtoToMeta(
-            Function<Map<Integer, PermissionDTO>, Map<Integer, Meta.Permission>> roleIdByPermissionDtoToRoleIdByPermission,
-            Function<Map<PermissionDTO, RestrictedPermissionDTO>, Set<RestrictedPermissionJPA>>
-                    restrictedPermissionsDtoToRestrictedPermissions
-    ) {
+    public Function<DocumentDTO, Meta> documentDtoToMeta(CategoryService categoryService) {
         return documentDTO -> {
             final Meta meta = new Meta();
             final Integer version = documentDTO.getCurrentVersion().getId();
@@ -259,21 +217,26 @@ class MappingConfig {
             meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
             meta.setSearchDisabled(documentDTO.isSearchDisabled());
 
-            final Set<Integer> categoryIds = documentDTO.getCategories()
+            final Set<Category> categories = documentDTO.getCategories()
                     .stream()
-                    .map(Category::getId)
+                    .map(categoryDTO -> categoryService.getById(categoryDTO.getId()).map(CategoryJPA::new))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .collect(Collectors.toSet());
 
-            meta.setCategoryIds(categoryIds);
+            meta.setCategories(categories);
 
             meta.setLinkableByOtherUsers(true);                         // fixme: not sure what to do with this
             meta.setLinkedForUnauthorizedUsers(true);                   // fixme: not sure what to do with this
 
-            meta.setRoleIdToPermission(roleIdByPermissionDtoToRoleIdByPermission.apply(documentDTO.getRoleIdToPermission()));
+            meta.setRoleIdToPermission(documentDTO.getRoleIdToPermission());
 
-            meta.setRestrictedPermissions(restrictedPermissionsDtoToRestrictedPermissions.apply(
-                    documentDTO.getRestrictedPermissions()
-            ));
+            final Set<RestrictedPermissionJPA> restrictedPermissions = documentDTO.getRestrictedPermissions()
+                    .stream()
+                    .map(RestrictedPermissionJPA::new)
+                    .collect(Collectors.toSet());
+
+            meta.setRestrictedPermissions(restrictedPermissions);
 
             return meta;
         };
@@ -281,9 +244,6 @@ class MappingConfig {
 
     @Bean
     public TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping(
-            Function<Set<RestrictedPermissionJPA>, Map<PermissionDTO, RestrictedPermissionDTO>> restrictedPermissionsToDTO,
-            Function<Map<Integer, Meta.Permission>, Map<Integer, PermissionDTO>> roleIdByPermissionDtoToRoleIdByPermission,
-            CategoryService categoryService,
             UserService userService,
             TextDocumentTemplateService textDocumentTemplateService
     ) {
@@ -330,21 +290,21 @@ class MappingConfig {
             dto.setSearchDisabled(meta.isSearchDisabled());
 
             dto.setKeywords(meta.getKeywords());
+            dto.setRoleIdToPermission(meta.getRoleIdToPermission());
 
-            final Map<Integer, PermissionDTO> roleIdToPermissionDTO =
-                    roleIdByPermissionDtoToRoleIdByPermission.apply(meta.getRoleIdToPermission());
-            dto.setRoleIdToPermission(roleIdToPermissionDTO);
-
-            final Set<CategoryDTO> categories = meta.getCategoryIds()
+            final Set<CategoryDTO> categories = meta.getCategories()
                     .stream()
-                    .map(categoryService::getById)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
                     .map(CategoryDTO::new)
                     .collect(Collectors.toSet());
 
             dto.setCategories(categories);
-            dto.setRestrictedPermissions(restrictedPermissionsToDTO.apply(meta.getRestrictedPermissions()));
+
+            final Set<RestrictedPermissionDTO> restrictedPermissions = meta.getRestrictedPermissions()
+                    .stream()
+                    .map(RestrictedPermissionDTO::new)
+                    .collect(Collectors.toSet());
+
+            dto.setRestrictedPermissions(restrictedPermissions);
 
             textDocumentTemplateService.get(metaId).map(TextDocumentTemplateDTO::new).ifPresent(dto::setTemplate);
 
