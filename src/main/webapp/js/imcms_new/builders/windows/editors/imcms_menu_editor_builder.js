@@ -343,16 +343,16 @@ Imcms.define("imcms-menu-editor-builder",
             closeSubItems($frame);
 
             isMouseDown = true;
-
-            $(document).on("mousemove", moveFrame)
-                .on("dragstart", "imcms-menu-item__info", function () {
-                    return false;
-                });
-
-            $(document).on("mouseup", function () {
-                disableDrag($frame);
-            });
         }
+
+        $(document).on("mousemove", moveFrame)
+            .on("dragstart", "imcms-menu-item__info", function () {
+                return false;
+            });
+
+        $(document).on("mouseup", function () {
+            disableDrag($(".imcms-menu-items--frame"));
+        });
 
         function createItem() {
             var $dataInput = $(this),

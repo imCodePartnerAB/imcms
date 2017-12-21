@@ -212,12 +212,12 @@ Imcms.define("imcms-document-editor-builder",
             });
 
             $frame.appendTo("body");
-
-            $(document).on("mousemove", moveFrame)
-                .on("dragstart", function () {
-                    return false;
-                });
         }
+
+        $(document).on("mousemove", moveFrame)
+            .on("dragstart", function () {
+                return false;
+            });
 
         function refreshDocumentInList(document) {
             var $oldDocumentElement = $documentsList.find("[data-doc-id=" + document.id + "]");
