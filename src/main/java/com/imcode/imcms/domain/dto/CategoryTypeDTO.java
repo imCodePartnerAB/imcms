@@ -18,20 +18,8 @@ public class CategoryTypeDTO extends CategoryType implements Serializable {
 
     private boolean multiSelect;
 
-//    private List<CategoryDTO> categories;
-
     public CategoryTypeDTO(CategoryType from) {
         super(from);
     }
 
-//    @Override
-//    public List<Category> getCategories() {
-//        return (categories == null) ? null : new ArrayList<>(categories);
-//    }
-//
-//    @Override
-//    public void setCategories(List<Category> categories) {
-//        this.categories = (categories == null) ? null
-//                : categories.stream().map(CategoryDTO::new).collect(Collectors.toList());
-//    }
 }

@@ -32,19 +32,19 @@ public class CategoryTypeServiceTest {
     private CategoryTypeService categoryTypeService;
 
     @Autowired
-    private CategoryDataInitializer categoryDataInitilizer;
+    private CategoryDataInitializer categoryDataInitializer;
 
     @Autowired
     private CategoryTypeRepository categoryTypeRepository;
 
     @Before
-    public void setUpCategoryDataInitilizer() {
-        categoryDataInitilizer.createData(4);
+    public void setUpCategoryDataInitializer() {
+        categoryDataInitializer.createData(4);
     }
 
     @After
     public void clearData() {
-        categoryDataInitilizer.cleanRepositories();
+        categoryDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -66,7 +66,7 @@ public class CategoryTypeServiceTest {
 
     @Test
     public void getAllExpectedEqualsCategoryTypesAsDtoTest() {
-        assertEquals(categoryDataInitilizer.getCategoryTypesAsDTO(), categoryTypeService.getAll());
+        assertEquals(categoryDataInitializer.getCategoryTypesAsDTO(), categoryTypeService.getAll());
     }
 
     @Test

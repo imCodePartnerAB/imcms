@@ -9,7 +9,6 @@ public abstract class CategoryType {
         setId(from.getId());
         setName(from.getName());
         setMultiSelect(from.isMultiSelect());
-//        setCategories(from.getCategories());
     }
 
     public abstract boolean isMultiSelect();
@@ -23,9 +22,5 @@ public abstract class CategoryType {
     public abstract String getName();
 
     public abstract void setName(String name);
-
-//    public abstract List<Category> getCategories();
-//
-//    public abstract void setCategories(List<Category> categories);
 
 }
