@@ -208,6 +208,14 @@ Imcms.define("imcms-menu-editor-builder",
             });
         }
 
+        function slideUpMenuDocIfItClose(menuDoc) {
+            var showHidBtn = menuDoc.find(".imcms-menu-item").first().find(".children-triangle");
+
+            if (!showHidBtn.hasClass("imcms-menu-item-btn--open")) {
+                showHidBtn.trigger("click");
+            }
+        }
+
         function insertMenuCopyFrame(menuDoc, placeStatus) {
             var $frame = $(".imcms-menu-items--frame"),
                 $origin = $(".imcms-menu-items--is-drag").clone(true)
@@ -223,6 +231,7 @@ Imcms.define("imcms-menu-editor-builder",
             $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
 
             if (placeStatus) {
+                slideUpMenuDocIfItClose(menuDoc);
                 menuDoc.append($origin);
                 changeDataDocumentLevel(menuDoc, $origin, placeStatus);
                 addShowHideBtn(menuDoc);
