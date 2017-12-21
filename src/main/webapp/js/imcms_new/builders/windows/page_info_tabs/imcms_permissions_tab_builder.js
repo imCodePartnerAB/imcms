@@ -7,6 +7,12 @@ Imcms.define("imcms-permissions-tab-builder",
     ],
     function (BEM, components, tabContentBuilder) {
 
+        var defaultPermissions = [{
+            permission: "RESTRICTED_1"
+        }, {
+            permission: "RESTRICTED_2"
+        }];
+
         var editText = "editText",
             editMenu = "editMenu",
             editImage = "editImage",
@@ -48,6 +54,10 @@ Imcms.define("imcms-permissions-tab-builder",
             });
         }
 
+        function prettifyPermissionName(permissionName) {
+            return permissionName.charAt(0).toUpperCase() + permissionName.replace("_", " ").toLowerCase().slice(1);
+        }
+
         var permissionsWrapperBEM = new BEM({
             block: "imcms-field",
             elements: {
@@ -64,12 +74,16 @@ Imcms.define("imcms-permissions-tab-builder",
             fillTabDataFromDocument: function (document) {
                 tabData.restrictedCheckboxes$ = [];
 
+                if (!document.restrictedPermissions || !document.restrictedPermissions.length) {
+                    document.restrictedPermissions = defaultPermissions;
+                }
+
                 document.restrictedPermissions.forEach(function (restrictedPermission) {
                     var permissionName = restrictedPermission.permission;
 
                     var restrictedCheckboxes$ = createRestrictedCheckboxes(permissionName);
                     var $restrictedRoleRights = components.checkboxes.checkboxContainer(
-                        "<div>", restrictedCheckboxes$, {title: permissionName.replace("_", " ").toLowerCase()}
+                        "<div>", restrictedCheckboxes$, {title: prettifyPermissionName(permissionName)}
                     );
 
                     permissionsWrapperBEM.makeBlockElement("item", $restrictedRoleRights, ["float-l", "col-3"]);
