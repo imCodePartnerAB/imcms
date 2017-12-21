@@ -56,7 +56,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
 
             meta.setArchivedDatetime(new Date());
             meta.setArchiverId(1);
-            meta.setCategoryIds(new HashSet<>());
+            meta.setCategories(new HashSet<>());
             meta.setCreatedDatetime(new Date());
             meta.setCreatorId(1);
             meta.setModifiedDatetime(new Date());

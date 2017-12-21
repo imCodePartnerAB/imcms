@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.model.Category;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import org.apache.commons.lang.NullArgumentException;
@@ -52,7 +53,7 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile Integer publisherId;
     private volatile Integer depublisherId;
     private volatile Map<String, String> properties = new ConcurrentHashMap<>();
-    private volatile Set<Integer> categoryIds = new CopyOnWriteArraySet<>();
+    private volatile Set<Category> categories = new CopyOnWriteArraySet<>();
     private volatile Set<String> keywords = new CopyOnWriteArraySet<>();
     private volatile RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
     private volatile Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
@@ -64,7 +65,7 @@ public class DocumentMeta implements Serializable, Cloneable {
 
             clone.disabledLanguageShowMode = disabledLanguageShowMode;
             clone.properties = new ConcurrentHashMap<>(properties);
-            clone.categoryIds = new CopyOnWriteArraySet<>(categoryIds);
+            clone.categories = new CopyOnWriteArraySet<>(categories);
 
             clone.keywords = new CopyOnWriteArraySet<>(keywords);
 
@@ -215,12 +216,12 @@ public class DocumentMeta implements Serializable, Cloneable {
         this.properties = properties;
     }
 
-    public Set<Integer> getCategoryIds() {
-        return categoryIds;
+    public Set<Category> getCategories() {
+        return categories;
     }
 
-    public void setCategoryIds(Set<Integer> categoryIds) {
-        this.categoryIds = categoryIds;
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
     }
 
     public Set<String> getKeywords() {

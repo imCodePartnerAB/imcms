@@ -722,7 +722,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {
-        Set<CategoryDomainObject> categories = getCategoryMapper().getCategories(document.getCategoryIds());
+        Set<CategoryDomainObject> categories = getCategoryMapper().getCategories(document.getCategories());
         categories.stream()
                 .filter(category -> !category.getType().isInherited())
                 .forEach(category -> document.removeCategoryId(category.getId()));

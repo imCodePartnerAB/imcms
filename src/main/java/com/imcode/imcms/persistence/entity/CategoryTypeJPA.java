@@ -45,6 +45,10 @@ public class CategoryTypeJPA extends CategoryType {
         super(from);
     }
 
+    public CategoryTypeJPA(int id, String name, boolean multiselect, boolean inherited, boolean imageArchive) {
+        this(id, name, multiselect ? 0 : 1, inherited, imageArchive);
+    }
+
     /**
      * Checks whether category type is multi select. Can be only 0 or 1.
      * {@link #maxChoices} = 0 - is multi select

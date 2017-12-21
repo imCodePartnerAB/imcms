@@ -166,7 +166,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<DocumentDTO, Meta> documentDtoToMeta() {
+    public Function<DocumentDTO, Meta> documentDtoToMeta(CategoryService categoryService) {
         return documentDTO -> {
             final Meta meta = new Meta();
             final Integer version = documentDTO.getCurrentVersion().getId();
@@ -217,12 +217,14 @@ class MappingConfig {
             meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
             meta.setSearchDisabled(documentDTO.isSearchDisabled());
 
-            final Set<Integer> categoryIds = documentDTO.getCategories()
+            final Set<Category> categories = documentDTO.getCategories()
                     .stream()
-                    .map(Category::getId)
+                    .map(categoryDTO -> categoryService.getById(categoryDTO.getId()).map(CategoryJPA::new))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .collect(Collectors.toSet());
 
-            meta.setCategoryIds(categoryIds);
+            meta.setCategories(categories);
 
             meta.setLinkableByOtherUsers(true);                         // fixme: not sure what to do with this
             meta.setLinkedForUnauthorizedUsers(true);                   // fixme: not sure what to do with this
@@ -242,7 +244,6 @@ class MappingConfig {
 
     @Bean
     public TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping(
-            CategoryService categoryService,
             UserService userService,
             TextDocumentTemplateService textDocumentTemplateService
     ) {
@@ -291,11 +292,8 @@ class MappingConfig {
             dto.setKeywords(meta.getKeywords());
             dto.setRoleIdToPermission(meta.getRoleIdToPermission());
 
-            final Set<CategoryDTO> categories = meta.getCategoryIds()
+            final Set<CategoryDTO> categories = meta.getCategories()
                     .stream()
-                    .map(categoryService::getById)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
                     .map(CategoryDTO::new)
                     .collect(Collectors.toSet());
 

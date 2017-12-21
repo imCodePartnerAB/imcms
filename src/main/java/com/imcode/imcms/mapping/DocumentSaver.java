@@ -343,7 +343,7 @@ public class DocumentSaver {
 
         meta.setArchivedDatetime(metaDO.getArchivedDatetime());
         meta.setArchiverId(metaDO.getArchiverId());
-        meta.setCategoryIds(metaDO.getCategoryIds());
+        meta.setCategories(metaDO.getCategories());
         meta.setCreatedDatetime(metaDO.getCreatedDatetime());
         meta.setCreatorId(metaDO.getCreatorId());
         meta.setDefaultVersionNo(metaDO.getDefaultVersionNo());

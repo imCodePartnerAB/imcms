@@ -95,7 +95,7 @@ public class CategoryRepositoryTest {
         final Integer docId = firstDoc.getId();
         final Integer categoryId = saved.getId();
 
-        firstDoc.setCategoryIds(new HashSet<>(Collections.singleton(categoryId)));
+        firstDoc.setCategories(new HashSet<>(Collections.singleton(saved)));
         metaRepository.save(firstDoc);
 
         final List<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(categoryId);
@@ -122,16 +122,15 @@ public class CategoryRepositoryTest {
 
         final Meta firstDoc = allMetas.get(0);
         final Integer docId = firstDoc.getId();
-        final Set<Integer> docCategoryIds = firstDoc.getCategoryIds();
+        final Set<Category> docCategories = firstDoc.getCategories();
         final Integer docCategoryId = saved.getId();
 
-        assertFalse(docCategoryIds.contains(docCategoryId));
+        assertFalse(docCategories.contains(saved));
 
-        docCategoryIds.add(docCategoryId);
+        docCategories.add(saved);
+        firstDoc.setCategories(docCategories);
 
         metaRepository.save(firstDoc);
-
-        assertTrue(docCategoryIds.contains(docCategoryId));
 
         List<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(docCategoryId);
 

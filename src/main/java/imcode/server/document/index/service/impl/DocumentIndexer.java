@@ -73,7 +73,7 @@ public class DocumentIndexer {
 
         indexDoc.addField(DocumentIndex.FIELD__STATUS, doc.getPublicationStatus().asInt());
 
-        categoryMapper.getCategories(doc.getCategoryIds()).forEach(category -> {
+        categoryMapper.getCategories(doc.getCategories()).forEach(category -> {
             indexDoc.addField(DocumentIndex.FIELD__CATEGORY, category.getName());
             indexDoc.addField(DocumentIndex.FIELD__CATEGORY_ID, category.getId());
 

@@ -170,7 +170,7 @@ public class DocumentLoader {
 
         metaDO.setArchivedDatetime(meta.getArchivedDatetime());
         metaDO.setArchiverId(meta.getArchiverId());
-        metaDO.setCategoryIds(meta.getCategoryIds());
+        metaDO.setCategories(meta.getCategories());
         metaDO.setCreatedDatetime(meta.getCreatedDatetime());
         metaDO.setCreatorId(meta.getCreatorId());
         metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());

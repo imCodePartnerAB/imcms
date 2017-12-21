@@ -1,6 +1,8 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
+import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
@@ -127,10 +129,10 @@ public class CategoryMapper {
             throws MaxCategoryDomainObjectsOfTypeExceededException {
         CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
         for (CategoryTypeDomainObject categoryType : categoryTypes) {
-            int maxChoices = categoryType.getMaxChoices();
-            Set documentCategoriesOfType = getCategoriesOfType(categoryType, document.getCategoryIds());
-            if (UNLIMITED_MAX_CATEGORY_CHOICES != maxChoices && documentCategoriesOfType.size() > maxChoices) {
-                throw new MaxCategoryDomainObjectsOfTypeExceededException("Document may have at most " + maxChoices
+            boolean multiselect = categoryType.isMultiSelect();
+            Set documentCategoriesOfType = getCategoriesOfType(categoryType, document.getCategories());
+            if (!multiselect && documentCategoriesOfType.size() > UNLIMITED_MAX_CATEGORY_CHOICES) {
+                throw new MaxCategoryDomainObjectsOfTypeExceededException("Document may have at most " + UNLIMITED_MAX_CATEGORY_CHOICES
                         + " categories of type '"
                         + categoryType.getName()
                         + "'");
@@ -153,11 +155,10 @@ public class CategoryMapper {
         return toDomainObject(categoryRepository.saveAndFlush(toJpaObject(category)));
     }
 
-    public Set<CategoryDomainObject> getCategories(Collection<Integer> categoryIds) {
-        List<CategoryJPA> categoryList = categoryRepository.findAll(categoryIds);
+    public Set<CategoryDomainObject> getCategories(Collection<Category> categories) {
         Set<CategoryDomainObject> categoryDomainObjectSet = new HashSet<>();
 
-        for (CategoryJPA category : categoryList) {
+        for (Category category : categories) {
             categoryDomainObjectSet.add(toDomainObject(category));
         }
 
@@ -175,8 +176,8 @@ public class CategoryMapper {
         return categoryDomainObjectList;
     }
 
-    public Set<CategoryDomainObject> getCategoriesOfType(CategoryTypeDomainObject categoryType, Set<Integer> categoryIds) {
-        Set<CategoryDomainObject> categoryDomainObjectSet = getCategories(categoryIds);
+    public Set<CategoryDomainObject> getCategoriesOfType(CategoryTypeDomainObject categoryType, Set<Category> categories) {
+        Set<CategoryDomainObject> categoryDomainObjectSet = getCategories(categories);
 
         categoryDomainObjectSet.removeIf(categoryDomainObject -> !categoryDomainObject.getType().equals(categoryType));
 
@@ -184,18 +185,18 @@ public class CategoryMapper {
     }
 
 
-    private CategoryTypeDomainObject toDomainObject(CategoryTypeJPA jpaType) {
+    private CategoryTypeDomainObject toDomainObject(CategoryType jpaType) {
         return jpaType == null
                 ? null
                 : new CategoryTypeDomainObject(
                 jpaType.getId(),
                 jpaType.getName(),
-                jpaType.getMaxChoices(),
+                jpaType.isMultiSelect(),
                 jpaType.isInherited(),
                 jpaType.isImageArchive());
     }
 
-    private CategoryDomainObject toDomainObject(CategoryJPA jpaCategory) {
+    private CategoryDomainObject toDomainObject(Category jpaCategory) {
         return jpaCategory == null
                 ? null
                 : new CategoryDomainObject(
@@ -206,9 +207,9 @@ public class CategoryMapper {
                 toDomainObject(jpaCategory.getType()));
     }
 
-    private CategoryTypeJPA toJpaObject(CategoryTypeDomainObject typeDO) {
+    private CategoryTypeJPA toJpaObject(CategoryType typeDO) {
         return new CategoryTypeJPA(
-                typeDO.getId(), typeDO.getName(), typeDO.getMaxChoices(), typeDO.isInherited(), typeDO.isImageArchive()
+                typeDO.getId(), typeDO.getName(), typeDO.isMultiSelect(), typeDO.isInherited(), typeDO.isImageArchive()
         );
     }
 

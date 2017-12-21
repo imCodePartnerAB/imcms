@@ -97,6 +97,6 @@ public class DocumentDTO implements Serializable {
     }
 
     public Set<RestrictedPermissionDTO> getRestrictedPermissions() {
-        return new TreeSet<>(this.restrictedPermissions);
+        return (this.restrictedPermissions == null) ? null : new TreeSet<>(this.restrictedPermissions);
     }
 }

@@ -10,6 +10,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -212,12 +213,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setArchiverId(id);
     }
 
-    public Set<Integer> getCategoryIds() {
-        return meta.getCategoryIds();
+    public Set<Category> getCategories() {
+        return meta.getCategories();
     }
 
-    public void setCategoryIds(Set<Integer> categoryIds) {
-        meta.setCategoryIds(categoryIds);
+    public void setCategories(Set<Category> categories) {
+        meta.setCategories(categories);
     }
 
     public Date getCreatedDatetime() {
@@ -407,8 +408,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setLinkedForUnauthorizedUsers(linkedForUnauthorizedUsers);
     }
 
-    public void addCategoryId(int categoryId) {
-        meta.getCategoryIds().add(categoryId);
+    public void addCategory(Category category) {
+        meta.getCategories().add(category);
     }
 
     public boolean equals(Object o) {
@@ -440,7 +441,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void removeCategoryId(int categoryId) {
-        meta.getCategoryIds().remove(categoryId);
+        meta.getCategories().remove(categoryId);
     }
 
     public abstract void accept(DocumentVisitor documentVisitor);

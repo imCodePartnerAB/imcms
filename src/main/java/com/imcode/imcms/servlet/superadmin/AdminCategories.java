@@ -300,7 +300,7 @@ public class AdminCategories extends HttpServlet {
             if (formBean.isUniqueCategoryTypeName()) {
                 int maxChoices = Integer.parseInt(req.getParameter(PARAMETER__MAX_CHOICES));
                 categoryTypeToEdit.setName(newName);
-                categoryTypeToEdit.setMaxChoices(maxChoices);
+                categoryTypeToEdit.setMultiSelect(maxChoices == 0);
                 boolean inherited = getInheritedParameterFromRequest(req);
                 categoryTypeToEdit.setInherited(inherited);
                 categoryTypeToEdit.setImageArchive(getImageArchiveParameterFromRequest(req));
@@ -329,9 +329,9 @@ public class AdminCategories extends HttpServlet {
 
     private CategoryTypeDomainObject createCategoryTypeFromRequest(HttpServletRequest req) {
         String categoryTypeName = req.getParameter(PARAMETER__NAME).trim();
-        int maxChoices = Integer.parseInt(req.getParameter(PARAMETER__MAX_CHOICES));
+        boolean multiselect = Integer.parseInt(req.getParameter(PARAMETER__MAX_CHOICES)) == 0;
         boolean inherited = getInheritedParameterFromRequest(req);
-        CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(0, categoryTypeName, maxChoices, inherited);
+        CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(0, categoryTypeName, multiselect, inherited);
         categoryType.setImageArchive(getImageArchiveParameterFromRequest(req));
         return categoryType;
     }

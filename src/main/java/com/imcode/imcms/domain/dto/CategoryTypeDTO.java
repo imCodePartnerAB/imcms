@@ -22,4 +22,23 @@ public class CategoryTypeDTO extends CategoryType implements Serializable {
         super(from);
     }
 
+    @Override
+    public boolean isInherited() {
+        return false;
+    }
+
+    @Override
+    public void setInherited(boolean isInherited) {
+        // not implemented
+    }
+
+    @Override
+    public boolean isImageArchive() {
+        return false;
+    }
+
+    @Override
+    public void setImageArchive(boolean imageArchive) {
+        // not implemented
+    }
 }
