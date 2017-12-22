@@ -127,4 +127,14 @@ public class MetaRepositoryTest {
         assertEquals(createdDoc.getTarget(), metaRepository.findTarget(createdDoc.getId()));
 
     }
+
+    @Test
+    public void findType() {
+
+        final Integer createdDocId = documentDataInitializer.createData().getId();
+        final Meta createdMeta = metaRepository.findOne(createdDocId);
+
+        assertEquals(createdMeta.getDocumentType(), metaRepository.findType(createdDocId));
+
+    }
 }
