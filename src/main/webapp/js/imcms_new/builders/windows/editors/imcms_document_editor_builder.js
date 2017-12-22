@@ -255,14 +255,6 @@ Imcms.define("imcms-document-editor-builder",
             return controlsBuilder.buildControlsBlock("<div>", controls);
         }
 
-        function toggleUserSelect(flag) {
-            if (flag) {
-                $("body").find("*").css({"user-select": "none"});
-            } else {
-                $("body").find("*").css({"user-select": "auto"});
-            }
-        }
-
         function moveFrame(event) {
             var $frame = $(".imcms-document-items--frame");
             mouseCoords.newPageX = event.clientX;
@@ -275,10 +267,12 @@ Imcms.define("imcms-document-editor-builder",
                 });
 
                 if (detectTargetArea(event)) {
-                    toggleUserSelect(true);
-                    $menuArea.css({
-                        "border-color": "#51aeea"
-                    });
+                    if ( $menuArea.css("border-color") !== "#51aeea") {
+                        $menuArea.css({
+                            "border-color": "#51aeea"
+                        });
+                    }
+
                     getDocumentParent();
 
                 } else {
@@ -286,7 +280,6 @@ Imcms.define("imcms-document-editor-builder",
                         "border-color": "transparent"
                     });
                     disableHighlightingMenuDoc();
-                    toggleUserSelect(false);
                 }
 
             }
@@ -482,8 +475,6 @@ Imcms.define("imcms-document-editor-builder",
 
             $frame.remove();
             isMouseDown = false;
-
-            toggleUserSelect(false);
         });
 
         function buildDocItem(document, opts) {
