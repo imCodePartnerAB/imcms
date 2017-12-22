@@ -107,11 +107,11 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         function toggleUserSelect(flag) {
-            if (flag) {
+            /*if (flag) {
                 $("body").find("*").css({"user-select": "none"});
             } else {
                 $("body").find("*").css({"user-select": "auto"});
-            }
+            }*/
         }
 
         function getMenuDocByObjId(obj) {
@@ -352,7 +352,7 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         $(document).on("mousemove", moveFrame)
-            .on("dragstart", "imcms-menu-item__info", function () {
+            .on("mousedown", "imcms-menu-item__info", function () {
                 return false;
             });
 

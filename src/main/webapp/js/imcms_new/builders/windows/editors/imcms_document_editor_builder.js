@@ -216,7 +216,7 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         $(document).on("mousemove", moveFrame)
-            .on("dragstart", function () {
+            .on("mousedown", "imcms-document-item__info", function () {
                 return false;
             });
 
@@ -453,11 +453,11 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function toggleUserSelect(flag) {
-            if (flag) {
+            /*if (flag) {
                 $("body").find("*").css({"user-select": "none"});
             } else {
                 $("body").find("*").css({"user-select": "auto"});
-            }
+            }*/
         }
 
         $(document).on("mouseup", function (event) {
