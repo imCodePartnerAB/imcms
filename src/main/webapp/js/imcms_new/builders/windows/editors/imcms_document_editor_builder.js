@@ -346,6 +346,14 @@ Imcms.define("imcms-document-editor-builder",
             $menuTree.find("[data-document-id=" + $menuItemFrame.attr("data-id") + "]").remove();
         }
 
+        function slideUpMenuDocIfItClose(menuDoc) {
+            var showHidBtn = menuDoc.find(".imcms-menu-item").first().find(".children-triangle");
+
+            if (!showHidBtn.hasClass("imcms-menu-item-btn--open")) {
+                showHidBtn.trigger("click");
+            }
+        }
+
         function createMenuItemFrame(menuDoc, placeStatus) {
             var insertedParent = {
                     parent: menuDoc,
@@ -358,6 +366,10 @@ Imcms.define("imcms-document-editor-builder",
 
             if (menuDoc.find("[data-document-id=" + $menuItemFrame.attr("data-id") + "]").length !== 0) {
                 return
+            }
+
+            if (placeStatus) {
+                slideUpMenuDocIfItClose(menuDoc);
             }
 
             setDataInputParams(insertedParent, $menuItemFrame);
