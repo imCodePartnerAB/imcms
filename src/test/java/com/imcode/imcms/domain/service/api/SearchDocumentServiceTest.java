@@ -129,7 +129,7 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    @Ignore
+    @Ignore // categories not working
     @Transactional
     public void search_When_CategorySpecified_Expect_Found() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();

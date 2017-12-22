@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import com.imcode.imcms.mapping.jpa.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,4 +18,8 @@ public class UserDTO implements Serializable {
 
     private String username;
 
+    public UserDTO(User from) {
+        id = from.getId();
+        username = from.getLogin();
+    }
 }

@@ -15,7 +15,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
@@ -24,14 +23,12 @@ import static java.util.Optional.ofNullable;
 class DefaultUserService implements UserService {
 
     private final UserRepository userRepository;
-    private final Function<User, UserDTO> userToUserDTO;
+
     @PersistenceContext
     private EntityManager entityManager;
 
-    DefaultUserService(UserRepository userRepository,
-                       Function<User, UserDTO> userToUserDTO) {
+    DefaultUserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.userToUserDTO = userToUserDTO;
     }
 
     @Override
@@ -49,7 +46,7 @@ class DefaultUserService implements UserService {
     @Override
     public List<UserDTO> getAdminUsers() {
         return userRepository.findUsersWithRoleIds(RoleId.USERADMIN_ID, RoleId.SUPERADMIN_ID).stream()
-                .map(userToUserDTO)
+                .map(UserDTO::new)
                 .collect(Collectors.toList());
     }
 
