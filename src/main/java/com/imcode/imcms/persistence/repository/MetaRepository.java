@@ -13,6 +13,13 @@ public interface MetaRepository extends JpaRepository<Meta, Integer> {
     @Query("SELECT m.id FROM Meta m")
     List<Integer> findAllIds();
 
+    /**
+     * Finds all document ids that lies between (inclusively).
+     *
+     * @param from start id, including it
+     * @param to   end id, including it
+     * @return a {@code List} of found ids
+     */
     @Query("SELECT m.id FROM Meta m WHERE m.id BETWEEN ?1 and ?2")
     List<Integer> findIdsBetween(int from, int to);
 
