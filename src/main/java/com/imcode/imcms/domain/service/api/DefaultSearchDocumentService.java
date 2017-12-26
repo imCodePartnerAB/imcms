@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,7 +64,10 @@ class DefaultSearchDocumentService implements SearchDocumentService {
         }
 
         return documentIndex.search(solrQuery, Imcms.getUser())
-                .documentStoredFieldsList().stream().map(DocumentStoredFieldsDTO::new)
+                .documentStoredFieldsList()
+                .stream()
+                .map(DocumentStoredFieldsDTO::new)
+                .sorted(Comparator.comparingInt(DocumentStoredFieldsDTO::getId).reversed())
                 .collect(Collectors.toList());
     }
 }
