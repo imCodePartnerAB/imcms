@@ -211,6 +211,7 @@ Imcms.define("imcms-document-editor-builder",
                 "left": mouseCoords.left
             });
 
+            toggleUserSelect(true);
             $frame.appendTo("body");
         }
 
@@ -255,14 +256,6 @@ Imcms.define("imcms-document-editor-builder",
             return controlsBuilder.buildControlsBlock("<div>", controls);
         }
 
-        function toggleUserSelect(flag) {
-            if (flag) {
-                $("body").find("*").css({"user-select": "none"});
-            } else {
-                $("body").find("*").css({"user-select": "auto"});
-            }
-        }
-
         function moveFrame(event) {
             var $frame = $(".imcms-document-items--frame");
             mouseCoords.newPageX = event.clientX;
@@ -275,10 +268,12 @@ Imcms.define("imcms-document-editor-builder",
                 });
 
                 if (detectTargetArea(event)) {
-                    toggleUserSelect(true);
-                    $menuArea.css({
-                        "border-color": "#51aeea"
-                    });
+                    if ( $menuArea.css("border-color") !== "#51aeea") {
+                        $menuArea.css({
+                            "border-color": "#51aeea"
+                        });
+                    }
+
                     getDocumentParent();
 
                 } else {
@@ -286,7 +281,6 @@ Imcms.define("imcms-document-editor-builder",
                         "border-color": "transparent"
                     });
                     disableHighlightingMenuDoc();
-                    toggleUserSelect(false);
                 }
 
             }
@@ -346,6 +340,14 @@ Imcms.define("imcms-document-editor-builder",
             $menuTree.find("[data-document-id=" + $menuItemFrame.attr("data-id") + "]").remove();
         }
 
+        function slideUpMenuDocIfItClose(menuDoc) {
+            var showHidBtn = menuDoc.find(".imcms-menu-item").first().find(".children-triangle");
+
+            if (!showHidBtn.hasClass("imcms-menu-item-btn--open")) {
+                showHidBtn.trigger("click");
+            }
+        }
+
         function createMenuItemFrame(menuDoc, placeStatus) {
             var insertedParent = {
                     parent: menuDoc,
@@ -358,6 +360,10 @@ Imcms.define("imcms-document-editor-builder",
 
             if (menuDoc.find("[data-document-id=" + $menuItemFrame.attr("data-id") + "]").length !== 0) {
                 return
+            }
+
+            if (placeStatus) {
+                slideUpMenuDocIfItClose(menuDoc);
             }
 
             setDataInputParams(insertedParent, $menuItemFrame);
@@ -446,6 +452,14 @@ Imcms.define("imcms-document-editor-builder",
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
         }
 
+        function toggleUserSelect(flag) {
+            if (flag) {
+                $("body").find("*").css({"user-select": "none"});
+            } else {
+                $("body").find("*").css({"user-select": "auto"});
+            }
+        }
+
         $(document).on("mouseup", function (event) {
             var $frame = $(".imcms-document-items--frame"),
                 frameItem = $frame.find(".imcms-document-item"),
@@ -468,10 +482,10 @@ Imcms.define("imcms-document-editor-builder",
                 disableHighlightingMenuDoc();
             }
 
+            toggleUserSelect(false);
+
             $frame.remove();
             isMouseDown = false;
-
-            toggleUserSelect(false);
         });
 
         function buildDocItem(document, opts) {

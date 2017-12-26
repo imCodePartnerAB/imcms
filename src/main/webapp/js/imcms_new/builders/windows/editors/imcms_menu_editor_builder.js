@@ -168,11 +168,9 @@ Imcms.define("imcms-menu-editor-builder",
                 frameCopies
             ;
 
-            //if ($frameParent.attr("data-menu-items-lvl") === "1") {
-                if ($frameParent.find("[data-menu-items-lvl]").length === 1 || !$frameParent.hasClass("imcms-menu-items--is-drag")) {
-                    $frameParent.find(".children-triangle").remove();
-                }
-            //}
+            if ($frameParent.find("[data-menu-items-lvl]").length === 1 || !$frameParent.hasClass("imcms-menu-items--is-drag")) {
+                $frameParent.find(".children-triangle").remove();
+            }
 
             frameCopies = $menuTree.find("[data-document-id=" + $frame.attr("data-document-id") + "]");
 
@@ -237,11 +235,9 @@ Imcms.define("imcms-menu-editor-builder",
                 menuDoc.append($origin);
                 changeDataDocumentLevel(menuDoc, $origin, placeStatus);
                 addShowHideBtn(menuDoc);
-                console.log("placeStatus: ", placeStatus);
             } else {
                 menuDoc.after($origin);
                 changeDataDocumentLevel(menuDoc, $origin, placeStatus);
-                console.log("placeStatus: ", placeStatus);
             }
 
             isPasted = true;
@@ -287,7 +283,6 @@ Imcms.define("imcms-menu-editor-builder",
             mouseCoords.newPageY = event.clientY;
 
             if (isMouseDown && detectTargetArea(event)) {
-                toggleUserSelect(true);
                 $frame.css({
                     "top": (mouseCoords.newPageY - mouseCoords.pageY) + mouseCoords.top,
                     "left": (mouseCoords.newPageX - mouseCoords.pageX) + mouseCoords.left
@@ -296,7 +291,6 @@ Imcms.define("imcms-menu-editor-builder",
             } else {
                 disableDrag($frame);
                 disableHighlightingMenuDoc();
-                toggleUserSelect(false);
             }
         }
 
@@ -352,6 +346,7 @@ Imcms.define("imcms-menu-editor-builder",
             $frame.appendTo("body");
 
             closeSubItems($frame);
+            toggleUserSelect(true);
 
             isMouseDown = true;
         }
@@ -363,6 +358,7 @@ Imcms.define("imcms-menu-editor-builder",
 
         $(document).on("mouseup", function () {
             disableDrag($(".imcms-menu-items--frame"));
+            toggleUserSelect(false);
         });
 
         function createItem() {
