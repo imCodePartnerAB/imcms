@@ -33,7 +33,7 @@ public class InternalDocumentIndexService implements DocumentIndexService, Index
     private final static Object lock = new Object();
     private AtomicBoolean shutdownRef = new AtomicBoolean(false);
     private AtomicReference<DocumentIndexService> serviceRef = new AtomicReference<>(
-            UnavailableDocumentIndexService$.MODULE$
+            new UnavailableDocumentIndexService()
     );
     private String solrHome;
     private DocumentIndexServiceOps serviceOps;
@@ -108,7 +108,7 @@ public class InternalDocumentIndexService implements DocumentIndexService, Index
                 logger.info("Attempting to shut down the service.");
 
                 try {
-                    serviceRef.getAndSet(UnavailableDocumentIndexService$.MODULE$).shutdown();
+                    serviceRef.getAndSet(new UnavailableDocumentIndexService()).shutdown();
                     logger.info("Service has been shut down.");
 
                 } catch (Exception e) {
@@ -125,7 +125,7 @@ public class InternalDocumentIndexService implements DocumentIndexService, Index
 
     private void replaceManagedServerInstance(ServiceFailure failure) {
         synchronized (lock) {
-            if (serviceRef.compareAndSet(failure.getService(), UnavailableDocumentIndexService$.MODULE$)) {
+            if (serviceRef.compareAndSet(failure.getService(), new UnavailableDocumentIndexService())) {
                 logger.error("Unrecoverable index error. Managed service instance have to be replaced.", failure.getException());
                 failure.getService().shutdown();
 
