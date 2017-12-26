@@ -5,11 +5,9 @@ import com.imcode.imcms.api.ServiceUnavailableException
 import org.apache.solr.client.solrj.SolrQuery
 import org.apache.solr.client.solrj.response.QueryResponse
 
-import scala.util.{Failure, Try}
-
 object UnavailableDocumentIndexService extends DocumentIndexService {
 
-  override def query(solrQuery: SolrQuery): Try[QueryResponse] = Failure(new ServiceUnavailableException())
+  override def query(solrQuery: SolrQuery): QueryResponse = throw new ServiceUnavailableException()
 
   override def update(request: IndexUpdateOp) {}
 

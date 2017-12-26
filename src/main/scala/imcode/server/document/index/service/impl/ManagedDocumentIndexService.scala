@@ -9,11 +9,12 @@ import _root_.imcode.server.document.index.service._
 import com.imcode._
 import com.imcode.imcms.api.ServiceUnavailableException
 import com.imcode.util.Threads
+import imcode.server.document.index.IndexException
+import org.apache.log4j.Logger
 import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.client.solrj.{SolrQuery, SolrServer}
 
 import scala.util.control.NonFatal
-import scala.util.{Failure, Success, Try}
 
 /**
  * Implements all DocumentIndexService functionality.
@@ -25,11 +26,12 @@ import scala.util.{Failure, Success, Try}
  * The business-logic (like rebuild scheduling and index recovery) is implemented on higher levels.
  */
 class ManagedDocumentIndexService(
-    solrServerReader: SolrServer,
-    solrServerWriter: SolrServer,
-    serviceOps: DocumentIndexServiceOps,
-    failureHandler: ServiceFailure => Unit) extends DocumentIndexService {
+                                   solrServerReader: SolrServer,
+                                   solrServerWriter: SolrServer,
+                                   serviceOps: DocumentIndexServiceOps,
+                                   failureHandler: Consumer[ServiceFailure]) extends DocumentIndexService {
 
+  private val logger = Logger.getLogger(getClass)
   private val lock = new AnyRef
   private val shutdownRef = new AtomicBoolean(false)
   private val indexRebuildThreadRef = new AtomicReference[Thread]
@@ -116,7 +118,7 @@ class ManagedDocumentIndexService(
               logger.error(s"document-index-rebuild task has failed. document-index-rebuild thread: [$indexRebuildThread].", cause)
               indexWriteFailureRef.set(writeFailure)
               Threads.spawnDaemon {
-                failureHandler(writeFailure)
+                failureHandler.accept(writeFailure)
               }
           } finally {
             logger.info(s"document-index-rebuild thread [$indexRebuildThread] is about to terminate.")
@@ -173,7 +175,7 @@ class ManagedDocumentIndexService(
                 logger.error(s"error in document-index-update thread [$indexUpdateThread].", e)
                 indexWriteFailureRef.set(writeFailure)
                 Threads.spawnDaemon {
-                  failureHandler(writeFailure)
+                  failureHandler.accept(writeFailure)
                 }
             } finally {
               logger.info(s"document-index-update thread [$indexUpdateThread] is about to terminate.")
@@ -216,13 +218,18 @@ class ManagedDocumentIndexService(
   }
 
 
-  override def query(solrQuery: SolrQuery): Try[QueryResponse] = Try(serviceOps.query(solrServerReader, solrQuery)) |>> {
-    case _: Success[_] =>
-    case Failure(e) =>
-      logger.error(s"Search error. solrQuery: $solrQuery", e)
-      Threads.spawnDaemon {
-        failureHandler(new ServiceFailure(ManagedDocumentIndexService.this, e, ServiceFailure.Type.SEARCH))
-      }
+  override def query(solrQuery: SolrQuery): QueryResponse = {
+    try {
+      serviceOps.query(solrServerReader, solrQuery)
+
+    } catch {
+      case e: Throwable =>
+        logger.error(s"Search error. solrQuery: $solrQuery", e)
+        Threads.spawnDaemon {
+          failureHandler.accept(new ServiceFailure(ManagedDocumentIndexService.this, e, ServiceFailure.Type.SEARCH))
+        }
+        throw new IndexException(e)
+    }
   }
 
 

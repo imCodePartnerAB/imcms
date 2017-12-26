@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+// translated from scala...
 public interface IndexRebuildScheduler {
 
     Logger logger = Logger.getLogger(IndexRebuildScheduler.class);

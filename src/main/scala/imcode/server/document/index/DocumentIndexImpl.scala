@@ -10,7 +10,6 @@ import com.imcode.imcms.ImcmsServicesSupport
 import org.apache.solr.client.solrj.SolrQuery
 
 import scala.collection.JavaConverters._
-import scala.util.{Failure, Success}
 
 
 /**
@@ -80,10 +79,8 @@ class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex wit
 
     if (solrQuery.getRows == null) solrQuery.setRows(Integer.MAX_VALUE)
 
-    service.query(solrQuery) match {
-      case Failure(e) => throw new IndexException(e)
-      case Success(queryResponse) => new IndexSearchResult(solrQuery, queryResponse)
-    }
+    val queryResponse = service.query(solrQuery)
+    new IndexSearchResult(solrQuery, queryResponse)
   }
 
 

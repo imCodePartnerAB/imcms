@@ -1,17 +1,14 @@
 package imcode.server.document.index.service
 
+import java.lang.Long
+
 import com.imcode._
 import org.apache.solr.client.solrj.SolrQuery
 import org.apache.solr.client.solrj.response.QueryResponse
 
-import scala.util.{Success, Try}
+trait DocumentIndexService {
 
-/**
- *
- */
-trait DocumentIndexService extends Log4jLogger {
-
-  def query(solrQuery: SolrQuery): Try[QueryResponse]
+  def query(solrQuery: SolrQuery): QueryResponse
 
   /**
    * Updates index asynchronously.
@@ -30,16 +27,12 @@ trait DocumentIndexService extends Log4jLogger {
   /**
    * @return None if index is not empty or Some(attempt to rebuild).
    */
-  final def rebuildIfEmpty(): Option[IndexRebuildTask] = {
-    count match {
-      case Success(0) => Some(rebuild())
-      case Success(_) => None
-      //      case Failure(throwable) => Some(throwable)
-    }
+  def rebuildIfEmpty(): Option[IndexRebuildTask] = {
+    if (count == 0L) Some(rebuild()) else None
   }
 
   // todo: optimize
-  final def count: Try[Long] = query(new SolrQuery("*:*")).map(_.getResults.getNumFound)
+  def count: Long = query(new SolrQuery("*:*")).getResults.getNumFound
 
   /**
    * @return current rebuild task

@@ -5,8 +5,8 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.CategoryDTO;
-import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
+import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.domain.service.DocumentService;
@@ -83,7 +83,7 @@ public class SearchDocumentServiceTest {
     private DocumentDataInitializer documentDataInitializer;
 
     @Autowired
-    private DocumentService documentService;
+    private DocumentService<? super TextDocumentDTO> documentService;
 
     @AfterClass
     public static void shutDownSolr() {
@@ -142,7 +142,7 @@ public class SearchDocumentServiceTest {
         final Category category = new CategoryJPA(testCategoryName, "dummy", "", savedType);
         final Category saved = categoryService.save(category);
         final Integer savedId = saved.getId();
-        final DocumentDTO documentDTO = documentDataInitializer.createData();
+        final TextDocumentDTO documentDTO = documentDataInitializer.createTextDocument();
 
         try {
             documentDTO.getCategories().add(new CategoryDTO(saved));

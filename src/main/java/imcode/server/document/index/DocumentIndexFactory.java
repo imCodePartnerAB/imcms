@@ -36,10 +36,7 @@ public class DocumentIndexFactory {
 
         } else if (oSolrHome.isPresent()) {
             final String solrHome = oSolrHome.get();
-
-            service = new InternalDocumentIndexServiceScheduler(
-                    solrHome, documentIndexServiceOps, periodInMinutes
-            );
+            service = new InternalDocumentIndexService(solrHome, documentIndexServiceOps, periodInMinutes);
 
         } else {
             final String errMsg = "Configuration error. Unable to create DocumentIndex.\n"
@@ -57,13 +54,6 @@ public class DocumentIndexFactory {
     static class RemoteDocumentIndexServiceScheduler extends RemoteDocumentIndexService implements IndexRebuildScheduler {
         RemoteDocumentIndexServiceScheduler(String solrReadUrl, String solrWriteUrl, DocumentIndexServiceOps serviceOps, long periodInMinutes) {
             super(solrReadUrl, solrWriteUrl, serviceOps);
-            setRebuildIntervalInMinutes(periodInMinutes);
-        }
-    }
-
-    static class InternalDocumentIndexServiceScheduler extends InternalDocumentIndexService implements IndexRebuildScheduler {
-        InternalDocumentIndexServiceScheduler(String solrHome, DocumentIndexServiceOps serviceOps, long periodInMinutes) {
-            super(solrHome, serviceOps);
             setRebuildIntervalInMinutes(periodInMinutes);
         }
     }
