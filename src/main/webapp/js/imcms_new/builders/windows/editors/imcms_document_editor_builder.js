@@ -33,7 +33,7 @@ Imcms.define("imcms-document-editor-builder",
         function buildBodyHeadTools() {
             function addDocumentToList(document) {
                 var $document = buildDocument(document, documentEditorOptions);
-                $documentsList.append($document); // todo: replace append by pasting into correct position in sorted list
+                $documentsList.prepend($document); // todo: replace append by pasting into correct position in sorted list
             }
 
             function onNewDocButtonClick(e) {
