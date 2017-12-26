@@ -6,8 +6,10 @@ import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.Value;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.*;
@@ -19,54 +21,74 @@ import static com.imcode.imcms.persistence.entity.Meta.PublicationStatus.NEW;
 @NoArgsConstructor
 public class DocumentDTO implements Serializable {
 
-    private static final long serialVersionUID = -2317764204932918145L;
+    protected static final long serialVersionUID = -1197329246115859534L;
 
-    private Integer id;
+    protected Integer id;
 
-    private String title;
+    protected String title;
 
-    private DocumentType type;
+    @Setter(AccessLevel.NONE)
+    protected DocumentType type;
 
-    private String target;
+    protected String target;
 
-    private String alias;
+    protected String alias;
 
-    private List<CommonContentDTO> commonContents;
+    protected List<CommonContentDTO> commonContents;
 
-    private PublicationStatus publicationStatus;
+    protected PublicationStatus publicationStatus;
 
-    private AuditDTO published;
+    protected AuditDTO published;
 
-    private AuditDTO archived;
+    protected AuditDTO archived;
 
-    private AuditDTO publicationEnd;
+    protected AuditDTO publicationEnd;
 
-    private AuditDTO modified;
+    protected AuditDTO modified;
 
-    private AuditDTO created;
+    protected AuditDTO created;
 
-    private DisabledLanguageShowMode disabledLanguageShowMode;
+    protected DisabledLanguageShowMode disabledLanguageShowMode;
 
-    private AuditDTO currentVersion;
+    protected AuditDTO currentVersion;
 
-    private Set<String> keywords;
+    protected Set<String> keywords;
 
-    private boolean searchDisabled;
+    protected boolean searchDisabled;
 
-    private Set<CategoryDTO> categories;
+    protected Set<CategoryDTO> categories;
 
-    private Set<RestrictedPermissionDTO> restrictedPermissions;
+    protected Set<RestrictedPermissionDTO> restrictedPermissions;
 
-    private Map<Integer, Permission> roleIdToPermission;
+    protected Map<Integer, Permission> roleIdToPermission;
 
-    private TextDocumentTemplateDTO template;
+    protected DocumentDTO(DocumentDTO from) {
+        id = from.id;
+        title = from.title;
+//        type = from.type; // not sure
+        target = from.target;
+        alias = from.alias;
+        commonContents = from.commonContents;
+        publicationStatus = from.publicationStatus;
+        published = from.published;
+        archived = from.archived;
+        publicationEnd = from.publicationEnd;
+        modified = from.modified;
+        created = from.created;
+        disabledLanguageShowMode = from.disabledLanguageShowMode;
+        currentVersion = from.currentVersion;
+        keywords = from.keywords;
+        searchDisabled = from.searchDisabled;
+        categories = from.categories;
+        restrictedPermissions = from.restrictedPermissions;
+        roleIdToPermission = from.roleIdToPermission;
+    }
 
-    public static DocumentDTO createNew(DocumentType type) {
+    public static DocumentDTO createEmpty() {
         return Value.with(new DocumentDTO(), documentDTO -> {
             documentDTO.title = "";
             documentDTO.target = "";
             documentDTO.alias = "";
-            documentDTO.type = type;
 
             // common contents have to be set by service
 
@@ -92,11 +114,11 @@ public class DocumentDTO implements Serializable {
             documentDTO.created = new AuditDTO();
             documentDTO.currentVersion = new AuditDTO();
             documentDTO.currentVersion.setId(Version.WORKING_VERSION_INDEX);
-            documentDTO.template = TextDocumentTemplateDTO.createDefault();
         });
     }
 
     public Set<RestrictedPermissionDTO> getRestrictedPermissions() {
         return (this.restrictedPermissions == null) ? null : new TreeSet<>(this.restrictedPermissions);
     }
+
 }

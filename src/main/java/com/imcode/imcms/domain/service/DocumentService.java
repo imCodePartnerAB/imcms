@@ -3,15 +3,13 @@ package com.imcode.imcms.domain.service;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 
-public interface DocumentService extends DeleterByDocumentId {
+public interface DocumentService<Document extends DocumentDTO> extends DeleterByDocumentId {
 
-    DocumentDTO getOrEmpty(Integer docId, DocumentType type);
+    Document createEmpty(DocumentType type);
 
-    DocumentDTO get(int docId);
+    Document get(int docId);
 
-    int save(DocumentDTO saveMe);
-
-    void delete(DocumentDTO deleteMe);
+    int save(Document saveMe);
 
     boolean publishDocument(int docId, int userId);
 

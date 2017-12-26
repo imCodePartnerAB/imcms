@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.UberDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import imcode.server.Imcms;
@@ -16,19 +17,24 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/documents")
 public class DocumentController {
 
-    private DocumentService documentService;
+    private DocumentService<DocumentDTO> documentService;
 
-    DocumentController(DocumentService documentService) {
+    DocumentController(DocumentService<DocumentDTO> documentService) {
         this.documentService = documentService;
     }
 
     @GetMapping
     public DocumentDTO get(Integer docId, DocumentType type) {
-        return documentService.getOrEmpty(docId, type);
+        if (docId == null) {
+            return documentService.createEmpty(type);
+
+        } else {
+            return documentService.get(docId);
+        }
     }
 
     @PostMapping
-    public int save(@RequestBody DocumentDTO saveMe) {
+    public int save(@RequestBody UberDocumentDTO saveMe) {
 
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {
@@ -39,7 +45,7 @@ public class DocumentController {
     }
 
     @DeleteMapping
-    public void delete(@RequestBody DocumentDTO deleteMe) {
+    public void delete(@RequestBody DocumentDTO deleteMe) { // todo: change to receive only id
 
         throw new NotImplementedException("Document deletion is disabled for now...");
 

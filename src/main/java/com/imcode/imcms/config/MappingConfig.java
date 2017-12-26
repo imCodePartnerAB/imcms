@@ -4,7 +4,6 @@ import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
-import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
@@ -223,10 +222,7 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping(
-            UserService userService,
-            TextDocumentTemplateService textDocumentTemplateService
-    ) {
+    public TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping(UserService userService) {
         final BiFunction<Supplier<Integer>, Supplier<Date>, AuditDTO> auditDtoCreator =
                 (auditorIdSupplier, auditedDateSupplier) -> {
 
@@ -249,7 +245,6 @@ class MappingConfig {
             dto.setTarget(meta.getTarget());
             dto.setAlias(meta.getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
             dto.setPublicationStatus(meta.getPublicationStatus());
-            dto.setType(meta.getDocumentType());
 
             Optional.ofNullable(commonContents).map(commonContents1
                     -> commonContents1.stream().map(CommonContentDTO::new).collect(Collectors.toList()))
@@ -285,8 +280,6 @@ class MappingConfig {
                     .collect(Collectors.toSet());
 
             dto.setRestrictedPermissions(restrictedPermissions);
-
-            textDocumentTemplateService.get(metaId).map(TextDocumentTemplateDTO::new).ifPresent(dto::setTemplate);
 
             return dto;
         };

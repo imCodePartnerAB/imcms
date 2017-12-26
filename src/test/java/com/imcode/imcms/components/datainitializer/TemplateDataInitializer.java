@@ -55,7 +55,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
         });
     }
 
-    public void createData(int docId, String templateName, String childrenTemplate) {
+    public TextDocumentTemplateJPA createData(int docId, String templateName, String childrenTemplate) {
         createData(templateName);
         createData(childrenTemplate);
 
@@ -64,7 +64,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
         textDocumentTemplate.setChildrenTemplateName(childrenTemplate);
         textDocumentTemplate.setDocId(docId);
 
-        textDocumentTemplateRepository.save(textDocumentTemplate);
+        return textDocumentTemplateRepository.save(textDocumentTemplate);
     }
 
     public TemplateGroup createData(String name, int howMuchContainsTemplates, boolean withoutSaving) {

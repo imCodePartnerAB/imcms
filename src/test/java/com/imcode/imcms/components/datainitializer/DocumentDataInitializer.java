@@ -1,9 +1,12 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.TextDocumentDTO;
+import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
@@ -50,8 +53,6 @@ public class DocumentDataInitializer extends TestDataCleaner {
     }
 
     public DocumentDTO createData() {
-        templateDataInitializer.cleanRepositories();
-
         final Meta metaDoc = Value.with(new Meta(), meta -> {
 
             meta.setArchivedDatetime(new Date());
@@ -80,7 +81,6 @@ public class DocumentDataInitializer extends TestDataCleaner {
         Imcms.setUser(user);
 
         metaRepository.save(metaDoc);
-        templateDataInitializer.createData(metaDoc.getId(), "demo", "demo");
 
         final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, metaDoc.getId());
         commonContentDataInitializer.createData(metaDoc.getId(), TEST_VERSION_INDEX);
@@ -89,6 +89,18 @@ public class DocumentDataInitializer extends TestDataCleaner {
                 metaDoc.getId(), version.getNo()
         );
         return metaToDocumentDTO.apply(metaDoc, version, commonContents);
+    }
+
+    public TextDocumentDTO createTextDocument() {
+        templateDataInitializer.cleanRepositories();
+        final DocumentDTO documentDTO = createData();
+        final TextDocumentTemplateJPA template = templateDataInitializer.createData(
+                documentDTO.getId(), "demo", "demo"
+        );
+        final TextDocumentDTO textDocumentDTO = new TextDocumentDTO(documentDTO);
+        textDocumentDTO.setTemplate(new TextDocumentTemplateDTO(template));
+
+        return textDocumentDTO;
     }
 
     @Override

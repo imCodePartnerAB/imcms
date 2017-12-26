@@ -2,7 +2,6 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -18,12 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Service for work with common document entities.
+ * Every specified document type has it's own corresponding service.
+ */
 @Service
-class DefaultDocumentService implements DocumentService {
+class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     private final MetaRepository metaRepository;
     private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping;
@@ -34,7 +36,6 @@ class DefaultDocumentService implements DocumentService {
     private final ImageService imageService;
     private final LoopService loopService;
     private final DocumentIndex documentIndex;
-    private final TextDocumentTemplateService textDocumentTemplateService;
     private final List<VersionedContentService> versionedContentServices;
 
     private DeleterByDocumentId[] docContentServices = {};
@@ -48,7 +49,6 @@ class DefaultDocumentService implements DocumentService {
                            ImageService imageService,
                            LoopService loopService,
                            DocumentIndex documentIndex,
-                           TextDocumentTemplateService textDocumentTemplateService,
                            List<VersionedContentService> versionedContentServices) {
 
         this.metaRepository = metaRepository;
@@ -60,7 +60,6 @@ class DefaultDocumentService implements DocumentService {
         this.imageService = imageService;
         this.loopService = loopService;
         this.documentIndex = documentIndex;
-        this.textDocumentTemplateService = textDocumentTemplateService;
         this.versionedContentServices = versionedContentServices;
     }
 
@@ -70,15 +69,19 @@ class DefaultDocumentService implements DocumentService {
                 textService,
                 imageService,
                 loopService,
-                textDocumentTemplateService,
                 commonContentService,
                 versionService
         };
     }
 
     @Override
-    public DocumentDTO getOrEmpty(Integer docId, DocumentType type) {
-        return (docId == null) ? buildNewDocument(type) : get(docId);
+    public DocumentDTO createEmpty(DocumentType type) {
+        final List<CommonContentDTO> commonContents = commonContentService.createCommonContents()
+                .stream()
+                .map(CommonContentDTO::new)
+                .collect(Collectors.toList());
+
+        return Value.with(DocumentDTO.createEmpty(), documentDTO -> documentDTO.setCommonContents(commonContents));
     }
 
     @Override
@@ -101,28 +104,18 @@ class DefaultDocumentService implements DocumentService {
     public int save(DocumentDTO saveMe) {
         final boolean isNew = (saveMe.getId() == null);
 
-        final Optional<TextDocumentTemplateDTO> oTemplate = Optional.ofNullable(saveMe.getTemplate());
         final Meta metaForSave = documentDtoToMeta.apply(saveMe);
         final Integer docId = metaRepository.save(metaForSave).getId();
 
         if (isNew) {
             versionService.create(docId);
-            oTemplate.ifPresent(textDocumentTemplateDTO -> textDocumentTemplateDTO.setDocId(docId));
             saveMe.getCommonContents().forEach(commonContentDTO -> commonContentDTO.setDocId(docId));
         }
 
         commonContentService.save(docId, new ArrayList<>(saveMe.getCommonContents()));
-        oTemplate.ifPresent(textDocumentTemplateService::save);
-
         documentIndex.reindexDocument(docId);
 
         return docId;
-    }
-
-    @Override
-    @Transactional
-    public void delete(DocumentDTO deleteMe) {
-        deleteByDocId(deleteMe.getId());
     }
 
     @Override
@@ -152,15 +145,6 @@ class DefaultDocumentService implements DocumentService {
         for (DeleterByDocumentId docContentService : docContentServices) {
             docContentService.deleteByDocId(docIdToDelete);
         }
-    }
-
-    private DocumentDTO buildNewDocument(DocumentType type) {
-        final List<CommonContentDTO> commonContents = commonContentService.createCommonContents()
-                .stream()
-                .map(CommonContentDTO::new)
-                .collect(Collectors.toList());
-
-        return Value.with(DocumentDTO.createNew(type), documentDTO -> documentDTO.setCommonContents(commonContents));
     }
 
 }
