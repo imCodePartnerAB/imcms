@@ -7,6 +7,9 @@ import imcode.server.document.index.service.IndexUpdateOp;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import scala.Option;
+import scala.Some;
+
+import java.util.Objects;
 
 // translated from scala
 public class UnavailableDocumentIndexService implements DocumentIndexService {
@@ -17,7 +20,6 @@ public class UnavailableDocumentIndexService implements DocumentIndexService {
 
     @Override
     public void update(IndexUpdateOp request) {
-        throw new ServiceUnavailableException();
     }
 
     @Override
@@ -26,22 +28,24 @@ public class UnavailableDocumentIndexService implements DocumentIndexService {
     }
 
     @Override
-    public Option<IndexRebuildTask> rebuildIfEmpty() {
-        throw new ServiceUnavailableException();
+    public Long count() {
+        return query(new SolrQuery("*:*")).getResults().getNumFound();
     }
 
     @Override
-    public Long count() {
-        throw new ServiceUnavailableException();
+    public Option<IndexRebuildTask> rebuildIfEmpty() {
+        if (Objects.equals(count(), 0L)) {
+            return Some.apply(rebuild());
+
+        } else return Option.empty();
     }
 
     @Override
     public Option<IndexRebuildTask> currentRebuildTaskOpt() {
-        throw new ServiceUnavailableException();
+        return Option.empty();
     }
 
     @Override
     public void shutdown() {
-        throw new ServiceUnavailableException();
     }
 }
