@@ -59,7 +59,6 @@
 
         <solr.version>4.10.2</solr.version>
         <slf4j.version>1.7.13</slf4j.version>
-        <scala.version>2.11.7</scala.version>
         <springframework.version>4.3.13.RELEASE</springframework.version>
 
         <!--
@@ -489,52 +488,6 @@
             <version>0.97-incubator</version>
         </dependency>
 
-        <!-- ===== -->
-        <!-- Scala -->
-        <!-- ===== -->
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-compiler</artifactId>
-            <version>${scala.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${scala.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-actors</artifactId>
-            <version>${scala.version}</version>
-        </dependency>
-
-        <!--<dependency>-->
-        <!--<groupId>org.scalatest</groupId>-->
-        <!--<artifactId>scalatest_2.11</artifactId>-->
-        <!--<version>2.2.6</version>-->
-        <!--<scope>test</scope>-->
-        <!--&lt;!&ndash;-->
-        <!--Technically, exclusions section is not required.-->
-        <!--It is introduced to suppress scala plugin 'multiple scala versions' warning.-->
-        <!--&ndash;&gt;-->
-        <!--<exclusions>-->
-        <!--<exclusion>-->
-        <!--<artifactId>scala-library</artifactId>-->
-        <!--<groupId>org.scala-lang</groupId>-->
-        <!--</exclusion>-->
-        <!--<exclusion>-->
-        <!--<artifactId>scala-actors</artifactId>-->
-        <!--<groupId>org.scala-lang</groupId>-->
-        <!--</exclusion>-->
-        <!--<exclusion>-->
-        <!--<artifactId>scala-reflect</artifactId>-->
-        <!--<groupId>org.scala-lang</groupId>-->
-        <!--</exclusion>-->
-        <!--</exclusions>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-core</artifactId>
@@ -769,37 +722,6 @@
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.0.0</version>
-            </plugin>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <jvmArgs>
-                        <jvmArg>-Xss1024k</jvmArg>
-                        <jvmArg>-Xms1024m</jvmArg>
-                        <jvmArg>-Xmx1024m</jvmArg>
-                    </jvmArgs>
-                    <verbose>true</verbose>
-                </configuration>
-
-                <executions>
-                    <execution>
-                        <id>compile-scala-classes-fist</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-
-                    <execution>
-                        <id>compile-scala-test-classes-fist</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
@@ -1084,39 +1006,6 @@
                         <descriptor>src/main/assembly/classes.xml</descriptor>
                     </descriptors>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.10</version>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/main/scala</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>add-test-source</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/scala</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
