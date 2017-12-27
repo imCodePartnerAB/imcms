@@ -70,11 +70,7 @@ public class Imcms {
     private static synchronized void start() throws StartupException {
         try {
             users = new InheritableThreadLocal<>();
-
-            if (services.getDocumentMapper().getDocumentIndex().getService().rebuildIfEmpty().isDefined()) {
-                logger.info("Document index is empty, initiated index rebuild.");
-            }
-
+            services.getDocumentMapper().getDocumentIndex().getService().rebuildIfEmpty();
             startInvoked = false;
 
         } catch (Exception e) {

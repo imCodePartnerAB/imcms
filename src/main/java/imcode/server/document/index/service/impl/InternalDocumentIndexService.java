@@ -10,12 +10,9 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrException;
-import scala.Option;
-import scala.Some;
 
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -96,11 +93,6 @@ public class InternalDocumentIndexService implements DocumentIndexService, Index
     }
 
     @Override
-    public Option<IndexRebuildTask> currentRebuildTaskOpt() {
-        return serviceRef.get().currentRebuildTaskOpt();
-    }
-
-    @Override
     public void shutdown() {
         synchronized (lock) {
             if (shutdownRef.compareAndSet(false, true)) {
@@ -143,16 +135,4 @@ public class InternalDocumentIndexService implements DocumentIndexService, Index
         }
     }
 
-    @Override
-    public Long count() {
-        return query(new SolrQuery("*:*")).getResults().getNumFound();
-    }
-
-    @Override
-    public Option<IndexRebuildTask> rebuildIfEmpty() {
-        if (Objects.equals(count(), 0L)) {
-            return Some.apply(rebuild());
-
-        } else return Option.empty();
-    }
 }

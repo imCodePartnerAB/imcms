@@ -9,10 +9,7 @@ import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import scala.Option;
-import scala.Some;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -122,24 +119,6 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
         } else {
             return startNewIndexRebuildThread();
         }
-    }
-
-    @Override
-    public Option<IndexRebuildTask> rebuildIfEmpty() {
-        if (Objects.equals(count(), 0L)) {
-            return Some.apply(rebuild());
-
-        } else return Option.empty();
-    }
-
-    @Override
-    public Long count() {
-        return query(new SolrQuery("*:*")).getResults().getNumFound();
-    }
-
-    @Override
-    public Option<IndexRebuildTask> currentRebuildTaskOpt() {
-        return Option.apply(indexRebuildTaskRef.get());
     }
 
     @Override
