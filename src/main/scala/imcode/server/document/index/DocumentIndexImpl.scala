@@ -6,16 +6,16 @@ import _root_.imcode.server.document.DocumentDomainObject
 import _root_.imcode.server.document.index.service.{AddDocToIndex, DeleteDocFromIndex, DocumentIndexService}
 import _root_.imcode.server.user.UserDomainObject
 import com.imcode._
-import com.imcode.imcms.ImcmsServicesSupport
+import imcode.server.{Imcms, ImcmsServices}
+import org.apache.log4j.Logger
 import org.apache.solr.client.solrj.SolrQuery
 
 import scala.collection.JavaConverters._
 
 
-/**
- * {@link DocumentIndex} implementation.
- */
-class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex with ImcmsServicesSupport with Log4jLogger {
+class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex {
+
+  private val logger = Logger.getLogger(getClass)
 
   @deprecated
   override def search(query: DocumentQuery, searchingUser: UserDomainObject): JList[DocumentDomainObject] = {
@@ -83,6 +83,7 @@ class DocumentIndexImpl(service: DocumentIndexService) extends DocumentIndex wit
     new IndexSearchResult(solrQuery, queryResponse)
   }
 
+  def imcmsServices(implicit implicitImcmsServices: ImcmsServices = Imcms.getServices) = implicitImcmsServices
 
   override def rebuild() {
     service.rebuild()

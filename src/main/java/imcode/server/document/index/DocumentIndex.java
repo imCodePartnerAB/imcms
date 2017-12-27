@@ -67,11 +67,6 @@ public interface DocumentIndex {
 
     /**
      * Searches documents.
-     *
-     * @param query
-     * @param searchingUser
-     * @return
-     * @throws IndexException
      */
     @Deprecated
     List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
@@ -92,18 +87,12 @@ public interface DocumentIndex {
 
     /**
      * Adds default document to index.
-     *
-     * @param docId
-     * @throws IndexException
      * @since 6.0
      */
     void indexDocument(int docId) throws IndexException;
 
     /**
      * Removes default document from index.
-     *
-     * @param docId
-     * @throws IndexException
      * @since 6.0
      */
     void removeDocument(int docId) throws IndexException;
