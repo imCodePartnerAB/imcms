@@ -3,7 +3,10 @@ package imcode.server.document.index.service.impl;
 import com.imcode.imcms.api.ServiceUnavailableException;
 import com.imcode.imcms.util.ThreadUtility;
 import imcode.server.document.index.IndexException;
-import imcode.server.document.index.service.*;
+import imcode.server.document.index.service.DocumentIndexService;
+import imcode.server.document.index.service.IndexRebuildTask;
+import imcode.server.document.index.service.IndexUpdateOp;
+import imcode.server.document.index.service.IndexUpdateOperation;
 import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -276,12 +279,13 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
                 try {
                     while (true) { // todo: rewrite this shit!
                         final IndexUpdateOp updateOp = indexUpdateRequests.take();
+                        final IndexUpdateOperation indexUpdateOperation = updateOp.operation();
 
-                        if (updateOp instanceof AddDocToIndex) {
-                            serviceOps.addDocsToIndex(solrServerWriter, ((AddDocToIndex) updateOp).docId());
+                        if (IndexUpdateOperation.ADD.equals(indexUpdateOperation)) {
+                            serviceOps.addDocsToIndex(solrServerWriter, updateOp.docId());
 
-                        } else if (updateOp instanceof DeleteDocFromIndex) {
-                            serviceOps.deleteDocsFromIndex(solrServerWriter, ((DeleteDocFromIndex) updateOp).docId());
+                        } else if (IndexUpdateOperation.DELETE.equals(indexUpdateOperation)) {
+                            serviceOps.deleteDocsFromIndex(solrServerWriter, updateOp.docId());
                         }
                     }
                 } catch (InterruptedException e) {
