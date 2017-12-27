@@ -5,6 +5,7 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
+import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
@@ -122,8 +123,8 @@ public class DocumentIndexServiceOps {
         solrServer.commit();
     }
 
-    public void rebuildIndex(SolrServer solrServer, Consumer<IndexRebuildProgress> progressCallback)
-            throws SolrServerException, IOException, InterruptedException {
+    @SneakyThrows
+    public void rebuildIndex(SolrServer solrServer, Consumer<IndexRebuildProgress> progressCallback) {
         logger.debug("Rebuilding index.");
 
         List<Integer> ids = documentMapper.getAllDocumentIds();

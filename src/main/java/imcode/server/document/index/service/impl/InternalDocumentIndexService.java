@@ -57,14 +57,14 @@ public class InternalDocumentIndexService implements DocumentIndexService, Index
                 logger.error("Received solr error", e);
             }
         } catch (IOException e) {
+            logger.error("Received solr error", e);
             replaceManagedServerInstance(failure);
 
         } catch (SolrServerException e) {
+            logger.error("Received solr error", e);
+
             if (e.getCause() instanceof IOException) {
                 replaceManagedServerInstance(failure);
-
-            } else {
-                logger.error("Received solr error", e);
             }
         } catch (Throwable e) {
             logger.error("Received solr error", e);
