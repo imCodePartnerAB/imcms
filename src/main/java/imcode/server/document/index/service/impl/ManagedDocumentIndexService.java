@@ -218,13 +218,17 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
                     submitStartNewIndexUpdateThread();
 
                 } catch (CancellationException e) {
-                    logger.debug("document-index-rebuild task was cancelled. document-index-rebuild thread: [" + toString() + "].");
+                    logger.debug("document-index-rebuild task was cancelled. document-index-rebuild thread: ["
+                            + toString() + "].");
                     submitStartNewIndexUpdateThread();
 
                 } catch (ExecutionException e) {
                     final Throwable cause = e.getCause();
-                    final ServiceFailure writeFailure = new ServiceFailure(ManagedDocumentIndexService.this, cause, ServiceFailure.Type.REBUILD);
-                    logger.error("document-index-rebuild task has failed. document-index-rebuild thread: [" + toString() + "].", cause);
+                    final ServiceFailure writeFailure = new ServiceFailure(
+                            ManagedDocumentIndexService.this, cause, ServiceFailure.Type.REBUILD
+                    );
+                    logger.error("document-index-rebuild task has failed. document-index-rebuild thread: ["
+                            + toString() + "].", cause);
                     indexWriteFailureRef.set(writeFailure);
                     ThreadUtility.spawnDaemon(() -> failureHandler.accept(writeFailure));
                 } finally {
@@ -249,28 +253,24 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
      * As the final action, index-update-thread submits start of a new index-update-thread .
      */
     private void startNewIndexUpdateThread() {
-        ServiceFailure indexWriteFailure;
-        Thread indexRebuildThread;
-        Thread indexUpdateThread;
+        final ServiceFailure indexWriteFailure = indexWriteFailureRef.get();
+        final Thread indexRebuildThread = indexRebuildThreadRef.get();
+        final Thread indexUpdateThread = indexUpdateThreadRef.get();
 
         logger.info("attempting to start new document-index-update thread.");
 
         if (shutdownRef.get()) {
             logger.error("new document-index-update thread can not be started - service is shut down.");
 
-        } else if ((indexWriteFailure = indexWriteFailureRef.get()) != null) {
+        } else if (indexWriteFailure != null) {
             logger.error("new document-index-update thread can not be started - previous index write" +
                     " attempt has failed [" + indexWriteFailure + "].");
 
-        } else if ((((indexRebuildThread = indexRebuildThreadRef.get())) != null)
-                && (indexRebuildThread.getState() != Thread.State.TERMINATED))
-        {
+        } else if (ThreadUtility.notTerminated(indexRebuildThread)) {
             logger.info("new document-index-update thread can not be started while document-index-rebuild" +
                     " thread [" + indexRebuildThread + "] is running.");
 
-        } else if ((((indexUpdateThread = indexUpdateThreadRef.get())) != null)
-                && (indexUpdateThread.getState() != Thread.State.TERMINATED))
-        {
+        } else if (ThreadUtility.notTerminated(indexUpdateThread)) {
             logger.info("new document-index-update thread can not be started - document-index-update" +
                     " thread [" + indexUpdateThread + "] is already running.");
 
@@ -293,10 +293,13 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
 
                 } catch (Exception e) {
 
-                    final ServiceFailure writeFailure = new ServiceFailure(ManagedDocumentIndexService.this, e, ServiceFailure.Type.UPDATE);
+                    final ServiceFailure writeFailure = new ServiceFailure(
+                            ManagedDocumentIndexService.this, e, ServiceFailure.Type.UPDATE
+                    );
                     logger.error("error in document-index-update thread [" + toString() + "].", e);
                     indexWriteFailureRef.set(writeFailure);
                     ThreadUtility.spawnDaemon(() -> failureHandler.accept(writeFailure));
+
                 } finally {
                     logger.info("document-index-update thread [" + toString() + "] is about to terminate.");
                 }
@@ -307,9 +310,6 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
             newIndexUpdateThread.setName("document-index-update-" + newIndexUpdateThread.getId() + "}");
             newIndexUpdateThread.start();
             logger.info("new document-index-update thread [" + newIndexUpdateThread + "] has been started");
-
         }
-
     }
-
 }

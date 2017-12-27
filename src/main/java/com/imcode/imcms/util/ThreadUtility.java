@@ -3,18 +3,14 @@ package com.imcode.imcms.util;
 // translated from scala...
 public class ThreadUtility {
 
-    public static Thread mkThread(Runnable runBody) {
-        return new Thread(runBody);
-    }
-
-    public static Thread mkThread(String name, Runnable runBody) {
-        final Thread thread = mkThread(runBody);
+    private static Thread mkThread(String name, Runnable runBody) {
+        final Thread thread = new Thread(runBody);
         thread.setName(name);
         return thread;
     }
 
     public static Thread spawn(Runnable runBody) {
-        return startThread(mkThread(runBody));
+        return startThread(new Thread(runBody));
     }
 
     public static Thread spawn(String name, Runnable runBody) {
@@ -22,14 +18,14 @@ public class ThreadUtility {
     }
 
     public static Thread spawnDaemon(Runnable runBody) {
-        return startDaemon(mkThread(runBody));
+        return startDaemon(new Thread(runBody));
     }
 
     public static Thread spawnDaemon(String name, Runnable runBody) {
         return startDaemon(mkThread(name, runBody));
     }
 
-    public static Boolean isTerminated(Thread thread) {
+    private static Boolean isTerminated(Thread thread) {
         return (thread == null) || (thread.getState() == Thread.State.TERMINATED);
     }
 
