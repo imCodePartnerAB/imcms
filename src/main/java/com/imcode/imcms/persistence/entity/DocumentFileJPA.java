@@ -3,6 +3,7 @@ package com.imcode.imcms.persistence.entity;
 import com.imcode.imcms.model.DocumentFile;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
+@NoArgsConstructor
 @ToString(callSuper = true)
 @Table(name = "fileupload_docs")
 @EqualsAndHashCode(callSuper = true)
@@ -48,4 +50,12 @@ public class DocumentFileJPA extends DocumentFile {
     @Column(name = "variant_name", nullable = false)
     private String fileId;
 
+    public DocumentFileJPA(DocumentFile from) {
+        super(from);
+    }
+
+    @Override
+    public Integer getDocId() {
+        return version.getDocId();
+    }
 }
