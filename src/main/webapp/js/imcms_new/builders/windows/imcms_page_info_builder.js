@@ -82,7 +82,7 @@ Imcms.define("imcms-page-info-builder",
 
             documentsRestApi.create(documentDTO).success(function (savedDocId) {
 
-                if (documentDTO.id) {
+                if (documentDTO.id === imcms.document.id) {
                     events.trigger("imcms-version-modified");
 
                 } else {
