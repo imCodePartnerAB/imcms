@@ -15,7 +15,6 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
-import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -59,9 +58,6 @@ public class SearchDocumentServiceTest {
 
     @Value("WEB-INF/solr")
     private File defaultSolrFolder;
-
-    @Autowired
-    private MetaRepository metaRepository;
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
@@ -114,6 +110,12 @@ public class SearchDocumentServiceTest {
         versionDataInitializer.createData(2, DOC_ID);
 
         Imcms.invokeStart();
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+        Imcms.setUser(user); // means current user is admin now
+
         Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr init, not sure 2 sec is exact time
     }
 
@@ -146,11 +148,6 @@ public class SearchDocumentServiceTest {
         final TextDocumentDTO documentDTO = documentDataInitializer.createTextDocument();
 
         try {
-            final UserDomainObject user = new UserDomainObject(1);
-            user.addRoleId(RoleId.SUPERADMIN);
-            user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
-            Imcms.setUser(user); // means current user is admin now
-
             documentDTO.getCategories().add(new CategoryDTO(saved));
 
             documentService.save(documentDTO);

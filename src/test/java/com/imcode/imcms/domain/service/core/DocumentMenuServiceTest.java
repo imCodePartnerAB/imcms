@@ -12,6 +12,7 @@ import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
@@ -27,9 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -53,6 +52,12 @@ public class DocumentMenuServiceTest {
 
     @Before
     public void setUp() throws Exception {
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+        Imcms.setUser(user); // means current user is admin now
+
         int id = documentDataInitializer.createData().getId();
         meta = metaRepository.getOne(id);
     }

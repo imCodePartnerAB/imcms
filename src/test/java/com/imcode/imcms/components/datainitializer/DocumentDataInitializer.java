@@ -12,7 +12,6 @@ import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
-import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -71,10 +70,6 @@ public class DocumentDataInitializer extends TestDataCleaner {
             meta.setTarget("test");
 
         });
-
-        final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("eng");
-        Imcms.setUser(user);
 
         metaRepository.save(metaDoc);
 

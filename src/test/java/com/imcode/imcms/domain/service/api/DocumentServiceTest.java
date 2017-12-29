@@ -271,6 +271,12 @@ public class DocumentServiceTest {
 
     @Test
     public void save_When_CreatedAndModifiedAndArchivedAndPublishedAndDepublishedAttributesSet_Expect_Saved() {
+
+        final UserDomainObject currentUser = new UserDomainObject(1);
+        currentUser.addRoleId(RoleId.SUPERADMIN);
+        currentUser.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+        Imcms.setUser(currentUser); // means current user is admin now
+
         final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
         final User user = userDataInitializer.createData("testUser");
 
