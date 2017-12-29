@@ -6,7 +6,7 @@ import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContentRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
 import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContentRepository;
-import com.imcode.imcms.persistence.entity.DocumentFile;
+import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.repository.DocumentFileRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.user.UserDomainObject;
@@ -95,25 +95,25 @@ public class DocRepository {
         urlDocContentRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
-    public List<DocumentFile> getFileDocContent(DocRef docIdentity) {
+    public List<DocumentFileJPA> getFileDocContent(DocRef docIdentity) {
         return documentFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
 
-    public DocumentFile saveFileDocFile(DocumentFile fileDocItem) {
+    public DocumentFileJPA saveFileDocFile(DocumentFileJPA fileDocItem) {
         return entityManager.merge(fileDocItem);
     }
 
     public void deleteFileDocContent(DocRef docIdentity) {
-        List<DocumentFile> documentFile = documentFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+        List<DocumentFileJPA> documentFile = documentFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
 
         if (documentFile.size() == 0) {
             return;
         }
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaDelete<DocumentFile> query = cb.createCriteriaDelete(DocumentFile.class);
-        query.where(query.from(DocumentFile.class).get("id").in(documentFile.stream().map(DocumentFile::getId).collect(Collectors.toList())));
+        CriteriaDelete<DocumentFileJPA> query = cb.createCriteriaDelete(DocumentFileJPA.class);
+        query.where(query.from(DocumentFileJPA.class).get("id").in(documentFile.stream().map(DocumentFileJPA::getId).collect(Collectors.toList())));
 
         entityManager.createQuery(query).executeUpdate();
     }

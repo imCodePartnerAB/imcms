@@ -4,7 +4,7 @@ import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.persistence.entity.DocumentFile;
+import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
@@ -150,7 +150,7 @@ class DocumentStoringVisitor extends DocumentVisitor {
             }
 
             boolean isDefaultFile = fileId.equals(fileDocument.getDefaultFileId());
-            DocumentFile documentFile = new DocumentFile();
+            DocumentFileJPA documentFile = new DocumentFileJPA();
             documentFile.setVersion(version);
             documentFile.setFileId(fileId);
             documentFile.setFilename(filename);

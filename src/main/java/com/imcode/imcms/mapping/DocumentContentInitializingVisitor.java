@@ -3,7 +3,7 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
-import com.imcode.imcms.persistence.entity.DocumentFile;
+import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -38,9 +38,9 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
      * ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
     public void visitFileDocument(FileDocumentDomainObject doc) {
-        Collection<DocumentFile> fileDocItems = docRepository.getFileDocContent(doc.getRef());
+        Collection<DocumentFileJPA> fileDocItems = docRepository.getFileDocContent(doc.getRef());
 
-        for (DocumentFile item : fileDocItems) {
+        for (DocumentFileJPA item : fileDocItems) {
             String fileId = item.getFileId();
             FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
 
