@@ -112,7 +112,7 @@ public class DocumentIndexServiceOps {
             solrServer.add(solrInputDocs);
             solrServer.commit();
 
-            logger.trace(String.format("Added %d solrInputDoc(s) with docId %d into the index.", solrInputDocs.size(), docId));
+            logger.info(String.format("Added %d solrInputDoc(s) with docId %d into the index.", solrInputDocs.size(), docId));
         }
     }
 
