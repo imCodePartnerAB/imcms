@@ -1,10 +1,12 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.model.DocumentFile;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -17,7 +19,19 @@ import javax.persistence.*;
                 @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
                 @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
         })
-public class DocumentFileJPA extends VersionedContent {
+public class DocumentFileJPA extends DocumentFile {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
+            @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
+    })
+    private Version version;
 
     @Column(name = "filename", nullable = false)
     private String filename;
