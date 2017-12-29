@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.imcode.imcms.persistence.entity;
 
 import lombok.Data;
@@ -14,7 +11,7 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @Table(name = "fileupload_docs")
 @EqualsAndHashCode(callSuper = true)
-@AssociationOverride(
+@AssociationOverride( // is this used?
         name = "docVersion",
         joinColumns = {
                 @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
