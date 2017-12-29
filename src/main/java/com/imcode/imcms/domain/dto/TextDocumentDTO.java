@@ -19,7 +19,7 @@ public class TextDocumentDTO extends DocumentDTO implements Serializable {
     private TextDocumentTemplateDTO template;
 
     {
-        type = DocumentType.TEXT;
+        super.type = DocumentType.TEXT;
     }
 
     public TextDocumentDTO(DocumentDTO from) {
