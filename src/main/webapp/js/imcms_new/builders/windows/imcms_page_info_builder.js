@@ -73,7 +73,7 @@ Imcms.define("imcms-page-info-builder",
             pageInfoWindowBuilder.closeWindow();
         }
 
-        function saveAndClose(onDocumentSaved) {
+        function saveAndClose(onDocumentSavedCallback) {
             pageInfoTabs.tabBuilders.forEach(function (tabBuilder) {
                 documentDTO = tabBuilder.saveData(documentDTO);
             });
@@ -89,7 +89,12 @@ Imcms.define("imcms-page-info-builder",
                     documentDTO.id = savedDocId;
                 }
 
-                onDocumentSaved && onDocumentSaved(documentDTO);
+                if (onDocumentSavedCallback) {
+                    onDocumentSavedCallback(documentDTO);
+
+                } else if (onDocumentSaved) {
+                    onDocumentSaved(documentDTO);
+                }
             });
         }
 
@@ -99,10 +104,10 @@ Imcms.define("imcms-page-info-builder",
             });
         }
 
-        function buildPageInfoFooterButtons(onDocumentSaved) {
+        function buildPageInfoFooterButtons() {
             var $saveBtn = components.buttons.positiveButton({
                 text: "ok",
-                click: saveAndClose.bindArgs(onDocumentSaved)
+                click: saveAndClose.bindArgs(null)
             });
 
             var $cancelBtn = components.buttons.negativeButton({
@@ -119,7 +124,8 @@ Imcms.define("imcms-page-info-builder",
             return [$saveAndPublishBtn, $cancelBtn, $saveBtn];
         }
 
-        function buildPageInfo(docId, onDocumentSaved, docType) {
+        function buildPageInfo(docId, onDocumentSavedCallback, docType) {
+            onDocumentSaved = onDocumentSavedCallback;
             panels = buildPageInfoPanels(docId);
 
             return new BEM({
@@ -128,7 +134,7 @@ Imcms.define("imcms-page-info-builder",
                     "head": buildPageInfoHead(),
                     "left-side": buildPageInfoTabs(),
                     "right-side": $("<div>", {"class": "imcms-right-side"}).append(panels),
-                    "footer": $("<div>", {"class": "imcms-footer"}).append(buildPageInfoFooterButtons(onDocumentSaved))
+                    "footer": $("<div>", {"class": "imcms-footer"}).append(buildPageInfoFooterButtons())
                 }
             }).buildBlockStructure("<div>", {"data-menu": "pageInfo"});
         }
@@ -163,7 +169,8 @@ Imcms.define("imcms-page-info-builder",
             });
         }
 
-        function loadData(docId, onDocumentSaved, docType) {
+        function loadData(docId, onDocumentSavedCallback, docType) {
+            onDocumentSaved = onDocumentSavedCallback;
             loadPageInfoDataFromDocumentBy(docId, docType);
         }
 
@@ -173,8 +180,11 @@ Imcms.define("imcms-page-info-builder",
             clearDataStrategy: clearPageInfoData
         });
 
+        var onDocumentSaved;
+
         return {
-            build: function (docId, onDocumentSaved, docType) {
+            build: function (docId, onDocumentSavedCallback, docType) {
+                onDocumentSaved = onDocumentSavedCallback;
                 pageInfoWindowBuilder.buildWindowWithShadow.applyAsync(arguments, pageInfoWindowBuilder);
             }
         }
