@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -27,13 +26,11 @@ public class DocumentFileJPA extends DocumentFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
-            @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
-    })
-    private Version version;
+    @Column(name = "doc_id", nullable = false)
+    private Integer docId;
+
+    @Column(name = "doc_version_no", nullable = false)
+    private int versionIndex = 0; // not used, delete if no versioning needed for doc's files
 
     @Column(name = "filename", nullable = false)
     private String filename;
@@ -54,8 +51,4 @@ public class DocumentFileJPA extends DocumentFile {
         super(from);
     }
 
-    @Override
-    public Integer getDocId() {
-        return version.getDocId();
-    }
 }

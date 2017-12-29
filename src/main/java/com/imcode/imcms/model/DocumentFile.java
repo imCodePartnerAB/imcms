@@ -7,6 +7,7 @@ public abstract class DocumentFile {
 
     public DocumentFile(DocumentFile from) {
         setId(from.getId());
+        setDocId(from.getDocId());
         setFilename(from.getFilename());
         setCreatedAsImage(from.isCreatedAsImage());
         setMimeType(from.getMimeType());
@@ -19,6 +20,8 @@ public abstract class DocumentFile {
     public abstract void setId(Integer id);
 
     public abstract Integer getDocId();
+
+    public abstract void setDocId(Integer docId);
 
     public abstract String getFilename();
 

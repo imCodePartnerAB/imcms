@@ -96,7 +96,7 @@ public class DocRepository {
     }
 
     public List<DocumentFileJPA> getFileDocContent(DocRef docIdentity) {
-        return documentFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+        return documentFileRepository.findByDocId(docIdentity.getId());
     }
 
 
@@ -105,7 +105,7 @@ public class DocRepository {
     }
 
     public void deleteFileDocContent(DocRef docIdentity) {
-        List<DocumentFileJPA> documentFile = documentFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+        List<DocumentFileJPA> documentFile = documentFileRepository.findByDocId(docIdentity.getId());
 
         if (documentFile.size() == 0) {
             return;
