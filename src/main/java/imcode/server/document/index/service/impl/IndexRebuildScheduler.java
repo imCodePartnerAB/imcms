@@ -1,6 +1,5 @@
 package imcode.server.document.index.service.impl;
 
-import imcode.server.document.index.service.IndexRebuildTask;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.*;
@@ -42,7 +41,7 @@ public interface IndexRebuildScheduler {
                 logger.info("Running scheduled index rebuild.");
 
                 try {
-                    rebuild().future().get();
+                    rebuild().get();
                     logger.info("Scheduled index rebuild task has finished. Next scheduled run in " + interval + " minutes.");
 
                 } catch (InterruptedException e) {
@@ -62,5 +61,5 @@ public interface IndexRebuildScheduler {
         }
     }
 
-    IndexRebuildTask rebuild();
+    Future rebuild();
 }

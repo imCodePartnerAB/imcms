@@ -15,10 +15,13 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
+import imcode.server.ImcmsConstants;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -32,7 +35,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -59,13 +61,13 @@ public class SearchDocumentServiceTest {
     private File defaultSolrFolder;
 
     @Autowired
+    private MetaRepository metaRepository;
+
+    @Autowired
     private VersionDataInitializer versionDataInitializer;
 
     @Autowired
     private SearchDocumentService searchDocumentService;
-
-    @Autowired
-    private ImcmsServices imcmsServices;
 
     @Autowired
     private Imcms imcms;
@@ -113,7 +115,6 @@ public class SearchDocumentServiceTest {
 
         Imcms.invokeStart();
         Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr init, not sure 2 sec is exact time
-        Imcms.setUser(imcmsServices.getImcmsAuthenticatorAndUserAndRoleMapper().getDefaultUser());
     }
 
     @Test
@@ -130,7 +131,7 @@ public class SearchDocumentServiceTest {
 
     @Test
     @Ignore // categories not working
-    @Transactional
+//    @Transactional
     public void search_When_CategorySpecified_Expect_Found() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryType categoryType = new CategoryTypeJPA(
@@ -145,6 +146,11 @@ public class SearchDocumentServiceTest {
         final TextDocumentDTO documentDTO = documentDataInitializer.createTextDocument();
 
         try {
+            final UserDomainObject user = new UserDomainObject(1);
+            user.addRoleId(RoleId.SUPERADMIN);
+            user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+            Imcms.setUser(user); // means current user is admin now
+
             documentDTO.getCategories().add(new CategoryDTO(saved));
 
             documentService.save(documentDTO);
@@ -154,7 +160,7 @@ public class SearchDocumentServiceTest {
             final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+                Thread.sleep(TimeUnit.SECONDS.toMillis(4));
             } catch (InterruptedException e) {
                 // don't really care
             }
@@ -167,6 +173,7 @@ public class SearchDocumentServiceTest {
         } finally {
             categoryService.delete(savedId);
             categoryTypeService.delete(savedType.getId());
+            documentDataInitializer.cleanRepositories(documentDTO.getId());
 
             assertFalse(categoryService.getById(savedId).isPresent());
             assertFalse(categoryTypeService.get(savedType.getId()).isPresent());

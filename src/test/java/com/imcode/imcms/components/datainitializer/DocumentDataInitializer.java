@@ -9,7 +9,6 @@ import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
-import com.imcode.imcms.persistence.repository.TemplateRepository;
 import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
@@ -29,7 +28,6 @@ public class DocumentDataInitializer extends TestDataCleaner {
 
     private final MetaRepository metaRepository;
     private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
-    private final TemplateRepository templateRepository;
     private final CommonContentDataInitializer commonContentDataInitializer;
     private final VersionDataInitializer versionDataInitializer;
     private final TemplateDataInitializer templateDataInitializer;
@@ -40,7 +38,6 @@ public class DocumentDataInitializer extends TestDataCleaner {
                                    VersionDataInitializer versionDataInitializer,
                                    TemplateDataInitializer templateDataInitializer,
                                    CommonContentService commonContentService,
-                                   TemplateRepository templateRepository,
                                    CommonContentDataInitializer commonContentDataInitializer) {
 
         this.metaRepository = metaRepository;
@@ -48,7 +45,6 @@ public class DocumentDataInitializer extends TestDataCleaner {
         this.versionDataInitializer = versionDataInitializer;
         this.templateDataInitializer = templateDataInitializer;
         this.commonContentService = commonContentService;
-        this.templateRepository = templateRepository;
         this.commonContentDataInitializer = commonContentDataInitializer;
     }
 
@@ -103,8 +99,11 @@ public class DocumentDataInitializer extends TestDataCleaner {
         return textDocumentDTO;
     }
 
-    @Override
-    public void cleanRepositories() {
-        Imcms.setUser(null);
+    public void cleanRepositories(int createdDocId) {
+        Imcms.removeUser();
+        templateDataInitializer.cleanRepositories();
+        commonContentDataInitializer.cleanRepositories();
+        metaRepository.delete(createdDocId);
+        versionDataInitializer.cleanRepositories();
     }
 }

@@ -2,10 +2,11 @@ package imcode.server.document.index.service.impl;
 
 import com.imcode.imcms.api.ServiceUnavailableException;
 import imcode.server.document.index.service.DocumentIndexService;
-import imcode.server.document.index.service.IndexRebuildTask;
 import imcode.server.document.index.service.IndexUpdateOp;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
+
+import java.util.concurrent.Future;
 
 // translated from scala
 public class UnavailableDocumentIndexService implements DocumentIndexService {
@@ -19,7 +20,7 @@ public class UnavailableDocumentIndexService implements DocumentIndexService {
     }
 
     @Override
-    public IndexRebuildTask rebuild() {
+    public Future rebuild() {
         throw new ServiceUnavailableException();
     }
 

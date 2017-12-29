@@ -1,13 +1,12 @@
 package imcode.server.document.index.service.impl;
 
 import imcode.server.document.index.service.DocumentIndexService;
-import imcode.server.document.index.service.IndexRebuildTask;
 import imcode.server.document.index.service.IndexUpdateOp;
-import imcode.server.document.index.service.SolrServerFactory;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.util.concurrent.Future;
 
 // translated from scala...
 public class RemoteDocumentIndexService implements DocumentIndexService, IndexRebuildScheduler {
@@ -23,14 +22,6 @@ public class RemoteDocumentIndexService implements DocumentIndexService, IndexRe
         setRebuildIntervalInMinutes(periodInMinutes);
     }
 
-    private ManagedDocumentIndexService newManagedService() {
-        final HttpSolrServer solrServerReader = SolrServerFactory.createHttpSolrServer(solrReadUrl);
-        final HttpSolrServer solrServerWriter = SolrServerFactory.createHttpSolrServer(solrWriteUrl);
-
-        return new ManagedDocumentIndexService(solrServerReader, solrServerWriter, serviceOps, serviceFailure -> {
-        });
-    }
-
     @Override
     public QueryResponse query(SolrQuery solrQuery) {
         throw new NotImplementedException();
@@ -42,7 +33,7 @@ public class RemoteDocumentIndexService implements DocumentIndexService, IndexRe
     }
 
     @Override
-    public IndexRebuildTask rebuild() {
+    public Future rebuild() {
         throw new NotImplementedException();
     }
 

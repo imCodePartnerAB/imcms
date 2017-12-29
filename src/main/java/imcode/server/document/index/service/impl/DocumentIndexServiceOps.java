@@ -123,17 +123,22 @@ public class DocumentIndexServiceOps {
         solrServer.commit();
     }
 
+    public void rebuildIndex(SolrServer solrServer) {
+        rebuildIndex(solrServer, indexRebuildProgress -> {
+        });
+    }
+
     @SneakyThrows
-    public void rebuildIndex(SolrServer solrServer, Consumer<IndexRebuildProgress> progressCallback) {
+    private void rebuildIndex(SolrServer solrServer, Consumer<IndexRebuildProgress> progressCallback) {
         logger.debug("Rebuilding index.");
 
-        List<Integer> ids = documentMapper.getAllDocumentIds();
-        List<DocumentLanguage> languages = documentLanguages.getAll();
+        final List<Integer> ids = documentMapper.getAllDocumentIds();
+        final List<DocumentLanguage> languages = documentLanguages.getAll();
 
-        int docsCount = ids.size();
+        final int docsCount = ids.size();
         int docNo = 0;
-        Date rebuildStartDt = new Date();
-        long rebuildStartTime = rebuildStartDt.getTime();
+        final Date rebuildStartDt = new Date();
+        final long rebuildStartTime = rebuildStartDt.getTime();
 
         progressCallback.accept(new IndexRebuildProgress(rebuildStartTime, rebuildStartTime, docsCount, docNo));
 

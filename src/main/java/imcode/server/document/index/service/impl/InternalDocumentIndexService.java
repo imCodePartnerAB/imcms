@@ -1,7 +1,6 @@
 package imcode.server.document.index.service.impl;
 
 import imcode.server.document.index.service.DocumentIndexService;
-import imcode.server.document.index.service.IndexRebuildTask;
 import imcode.server.document.index.service.IndexUpdateOp;
 import imcode.server.document.index.service.SolrServerFactory;
 import org.apache.log4j.Logger;
@@ -13,6 +12,7 @@ import org.apache.solr.common.SolrException;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -88,7 +88,7 @@ public class InternalDocumentIndexService implements DocumentIndexService, Index
     }
 
     @Override
-    public IndexRebuildTask rebuild() {
+    public Future rebuild() {
         return serviceRef.get().rebuild();
     }
 

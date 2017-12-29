@@ -3,6 +3,8 @@ package imcode.server.document.index.service;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
+import java.util.concurrent.Future;
+
 // translated from scala...
 public interface DocumentIndexService {
 
@@ -18,9 +20,9 @@ public interface DocumentIndexService {
     /**
      * Attempts to run a new index rebuild task if one is not already running.
      *
-     * @return current or a new rebuild task.
+     * @return rebuild future.
      */
-    IndexRebuildTask rebuild();
+    Future rebuild();
 
     // previously failed indexing not covered here
     default void rebuildIfEmpty() {
