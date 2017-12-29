@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface FileDocFileRepository extends JpaRepository<DocumentFile, Integer> {
+public interface DocumentFileRepository extends JpaRepository<DocumentFile, Integer> {
 
 //    @Modifying
 //    @Query("DELETE FROM DocumentFile f WHERE f.id IN (SELECT asd FROM (SELECT fdf.id FROM DocumentFile fdf WHERE fdf.version.docId = ?1 AND fdf.version.no = ?2) asd)")

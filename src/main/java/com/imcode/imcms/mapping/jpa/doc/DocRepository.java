@@ -29,7 +29,7 @@ public class DocRepository {
     private final PropertyRepository propertyRepository;
     private final HtmlDocContentRepository htmlDocContentRepository;
     private final UrlDocContentRepository urlDocContentRepository;
-    private final FileDocFileRepository fileDocFileRepository;
+    private final DocumentFileRepository documentFileRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -39,12 +39,12 @@ public class DocRepository {
     @Inject
     public DocRepository(MetaRepository metaRepository, PropertyRepository propertyRepository,
                          HtmlDocContentRepository htmlDocContentRepository,
-                         UrlDocContentRepository urlDocContentRepository, FileDocFileRepository fileDocFileRepository) {
+                         UrlDocContentRepository urlDocContentRepository, DocumentFileRepository documentFileRepository) {
         this.metaRepository = metaRepository;
         this.propertyRepository = propertyRepository;
         this.htmlDocContentRepository = htmlDocContentRepository;
         this.urlDocContentRepository = urlDocContentRepository;
-        this.fileDocFileRepository = fileDocFileRepository;
+        this.documentFileRepository = documentFileRepository;
     }
 
     public void touch(VersionRef docIdentity, UserDomainObject user) {
@@ -92,7 +92,7 @@ public class DocRepository {
     }
 
     public List<DocumentFile> getFileDocContent(DocRef docIdentity) {
-        return fileDocFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+        return documentFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
 
@@ -101,7 +101,7 @@ public class DocRepository {
     }
 
     public void deleteFileDocContent(DocRef docIdentity) {
-        List<DocumentFile> documentFile = fileDocFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+        List<DocumentFile> documentFile = documentFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
 
         if (documentFile.size() == 0) {
             return;
