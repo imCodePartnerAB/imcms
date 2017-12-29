@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.exception.UnsupportedDocumentTypeException;
@@ -22,12 +23,15 @@ import java.util.Optional;
 public class DelegatingByTypeDocumentService<T extends DocumentDTO> implements DocumentService<T> {
 
     private final DocumentService<TextDocumentDTO> textDocumentService;
+    private final DocumentService<FileDocumentDTO> fileDocumentService;
     private final MetaRepository metaRepository;
 
     DelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService,
+                                    DocumentService<FileDocumentDTO> fileDocumentService,
                                     MetaRepository metaRepository) {
 
         this.textDocumentService = textDocumentService;
+        this.fileDocumentService = fileDocumentService;
         this.metaRepository = metaRepository;
     }
 
@@ -62,10 +66,14 @@ public class DelegatingByTypeDocumentService<T extends DocumentDTO> implements D
                 .orElseThrow(DocumentNotExistException::new);
     }
 
+    @SuppressWarnings("unchecked")
     private DocumentService<T> getCorrespondingDocumentService(DocumentType type) {
         switch (type) {
             case TEXT:
                 return (DocumentService<T>) textDocumentService;
+
+            case FILE:
+                return (DocumentService<T>) fileDocumentService;
 
             default:
                 throw new UnsupportedDocumentTypeException(type);
