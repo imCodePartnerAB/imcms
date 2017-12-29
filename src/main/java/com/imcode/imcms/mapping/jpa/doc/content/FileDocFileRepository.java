@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping.jpa.doc.content;
 
+import com.imcode.imcms.persistence.entity.FileDocFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
