@@ -128,8 +128,12 @@ public class DocumentServiceTest {
     private File defaultSolrFolder;
 
     @AfterClass
-    public static void shutDownSolr() throws Exception {
-        FileUtility.forceDelete(testSolrFolder);
+    public static void shutDownSolr() {
+        try {
+            FileUtility.forceDelete(testSolrFolder);
+        } catch (Exception e) {
+            // windows user may receive it
+        }
     }
 
     @Before

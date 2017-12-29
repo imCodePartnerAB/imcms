@@ -37,6 +37,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -98,7 +99,11 @@ public class SearchDocumentServiceTest {
         final File testSolrFolder = new File(config.getSolrHome());
 
         if (!testSolrFolder.mkdirs()) {
-            assertTrue(FileUtility.forceDelete(testSolrFolder));
+            try {
+                FileUtility.forceDelete(testSolrFolder);
+            } catch (IOException e) {
+                // windows user may receive it
+            }
         }
 
         FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
