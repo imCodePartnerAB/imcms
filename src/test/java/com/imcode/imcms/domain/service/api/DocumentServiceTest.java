@@ -59,6 +59,9 @@ public class DocumentServiceTest {
     private TextDocumentDTO createdDoc;
 
     @Autowired
+    private DocumentService<DocumentDTO> documentService;
+
+    @Autowired
     private DocumentService<TextDocumentDTO> textDocumentService;
 
     @Autowired
@@ -726,6 +729,18 @@ public class DocumentServiceTest {
         assertEquals(Integer.valueOf(2), new ArrayList<>(commonContentByVersion).get(0).getVersionNo());
         assertEquals(Integer.valueOf(2), new ArrayList<>(commonContentByVersion).get(1).getVersionNo());
 
+    }
+
+    @Test
+    public void createDocumentByType_Expect_CreatedWithCorrectType() {
+        final DocumentType textType = DocumentType.TEXT;
+        final DocumentType fileType = DocumentType.FILE;
+//        final DocumentType urlType = DocumentType.URL;
+        // html is not supported (yet?)
+
+        assertEquals(documentService.createEmpty(textType).getType(), textType);
+        assertEquals(documentService.createEmpty(fileType).getType(), fileType);
+//        assertEquals(documentService.createEmpty(urlType).getType(), urlType);
     }
 
     private void createText(int index, LanguageJPA language, Version version) {
