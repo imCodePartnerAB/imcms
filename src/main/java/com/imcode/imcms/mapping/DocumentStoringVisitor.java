@@ -4,7 +4,7 @@ import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.persistence.entity.FileDocFile;
+import com.imcode.imcms.persistence.entity.DocumentFile;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
@@ -150,15 +150,15 @@ class DocumentStoringVisitor extends DocumentVisitor {
             }
 
             boolean isDefaultFile = fileId.equals(fileDocument.getDefaultFileId());
-            FileDocFile fileDocFile = new FileDocFile();
-            fileDocFile.setVersion(version);
-            fileDocFile.setFileId(fileId);
-            fileDocFile.setFilename(filename);
-            fileDocFile.setDefaultFileId(isDefaultFile);
-            fileDocFile.setMimeType(fileDocumentFile.getMimeType());
-            fileDocFile.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
+            DocumentFile documentFile = new DocumentFile();
+            documentFile.setVersion(version);
+            documentFile.setFileId(fileId);
+            documentFile.setFilename(filename);
+            documentFile.setDefaultFileId(isDefaultFile);
+            documentFile.setMimeType(fileDocumentFile.getMimeType());
+            documentFile.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
 
-            docRepository.saveFileDocFile(fileDocFile);
+            docRepository.saveFileDocFile(documentFile);
 
             saveFileDocumentFile(fileDocument.getVersionRef(), fileDocumentFile, fileId);
         }

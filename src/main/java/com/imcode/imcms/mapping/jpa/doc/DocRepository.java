@@ -3,7 +3,7 @@ package com.imcode.imcms.mapping.jpa.doc;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.content.*;
-import com.imcode.imcms.persistence.entity.FileDocFile;
+import com.imcode.imcms.persistence.entity.DocumentFile;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
@@ -91,25 +91,25 @@ public class DocRepository {
         urlDocContentRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
-    public List<FileDocFile> getFileDocContent(DocRef docIdentity) {
+    public List<DocumentFile> getFileDocContent(DocRef docIdentity) {
         return fileDocFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
 
-    public FileDocFile saveFileDocFile(FileDocFile fileDocItem) {
+    public DocumentFile saveFileDocFile(DocumentFile fileDocItem) {
         return entityManager.merge(fileDocItem);
     }
 
     public void deleteFileDocContent(DocRef docIdentity) {
-        List<FileDocFile> fileDocFile = fileDocFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+        List<DocumentFile> documentFile = fileDocFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
 
-        if (fileDocFile.size() == 0) {
+        if (documentFile.size() == 0) {
             return;
         }
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaDelete<FileDocFile> query = cb.createCriteriaDelete(FileDocFile.class);
-        query.where(query.from(FileDocFile.class).get("id").in(fileDocFile.stream().map(FileDocFile::getId).collect(Collectors.toList())));
+        CriteriaDelete<DocumentFile> query = cb.createCriteriaDelete(DocumentFile.class);
+        query.where(query.from(DocumentFile.class).get("id").in(documentFile.stream().map(DocumentFile::getId).collect(Collectors.toList())));
 
         entityManager.createQuery(query).executeUpdate();
     }
