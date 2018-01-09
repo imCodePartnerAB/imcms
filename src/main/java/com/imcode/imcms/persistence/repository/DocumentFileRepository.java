@@ -15,5 +15,6 @@ public interface DocumentFileRepository extends JpaRepository<DocumentFileJPA, I
 
     //    @Query("SELECT f FROM DocumentFileJPA f WHERE f.docId = ?1 ORDER BY f.defaultFileId DESC, f.fileId")
     List<DocumentFileJPA> findByDocId(int docId);
-}
 
+    List<DocumentFileJPA> findByDocIdAndVersionIndex(int docId, int versionIndex);
+}
