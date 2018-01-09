@@ -3,10 +3,15 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
+import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Config;
+import imcode.server.Imcms;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -24,8 +29,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -35,7 +39,7 @@ public class FileDocumentServiceTest {
 
     private static File testSolrFolder;
 
-    private FileDocumentDTO createdDoc;
+    private int createdDocId;
 
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
@@ -56,7 +60,7 @@ public class FileDocumentServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        createdDoc = documentDataInitializer.createFileDocument();
+        createdDocId = documentDataInitializer.createFileDocument().getId();
     }
 
     @PostConstruct
@@ -79,13 +83,31 @@ public class FileDocumentServiceTest {
 
     @Test
     public void get_When_NoFileSavedYet_Expect_Found() {
-        final FileDocumentDTO fileDocumentDTO = fileDocumentService.get(createdDoc.getId());
+        final FileDocumentDTO fileDocumentDTO = fileDocumentService.get(createdDocId);
 
         assertNotNull(fileDocumentDTO);
     }
 
     @Test
-    public void save() {
+    public void save_When_CustomFileSet_Expect_SavedWithSameDocId() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        final FileDocumentDTO fileDocumentDTO = fileDocumentService.get(createdDocId);
+
+        final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
+        documentFileJPA.setDocId(createdDocId);
+        documentFileJPA.setFileId("test_id_" + System.currentTimeMillis());
+        documentFileJPA.setFilename("test_name" + System.currentTimeMillis());
+        documentFileJPA.setMimeType("test" + System.currentTimeMillis());
+
+        final DocumentFileDTO documentFileDTO = new DocumentFileDTO(documentFileJPA);
+        fileDocumentDTO.setFile(documentFileDTO);
+
+        final int savedDocId = fileDocumentService.save(fileDocumentDTO);
+
+        assertEquals(savedDocId, createdDocId);
     }
 
     @Test
