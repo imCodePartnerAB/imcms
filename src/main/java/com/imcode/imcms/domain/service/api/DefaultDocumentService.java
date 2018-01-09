@@ -29,7 +29,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     private final MetaRepository metaRepository;
     private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping;
-    private final Function<DocumentDTO, Meta> documentDtoToMeta;
     private final CommonContentService commonContentService;
     private final VersionService versionService;
     private final TextService textService;
@@ -37,6 +36,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     private final LoopService loopService;
     private final DocumentIndex documentIndex;
     private final List<VersionedContentService> versionedContentServices;
+    private final Function<DocumentDTO, Meta> documentSaver;
 
     private DeleterByDocumentId[] docContentServices = {};
 
@@ -53,7 +53,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         this.metaRepository = metaRepository;
         this.documentMapping = metaToDocumentDTO;
-        this.documentDtoToMeta = documentDtoToMeta;
         this.commonContentService = commonContentService;
         this.versionService = versionService;
         this.textService = textService;
@@ -61,6 +60,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.loopService = loopService;
         this.documentIndex = documentIndex;
         this.versionedContentServices = versionedContentServices;
+        this.documentSaver = ((Function<Meta, Meta>) metaRepository::save).compose(documentDtoToMeta);
     }
 
     @PostConstruct
@@ -103,9 +103,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     @Transactional
     public int save(DocumentDTO saveMe) {
         final boolean isNew = (saveMe.getId() == null);
-
-        final Meta metaForSave = documentDtoToMeta.apply(saveMe);
-        final Integer docId = metaRepository.save(metaForSave).getId();
+        final Integer docId = documentSaver.apply(saveMe).getId();
 
         if (isNew) {
             versionService.create(docId);
