@@ -21,13 +21,12 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     private final DocumentService<DocumentDTO> defaultDocumentService;
 
     FileDocumentService(@Qualifier("defaultDocumentService") DocumentService<DocumentDTO> documentService) {
-
         defaultDocumentService = documentService;
     }
 
     @Override
     public FileDocumentDTO createEmpty(Meta.DocumentType type) {
-        return new FileDocumentDTO(defaultDocumentService.createEmpty(type));
+        return FileDocumentDTO.createEmpty(defaultDocumentService.createEmpty(type));
     }
 
     @Override
