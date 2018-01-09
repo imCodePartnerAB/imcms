@@ -1,6 +1,7 @@
-package com.imcode.imcms.domain.service;
+package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
+import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.repository.DocumentFileRepository;
