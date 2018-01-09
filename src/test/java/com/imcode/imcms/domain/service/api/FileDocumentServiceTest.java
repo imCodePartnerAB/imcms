@@ -78,7 +78,10 @@ public class FileDocumentServiceTest {
     }
 
     @Test
-    public void get() {
+    public void get_When_NoFileSavedYet_Expect_Found() {
+        final FileDocumentDTO fileDocumentDTO = fileDocumentService.get(createdDoc.getId());
+
+        assertNotNull(fileDocumentDTO);
     }
 
     @Test
