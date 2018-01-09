@@ -1,10 +1,9 @@
 package com.imcode.imcms.components.datainitializer;
 
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.TextDocumentDTO;
-import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
 import com.imcode.imcms.persistence.entity.Version;
@@ -80,6 +79,22 @@ public class DocumentDataInitializer extends TestDataCleaner {
                 metaDoc.getId(), version.getNo()
         );
         return metaToDocumentDTO.apply(metaDoc, version, commonContents);
+    }
+
+    public FileDocumentDTO createFileDocument() {
+        final DocumentDTO documentDTO = createData();
+        final FileDocumentDTO fileDocumentDTO = new FileDocumentDTO(documentDTO);
+
+        final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
+        documentFileJPA.setDocId(documentDTO.getId());
+        documentFileJPA.setFileId("test_id");
+        documentFileJPA.setFilename("test_name");
+        documentFileJPA.setMimeType("test");
+
+        final DocumentFileDTO documentFileDTO = new DocumentFileDTO(documentFileJPA);
+        fileDocumentDTO.setFile(documentFileDTO);
+
+        return fileDocumentDTO;
     }
 
     public TextDocumentDTO createTextDocument() {
