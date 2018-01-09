@@ -33,6 +33,12 @@ public class DocumentController {
         }
     }
 
+    /**
+     * Simply save document.
+     *
+     * @param saveMe unified document, compatible with each {@link DocumentType} except HTML (yet?)
+     * @return saved document's id
+     */
     @PostMapping
     public int save(@RequestBody UberDocumentDTO saveMe) {
 
