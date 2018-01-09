@@ -13,6 +13,7 @@ import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -91,8 +92,9 @@ public class DocumentDataInitializer extends TestDataCleaner {
         documentFileJPA.setFilename("test_name");
         documentFileJPA.setMimeType("test");
 
-        final DocumentFileDTO documentFileDTO = new DocumentFileDTO(documentFileJPA);
-        fileDocumentDTO.setFile(documentFileDTO);
+        final List<DocumentFileDTO> documentFileDTOS = new ArrayList<>();
+        documentFileDTOS.add(new DocumentFileDTO(documentFileJPA));
+        fileDocumentDTO.setFiles(documentFileDTOS);
 
         return fileDocumentDTO;
     }

@@ -8,7 +8,8 @@ import com.imcode.imcms.persistence.repository.DocumentFileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -21,13 +22,20 @@ public class DefaultDocumentFileService implements DocumentFileService {
     }
 
     @Override
-    public DocumentFile save(DocumentFile saveMe) {
-        return new DocumentFileDTO(documentFileRepository.save(new DocumentFileJPA(saveMe)));
+    public List<DocumentFile> saveAll(List<DocumentFile> saveUs) {
+        return saveUs.stream()
+                .map(documentFile -> new DocumentFileDTO(
+                        documentFileRepository.save(new DocumentFileJPA(documentFile))
+                ))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<DocumentFile> getByDocId(int docId) {
-        return Optional.empty();//ofNullable(documentFileRepository.findByDocId(docId));
+    public List<DocumentFile> getByDocId(int docId) {
+        return documentFileRepository.findByDocId(docId)
+                .stream()
+                .map(DocumentFileDTO::new)
+                .collect(Collectors.toList());
     }
 
     @Override

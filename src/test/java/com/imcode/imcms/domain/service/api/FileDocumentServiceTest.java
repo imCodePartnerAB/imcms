@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -77,8 +79,8 @@ public class FileDocumentServiceTest {
         final FileDocumentDTO empty = fileDocumentService.createEmpty(Meta.DocumentType.FILE);
 
         assertNull(empty.getId());
-        assertNotNull(empty.getFile());
-        assertNull(empty.getFile().getId());
+        assertNotNull(empty.getFiles());
+        assertTrue(empty.getFiles().isEmpty());
     }
 
     @Test
@@ -102,12 +104,46 @@ public class FileDocumentServiceTest {
         documentFileJPA.setFilename("test_name" + System.currentTimeMillis());
         documentFileJPA.setMimeType("test" + System.currentTimeMillis());
 
-        final DocumentFileDTO documentFileDTO = new DocumentFileDTO(documentFileJPA);
-        fileDocumentDTO.setFile(documentFileDTO);
+        final List<DocumentFileDTO> documentFileDTOS = new ArrayList<>();
+        documentFileDTOS.add(new DocumentFileDTO(documentFileJPA));
+        fileDocumentDTO.setFiles(documentFileDTOS);
 
         final int savedDocId = fileDocumentService.save(fileDocumentDTO);
 
         assertEquals(savedDocId, createdDocId);
+    }
+
+    @Test
+    public void save_When_CustomFileSet_Expect_CustomFileSaved() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        final FileDocumentDTO fileDocumentDTO = fileDocumentService.get(createdDocId);
+
+        final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
+        documentFileJPA.setDocId(createdDocId);
+        documentFileJPA.setFileId("test_id_" + System.currentTimeMillis());
+        documentFileJPA.setFilename("test_name" + System.currentTimeMillis());
+        documentFileJPA.setMimeType("test" + System.currentTimeMillis());
+
+        final List<DocumentFileDTO> documentFileDTOS = new ArrayList<>();
+        documentFileDTOS.add(new DocumentFileDTO(documentFileJPA));
+        fileDocumentDTO.setFiles(documentFileDTOS);
+
+        fileDocumentService.save(fileDocumentDTO);
+
+        final List<DocumentFileDTO> savedFiles = fileDocumentService.get(createdDocId).getFiles();
+
+        assertNotNull(savedFiles);
+        assertEquals(savedFiles.size(), documentFileDTOS.size());
+
+        final DocumentFileDTO savedFile = documentFileDTOS.get(0);
+
+        assertEquals(savedFile.getDocId(), documentFileJPA.getDocId());
+        assertEquals(savedFile.getFileId(), documentFileJPA.getFileId());
+        assertEquals(savedFile.getFilename(), documentFileJPA.getFilename());
+        assertEquals(savedFile.getMimeType(), documentFileJPA.getMimeType());
     }
 
     @Test

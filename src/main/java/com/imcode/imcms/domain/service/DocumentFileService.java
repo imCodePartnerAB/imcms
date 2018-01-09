@@ -2,7 +2,7 @@ package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.model.DocumentFile;
 
-import java.util.Optional;
+import java.util.List;
 
 /**
  * Service for work with Document's files.
@@ -12,8 +12,8 @@ import java.util.Optional;
  */
 public interface DocumentFileService extends DeleterByDocumentId {
 
-    DocumentFile save(DocumentFile saveMe);
+    List<DocumentFile> saveAll(List<DocumentFile> saveUs);
 
-    Optional<DocumentFile> getByDocId(int docId);
+    List<DocumentFile> getByDocId(int docId);
 
 }

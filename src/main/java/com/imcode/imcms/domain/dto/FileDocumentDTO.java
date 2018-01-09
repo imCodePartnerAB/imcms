@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,7 +18,7 @@ public class FileDocumentDTO extends DocumentDTO implements Serializable {
 
     private static final long serialVersionUID = -8104577284192730444L;
 
-    private DocumentFileDTO file;
+    private List<DocumentFileDTO> files;
 
     {
         super.type = Meta.DocumentType.FILE;
@@ -28,7 +30,7 @@ public class FileDocumentDTO extends DocumentDTO implements Serializable {
 
     public static FileDocumentDTO createEmpty(DocumentDTO from) {
         final FileDocumentDTO fileDocumentDTO = new FileDocumentDTO(from);
-        fileDocumentDTO.file = new DocumentFileDTO();
+        fileDocumentDTO.files = new ArrayList<>();
 
         return fileDocumentDTO;
     }
