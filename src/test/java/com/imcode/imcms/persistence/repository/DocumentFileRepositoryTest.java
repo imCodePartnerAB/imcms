@@ -151,4 +151,47 @@ public class DocumentFileRepositoryTest {
             assertEquals(defaultFile.getFilename(), documentFileJPA.getFilename());
         }
     }
+
+    @Test
+    public void findByVersion() {
+        documentFileRepository.deleteAll();
+        assertTrue(documentFileRepository.findAll().isEmpty());
+
+        final int firstVersionIndex = 0;
+        final int secondVersionIndex = 13;
+        final int maxItems = 10;
+
+        final Integer firstDocId = documentDataInitializer.createData().getId();
+        final Integer secondDocId = documentDataInitializer.createData().getId();
+
+        final Version[] versions = {
+                versionDataInitializer.createData(firstVersionIndex, firstDocId),
+                versionDataInitializer.createData(secondVersionIndex, firstDocId),
+                versionDataInitializer.createData(firstVersionIndex, secondDocId),
+                versionDataInitializer.createData(secondVersionIndex, secondDocId)
+        };
+
+        int totalAmount = 0;
+
+        for (Version version : versions) {
+            IntStream.range(1, maxItems).forEach(value -> {
+                final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
+                documentFileJPA.setDocId(version.getDocId());
+                documentFileJPA.setVersionIndex(version.getNo());
+                documentFileJPA.setFileId("test_id" + value);
+                documentFileJPA.setFilename("test_name" + value);
+                documentFileJPA.setMimeType("test" + value);
+
+                documentFileRepository.save(documentFileJPA);
+            });
+
+            totalAmount += documentFileRepository.findByVersion(version).size();
+        }
+
+        final List<DocumentFileJPA> all = documentFileRepository.findAll();
+
+        assertNotEquals(totalAmount, 0);
+        assertFalse(all.isEmpty());
+        assertEquals(totalAmount, all.size());
+    }
 }

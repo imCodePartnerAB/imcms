@@ -27,6 +27,6 @@ public interface DocumentFileRepository extends JpaRepository<DocumentFileJPA, I
     DocumentFileJPA findDefaultByDocIdAndVersionIndex(int docId, int versionIndex);
 
     @Override
-    @Query("select f from DocumentFileJPA f where f.versionIndex = :#{#version.no}")
+    @Query("select f from DocumentFileJPA f where f.versionIndex = :#{#version.no} and f.docId = :#{#version.docId}")
     List<DocumentFileJPA> findByVersion(@Param("version") Version version);
 }
