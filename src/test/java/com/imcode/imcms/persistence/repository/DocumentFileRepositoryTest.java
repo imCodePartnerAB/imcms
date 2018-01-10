@@ -6,6 +6,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +44,7 @@ public class DocumentFileRepositoryTest {
 
         final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
         documentFileJPA.setDocId(documentDTO.getId());
+        documentFileJPA.setVersionIndex(Version.WORKING_VERSION_INDEX);
         documentFileJPA.setFileId("test_id");
         documentFileJPA.setFilename("test_name");
         documentFileJPA.setMimeType("test");
@@ -84,6 +86,7 @@ public class DocumentFileRepositoryTest {
         assertNotNull(firstVersionFiles);
         assertFalse(firstVersionFiles.isEmpty());
         assertEquals(firstVersionFiles.size(), maxItems / 2);
+        assertEquals(firstVersionFiles.get(0).getVersionIndex(), firstVersionIndex);
 
         final List<DocumentFileJPA> lastVersionFiles = documentFileRepository.findByDocIdAndVersionIndex(
                 docId, lastVersionIndex
@@ -92,6 +95,7 @@ public class DocumentFileRepositoryTest {
         assertNotNull(lastVersionFiles);
         assertFalse(lastVersionFiles.isEmpty());
         assertEquals(lastVersionFiles.size(), maxItems / 2);
+        assertEquals(lastVersionFiles.get(0).getVersionIndex(), lastVersionIndex);
     }
 
     @Test

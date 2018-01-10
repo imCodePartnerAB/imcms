@@ -6,6 +6,7 @@ import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentFileRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -30,6 +30,7 @@ import static org.junit.Assert.assertNotNull;
 public class DocumentFileServiceTest {
 
     private Integer docId;
+    private List<DocumentFile> documentFiles;
 
     @Autowired
     private DocumentFileService documentFileService;
@@ -44,14 +45,11 @@ public class DocumentFileServiceTest {
     public void setUp() throws Exception {
         documentFileRepository.deleteAll();
         docId = documentDataInitializer.createData().getId();
-    }
-
-    @Test
-    public void saveAll() {
-        final List<DocumentFile> documentFiles = IntStream.rangeClosed(0, 10)
+        documentFiles = IntStream.rangeClosed(0, 10)
                 .mapToObj(value -> {
                     final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
                     documentFileJPA.setDocId(docId);
+                    documentFileJPA.setVersionIndex(Version.WORKING_VERSION_INDEX);
                     documentFileJPA.setFileId("test_id_" + value);
                     documentFileJPA.setFilename("test_name" + value);
                     documentFileJPA.setMimeType("test" + value);
@@ -59,7 +57,10 @@ public class DocumentFileServiceTest {
                     return (DocumentFile) documentFileJPA;
                 })
                 .collect(Collectors.toList());
+    }
 
+    @Test
+    public void saveAll() {
         documentFileService.saveAll(documentFiles);
 
         final List<DocumentFileJPA> saved = documentFileRepository.findAll();
@@ -70,22 +71,10 @@ public class DocumentFileServiceTest {
 
     @Test
     public void getByDocId() {
-        final List<DocumentFile> documentFiles = IntStream.rangeClosed(0, 10)
-                .mapToObj(value -> {
-                    final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
-                    documentFileJPA.setDocId(docId);
-                    documentFileJPA.setFileId("test_id_" + value);
-                    documentFileJPA.setFilename("test_name" + value);
-                    documentFileJPA.setMimeType("test" + value);
-
-                    return (DocumentFile) documentFileJPA;
-                })
-                .collect(Collectors.toList());
-
         final List<DocumentFile> saved = documentFileService.saveAll(documentFiles);
         final List<DocumentFile> found = documentFileService.getByDocId(docId);
 
-        assertEquals(saved, found);
+        assertTrue(saved.containsAll(found));
     }
 
     @Test

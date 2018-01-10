@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
@@ -100,6 +101,7 @@ public class FileDocumentServiceTest {
 
         final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
         documentFileJPA.setDocId(createdDocId);
+        documentFileJPA.setVersionIndex(Version.WORKING_VERSION_INDEX);
         documentFileJPA.setFileId("test_id_" + System.currentTimeMillis());
         documentFileJPA.setFilename("test_name" + System.currentTimeMillis());
         documentFileJPA.setMimeType("test" + System.currentTimeMillis());
@@ -123,6 +125,7 @@ public class FileDocumentServiceTest {
 
         final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
         documentFileJPA.setDocId(createdDocId);
+        documentFileJPA.setVersionIndex(Version.WORKING_VERSION_INDEX);
         documentFileJPA.setFileId("test_id_" + System.currentTimeMillis());
         documentFileJPA.setFilename("test_name" + System.currentTimeMillis());
         documentFileJPA.setMimeType("test" + System.currentTimeMillis());
