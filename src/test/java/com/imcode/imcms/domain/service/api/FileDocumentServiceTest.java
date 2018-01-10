@@ -9,7 +9,6 @@ import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
-import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Config;
 import imcode.server.Imcms;
@@ -82,7 +81,7 @@ public class FileDocumentServiceTest {
 
     @Test
     public void createEmpty() {
-        final FileDocumentDTO empty = fileDocumentService.createEmpty(Meta.DocumentType.FILE);
+        final FileDocumentDTO empty = fileDocumentService.createEmpty();
 
         assertNull(empty.getId());
         assertNotNull(empty.getFiles());

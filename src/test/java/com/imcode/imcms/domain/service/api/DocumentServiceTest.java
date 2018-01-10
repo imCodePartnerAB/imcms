@@ -11,7 +11,6 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import com.imcode.imcms.persistence.entity.TextJPA;
@@ -160,7 +159,7 @@ public class DocumentServiceTest {
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user); // means current user is admin now
 
-        final TextDocumentDTO emptyDocumentDTO = textDocumentService.createEmpty(DocumentType.TEXT);
+        final TextDocumentDTO emptyDocumentDTO = textDocumentService.createEmpty();
         textDocumentService.save(emptyDocumentDTO);
     }
 
@@ -197,7 +196,7 @@ public class DocumentServiceTest {
 
         final String testTarget = "_test";
 
-        final TextDocumentDTO emptyDocumentDTO = textDocumentService.createEmpty(DocumentType.TEXT);
+        final TextDocumentDTO emptyDocumentDTO = textDocumentService.createEmpty();
         emptyDocumentDTO.setTarget(testTarget);
 
         final int saveDocId = textDocumentService.save(emptyDocumentDTO);
@@ -731,18 +730,6 @@ public class DocumentServiceTest {
 
     }
 
-    @Test
-    public void createDocumentByType_Expect_CreatedWithCorrectType() {
-        final DocumentType textType = DocumentType.TEXT;
-        final DocumentType fileType = DocumentType.FILE;
-//        final DocumentType urlType = DocumentType.URL;
-        // html is not supported (yet?)
-
-        assertEquals(documentService.createEmpty(textType).getType(), textType);
-        assertEquals(documentService.createEmpty(fileType).getType(), fileType);
-//        assertEquals(documentService.createEmpty(urlType).getType(), urlType);
-    }
-
     private void createText(int index, LanguageJPA language, Version version) {
         final TextJPA text = new TextJPA();
         text.setIndex(index);
@@ -753,6 +740,5 @@ public class DocumentServiceTest {
 
         textRepository.saveAndFlush(text);
     }
-
 
 }

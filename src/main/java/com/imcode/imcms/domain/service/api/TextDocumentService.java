@@ -5,7 +5,6 @@ import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
-import com.imcode.imcms.persistence.entity.Meta;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +32,8 @@ class TextDocumentService implements DocumentService<TextDocumentDTO> {
     }
 
     @Override
-    public TextDocumentDTO createEmpty(Meta.DocumentType type) {
-        final DocumentDTO emptyCommonDoc = defaultDocumentService.createEmpty(type);
+    public TextDocumentDTO createEmpty() {
+        final DocumentDTO emptyCommonDoc = defaultDocumentService.createEmpty();
         return TextDocumentDTO.createEmpty(emptyCommonDoc);
     }
 

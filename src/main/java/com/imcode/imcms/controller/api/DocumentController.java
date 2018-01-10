@@ -2,7 +2,7 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.UberDocumentDTO;
-import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.TypedDocumentService;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/documents")
 class DocumentController {
 
-    private DocumentService<DocumentDTO> documentService;
+    private TypedDocumentService<DocumentDTO> documentService;
 
-    DocumentController(DocumentService<DocumentDTO> documentService) {
+    DocumentController(TypedDocumentService<DocumentDTO> documentService) {
         this.documentService = documentService;
     }
 

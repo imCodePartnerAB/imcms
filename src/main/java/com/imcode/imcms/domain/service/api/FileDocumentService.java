@@ -6,7 +6,6 @@ import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.DocumentFile;
-import com.imcode.imcms.persistence.entity.Meta;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +34,8 @@ class FileDocumentService implements DocumentService<FileDocumentDTO> {
     }
 
     @Override
-    public FileDocumentDTO createEmpty(Meta.DocumentType type) {
-        return FileDocumentDTO.createEmpty(defaultDocumentService.createEmpty(type));
+    public FileDocumentDTO createEmpty() {
+        return FileDocumentDTO.createEmpty(defaultDocumentService.createEmpty());
     }
 
     @Override

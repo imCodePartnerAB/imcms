@@ -5,7 +5,6 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
-import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
@@ -75,7 +74,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     }
 
     @Override
-    public DocumentDTO createEmpty(DocumentType type) {
+    public DocumentDTO createEmpty() {
         final List<CommonContentDTO> commonContents = commonContentService.createCommonContents()
                 .stream()
                 .map(CommonContentDTO::new)
