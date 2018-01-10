@@ -18,7 +18,7 @@ public class DocumentFileDTO extends DocumentFile {
 
     private String mimeType;
 
-    private boolean defaultFileId;
+    private boolean defaultFile;
 
     private String fileId;
 

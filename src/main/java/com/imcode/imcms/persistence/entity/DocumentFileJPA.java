@@ -29,8 +29,8 @@ public class DocumentFileJPA extends DocumentFile {
     @Column(name = "doc_id", nullable = false)
     private Integer docId;
 
-    @Column(name = "doc_version_no", nullable = false)
-    private int versionIndex = 0; // not used, delete if no versioning needed for doc's files
+    @Column(name = "doc_version_no")
+    private int versionIndex;
 
     @Column(name = "filename", nullable = false)
     private String filename;
@@ -42,7 +42,7 @@ public class DocumentFileJPA extends DocumentFile {
     private String mimeType;
 
     @Column(name = "default_variant")
-    private boolean defaultFileId;
+    private boolean defaultFile;
 
     @Column(name = "variant_name", nullable = false)
     private String fileId;

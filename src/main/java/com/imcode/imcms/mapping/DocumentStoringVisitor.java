@@ -151,9 +151,10 @@ class DocumentStoringVisitor extends DocumentVisitor {
             boolean isDefaultFile = fileId.equals(fileDocument.getDefaultFileId());
             DocumentFileJPA documentFile = new DocumentFileJPA();
             documentFile.setDocId(fileDocument.getId());
+            documentFile.setVersionIndex(fileDocument.getVersionNo());
             documentFile.setFileId(fileId);
             documentFile.setFilename(filename);
-            documentFile.setDefaultFileId(isDefaultFile);
+            documentFile.setDefaultFile(isDefaultFile);
             documentFile.setMimeType(fileDocumentFile.getMimeType());
             documentFile.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
 

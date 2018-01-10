@@ -11,7 +11,7 @@ public abstract class DocumentFile {
         setFilename(from.getFilename());
         setCreatedAsImage(from.isCreatedAsImage());
         setMimeType(from.getMimeType());
-        setDefaultFileId(from.isDefaultFileId());
+        setDefaultFile(from.isDefaultFile());
         setFileId(from.getFileId());
     }
 
@@ -35,9 +35,9 @@ public abstract class DocumentFile {
 
     public abstract void setMimeType(String mimeType);
 
-    public abstract boolean isDefaultFileId();
+    public abstract boolean isDefaultFile();
 
-    public abstract void setDefaultFileId(boolean defaultFileId);
+    public abstract void setDefaultFile(boolean defaultFile);
 
     public abstract String getFileId();
 

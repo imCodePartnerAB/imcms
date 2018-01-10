@@ -62,7 +62,7 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
             doc.addFile(fileId, file);
 
-            if (item.isDefaultFileId()) {
+            if (item.isDefaultFile()) {
                 doc.setDefaultFileId(fileId);
             }
 
