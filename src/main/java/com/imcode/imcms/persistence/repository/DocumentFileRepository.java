@@ -1,14 +1,16 @@
 package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface DocumentFileRepository extends JpaRepository<DocumentFileJPA, Integer> {
+public interface DocumentFileRepository extends JpaRepository<DocumentFileJPA, Integer>, VersionedContentRepository<DocumentFileJPA> {
 
 //    @Modifying
 //    @Query("DELETE FROM DocumentFileJPA f WHERE f.id IN (SELECT asd FROM (SELECT fdf.id FROM DocumentFileJPA fdf WHERE fdf.version.docId = ?1 AND fdf.version.no = ?2) asd)")
@@ -24,4 +26,7 @@ public interface DocumentFileRepository extends JpaRepository<DocumentFileJPA, I
             " order by f.defaultFile desc, f.fileId")
     DocumentFileJPA findDefaultByDocIdAndVersionIndex(int docId, int versionIndex);
 
+    @Override
+    @Query("select f from DocumentFileJPA f where f.versionIndex = :#{#version.no}")
+    List<DocumentFileJPA> findByVersion(@Param("version") Version version);
 }
