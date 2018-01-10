@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.service.DocumentFileService;
@@ -40,6 +41,9 @@ public class DocumentFileServiceTest {
 
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
+
+    @Autowired
+    private VersionDataInitializer versionDataInitializer;
 
     @Before
     public void setUp() throws Exception {
@@ -84,6 +88,8 @@ public class DocumentFileServiceTest {
         futurePublicFile.setFilename("test" + System.currentTimeMillis());
 
         documentFileService.saveAll(documentFiles);
+        versionDataInitializer.createData(Version.WORKING_VERSION_INDEX + 1, docId);
+
         documentFileService.publishDocumentFiles(docId);
 
         final DocumentFile publicFile = documentFileService.getPublicByDocId(docId);
