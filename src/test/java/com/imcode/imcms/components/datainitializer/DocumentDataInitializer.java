@@ -88,6 +88,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
 
         final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
         documentFileJPA.setDocId(documentDTO.getId());
+        documentFileJPA.setVersionIndex(Version.WORKING_VERSION_INDEX);
         documentFileJPA.setFileId("test_id");
         documentFileJPA.setFilename("test_name");
         documentFileJPA.setMimeType("test");
