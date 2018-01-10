@@ -20,7 +20,7 @@ import java.util.Optional;
  * 22.12.17.
  */
 @Service("documentService")
-public class DelegatingByTypeDocumentService<T extends DocumentDTO> implements DocumentService<T> {
+class DelegatingByTypeDocumentService<T extends DocumentDTO> implements DocumentService<T> {
 
     private final DocumentService<TextDocumentDTO> textDocumentService;
     private final DocumentService<FileDocumentDTO> fileDocumentService;

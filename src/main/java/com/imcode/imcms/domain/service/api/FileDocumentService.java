@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional
-public class FileDocumentService implements DocumentService<FileDocumentDTO> {
+class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocumentFileService documentFileService;

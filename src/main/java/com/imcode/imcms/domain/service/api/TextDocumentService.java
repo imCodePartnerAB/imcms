@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 @Service
 @Transactional
-public class TextDocumentService implements DocumentService<TextDocumentDTO> {
+class TextDocumentService implements DocumentService<TextDocumentDTO> {
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final TextDocumentTemplateService textDocumentTemplateService;
