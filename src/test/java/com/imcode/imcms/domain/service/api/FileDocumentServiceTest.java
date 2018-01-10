@@ -5,7 +5,9 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
+import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
@@ -55,6 +57,9 @@ public class FileDocumentServiceTest {
 
     @Autowired
     private DocumentService<FileDocumentDTO> fileDocumentService;
+
+    @Autowired
+    private DocumentFileService documentFileService;
 
     @AfterClass
     public static void shutDownSolr() throws Exception {
@@ -151,6 +156,35 @@ public class FileDocumentServiceTest {
 
     @Test
     public void publishDocument() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        final FileDocumentDTO fileDocumentDTO = fileDocumentService.get(createdDocId);
+
+        final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
+        documentFileJPA.setDocId(createdDocId);
+        documentFileJPA.setVersionIndex(Version.WORKING_VERSION_INDEX);
+        documentFileJPA.setFileId("test_id_" + System.currentTimeMillis());
+        documentFileJPA.setFilename("test_name" + System.currentTimeMillis());
+        documentFileJPA.setDefaultFile(true);
+        documentFileJPA.setMimeType("test" + System.currentTimeMillis());
+
+        final List<DocumentFileDTO> documentFileDTOS = new ArrayList<>();
+        documentFileDTOS.add(new DocumentFileDTO(documentFileJPA));
+        fileDocumentDTO.setFiles(documentFileDTOS);
+
+        fileDocumentService.save(fileDocumentDTO);
+
+        final boolean published = fileDocumentService.publishDocument(createdDocId, user.getId());
+
+        assertTrue(published);
+
+        final DocumentFile publicByDocId = documentFileService.getPublicByDocId(createdDocId);
+
+        assertNotNull(publicByDocId);
+        assertEquals(publicByDocId.getDocId().intValue(), createdDocId);
+        assertEquals(publicByDocId.getFilename(), documentFileJPA.getFilename());
     }
 
     @Test

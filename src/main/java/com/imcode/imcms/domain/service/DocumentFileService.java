@@ -16,4 +16,8 @@ public interface DocumentFileService extends DeleterByDocumentId {
 
     List<DocumentFile> getByDocId(int docId);
 
+    void publishDocumentFiles(int docId);
+
+    DocumentFile getPublicByDocId(int docId);
+
 }

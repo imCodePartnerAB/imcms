@@ -78,6 +78,23 @@ public class DocumentFileServiceTest {
     }
 
     @Test
+    public void publishDocumentFiles() {
+        final DocumentFile futurePublicFile = documentFiles.get(0);
+        futurePublicFile.setDefaultFile(true); // one has to be default
+        futurePublicFile.setFilename("test" + System.currentTimeMillis());
+
+        documentFileService.saveAll(documentFiles);
+        documentFileService.publishDocumentFiles(docId);
+
+        final DocumentFile publicFile = documentFileService.getPublicByDocId(docId);
+
+        assertNotNull(publicFile);
+        assertNotNull(publicFile.getId());
+        assertTrue(publicFile.isDefaultFile());
+        assertEquals(publicFile.getFilename(), futurePublicFile.getFilename());
+    }
+
+    @Test
     public void deleteByDocId() {
         // todo: cover when there will be implementation
     }
