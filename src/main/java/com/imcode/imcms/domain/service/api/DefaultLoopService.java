@@ -74,12 +74,12 @@ class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, Loop, 
     }
 
     @Override
-    protected Loop mapping(LoopJPA jpa, Version version) {
+    protected Loop mapToDTO(LoopJPA jpa, Version version) {
         return new LoopDTO(jpa, version);
     }
 
     @Override
-    protected LoopJPA mappingWithoutId(Loop dto, Version version) {
+    protected LoopJPA mapToJpaWithoutId(Loop dto, Version version) {
         return new LoopJPA(dto, version);
     }
 

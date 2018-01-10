@@ -119,12 +119,12 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, 
     }
 
     @Override
-    protected Text mapping(TextJPA entity, Version version) {
+    protected Text mapToDTO(TextJPA entity, Version version) {
         return new TextDTO(entity, version, entity.getLanguage());
     }
 
     @Override
-    protected TextJPA mappingWithoutId(Text entity, Version version) {
+    protected TextJPA mapToJpaWithoutId(Text entity, Version version) {
         final LanguageJPA languageJPA = new LanguageJPA(languageService.findByCode(entity.getLangCode()));
         return new TextJPA(entity, version, languageJPA);
     }

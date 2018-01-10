@@ -132,12 +132,12 @@ public class DefaultCommonContentService
     }
 
     @Override
-    protected CommonContent mapping(CommonContentJPA jpa, Version version) {
+    protected CommonContent mapToDTO(CommonContentJPA jpa, Version version) {
         return new CommonContentDTO(jpa);
     }
 
     @Override
-    protected CommonContentJPA mappingWithoutId(CommonContent dto, Version version) {
+    protected CommonContentJPA mapToJpaWithoutId(CommonContent dto, Version version) {
         dto.setId(null);
         dto.setVersionNo(version.getNo());
         return new CommonContentJPA(dto);
