@@ -14,7 +14,7 @@ import java.util.Optional;
 
 /**
  * Central {@link com.imcode.imcms.domain.service.DocumentService} instance
- * that delegates calls to corresponding service by type.
+ * that delegates calls to corresponding service by document's type.
  *
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 22.12.17.
