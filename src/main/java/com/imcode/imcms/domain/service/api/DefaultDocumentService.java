@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * Service for work with common document entities.
  * Every specified document type has it's own corresponding service.
  */
-@Service
+@Service("defaultDocumentService")
 class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     private final MetaRepository metaRepository;
