@@ -108,4 +108,47 @@ public class DocumentFileRepositoryTest {
         assertNotNull(emptyList);
         assertTrue(emptyList.isEmpty());
     }
+
+    @Test
+    public void findDefaultByDocIdAndVersionIndex() {
+        final int firstVersionIndex = 0;
+        final int lastVersionIndex = 3;
+        final int maxItems = 10;
+        final Integer docId = documentDataInitializer.createData().getId();
+        versionDataInitializer.createData(firstVersionIndex, docId);
+        versionDataInitializer.createData(lastVersionIndex, docId);
+
+        IntStream.range(1, maxItems).forEach(value -> {
+            final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
+            documentFileJPA.setDocId(docId);
+            documentFileJPA.setVersionIndex((value % 2 == 0) ? firstVersionIndex : lastVersionIndex);
+            documentFileJPA.setFileId("test_id" + value);
+            documentFileJPA.setFilename("test_name" + value);
+            documentFileJPA.setMimeType("test" + value);
+
+            documentFileRepository.save(documentFileJPA);
+        });
+
+        final String specialFileName = "SPECIAL";
+
+        for (int versionIndex : new int[]{firstVersionIndex, lastVersionIndex}) {
+            final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
+            documentFileJPA.setDocId(docId);
+            documentFileJPA.setVersionIndex(versionIndex);
+            documentFileJPA.setFileId("test_id");
+            documentFileJPA.setFilename(specialFileName);
+            documentFileJPA.setMimeType("test");
+            documentFileJPA.setDefaultFile(true); // main thing for this test
+
+            documentFileRepository.save(documentFileJPA);
+
+            final DocumentFileJPA defaultFile = documentFileRepository.findDefaultByDocIdAndVersionIndex(
+                    docId, firstVersionIndex
+            );
+
+            assertNotNull(defaultFile);
+            assertTrue(defaultFile.isDefaultFile());
+            assertEquals(defaultFile.getFilename(), documentFileJPA.getFilename());
+        }
+    }
 }
