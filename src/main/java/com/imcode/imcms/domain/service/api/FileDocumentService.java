@@ -6,7 +6,6 @@ import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.DocumentFile;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +25,10 @@ class FileDocumentService implements DocumentService<FileDocumentDTO> {
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocumentFileService documentFileService;
 
-    FileDocumentService(@Qualifier("defaultDocumentService") DocumentService<DocumentDTO> documentService,
+    FileDocumentService(DocumentService<DocumentDTO> documentService2,
                         DocumentFileService documentFileService) {
 
-        this.defaultDocumentService = documentService;
+        this.defaultDocumentService = documentService2;
         this.documentFileService = documentFileService;
     }
 
@@ -53,7 +52,7 @@ class FileDocumentService implements DocumentService<FileDocumentDTO> {
     }
 
     public int save(FileDocumentDTO saveMe) {
-        final int savedDocId = defaultDocumentService.save(saveMe);
+        final int savedDocId = defaultDocumentService.save(new DocumentDTO(saveMe));
 
         final List<DocumentFile> saveMeFiles = saveMe.getFiles()
                 .stream()

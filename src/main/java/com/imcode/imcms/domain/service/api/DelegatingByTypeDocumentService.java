@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UberDocumentDTO;
@@ -9,6 +8,7 @@ import com.imcode.imcms.domain.exception.UnsupportedDocumentTypeException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TypedDocumentService;
 import com.imcode.imcms.domain.service.core.WrappingDocumentService;
+import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import org.springframework.stereotype.Service;
@@ -23,28 +23,28 @@ import java.util.Optional;
  * 22.12.17.
  */
 @Service
-public class DelegatingByTypeDocumentService implements TypedDocumentService<DocumentDTO> {
+public class DelegatingByTypeDocumentService implements TypedDocumentService<Document> {
 
     private final WrappingDocumentService<TextDocumentDTO> wrappedTextDocumentService;
     private final WrappingDocumentService<FileDocumentDTO> wrappedFileDocumentService;
     private final MetaRepository metaRepository;
 
-    DelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService,
-                                    DocumentService<FileDocumentDTO> fileDocumentService,
+    DelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService2,
+                                    DocumentService<FileDocumentDTO> fileDocumentService2,
                                     MetaRepository metaRepository) {
 
-        this.wrappedFileDocumentService = new WrappingDocumentService<>(fileDocumentService);
-        this.wrappedTextDocumentService = new WrappingDocumentService<>(textDocumentService);
+        this.wrappedFileDocumentService = new WrappingDocumentService<>(fileDocumentService2);
+        this.wrappedTextDocumentService = new WrappingDocumentService<>(textDocumentService2);
         this.metaRepository = metaRepository;
     }
 
     @Override
-    public DocumentDTO createEmpty(DocumentType type) {
+    public Document createEmpty(DocumentType type) {
         return getCorrespondingDocumentService(type).createEmpty();
     }
 
     @Override
-    public DocumentDTO get(int docId) {
+    public Document get(int docId) {
         return getCorrespondingDocumentService(docId).get(docId);
     }
 

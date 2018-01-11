@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class TextDocumentDTO extends DocumentDTO implements Serializable {
+public class TextDocumentDTO extends Document implements Serializable {
 
     private static final long serialVersionUID = -2317764204932918145L;
 
@@ -22,11 +23,11 @@ public class TextDocumentDTO extends DocumentDTO implements Serializable {
         super.type = DocumentType.TEXT;
     }
 
-    public TextDocumentDTO(DocumentDTO from) {
+    public TextDocumentDTO(Document from) {
         super(from);
     }
 
-    public static TextDocumentDTO createEmpty(DocumentDTO from) {
+    public static TextDocumentDTO createEmpty(Document from) {
         final TextDocumentDTO textDocumentDTO = new TextDocumentDTO(from);
         textDocumentDTO.template = TextDocumentTemplateDTO.createDefault();
 

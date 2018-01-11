@@ -5,7 +5,6 @@ import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +23,10 @@ class TextDocumentService implements DocumentService<TextDocumentDTO> {
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final TextDocumentTemplateService textDocumentTemplateService;
 
-    TextDocumentService(@Qualifier("defaultDocumentService") DocumentService<DocumentDTO> documentService,
+    TextDocumentService(DocumentService<DocumentDTO> documentService3,
                         TextDocumentTemplateService textDocumentTemplateService) {
 
-        defaultDocumentService = documentService;
+        defaultDocumentService = documentService3;
         this.textDocumentTemplateService = textDocumentTemplateService;
     }
 
@@ -49,7 +48,7 @@ class TextDocumentService implements DocumentService<TextDocumentDTO> {
         final boolean isNew = (saveMe.getId() == null);
         final Optional<TextDocumentTemplateDTO> oTemplate = Optional.ofNullable(saveMe.getTemplate());
 
-        final int savedDocId = defaultDocumentService.save(saveMe);
+        final int savedDocId = defaultDocumentService.save(new DocumentDTO(saveMe));
 
         if (isNew) {
             oTemplate.ifPresent(textDocumentTemplateDTO -> textDocumentTemplateDTO.setDocId(savedDocId));
