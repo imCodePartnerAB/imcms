@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.core;
 
-import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.TypedDocumentService;
+import com.imcode.imcms.model.Document;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
@@ -22,7 +22,7 @@ public class DocumentPublicationController {
 
     private final TypedDocumentService documentService;
 
-    public DocumentPublicationController(TypedDocumentService<DocumentDTO> documentService) {
+    public DocumentPublicationController(TypedDocumentService<Document> documentService) {
         this.documentService = documentService;
     }
 

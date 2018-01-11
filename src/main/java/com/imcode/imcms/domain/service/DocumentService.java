@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.model.Document;
 
-public interface DocumentService<Document extends DocumentDTO>
-        extends EmptyDocumentCreatingService<Document>, BasicDocumentService<Document>, DocumentSaver<Document> {
+public interface DocumentService<D extends Document>
+        extends EmptyDocumentCreatingService<D>, BasicDocumentService<D>, DocumentSaver<D> {
 }

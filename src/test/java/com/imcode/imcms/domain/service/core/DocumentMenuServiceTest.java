@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
 public class DocumentMenuServiceTest {
 
     @Autowired
-    private DocumentService documentService;
+    private DocumentService<DocumentDTO> documentService;
 
     @Autowired
     private MetaRepository metaRepository;

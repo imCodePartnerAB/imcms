@@ -1,9 +1,11 @@
 package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.domain.exception.UnsupportedDocumentTypeException;
+import com.imcode.imcms.model.Document;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Document that includes specific things for each document type.
@@ -14,8 +16,9 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class UberDocumentDTO extends DocumentDTO {
+public class UberDocumentDTO extends Document {
 
     private static final long serialVersionUID = 3380096038825841879L;
 
@@ -24,12 +27,12 @@ public class UberDocumentDTO extends DocumentDTO {
     private FileDocumentDTO fileDocumentDTO;
 
 
-    private <T extends DocumentDTO> UberDocumentDTO(T from) {
+    private UberDocumentDTO(Document from) {
         super(from);
-        this.type = from.type;
+        this.type = from.getType();
     }
 
-    public static <T extends DocumentDTO> UberDocumentDTO of(T from) {
+    public static <T extends Document> UberDocumentDTO of(T from) {
         final UberDocumentDTO uberDocumentDTO = new UberDocumentDTO(from);
 
         switch (uberDocumentDTO.type) {
@@ -42,13 +45,13 @@ public class UberDocumentDTO extends DocumentDTO {
                 break;
 
             default:
-                throw new UnsupportedDocumentTypeException(from.type);
+                throw new UnsupportedDocumentTypeException(from.getType());
         }
 
         return uberDocumentDTO;
     }
 
-    public <T extends DocumentDTO> T toTypedDocument() {
+    public <T extends Document> T toTypedDocument() {
         switch (type) {
             case TEXT:
                 return (T) textDocumentDTO;

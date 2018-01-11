@@ -58,9 +58,6 @@ public class DocumentServiceTest {
     private TextDocumentDTO createdDoc;
 
     @Autowired
-    private DocumentService<DocumentDTO> documentService;
-
-    @Autowired
     private DocumentService<TextDocumentDTO> textDocumentService;
 
     @Autowired

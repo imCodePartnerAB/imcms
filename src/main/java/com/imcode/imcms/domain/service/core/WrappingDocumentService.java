@@ -1,8 +1,8 @@
 package com.imcode.imcms.domain.service.core;
 
-import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.UberDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.Document;
 
 /**
  * Wrapping around concrete document service.
@@ -10,7 +10,7 @@ import com.imcode.imcms.domain.service.DocumentService;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 10.01.18.
  */
-public class WrappingDocumentService<T extends DocumentDTO> implements DocumentService<UberDocumentDTO> {
+public class WrappingDocumentService<T extends Document> implements DocumentService<UberDocumentDTO> {
 
     private final DocumentService<T> typedDocumentService;
 

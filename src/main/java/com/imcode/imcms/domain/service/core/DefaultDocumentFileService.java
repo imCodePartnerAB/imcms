@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class DefaultDocumentFileService extends AbstractVersionedContentService<DocumentFileJPA, DocumentFile, DocumentFileRepository> implements DocumentFileService {
+class DefaultDocumentFileService extends AbstractVersionedContentService<DocumentFileJPA, DocumentFile, DocumentFileRepository> implements DocumentFileService {
 
     private final DocumentFileRepository documentFileRepository;
     private final VersionService versionService;
 
-    public DefaultDocumentFileService(DocumentFileRepository documentFileRepository,
-                                      VersionService versionService) {
+    DefaultDocumentFileService(DocumentFileRepository documentFileRepository,
+                               VersionService versionService) {
 
         super(documentFileRepository);
         this.documentFileRepository = documentFileRepository;
