@@ -46,6 +46,7 @@ import static org.junit.Assert.*;
 public class DocumentControllerTest extends AbstractControllerTest {
 
     private TextDocumentDTO createdTextDoc;
+    private FileDocumentDTO createdFileDoc;
 
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
@@ -79,6 +80,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
     @Before
     public void setUp() throws Exception {
         createdTextDoc = documentDataInitializer.createTextDocument();
+        createdFileDoc = documentDataInitializer.createFileDocument();
 
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(RoleId.SUPERADMIN);
@@ -482,4 +484,13 @@ public class DocumentControllerTest extends AbstractControllerTest {
         assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
         assertTrue(documentDTO.getFiles().isEmpty());
     }
+
+    @Test
+    public void getFileDocument_When_Exist_Expect_Found() throws Exception {
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + createdFileDoc.getId());
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdFileDoc));
+    }
+
 }

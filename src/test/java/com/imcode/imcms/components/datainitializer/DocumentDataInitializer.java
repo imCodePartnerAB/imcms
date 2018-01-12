@@ -51,7 +51,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
         this.commonContentDataInitializer = commonContentDataInitializer;
     }
 
-    public DocumentDTO createData() {
+    public DocumentDTO createData(Meta.DocumentType type) {
         final Meta metaDoc = Value.with(new Meta(), meta -> {
 
             meta.setArchivedDatetime(new Date());
@@ -63,7 +63,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
             meta.setModifierId(1);
             meta.setDefaultVersionNo(0);
             meta.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
-            meta.setDocumentType(Meta.DocumentType.TEXT);
+            meta.setDocumentType(type);
             meta.setKeywords(new HashSet<>());
             meta.setLinkableByOtherUsers(true);
             meta.setLinkedForUnauthorizedUsers(true);
@@ -86,8 +86,12 @@ public class DocumentDataInitializer extends TestDataCleaner {
         return metaToDocumentDTO.apply(metaDoc, version, commonContents);
     }
 
+    public DocumentDTO createData() {
+        return createData(Meta.DocumentType.TEXT);
+    }
+
     public FileDocumentDTO createFileDocument() {
-        final DocumentDTO documentDTO = createData();
+        final DocumentDTO documentDTO = createData(Meta.DocumentType.FILE);
         final FileDocumentDTO fileDocumentDTO = new FileDocumentDTO(documentDTO);
 
         final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
@@ -106,7 +110,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
 
     public TextDocumentDTO createTextDocument() {
         templateDataInitializer.cleanRepositories();
-        final DocumentDTO documentDTO = createData();
+        final DocumentDTO documentDTO = createData(Meta.DocumentType.TEXT);
         final TextDocumentTemplateJPA template = templateDataInitializer.createData(
                 documentDTO.getId(), "demo", "demo"
         );
