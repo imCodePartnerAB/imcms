@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
+
 /**
  * Document that includes specific things for each document type.
  * Exist because controller can't create generic type instance.
@@ -22,42 +24,46 @@ public class UberDocumentDTO extends Document {
 
     private static final long serialVersionUID = 3380096038825841879L;
 
-    private TextDocumentDTO textDocumentDTO;
+    private TextDocumentTemplateDTO template;
 
-    private FileDocumentDTO fileDocumentDTO;
-
+    private List<DocumentFileDTO> files;
 
     private UberDocumentDTO(Document from) {
         super(from);
         this.type = from.getType();
     }
 
-    public static <T extends Document> UberDocumentDTO of(T from) {
-        final UberDocumentDTO uberDocumentDTO = new UberDocumentDTO(from);
+    private UberDocumentDTO(TextDocumentDTO from) {
+        this((Document) from);
+        this.template = from.getTemplate();
+    }
 
-        switch (uberDocumentDTO.type) {
+    private UberDocumentDTO(FileDocumentDTO from) {
+        this((Document) from);
+        this.files = from.getFiles();
+    }
+
+    public static <T extends Document> UberDocumentDTO of(T from) {
+        switch (from.getType()) {
             case TEXT:
-                uberDocumentDTO.textDocumentDTO = (TextDocumentDTO) from;
-                break;
+                return new UberDocumentDTO((TextDocumentDTO) from);
 
             case FILE:
-                uberDocumentDTO.fileDocumentDTO = (FileDocumentDTO) from;
-                break;
+                return new UberDocumentDTO((FileDocumentDTO) from);
 
             default:
                 throw new UnsupportedDocumentTypeException(from.getType());
         }
-
-        return uberDocumentDTO;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Document> T toTypedDocument() {
         switch (type) {
             case TEXT:
-                return (T) textDocumentDTO;
+                return (T) new TextDocumentDTO(this);
 
             case FILE:
-                return (T) fileDocumentDTO;
+                return (T) new FileDocumentDTO(this);
 
             default:
                 throw new UnsupportedDocumentTypeException(type);

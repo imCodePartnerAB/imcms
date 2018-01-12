@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FileDocumentDTO extends Document implements Serializable {
 
     private static final long serialVersionUID = -8104577284192730444L;
@@ -27,6 +29,11 @@ public class FileDocumentDTO extends Document implements Serializable {
 
     public FileDocumentDTO(Document from) {
         super(from);
+    }
+
+    FileDocumentDTO(UberDocumentDTO from) {
+        this((Document) from);
+        this.files = from.getFiles();
     }
 
     public static FileDocumentDTO createEmpty(Document from) {
