@@ -465,4 +465,21 @@ public class DocumentControllerTest extends AbstractControllerTest {
 //
 //        performRequestBuilderExpectException(DocumentNotExistException.class, requestBuilder);
 //    }
+
+    @Test
+    public void createEmpty_When_FileDocTypeSet_Expect_EmptyFileDoc() throws Exception {
+        final Meta.DocumentType documentType = Meta.DocumentType.FILE;
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("type", "" + documentType);
+
+        final String response = getJsonResponse(requestBuilder);
+        final FileDocumentDTO documentDTO = fromJson(response, FileDocumentDTO.class);
+
+        assertNull(documentDTO.getId());
+        assertEquals(documentDTO.getType(), documentType);
+        assertFalse(documentDTO.getCommonContents().isEmpty());
+        assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
+        assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
+        assertTrue(documentDTO.getFiles().isEmpty());
+    }
 }
