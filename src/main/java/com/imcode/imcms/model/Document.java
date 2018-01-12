@@ -6,7 +6,7 @@ import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
 import com.imcode.imcms.persistence.entity.Meta;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -19,8 +19,7 @@ import java.util.TreeSet;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 11.01.18.
  */
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public abstract class Document {
 
@@ -48,7 +47,7 @@ public abstract class Document {
     protected Document(Document from) {
         id = from.id;
         title = from.title;
-//        type = from.type; // not sure
+        type = from.type; // not sure
         target = from.target;
         alias = from.alias;
         commonContents = from.commonContents;
