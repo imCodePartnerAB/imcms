@@ -173,6 +173,10 @@ public class DocumentServiceTest {
 
     @Test
     public void save_With_Target_Expect_Saved() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
         final String testTarget = "_test";
         final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
 
