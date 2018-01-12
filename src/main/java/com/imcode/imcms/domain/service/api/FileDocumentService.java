@@ -6,7 +6,6 @@ import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.DocumentFile;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,15 +17,14 @@ import java.util.stream.Collectors;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 29.12.17.
  */
-@Service
 @Transactional
-class FileDocumentService implements DocumentService<FileDocumentDTO> {
+public class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocumentFileService documentFileService;
 
-    FileDocumentService(DocumentService<DocumentDTO> documentService2,
-                        DocumentFileService documentFileService) {
+    public FileDocumentService(DocumentService<DocumentDTO> documentService2,
+                               DocumentFileService documentFileService) {
 
         this.defaultDocumentService = documentService2;
         this.documentFileService = documentFileService;

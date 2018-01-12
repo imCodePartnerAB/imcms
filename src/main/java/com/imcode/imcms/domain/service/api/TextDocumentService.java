@@ -5,7 +5,6 @@ import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -16,15 +15,14 @@ import java.util.Optional;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 22.12.17.
  */
-@Service
 @Transactional
-class TextDocumentService implements DocumentService<TextDocumentDTO> {
+public class TextDocumentService implements DocumentService<TextDocumentDTO> {
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final TextDocumentTemplateService textDocumentTemplateService;
 
-    TextDocumentService(DocumentService<DocumentDTO> documentService3,
-                        TextDocumentTemplateService textDocumentTemplateService) {
+    public TextDocumentService(DocumentService<DocumentDTO> documentService3,
+                               TextDocumentTemplateService textDocumentTemplateService) {
 
         defaultDocumentService = documentService3;
         this.textDocumentTemplateService = textDocumentTemplateService;
