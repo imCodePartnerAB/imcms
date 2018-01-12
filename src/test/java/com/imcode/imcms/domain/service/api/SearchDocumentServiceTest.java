@@ -24,7 +24,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,8 +131,6 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    @Ignore // categories not working
-//    @Transactional
     public void search_When_CategorySpecified_Expect_Found() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryType categoryType = new CategoryTypeJPA(
