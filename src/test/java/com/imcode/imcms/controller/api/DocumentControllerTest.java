@@ -112,7 +112,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
         assertNull(documentDTO.getId());
         assertEquals(documentDTO.getType(), documentType);
-        assertNotEquals(documentDTO.getCommonContents().size(), 0);
+        assertFalse(documentDTO.getCommonContents().isEmpty());
         assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
         assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
         assertEquals(documentDTO.getTemplate(), TextDocumentTemplateDTO.createDefault());
