@@ -5,6 +5,7 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.CategoryDTO;
+import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.CategoryService;
@@ -37,8 +38,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -51,6 +55,8 @@ import static org.junit.Assert.*;
 public class SearchDocumentServiceTest {
 
     private static final int DOC_ID = 1001;
+
+    private static boolean flag = true;
 
     private static Imcms imcmsStatic;
 
@@ -83,6 +89,9 @@ public class SearchDocumentServiceTest {
     @Autowired
     private DocumentService<TextDocumentDTO> documentService;
 
+    @Autowired
+    private DocumentIndex documentIndex;
+
     @AfterClass
     public static void shutDownSolr() {
         imcmsStatic.stop();
@@ -92,20 +101,24 @@ public class SearchDocumentServiceTest {
 
     @PostConstruct
     public void initSolr() throws Exception {
+
         imcmsStatic = imcms;
         versionDataInitializerStatic = versionDataInitializer;
 
         final File testSolrFolder = new File(config.getSolrHome());
 
-        if (!testSolrFolder.mkdirs()) {
-            try {
-                FileUtility.forceDelete(testSolrFolder);
-            } catch (IOException e) {
-                // windows user may receive it
+        if (flag) {
+            if (!testSolrFolder.mkdirs()) {
+                try {
+                    FileUtility.forceDelete(testSolrFolder);
+                } catch (IOException e) {
+                    // windows user may receive it
+                }
             }
-        }
 
-        FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
+            FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
+            flag = false;
+        }
 
         versionDataInitializer.cleanRepositories();
 
@@ -176,6 +189,174 @@ public class SearchDocumentServiceTest {
 
             assertFalse(categoryService.getById(savedId).isPresent());
             assertFalse(categoryTypeService.get(savedType.getId()).isPresent());
+        }
+    }
+
+    @Test
+    public void search_When_OneHundredDocumentsExist_Expect_Found() {
+        int caseNumber = 100;
+        List<Integer> ids = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < caseNumber; i++) {
+                TextDocumentDTO documentDTO = documentDataInitializer.createTextDocument();
+                ids.add(documentService.save(documentDTO));
+            }
+
+            try {
+                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+            } catch (InterruptedException e) {
+                // ignore
+            }
+
+            SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            PageRequest pageRequest = new PageRequest(0, 10, new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID)));
+            searchQueryDTO.setPage(pageRequest);
+
+            int documentCount = searchDocumentService.searchDocuments(searchQueryDTO).size();
+
+            assertEquals(101, documentCount);
+        } finally {
+            ids.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+        }
+    }
+
+    @Test
+    public void search_When_SpecifiedCategorySet_Expect_OneDocument() {
+        // create category type
+        String categoryName = "test_type_name" + System.currentTimeMillis();
+        CategoryType categoryType = new CategoryTypeJPA(null, categoryName, 0,
+                false, false);
+
+        CategoryTypeJPA savedCategoryType = new CategoryTypeJPA(categoryTypeService.save(categoryType));
+
+        // create 2 categories
+        String firstTestCategoryName = "first_category_name" + System.currentTimeMillis();
+        Category firstCategory = new CategoryJPA(firstTestCategoryName, "dummy", "", savedCategoryType);
+        Category savedFirstCategory = categoryService.save(firstCategory);
+
+        String secondTestCategoryName = "second_category_name" + System.currentTimeMillis();
+        Category secondCategory = new CategoryJPA(secondTestCategoryName, "dummy", "", savedCategoryType);
+        Category savedSecondCategory = categoryService.save(secondCategory);
+
+        // create 3 documents
+        TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
+        TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
+        TextDocumentDTO thirdDocument = documentDataInitializer.createTextDocument();
+
+        try {
+            // add categories to documents (firstCategory add only to secondDocument)
+            firstDocument.getCategories().add(new CategoryDTO(savedSecondCategory));
+            secondDocument.getCategories().add(new CategoryDTO(savedFirstCategory));
+            thirdDocument.getCategories().add(new CategoryDTO(savedSecondCategory));
+
+            // save documents
+            documentService.save(firstDocument);
+            documentService.save(secondDocument);
+            documentService.save(thirdDocument);
+
+            try {
+                Thread.sleep(TimeUnit.SECONDS.toMillis(4));
+            } catch (InterruptedException e) {
+                // don't really care
+            }
+
+            Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+            PageRequest pageRequest = new PageRequest(0, 10, sort);
+            SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            searchQueryDTO.setPage(pageRequest);
+            searchQueryDTO.setCategoriesId(Collections.singletonList(savedFirstCategory.getId()));
+
+            List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
+            assertEquals(1, documents.size());
+
+            DocumentStoredFieldsDTO dto = documents.get(0);
+            assertEquals(secondDocument.getId(), dto.getId());
+
+        } finally {
+            categoryService.delete(savedFirstCategory.getId());
+            categoryService.delete(savedSecondCategory.getId());
+
+            categoryTypeService.delete(savedCategoryType.getId());
+
+            documentDataInitializer.cleanRepositories(firstDocument.getId());
+            documentDataInitializer.cleanRepositories(secondDocument.getId());
+            documentDataInitializer.cleanRepositories(thirdDocument.getId());
+
+            documentIndex.removeDocument(firstDocument.getId());
+            documentIndex.removeDocument(secondDocument.getId());
+            documentIndex.removeDocument(thirdDocument.getId());
+        }
+    }
+
+    @Test
+    public void search_When_SpecifiedCategorySet_Expect_MultipleDocuments() {
+        // create category type
+        String categoryName = "test_type_name" + System.currentTimeMillis();
+        CategoryType categoryType = new CategoryTypeJPA(null, categoryName, 0,
+                false, false);
+
+        CategoryTypeJPA savedCategoryType = new CategoryTypeJPA(categoryTypeService.save(categoryType));
+
+        // create category
+        String firstTestCategoryName = "category_name" + System.currentTimeMillis();
+        Category firstCategory = new CategoryJPA(firstTestCategoryName, "dummy", "", savedCategoryType);
+        Category savedCategory = categoryService.save(firstCategory);
+
+        // create 3 documents
+        TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
+        TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
+        TextDocumentDTO thirdDocument = documentDataInitializer.createTextDocument();
+
+        try {
+            // add categories to documents
+            firstDocument.getCategories().add(new CategoryDTO(savedCategory));
+            secondDocument.getCategories().add(new CategoryDTO(savedCategory));
+            thirdDocument.getCategories().add(new CategoryDTO(savedCategory));
+
+            // save documents
+            documentService.save(firstDocument);
+            documentService.save(secondDocument);
+            documentService.save(thirdDocument);
+
+            try {
+                Thread.sleep(TimeUnit.SECONDS.toMillis(4));
+            } catch (InterruptedException e) {
+                // don't really care
+            }
+
+            Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+            PageRequest pageRequest = new PageRequest(0, 10, sort);
+            SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            searchQueryDTO.setPage(pageRequest);
+            searchQueryDTO.setCategoriesId(Collections.singletonList(savedCategory.getId()));
+
+            List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
+            assertEquals(3, documents.size());
+
+            List<Integer> ids = documents
+                    .stream()
+                    .map(DocumentStoredFieldsDTO::getId)
+                    .collect(Collectors.toList());
+
+            assertTrue(ids.contains(firstDocument.getId()));
+            assertTrue(ids.contains(secondDocument.getId()));
+            assertTrue(ids.contains(thirdDocument.getId()));
+        } finally {
+            categoryService.delete(savedCategory.getId());
+
+            categoryTypeService.delete(savedCategoryType.getId());
+
+            documentDataInitializer.cleanRepositories(firstDocument.getId());
+            documentDataInitializer.cleanRepositories(secondDocument.getId());
+            documentDataInitializer.cleanRepositories(thirdDocument.getId());
+
+            documentIndex.removeDocument(firstDocument.getId());
+            documentIndex.removeDocument(secondDocument.getId());
+            documentIndex.removeDocument(thirdDocument.getId());
         }
     }
 }
