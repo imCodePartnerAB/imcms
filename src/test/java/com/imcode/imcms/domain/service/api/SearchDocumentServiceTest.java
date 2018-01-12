@@ -81,7 +81,7 @@ public class SearchDocumentServiceTest {
     private DocumentDataInitializer documentDataInitializer;
 
     @Autowired
-    private DocumentService<? super TextDocumentDTO> documentService;
+    private DocumentService<TextDocumentDTO> documentService;
 
     @AfterClass
     public static void shutDownSolr() {
