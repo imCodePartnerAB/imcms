@@ -9,6 +9,7 @@ import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
+import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Config;
 import imcode.server.Imcms;
@@ -43,6 +44,7 @@ public class FileDocumentServiceTest {
 
     private static File testSolrFolder;
 
+    private FileDocumentDTO createdDoc;
     private int createdDocId;
 
     @Autowired
@@ -67,7 +69,8 @@ public class FileDocumentServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        createdDocId = documentDataInitializer.createFileDocument().getId();
+        createdDoc = documentDataInitializer.createFileDocument();
+        createdDocId = createdDoc.getId();
     }
 
     @PostConstruct
@@ -84,15 +87,17 @@ public class FileDocumentServiceTest {
         final FileDocumentDTO empty = fileDocumentService.createEmpty();
 
         assertNull(empty.getId());
+        assertEquals(empty.getType(), Meta.DocumentType.FILE);
         assertNotNull(empty.getFiles());
         assertTrue(empty.getFiles().isEmpty());
     }
 
     @Test
     public void get_When_NoFileSavedYet_Expect_Found() {
+        documentFileService.saveAll(new ArrayList<>(createdDoc.getFiles()));
         final FileDocumentDTO fileDocumentDTO = fileDocumentService.get(createdDocId);
 
-        assertNotNull(fileDocumentDTO);
+        assertEquals(fileDocumentDTO, createdDoc);
     }
 
     @Test

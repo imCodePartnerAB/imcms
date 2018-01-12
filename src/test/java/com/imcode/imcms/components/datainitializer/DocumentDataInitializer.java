@@ -7,6 +7,7 @@ import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
 import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.DocumentFileRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
@@ -26,6 +27,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
     private static final int TEST_VERSION_INDEX = 0;
 
     private final MetaRepository metaRepository;
+    private final DocumentFileRepository documentFileRepository;
     private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
     private final CommonContentDataInitializer commonContentDataInitializer;
     private final VersionDataInitializer versionDataInitializer;
@@ -33,6 +35,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
     private final CommonContentService commonContentService;
 
     public DocumentDataInitializer(MetaRepository metaRepository,
+                                   DocumentFileRepository documentFileRepository,
                                    TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
                                    VersionDataInitializer versionDataInitializer,
                                    TemplateDataInitializer templateDataInitializer,
@@ -40,6 +43,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
                                    CommonContentDataInitializer commonContentDataInitializer) {
 
         this.metaRepository = metaRepository;
+        this.documentFileRepository = documentFileRepository;
         this.metaToDocumentDTO = metaToDocumentDTO;
         this.versionDataInitializer = versionDataInitializer;
         this.templateDataInitializer = templateDataInitializer;
@@ -94,7 +98,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
         documentFileJPA.setMimeType("test");
 
         final List<DocumentFileDTO> documentFileDTOS = new ArrayList<>();
-        documentFileDTOS.add(new DocumentFileDTO(documentFileJPA));
+        documentFileDTOS.add(new DocumentFileDTO(documentFileRepository.save(documentFileJPA)));
         fileDocumentDTO.setFiles(documentFileDTOS);
 
         return fileDocumentDTO;
