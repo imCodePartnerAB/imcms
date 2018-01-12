@@ -139,9 +139,8 @@ public class FileDocumentServiceTest {
         documentFileJPA.setFilename("test_name" + System.currentTimeMillis());
         documentFileJPA.setMimeType("test" + System.currentTimeMillis());
 
-        final List<DocumentFileDTO> documentFileDTOS = new ArrayList<>();
+        final List<DocumentFileDTO> documentFileDTOS = fileDocumentDTO.getFiles();
         documentFileDTOS.add(new DocumentFileDTO(documentFileJPA));
-        fileDocumentDTO.setFiles(documentFileDTOS);
 
         fileDocumentService.save(fileDocumentDTO);
 
@@ -150,12 +149,9 @@ public class FileDocumentServiceTest {
         assertNotNull(savedFiles);
         assertEquals(savedFiles.size(), documentFileDTOS.size());
 
-        final DocumentFileDTO savedFile = documentFileDTOS.get(0);
-
-        assertEquals(savedFile.getDocId(), documentFileJPA.getDocId());
-        assertEquals(savedFile.getFileId(), documentFileJPA.getFileId());
-        assertEquals(savedFile.getFilename(), documentFileJPA.getFilename());
-        assertEquals(savedFile.getMimeType(), documentFileJPA.getMimeType());
+        for (DocumentFileDTO documentFileDTO : documentFileDTOS) {
+            assertEquals(documentFileDTO.getDocId().intValue(), createdDocId);
+        }
     }
 
     @Test
