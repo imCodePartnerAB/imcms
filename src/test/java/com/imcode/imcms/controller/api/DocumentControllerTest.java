@@ -102,14 +102,16 @@ public class DocumentControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void get_When_IdIsNull_Expect_DefaultEmptyDtoReturned() throws Exception {
+    public void get_When_IdIsNull_Expect_DefaultEmptyTextDocumentDtoReturned() throws Exception {
+        final Meta.DocumentType documentType = Meta.DocumentType.TEXT;
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("type", "" + Meta.DocumentType.TEXT);
+                .param("type", "" + documentType);
 
         final String response = getJsonResponse(requestBuilder);
         final TextDocumentDTO documentDTO = fromJson(response, TextDocumentDTO.class);
 
         assertNull(documentDTO.getId());
+        assertEquals(documentDTO.getType(), documentType);
         assertNotEquals(documentDTO.getCommonContents().size(), 0);
         assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
         assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
