@@ -359,4 +359,101 @@ public class SearchDocumentServiceTest {
             documentIndex.removeDocument(thirdDocument.getId());
         }
     }
+
+    @Test
+    public void search_When_SpecifiedKeywordSet_Expect_OneDocument() {
+        String firstKeyword = "firstKeyword";
+        String secondKeyword = "secondKeyword";
+
+        // create 3 documents
+        TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
+        TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
+        TextDocumentDTO thirdDocument = documentDataInitializer.createTextDocument();
+
+        try {
+            firstDocument.getKeywords().add(firstKeyword);
+            secondDocument.getKeywords().add(firstKeyword);
+            thirdDocument.getKeywords().add(secondKeyword);
+
+            // save documents
+            documentService.save(firstDocument);
+            documentService.save(secondDocument);
+            documentService.save(thirdDocument);
+
+            try {
+                Thread.sleep(TimeUnit.SECONDS.toMillis(4));
+            } catch (InterruptedException e) {
+                // don't really care
+            }
+
+            Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+            PageRequest pageRequest = new PageRequest(0, 10, sort);
+            SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+
+            searchQueryDTO.setTerm(secondKeyword);
+            searchQueryDTO.setPage(pageRequest);
+
+            List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
+            assertEquals(1, documents.size());
+
+            DocumentStoredFieldsDTO dto = documents.get(0);
+            assertEquals(thirdDocument.getId(), dto.getId());
+
+        } finally {
+            documentDataInitializer.cleanRepositories(firstDocument.getId());
+            documentDataInitializer.cleanRepositories(secondDocument.getId());
+            documentDataInitializer.cleanRepositories(thirdDocument.getId());
+
+            documentIndex.removeDocument(firstDocument.getId());
+            documentIndex.removeDocument(secondDocument.getId());
+            documentIndex.removeDocument(thirdDocument.getId());
+        }
+    }
+
+    @Test
+    public void search_When_SpecifiedKeywordSet_Expect_MultipleDocuments() {
+        String keyword = "keyword";
+
+        // create 2 documents
+        TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
+        TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
+
+        try {
+            firstDocument.getKeywords().add(keyword);
+            secondDocument.getKeywords().add(keyword);
+
+            // save documents
+            documentService.save(firstDocument);
+            documentService.save(secondDocument);
+
+            try {
+                Thread.sleep(TimeUnit.SECONDS.toMillis(4));
+            } catch (InterruptedException e) {
+                // don't really care
+            }
+
+            Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+            PageRequest pageRequest = new PageRequest(0, 10, sort);
+            SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+
+            searchQueryDTO.setTerm(keyword);
+            searchQueryDTO.setPage(pageRequest);
+
+            List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
+            assertEquals(2, documents.size());
+
+            List<Integer> ids = documents.stream()
+                    .map(DocumentStoredFieldsDTO::getId)
+                    .collect(Collectors.toList());
+
+            assertTrue(ids.contains(firstDocument.getId()));
+            assertTrue(ids.contains(secondDocument.getId()));
+        } finally {
+            documentDataInitializer.cleanRepositories(firstDocument.getId());
+            documentDataInitializer.cleanRepositories(secondDocument.getId());
+
+            documentIndex.removeDocument(firstDocument.getId());
+            documentIndex.removeDocument(secondDocument.getId());
+        }
+    }
 }
