@@ -14,12 +14,6 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @Table(name = "fileupload_docs")
 @EqualsAndHashCode(callSuper = true)
-@AssociationOverride( // is this used?
-        name = "docVersion",
-        joinColumns = {
-                @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
-                @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
-        })
 public class DocumentFileJPA extends DocumentFile {
 
     @Id
