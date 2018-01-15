@@ -204,7 +204,7 @@ public class SearchDocumentServiceTest {
             }
 
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+                Thread.sleep(TimeUnit.SECONDS.toMillis(8));
             } catch (InterruptedException e) {
                 // ignore
             }
