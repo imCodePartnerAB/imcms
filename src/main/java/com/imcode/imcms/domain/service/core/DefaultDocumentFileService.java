@@ -11,6 +11,8 @@ import com.imcode.imcms.persistence.repository.DocumentFileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +43,14 @@ class DefaultDocumentFileService extends AbstractVersionedContentService<Documen
      */
     @Override
     public List<DocumentFile> saveAll(List<DocumentFile> saveUs, int docId) {
-        saveUs.forEach(documentFile -> documentFile.setDocId(docId));
+        saveUs.forEach(documentFile -> {
+            documentFile.setDocId(docId);
+            final String fileId = documentFile.getFileId();
+
+            if (fileId == null) {
+                documentFile.setFileId(documentFile.getFilename());
+            }
+        });
 
         final List<DocumentFileJPA> noMoreNeededFiles = getByDocId(docId).stream()
                 .filter(documentFile -> !saveUs.contains(documentFile))
@@ -49,6 +58,28 @@ class DefaultDocumentFileService extends AbstractVersionedContentService<Documen
                 .collect(Collectors.toList());
 
         documentFileRepository.delete(noMoreNeededFiles);
+
+        saveUs.stream()
+                .collect(Collectors.toMap(
+                        DocumentFile::getFilename,
+                        documentFile -> new ArrayList<>(Collections.singletonList(documentFile)),
+                        (documentFiles, documentFiles2) -> {
+                            documentFiles.addAll(documentFiles2);
+                            return documentFiles;
+                        }
+                ))
+                .entrySet()
+                .stream()
+                .filter(fileNameToDocFilesEntry -> fileNameToDocFilesEntry.getValue().size() > 1)
+                .forEach(fileNameToDocFilesEntry -> {
+                    final List<DocumentFile> docFilesWithSameName = fileNameToDocFilesEntry.getValue();
+
+                    for (int i = 0; i < docFilesWithSameName.size(); i++) {
+                        if (i == 0) continue;
+                        final DocumentFile documentFile = docFilesWithSameName.get(i);
+                        documentFile.setFileId(documentFile.getFilename() + i);
+                    }
+                });
 
         return saveUs.stream()
                 .map(documentFile -> new DocumentFileDTO(

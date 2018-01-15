@@ -139,6 +139,37 @@ public class DocumentFileServiceTest {
     }
 
     @Test
+    public void save_When_NullFileIdSet_Expect_IdCopiedFromNameWithIndex() {
+        final FileDocumentDTO document = documentDataInitializer.createFileDocument();
+        final Integer documentId = document.getId();
+        final String fileName = "new_file";
+
+        List<DocumentFile> newFiles = IntStream.range(0, 5)
+                .mapToObj(value -> {
+                    final DocumentFileDTO newFile = new DocumentFileDTO();
+                    newFile.setDocId(documentId);
+                    newFile.setFileId(null); // the main point
+                    newFile.setFilename(fileName);
+                    newFile.setMimeType("test");
+                    newFile.setDefaultFile(true);
+
+                    return newFile;
+                })
+                .collect(Collectors.toList());
+
+        newFiles = documentFileService.saveAll(newFiles, documentId);
+
+        final List<DocumentFile> receivedNewFiles = documentFileService.getByDocId(documentId);
+
+        assertEquals(receivedNewFiles.size(), newFiles.size());
+        assertTrue(receivedNewFiles.containsAll(newFiles));
+
+        receivedNewFiles.forEach(documentFile -> assertTrue(
+                documentFile.getFileId().contains(documentFile.getFilename())
+        ));
+    }
+
+    @Test
     public void deleteByDocId() {
         // todo: cover when there will be implementation
     }
