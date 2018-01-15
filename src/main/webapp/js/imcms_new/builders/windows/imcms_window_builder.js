@@ -42,16 +42,24 @@ Imcms.define("imcms-window-builder", ["imcms-window-components-builder", "jquery
             this.buildWindow.applyAsync(arguments, this);
         },
         buildWindow: function (windowInitData) {
-            this._scrollTop = getScrollTopAndDisable();
-            this._pageOverflow = $("body").css("overflow") || "auto";
-            setBodyScrollingRule("hidden");
+            try {
+                this._scrollTop = getScrollTopAndDisable();
+                this._pageOverflow = $("body").css("overflow") || "auto";
+                setBodyScrollingRule("hidden");
 
-            if (!this.$editor) {
-                this.$editor = this.factory.apply(null, arguments).appendTo("body");
+                if (!this.$editor) {
+                    this.$editor = this.factory.apply(null, arguments).appendTo("body");
+                }
+
+                this.loadDataStrategy && this.loadDataStrategy.applyAsync(arguments);
+                this.$editor.css("display", "block");
+
+            } catch (e) {
+                console.error(e);
+                alert("Error in window builder! Stacktrace in console.");
+                this.shadowBuilder.closeWindow();
+                // todo: build some window with error message? hide shadow? show window anyway?
             }
-
-            this.loadDataStrategy && this.loadDataStrategy.applyAsync(arguments);
-            this.$editor.css("display", "block");
         },
         closeWindow: function () {
             enableBackgroundPageScrolling(this._pageOverflow, this._scrollTop);
