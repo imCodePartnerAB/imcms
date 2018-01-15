@@ -34,6 +34,7 @@ import java.io.File;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
@@ -493,4 +494,41 @@ public class DocumentControllerTest extends AbstractControllerTest {
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdFileDoc));
     }
 
+    @Test
+    public void save_When_CustomFileSet_Expect_Saved() throws Exception {
+        final String testName = "test_name";
+
+        final List<DocumentFileDTO> files = createdFileDoc.getFiles();
+
+        final List<DocumentFileDTO> newFiles = IntStream.range(0, 5).mapToObj(value -> {
+            final DocumentFileDTO documentFileDTO = new DocumentFileDTO();
+            documentFileDTO.setDocId(createdFileDoc.getId());
+            documentFileDTO.setFilename(testName + value);
+            documentFileDTO.setFileId(testName + value);
+            documentFileDTO.setDefaultFile(value == 0);
+            documentFileDTO.setMimeType("test");
+
+            return documentFileDTO;
+        }).collect(Collectors.toList());
+
+        files.addAll(newFiles);
+
+        performPostWithContentExpectOk(createdFileDoc);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + createdFileDoc.getId());
+
+        final String response = getJsonResponse(requestBuilder);
+        final FileDocumentDTO documentDTO = fromJson(response, FileDocumentDTO.class);
+
+        assertNotNull(documentDTO);
+        assertNotNull(documentDTO.getFiles());
+        assertFalse(documentDTO.getFiles().isEmpty());
+        assertEquals(documentDTO.getFiles().size(), files.size());
+
+        for (DocumentFileDTO fileDTO : documentDTO.getFiles()) {
+            assertEquals(fileDTO.getDocId(), createdFileDoc.getId());
+            assertTrue(fileDTO.getFilename().contains(testName));
+        }
+    }
 }
