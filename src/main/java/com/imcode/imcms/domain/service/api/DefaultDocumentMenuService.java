@@ -90,4 +90,8 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         return "/" + (alias == null ? documentId : alias);
     }
 
+    @Override
+    public Meta.DocumentType getDocumentType(int documentId) {
+        return metaRepository.findType(documentId);
+    }
 }

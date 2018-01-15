@@ -45,6 +45,7 @@ class MappingConfig {
 
                 final MenuItemDTO menuItemDTO = new MenuItemDTO();
                 menuItemDTO.setDocumentId(documentId);
+                menuItemDTO.setType(documentMenuService.getDocumentType(documentId));
                 menuItemDTO.setTitle(documentMenuService.getDocumentTitle(documentId));
                 menuItemDTO.setLink(documentMenuService.getDocumentLink(documentId));
                 menuItemDTO.setTarget(documentMenuService.getDocumentTarget(documentId));

@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.user.UserDomainObject;
 
 public interface DocumentMenuService {
@@ -10,4 +11,6 @@ public interface DocumentMenuService {
     String getDocumentTarget(int documentId);
 
     String getDocumentLink(int documentId);
+
+    Meta.DocumentType getDocumentType(int documentId);
 }
