@@ -29,9 +29,26 @@ class DefaultDocumentFileService extends AbstractVersionedContentService<Documen
         this.versionService = versionService;
     }
 
+    /**
+     * This will save list of files for specified document by id.
+     * Note that all other files that are connected to document but not
+     * mentioned in list will be deleted.
+     * All changes applied for working document version.
+     *
+     * @param saveUs list of files to save
+     * @param docId  id of document
+     * @return list of saved files
+     */
     @Override
     public List<DocumentFile> saveAll(List<DocumentFile> saveUs, int docId) {
-//        final List<DocumentFile> prevFiles = getByDocId(docId);
+        saveUs.forEach(documentFile -> documentFile.setDocId(docId));
+
+        final List<DocumentFileJPA> noMoreNeededFiles = getByDocId(docId).stream()
+                .filter(documentFile -> !saveUs.contains(documentFile))
+                .map(DocumentFileJPA::new)
+                .collect(Collectors.toList());
+
+        documentFileRepository.delete(noMoreNeededFiles);
 
         return saveUs.stream()
                 .map(documentFile -> new DocumentFileDTO(

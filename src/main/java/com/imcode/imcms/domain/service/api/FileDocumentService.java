@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.DocumentFile;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,14 +52,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
     public int save(FileDocumentDTO saveMe) {
         final int savedDocId = defaultDocumentService.save(new DocumentDTO(saveMe));
-
-        final List<DocumentFile> saveMeFiles = saveMe.getFiles()
-                .stream()
-                .map(documentFileDTO -> {
-                    documentFileDTO.setDocId(savedDocId);
-                    return ((DocumentFile) documentFileDTO);
-                })
-                .collect(Collectors.toList());
+        final List<DocumentFile> saveMeFiles = new ArrayList<>(saveMe.getFiles());
 
         documentFileService.saveAll(saveMeFiles, savedDocId);
 

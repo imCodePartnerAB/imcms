@@ -4,6 +4,8 @@ import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
+import com.imcode.imcms.domain.dto.DocumentFileDTO;
+import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
@@ -18,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -48,7 +51,7 @@ public class DocumentFileServiceTest {
     @Before
     public void setUp() throws Exception {
         documentFileRepository.deleteAll();
-        docId = documentDataInitializer.createData().getId();
+        docId = documentDataInitializer.createFileDocument().getId();
         documentFiles = IntStream.rangeClosed(0, 10)
                 .mapToObj(value -> {
                     final DocumentFileJPA documentFileJPA = new DocumentFileJPA();
@@ -98,6 +101,41 @@ public class DocumentFileServiceTest {
         assertNotNull(publicFile.getId());
         assertTrue(publicFile.isDefaultFile());
         assertEquals(publicFile.getFilename(), futurePublicFile.getFilename());
+    }
+
+    @Test
+    public void save_When_DocumentAlreadyHaveFile_Expect_OldRemovedAndNewSaved() {
+        final FileDocumentDTO document = documentDataInitializer.createFileDocument();
+
+        final List<DocumentFile> oldFiles = new ArrayList<>(document.getFiles());
+        assertNotNull(oldFiles);
+        assertFalse(oldFiles.isEmpty());
+
+        final Integer documentId = document.getId();
+        final List<DocumentFile> receivedFiles = documentFileService.getByDocId(documentId);
+
+        assertEquals(receivedFiles.size(), oldFiles.size());
+        assertTrue(receivedFiles.containsAll(oldFiles));
+
+        // new
+        final String fileName = "new_file";
+
+        final DocumentFileDTO newFile = new DocumentFileDTO();
+        newFile.setDocId(documentId);
+        newFile.setFileId(fileName);
+        newFile.setFilename(fileName);
+        newFile.setMimeType("test");
+        newFile.setDefaultFile(true);
+
+        List<DocumentFile> newFiles = new ArrayList<>();
+        newFiles.add(newFile);
+
+        newFiles = documentFileService.saveAll(newFiles, documentId);
+
+        final List<DocumentFile> receivedNewFiles = documentFileService.getByDocId(documentId);
+
+        assertEquals(receivedNewFiles.size(), newFiles.size());
+        assertTrue(receivedNewFiles.containsAll(newFiles));
     }
 
     @Test
