@@ -181,9 +181,6 @@ Imcms.define("imcms-document-editor-builder",
                 return
             }
 
-            $frame.find(".imcms-title").last().remove();
-            $frame.find(".imcms-title").last().remove();
-
             isMouseDown = true;
             mouseCoords = {
                 pageX: event.clientX,
@@ -198,8 +195,9 @@ Imcms.define("imcms-document-editor-builder",
                 bottom: menuAreaProp.top + $menuArea.outerHeight()
             };
 
-            frameItem.attr("data-id", frameItem.children().first().text());
-            frameItem.attr("data-title", frameItem.children().eq(1).text());
+            frameItem.attr("data-id", frameItem.find(".imcms-document-item__info--id").text());
+            frameItem.attr("data-title", frameItem.find(".imcms-document-item__info--title").text());
+            frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
 
             $frame.addClass("imcms-document-items--frame");
             $frame.css({
@@ -247,7 +245,7 @@ Imcms.define("imcms-document-editor-builder",
 
                 if (opts.editEnable) {
                     var $controlEdit = controlsBuilder.edit(function () {
-                        pageInfoBuilder.build(document.id, refreshDocumentInList);
+                        pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
                     });
                     controls.push($controlEdit);
                 }
@@ -449,6 +447,7 @@ Imcms.define("imcms-document-editor-builder",
             }
 
             dataInput.attr("data-id", frameItem.attr("data-id"));
+            dataInput.attr("data-type", frameItem.attr("data-type"));
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
         }
 
@@ -490,7 +489,7 @@ Imcms.define("imcms-document-editor-builder",
 
         function buildDocItem(document, opts) {
             var $docItemId = components.texts.titleText("<div>", document.id);
-            $docItemId.modifiers = ["col-2"];
+            $docItemId.modifiers = ["col-2", "id"];
 
             var title = (document.commonContents) ? document.commonContents.filter(function (commonContent) {
                 return commonContent.language.code === imcms.language.code;
@@ -501,13 +500,13 @@ Imcms.define("imcms-document-editor-builder",
             })[0] : document.title;
 
             var $docItemTitle = components.texts.titleText("<div>", title);
-            $docItemTitle.modifiers = ["col-3"];
+            $docItemTitle.modifiers = ["col-3", "title"];
 
             var $docItemAlias = components.texts.titleText("<div>", document.alias);
-            $docItemAlias.modifiers = ["col-3"];
+            $docItemAlias.modifiers = ["col-3", "alias"];
 
             var $docItemType = components.texts.titleText("<div>", document.type);
-            $docItemType.modifiers = ["col-4"];
+            $docItemType.modifiers = ["col-4", "type"];
 
             return new BEM({
                 block: "imcms-document-item",

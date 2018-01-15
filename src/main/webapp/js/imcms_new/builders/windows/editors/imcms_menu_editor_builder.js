@@ -365,6 +365,7 @@ Imcms.define("imcms-menu-editor-builder",
             var $dataInput = $(this),
                 parentId = $dataInput.attr("data-parent-id"),
                 menuElementsTree = {
+                    type: $dataInput.attr("data-type"),
                     documentId: $dataInput.attr("data-id"),
                     title: $dataInput.attr("data-title")
                 },
@@ -436,13 +437,13 @@ Imcms.define("imcms-menu-editor-builder",
             });
         }
 
-        function buildMenuItemControls(menuItemDocId) {
+        function buildMenuItemControls(menuElementTree) {
             var $controlMove = controls.move();
             var $controlRemove = controls.remove(function () {
-                removeMenuItem.call(this, menuItemDocId);
+                removeMenuItem.call(this, menuElementTree.documentId);
             });
             var $controlEdit = controls.edit(function () {
-                pageInfoBuilder.build(menuItemDocId);
+                pageInfoBuilder.build(menuElementTree.documentId, null, menuElementTree.type);
             });
 
             $controlMove.on("mousedown", dragMenuItem);
@@ -483,7 +484,7 @@ Imcms.define("imcms-menu-editor-builder",
             }
 
             elements.info = components.texts.titleText("<div>", menuElementTree.documentId + " - " + menuElementTree.title);
-            elements.controls = buildMenuItemControls(menuElementTree.documentId);
+            elements.controls = buildMenuItemControls(menuElementTree);
 
             return new BEM({
                 block: "imcms-menu-item",

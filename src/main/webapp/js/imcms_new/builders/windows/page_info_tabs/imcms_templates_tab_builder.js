@@ -1,14 +1,25 @@
 Imcms.define("imcms-templates-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-templates-rest-api",
+        "imcms-bem-builder", "imcms-components-builder", "imcms-templates-rest-api", "imcms-document-types",
         "imcms-page-info-tab-form-builder"
     ],
-    function (BEM, components, templatesRestApi, tabContentBuilder) {
+    function (BEM, components, templatesRestApi, docTypes, tabContentBuilder) {
 
         return {
             name: "templates",
             data: {},
+            tabIndex: null,
+            isDocumentTypeSupported: function (docType) {
+                return docType === docTypes.text;
+            },
+            showTab: function () {
+                tabContentBuilder.showTab(this.tabIndex);
+            },
+            hideTab: function () {
+                tabContentBuilder.hideTab(this.tabIndex);
+            },
             buildTab: function (index) {
+                this.tabIndex = index;
                 var $templateSelectContainer = components.selects.selectContainer("<div>", {
                         name: "template",
                         text: "Template"

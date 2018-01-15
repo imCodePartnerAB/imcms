@@ -3,14 +3,11 @@
  * 20.12.17
  */
 Imcms.define("imcms-document-type-select-window-builder",
-    ["imcms-page-info-builder", "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder"],
-    function (pageInfoBuilder, WindowBuilder, BEM, components) {
-
-        var documentTypesToTexts = {
-            file: "FILE",
-            text: "TEXT",
-            url: "URL"
-        };
+    [
+        "imcms-page-info-builder", "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder",
+        "imcms-document-types"
+    ],
+    function (pageInfoBuilder, WindowBuilder, BEM, components, docTypes) {
 
         function buildBody(onDocTypeSelected) {
             function buildButton(type, text) {
@@ -26,9 +23,9 @@ Imcms.define("imcms-document-type-select-window-builder",
             return new BEM({
                 block: "imcms-document-type",
                 elements: {
-                    "text-doc": buildButton(documentTypesToTexts.text, "Text Document"),
-                    "url-doc": buildButton(documentTypesToTexts.url, "URL document"),
-                    "file-doc": buildButton(documentTypesToTexts.file, "File Document")
+                    "text-doc": buildButton(docTypes.text, "Text Document"),
+                    "url-doc": buildButton(docTypes.url, "URL document"),
+                    "file-doc": buildButton(docTypes.file, "File Document")
                 }
             }).buildBlockStructure("<div>");
         }

@@ -127,7 +127,22 @@ Imcms.define("imcms-appearance-tab-builder",
 
             name: "appearance",
 
+            tabIndex: null,
+
+            isDocumentTypeSupported: function () {
+                return true; // all supported
+            },
+
+            showTab: function () {
+                tabFormBuilder.showTab(this.tabIndex);
+            },
+
+            hideTab: function () {
+                tabFormBuilder.hideTab(this.tabIndex);
+            },
+
             buildTab: function (index) {
+                this.tabIndex = index;
                 var tabElements = [
                     buildSelectTargetForDocumentLink(),
                     buildDocumentAliasBlock(),

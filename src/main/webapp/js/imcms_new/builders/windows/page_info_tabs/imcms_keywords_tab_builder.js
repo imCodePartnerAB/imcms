@@ -8,7 +8,18 @@ Imcms.define("imcms-keywords-tab-builder",
         return {
             name: "keywords",
             data: {},
+            tabIndex: null,
+            isDocumentTypeSupported: function () {
+                return true; // all supported
+            },
+            showTab: function () {
+                tabContentBuilder.showTab(this.tabIndex);
+            },
+            hideTab: function () {
+                tabContentBuilder.hideTab(this.tabIndex);
+            },
             buildTab: function (index) {
+                this.tabIndex = index;
                 this.data.$keywordsBox = components.keywords.keywordsBox("<div>", {
                     "input-id": "keyword",
                     title: "Keywords",
