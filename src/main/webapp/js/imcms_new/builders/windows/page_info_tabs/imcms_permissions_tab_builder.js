@@ -66,7 +66,7 @@ Imcms.define("imcms-permissions-tab-builder",
             name: "permissions",
             tabIndex: null,
             isDocumentTypeSupported: function (docType) {
-                return docType === docTypes.text;
+                return docType === docTypes.TEXT;
             },
             showTab: function () {
                 tabContentBuilder.showTab(this.tabIndex);

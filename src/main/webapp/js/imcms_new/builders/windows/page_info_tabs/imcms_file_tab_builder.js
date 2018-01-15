@@ -16,7 +16,7 @@ Imcms.define("imcms-file-tab-builder",
             data: {},
             tabIndex: null,
             isDocumentTypeSupported: function (docType) {
-                return docType === docTypes.file;
+                return docType === docTypes.FILE;
             },
             showTab: function () {
                 tabContentBuilder.showTab(this.tabIndex);

@@ -23,9 +23,9 @@ Imcms.define("imcms-document-type-select-window-builder",
             return new BEM({
                 block: "imcms-document-type",
                 elements: {
-                    "text-doc": buildButton(docTypes.text, "Text Document"),
-                    "url-doc": buildButton(docTypes.url, "URL document"),
-                    "file-doc": buildButton(docTypes.file, "File Document")
+                    "text-doc": buildButton(docTypes.TEXT, "Text Document"),
+                    "file-doc": buildButton(docTypes.FILE, "File Document"),
+                    "url-doc": buildButton(docTypes.URL, "URL document")
                 }
             }).buildBlockStructure("<div>");
         }

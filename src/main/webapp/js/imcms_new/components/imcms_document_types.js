@@ -4,8 +4,8 @@
  */
 Imcms.define("imcms-document-types", [], function () {
     return {
-        file: "FILE",
-        text: "TEXT",
-        url: "URL"
+        FILE: "FILE",
+        TEXT: "TEXT",
+        URL: "URL"
     }
 });

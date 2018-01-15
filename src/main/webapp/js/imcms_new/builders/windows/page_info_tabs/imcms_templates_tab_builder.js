@@ -10,7 +10,7 @@ Imcms.define("imcms-templates-tab-builder",
             data: {},
             tabIndex: null,
             isDocumentTypeSupported: function (docType) {
-                return docType === docTypes.text;
+                return docType === docTypes.TEXT;
             },
             showTab: function () {
                 tabContentBuilder.showTab(this.tabIndex);
