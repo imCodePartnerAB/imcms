@@ -30,7 +30,9 @@ class DefaultDocumentFileService extends AbstractVersionedContentService<Documen
     }
 
     @Override
-    public List<DocumentFile> saveAll(List<DocumentFile> saveUs) {
+    public List<DocumentFile> saveAll(List<DocumentFile> saveUs, int docId) {
+//        final List<DocumentFile> prevFiles = getByDocId(docId);
+
         return saveUs.stream()
                 .map(documentFile -> new DocumentFileDTO(
                         documentFileRepository.save(new DocumentFileJPA(documentFile))

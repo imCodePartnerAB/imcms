@@ -65,7 +65,7 @@ public class DocumentFileServiceTest {
 
     @Test
     public void saveAll() {
-        documentFileService.saveAll(documentFiles);
+        documentFileService.saveAll(documentFiles, docId);
 
         final List<DocumentFileJPA> saved = documentFileRepository.findAll();
 
@@ -75,7 +75,7 @@ public class DocumentFileServiceTest {
 
     @Test
     public void getByDocId() {
-        final List<DocumentFile> saved = documentFileService.saveAll(documentFiles);
+        final List<DocumentFile> saved = documentFileService.saveAll(documentFiles, docId);
         final List<DocumentFile> found = documentFileService.getByDocId(docId);
 
         assertTrue(saved.containsAll(found));
@@ -87,7 +87,7 @@ public class DocumentFileServiceTest {
         futurePublicFile.setDefaultFile(true); // one has to be default
         futurePublicFile.setFilename("test" + System.currentTimeMillis());
 
-        documentFileService.saveAll(documentFiles);
+        documentFileService.saveAll(documentFiles, docId);
         versionDataInitializer.createData(Version.WORKING_VERSION_INDEX + 1, docId);
 
         documentFileService.publishDocumentFiles(docId);

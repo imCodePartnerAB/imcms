@@ -60,7 +60,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
                 })
                 .collect(Collectors.toList());
 
-        documentFileService.saveAll(saveMeFiles);
+        documentFileService.saveAll(saveMeFiles, savedDocId);
 
         return savedDocId;
     }
