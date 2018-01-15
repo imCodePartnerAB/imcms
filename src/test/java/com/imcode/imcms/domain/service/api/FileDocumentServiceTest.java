@@ -188,6 +188,38 @@ public class FileDocumentServiceTest {
     }
 
     @Test
+    public void save_When_FileIsSetAndNewIsSaved_Expect_OldRemovedAndNewSaved() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        final FileDocumentDTO fileDocumentDTO = fileDocumentService.get(createdDocId);
+        final List<DocumentFileDTO> oldFiles = fileDocumentDTO.getFiles();
+
+        final DocumentFileDTO documentFile = new DocumentFileDTO();
+        documentFile.setDocId(createdDocId);
+        documentFile.setFileId("test_id_" + System.currentTimeMillis());
+        documentFile.setFilename("test_name" + System.currentTimeMillis());
+        documentFile.setMimeType("test" + System.currentTimeMillis());
+
+        final List<DocumentFileDTO> newFiles = new ArrayList<>();
+        newFiles.add(documentFile);
+        fileDocumentDTO.setFiles(newFiles);
+
+        fileDocumentService.save(fileDocumentDTO);
+
+        final List<DocumentFileDTO> savedFiles = fileDocumentService.get(createdDocId).getFiles();
+
+        assertNotNull(savedFiles);
+        assertEquals(savedFiles.size(), newFiles.size());
+        assertFalse(savedFiles.containsAll(oldFiles));
+
+        for (DocumentFileDTO documentFileDTO : newFiles) {
+            assertEquals(documentFileDTO.getDocId().intValue(), createdDocId);
+        }
+    }
+
+    @Test
     public void deleteByDocId() {
     }
 }
