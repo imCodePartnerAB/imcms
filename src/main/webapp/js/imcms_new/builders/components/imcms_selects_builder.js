@@ -119,8 +119,8 @@ Imcms.define("imcms-selects-builder",
                     return $resultImcmsSelect;
 
                 } else {
-                    console.error("Value '" + value + "' for select doesn't exist");
-                    console.error($resultImcmsSelect[0]);
+                    console.log("%c Value '" + value + "' for select doesn't exist", "color: red;");
+                    console.log($resultImcmsSelect[0]);
                 }
             }
         }
@@ -135,8 +135,8 @@ Imcms.define("imcms-selects-builder",
                     return $resultImcmsSelect;
 
                 } else {
-                    console.error("Select is empty, nothing to choose");
-                    console.error($resultImcmsSelect[0]);
+                    console.log("%c Select is empty, nothing to choose", "color: red;");
+                    console.log($resultImcmsSelect[0]);
                 }
             }
         }
