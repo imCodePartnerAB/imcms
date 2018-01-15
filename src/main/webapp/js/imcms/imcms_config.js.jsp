@@ -122,6 +122,7 @@
             "imcms-access-tab-builder": "builders/windows/page_info_tabs/imcms_access_tab_builder.js",
             "imcms-permissions-tab-builder": "builders/windows/page_info_tabs/imcms_permissions_tab_builder.js",
             "imcms-templates-tab-builder": "builders/windows/page_info_tabs/imcms_templates_tab_builder.js",
+            "imcms-file-tab-builder": "builders/windows/page_info_tabs/imcms_file_tab_builder.js",
             "imcms-status-tab-builder": "builders/windows/page_info_tabs/imcms_status_tab_builder.js",
             //  </page_info_tabs>
             //  <editors>
