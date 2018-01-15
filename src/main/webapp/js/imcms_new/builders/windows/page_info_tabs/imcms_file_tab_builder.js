@@ -11,6 +11,25 @@ Imcms.define("imcms-file-tab-builder",
     ],
     function (BEM, components, docTypes, tabContentBuilder, $) {
 
+        function buildFilesContainerBody() {
+            return $("<div>", {"class": "files-container-body"});
+        }
+
+        function buildFilesContainerHead() {
+            var filesContainerHeadBEM = new BEM({
+                block: "files-container-head",
+                elements: {
+                    "title": "imcms-title"
+                }
+            });
+
+            return filesContainerHeadBEM.buildBlock("<div>", [
+                {"title": $("<div>", {text: "ID"})},
+                {"title": $("<div>", {text: "Name"})},
+                {"title": $("<div>", {text: "Default"})}
+            ]);
+        }
+
         return {
             name: "files",
             data: {},
@@ -49,12 +68,22 @@ Imcms.define("imcms-file-tab-builder",
                     }
                 });
 
+                var $filesContainer = new BEM({
+                    block: "files-container",
+                    elements: [
+                        buildFilesContainerHead(),
+                        this.data.$filesContainerBody = buildFilesContainerBody()
+                    ]
+                }).buildBlockStructure("<div>");
+
                 var blockElements = [
-                    $uploadNewFilesButton
+                    $uploadNewFilesButton,
+                    $filesContainer
                 ];
                 return tabContentBuilder.buildFormBlock(blockElements, index);
             },
             fillTabDataFromDocument: function (document) {
+                // append to this.data.$filesContainerBody
             },
             saveData: function (documentDTO) {
                 return documentDTO;
