@@ -67,6 +67,7 @@
             // events
             "imcms-events": "events/imcms_events.js",
             // components
+            "imcms-document-types": "components/imcms_document_types.js",
             "imcms-calendar": "components/imcms_calendar.js",
             "imcms-date-picker": "components/imcms_date_picker.js",
             "imcms-time-picker": "components/imcms_time_picker.js",
