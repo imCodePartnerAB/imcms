@@ -531,4 +531,45 @@ public class DocumentControllerTest extends AbstractControllerTest {
             assertTrue(fileDTO.getFilename().contains(testName));
         }
     }
+
+    @Test
+    public void save_When_DocumentHaveFilesAndNewFilesSet_Expect_NewSavedAndOldRemoved() throws Exception {
+        final String testName = "test_name";
+
+        final List<DocumentFileDTO> oldFiles = createdFileDoc.getFiles();
+
+        final List<DocumentFileDTO> newFiles = IntStream.range(0, 5)
+                .mapToObj(value -> {
+                    final DocumentFileDTO documentFileDTO = new DocumentFileDTO();
+                    documentFileDTO.setDocId(createdFileDoc.getId());
+                    documentFileDTO.setFilename(testName + value);
+                    documentFileDTO.setFileId(testName + value);
+                    documentFileDTO.setDefaultFile(value == 0);
+                    documentFileDTO.setMimeType("test");
+
+                    return documentFileDTO;
+                })
+                .collect(Collectors.toList());
+
+        createdFileDoc.setFiles(newFiles);
+
+        performPostWithContentExpectOk(createdFileDoc);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + createdFileDoc.getId());
+
+        final String response = getJsonResponse(requestBuilder);
+        final FileDocumentDTO documentDTO = fromJson(response, FileDocumentDTO.class);
+
+        assertNotNull(documentDTO);
+        assertNotNull(documentDTO.getFiles());
+        assertFalse(documentDTO.getFiles().isEmpty());
+        assertFalse(documentDTO.getFiles().containsAll(oldFiles));
+        assertEquals(documentDTO.getFiles().size(), newFiles.size());
+
+        for (DocumentFileDTO fileDTO : documentDTO.getFiles()) {
+            assertEquals(fileDTO.getDocId(), createdFileDoc.getId());
+            assertTrue(fileDTO.getFilename().contains(testName));
+        }
+    }
 }
