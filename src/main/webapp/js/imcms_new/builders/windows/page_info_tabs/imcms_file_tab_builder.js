@@ -7,12 +7,14 @@
 Imcms.define("imcms-file-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "imcms-page-info-tab-form-builder",
-        "jquery"
+        "imcms-controls-builder", "jquery"
     ],
-    function (BEM, components, docTypes, tabContentBuilder, $) {
+    function (BEM, components, docTypes, tabContentBuilder, controls, $) {
+
+        var $filesContainerBody;
 
         function buildFilesContainerBody() {
-            return $("<div>", {"class": "files-container-body"});
+            return $filesContainerBody = $("<div>", {"class": "files-container-body"});
         }
 
         function buildFilesContainerHead() {
@@ -23,20 +25,69 @@ Imcms.define("imcms-file-tab-builder",
                 }
             });
 
+            var $idTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: "ID"});
+            var $nameTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: "Name"});
+            var $isDefaultFileTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: "Default"});
+
             return filesContainerHeadBEM.buildBlock("<div>", [
-                {"title": $("<div>", {text: "ID"})},
-                {"title": $("<div>", {text: "Name"})},
-                {"title": $("<div>", {text: "Default"})}
+                {"title": $idTitle},
+                {"title": $nameTitle},
+                {"title": $isDefaultFileTitle}
             ]);
         }
 
-        function appendFiles(files) {
+        function buildFileRow(file) {
+            var $isDefaultFileRadioBtn = components.radios.imcmsRadio("<div>", {
+                name: "isDefaultFile",
+                value: file.name
+            });
 
+            var $row;
+
+            return ($row = new BEM({
+                block: "file-row",
+                elements: {
+                    "id": components.texts.textInput({value: file.fileId}),
+                    "name": $("<div>", {text: file.filename}),
+                    "default": $isDefaultFileRadioBtn,
+                    "delete": controls.remove(function () {
+                        $row.detach();
+
+                        if (!tabData.formData) {
+
+                        }
+
+                        // tabData.formData.
+                    })
+                }
+            }).buildBlockStructure("<div>", {"class": "files-container-body__file-row"}));
         }
+
+        function buildFilesRow(files) {
+            return (files || []).map(buildFileRow);
+        }
+
+        function appendFiles(files) {
+            $filesContainerBody.append(buildFilesRow(files));
+        }
+
+        function transformFileToDTO(file) {
+            return {
+                fileId: "",
+                filename: file.name,
+                mimeType: file.type,
+                defaultFile: false
+            }
+        }
+
+        function transformFilesToDTO(files) {
+            return Array.prototype.slice.call(files || []).map(transformFileToDTO);
+        }
+
+        var tabData = {};
 
         return {
             name: "files",
-            data: {},
             tabIndex: null,
             isDocumentTypeSupported: function (docType) {
                 return docType === docTypes.FILE;
@@ -49,22 +100,21 @@ Imcms.define("imcms-file-tab-builder",
             },
             buildTab: function (index) {
                 this.tabIndex = index;
-                var parent = this;
 
                 var $fileInput = $("<input>", {
                     type: "file",
                     style: "display: none;",
                     multiple: "",
                     change: function () {
-                        var formData = new FormData();
+                        tabData.formData = tabData.formData || new FormData();
 
                         for (var i = 0; i < this.files.length; i++) {
-                            formData.append('files', this.files[i]);
+                            tabData.formData.append('files', this.files[i]);
                         }
 
-                        parent.data.formData = formData;
-
-                        appendFiles(this.files);
+                        console.log(this.files);
+                        console.log(tabData.formData.getAll("files"));
+                        appendFiles(transformFilesToDTO(this.files));
                     }
                 });
 
@@ -81,10 +131,10 @@ Imcms.define("imcms-file-tab-builder",
 
                 var $filesContainer = new BEM({
                     block: "files-container",
-                    elements: [
-                        buildFilesContainerHead(),
-                        this.data.$filesContainerBody = buildFilesContainerBody()
-                    ]
+                    elements: {
+                        "head": buildFilesContainerHead(),
+                        "body": buildFilesContainerBody()
+                    }
                 }).buildBlockStructure("<div>");
 
                 var blockElements = [
