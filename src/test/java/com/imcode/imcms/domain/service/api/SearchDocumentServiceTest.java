@@ -425,7 +425,7 @@ public class SearchDocumentServiceTest {
             documentService.save(secondDocument);
 
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+                Thread.sleep(TimeUnit.SECONDS.toMillis(8));
             } catch (InterruptedException e) {
                 // don't really care
             }
