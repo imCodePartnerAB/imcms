@@ -9,7 +9,7 @@ Imcms.define("imcms-page-info-builder",
     ],
     function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms) {
 
-        var panels, $title, documentDTO, $saveAndPublishBtn;
+        var panels, $title, documentDTO, $saveAndPublishBtn, $tabsContainer;
 
         function buildPageInfoHead() {
             return new BEM({
@@ -48,7 +48,7 @@ Imcms.define("imcms-page-info-builder",
                 };
             });
 
-            var $tabsContainer = new BEM({
+            $tabsContainer = new BEM({
                 block: "imcms-tabs",
                 elements: {
                     "tab": $tabs
@@ -177,6 +177,7 @@ Imcms.define("imcms-page-info-builder",
 
         function loadData(docId, onDocumentSavedCallback, docType) {
             onDocumentSaved = onDocumentSavedCallback;
+            $tabsContainer.find("[data-window-id=0]").click();
             loadPageInfoDataFromDocumentBy(docId, docType);
         }
 
