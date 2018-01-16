@@ -7,6 +7,7 @@ import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
 
 @Service
 class DefaultSearchDocumentService implements SearchDocumentService {
+
+    private static final int DEFAULT_PAGE_SIZE = 100;
 
     private final DocumentIndex documentIndex;
 
@@ -59,8 +62,17 @@ class DefaultSearchDocumentService implements SearchDocumentService {
         }
 
         if (searchQuery.getPage() != null) {
-            final Sort.Order order = searchQuery.getPage().getSort().iterator().next();
-            solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
+            Sort sort = searchQuery.getPage().getSort();
+            if (sort == null) {
+                sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+            }
+
+            final Sort.Order order = sort.iterator().next();
+            changeSolrQuery(solrQuery, searchQuery.getPage(), order);
+        } else {
+            PageRequest pageRequest = new PageRequest(0, DEFAULT_PAGE_SIZE,
+                    new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID)));
+            changeSolrQuery(solrQuery, pageRequest, pageRequest.getSort().iterator().next());
         }
 
         return documentIndex.search(solrQuery, Imcms.getUser())
@@ -69,5 +81,14 @@ class DefaultSearchDocumentService implements SearchDocumentService {
                 .map(DocumentStoredFieldsDTO::new)
                 .sorted(Comparator.comparingInt(DocumentStoredFieldsDTO::getId).reversed())
                 .collect(Collectors.toList());
+    }
+
+    private void changeSolrQuery(SolrQuery solrQuery, PageRequest pageRequest, Sort.Order order) {
+        final int pageSize = pageRequest.getPageSize();
+
+        solrQuery.setStart(pageRequest.getPageNumber() * pageSize);
+        solrQuery.setRows(pageSize);
+
+        solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
     }
 }

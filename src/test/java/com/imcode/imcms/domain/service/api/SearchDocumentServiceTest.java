@@ -186,6 +186,7 @@ public class SearchDocumentServiceTest {
             categoryService.delete(savedId);
             categoryTypeService.delete(savedType.getId());
             documentDataInitializer.cleanRepositories(documentDTO.getId());
+            documentIndex.removeDocument(documentDTO.getId());
 
             assertFalse(categoryService.getById(savedId).isPresent());
             assertFalse(categoryTypeService.get(savedType.getId()).isPresent());
@@ -204,18 +205,15 @@ public class SearchDocumentServiceTest {
             }
 
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(8));
+                Thread.sleep(TimeUnit.SECONDS.toMillis(9));
             } catch (InterruptedException e) {
                 // ignore
             }
 
             SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
-            PageRequest pageRequest = new PageRequest(0, 10, new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID)));
-            searchQueryDTO.setPage(pageRequest);
-
             int documentCount = searchDocumentService.searchDocuments(searchQueryDTO).size();
 
-            assertEquals(101, documentCount);
+            assertEquals(100, documentCount);
         } finally {
             ids.forEach(id -> {
                 documentDataInitializer.cleanRepositories(id);
@@ -323,7 +321,7 @@ public class SearchDocumentServiceTest {
             documentService.save(thirdDocument);
 
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(4));
+                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
             } catch (InterruptedException e) {
                 // don't really care
             }
@@ -427,7 +425,7 @@ public class SearchDocumentServiceTest {
             documentService.save(secondDocument);
 
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(4));
+                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
             } catch (InterruptedException e) {
                 // don't really care
             }
@@ -455,5 +453,67 @@ public class SearchDocumentServiceTest {
             documentIndex.removeDocument(firstDocument.getId());
             documentIndex.removeDocument(secondDocument.getId());
         }
+    }
+
+    @Test
+    public void search_When_SpecifiedPageRequest_Expect_Fount() throws InterruptedException {
+        // create documents
+        final List<TextDocumentDTO> docs = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            docs.add(documentDataInitializer.createTextDocument());
+        }
+
+        try {
+            // save documents
+            docs.forEach(documentService::save);
+
+            Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+
+            // create page request
+            final Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+            final PageRequest pageRequest = new PageRequest(0, 6, sort);
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            searchQueryDTO.setPage(pageRequest);
+
+            final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = searchDocumentService.searchDocuments(searchQueryDTO);
+
+            assertEquals(6, documentStoredFieldsDTOS.size());
+
+        } finally {
+            docs.forEach(document -> {
+                documentDataInitializer.cleanRepositories(document.getId());
+                documentIndex.removeDocument(document.getId());
+            });
+        }
+    }
+
+    @Test
+    public void search_When_UseDefaultPageRequest_Expect_Found() throws InterruptedException {
+        // create documents
+        final List<TextDocumentDTO> docs = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            docs.add(documentDataInitializer.createTextDocument());
+        }
+
+        try {
+            // save documents
+            docs.forEach(documentService::save);
+
+            Thread.sleep(TimeUnit.SECONDS.toMillis(7));
+
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+
+            final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = searchDocumentService.searchDocuments(searchQueryDTO);
+
+            assertEquals(11, documentStoredFieldsDTOS.size());
+
+        } finally {
+            docs.forEach(document -> {
+                documentDataInitializer.cleanRepositories(document.getId());
+                documentIndex.removeDocument(document.getId());
+            });
+        }
+
+
     }
 }
