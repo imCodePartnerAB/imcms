@@ -14,12 +14,15 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 class DefaultSearchDocumentService implements SearchDocumentService {
 
+    private static final Sort DEFAULT_SORT = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
     private static final int DEFAULT_PAGE_SIZE = 100;
+    private static final int DEFAULT_PAGE_NUMBER = 0;
 
     private final DocumentIndex documentIndex;
 
@@ -61,19 +64,7 @@ class DefaultSearchDocumentService implements SearchDocumentService {
             solrQuery.addFilterQuery(userFilter);
         }
 
-        if (searchQuery.getPage() != null) {
-            Sort sort = searchQuery.getPage().getSort();
-            if (sort == null) {
-                sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-            }
-
-            final Sort.Order order = sort.iterator().next();
-            changeSolrQuery(solrQuery, searchQuery.getPage(), order);
-        } else {
-            PageRequest pageRequest = new PageRequest(0, DEFAULT_PAGE_SIZE,
-                    new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID)));
-            changeSolrQuery(solrQuery, pageRequest, pageRequest.getSort().iterator().next());
-        }
+        prepareSolrQueryPaging(searchQuery, solrQuery);
 
         return documentIndex.search(solrQuery, Imcms.getUser())
                 .documentStoredFieldsList()
@@ -83,12 +74,24 @@ class DefaultSearchDocumentService implements SearchDocumentService {
                 .collect(Collectors.toList());
     }
 
-    private void changeSolrQuery(SolrQuery solrQuery, PageRequest pageRequest, Sort.Order order) {
-        final int pageSize = pageRequest.getPageSize();
+    private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
+        PageRequest page = searchQuery.getPage();
 
-        solrQuery.setStart(pageRequest.getPageNumber() * pageSize);
+        if (page == null) {
+            page = new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE, DEFAULT_SORT);
+        }
+
+        final int pageSize = page.getPageSize();
+
+        solrQuery.setStart(page.getPageNumber() * pageSize);
         solrQuery.setRows(pageSize);
+
+        final Sort.Order order = Optional.ofNullable(page.getSort())
+                .orElse(DEFAULT_SORT)
+                .iterator()
+                .next();
 
         solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
     }
+
 }
