@@ -61,12 +61,16 @@ Imcms.define("imcms-file-tab-builder",
                     }
                 });
 
+                var $uploadButtonContainer = $("<div>", {"class": "imcms-field"});
+
                 var $uploadNewFilesButton = components.buttons.positiveButton({
                     text: "Upload",
                     click: function () {
                         $fileInput.click();
                     }
                 });
+
+                $uploadButtonContainer.append($fileInput, $uploadNewFilesButton);
 
                 var $filesContainer = new BEM({
                     block: "files-container",
@@ -77,7 +81,7 @@ Imcms.define("imcms-file-tab-builder",
                 }).buildBlockStructure("<div>");
 
                 var blockElements = [
-                    $uploadNewFilesButton,
+                    $uploadButtonContainer,
                     $filesContainer
                 ];
                 return tabContentBuilder.buildFormBlock(blockElements, index);
