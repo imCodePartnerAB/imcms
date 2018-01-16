@@ -57,7 +57,11 @@ public class DBConfig {
         entityManagerFactory.setDataSource(dataSource);
         entityManagerFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         entityManagerFactory.setJpaDialect(new HibernateJpaDialect());
-        entityManagerFactory.setPackagesToScan("com.imcode.imcms.imagearchive", "com.imcode.imcms.mapping.jpa");
+        entityManagerFactory.setPackagesToScan(
+                "com.imcode.imcms.imagearchive",
+                "com.imcode.imcms.mapping.jpa",
+                "imcode.server.document.textdocument"
+        );
         entityManagerFactory.setPersistenceUnitName("com.imcode.imcms");
         entityManagerFactory.setJpaPropertyMap(createHibernateJpaProperties());
         return entityManagerFactory;
