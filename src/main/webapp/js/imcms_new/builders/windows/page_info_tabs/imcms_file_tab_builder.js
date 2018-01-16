@@ -30,6 +30,10 @@ Imcms.define("imcms-file-tab-builder",
             ]);
         }
 
+        function appendFiles(files) {
+
+        }
+
         return {
             name: "files",
             data: {},
@@ -45,6 +49,7 @@ Imcms.define("imcms-file-tab-builder",
             },
             buildTab: function (index) {
                 this.tabIndex = index;
+                var parent = this;
 
                 var $fileInput = $("<input>", {
                     type: "file",
@@ -57,7 +62,9 @@ Imcms.define("imcms-file-tab-builder",
                             formData.append('files', this.files[i]);
                         }
 
-                        // todo: save somewhere
+                        parent.data.formData = formData;
+
+                        appendFiles(this.files);
                     }
                 });
 
@@ -87,6 +94,7 @@ Imcms.define("imcms-file-tab-builder",
                 return tabContentBuilder.buildFormBlock(blockElements, index);
             },
             fillTabDataFromDocument: function (document) {
+                appendFiles(document.files);
                 // append to this.data.$filesContainerBody
             },
             saveData: function (documentDTO) {
