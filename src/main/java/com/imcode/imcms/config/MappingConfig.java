@@ -11,11 +11,14 @@ import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
+import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.DocumentStoredFields;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.solr.common.SolrDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -369,6 +372,24 @@ class MappingConfig {
 
                 return imageFolderDTO;
             }
+        };
+    }
+
+    @Bean
+    public Function<TextDocumentDTO, DocumentStoredFieldsDTO> textDocumentDTOtoDocumentStoredFieldsDTO() {
+        return textDocument -> {
+            SolrDocument solrDocument = new SolrDocument();
+            solrDocument.put(DocumentIndex.FIELD__META_ID, textDocument.getId());
+
+            final String title = textDocument.getTitle();
+            solrDocument.put(DocumentIndex.FIELD__META_HEADLINE, title == null ? "headline_en" : title);
+
+            solrDocument.put(DocumentIndex.FIELD__DOC_TYPE_ID, textDocument.getType().ordinal());
+            solrDocument.put(DocumentIndex.FIELD__ALIAS, textDocument.getAlias());
+
+            DocumentStoredFields from = new DocumentStoredFields(solrDocument);
+
+            return new DocumentStoredFieldsDTO(from);
         };
     }
 
