@@ -110,6 +110,10 @@ Imcms.define("imcms-permissions-tab-builder",
                 });
             },
             saveData: function (documentDTO) {
+                if (!this.isDocumentTypeSupported(documentDTO.type)) {
+                    return documentDTO;
+                }
+
                 var restrictedCheckboxes = {};
 
                 tabData.restrictedCheckboxes$.forEach(function ($restrictedPermCheckbox) {
