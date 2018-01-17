@@ -12,6 +12,7 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -128,6 +130,43 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
                     .param("page.size", String.valueOf(100));
 
             performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
+
+        } finally {
+            ids.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+        }
+    }
+
+    @Test
+    public void checkTextDocumentWithMaxId_When_DefaultSearchQuerySet_Expect_isFirstFound() throws Exception {
+        List<Integer> ids = new ArrayList<>();
+
+        List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+        for (int i = 0; i < 50; i++) {
+            textDocumentDTOS.add(documentDataInitializer.createTextDocument());
+        }
+
+        textDocumentDTOS.forEach(textDocumentDTO -> {
+            final int id = documentService.save(textDocumentDTO);
+            ids.add(id);
+            documentIndex.indexDocument(id);
+        });
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(12));
+
+        int maxId = ids.stream()
+                .mapToInt(id -> id)
+                .max()
+                .getAsInt();
+
+        try {
+            final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
+            final String responseJSON = getJsonResponse(requestBuilder);
+            final List list = fromJson(responseJSON, List.class);
+
+            Assert.assertEquals(maxId, ((LinkedHashMap) list.get(0)).get("id"));
 
         } finally {
             ids.forEach(id -> {
