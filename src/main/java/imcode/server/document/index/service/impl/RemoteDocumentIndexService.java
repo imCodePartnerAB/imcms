@@ -41,4 +41,9 @@ public class RemoteDocumentIndexService implements DocumentIndexService, IndexRe
     public void shutdown() {
         throw new NotImplementedException();
     }
+
+    @Override
+    public boolean isUpdateDone() {
+        throw new NotImplementedException();
+    }
 }

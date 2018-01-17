@@ -149,4 +149,9 @@ public class DocumentIndexImpl implements DocumentIndex {
     public DocumentIndexService getService() {
         return service;
     }
+
+    @Override
+    public boolean isUpdateDone() {
+        return service.isUpdateDone();
+    }
 }

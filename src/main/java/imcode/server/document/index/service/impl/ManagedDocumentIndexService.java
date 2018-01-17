@@ -135,6 +135,11 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
         }
     }
 
+    @Override
+    public boolean isUpdateDone() {
+        return indexUpdateFuture.isDone();
+    }
+
     private void rebuildIndexes() {
         indexUpdateRequests.clear();
         serviceOps.rebuildIndex(solrServerWriter);
@@ -143,12 +148,8 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
 
     private void invokeIndexUpdateThread() {
         if (indexUpdateFuture.isDone() && indexRebuildFuture.isDone()) {
-            synchronized (lock) {
-                if (indexUpdateFuture.isDone() && indexRebuildFuture.isDone()) {
-                    logger.info("Submitted new index update thread.");
-                    indexUpdateFuture = indexUpdateExecutor.submit(this::updateIndexes);
-                }
-            }
+            indexUpdateFuture = indexUpdateExecutor.submit(this::updateIndexes);
+            logger.info("Submitted new index update thread.");
         }
     }
 
