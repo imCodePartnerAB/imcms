@@ -1,13 +1,13 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
+import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.SearchDocumentService;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +20,7 @@ import java.util.stream.Collectors;
 @Service
 class DefaultSearchDocumentService implements SearchDocumentService {
 
-    private static final Sort DEFAULT_SORT = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-    private static final int DEFAULT_PAGE_SIZE = 100;
-    private static final int DEFAULT_PAGE_NUMBER = 0;
+    private static final Sort DEFAULT_SORT = new Sort(new Sort.Order(Sort.Direction.DESC, DocumentIndex.FIELD__META_ID));
 
     private final DocumentIndex documentIndex;
 
@@ -75,15 +73,15 @@ class DefaultSearchDocumentService implements SearchDocumentService {
     }
 
     private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
-        PageRequest page = searchQuery.getPage();
+        PageRequestDTO page = searchQuery.getPage();
 
         if (page == null) {
-            page = new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE, DEFAULT_SORT);
+            page = new PageRequestDTO();
         }
 
-        final int pageSize = page.getPageSize();
+        final int pageSize = page.getSize();
 
-        solrQuery.setStart(page.getPageNumber() * pageSize);
+        solrQuery.setStart(page.getPage() * pageSize);
         solrQuery.setRows(pageSize);
 
         final Sort.Order order = Optional.ofNullable(page.getSort())
