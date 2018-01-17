@@ -572,4 +572,60 @@ public class DocumentControllerTest extends AbstractControllerTest {
             assertTrue(fileDTO.getFilename().contains(testName));
         }
     }
+
+    @Test
+    public void saveFileDoc_When_FilesAlreadyExistAndDefaultFileChanged_Expect_Saved() throws Exception {
+        List<DocumentFileDTO> oldFiles = createdFileDoc.getFiles();
+
+        assertFalse(oldFiles.isEmpty());
+
+        oldFiles.get(0).setDefaultFile(true); // first is set as default
+
+        performPostWithContentExpectOk(createdFileDoc);
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + createdFileDoc.getId());
+
+        String response = getJsonResponse(requestBuilder);
+        FileDocumentDTO documentDTO = fromJson(response, FileDocumentDTO.class);
+        final String newDefaultFileName = "default_file";
+
+        oldFiles = documentDTO.getFiles();
+
+        for (DocumentFileDTO oldFile : oldFiles) {
+            oldFile.setDefaultFile(false); // all old files set as not default now
+        }
+
+        final DocumentFileDTO newFile = new DocumentFileDTO();
+        newFile.setDocId(documentDTO.getId());
+        newFile.setFilename(newDefaultFileName);
+        newFile.setDefaultFile(true); // new file is default
+        newFile.setMimeType("test");
+
+        oldFiles.add(newFile);
+
+        performPostWithContentExpectOk(documentDTO);
+
+        requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + documentDTO.getId());
+
+        response = getJsonResponse(requestBuilder);
+        documentDTO = fromJson(response, FileDocumentDTO.class);
+
+        assertFalse(documentDTO.getFiles().isEmpty());
+
+        final List<DocumentFileDTO> defaultFiles = documentDTO.getFiles()
+                .stream()
+                .filter(DocumentFileDTO::isDefaultFile)
+                .collect(Collectors.toList());
+
+        assertFalse(defaultFiles.isEmpty());
+        assertEquals(defaultFiles.size(), 1);
+
+        final DocumentFileDTO defaultFile = defaultFiles.get(0);
+
+        assertNotNull(defaultFile);
+        assertTrue(defaultFile.isDefaultFile());
+        assertEquals(newDefaultFileName, defaultFile.getFilename());
+    }
 }

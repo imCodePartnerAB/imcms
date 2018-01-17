@@ -39,7 +39,8 @@ Imcms.define("imcms-file-tab-builder",
         function buildFileRow(file) {
             var $isDefaultFileRadioBtn = components.radios.imcmsRadio("<div>", {
                 name: "isDefaultFile",
-                value: file.name
+                value: file.name,
+                checked: file.defaultFile
             });
 
             var $row;
@@ -52,15 +53,13 @@ Imcms.define("imcms-file-tab-builder",
                     "default": $isDefaultFileRadioBtn,
                     "delete": controls.remove(function () {
                         $row.detach();
-
-                        if (!tabData.formData) {
-
-                        }
-
-                        // tabData.formData.
                     })
                 }
-            }).buildBlockStructure("<div>", {"class": "files-container-body__file-row"}));
+            }).buildBlockStructure("<div>", {
+                "class": "files-container-body__file-row",
+                "data-file-id": file.id,
+                "data-file-type": file.mimeType
+            }));
         }
 
         function buildFilesRow(files) {
@@ -73,6 +72,7 @@ Imcms.define("imcms-file-tab-builder",
 
         function transformFileToDTO(file) {
             return {
+                id: null,
                 fileId: "",
                 filename: file.name,
                 mimeType: file.type,
@@ -82,6 +82,23 @@ Imcms.define("imcms-file-tab-builder",
 
         function transformFilesToDTO(files) {
             return Array.prototype.slice.call(files || []).map(transformFileToDTO);
+        }
+
+        function getFileObjects(docId) {
+            return $filesListContainerBody.children()
+                .toArray()
+                .map(function (fileRowDOM) {
+                    var $fileRow = $(fileRowDOM);
+
+                    return {
+                        id: $fileRow.data("fileId"),
+                        docId: docId,
+                        fileId: $fileRow.find(".file-row__id").val(),
+                        filename: $fileRow.find(".file-row__name").text(),
+                        mimeType: $fileRow.data("fileType"),
+                        defaultFile: $fileRow.find("input[name=isDefaultFile]").is(":checked")
+                    }
+                });
         }
 
         var tabData = {};
@@ -146,9 +163,9 @@ Imcms.define("imcms-file-tab-builder",
             fillTabDataFromDocument: function (document) {
                 appendFiles(document.files);
             },
-            saveData: function (documentDTO) {
-                // todo: implement saving
-                return documentDTO;
+            saveData: function (document) {
+                document.files = getFileObjects(document.id);
+                return document;
             },
             clearTabData: function () {
                 $filesListContainerBody.empty();

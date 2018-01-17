@@ -11,14 +11,14 @@ import com.imcode.imcms.persistence.repository.DocumentFileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
-class DefaultDocumentFileService extends AbstractVersionedContentService<DocumentFileJPA, DocumentFile, DocumentFileRepository> implements DocumentFileService {
+class DefaultDocumentFileService
+        extends AbstractVersionedContentService<DocumentFileJPA, DocumentFile, DocumentFileRepository>
+        implements DocumentFileService {
 
     private final DocumentFileRepository documentFileRepository;
     private final VersionService versionService;
@@ -52,8 +52,13 @@ class DefaultDocumentFileService extends AbstractVersionedContentService<Documen
             }
         });
 
+        final Set<Integer> existingFileIds = saveUs.stream()
+                .map(DocumentFile::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
         final List<DocumentFileJPA> noMoreNeededFiles = getByDocId(docId).stream()
-                .filter(documentFile -> !saveUs.contains(documentFile))
+                .filter(documentFile -> !existingFileIds.contains(documentFile.getId()))
                 .map(DocumentFileJPA::new)
                 .collect(Collectors.toList());
 
