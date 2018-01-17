@@ -22,10 +22,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -87,8 +90,46 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
         } finally {
             documentDataInitializer.cleanRepositories(documentId);
-            documentIndex.indexDocument(documentId);
+            documentIndex.removeDocument(documentId);
+        }
+    }
+
+    @Test
+    public void getTextDocuments_When_SecondPageIsSet_Expect_DocumentStoredFieldsDtoJson() throws Exception {
+        List<Integer> ids = new ArrayList<>();
+
+        List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+        for (int i = 0; i < 110; i++) {
+            textDocumentDTOS.add(documentDataInitializer.createTextDocument());
         }
 
+        textDocumentDTOS.forEach(textDocumentDTO -> {
+            final int id = documentService.save(textDocumentDTO);
+            ids.add(id);
+            documentIndex.indexDocument(id);
+        });
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(20));
+
+        final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = IntStream.range(100, 110)
+                .mapToObj(textDocumentDTOS::get)
+                .map(textDocumentDTOtoDocumentStoredFieldsDTO)
+                .collect(Collectors.toList());
+
+        String expectedJson = asJson(documentStoredFieldsDTOS);
+
+        try {
+            final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                    .param("page.page", String.valueOf(1))
+                    .param("page.size", String.valueOf(100));
+
+            performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
+
+        } finally {
+            ids.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+        }
     }
 }

@@ -4,10 +4,7 @@ import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
-import com.imcode.imcms.domain.dto.CategoryDTO;
-import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
-import com.imcode.imcms.domain.dto.SearchQueryDTO;
-import com.imcode.imcms.domain.dto.TextDocumentDTO;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.domain.service.DocumentService;
@@ -29,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -138,7 +134,7 @@ public class SearchDocumentServiceTest {
 
     @Test
     public void searchDocuments_When_DocId1001Requested_Expect_Found() {
-        PageRequest pageRequest = new PageRequest(0, 10, new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID)));
+        PageRequestDTO pageRequest = new PageRequestDTO(0, 10, new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID)));
 
         SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
@@ -168,11 +164,11 @@ public class SearchDocumentServiceTest {
             documentService.save(documentDTO);
 
             final Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-            final PageRequest pageRequest = new PageRequest(0, 10, sort);
+            final PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
             final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(4));
+                Thread.sleep(TimeUnit.SECONDS.toMillis(10));
             } catch (InterruptedException e) {
                 // don't really care
             }
@@ -213,7 +209,7 @@ public class SearchDocumentServiceTest {
             SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
             int documentCount = searchDocumentService.searchDocuments(searchQueryDTO).size();
 
-            assertEquals(100, documentCount);
+            assertEquals(101, documentCount);
         } finally {
             ids.forEach(id -> {
                 documentDataInitializer.cleanRepositories(id);
@@ -263,7 +259,7 @@ public class SearchDocumentServiceTest {
             }
 
             Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-            PageRequest pageRequest = new PageRequest(0, 10, sort);
+            PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
             SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
             searchQueryDTO.setPage(pageRequest);
             searchQueryDTO.setCategoriesId(Collections.singletonList(savedFirstCategory.getId()));
@@ -321,13 +317,13 @@ public class SearchDocumentServiceTest {
             documentService.save(thirdDocument);
 
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+                Thread.sleep(TimeUnit.SECONDS.toMillis(10));
             } catch (InterruptedException e) {
                 // don't really care
             }
 
             Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-            PageRequest pageRequest = new PageRequest(0, 10, sort);
+            PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
             SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
             searchQueryDTO.setPage(pageRequest);
             searchQueryDTO.setCategoriesId(Collections.singletonList(savedCategory.getId()));
@@ -385,7 +381,7 @@ public class SearchDocumentServiceTest {
             }
 
             Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-            PageRequest pageRequest = new PageRequest(0, 10, sort);
+            PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
             SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
             searchQueryDTO.setTerm(secondKeyword);
@@ -425,13 +421,13 @@ public class SearchDocumentServiceTest {
             documentService.save(secondDocument);
 
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(8));
+                Thread.sleep(TimeUnit.SECONDS.toMillis(15));
             } catch (InterruptedException e) {
                 // don't really care
             }
 
             Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-            PageRequest pageRequest = new PageRequest(0, 10, sort);
+            PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
             SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
             searchQueryDTO.setTerm(keyword);
@@ -471,7 +467,7 @@ public class SearchDocumentServiceTest {
 
             // create page request
             final Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-            final PageRequest pageRequest = new PageRequest(0, 6, sort);
+            final PageRequestDTO pageRequest = new PageRequestDTO(0, 6, sort);
             final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
             searchQueryDTO.setPage(pageRequest);
 
