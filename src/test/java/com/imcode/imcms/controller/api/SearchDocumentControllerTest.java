@@ -1,12 +1,15 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.mapping.jpa.User;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.RoleId;
@@ -50,6 +53,9 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
     @Autowired
     private DocumentService<TextDocumentDTO> documentService;
+
+    @Autowired
+    private UserDataInitializer userDataInitializer;
 
     @Override
     protected String controllerPath() {
@@ -173,6 +179,76 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
                 documentDataInitializer.cleanRepositories(id);
                 documentIndex.removeDocument(id);
             });
+        }
+    }
+
+    @Test
+    public void searchTextDocuments_WhenUserIdSet_Expect_Found() throws Exception {
+        final int documentNumberFirstUser = 14;
+        final int documentNumberSecondUser = 7;
+
+        //create 2 users
+        final List<User> users = userDataInitializer.createData(2, RoleId.USERS_ID);
+
+        List<Integer> ids = new ArrayList<>();
+
+        List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+
+        // create docs for 1st user
+        for (int i = 0; i < documentNumberFirstUser; i++) {
+            AuditDTO auditDTO = new AuditDTO();
+            auditDTO.setId(users.get(0).getId());
+
+            final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
+            textDocument.setCreated(auditDTO);
+
+            textDocumentDTOS.add(textDocument);
+        }
+
+        // create docs for 2st user
+        for (int i = 0; i < documentNumberSecondUser; i++) {
+            AuditDTO auditDTO = new AuditDTO();
+            auditDTO.setId(users.get(1).getId());
+
+            final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
+            textDocument.setCreated(auditDTO);
+
+            textDocumentDTOS.add(textDocument);
+        }
+
+        textDocumentDTOS.forEach(textDocumentDTO -> {
+            final int id = documentService.save(textDocumentDTO);
+            ids.add(id);
+            documentIndex.indexDocument(id);
+        });
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(20));
+
+        try {
+            // create query for 1st user
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                    .param("userId", users.get(0).getId().toString());
+            String responseJSON = getJsonResponse(requestBuilder);
+            List documentList = fromJson(responseJSON, List.class);
+
+            // check document number for 1st user
+            Assert.assertEquals(documentNumberFirstUser, documentList.size());
+
+            requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                    .param("userId", users.get(1).getId().toString());
+            responseJSON = getJsonResponse(requestBuilder);
+            documentList = fromJson(responseJSON, List.class);
+
+            // check document number for 2st user
+            Assert.assertEquals(documentNumberSecondUser, documentList.size());
+
+        } finally {
+            ids.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+
+            userDataInitializer.cleanRepositories(users);
         }
     }
 }
