@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 class DefaultSearchDocumentService implements SearchDocumentService {
 
-    private static final Sort DEFAULT_SORT = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+    private static final Sort DEFAULT_SORT = new Sort(new Sort.Order(Sort.Direction.DESC, DocumentIndex.FIELD__META_ID));
 
     private final DocumentIndex documentIndex;
 

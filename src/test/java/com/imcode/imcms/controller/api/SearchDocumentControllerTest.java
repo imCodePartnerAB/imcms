@@ -111,7 +111,11 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(20));
 
-        final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = IntStream.range(100, 110)
+        final int from = 0;
+        final int to = 10;
+
+        final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = IntStream.range(from, to)
+                .map(i -> to - i + from - 1)
                 .mapToObj(textDocumentDTOS::get)
                 .map(textDocumentDTOtoDocumentStoredFieldsDTO)
                 .collect(Collectors.toList());
