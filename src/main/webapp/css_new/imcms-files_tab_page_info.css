@@ -38,9 +38,11 @@
 
 .files-container-body__file-row .file-row__default {
     width: auto;
+    margin-top: 1.5%;
 }
 
 .files-container-body__file-row .file-row__delete {
     width: 16px;
+    margin-top: 1.5%;
     margin-left: 7%;
 }
