@@ -156,7 +156,7 @@ Imcms.define("imcms-page-info-builder",
                 $title.text((document.id) ? "document " + document.id : "new document");
 
                 pageInfoTabs.tabBuilders.forEach(function (tab) {
-                    if (tab.isDocumentTypeSupported(docType)) {
+                    if (tab.isDocumentTypeSupported(document.type)) {
                         tab.fillTabDataFromDocument(document);
                         tab.showTab();
 
