@@ -11,10 +11,10 @@ Imcms.define("imcms-file-tab-builder",
     ],
     function (BEM, components, docTypes, tabContentBuilder, controls, $) {
 
-        var $filesContainerBody;
+        var $filesListContainerBody, $fileInput;
 
         function buildFilesContainerBody() {
-            return $filesContainerBody = $("<div>", {"class": "files-container-body"});
+            return $filesListContainerBody = $("<div>", {"class": "files-container-body"});
         }
 
         function buildFilesContainerHead() {
@@ -68,7 +68,7 @@ Imcms.define("imcms-file-tab-builder",
         }
 
         function appendFiles(files) {
-            $filesContainerBody.append(buildFilesRow(files));
+            $filesListContainerBody.append(buildFilesRow(files));
         }
 
         function transformFileToDTO(file) {
@@ -101,7 +101,7 @@ Imcms.define("imcms-file-tab-builder",
             buildTab: function (index) {
                 this.tabIndex = index;
 
-                var $fileInput = $("<input>", {
+                $fileInput = $("<input>", {
                     type: "file",
                     style: "display: none;",
                     multiple: "",
@@ -129,7 +129,7 @@ Imcms.define("imcms-file-tab-builder",
 
                 $uploadButtonContainer.append($fileInput, $uploadNewFilesButton);
 
-                var $filesContainer = new BEM({
+                var $filesListContainer = new BEM({
                     block: "files-container",
                     elements: {
                         "head": buildFilesContainerHead(),
@@ -139,18 +139,21 @@ Imcms.define("imcms-file-tab-builder",
 
                 var blockElements = [
                     $uploadButtonContainer,
-                    $filesContainer
+                    $filesListContainer
                 ];
                 return tabContentBuilder.buildFormBlock(blockElements, index);
             },
             fillTabDataFromDocument: function (document) {
                 appendFiles(document.files);
-                // append to this.data.$filesContainerBody
             },
             saveData: function (documentDTO) {
+                // todo: implement saving
                 return documentDTO;
             },
             clearTabData: function () {
+                $filesListContainerBody.empty();
+                $fileInput.val('');
+                tabData = {};
             }
         };
     }
