@@ -17,7 +17,6 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,14 +27,14 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -83,22 +82,17 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
     public void getTextDocument_When_DefaultSearchQuery_Expect_DocumentStoredFieldsDtoJson() throws Exception {
 
         final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
-
-        documentService.save(textDocument);
-
-        Thread.sleep(TimeUnit.SECONDS.toMillis(5));
-
-        final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS =
-                Collections.singletonList(textDocumentDTOtoDocumentStoredFieldsDTO.apply(textDocument));
-
-        final String expectedJson = asJson(documentStoredFieldsDTOS);
-
-        final Integer documentId = textDocument.getId();
+        final Integer documentId = documentService.save(textDocument);
 
         try {
-            documentIndex.indexDocument(documentId);
+            waitForIndexUpdates();
 
+            final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS =
+                    Collections.singletonList(textDocumentDTOtoDocumentStoredFieldsDTO.apply(textDocument));
+
+            final String expectedJson = asJson(documentStoredFieldsDTOS);
             final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
+
             performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
 
         } finally {
@@ -109,33 +103,33 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void getTextDocuments_When_SecondPageIsSet_Expect_DocumentStoredFieldsDtoJson() throws Exception {
-        List<Integer> ids = new ArrayList<>();
 
-        List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
-        for (int i = 0; i < 110; i++) {
-            textDocumentDTOS.add(documentDataInitializer.createTextDocument());
-        }
-
-        textDocumentDTOS.forEach(textDocumentDTO -> {
-            final int id = documentService.save(textDocumentDTO);
-            ids.add(id);
-            documentIndex.indexDocument(id);
-        });
-
-        Thread.sleep(TimeUnit.SECONDS.toMillis(20));
-
-        final int from = 0;
-        final int to = 10;
-
-        final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = IntStream.range(from, to)
-                .map(i -> to - i + from - 1)
-                .mapToObj(textDocumentDTOS::get)
-                .map(textDocumentDTOtoDocumentStoredFieldsDTO)
-                .collect(Collectors.toList());
-
-        String expectedJson = asJson(documentStoredFieldsDTOS);
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
 
         try {
+            for (int i = 0; i < 110; i++) {
+                textDocumentDTOS.add(documentDataInitializer.createTextDocument());
+            }
+
+            textDocumentDTOS.forEach(textDocumentDTO -> {
+                final int id = documentService.save(textDocumentDTO);
+                docIds.add(id);
+            });
+
+            waitForIndexUpdates();
+
+            final int from = 0;
+            final int to = 10;
+
+            final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = IntStream.range(from, to)
+                    .map(i -> to - i + from - 1)
+                    .mapToObj(textDocumentDTOS::get)
+                    .map(textDocumentDTOtoDocumentStoredFieldsDTO)
+                    .collect(Collectors.toList());
+
+            final String expectedJson = asJson(documentStoredFieldsDTOS);
+
             final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                     .param("page.page", String.valueOf(1))
                     .param("page.size", String.valueOf(100));
@@ -143,7 +137,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
 
         } finally {
-            ids.forEach(id -> {
+            docIds.forEach(id -> {
                 documentDataInitializer.cleanRepositories(id);
                 documentIndex.removeDocument(id);
             });
@@ -152,35 +146,38 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void checkTextDocumentWithMaxId_When_DefaultSearchQuerySet_Expect_isFirstFound() throws Exception {
-        List<Integer> ids = new ArrayList<>();
 
-        List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            textDocumentDTOS.add(documentDataInitializer.createTextDocument());
-        }
-
-        textDocumentDTOS.forEach(textDocumentDTO -> {
-            final int id = documentService.save(textDocumentDTO);
-            ids.add(id);
-            documentIndex.indexDocument(id);
-        });
-
-        Thread.sleep(TimeUnit.SECONDS.toMillis(12));
-
-        int maxId = ids.stream()
-                .mapToInt(id -> id)
-                .max()
-                .getAsInt();
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
 
         try {
+            for (int i = 0; i < 50; i++) {
+                textDocumentDTOS.add(documentDataInitializer.createTextDocument());
+            }
+
+            textDocumentDTOS.forEach(textDocumentDTO -> {
+                final int id = documentService.save(textDocumentDTO);
+                docIds.add(id);
+            });
+
+            final OptionalInt oMax = docIds.stream()
+                    .mapToInt(id -> id)
+                    .max();
+
+            assertTrue(oMax.isPresent());
+
+            final int maxId = oMax.getAsInt();
+
+            waitForIndexUpdates();
+
             final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
             final String responseJSON = getJsonResponse(requestBuilder);
             final List list = fromJson(responseJSON, List.class);
 
-            Assert.assertEquals(maxId, ((LinkedHashMap) list.get(0)).get("id"));
+            assertEquals(maxId, ((LinkedHashMap) list.get(0)).get("id"));
 
         } finally {
-            ids.forEach(id -> {
+            docIds.forEach(id -> {
                 documentDataInitializer.cleanRepositories(id);
                 documentIndex.removeDocument(id);
             });
@@ -194,50 +191,48 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
         //create 2 users
         final List<User> users = userDataInitializer.createData(2, RoleId.USERS_ID);
-
-        List<Integer> ids = new ArrayList<>();
-
-        List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
-
-        // create docs for 1st user
-        for (int i = 0; i < documentNumberFirstUser; i++) {
-            AuditDTO auditDTO = new AuditDTO();
-            auditDTO.setId(users.get(0).getId());
-
-            final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
-            textDocument.setCreated(auditDTO);
-
-            textDocumentDTOS.add(textDocument);
-        }
-
-        // create docs for 2st user
-        for (int i = 0; i < documentNumberSecondUser; i++) {
-            AuditDTO auditDTO = new AuditDTO();
-            auditDTO.setId(users.get(1).getId());
-
-            final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
-            textDocument.setCreated(auditDTO);
-
-            textDocumentDTOS.add(textDocument);
-        }
-
-        textDocumentDTOS.forEach(textDocumentDTO -> {
-            final int id = documentService.save(textDocumentDTO);
-            ids.add(id);
-            documentIndex.indexDocument(id);
-        });
-
-        Thread.sleep(TimeUnit.SECONDS.toMillis(20));
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
 
         try {
+            // create docs for 1st user
+            for (int i = 0; i < documentNumberFirstUser; i++) {
+                final AuditDTO auditDTO = new AuditDTO();
+                auditDTO.setId(users.get(0).getId());
+
+                final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
+                textDocument.setCreated(auditDTO);
+
+                textDocumentDTOS.add(textDocument);
+            }
+
+            // create docs for 2st user
+            for (int i = 0; i < documentNumberSecondUser; i++) {
+                final AuditDTO auditDTO = new AuditDTO();
+                auditDTO.setId(users.get(1).getId());
+
+                final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
+                textDocument.setCreated(auditDTO);
+
+                textDocumentDTOS.add(textDocument);
+            }
+
+            textDocumentDTOS.forEach(textDocumentDTO -> {
+                final int id = documentService.save(textDocumentDTO);
+                docIds.add(id);
+            });
+
+            waitForIndexUpdates();
+
             // create query for 1st user
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                     .param("userId", users.get(0).getId().toString());
+
             String responseJSON = getJsonResponse(requestBuilder);
             List documentList = fromJson(responseJSON, List.class);
 
             // check document number for 1st user
-            Assert.assertEquals(documentNumberFirstUser, documentList.size());
+            assertEquals(documentNumberFirstUser, documentList.size());
 
             requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                     .param("userId", users.get(1).getId().toString());
@@ -245,10 +240,10 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             documentList = fromJson(responseJSON, List.class);
 
             // check document number for 2st user
-            Assert.assertEquals(documentNumberSecondUser, documentList.size());
+            assertEquals(documentNumberSecondUser, documentList.size());
 
         } finally {
-            ids.forEach(id -> {
+            docIds.forEach(id -> {
                 documentDataInitializer.cleanRepositories(id);
                 documentIndex.removeDocument(id);
             });
@@ -264,46 +259,44 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         final int categoryNumber = 1;
 
         categoryDataInitializer.createData(categoryNumber);
+
         final List<CategoryDTO> categories = categoryDataInitializer.getCategoriesAsDTO();
-
-        List<Integer> ids = new ArrayList<>();
-
-        List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
-        for (int i = 0; i < documentNumberWithSpecifiedCategory; i++) {
-            final TextDocumentDTO textDocumentWithCategory = documentDataInitializer.createTextDocument();
-            textDocumentWithCategory.getCategories().add(categories.get(0));
-            textDocumentDTOS.add(textDocumentWithCategory);
-        }
-
-        for (int i = 0; i < documentNumberWithoutCategory; i++) {
-            textDocumentDTOS.add(documentDataInitializer.createTextDocument());
-        }
-
-        textDocumentDTOS.forEach(textDocumentDTO -> {
-            final int id = documentService.save(textDocumentDTO);
-            ids.add(id);
-            documentIndex.indexDocument(id);
-        });
-
-        Thread.sleep(TimeUnit.SECONDS.toMillis(12));
-
-        final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = IntStream.range(0, documentNumberWithSpecifiedCategory)
-                .map(i -> documentNumberWithSpecifiedCategory - i - 1)
-                .mapToObj(textDocumentDTOS::get)
-                .map(textDocumentDTOtoDocumentStoredFieldsDTO)
-                .collect(Collectors.toList());
-
-        String expectedJson = asJson(documentStoredFieldsDTOS);
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
 
         try {
+            for (int i = 0; i < documentNumberWithSpecifiedCategory; i++) {
+                final TextDocumentDTO textDocumentWithCategory = documentDataInitializer.createTextDocument();
+                textDocumentWithCategory.getCategories().add(categories.get(0));
+                textDocumentDTOS.add(textDocumentWithCategory);
+            }
+
+            for (int i = 0; i < documentNumberWithoutCategory; i++) {
+                textDocumentDTOS.add(documentDataInitializer.createTextDocument());
+            }
+
+            textDocumentDTOS.forEach(textDocumentDTO -> {
+                final int id = documentService.save(textDocumentDTO);
+                docIds.add(id);
+            });
+
+            waitForIndexUpdates();
+
+            final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = IntStream.range(0, documentNumberWithSpecifiedCategory)
+                    .map(i -> documentNumberWithSpecifiedCategory - i - 1)
+                    .mapToObj(textDocumentDTOS::get)
+                    .map(textDocumentDTOtoDocumentStoredFieldsDTO)
+                    .collect(Collectors.toList());
+
+            final String expectedJson = asJson(documentStoredFieldsDTOS);
             final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                     .param("categoriesId[0]", String.valueOf(categories.get(0).getId()));
 
-            Assert.assertEquals(documentNumberWithSpecifiedCategory, fromJson(getJsonResponse(requestBuilder), List.class).size());
+            assertEquals(documentNumberWithSpecifiedCategory, fromJson(getJsonResponse(requestBuilder), List.class).size());
             performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
 
         } finally {
-            ids.forEach(id -> {
+            docIds.forEach(id -> {
                 documentDataInitializer.cleanRepositories(id);
                 documentIndex.removeDocument(id);
             });
@@ -335,47 +328,53 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
     private void testForLastDigits(int lastDigitsNumber) throws Exception {
         final int documentNumber = 35;
 
-        final List<Integer> ids = new ArrayList<>();
-
+        final List<Integer> docIds = new ArrayList<>();
         final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+
         for (int i = 0; i < documentNumber; i++) {
             textDocumentDTOS.add(documentDataInitializer.createTextDocument());
         }
 
         textDocumentDTOS.forEach(textDocumentDTO -> {
             final int id = documentService.save(textDocumentDTO);
-            ids.add(id);
+            docIds.add(id);
             documentIndex.indexDocument(id);
         });
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(10));
+            waitForIndexUpdates();
 
-        final String firstId = String.valueOf(ids.get(0));
-        final String lastDigitsOfFirstID = firstId.substring(firstId.length() - lastDigitsNumber);
+            final String firstId = String.valueOf(docIds.get(0));
+            final String lastDigitOfFirstID = firstId.substring(firstId.length() - lastDigitsNumber);
 
         final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = textDocumentDTOS.stream()
                 .map(textDocumentDTOtoDocumentStoredFieldsDTO)
-                .filter(doc -> String.valueOf(doc.getId()).contains(lastDigitsOfFirstID))
+                .filter(doc -> String.valueOf(doc.getId()).contains(lastDigitOfFirstID))
                 .collect(Collectors.toList());
 
-        final int expectedSize = documentStoredFieldsDTOS.size();
+        final int expectedDocumentListSize = documentStoredFieldsDTOS.size();
 
         Collections.reverse(documentStoredFieldsDTOS);
 
-        final String expectedJson = asJson(documentStoredFieldsDTOS);
+        String expectedJson = asJson(documentStoredFieldsDTOS);
 
         try {
             final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                    .param("term", lastDigitsOfFirstID);
+                    .param("term", lastDigitOfFirstID);
 
-            Assert.assertEquals(expectedSize, fromJson(getJsonResponse(requestBuilder), List.class).size());
+            assertEquals(expectedDocumentListSize, fromJson(getJsonResponse(requestBuilder), List.class).size());
             performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
 
         } finally {
-            ids.forEach(id -> {
+            docIds.forEach(id -> {
                 documentDataInitializer.cleanRepositories(id);
                 documentIndex.removeDocument(id);
             });
+        }
+    }
+
+    private void waitForIndexUpdates() throws InterruptedException {
+        while (!documentIndex.isUpdateDone()) {
+            Thread.sleep(TimeUnit.SECONDS.toMillis(1));
         }
     }
 }

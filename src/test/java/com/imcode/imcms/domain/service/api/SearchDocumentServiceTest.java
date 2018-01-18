@@ -134,9 +134,10 @@ public class SearchDocumentServiceTest {
 
     @Test
     public void searchDocuments_When_DocId1001Requested_Expect_Found() {
-        PageRequestDTO pageRequest = new PageRequestDTO(0, 10, new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID)));
-
-        SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+        final PageRequestDTO pageRequest = new PageRequestDTO(
+                0, 10, new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID))
+        );
+        final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
         searchQueryDTO.setTerm(String.valueOf(DOC_ID));
         searchQueryDTO.setPage(pageRequest);
@@ -145,7 +146,7 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    public void search_When_CategorySpecified_Expect_Found() {
+    public void search_When_CategorySpecified_Expect_Found() throws InterruptedException {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
@@ -167,11 +168,7 @@ public class SearchDocumentServiceTest {
             final PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
             final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
-            try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(10));
-            } catch (InterruptedException e) {
-                // don't really care
-            }
+            waitForIndexUpdates();
 
             searchQueryDTO.setPage(pageRequest);
             searchQueryDTO.setCategoriesId(Collections.singletonList(savedId));
@@ -190,28 +187,25 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    public void search_When_OneHundredDocumentsExist_Expect_Found() {
-        int caseNumber = 100;
-        List<Integer> ids = new ArrayList<>();
+    public void search_When_OneHundredDocumentsExist_Expect_Found() throws Exception {
+        final int caseNumber = 100;
+        final List<Integer> docIds = new ArrayList<>();
 
         try {
             for (int i = 0; i < caseNumber; i++) {
-                TextDocumentDTO documentDTO = documentDataInitializer.createTextDocument();
-                ids.add(documentService.save(documentDTO));
+                final TextDocumentDTO documentDTO = documentDataInitializer.createTextDocument();
+                docIds.add(documentService.save(documentDTO));
             }
 
-            try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(9));
-            } catch (InterruptedException e) {
-                // ignore
-            }
+            waitForIndexUpdates();
 
-            SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
-            int documentCount = searchDocumentService.searchDocuments(searchQueryDTO).size();
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            final int documentCount = searchDocumentService.searchDocuments(searchQueryDTO).size();
 
             assertEquals(101, documentCount);
+
         } finally {
-            ids.forEach(id -> {
+            docIds.forEach(id -> {
                 documentDataInitializer.cleanRepositories(id);
                 documentIndex.removeDocument(id);
             });
@@ -219,27 +213,31 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    public void search_When_SpecifiedCategorySet_Expect_OneDocument() {
+    public void search_When_SpecifiedCategorySet_Expect_OneDocument() throws InterruptedException {
         // create category type
-        String categoryName = "test_type_name" + System.currentTimeMillis();
-        CategoryType categoryType = new CategoryTypeJPA(null, categoryName, 0,
+        final String categoryName = "test_type_name" + System.currentTimeMillis();
+        final CategoryType categoryType = new CategoryTypeJPA(null, categoryName, 0,
                 false, false);
 
-        CategoryTypeJPA savedCategoryType = new CategoryTypeJPA(categoryTypeService.save(categoryType));
+        final CategoryTypeJPA savedCategoryType = new CategoryTypeJPA(categoryTypeService.save(categoryType));
 
         // create 2 categories
-        String firstTestCategoryName = "first_category_name" + System.currentTimeMillis();
-        Category firstCategory = new CategoryJPA(firstTestCategoryName, "dummy", "", savedCategoryType);
-        Category savedFirstCategory = categoryService.save(firstCategory);
+        final String firstTestCategoryName = "first_category_name" + System.currentTimeMillis();
+        final Category firstCategory = new CategoryJPA(
+                firstTestCategoryName, "dummy", "", savedCategoryType
+        );
+        final Category savedFirstCategory = categoryService.save(firstCategory);
 
-        String secondTestCategoryName = "second_category_name" + System.currentTimeMillis();
-        Category secondCategory = new CategoryJPA(secondTestCategoryName, "dummy", "", savedCategoryType);
-        Category savedSecondCategory = categoryService.save(secondCategory);
+        final String secondTestCategoryName = "second_category_name" + System.currentTimeMillis();
+        final Category secondCategory = new CategoryJPA(
+                secondTestCategoryName, "dummy", "", savedCategoryType
+        );
+        final Category savedSecondCategory = categoryService.save(secondCategory);
 
         // create 3 documents
-        TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
-        TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
-        TextDocumentDTO thirdDocument = documentDataInitializer.createTextDocument();
+        final TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
+        final TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
+        final TextDocumentDTO thirdDocument = documentDataInitializer.createTextDocument();
 
         try {
             // add categories to documents (firstCategory add only to secondDocument)
@@ -252,22 +250,18 @@ public class SearchDocumentServiceTest {
             documentService.save(secondDocument);
             documentService.save(thirdDocument);
 
-            try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(4));
-            } catch (InterruptedException e) {
-                // don't really care
-            }
+            waitForIndexUpdates();
 
-            Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-            PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
-            SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            final Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+            final PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
             searchQueryDTO.setPage(pageRequest);
             searchQueryDTO.setCategoriesId(Collections.singletonList(savedFirstCategory.getId()));
 
-            List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
+            final List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
             assertEquals(1, documents.size());
 
-            DocumentStoredFieldsDTO dto = documents.get(0);
+            final DocumentStoredFieldsDTO dto = documents.get(0);
             assertEquals(secondDocument.getId(), dto.getId());
 
         } finally {
@@ -287,23 +281,25 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    public void search_When_SpecifiedCategorySet_Expect_MultipleDocuments() {
+    public void search_When_SpecifiedCategorySet_Expect_MultipleDocuments() throws InterruptedException {
         // create category type
-        String categoryName = "test_type_name" + System.currentTimeMillis();
-        CategoryType categoryType = new CategoryTypeJPA(null, categoryName, 0,
+        final String categoryName = "test_type_name" + System.currentTimeMillis();
+        final CategoryType categoryType = new CategoryTypeJPA(null, categoryName, 0,
                 false, false);
 
-        CategoryTypeJPA savedCategoryType = new CategoryTypeJPA(categoryTypeService.save(categoryType));
+        final CategoryTypeJPA savedCategoryType = new CategoryTypeJPA(categoryTypeService.save(categoryType));
 
         // create category
-        String firstTestCategoryName = "category_name" + System.currentTimeMillis();
-        Category firstCategory = new CategoryJPA(firstTestCategoryName, "dummy", "", savedCategoryType);
-        Category savedCategory = categoryService.save(firstCategory);
+        final String firstTestCategoryName = "category_name" + System.currentTimeMillis();
+        final Category firstCategory = new CategoryJPA(
+                firstTestCategoryName, "dummy", "", savedCategoryType
+        );
+        final Category savedCategory = categoryService.save(firstCategory);
 
         // create 3 documents
-        TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
-        TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
-        TextDocumentDTO thirdDocument = documentDataInitializer.createTextDocument();
+        final TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
+        final TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
+        final TextDocumentDTO thirdDocument = documentDataInitializer.createTextDocument();
 
         try {
             // add categories to documents
@@ -316,22 +312,19 @@ public class SearchDocumentServiceTest {
             documentService.save(secondDocument);
             documentService.save(thirdDocument);
 
-            try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(10));
-            } catch (InterruptedException e) {
-                // don't really care
-            }
+            waitForIndexUpdates();
 
-            Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-            PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
-            SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            final Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+            final PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+
             searchQueryDTO.setPage(pageRequest);
             searchQueryDTO.setCategoriesId(Collections.singletonList(savedCategory.getId()));
 
-            List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
+            final List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
             assertEquals(3, documents.size());
 
-            List<Integer> ids = documents
+            final List<Integer> ids = documents
                     .stream()
                     .map(DocumentStoredFieldsDTO::getId)
                     .collect(Collectors.toList());
@@ -339,9 +332,9 @@ public class SearchDocumentServiceTest {
             assertTrue(ids.contains(firstDocument.getId()));
             assertTrue(ids.contains(secondDocument.getId()));
             assertTrue(ids.contains(thirdDocument.getId()));
+
         } finally {
             categoryService.delete(savedCategory.getId());
-
             categoryTypeService.delete(savedCategoryType.getId());
 
             documentDataInitializer.cleanRepositories(firstDocument.getId());
@@ -355,14 +348,14 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    public void search_When_SpecifiedKeywordSet_Expect_OneDocument() {
-        String firstKeyword = "firstKeyword";
-        String secondKeyword = "secondKeyword";
+    public void search_When_SpecifiedKeywordSet_Expect_OneDocument() throws InterruptedException {
+        final String firstKeyword = "firstKeyword";
+        final String secondKeyword = "secondKeyword";
 
         // create 3 documents
-        TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
-        TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
-        TextDocumentDTO thirdDocument = documentDataInitializer.createTextDocument();
+        final TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
+        final TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
+        final TextDocumentDTO thirdDocument = documentDataInitializer.createTextDocument();
 
         try {
             firstDocument.getKeywords().add(firstKeyword);
@@ -374,23 +367,19 @@ public class SearchDocumentServiceTest {
             documentService.save(secondDocument);
             documentService.save(thirdDocument);
 
-            try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(4));
-            } catch (InterruptedException e) {
-                // don't really care
-            }
+            waitForIndexUpdates();
 
-            Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-            PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
-            SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            final Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+            final PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
             searchQueryDTO.setTerm(secondKeyword);
             searchQueryDTO.setPage(pageRequest);
 
-            List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
+            final List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
             assertEquals(1, documents.size());
 
-            DocumentStoredFieldsDTO dto = documents.get(0);
+            final DocumentStoredFieldsDTO dto = documents.get(0);
             assertEquals(thirdDocument.getId(), dto.getId());
 
         } finally {
@@ -405,12 +394,12 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    public void search_When_SpecifiedKeywordSet_Expect_MultipleDocuments() {
-        String keyword = "keyword";
+    public void search_When_SpecifiedKeywordSet_Expect_MultipleDocuments() throws InterruptedException {
+        final String keyword = "keyword";
 
         // create 2 documents
-        TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
-        TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
+        final TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
+        final TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
 
         try {
             firstDocument.getKeywords().add(keyword);
@@ -420,28 +409,25 @@ public class SearchDocumentServiceTest {
             documentService.save(firstDocument);
             documentService.save(secondDocument);
 
-            try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(15));
-            } catch (InterruptedException e) {
-                // don't really care
-            }
+            waitForIndexUpdates();
 
-            Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
-            PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
-            SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            final Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
+            final PageRequestDTO pageRequest = new PageRequestDTO(0, 10, sort);
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
             searchQueryDTO.setTerm(keyword);
             searchQueryDTO.setPage(pageRequest);
 
-            List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
+            final List<DocumentStoredFieldsDTO> documents = searchDocumentService.searchDocuments(searchQueryDTO);
             assertEquals(2, documents.size());
 
-            List<Integer> ids = documents.stream()
+            final List<Integer> ids = documents.stream()
                     .map(DocumentStoredFieldsDTO::getId)
                     .collect(Collectors.toList());
 
             assertTrue(ids.contains(firstDocument.getId()));
             assertTrue(ids.contains(secondDocument.getId()));
+
         } finally {
             documentDataInitializer.cleanRepositories(firstDocument.getId());
             documentDataInitializer.cleanRepositories(secondDocument.getId());
@@ -463,7 +449,7 @@ public class SearchDocumentServiceTest {
             // save documents
             docs.forEach(documentService::save);
 
-            Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+            waitForIndexUpdates();
 
             // create page request
             final Sort sort = new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID));
@@ -471,7 +457,9 @@ public class SearchDocumentServiceTest {
             final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
             searchQueryDTO.setPage(pageRequest);
 
-            final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = searchDocumentService.searchDocuments(searchQueryDTO);
+            final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = searchDocumentService.searchDocuments(
+                    searchQueryDTO
+            );
 
             assertEquals(6, documentStoredFieldsDTOS.size());
 
@@ -495,11 +483,13 @@ public class SearchDocumentServiceTest {
             // save documents
             docs.forEach(documentService::save);
 
-            Thread.sleep(TimeUnit.SECONDS.toMillis(7));
+            waitForIndexUpdates();
 
             final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
 
-            final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = searchDocumentService.searchDocuments(searchQueryDTO);
+            final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = searchDocumentService.searchDocuments(
+                    searchQueryDTO
+            );
 
             assertEquals(11, documentStoredFieldsDTOS.size());
 
@@ -509,7 +499,11 @@ public class SearchDocumentServiceTest {
                 documentIndex.removeDocument(document.getId());
             });
         }
+    }
 
-
+    private void waitForIndexUpdates() throws InterruptedException {
+        while (!documentIndex.isUpdateDone()) {
+            Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+        }
     }
 }

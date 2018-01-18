@@ -27,4 +27,9 @@ public class UnavailableDocumentIndexService implements DocumentIndexService {
     @Override
     public void shutdown() {
     }
+
+    @Override
+    public boolean isUpdateDone() {
+        throw new ServiceUnavailableException();
+    }
 }

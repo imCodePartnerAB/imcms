@@ -15,18 +15,22 @@ public class DocumentIndexWrapper implements DocumentIndex {
         this.index = index;
     }
 
+    @Override
     public void indexDocument(DocumentDomainObject document) throws IndexException {
         index.indexDocument(document);
     }
 
+    @Override
     public void rebuild() throws IndexException {
         index.rebuild();
     }
 
+    @Override
     public void removeDocument(DocumentDomainObject document) throws IndexException {
         index.removeDocument(document);
     }
 
+    @Override
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return index.search(query, searchingUser);
     }
@@ -41,6 +45,7 @@ public class DocumentIndexWrapper implements DocumentIndex {
         return index.search(solrQuery, searchingUser);
     }
 
+    @Override
     public DocumentIndexService getService() {
         return index.getService();
     }
@@ -53,5 +58,10 @@ public class DocumentIndexWrapper implements DocumentIndex {
     @Override
     public void removeDocument(int docId) throws IndexException {
         index.removeDocument(docId);
+    }
+
+    @Override
+    public boolean isUpdateDone() {
+        return index.isUpdateDone();
     }
 }

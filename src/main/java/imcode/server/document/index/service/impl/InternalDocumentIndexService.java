@@ -110,6 +110,11 @@ public class InternalDocumentIndexService implements DocumentIndexService, Index
         }
     }
 
+    @Override
+    public boolean isUpdateDone() {
+        return serviceRef.get().isUpdateDone();
+    }
+
     private ManagedDocumentIndexService newManagedService(boolean recreateDataDir) {
         final SolrServer solrServer = SolrServerFactory.createEmbeddedSolrServer(solrHome, recreateDataDir);
         return new ManagedDocumentIndexService(solrServer, solrServer, serviceOps, failureHandler);

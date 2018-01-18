@@ -32,4 +32,6 @@ public interface DocumentIndexService {
 
     void shutdown();
 
+    boolean isUpdateDone();
+
 }
