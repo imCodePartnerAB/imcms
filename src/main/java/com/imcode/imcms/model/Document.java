@@ -24,7 +24,6 @@ import java.util.TreeSet;
 public abstract class Document {
 
     protected Integer id;
-    protected String title;
     @Setter(AccessLevel.NONE)
     protected Meta.DocumentType type;
     protected String target;
@@ -46,7 +45,6 @@ public abstract class Document {
 
     protected Document(Document from) {
         id = from.id;
-        title = from.title;
         type = from.type; // not sure
         target = from.target;
         alias = from.alias;
