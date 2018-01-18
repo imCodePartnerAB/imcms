@@ -412,6 +412,52 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         }
     }
 
+    @Test
+    public void checkTextDocument_When_TermIsSetAsAlias_Expect_Found() throws Exception {
+        final int documentNumber = 10;
+        final int docIdCheckingIndex = new Random().nextInt(documentNumber);
+
+        final String aliasSuffix = "alias";
+
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < documentNumber; i++) {
+                final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
+                textDocument.setAlias(textDocument.getId() + aliasSuffix);
+                textDocumentDTOS.add(textDocument);
+            }
+
+            textDocumentDTOS.forEach(textDocumentDTO -> {
+                final int id = documentService.save(textDocumentDTO);
+                docIds.add(id);
+            });
+
+            waitForIndexUpdates();
+
+            List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = textDocumentDTOS.stream()
+                    .skip(docIdCheckingIndex)
+                    .limit(1)
+                    .map(textDocumentDTOtoDocumentStoredFieldsDTO)
+                    .collect(Collectors.toList());
+
+            final String expectedJson = asJson(documentStoredFieldsDTOS);
+            final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                    .param("term", String.valueOf(
+                            textDocumentDTOS.get(docIdCheckingIndex).getId()) + aliasSuffix);
+
+            assertEquals(1, fromJson(getJsonResponse(requestBuilder), List.class).size());
+            performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
+
+        } finally {
+            docIds.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+        }
+    }
+
     private void testForLastDigits(int lastDigitsNumber) throws Exception {
         final int documentNumber = 35;
 
