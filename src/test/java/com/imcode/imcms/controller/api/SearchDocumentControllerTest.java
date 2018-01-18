@@ -254,7 +254,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void searchTextDocuments_When_SpecifiedCategorySet_Expect_Found() throws Exception {
-        final int documentNumberWithSpecifiedCategory = 14;
+        final int documentNumberWithSpecifiedCategory = 10;
         final int documentNumberWithoutCategory = 6;
         final int categoryNumber = 1;
 
@@ -338,13 +338,12 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         textDocumentDTOS.forEach(textDocumentDTO -> {
             final int id = documentService.save(textDocumentDTO);
             docIds.add(id);
-            documentIndex.indexDocument(id);
         });
 
-            waitForIndexUpdates();
+        waitForIndexUpdates();
 
-            final String firstId = String.valueOf(docIds.get(0));
-            final String lastDigitOfFirstID = firstId.substring(firstId.length() - lastDigitsNumber);
+        final String firstId = String.valueOf(docIds.get(0));
+        final String lastDigitOfFirstID = firstId.substring(firstId.length() - lastDigitsNumber);
 
         final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = textDocumentDTOS.stream()
                 .map(textDocumentDTOtoDocumentStoredFieldsDTO)
@@ -355,7 +354,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
         Collections.reverse(documentStoredFieldsDTOS);
 
-        String expectedJson = asJson(documentStoredFieldsDTOS);
+        final String expectedJson = asJson(documentStoredFieldsDTOS);
 
         try {
             final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
