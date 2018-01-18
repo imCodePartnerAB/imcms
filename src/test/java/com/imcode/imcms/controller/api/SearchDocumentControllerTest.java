@@ -325,6 +325,48 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         testForLastDigits(4);
     }
 
+    @Test
+    public void checkTextDocument_When_TermIsSetAsSpecifiedDocId_Expect_Found() throws Exception {
+        final int documentNumber = 10;
+        final int docIdChecking = 4; // between 0 and documentNumber-1
+
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < documentNumber; i++) {
+                final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
+                textDocumentDTOS.add(textDocument);
+            }
+
+            textDocumentDTOS.forEach(textDocumentDTO -> {
+                final int id = documentService.save(textDocumentDTO);
+                docIds.add(id);
+            });
+
+            waitForIndexUpdates();
+
+            List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = textDocumentDTOS.stream()
+                    .skip(docIdChecking)
+                    .limit(1)
+                    .map(textDocumentDTOtoDocumentStoredFieldsDTO)
+                    .collect(Collectors.toList());
+
+            final String expectedJson = asJson(documentStoredFieldsDTOS);
+            final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                    .param("term", String.valueOf(textDocumentDTOS.get(docIdChecking).getId()));
+
+            assertEquals(1, fromJson(getJsonResponse(requestBuilder), List.class).size());
+            performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
+
+        } finally {
+            docIds.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+        }
+    }
+
     private void testForLastDigits(int lastDigitsNumber) throws Exception {
         final int documentNumber = 35;
 
