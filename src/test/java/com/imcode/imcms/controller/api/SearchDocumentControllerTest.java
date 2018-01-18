@@ -314,11 +314,30 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void searchTextDocuments_When_TermIsSetAsLastDigitOfSpecifiedId_Expect_FoundDocuments() throws Exception {
+        testForLastDigits(1);
+    }
+
+    @Test
+    public void searchTextDocuments_When_TermIsSetAsLastTwoDigitsOfSpecifiedId_Expect_FoundDocuments() throws Exception {
+        testForLastDigits(2);
+    }
+
+    @Test
+    public void searchTextDocuments_When_TermIsSetAsLastThreeDigitsOfSpecifiedId_Expect_FoundDocuments() throws Exception {
+        testForLastDigits(3);
+    }
+
+    @Test
+    public void searchTextDocuments_When_TermIsSetAsLastFourDigitsOfSpecifiedId_Expect_FoundDocuments() throws Exception {
+        testForLastDigits(4);
+    }
+
+    private void testForLastDigits(int lastDigitsNumber) throws Exception {
         final int documentNumber = 35;
 
-        List<Integer> ids = new ArrayList<>();
+        final List<Integer> ids = new ArrayList<>();
 
-        List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
         for (int i = 0; i < documentNumber; i++) {
             textDocumentDTOS.add(documentDataInitializer.createTextDocument());
         }
@@ -332,24 +351,24 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         Thread.sleep(TimeUnit.SECONDS.toMillis(10));
 
         final String firstId = String.valueOf(ids.get(0));
-        final String lastDigitOfFirstID = firstId.substring(firstId.length() - 1); // last digit
+        final String lastDigitsOfFirstID = firstId.substring(firstId.length() - lastDigitsNumber);
 
         final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = textDocumentDTOS.stream()
                 .map(textDocumentDTOtoDocumentStoredFieldsDTO)
-                .filter(doc -> String.valueOf(doc.getId()).contains(lastDigitOfFirstID))
+                .filter(doc -> String.valueOf(doc.getId()).contains(lastDigitsOfFirstID))
                 .collect(Collectors.toList());
 
-        final int expectedDocumentListSize = documentStoredFieldsDTOS.size();
+        final int expectedSize = documentStoredFieldsDTOS.size();
 
         Collections.reverse(documentStoredFieldsDTOS);
 
-        String expectedJson = asJson(documentStoredFieldsDTOS);
+        final String expectedJson = asJson(documentStoredFieldsDTOS);
 
         try {
             final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                    .param("term", lastDigitOfFirstID);
+                    .param("term", lastDigitsOfFirstID);
 
-            Assert.assertEquals(expectedDocumentListSize, fromJson(getJsonResponse(requestBuilder), List.class).size());
+            Assert.assertEquals(expectedSize, fromJson(getJsonResponse(requestBuilder), List.class).size());
             performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
 
         } finally {
