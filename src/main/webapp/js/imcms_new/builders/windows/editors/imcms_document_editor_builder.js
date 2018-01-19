@@ -50,7 +50,40 @@ Imcms.define("imcms-document-editor-builder",
                 });
             }
 
+            // default object
+            var searchQueryObj = {
+                term: "",
+                userId: null,
+                categories: {}
+            };
+
+            function setField(field, value) {
+                searchQueryObj[field] = value;
+            }
+
+            function showDocs() {
+                for (var id in showedDocIDs) {
+                    $($documentsList.find("[data-doc-id=" + id + "]")[0])
+                        .css("display", "none");
+                    delete showedDocIDs[id];
+                }
+
+                docSearchRestApi.read({
+                    term: searchQueryObj["term"],
+                    categoriesId: searchQueryObj["categories"],
+                    userId: searchQueryObj["userId"]
+                }).done(function (documentList) {
+                    for (var i = 0; i < documentList.length; i++) {
+                        var id = documentList[i].id;
+                        showedDocIDs[id] = true;
+                        $documentsList.find("[data-doc-id=" + id + "]")
+                            .css("display", "block");
+                    }
+                });
+            }
+
             function buildSearchDocField() {
+
                 var $textField;
 
                 return new BEM({
@@ -63,25 +96,8 @@ Imcms.define("imcms-document-editor-builder",
                         }),
                         "button": components.buttons.searchButton({
                             click: function () {
-
-                                for (var id in showedDocIDs) {
-                                    $($documentsList.find("[data-doc-id=" + id + "]")[0])
-                                        .css("display", "none");
-                                    delete showedDocIDs[id];
-                                }
-
-                                var term = $textField.val();
-
-                                docSearchRestApi.read({
-                                    term: term
-                                }).done(function (documentList) {
-                                    for (var i = 0; i < documentList.length; i++) {
-                                        var id = documentList[i].id;
-                                        showedDocIDs[id] = true;
-                                        $($documentsList.find("[data-doc-id=" + id + "]")[0])
-                                            .css("display", "block");
-                                    }
-                                });
+                                setField("term", $textField.val());
+                                showDocs();
                             }
                         })
                     }
@@ -89,9 +105,17 @@ Imcms.define("imcms-document-editor-builder",
             }
 
             function buildUsersFilterSelect() {
+                var onSelected = function (value) {
+                    if (searchQueryObj["userId"] !== value) {
+                        setField("userId", value);
+                        showDocs();
+                    }
+                };
+
                 var $usersFilterSelect = components.selects.imcmsSelect("<div>", {
                     id: "users-filter",
-                    name: "users-filter"
+                    name: "users-filter",
+                    onSelected: onSelected
                 });
 
                 usersRestApi.read(null).done(function (users) {
@@ -101,16 +125,27 @@ Imcms.define("imcms-document-editor-builder",
                             "data-value": user.id
                         }
                     });
-                    components.selects.addOptionsToSelect(usersDataMapped, $usersFilterSelect);
+                    components.selects.addOptionsToSelect(
+                        usersDataMapped, $usersFilterSelect, onSelected
+                    );
+
                 });
 
                 return $usersFilterSelect;
             }
 
             function buildCategoriesFilterSelect() {
+                var onSelected = function (value) {
+                    if (searchQueryObj["categories"][0] !== value) {
+                        setField("categories", {0: value});
+                        showDocs();
+                    }
+                };
+
                 var $categoriesFilterSelect = components.selects.imcmsSelect("<div>", {
                     id: "categories-filter",
-                    name: "categories-filter"
+                    name: "categories-filter",
+                    onSelected: onSelected
                 });
 
                 categoriesRestApi.read(null).done(function (categories) {
@@ -120,7 +155,8 @@ Imcms.define("imcms-document-editor-builder",
                             "data-value": category.id
                         }
                     });
-                    components.selects.addOptionsToSelect(categoriesDataMapped, $categoriesFilterSelect);
+                    components.selects.addOptionsToSelect(
+                        categoriesDataMapped, $categoriesFilterSelect, onSelected);
                 });
 
                 return $categoriesFilterSelect;
