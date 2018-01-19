@@ -30,7 +30,6 @@ public class DocumentDTO extends Document implements Serializable {
 
     public static DocumentDTO createEmpty() {
         return Value.with(new DocumentDTO(), documentDTO -> {
-            documentDTO.title = "";
             documentDTO.target = "";
             documentDTO.alias = "";
 

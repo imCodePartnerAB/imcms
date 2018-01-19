@@ -368,19 +368,53 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void checkTextDocument_When_TermIsSetAsKeyword_Expect_Found() throws Exception {
-        final int documentNumber = 10;
-        final int docIdCheckingIndex = new Random().nextInt(documentNumber);
+        testKeywordOrAliasOrHeadlineForOneDocument("keyword");
+    }
 
-        final String keywordSuffix = "keyword";
+    @Test
+    public void checkTextDocument_When_TermIsSetAsAlias_Expect_Found() throws Exception {
+        testKeywordOrAliasOrHeadlineForOneDocument("alias");
+    }
+
+    @Test
+    public void searchTextDocument_When_TermIsSetAsHeadline_Expect_Found() throws Exception {
+        testKeywordOrAliasOrHeadlineForOneDocument("headline");
+    }
+
+    @Test
+    public void checkTextDocuments_When_TermIsSetAsKeyword_Expect_DocumentsIsFound() throws Exception {
+        testKeywordOrAliasOrHeadlineForMultipleDocuments("keyword");
+    }
+
+    @Test
+    public void checkTextDocuments_When_TermIsSetAsAlias_Expect_DocumentsIsFound() throws Exception {
+        testKeywordOrAliasOrHeadlineForMultipleDocuments("alias");
+    }
+
+    @Test
+    public void checkTextDocuments_When_TermIsSetAsTitle_Expect_DocumentsIsFound() throws Exception {
+        testKeywordOrAliasOrHeadlineForMultipleDocuments("headline");
+    }
+
+    private void testKeywordOrAliasOrHeadlineForMultipleDocuments(String field) throws Exception {
+        final int documentNumberWithSpecifiedKeyword = 20;
+        final int documentNumberWithoutKeyword = 10;
+
+        final String termText = "some_text" + new Random().nextInt(100);
 
         final List<Integer> docIds = new ArrayList<>();
         final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
 
         try {
-            for (int i = 0; i < documentNumber; i++) {
+            for (int i = 0; i < documentNumberWithSpecifiedKeyword; i++) {
                 final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
-                textDocument.getKeywords().add(textDocument.getId() + keywordSuffix);
+
+                setTextDocumentField(field, textDocument, termText);
                 textDocumentDTOS.add(textDocument);
+            }
+
+            for (int i = 0; i < documentNumberWithoutKeyword; i++) {
+                textDocumentDTOS.add(documentDataInitializer.createTextDocument());
             }
 
             textDocumentDTOS.forEach(textDocumentDTO -> {
@@ -391,17 +425,20 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             waitForIndexUpdates();
 
             List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = textDocumentDTOS.stream()
-                    .skip(docIdCheckingIndex)
-                    .limit(1)
+                    .limit(documentNumberWithSpecifiedKeyword)
                     .map(textDocumentDTOtoDocumentStoredFieldsDTO)
                     .collect(Collectors.toList());
 
-            final String expectedJson = asJson(documentStoredFieldsDTOS);
-            final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                    .param("term", String.valueOf(
-                            textDocumentDTOS.get(docIdCheckingIndex).getId()) + keywordSuffix);
+            Collections.reverse(documentStoredFieldsDTOS);
 
-            assertEquals(1, fromJson(getJsonResponse(requestBuilder), List.class).size());
+            final String expectedJson = asJson(documentStoredFieldsDTOS);
+
+            final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                    .param("term", termText);
+
+            final List list = fromJson(getJsonResponse(requestBuilder), List.class);
+
+            assertEquals(documentNumberWithSpecifiedKeyword, list.size());
             performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
 
         } finally {
@@ -412,12 +449,9 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         }
     }
 
-    @Test
-    public void checkTextDocument_When_TermIsSetAsAlias_Expect_Found() throws Exception {
+    private void testKeywordOrAliasOrHeadlineForOneDocument(String field) throws Exception {
         final int documentNumber = 10;
         final int docIdCheckingIndex = new Random().nextInt(documentNumber);
-
-        final String aliasSuffix = "alias";
 
         final List<Integer> docIds = new ArrayList<>();
         final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
@@ -425,7 +459,9 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         try {
             for (int i = 0; i < documentNumber; i++) {
                 final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
-                textDocument.setAlias(textDocument.getId() + aliasSuffix);
+                final String termText = textDocument.getId() + field;
+
+                setTextDocumentField(field, textDocument, termText);
                 textDocumentDTOS.add(textDocument);
             }
 
@@ -445,9 +481,10 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             final String expectedJson = asJson(documentStoredFieldsDTOS);
             final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                     .param("term", String.valueOf(
-                            textDocumentDTOS.get(docIdCheckingIndex).getId()) + aliasSuffix);
+                            textDocumentDTOS.get(docIdCheckingIndex).getId()) + field);
 
-            assertEquals(1, fromJson(getJsonResponse(requestBuilder), List.class).size());
+            final List list = fromJson(getJsonResponse(requestBuilder), List.class);
+            assertEquals(1, list.size());
             performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
 
         } finally {
@@ -455,6 +492,20 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
                 documentDataInitializer.cleanRepositories(id);
                 documentIndex.removeDocument(id);
             });
+        }
+    }
+
+    private void setTextDocumentField(String field, TextDocumentDTO textDocument, String termText) {
+        switch (field) {
+            case "headline":
+                textDocument.getCommonContents().get(0).setHeadline(termText);
+                break;
+            case "alias":
+                textDocument.setAlias(termText);
+                break;
+            case "keyword":
+                textDocument.getKeywords().add(termText);
+                break;
         }
     }
 

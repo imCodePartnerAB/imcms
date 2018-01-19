@@ -381,8 +381,7 @@ class MappingConfig {
             SolrDocument solrDocument = new SolrDocument();
             solrDocument.put(DocumentIndex.FIELD__META_ID, textDocument.getId());
 
-            final String title = textDocument.getTitle();
-            solrDocument.put(DocumentIndex.FIELD__META_HEADLINE, title == null ? "headline_en" : title);
+            solrDocument.put(DocumentIndex.FIELD__META_HEADLINE, textDocument.getCommonContents().get(0).getHeadline());
 
             solrDocument.put(DocumentIndex.FIELD__DOC_TYPE_ID, textDocument.getType().ordinal());
             solrDocument.put(DocumentIndex.FIELD__ALIAS, textDocument.getAlias());
