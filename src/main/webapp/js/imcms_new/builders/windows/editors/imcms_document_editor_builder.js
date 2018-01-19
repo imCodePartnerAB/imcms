@@ -30,6 +30,8 @@ Imcms.define("imcms-document-editor-builder",
 
         var $documentsContainer, $editorBody, $documentsList;
 
+        var showedDocIDs = {};
+
         function buildBodyHeadTools() {
             function addDocumentToList(document) {
                 var $document = buildDocument(document, documentEditorOptions);
@@ -49,15 +51,39 @@ Imcms.define("imcms-document-editor-builder",
             }
 
             function buildSearchDocField() {
+                var $textField;
+
                 return new BEM({
                     block: "imcms-input-search",
                     elements: {
-                        "text-box": primitives.imcmsInputText({
+                        "text-box": $textField = primitives.imcmsInputText({
                             id: "searchText",
                             name: "search",
                             placeholder: "Type to find document"
                         }),
-                        "button": components.buttons.searchButton()
+                        "button": components.buttons.searchButton({
+                            click: function () {
+
+                                for (var id in showedDocIDs) {
+                                    $($documentsList.find("[data-doc-id=" + id + "]")[0])
+                                        .css("display", "none");
+                                    delete showedDocIDs[id];
+                                }
+
+                                var term = $textField.val();
+
+                                docSearchRestApi.read({
+                                    term: term
+                                }).done(function (documentList) {
+                                    for (var i = 0; i < documentList.length; i++) {
+                                        var id = documentList[i].id;
+                                        showedDocIDs[id] = true;
+                                        $($documentsList.find("[data-doc-id=" + id + "]")[0])
+                                            .css("display", "block");
+                                    }
+                                });
+                            }
+                        })
                     }
                 }).buildBlockStructure("<div>");
             }
@@ -585,6 +611,11 @@ Imcms.define("imcms-document-editor-builder",
 
         function loadDocumentEditorContent($documentsContainer, opts) {
             docSearchRestApi.read().done(function (documentList) {
+
+                for (var i = 0; i < documentList.length; i++) {
+                    showedDocIDs[documentList[i].id] = true;
+                }
+
                 $editorBody = buildEditorBody(documentList, opts);
                 $documentsContainer.append($editorBody);
             });
