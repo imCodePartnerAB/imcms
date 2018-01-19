@@ -48,12 +48,14 @@ public class DocumentIndexImpl implements DocumentIndex {
         final SolrQuery solrQuery = new SolrQuery(queryString);
 
         final Sort sort = query.getSort();
-        final SortField[] sortFields = sort.getSort();
+        if (sort != null) {
+            final SortField[] sortFields = sort.getSort();
 
-        for (SortField sortField : sortFields) {
-            final String field = sortField.getField();
-            solrQuery.addSort(field, (sortField.getReverse()) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc);
+            for (SortField sortField : sortFields) {
+                final String field = sortField.getField();
+                solrQuery.addSort(field, (sortField.getReverse()) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc);
 //            sortField.getReverse(); not sure
+            }
         }
 
         try {
