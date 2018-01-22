@@ -137,7 +137,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
 
     @Override
     public boolean isUpdateDone() {
-        return indexUpdateFuture.isDone();
+        return indexUpdateFuture.isDone() && indexUpdateRequests.isEmpty();
     }
 
     private void rebuildIndexes() {
