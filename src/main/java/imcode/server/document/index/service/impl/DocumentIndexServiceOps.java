@@ -121,6 +121,7 @@ public class DocumentIndexServiceOps {
 
         solrServer.deleteByQuery(query);
         solrServer.commit();
+        logger.info(String.format("Removed document with docId %d from index.", docId));
     }
 
     public void rebuildIndex(SolrServer solrServer) {
