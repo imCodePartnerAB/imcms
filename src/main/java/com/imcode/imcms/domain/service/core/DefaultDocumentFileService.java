@@ -20,9 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,6 +63,7 @@ class DefaultDocumentFileService
     @Override
     public List<DocumentFile> saveAll(List<DocumentFile> saveUs, int docId) {
         setDocAndFileIds(saveUs, docId);
+        resolveDuplicatedIds(saveUs);
         deleteNoMoreUsedFiles(saveUs, docId);
         saveNewFiles(saveUs);
 
@@ -114,12 +114,23 @@ class DefaultDocumentFileService
         return documentFileRepository.findByDocIdAndVersionIndex(docId, Version.WORKING_VERSION_INDEX);
     }
 
-    private List<DocumentFile> saveDocumentFiles(List<DocumentFile> saveUs) {
-        return saveUs.stream()
-                .map(documentFile -> new DocumentFileDTO(
-                        documentFileRepository.save(new DocumentFileJPA(documentFile))
+    private void resolveDuplicatedIds(List<DocumentFile> documentFiles) {
+        final AtomicInteger counter = new AtomicInteger();
+
+        documentFiles.stream()
+                .collect(Collectors.toMap(
+                        DocumentFile::getFileId,
+                        documentFile -> new ArrayList<>(Collections.singletonList(documentFile)),
+                        (documentFiles1, documentFiles2) -> {
+                            documentFiles1.addAll(documentFiles2);
+                            return documentFiles1;
+                        }
                 ))
-                .collect(Collectors.toList());
+                .entrySet()
+                .stream()
+                .filter(fileIdToDocFilesEntry -> fileIdToDocFilesEntry.getValue().size() > 1)
+                .flatMap(fileIdToDocFilesEntry -> fileIdToDocFilesEntry.getValue().stream())
+                .forEach(documentFile -> documentFile.setFileId(documentFile.getFilename() + counter.addAndGet(1)));
     }
 
     private void setDocAndFileIds(List<DocumentFile> saveUs, int docId) {
@@ -175,5 +186,13 @@ class DefaultDocumentFileService
                 LOG.error("Error while saving Document File.", e);
             }
         }
+    }
+
+    private List<DocumentFile> saveDocumentFiles(List<DocumentFile> saveUs) {
+        return saveUs.stream()
+                .map(documentFile -> new DocumentFileDTO(
+                        documentFileRepository.save(new DocumentFileJPA(documentFile))
+                ))
+                .collect(Collectors.toList());
     }
 }
