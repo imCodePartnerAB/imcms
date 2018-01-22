@@ -54,8 +54,6 @@ public class SearchDocumentServiceTest {
 
     private static boolean flag = true;
 
-    private static Imcms imcmsStatic;
-
     private static VersionDataInitializer versionDataInitializerStatic;
 
     @Value("WEB-INF/solr")
@@ -66,9 +64,6 @@ public class SearchDocumentServiceTest {
 
     @Autowired
     private SearchDocumentService searchDocumentService;
-
-    @Autowired
-    private Imcms imcms;
 
     @Autowired
     private Config config;
@@ -89,8 +84,7 @@ public class SearchDocumentServiceTest {
     private DocumentIndex documentIndex;
 
     @AfterClass
-    public static void shutDownSolr() {
-        imcmsStatic.stop();
+    public static void shutDown() {
         Imcms.removeUser();
         versionDataInitializerStatic.cleanRepositories();
     }
@@ -98,7 +92,6 @@ public class SearchDocumentServiceTest {
     @PostConstruct
     public void initSolr() throws Exception {
 
-        imcmsStatic = imcms;
         versionDataInitializerStatic = versionDataInitializer;
 
         final File testSolrFolder = new File(config.getSolrHome());

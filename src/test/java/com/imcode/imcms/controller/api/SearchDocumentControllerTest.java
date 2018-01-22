@@ -74,13 +74,14 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
     }
 
     @After
-    public void cleanRepos() {
+    public void tearDown() {
         Imcms.removeUser();
     }
 
     @Test
     public void getTextDocument_When_DefaultSearchQuery_Expect_DocumentStoredFieldsDtoJson() throws Exception {
 
+        documentIndex.removeDocument(1001); // this doc is already indexed in some cases
         final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
         final Integer documentId = documentService.save(textDocument);
 
@@ -104,6 +105,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
     @Test
     public void getTextDocuments_When_SecondPageIsSet_Expect_DocumentStoredFieldsDtoJson() throws Exception {
 
+        documentIndex.removeDocument(1001); // this doc is already indexed in some cases
         final List<Integer> docIds = new ArrayList<>();
         final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
 
