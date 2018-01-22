@@ -1,6 +1,7 @@
 package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
 public abstract class DocumentFile {
@@ -13,6 +14,7 @@ public abstract class DocumentFile {
         setMimeType(from.getMimeType());
         setDefaultFile(from.isDefaultFile());
         setFileId(from.getFileId());
+        setMultipartFile(from.getMultipartFile());
     }
 
     public abstract Integer getId();
@@ -42,5 +44,9 @@ public abstract class DocumentFile {
     public abstract String getFileId();
 
     public abstract void setFileId(String fileId);
+
+    public abstract MultipartFile getMultipartFile();
+
+    public abstract void setMultipartFile(MultipartFile multipartFile);
 
 }

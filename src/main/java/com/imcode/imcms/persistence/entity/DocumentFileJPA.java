@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 
@@ -40,6 +41,9 @@ public class DocumentFileJPA extends DocumentFile {
 
     @Column(name = "variant_name", nullable = false)
     private String fileId;
+
+    @Transient
+    private MultipartFile multipartFile;
 
     public DocumentFileJPA(DocumentFile from) {
         super(from);
