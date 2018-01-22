@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -43,9 +44,16 @@ import static org.junit.Assert.*;
 public class FileDocumentServiceTest {
 
     private static File testSolrFolder;
+    private static File testFilesFolder;
 
     private FileDocumentDTO createdDoc;
     private int createdDocId;
+
+    @Value("classpath:img1.jpg")
+    private File testFile;
+
+    @Value("${FilePath}")
+    private File filesPath;
 
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
@@ -66,8 +74,17 @@ public class FileDocumentServiceTest {
     public static void shutDownSolr() {
         try {
             FileUtility.forceDelete(testSolrFolder);
+
         } catch (Exception e) {
-            // windows user may receive it
+            testSolrFolder.deleteOnExit();
+
+        } finally {
+            try {
+                FileUtility.forceDelete(testFilesFolder);
+
+            } catch (Exception e) {
+                testFilesFolder.deleteOnExit();
+            }
         }
     }
 
@@ -80,6 +97,7 @@ public class FileDocumentServiceTest {
     @PostConstruct
     private void setUpSolrFiles() throws IOException {
         testSolrFolder = new File(config.getSolrHome());
+        testFilesFolder = filesPath;
 
         if (testSolrFolder.mkdirs()) {
             FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
@@ -220,6 +238,50 @@ public class FileDocumentServiceTest {
 
         for (DocumentFileDTO documentFileDTO : newFiles) {
             assertEquals(documentFileDTO.getDocId().intValue(), createdDocId);
+        }
+    }
+
+    @Test
+    public void save_When_MultipartFilesAttached_Expect_Saved() throws IOException {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        final FileDocumentDTO fileDocumentDTO = fileDocumentService.get(createdDocId);
+        final List<DocumentFileDTO> oldFiles = fileDocumentDTO.getFiles();
+        final String filename = "test-file-" + System.currentTimeMillis() + ".jpg";
+        final MockMultipartFile mockFile = new MockMultipartFile(
+                "file", filename, null, FileUtils.readFileToByteArray(testFile)
+        );
+
+        final DocumentFileDTO documentFile = new DocumentFileDTO();
+        documentFile.setDocId(createdDocId);
+        documentFile.setFilename(filename);
+        documentFile.setMimeType("test" + System.currentTimeMillis());
+        documentFile.setMultipartFile(mockFile);
+
+        final List<DocumentFileDTO> newFiles = new ArrayList<>();
+        newFiles.add(documentFile);
+        fileDocumentDTO.setFiles(newFiles);
+
+        fileDocumentService.save(fileDocumentDTO);
+
+        final List<DocumentFileDTO> savedFiles = fileDocumentService.get(createdDocId).getFiles();
+
+        assertNotNull(savedFiles);
+        assertEquals(savedFiles.size(), newFiles.size());
+        assertFalse(savedFiles.containsAll(oldFiles));
+
+        for (DocumentFileDTO documentFileDTO : newFiles) {
+            assertEquals(documentFileDTO.getDocId().intValue(), createdDocId);
+            final File savedFile = new File(filesPath, documentFileDTO.getFilename());
+            assertTrue(savedFile.exists());
+
+            try {
+                FileUtility.forceDelete(savedFile);
+            } catch (Exception e) {
+                savedFile.deleteOnExit();
+            }
         }
     }
 

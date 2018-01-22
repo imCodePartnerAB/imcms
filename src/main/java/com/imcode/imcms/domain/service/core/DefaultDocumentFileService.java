@@ -8,10 +8,20 @@ import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentFileRepository;
+import imcode.util.Utility;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,15 +30,24 @@ class DefaultDocumentFileService
         extends AbstractVersionedContentService<DocumentFileJPA, DocumentFile, DocumentFileRepository>
         implements DocumentFileService {
 
+    public static final Logger LOG = Logger.getLogger(DefaultDocumentFileService.class);
     private final DocumentFileRepository documentFileRepository;
     private final VersionService versionService;
+    private final File filesPath;
 
     DefaultDocumentFileService(DocumentFileRepository documentFileRepository,
-                               VersionService versionService) {
+                               VersionService versionService,
+                               @Value("${FilePath}") File filesPath) {
 
         super(documentFileRepository);
         this.documentFileRepository = documentFileRepository;
         this.versionService = versionService;
+        this.filesPath = filesPath;
+    }
+
+    @PostConstruct
+    private void createFilesPathDirectories() {
+        filesPath.mkdirs();
     }
 
     /**
@@ -43,54 +62,11 @@ class DefaultDocumentFileService
      */
     @Override
     public List<DocumentFile> saveAll(List<DocumentFile> saveUs, int docId) {
-        saveUs.forEach(documentFile -> {
-            documentFile.setDocId(docId);
-            final String fileId = documentFile.getFileId();
+        setDocAndFileIds(saveUs, docId);
+        deleteNoMoreUsedFiles(saveUs, docId);
+        saveNewFiles(saveUs);
 
-            if (fileId == null) {
-                documentFile.setFileId(documentFile.getFilename());
-            }
-        });
-
-        final Set<Integer> existingFileIds = saveUs.stream()
-                .map(DocumentFile::getId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-
-        final List<DocumentFileJPA> noMoreNeededFiles = getByDocId(docId).stream()
-                .filter(documentFile -> !existingFileIds.contains(documentFile.getId()))
-                .map(DocumentFileJPA::new)
-                .collect(Collectors.toList());
-
-        documentFileRepository.delete(noMoreNeededFiles);
-
-        saveUs.stream()
-                .collect(Collectors.toMap(
-                        DocumentFile::getFilename,
-                        documentFile -> new ArrayList<>(Collections.singletonList(documentFile)),
-                        (documentFiles, documentFiles2) -> {
-                            documentFiles.addAll(documentFiles2);
-                            return documentFiles;
-                        }
-                ))
-                .entrySet()
-                .stream()
-                .filter(fileNameToDocFilesEntry -> fileNameToDocFilesEntry.getValue().size() > 1)
-                .forEach(fileNameToDocFilesEntry -> {
-                    final List<DocumentFile> docFilesWithSameName = fileNameToDocFilesEntry.getValue();
-
-                    for (int i = 0; i < docFilesWithSameName.size(); i++) {
-                        if (i == 0) continue;
-                        final DocumentFile documentFile = docFilesWithSameName.get(i);
-                        documentFile.setFileId(documentFile.getFilename() + i);
-                    }
-                });
-
-        return saveUs.stream()
-                .map(documentFile -> new DocumentFileDTO(
-                        documentFileRepository.save(new DocumentFileJPA(documentFile))
-                ))
-                .collect(Collectors.toList());
+        return saveDocumentFiles(saveUs);
     }
 
     @Override
@@ -119,10 +95,6 @@ class DefaultDocumentFileService
         // todo: implement, or not =)
     }
 
-    private List<DocumentFileJPA> findWorkingVersionFiles(int docId) {
-        return documentFileRepository.findByDocIdAndVersionIndex(docId, Version.WORKING_VERSION_INDEX);
-    }
-
     @Override
     protected DocumentFile mapToDTO(DocumentFileJPA documentFileJPA, Version version) {
         return new DocumentFileDTO(documentFileJPA);
@@ -135,5 +107,72 @@ class DefaultDocumentFileService
         documentFileJPA.setId(null);
 
         return documentFileJPA;
+    }
+
+    private List<DocumentFileJPA> findWorkingVersionFiles(int docId) {
+        return documentFileRepository.findByDocIdAndVersionIndex(docId, Version.WORKING_VERSION_INDEX);
+    }
+
+    private List<DocumentFile> saveDocumentFiles(List<DocumentFile> saveUs) {
+        return saveUs.stream()
+                .map(documentFile -> new DocumentFileDTO(
+                        documentFileRepository.save(new DocumentFileJPA(documentFile))
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private void setDocAndFileIds(List<DocumentFile> saveUs, int docId) {
+        saveUs.forEach(documentFile -> {
+            documentFile.setDocId(docId);
+            final String fileId = documentFile.getFileId();
+
+            if (fileId == null) {
+                documentFile.setFileId(documentFile.getFilename());
+            }
+        });
+    }
+
+    private void deleteNoMoreUsedFiles(List<DocumentFile> saveUs, int docId) {
+        final Set<Integer> existingFileIds = saveUs.stream()
+                .map(DocumentFile::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        final List<DocumentFileJPA> noMoreNeededFiles = getByDocId(docId).stream()
+                .filter(documentFile -> !existingFileIds.contains(documentFile.getId()))
+                .map(DocumentFileJPA::new)
+                .collect(Collectors.toList());
+
+        documentFileRepository.delete(noMoreNeededFiles);
+    }
+
+    private void saveNewFiles(List<DocumentFile> saveUs) {
+        // do not rewrite using Java Stream API, file transfer can be long operation. in cycle.
+        for (DocumentFile documentFile : saveUs) {
+            final MultipartFile file = documentFile.getMultipartFile();
+
+            if (file == null) {
+                continue;
+            }
+
+            int copiesCount = 1;
+            String originalFilename = Utility.normalizeString(file.getOriginalFilename());
+            originalFilename = originalFilename.replace("(", "").replace(")", "");
+            File destination = new File(filesPath, originalFilename);
+
+            while (destination.exists()) {
+                final String baseName = FilenameUtils.getBaseName(originalFilename);
+                final String newName = baseName + copiesCount + "." + FilenameUtils.getExtension(originalFilename);
+                documentFile.setFilename(newName);
+                destination = new File(filesPath, newName);
+                copiesCount++;
+            }
+
+            try {
+                file.transferTo(destination);
+            } catch (IOException e) {
+                LOG.error("Error while saving Document File.", e);
+            }
+        }
     }
 }
