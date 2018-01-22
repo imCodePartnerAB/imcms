@@ -21,7 +21,7 @@ public class FileInputStreamSource implements InputStreamSource {
         return file;
     }
 
-    public long getSize() throws IOException {
+    public long getSize() {
         return (file.isFile() ? file.length() : 0);
     }
 
