@@ -91,6 +91,7 @@ public class FileDocumentServiceTest {
     public void setUp() throws Exception {
         createdDoc = documentDataInitializer.createFileDocument();
         createdDocId = createdDoc.getId();
+        filesPath.mkdirs();
     }
 
     @PostConstruct

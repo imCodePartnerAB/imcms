@@ -525,6 +525,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             docIds.add(id);
         });
 
+        Thread.sleep(TimeUnit.SECONDS.toMillis(2));
         waitForIndexUpdates();
 
         final String firstId = String.valueOf(docIds.get(0));
@@ -557,8 +558,8 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
     }
 
     private void waitForIndexUpdates() throws InterruptedException {
-        while (!documentIndex.isUpdateDone()) {
+        do {
             Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-        }
+        } while (!documentIndex.isUpdateDone());
     }
 }
