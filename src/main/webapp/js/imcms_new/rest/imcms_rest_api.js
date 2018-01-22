@@ -71,6 +71,9 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
 
     return {
         ajax: ajax,
+        /**
+         * Always call {@code new API()}
+         */
         API: API
     }
 });
