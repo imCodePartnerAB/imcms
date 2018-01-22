@@ -2,7 +2,6 @@ package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Version;
 import org.junit.After;
@@ -20,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class VersionRepositoryTest {
     private final static int userId = 1;
     private final static int docId = 1001;
@@ -49,12 +48,12 @@ public class VersionRepositoryTest {
     }
 
     @Test
-    public void testFindByDocId() throws Exception {
+    public void testFindByDocId() {
         assertEquals(6, versionRepository.findByDocId(docId).size());
     }
 
     @Test
-    public void testFindByDocIdAndNo() throws Exception {
+    public void testFindByDocIdAndNo() {
         assertNotNull(versionRepository.findByDocIdAndNo(docId, 0));
         assertNotNull(versionRepository.findByDocIdAndNo(docId, 1));
     }

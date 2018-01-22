@@ -1,7 +1,6 @@
 package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,25 +19,25 @@ import static org.junit.Assert.*;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class LanguageRepositoryTest {
 
     @Autowired
     private LanguageRepository languageRepository;
 
     @Test
-    public void testFindAll() throws Exception {
+    public void testFindAll() {
         assertEquals(2, languageRepository.findAll().size());
     }
 
     @Test
-    public void testFindByCode() throws Exception {
+    public void testFindByCode() {
         assertNotNull(languageRepository.findByCode(ENG_CODE));
         assertNotNull(languageRepository.findByCode(SWE_CODE));
     }
 
     @Test
-    public void testSave() throws Exception {
+    public void testSave() {
         LanguageJPA language = new LanguageJPA();
 
         language.setId(1);
@@ -49,7 +48,7 @@ public class LanguageRepositoryTest {
     }
 
     @Test
-    public void findByCode() throws Exception {
+    public void findByCode() {
         final List<LanguageJPA> languages = languageRepository.findAll();
         // langs should be already in DB, if this will be changed in future rewrite test with data creation
         assertTrue(!languages.isEmpty());

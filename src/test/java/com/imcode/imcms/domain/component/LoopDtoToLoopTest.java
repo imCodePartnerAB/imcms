@@ -2,7 +2,6 @@ package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.LoopJPA;
@@ -22,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class LoopDtoToLoopTest {
 
     private static final int TEST_DOC_ID = 1001;
@@ -46,7 +45,7 @@ public class LoopDtoToLoopTest {
     }
 
     @Test
-    public void expectedEqualsMapResult() throws Exception {
+    public void expectedEqualsMapResult() {
         final LoopDTO loopDTO = new LoopDTO(TEST_DOC_ID, TEST_LOOP_INDEX, Collections.emptyList());
         final Version workingVersion = versionRepository.findByDocIdAndNo(TEST_DOC_ID, TEST_VERSION_NO);
         final LoopJPA expected = LoopJPA.emptyLoop(workingVersion, TEST_LOOP_INDEX);

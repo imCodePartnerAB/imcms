@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.model.Role;
@@ -22,7 +21,7 @@ import static org.junit.Assert.assertNotNull;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class RoleServiceTest {
 
     @Autowired

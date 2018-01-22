@@ -2,7 +2,6 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
@@ -40,7 +39,7 @@ import static org.junit.Assert.*;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class DocumentFilesControllerTest extends AbstractControllerTest {
 
     private static File testSolrFolder;
@@ -87,6 +86,7 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
     @Before
     public void setUp() throws Exception {
         createdDocId = documentDataInitializer.createFileDocument().getId();
+        filesPath.mkdirs();
     }
 
     @PostConstruct

@@ -1,7 +1,6 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.RoleDTO;
 import imcode.server.user.RoleId;
@@ -20,7 +19,7 @@ import java.util.stream.Stream;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class RoleControllerTest extends AbstractControllerTest {
 
     private List<RoleDTO> roles;

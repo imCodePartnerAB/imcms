@@ -2,7 +2,6 @@ package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class CategoryTypeRepositoryTest {
 
     @Autowired
