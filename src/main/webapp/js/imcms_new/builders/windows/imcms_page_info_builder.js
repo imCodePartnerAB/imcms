@@ -5,9 +5,9 @@
 Imcms.define("imcms-page-info-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-documents-rest-api", "imcms-window-builder",
-        "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms"
+        "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms", "imcms-file-doc-files-rest-api"
     ],
-    function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms) {
+    function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms, docFilesAjaxApi) {
 
         var panels, $title, documentDTO, $saveAndPublishBtn, $tabsContainer;
 
@@ -81,6 +81,12 @@ Imcms.define("imcms-page-info-builder",
             closePageInfo();
 
             documentsRestApi.create(documentDTO).success(function (savedDocId) {
+
+                if (documentDTO.newFiles) {
+                    // files saved separately because of different content types and in file-doc case
+                    documentDTO.newFiles.append("docId", savedDocId);
+                    docFilesAjaxApi.postFiles(documentDTO.newFiles);
+                }
 
                 if (documentDTO.id === imcms.document.id) {
                     events.trigger("imcms-version-modified");
