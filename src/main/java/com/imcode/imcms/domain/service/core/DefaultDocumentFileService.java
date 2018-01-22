@@ -10,6 +10,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentFileRepository;
 import imcode.util.Utility;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -126,7 +127,7 @@ class DefaultDocumentFileService
             documentFile.setDocId(docId);
             final String fileId = documentFile.getFileId();
 
-            if (fileId == null) {
+            if (StringUtils.isBlank(fileId)) {
                 documentFile.setFileId(documentFile.getFilename());
             }
         });
