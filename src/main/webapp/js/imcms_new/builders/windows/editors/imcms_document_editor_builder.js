@@ -30,7 +30,39 @@ Imcms.define("imcms-document-editor-builder",
 
         var $documentsContainer, $editorBody, $documentsList;
 
-        var showedDocIDs = {};
+        var currentPage = 0;
+
+        var searchQueryObj = {
+            "term": "",
+            "userId": null,
+            "categoriesId": {},
+            "page.page": currentPage
+        };
+
+        function appendDocuments(field, value, removeOldDocuments) {
+            setField(field, value);
+
+            console.log($documentsList);
+
+            if (removeOldDocuments) {
+                $documentsList.empty();
+                currentPage = 0;
+                setField("page.page", currentPage);
+            }
+
+            docSearchRestApi.read(searchQueryObj).done(function (documentList) {
+                for (var i = 0; i < documentList.length; i++) {
+                    $documentsList
+                        .append(buildDocumentItemContainer(documentList[i], documentEditorOptions));
+                }
+
+                $(".imcms-document-items").addClass("imcms-document-items-list__document-items");
+            });
+        }
+
+        function setField(field, value) {
+            searchQueryObj[field] = value;
+        }
 
         function buildBodyHeadTools() {
             function addDocumentToList(document) {
@@ -47,40 +79,6 @@ Imcms.define("imcms-document-editor-builder",
                 return components.buttons.negativeButton({
                     text: "New",
                     click: onNewDocButtonClick
-                });
-            }
-
-            // default object
-            var searchQueryObj = {
-                term: "",
-                userId: null,
-                categories: {}
-            };
-
-            function setField(field, value) {
-                searchQueryObj[field] = value;
-            }
-
-            function showDocs(field, value) {
-                setField(field, value);
-
-                for (var id in showedDocIDs) {
-                    $($documentsList.find("[data-doc-id=" + id + "]")[0])
-                        .css("display", "none");
-                    delete showedDocIDs[id];
-                }
-
-                docSearchRestApi.read({
-                    term: searchQueryObj["term"],
-                    categoriesId: searchQueryObj["categories"],
-                    userId: searchQueryObj["userId"]
-                }).done(function (documentList) {
-                    for (var i = 0; i < documentList.length; i++) {
-                        var id = documentList[i].id;
-                        showedDocIDs[id] = true;
-                        $documentsList.find("[data-doc-id=" + id + "]")
-                            .css("display", "block");
-                    }
                 });
             }
 
@@ -103,7 +101,7 @@ Imcms.define("imcms-document-editor-builder",
                 $textField.on("input", function () {
                     var textFieldValue = $textField.val().trim();
                     if (searchQueryObj["term"] !== textFieldValue) {
-                        showDocs("term", textFieldValue);
+                        appendDocuments("term", textFieldValue, true);
                     }
                 });
 
@@ -113,7 +111,7 @@ Imcms.define("imcms-document-editor-builder",
             function buildUsersFilterSelect() {
                 var onSelected = function (value) {
                     if (searchQueryObj["userId"] !== value) {
-                        showDocs("userId", value);
+                        appendDocuments("userId", value, true);
                     }
                 };
 
@@ -143,8 +141,8 @@ Imcms.define("imcms-document-editor-builder",
 
             function buildCategoriesFilterSelect() {
                 var onSelected = function (value) {
-                    if (searchQueryObj["categories"][0] !== value) {
-                        showDocs("categories", {0: value});
+                    if (searchQueryObj["categoriesId"][0] !== value) {
+                        appendDocuments("categoriesId", {0: value}, true);
                     }
                 };
 
@@ -627,13 +625,21 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function buildEditorBody(documentList, opts) {
-            return new BEM({
+            var bem = new BEM({
                 block: "imcms-document-list",
                 elements: {
                     "titles": buildDocumentListTitlesRow(),
-                    "items": ($documentsList = buildDocumentList(documentList, opts))
+                    "items": $documentsList = buildDocumentList(documentList, opts)
                 }
             }).buildBlockStructure("<div>");
+
+            $documentsList.scroll(function () {
+                if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+                    appendDocuments("page.page", ++currentPage, false);
+                }
+            });
+
+            return bem;
         }
 
         function buildHead() {
@@ -655,11 +661,6 @@ Imcms.define("imcms-document-editor-builder",
 
         function loadDocumentEditorContent($documentsContainer, opts) {
             docSearchRestApi.read().done(function (documentList) {
-
-                for (var i = 0; i < documentList.length; i++) {
-                    showedDocIDs[documentList[i].id] = true;
-                }
-
                 $editorBody = buildEditorBody(documentList, opts);
                 $documentsContainer.append($editorBody);
             });
