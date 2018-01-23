@@ -61,7 +61,9 @@ Imcms.define("imcms-document-editor-builder",
                 searchQueryObj[field] = value;
             }
 
-            function showDocs() {
+            function showDocs(field, value) {
+                setField(field, value);
+
                 for (var id in showedDocIDs) {
                     $($documentsList.find("[data-doc-id=" + id + "]")[0])
                         .css("display", "none");
@@ -86,7 +88,7 @@ Imcms.define("imcms-document-editor-builder",
 
                 var $textField;
 
-                return new BEM({
+                var bem = new BEM({
                     block: "imcms-input-search",
                     elements: {
                         "text-box": $textField = primitives.imcmsInputText({
@@ -94,21 +96,24 @@ Imcms.define("imcms-document-editor-builder",
                             name: "search",
                             placeholder: "Type to find document"
                         }),
-                        "button": components.buttons.searchButton({
-                            click: function () {
-                                setField("term", $textField.val());
-                                showDocs();
-                            }
-                        })
+                        "button": components.buttons.searchButton()
                     }
                 }).buildBlockStructure("<div>");
+
+                $textField.on("input", function () {
+                    var textFieldValue = $textField.val();
+                    if (searchQueryObj["term"] !== textFieldValue) {
+                        showDocs("term", textFieldValue);
+                    }
+                });
+
+                return bem;
             }
 
             function buildUsersFilterSelect() {
                 var onSelected = function (value) {
                     if (searchQueryObj["userId"] !== value) {
-                        setField("userId", value);
-                        showDocs();
+                        showDocs("userId", value);
                     }
                 };
 
@@ -139,8 +144,7 @@ Imcms.define("imcms-document-editor-builder",
             function buildCategoriesFilterSelect() {
                 var onSelected = function (value) {
                     if (searchQueryObj["categories"][0] !== value) {
-                        setField("categories", {0: value});
-                        showDocs();
+                        showDocs("categories", {0: value});
                     }
                 };
 
