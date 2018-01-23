@@ -192,6 +192,7 @@ Imcms.define("imcms-selects-builder",
         return {
             imcmsSelect: function (tag, attributes, options) {
                 attributes = attributes || {};
+                options = options || [];
 
                 var blockElements = [];
 
@@ -206,7 +207,7 @@ Imcms.define("imcms-selects-builder",
 
                 var $selectElements = [];
 
-                if (attributes.emptySelect && options) {
+                if (attributes.emptySelect) {
                     options.unshift({
                         text: "None",
                         "data-value": null
@@ -214,7 +215,7 @@ Imcms.define("imcms-selects-builder",
                 }
 
                 if (options && options.length) {
-                    $selectElements.push(buildSelectOptions(options, dropDownListBEM));
+                    $selectElements.push(buildSelectOptions(options, dropDownListBEM, attributes.onSelected));
                 }
 
                 var $selectedValInput = $("<input>", {

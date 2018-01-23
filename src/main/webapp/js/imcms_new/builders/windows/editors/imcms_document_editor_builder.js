@@ -82,13 +82,6 @@ Imcms.define("imcms-document-editor-builder",
                 });
             }
 
-            function addDefaultOption(options) {
-                options.unshift({
-                    text: "None",
-                    "data-value": null
-                });
-            }
-
             function buildSearchDocField() {
 
                 var $textField;
@@ -122,6 +115,7 @@ Imcms.define("imcms-document-editor-builder",
                 var $usersFilterSelect = components.selects.imcmsSelect("<div>", {
                     id: "users-filter",
                     name: "users-filter",
+                    emptySelect: true,
                     onSelected: onSelected
                 });
 
@@ -132,8 +126,6 @@ Imcms.define("imcms-document-editor-builder",
                             "data-value": user.id
                         }
                     });
-
-                    addDefaultOption(usersDataMapped);
 
                     components.selects.addOptionsToSelect(
                         usersDataMapped, $usersFilterSelect, onSelected
@@ -155,6 +147,7 @@ Imcms.define("imcms-document-editor-builder",
                 var $categoriesFilterSelect = components.selects.imcmsSelect("<div>", {
                     id: "categories-filter",
                     name: "categories-filter",
+                    emptySelect: true,
                     onSelected: onSelected
                 });
 
@@ -165,8 +158,6 @@ Imcms.define("imcms-document-editor-builder",
                             "data-value": category.id
                         }
                     });
-
-                    addDefaultOption(categoriesDataMapped);
 
                     components.selects.addOptionsToSelect(
                         categoriesDataMapped, $categoriesFilterSelect, onSelected);
