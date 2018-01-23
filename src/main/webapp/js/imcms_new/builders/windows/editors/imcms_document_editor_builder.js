@@ -101,7 +101,7 @@ Imcms.define("imcms-document-editor-builder",
                 }).buildBlockStructure("<div>");
 
                 $textField.on("input", function () {
-                    var textFieldValue = $textField.val();
+                    var textFieldValue = $textField.val().trim();
                     if (searchQueryObj["term"] !== textFieldValue) {
                         showDocs("term", textFieldValue);
                     }
