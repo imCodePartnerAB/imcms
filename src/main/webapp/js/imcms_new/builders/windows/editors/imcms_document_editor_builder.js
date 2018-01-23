@@ -82,6 +82,13 @@ Imcms.define("imcms-document-editor-builder",
                 });
             }
 
+            function addDefaultOption(options) {
+                options.unshift({
+                    text: "None",
+                    "data-value": null
+                });
+            }
+
             function buildSearchDocField() {
 
                 var $textField;
@@ -125,6 +132,9 @@ Imcms.define("imcms-document-editor-builder",
                             "data-value": user.id
                         }
                     });
+
+                    addDefaultOption(usersDataMapped);
+
                     components.selects.addOptionsToSelect(
                         usersDataMapped, $usersFilterSelect, onSelected
                     );
@@ -155,6 +165,9 @@ Imcms.define("imcms-document-editor-builder",
                             "data-value": category.id
                         }
                     });
+
+                    addDefaultOption(categoriesDataMapped);
+
                     components.selects.addOptionsToSelect(
                         categoriesDataMapped, $categoriesFilterSelect, onSelected);
                 });
@@ -328,7 +341,7 @@ Imcms.define("imcms-document-editor-builder",
                 });
 
                 if (detectTargetArea(event)) {
-                    if ( $menuArea.css("border-color") !== "#51aeea") {
+                    if ($menuArea.css("border-color") !== "#51aeea") {
                         $menuArea.css({
                             "border-color": "#51aeea"
                         });
@@ -387,7 +400,7 @@ Imcms.define("imcms-document-editor-builder",
             var $menuTree = $(".imcms-menu-items-tree"),
                 $menuItemFrame = $(".imcms-document-items--frame").find(".imcms-document-item"),
                 $frameParent = $menuTree.find("[data-document-id=" + $menuItemFrame.attr("data-id") + "]")
-                .parent("[data-menu-items-lvl]")
+                    .parent("[data-menu-items-lvl]")
             ;
 
             if ($frameParent
