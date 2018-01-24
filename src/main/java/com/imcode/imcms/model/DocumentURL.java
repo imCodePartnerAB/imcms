@@ -1,6 +1,5 @@
 package com.imcode.imcms.model;
 
-import com.imcode.imcms.persistence.entity.Version;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -13,7 +12,6 @@ public abstract class DocumentURL {
         setUrl(from.getUrl());
         setUrlText(from.getUrlText());
         setUrlLanguagePrefix(from.getUrlLanguagePrefix());
-        setVersion(from.getVersion());
     }
 
     public abstract Integer getId();
@@ -40,7 +38,5 @@ public abstract class DocumentURL {
 
     public abstract void setUrlLanguagePrefix(String urlLanguagePrefix);
 
-    public abstract Version getVersion();
-
-    public abstract void setVersion(Version version);
+    public abstract Integer getDocId();
 }

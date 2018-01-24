@@ -90,11 +90,6 @@ public class DocRepository {
         htmlDocContentRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
-
-    public void deleteUrlDocContent(DocRef docIdentity) {
-        documentUrlRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
-    }
-
     public List<DocumentFileJPA> getFileDocContent(DocRef docIdentity) {
         return documentFileRepository.findByDocId(docIdentity.getId());
     }

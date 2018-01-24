@@ -20,19 +20,19 @@ public class DocumentUrlJPA extends DocumentURL {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "frame_name")
+    @Column(name = "frame_name", nullable = false)
     private String urlFrameName;
 
-    @Column(name = "target")
+    @Column(name = "target", nullable = false)
     private String urlTarget;
 
-    @Column(name = "url_ref")
+    @Column(name = "url_ref", nullable = false)
     private String url;
 
-    @Column(name = "url_txt")
+    @Column(name = "url_txt", nullable = false)
     private String urlText;
 
-    @Column(name = "lang_prefix")
+    @Column(name = "lang_prefix", nullable = false)
     private String urlLanguagePrefix;
 
     @NotNull
@@ -43,7 +43,13 @@ public class DocumentUrlJPA extends DocumentURL {
     })
     private Version version;
 
-    public DocumentUrlJPA(DocumentURL from) {
+    public DocumentUrlJPA(DocumentURL from, Version version) {
         super(from);
+        this.version = version;
+    }
+
+    @Override
+    public Integer getDocId() {
+        return (version == null) ? null : version.getDocId();
     }
 }
