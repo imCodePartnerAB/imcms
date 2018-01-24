@@ -28,6 +28,8 @@ public class UberDocumentDTO extends Document {
 
     private List<DocumentFileDTO> files;
 
+    private DocumentUrlDTO documentUrlDTO;
+
     private UberDocumentDTO(Document from) {
         super(from);
         this.type = from.getType();
@@ -43,6 +45,11 @@ public class UberDocumentDTO extends Document {
         this.files = from.getFiles();
     }
 
+    private UberDocumentDTO(UrlDocumentDTO from) {
+        this((Document) from);
+        this.documentUrlDTO = from.getDocumentUrlDTO();
+    }
+
     public static <T extends Document> UberDocumentDTO of(T from) {
         switch (from.getType()) {
             case TEXT:
@@ -50,6 +57,9 @@ public class UberDocumentDTO extends Document {
 
             case FILE:
                 return new UberDocumentDTO((FileDocumentDTO) from);
+
+            case URL:
+                return new UberDocumentDTO((UrlDocumentDTO) from);
 
             default:
                 throw new UnsupportedDocumentTypeException(from.getType());
@@ -65,9 +75,11 @@ public class UberDocumentDTO extends Document {
             case FILE:
                 return (T) new FileDocumentDTO(this);
 
+            case URL:
+                return (T) new UrlDocumentDTO(this);
+
             default:
                 throw new UnsupportedDocumentTypeException(type);
         }
     }
-
 }
