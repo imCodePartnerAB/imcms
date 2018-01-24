@@ -3,11 +3,9 @@ package com.imcode.imcms.components.datainitializer;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.model.CommonContent;
-import com.imcode.imcms.persistence.entity.DocumentFileJPA;
-import com.imcode.imcms.persistence.entity.Meta;
-import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.DocumentFileRepository;
+import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
@@ -25,6 +23,7 @@ import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.
 public class DocumentDataInitializer extends TestDataCleaner {
 
     private static final int TEST_VERSION_INDEX = 0;
+    private static final int DEFAULT_DOC_ID = 1001;
 
     private final MetaRepository metaRepository;
     private final DocumentFileRepository documentFileRepository;
@@ -33,6 +32,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
     private final VersionDataInitializer versionDataInitializer;
     private final TemplateDataInitializer templateDataInitializer;
     private final CommonContentService commonContentService;
+    private final DocumentUrlRepository documentUrlRepository;
 
     public DocumentDataInitializer(MetaRepository metaRepository,
                                    DocumentFileRepository documentFileRepository,
@@ -40,7 +40,8 @@ public class DocumentDataInitializer extends TestDataCleaner {
                                    VersionDataInitializer versionDataInitializer,
                                    TemplateDataInitializer templateDataInitializer,
                                    CommonContentService commonContentService,
-                                   CommonContentDataInitializer commonContentDataInitializer) {
+                                   CommonContentDataInitializer commonContentDataInitializer,
+                                   DocumentUrlRepository documentUrlRepository) {
 
         this.metaRepository = metaRepository;
         this.documentFileRepository = documentFileRepository;
@@ -49,6 +50,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
         this.templateDataInitializer = templateDataInitializer;
         this.commonContentService = commonContentService;
         this.commonContentDataInitializer = commonContentDataInitializer;
+        this.documentUrlRepository = documentUrlRepository;
     }
 
     public DocumentDTO createData(Meta.DocumentType type) {
@@ -118,6 +120,28 @@ public class DocumentDataInitializer extends TestDataCleaner {
         textDocumentDTO.setTemplate(new TextDocumentTemplateDTO(template));
 
         return textDocumentDTO;
+    }
+
+    public UrlDocumentDTO createUrlDocument() {
+        final DocumentDTO documentDTO = createData(Meta.DocumentType.URL);
+        final UrlDocumentDTO urlDocumentDTO = new UrlDocumentDTO(documentDTO);
+
+        DocumentUrlJPA documentUrlJPA = new DocumentUrlJPA();
+        documentUrlJPA.setUrlFrameName("test");
+        documentUrlJPA.setUrl("test");
+        documentUrlJPA.setUrlLanguagePrefix("t");
+        documentUrlJPA.setUrlTarget("test");
+        documentUrlJPA.setUrlText("test");
+
+        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, DEFAULT_DOC_ID);
+        documentUrlJPA.setVersion(version);
+
+        final DocumentUrlDTO documentUrlDTO =
+                new DocumentUrlDTO(documentUrlRepository.saveAndFlush(documentUrlJPA), version);
+
+        urlDocumentDTO.setDocumentUrlDTO(documentUrlDTO);
+
+        return urlDocumentDTO;
     }
 
     public void cleanRepositories(int createdDocId) {
