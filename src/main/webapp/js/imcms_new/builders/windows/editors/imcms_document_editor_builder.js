@@ -42,8 +42,6 @@ Imcms.define("imcms-document-editor-builder",
         function appendDocuments(field, value, removeOldDocuments) {
             setField(field, value);
 
-            console.log($documentsList);
-
             if (removeOldDocuments) {
                 $documentsList.empty();
                 currentPage = 0;
@@ -51,12 +49,9 @@ Imcms.define("imcms-document-editor-builder",
             }
 
             docSearchRestApi.read(searchQueryObj).done(function (documentList) {
-                for (var i = 0; i < documentList.length; i++) {
-                    $documentsList
-                        .append(buildDocumentItemContainer(documentList[i], documentEditorOptions));
-                }
-
-                $(".imcms-document-items").addClass("imcms-document-items-list__document-items");
+                (documentList || []).forEach(function (document) {
+                    $documentsList.append(buildDocument(document, documentEditorOptions));
+                });
             });
         }
 
@@ -84,28 +79,25 @@ Imcms.define("imcms-document-editor-builder",
 
             function buildSearchDocField() {
 
-                var $textField;
+                var $textField = primitives.imcmsInputText({
+                    id: "searchText",
+                    name: "search",
+                    placeholder: "Type to find document"
 
-                var bem = new BEM({
-                    block: "imcms-input-search",
-                    elements: {
-                        "text-box": $textField = primitives.imcmsInputText({
-                            id: "searchText",
-                            name: "search",
-                            placeholder: "Type to find document"
-                        }),
-                        "button": components.buttons.searchButton()
-                    }
-                }).buildBlockStructure("<div>");
-
-                $textField.on("input", function () {
+                }).on("input", function () {
                     var textFieldValue = $textField.val().trim();
                     if (searchQueryObj["term"] !== textFieldValue) {
                         appendDocuments("term", textFieldValue, true);
                     }
                 });
 
-                return bem;
+                return new BEM({
+                    block: "imcms-input-search",
+                    elements: {
+                        "text-box": $textField,
+                        "button": components.buttons.searchButton()
+                    }
+                }).buildBlockStructure("<div>");
             }
 
             function buildUsersFilterSelect() {
@@ -625,21 +617,23 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function buildEditorBody(documentList, opts) {
-            var bem = new BEM({
-                block: "imcms-document-list",
-                elements: {
-                    "titles": buildDocumentListTitlesRow(),
-                    "items": $documentsList = buildDocumentList(documentList, opts)
-                }
-            }).buildBlockStructure("<div>");
+            $documentsList = buildDocumentList(documentList, opts);
 
             $documentsList.scroll(function () {
-                if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+                var $this = $(this);
+
+                if ($this.scrollTop() + $this.innerHeight() >= this.scrollHeight) {
                     appendDocuments("page.page", ++currentPage, false);
                 }
             });
 
-            return bem;
+            return new BEM({
+                block: "imcms-document-list",
+                elements: {
+                    "titles": buildDocumentListTitlesRow(),
+                    "items": $documentsList
+                }
+            }).buildBlockStructure("<div>");
         }
 
         function buildHead() {
