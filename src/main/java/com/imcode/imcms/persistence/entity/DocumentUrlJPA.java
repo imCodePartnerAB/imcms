@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "imcms_url_docs")
-public class UrlDocContent extends VersionedContent {
+public class DocumentUrlJPA extends VersionedContent {
 
     @Column(name = "frame_name")
     private String urlFrameName;

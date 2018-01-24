@@ -3,7 +3,7 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
-import com.imcode.imcms.persistence.entity.UrlDocContent;
+import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -76,7 +76,7 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject doc) {
-        UrlDocContent reference = docRepository.getUrlDocContent(doc.getRef());
+        DocumentUrlJPA reference = docRepository.getUrlDocContent(doc.getRef());
         doc.setUrl(reference.getUrl());
     }
 

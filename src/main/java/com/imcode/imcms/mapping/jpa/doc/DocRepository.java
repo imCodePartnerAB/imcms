@@ -5,10 +5,10 @@ import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContentRepository;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
-import com.imcode.imcms.persistence.entity.UrlDocContent;
+import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import com.imcode.imcms.persistence.repository.DocumentFileRepository;
+import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
-import com.imcode.imcms.persistence.repository.UrlDocContentRepository;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -32,7 +32,7 @@ public class DocRepository {
     private final MetaRepository metaRepository;
     private final PropertyRepository propertyRepository;
     private final HtmlDocContentRepository htmlDocContentRepository;
-    private final UrlDocContentRepository urlDocContentRepository;
+    private final DocumentUrlRepository documentUrlRepository;
     private final DocumentFileRepository documentFileRepository;
 
     @PersistenceContext
@@ -43,11 +43,11 @@ public class DocRepository {
     @Inject
     public DocRepository(MetaRepository metaRepository, PropertyRepository propertyRepository,
                          HtmlDocContentRepository htmlDocContentRepository,
-                         UrlDocContentRepository urlDocContentRepository, DocumentFileRepository documentFileRepository) {
+                         DocumentUrlRepository documentUrlRepository, DocumentFileRepository documentFileRepository) {
         this.metaRepository = metaRepository;
         this.propertyRepository = propertyRepository;
         this.htmlDocContentRepository = htmlDocContentRepository;
-        this.urlDocContentRepository = urlDocContentRepository;
+        this.documentUrlRepository = documentUrlRepository;
         this.documentFileRepository = documentFileRepository;
     }
 
@@ -92,7 +92,7 @@ public class DocRepository {
 
 
     public void deleteUrlDocContent(DocRef docIdentity) {
-        urlDocContentRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+        documentUrlRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
     public List<DocumentFileJPA> getFileDocContent(DocRef docIdentity) {
@@ -127,12 +127,12 @@ public class DocRepository {
         return entityManager.merge(content);
     }
 
-    public UrlDocContent getUrlDocContent(DocRef docIdentity) {
-        return urlDocContentRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+    public DocumentUrlJPA getUrlDocContent(DocRef docIdentity) {
+        return documentUrlRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
 
-    public UrlDocContent saveUrlDocContent(UrlDocContent reference) {
+    public DocumentUrlJPA saveUrlDocContent(DocumentUrlJPA reference) {
         return entityManager.merge(reference);
     }
 
