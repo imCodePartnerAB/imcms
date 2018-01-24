@@ -154,7 +154,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
     }
 
     private void updateIndexes() {
-        logger.info("Index update thread invoked.");
+        logger.info("Index update thread invoked for " + indexUpdateRequests.size() + " update requests.");
 
         while (!indexUpdateRequests.isEmpty()) {
             try {

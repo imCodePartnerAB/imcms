@@ -110,7 +110,7 @@ public class DocumentIndexServiceOps {
 
         if (!solrInputDocs.isEmpty()) {
             solrServer.add(solrInputDocs);
-            solrServer.commit();
+            solrServer.commit(false, false, true);
 
             logger.info(String.format("Added %d solrInputDoc(s) with docId %d into the index.", solrInputDocs.size(), docId));
         }
@@ -120,7 +120,7 @@ public class DocumentIndexServiceOps {
         String query = mkSolrDocsDeleteQuery(docId);
 
         solrServer.deleteByQuery(query);
-        solrServer.commit();
+        solrServer.commit(false, false, true);
         logger.info(String.format("Removed document with docId %d from index.", docId));
     }
 
