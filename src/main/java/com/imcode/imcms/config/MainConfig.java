@@ -149,17 +149,17 @@ class MainConfig {
     }
 
     @Bean
-    public DocumentService<TextDocumentDTO> textDocumentService(DocumentService<DocumentDTO> documentService3,
+    public DocumentService<TextDocumentDTO> textDocumentService(DocumentService<DocumentDTO> documentService,
                                                                 TextDocumentTemplateService textDocumentTemplateService) {
 
-        return new TextDocumentService(documentService3, textDocumentTemplateService);
+        return new TextDocumentService(documentService, textDocumentTemplateService);
     }
 
     @Bean
-    public DocumentService<FileDocumentDTO> fileDocumentService(DocumentService<DocumentDTO> documentService2,
+    public DocumentService<FileDocumentDTO> fileDocumentService(DocumentService<DocumentDTO> documentService,
                                                                 DocumentFileService documentFileService) {
 
-        return new FileDocumentService(documentService2, documentFileService);
+        return new FileDocumentService(documentService, documentFileService);
     }
 
 }

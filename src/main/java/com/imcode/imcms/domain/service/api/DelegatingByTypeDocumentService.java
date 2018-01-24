@@ -29,12 +29,12 @@ public class DelegatingByTypeDocumentService implements TypedDocumentService<Doc
     private final WrappingDocumentService<FileDocumentDTO> wrappedFileDocumentService;
     private final MetaRepository metaRepository;
 
-    DelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService2,
-                                    DocumentService<FileDocumentDTO> fileDocumentService2,
+    DelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService,
+                                    DocumentService<FileDocumentDTO> fileDocumentService,
                                     MetaRepository metaRepository) {
 
-        this.wrappedFileDocumentService = new WrappingDocumentService<>(fileDocumentService2);
-        this.wrappedTextDocumentService = new WrappingDocumentService<>(textDocumentService2);
+        this.wrappedFileDocumentService = new WrappingDocumentService<>(fileDocumentService);
+        this.wrappedTextDocumentService = new WrappingDocumentService<>(textDocumentService);
         this.metaRepository = metaRepository;
     }
 

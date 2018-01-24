@@ -24,10 +24,10 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocumentFileService documentFileService;
 
-    public FileDocumentService(DocumentService<DocumentDTO> documentService2,
+    public FileDocumentService(DocumentService<DocumentDTO> documentService,
                                DocumentFileService documentFileService) {
 
-        this.defaultDocumentService = documentService2;
+        this.defaultDocumentService = documentService;
         this.documentFileService = documentFileService;
     }
 
