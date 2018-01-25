@@ -398,7 +398,11 @@ public class DocumentServiceTest {
 
     @Test
     public void save_When_CategoriesIsSet_Expect_Saved() {
-        categoryDataInitializer.createData(50);
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
+        categoryDataInitializer.createData(20);
 
         final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
 

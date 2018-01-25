@@ -146,10 +146,10 @@ public class MenuServiceTest {
 
         final int docId = 1001;
 
-        IntStream.range(0, 10).forEach((versionIndex) -> {
+        IntStream.range(0, 3).forEach((versionIndex) -> {
             versionDataInitializer.createData(versionIndex, docId);
 
-            IntStream.range(1, 10).forEach((menuIndex) ->
+            IntStream.range(1, 5).forEach((menuIndex) ->
                     menuDataInitializer.createData(true, menuIndex, versionIndex, docId)
             );
         });

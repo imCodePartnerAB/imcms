@@ -1,7 +1,6 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
-import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.UserService;

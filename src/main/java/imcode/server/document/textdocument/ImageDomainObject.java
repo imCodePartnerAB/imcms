@@ -1,10 +1,8 @@
 package imcode.server.document.textdocument;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.imcode.imcms.domain.dto.ImageData;
+import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.util.ImageSize;
-import imcode.server.Imcms;
-import imcode.util.image.ImageInfo;
 import imcode.util.image.Resize;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,7 +15,7 @@ import java.io.IOException;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ImageDomainObject extends ImageData implements Cloneable {
+public class ImageDomainObject extends ImageDTO implements Cloneable {
 
     public static final int IMAGE_NAME_LENGTH = 40;
     public static final String ALIGN_NONE = "";
@@ -41,7 +39,6 @@ public class ImageDomainObject extends ImageData implements Cloneable {
     private volatile int horizontalSpace;
     private volatile String target = "";
     private volatile String linkUrl = "";
-    private volatile String name = "";
     private volatile Long archiveImageId;
 
 
@@ -164,7 +161,7 @@ public class ImageDomainObject extends ImageData implements Cloneable {
         return new ImageSize(w, h);
     }
 
-    public ImageSize getRealImageSize() {
+    private ImageSize getRealImageSize() {
         ImageSize imageSize = new ImageSize(0, 0);
         if (!isEmpty()) {
             try {
@@ -175,23 +172,6 @@ public class ImageDomainObject extends ImageData implements Cloneable {
         return imageSize;
     }
 
-    public ImageInfo getImageInfo() {
-        if (!isEmpty()) {
-            try {
-                return source.getImageInfo();
-            } catch (IOException ex) {
-            }
-        }
-
-        return null;
-    }
-
-    public void setSourceAndClearSize(ImageSource source) {
-        setSource(source);
-        setWidth(0);
-        setHeight(0);
-    }
-
     public String getUrlPath(String contextPath) {
         String urlPathRelativeToContextPath = getUrlPathRelativeToContextPath();
         if (StringUtils.isBlank(urlPathRelativeToContextPath)) {
@@ -200,18 +180,8 @@ public class ImageDomainObject extends ImageData implements Cloneable {
         return contextPath + urlPathRelativeToContextPath;
     }
 
-    public String getUrlPathRelativeToContextPath() {
+    private String getUrlPathRelativeToContextPath() {
         return source.getUrlPathRelativeToContextPath();
-    }
-
-    public String getGeneratedUrlPath(String contextPath) {
-        return contextPath + getGeneratedUrlPathRelativeToContextPath();
-    }
-
-    private String getGeneratedUrlPathRelativeToContextPath() {
-        String imagesUrl = Imcms.getServices().getConfig().getImageUrl();
-
-        return imagesUrl + "generated/" + getGeneratedFilename();
     }
 
     public long getSize() {
