@@ -326,7 +326,7 @@ Imcms.define("imcms-menu-editor-builder",
                 pageX: event.clientX,
                 pageY: event.clientY,
                 top: $originItem.position().top,
-                left: $originItem.position().left + 510
+                left: $originItem.position().left
             };
             $menuArea = $(".imcms-menu-items-tree");
             menuAreaProp = {
@@ -398,7 +398,7 @@ Imcms.define("imcms-menu-editor-builder",
                 $menuElement = buildMenuItemTree(menuElementsTree, level);
                 $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement);
             }
-
+            $menuElement.addClass("imcms-menu-items-tree__menu-items");
         }
 
         function buildFooter() {
