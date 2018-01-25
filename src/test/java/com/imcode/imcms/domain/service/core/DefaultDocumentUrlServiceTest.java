@@ -29,6 +29,8 @@ import static org.junit.Assert.*;
 @ContextConfiguration(classes = {TestConfig.class})
 public class DefaultDocumentUrlServiceTest {
 
+    private static final int DEFAULT_DOC_ID = 1001;
+
     @Autowired
     private DocumentUrlService documentUrlService;
 
@@ -49,7 +51,7 @@ public class DefaultDocumentUrlServiceTest {
         final DocumentUrlDTO urlDocument = DocumentUrlDTO.createDefault();
         urlDocument.setDocId(1001);
 
-        versionDataInitializer.createData(Version.WORKING_VERSION_INDEX, 1001);
+        versionDataInitializer.createData(Version.WORKING_VERSION_INDEX, DEFAULT_DOC_ID);
         documentUrlService.save(urlDocument);
 
         assertEquals(1, documentUrlRepository.findAll().size());
@@ -65,9 +67,9 @@ public class DefaultDocumentUrlServiceTest {
 
     @Test
     public void getDocumentUrlByVersion_When_SpecifiedVersionExists_Expect_Found() {
-        versionDataInitializer.createData(1, 1001);
-        final Version version = versionDataInitializer.createData(2, 1001);
-        versionDataInitializer.createData(3, 1001);
+        versionDataInitializer.createData(1, DEFAULT_DOC_ID);
+        final Version version = versionDataInitializer.createData(2, DEFAULT_DOC_ID);
+        versionDataInitializer.createData(3, DEFAULT_DOC_ID);
 
         final DocumentUrlJPA documentUrlJPA = new DocumentUrlJPA();
         documentUrlJPA.setUrlFrameName("test");
@@ -88,8 +90,8 @@ public class DefaultDocumentUrlServiceTest {
 
     @Test
     public void createVersionedContent_Expect_Created() {
-        final Version workingVersion = versionDataInitializer.createData(0, 1001);
-        final Version newVersion = versionDataInitializer.createData(1, 1001);
+        final Version workingVersion = versionDataInitializer.createData(0, DEFAULT_DOC_ID);
+        final Version newVersion = versionDataInitializer.createData(1, DEFAULT_DOC_ID);
 
         final DocumentUrlJPA documentUrlJPA = new DocumentUrlJPA();
         documentUrlJPA.setUrlFrameName("test");
@@ -102,9 +104,9 @@ public class DefaultDocumentUrlServiceTest {
         documentUrlRepository.saveAndFlush(documentUrlJPA);
         defaultDocumentUrlService.createVersionedContent(workingVersion, newVersion);
 
-        final List<DocumentUrlJPA> byDocId = documentUrlRepository.findByDocId(1001);
+        final List<DocumentUrlJPA> byDocId = documentUrlRepository.findByDocId(DEFAULT_DOC_ID);
 
-        assertNotNull(documentUrlRepository.findByDocIdAndVersionNo(1001, 1));
+        assertNotNull(documentUrlRepository.findByDocIdAndVersionNo(DEFAULT_DOC_ID, 1));
         assertEquals(2, byDocId.size());
     }
 }
