@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UberDocumentDTO;
+import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.exception.UnsupportedDocumentTypeException;
 import com.imcode.imcms.domain.service.DocumentService;
@@ -27,14 +28,17 @@ public class DelegatingByTypeDocumentService implements TypedDocumentService<Doc
 
     private final WrappingDocumentService<TextDocumentDTO> wrappedTextDocumentService;
     private final WrappingDocumentService<FileDocumentDTO> wrappedFileDocumentService;
+    private final WrappingDocumentService<UrlDocumentDTO> wrappedUrlDocumentService;
     private final MetaRepository metaRepository;
 
     DelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService,
                                     DocumentService<FileDocumentDTO> fileDocumentService,
+                                    DocumentService<UrlDocumentDTO> urlDocumentService,
                                     MetaRepository metaRepository) {
 
         this.wrappedFileDocumentService = new WrappingDocumentService<>(fileDocumentService);
         this.wrappedTextDocumentService = new WrappingDocumentService<>(textDocumentService);
+        this.wrappedUrlDocumentService = new WrappingDocumentService<>(urlDocumentService);
         this.metaRepository = metaRepository;
     }
 
@@ -76,6 +80,9 @@ public class DelegatingByTypeDocumentService implements TypedDocumentService<Doc
 
             case FILE:
                 return wrappedFileDocumentService;
+
+            case URL:
+                return wrappedUrlDocumentService;
 
             default:
                 throw new UnsupportedDocumentTypeException(type);

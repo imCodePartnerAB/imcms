@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DocumentUrlRepository extends JpaRepository<DocumentUrlJPA, Integer> {
+public interface DocumentUrlRepository extends JpaRepository<DocumentUrlJPA, Integer>, VersionedContentRepository<DocumentUrlJPA> {
 
     @Query("SELECT c FROM DocumentUrlJPA c WHERE c.version.docId = ?1 AND c.version.no = ?2")
     DocumentUrlJPA findByDocIdAndVersionNo(int docId, int versionNo);
