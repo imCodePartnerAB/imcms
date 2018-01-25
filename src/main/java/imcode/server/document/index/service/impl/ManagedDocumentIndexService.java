@@ -30,7 +30,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
     private final static Object lock = new Object();
 
     private final ExecutorService serviceFailureExecutor = Executors.newSingleThreadExecutor();
-    private final ScheduledExecutorService indexUpdateExecutor = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService indexUpdateExecutor = Executors.newSingleThreadScheduledExecutor();
     private final ExecutorService indexRebuildExecutor = Executors.newSingleThreadExecutor();
 
     private final AtomicBoolean shutdownRef = new AtomicBoolean(false);
@@ -148,7 +148,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
 
     private void invokeIndexUpdateThread() {
         if (indexUpdateFuture.isDone() && indexRebuildFuture.isDone()) {
-            indexUpdateFuture = indexUpdateExecutor.schedule(this::updateIndexes, 2, TimeUnit.SECONDS);
+            indexUpdateFuture = indexUpdateExecutor.schedule(this::updateIndexes, 1, TimeUnit.SECONDS);
             logger.info("Submitted new index update thread.");
         }
     }
