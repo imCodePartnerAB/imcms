@@ -189,8 +189,12 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         function addShowHideBtn(menuDoc) {
-            if (menuDoc.find(".imcms-menu-item").first().find(".children-triangle").length === 0) {
-                menuDoc.find(".imcms-menu-item").first().find(".imcms-controls").first().after(buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open"));
+            var $menuItem = menuDoc.find(".imcms-menu-item").first();
+
+            if ($menuItem.find(".children-triangle").length === 0) {
+                $menuItem.find(".imcms-controls").first().after(
+                    buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open")
+                );
             }
         }
 
@@ -382,7 +386,9 @@ Imcms.define("imcms-menu-editor-builder",
 
                     var parent = $menuElement.parent();
                     if (parent.find(".children-triangle").length === 0) {
-                        parent.find(".imcms-menu-item").first().find(".imcms-controls").first().after(buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open"));
+                        parent.find(".imcms-menu-item").first().find(".imcms-controls").first().after(
+                            buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open")
+                        );
                     }
                 } else {
                     $menuElement = buildMenuItemTree(menuElementsTree, level);
