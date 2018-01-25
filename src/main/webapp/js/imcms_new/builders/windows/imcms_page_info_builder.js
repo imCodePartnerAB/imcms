@@ -5,9 +5,11 @@
 Imcms.define("imcms-page-info-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-documents-rest-api", "imcms-window-builder",
-        "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms", "imcms-file-doc-files-rest-api"
+        "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms", "imcms-file-doc-files-rest-api",
+        "imcms-modal-window-builder"
     ],
-    function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms, docFilesAjaxApi) {
+    function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms, docFilesAjaxApi,
+              modalWindowBuilder) {
 
         var panels, $title, documentDTO, $saveAndPublishBtn, $tabsContainer;
 
@@ -108,10 +110,16 @@ Imcms.define("imcms-page-info-builder",
             });
         }
 
+        function confirmSaving() {
+            modalWindowBuilder.buildModalWindow("Save changes?", function (isUserConfirmedSaving) {
+                isUserConfirmedSaving ? saveAndClose() : "do nothing =)";
+            });
+        }
+
         function buildPageInfoFooterButtons() {
             var $saveBtn = components.buttons.positiveButton({
                 text: "ok",
-                click: saveAndClose.bindArgs(null)
+                click: confirmSaving
             });
 
             var $cancelBtn = components.buttons.negativeButton({
