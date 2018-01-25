@@ -36,3 +36,9 @@
 .imcms-pop-up-modal__footer {
     background-color: #f3f5f7;
 }
+
+.imcms-pop-up-modal .imcms-pop-up-modal__head .imcms-button.imcms-button--close.imcms-head__button {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+}

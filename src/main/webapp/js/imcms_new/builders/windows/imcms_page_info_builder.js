@@ -12,12 +12,10 @@ Imcms.define("imcms-page-info-builder",
         var panels, $title, documentDTO, $saveAndPublishBtn, $tabsContainer;
 
         function buildPageInfoHead() {
-            return new BEM({
-                block: "imcms-head",
-                elements: {
-                    "title": $title = components.texts.titleText("<div>", "")
-                }
-            }).buildBlockStructure("<div>");
+            var $head = pageInfoWindowBuilder.buildHead();
+            $title = $head.find(".imcms-head__title");
+
+            return $head;
         }
 
         function showPanel(index) {
