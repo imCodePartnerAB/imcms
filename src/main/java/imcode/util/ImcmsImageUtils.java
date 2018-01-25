@@ -1,7 +1,7 @@
 package imcode.util;
 
+import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageData;
-import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.persistence.entity.Image;
