@@ -45,6 +45,8 @@ public class DefaultDocumentUrlService
                 new DocumentUrlJPA(documentURL, documentWorkingVersion)
         );
 
+        updateWorkingVersion(documentURL.getDocId());
+
         return new DocumentUrlDTO(documentUrlJPA);
     }
 
