@@ -1,6 +1,7 @@
 package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,8 @@ public interface DocumentUrlRepository extends JpaRepository<DocumentUrlJPA, Int
 
     @Query("SELECT c FROM DocumentUrlJPA c WHERE c.version.docId = ?1")
     List<DocumentUrlJPA> findByDocId(int docId);
+
+    @Override
+    @Query("SELECT d FROM DocumentUrlJPA d WHERE d.version = ?1")
+    List<DocumentUrlJPA> findByVersion(Version version);
 }
