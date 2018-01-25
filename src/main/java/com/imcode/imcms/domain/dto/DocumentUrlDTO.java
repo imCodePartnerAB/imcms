@@ -28,7 +28,7 @@ public class DocumentUrlDTO extends DocumentURL {
     }
 
     public static DocumentUrlDTO createDefault() {
-        DocumentUrlDTO documentUrlDTO = new DocumentUrlDTO();
+        final DocumentUrlDTO documentUrlDTO = new DocumentUrlDTO();
 
         documentUrlDTO.setUrlFrameName("");
         documentUrlDTO.setUrlTarget("");
