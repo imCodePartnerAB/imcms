@@ -88,7 +88,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuDTO, 
     }
 
     @Override
-    protected MenuDTO mapToDTO(Menu jpa, Version version) {
+    protected MenuDTO mapToDTO(Menu jpa) {
         return menuToMenuDTO.apply(jpa);
     }
 

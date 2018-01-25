@@ -51,7 +51,7 @@ public class DefaultDocumentUrlService
     }
 
     @Override
-    protected DocumentURL mapToDTO(DocumentUrlJPA documentUrlJPA, Version version) {
+    protected DocumentURL mapToDTO(DocumentUrlJPA documentUrlJPA) {
         return new DocumentUrlDTO(documentUrlJPA);
     }
 

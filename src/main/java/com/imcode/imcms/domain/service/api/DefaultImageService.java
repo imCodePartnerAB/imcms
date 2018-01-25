@@ -157,7 +157,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageDT
     }
 
     @Override
-    protected ImageDTO mapToDTO(Image jpa, Version version) {
+    protected ImageDTO mapToDTO(Image jpa) {
         return imageToImageDTO.apply(jpa);
     }
 

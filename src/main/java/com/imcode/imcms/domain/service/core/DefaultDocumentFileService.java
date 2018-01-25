@@ -97,7 +97,7 @@ class DefaultDocumentFileService
     }
 
     @Override
-    protected DocumentFile mapToDTO(DocumentFileJPA documentFileJPA, Version version) {
+    protected DocumentFile mapToDTO(DocumentFileJPA documentFileJPA) {
         return new DocumentFileDTO(documentFileJPA);
     }
 

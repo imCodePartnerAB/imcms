@@ -89,7 +89,7 @@ public class TextServiceTest {
                 text.setVersion(workingVersion);
 
                 textRepository.save(text);
-                textDTOS.add(new TextDTO(text, text.getVersion(), text.getLanguage()));
+                textDTOS.add(new TextDTO(text));
             }
         }
 
@@ -115,7 +115,7 @@ public class TextServiceTest {
                 text.setType(PLAIN_TEXT);
 
                 textRepository.save(text);
-                textDTOS.add(new TextDTO(text, text.getVersion(), text.getLanguage()));
+                textDTOS.add(new TextDTO(text));
             }
         }
 
@@ -204,7 +204,7 @@ public class TextServiceTest {
         final TextJPA text = createText(index, languages.get(0), workingVersion);
         textRepository.saveAndFlush(text);
 
-        final TextDTO workingVersionText = new TextDTO(text, workingVersion, languages.get(0));
+        final TextDTO workingVersionText = new TextDTO(text);
 
         textService.createVersionedContent(workingVersion, latestVersion);
 
@@ -228,7 +228,7 @@ public class TextServiceTest {
                 textRepository.save(createText(index, language, middleVersion));
                 final TextJPA latestVersionText = createText(index, language, newLatestVersion);
                 textRepository.save(latestVersionText);
-                latestVersionTexts.add(new TextDTO(latestVersionText, newLatestVersion, language));
+                latestVersionTexts.add(new TextDTO(latestVersionText));
             }
         }
 
@@ -250,7 +250,7 @@ public class TextServiceTest {
         }
 
         return textRepository.save(texts).stream()
-                .map(jpa -> new TextDTO(jpa, workingVersion, jpa.getLanguage()))
+                .map(TextDTO::new)
                 .collect(Collectors.toSet());
     }
 

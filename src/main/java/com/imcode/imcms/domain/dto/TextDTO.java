@@ -1,9 +1,7 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.persistence.entity.Version;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,10 +25,10 @@ public class TextDTO extends Text {
         setLoopEntryRef(loopEntryRef);
     }
 
-    public TextDTO(Text from, Version version, Language language) {
+    public TextDTO(Text from) {
         super(from);
-        this.langCode = language.getCode();
-        this.docId = version.getDocId();
+        this.langCode = from.getLangCode();
+        this.docId = from.getDocId();
     }
 
     @Override
