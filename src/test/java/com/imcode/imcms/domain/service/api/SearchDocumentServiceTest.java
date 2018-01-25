@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -121,7 +120,7 @@ public class SearchDocumentServiceTest {
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
         Imcms.setUser(user); // means current user is admin now
 
-        Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr init, not sure 2 sec is exact time
+//        Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr init, not sure 2 sec is exact time
     }
 
     @Test
@@ -179,8 +178,8 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    public void search_When_OneHundredDocumentsExist_Expect_Found() throws Exception {
-        final int caseNumber = 100;
+    public void search_When_SomeAmountOfDocumentsExist_Expect_AllFound() throws Exception {
+        final int caseNumber = 15;
         final List<Integer> docIds = new ArrayList<>();
 
         try {
@@ -194,7 +193,7 @@ public class SearchDocumentServiceTest {
             final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
             final int documentCount = searchDocumentService.searchDocuments(searchQueryDTO).size();
 
-            assertEquals(101, documentCount);
+            assertEquals(caseNumber + 1, documentCount);
 
         } finally {
             docIds.forEach(id -> {
@@ -467,7 +466,8 @@ public class SearchDocumentServiceTest {
     public void search_When_UseDefaultPageRequest_Expect_Found() throws InterruptedException {
         // create documents
         final List<TextDocumentDTO> docs = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        final int numberOfDocs = 6;
+        for (int i = 0; i < numberOfDocs; i++) {
             docs.add(documentDataInitializer.createTextDocument());
         }
 
@@ -483,7 +483,7 @@ public class SearchDocumentServiceTest {
                     searchQueryDTO
             );
 
-            assertEquals(11, documentStoredFieldsDTOS.size());
+            assertEquals(numberOfDocs + 1, documentStoredFieldsDTOS.size());
 
         } finally {
             docs.forEach(document -> {
@@ -495,7 +495,7 @@ public class SearchDocumentServiceTest {
 
     private void waitForIndexUpdates() throws InterruptedException {
         while (!documentIndex.isUpdateDone()) {
-            Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+            Thread.sleep(10);
         }
     }
 }

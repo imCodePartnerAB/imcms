@@ -109,7 +109,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
 
         try {
-            for (int i = 0; i < 110; i++) {
+            for (int i = 0; i < 30; i++) {
                 textDocumentDTOS.add(documentDataInitializer.createTextDocument());
             }
 
@@ -133,7 +133,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
             final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                     .param("page.page", String.valueOf(1))
-                    .param("page.size", String.valueOf(100));
+                    .param("page.size", String.valueOf(20));
 
             performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
 
@@ -152,7 +152,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
 
         try {
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 15; i++) {
                 textDocumentDTOS.add(documentDataInitializer.createTextDocument());
             }
 
@@ -187,8 +187,8 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void searchTextDocuments_When_UserIdSet_Expect_Found() throws Exception {
-        final int documentNumberFirstUser = 14;
-        final int documentNumberSecondUser = 6;
+        final int documentNumberFirstUser = 6;
+        final int documentNumberSecondUser = 4;
 
         //create 2 users
         final List<User> users = userDataInitializer.createData(2, RoleId.USERS_ID);
@@ -255,8 +255,8 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void searchTextDocuments_When_SpecifiedCategorySet_Expect_Found() throws Exception {
-        final int documentNumberWithSpecifiedCategory = 10;
-        final int documentNumberWithoutCategory = 6;
+        final int documentNumberWithSpecifiedCategory = 6;
+        final int documentNumberWithoutCategory = 4;
         final int categoryNumber = 1;
 
         categoryDataInitializer.createData(categoryNumber);
@@ -328,7 +328,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void checkTextDocument_When_TermIsSetAsSpecifiedDocId_Expect_Found() throws Exception {
-        final int documentNumber = 10;
+        final int documentNumber = 5;
         final int docIdCheckingIndex = new Random().nextInt(documentNumber);
 
         final List<Integer> docIds = new ArrayList<>();
@@ -398,8 +398,8 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
     }
 
     private void testKeywordOrAliasOrHeadlineForMultipleDocuments(String field) throws Exception {
-        final int documentNumberWithSpecifiedKeyword = 20;
-        final int documentNumberWithoutKeyword = 10;
+        final int documentNumberWithSpecifiedKeyword = 6;
+        final int documentNumberWithoutKeyword = 4;
 
         final String termText = "some_text" + new Random().nextInt(100);
 
@@ -451,7 +451,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
     }
 
     private void testKeywordOrAliasOrHeadlineForOneDocument(String field) throws Exception {
-        final int documentNumber = 10;
+        final int documentNumber = 5;
         final int docIdCheckingIndex = new Random().nextInt(documentNumber);
 
         final List<Integer> docIds = new ArrayList<>();
@@ -511,7 +511,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
     }
 
     private void testForLastDigits(int lastDigitsNumber) throws Exception {
-        final int documentNumber = 35;
+        final int documentNumber = 12;
 
         final List<Integer> docIds = new ArrayList<>();
         final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
@@ -559,7 +559,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
     private void waitForIndexUpdates() throws InterruptedException {
         do {
-            Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+            Thread.sleep(10);
         } while (!documentIndex.isUpdateDone());
     }
 }
