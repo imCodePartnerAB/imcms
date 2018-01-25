@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.model.DocumentURL;
-import com.imcode.imcms.persistence.entity.Version;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,9 +22,9 @@ public class DocumentUrlDTO extends DocumentURL {
 
     private Integer docId;
 
-    public DocumentUrlDTO(DocumentURL from, Version version) {
+    public DocumentUrlDTO(DocumentURL from) {
         super(from);
-        this.docId = version.getDocId();
+        this.docId = from.getDocId();
     }
 
     public static DocumentUrlDTO createDefault() {

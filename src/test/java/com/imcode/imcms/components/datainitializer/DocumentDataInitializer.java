@@ -137,7 +137,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
         documentUrlJPA.setVersion(version);
 
         final DocumentUrlDTO documentUrlDTO =
-                new DocumentUrlDTO(documentUrlRepository.saveAndFlush(documentUrlJPA), version);
+                new DocumentUrlDTO(documentUrlRepository.saveAndFlush(documentUrlJPA));
 
         urlDocumentDTO.setDocumentUrlDTO(documentUrlDTO);
 
