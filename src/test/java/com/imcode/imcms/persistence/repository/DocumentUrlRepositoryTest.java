@@ -1,7 +1,9 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.domain.dto.DocumentUrlDTO;
 import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import org.junit.Test;
@@ -29,6 +31,9 @@ public class DocumentUrlRepositoryTest {
 
     @Autowired
     private DocumentUrlRepository documentUrlRepository;
+
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
@@ -106,6 +111,19 @@ public class DocumentUrlRepositoryTest {
 
         final List<DocumentUrlJPA> foundDocumentList = documentUrlRepository.findAll();
         savedDocuments.forEach(documentUrlJPA -> assertFalse(foundDocumentList.contains(documentUrlJPA)));
+    }
+
+    @Test
+    public void findByVersion() {
+        final DocumentUrlDTO expectedDocument = documentDataInitializer.createUrlDocument().getDocumentUrlDTO();
+        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, DEFAULT_DOC_ID);
+        final List<DocumentUrlJPA> byVersion = documentUrlRepository.findByVersion(version);
+
+        assertEquals(1, byVersion.size());
+
+        final DocumentUrlDTO actualDocument = new DocumentUrlDTO(byVersion.get(0));
+
+        assertEquals(expectedDocument, actualDocument);
     }
 
     private List<DocumentUrlJPA> getDocumentUrlList(int number) {
