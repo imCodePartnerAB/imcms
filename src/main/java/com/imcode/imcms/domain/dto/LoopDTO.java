@@ -2,7 +2,6 @@ package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.LoopEntry;
-import com.imcode.imcms.persistence.entity.Version;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,9 +23,9 @@ public class LoopDTO extends Loop implements Serializable {
     private Integer index;
     private List<LoopEntryDTO> entries;
 
-    public LoopDTO(Loop from, Version version) {
+    public LoopDTO(Loop from) {
         super(from);
-        this.docId = version.getDocId();
+        this.docId = from.getDocId();
     }
 
     public static LoopDTO empty(int docId, int index) {

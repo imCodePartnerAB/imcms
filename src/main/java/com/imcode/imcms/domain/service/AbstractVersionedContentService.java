@@ -11,7 +11,8 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
-public abstract class AbstractVersionedContentService<JPA, DTO, Repository extends VersionedContentRepository<JPA> & JpaRepository<JPA, Integer>> implements VersionedContentService<DTO> {
+public abstract class AbstractVersionedContentService<JPA, DTO, Repository extends VersionedContentRepository<JPA> & JpaRepository<JPA, Integer>>
+        implements VersionedContentService<DTO> {
 
     protected final Repository repository;
 
@@ -22,14 +23,14 @@ public abstract class AbstractVersionedContentService<JPA, DTO, Repository exten
         this.repository = repository;
     }
 
-    protected abstract DTO mapToDTO(JPA jpa, Version version);
+    protected abstract DTO mapToDTO(JPA jpa);
 
     protected abstract JPA mapToJpaWithoutId(DTO dto, Version version);
 
     @Override
     public Set<DTO> getByVersion(Version version) {
         return repository.findByVersion(version).stream()
-                .map(jpa -> mapToDTO(jpa, version))
+                .map(this::mapToDTO)
                 .collect(Collectors.toSet());
     }
 
