@@ -70,7 +70,7 @@ public class UrlDocumentServiceTest {
         expectedDefaultDocumentUrlDTO.setUrlText("");
         expectedDefaultDocumentUrlDTO.setUrlLanguagePrefix("");
 
-        final DocumentUrlDTO actualDefaultDocumentUrlDTO = emptyUrlDocumentDTO.getDocumentUrlDTO();
+        final DocumentUrlDTO actualDefaultDocumentUrlDTO = emptyUrlDocumentDTO.getDocumentURL();
 
         assertNull(emptyUrlDocumentDTO.getId());
         assertEquals(emptyUrlDocumentDTO.getType(), Meta.DocumentType.URL);
@@ -80,7 +80,7 @@ public class UrlDocumentServiceTest {
 
     @Test
     public void saveUrlDocument_When_documentDoesNotExist_Expect_Saved() {
-        emptyUrlDocumentDTO.setDocumentUrlDTO(null);
+        emptyUrlDocumentDTO.setDocumentURL(null);
         urlDocumentService.save(emptyUrlDocumentDTO);
 
         assertEquals(2, metaRepository.findAll().size()); // one doc with 1001 id
@@ -88,7 +88,7 @@ public class UrlDocumentServiceTest {
 
     @Test
     public void saveUrlDocument_When_DocumentUrlDTOIsNotSet_Expect_DocumentUrlDtoIsNotSaved() {
-        emptyUrlDocumentDTO.setDocumentUrlDTO(null);
+        emptyUrlDocumentDTO.setDocumentURL(null);
         urlDocumentService.save(emptyUrlDocumentDTO);
 
         assertEquals(0, documentUrlRepository.findAll().size());
@@ -103,7 +103,7 @@ public class UrlDocumentServiceTest {
 
         final DocumentURL actualDocumentUrl = documentUrlService.getByDocId(savedDocId);
 
-        final DocumentUrlDTO expectedDocumentUrl = emptyUrlDocumentDTO.getDocumentUrlDTO();
+        final DocumentUrlDTO expectedDocumentUrl = emptyUrlDocumentDTO.getDocumentURL();
         expectedDocumentUrl.setId(actualDocumentUrl.getId());
 
         assertEquals(expectedDocumentUrl, expectedDocumentUrl);

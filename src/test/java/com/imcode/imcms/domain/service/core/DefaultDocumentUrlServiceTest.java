@@ -59,7 +59,7 @@ public class DefaultDocumentUrlServiceTest {
 
     @Test
     public void getDocumentUrlByDocId_When_DocumentExists_Expect_Found() {
-        final DocumentUrlDTO expectedDocument = documentDataInitializer.createUrlDocument().getDocumentUrlDTO();
+        final DocumentUrlDTO expectedDocument = documentDataInitializer.createUrlDocument().getDocumentURL();
         final int docID = expectedDocument.getDocId();
 
         assertEquals(expectedDocument, documentUrlService.getByDocId(docID));
