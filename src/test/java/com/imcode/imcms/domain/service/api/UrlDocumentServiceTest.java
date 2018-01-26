@@ -100,4 +100,12 @@ public class UrlDocumentServiceTest {
 
         assertEquals(expectedDocumentUrl, expectedDocumentUrl);
     }
+
+    @Test
+    public void getDocumentUrlByDocId_When_DocumentExists_Expect_Found() {
+        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
+        final UrlDocumentDTO actualUrlDocumentDTO = urlDocumentService.get(savedDocId);
+
+        assertNotNull(actualUrlDocumentDTO);
+    }
 }
