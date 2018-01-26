@@ -17,7 +17,6 @@
 
 .imcms-input-search__text-box {
     width: 100%;
-    padding: 10px 30px 10px 15px;
 }
 
 .imcms-document-editor-head-tool__select {
@@ -27,4 +26,17 @@
 
 .imcms-document-editor-head-tool__select .imcms-drop-down-list {
     display: block;
+}
+
+.imcms-document-editor-head__tools .imcms-document-editor-head-tool__button {
+    margin-top: 27px;
+}
+
+.imcms-document-editor-head__tools .imcms-document-editor-head-tool__search .imcms-input-search__button {
+    top: 40px;
+}
+
+.imcms-document-editor-head__tools .imcms-document-editor-head-tool__search .imcms-text-box__label,
+.imcms-document-editor-head__tools .imcms-document-editor-head-tool__select .imcms-select__label {
+    margin-bottom: 5px;
 }
