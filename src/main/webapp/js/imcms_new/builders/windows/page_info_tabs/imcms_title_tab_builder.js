@@ -1,4 +1,4 @@
-Imcms.define("imcms-appearance-tab-builder",
+Imcms.define("imcms-title-tab-builder",
     ["imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder", "imcms-choose-image-builder"],
     function (BEM, components, tabFormBuilder, chooseImage) {
         var pageInfoInnerStructureBEM = new BEM({
@@ -125,7 +125,7 @@ Imcms.define("imcms-appearance-tab-builder",
 
         return {
 
-            name: "appearance",
+            name: "title",
 
             tabIndex: null,
 
