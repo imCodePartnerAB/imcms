@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
+import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.*;
@@ -11,8 +12,11 @@ import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.TextDocumentTemplate;
+import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
+import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
@@ -72,6 +76,18 @@ public class DocumentControllerTest extends AbstractControllerTest {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private DocumentService<DocumentDTO> documentService;
+
+    @Autowired
+    private DocumentService<UrlDocumentDTO> urlDocumentService;
+
+    @Autowired
+    private DocumentUrlRepository documentUrlRepository;
+
+    @Autowired
+    private VersionDataInitializer versionDataInitializer;
+
     @Override
     protected String controllerPath() {
         return "/documents";
@@ -85,6 +101,56 @@ public class DocumentControllerTest extends AbstractControllerTest {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user); // means current user is admin now
+    }
+
+    @Test
+    public void getUrlDocument_When_DocIdIsNull_Expect_DefaultUrlDocumentIsReturned() throws Exception {
+        final Meta.DocumentType documentType = Meta.DocumentType.URL;
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("type", documentType.toString());
+
+        final String response = getJsonResponse(requestBuilder);
+
+        final UrlDocumentDTO urlDocumentDTO = fromJson(response, UrlDocumentDTO.class);
+
+        final DocumentUrlDTO actualDocumentUrlDTO = urlDocumentDTO.getDocumentUrlDTO();
+        final DocumentUrlDTO expectedDocumentUrlDTO = UrlDocumentDTO.createEmpty(documentService.createEmpty()).getDocumentUrlDTO();
+
+        assertNull(urlDocumentDTO.getId());
+        assertEquals(urlDocumentDTO.getType(), documentType);
+        assertFalse(urlDocumentDTO.getCommonContents().isEmpty());
+        assertEquals(urlDocumentDTO.getCommonContents(), commonContentService.createCommonContents());
+        assertEquals(urlDocumentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
+        assertEquals(expectedDocumentUrlDTO, actualDocumentUrlDTO);
+    }
+
+    @Test
+    public void getUrlDocument_When_DocumentExists_Expect_Returned() throws Exception {
+        final UrlDocumentDTO empty = urlDocumentService.createEmpty();
+        empty.setDocumentUrlDTO(null);
+
+        final int savedId = urlDocumentService.save(empty);
+
+        final DocumentUrlJPA documentUrlJPA = new DocumentUrlJPA();
+        documentUrlJPA.setUrlFrameName("test");
+        documentUrlJPA.setUrl("test");
+        documentUrlJPA.setUrlLanguagePrefix("t");
+        documentUrlJPA.setUrlTarget("test");
+        documentUrlJPA.setUrlText("test");
+
+        final Version version = versionDataInitializer.createData(0, savedId);
+        documentUrlJPA.setVersion(version);
+
+        documentUrlRepository.saveAndFlush(documentUrlJPA);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", savedId + "");
+
+        final UrlDocumentDTO expectedUrlDocument = urlDocumentService.get(savedId);
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(expectedUrlDocument));
+
     }
 
     @Test
