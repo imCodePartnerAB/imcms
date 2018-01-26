@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
@@ -9,6 +10,7 @@ import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.model.DocumentURL;
 import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
@@ -32,6 +34,8 @@ import static org.junit.Assert.*;
 @ContextConfiguration(classes = {TestConfig.class})
 public class UrlDocumentServiceTest {
 
+    private static final int superAdminId = 1;
+
     @Autowired
     private DocumentService<UrlDocumentDTO> urlDocumentService;
 
@@ -44,11 +48,14 @@ public class UrlDocumentServiceTest {
     @Autowired
     private DocumentUrlService documentUrlService;
 
+    @Autowired
+    private VersionDataInitializer versionDataInitializer;
+
     private UrlDocumentDTO emptyUrlDocumentDTO;
 
     @Before
     public void setUp() {
-        Imcms.setUser(new UserDomainObject(1));
+        Imcms.setUser(new UserDomainObject(superAdminId));
         this.emptyUrlDocumentDTO = urlDocumentService.createEmpty();
     }
 
@@ -129,5 +136,26 @@ public class UrlDocumentServiceTest {
         urlDocumentService.deleteByDocId(savedDocId);
 
         assertEquals(0, documentUrlRepository.findAll().size());
+    }
+
+    @Test
+    public void publishUrlDocument_Expect_Published() {
+        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
+        final boolean published = urlDocumentService.publishDocument(savedDocId, 1);
+
+        assertEquals(true, published);
+    }
+
+    @Test
+    public void publishUrlDocument_Expect_NotPublished() {
+        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
+        final int nextVersionIndex = Version.WORKING_VERSION_INDEX + 1;
+
+        // create another version
+        versionDataInitializer.createData(nextVersionIndex, savedDocId);
+
+        final boolean published = urlDocumentService.publishDocument(savedDocId, superAdminId);
+
+        assertEquals(false, published);
     }
 }
