@@ -640,7 +640,7 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function buildHead() {
-            return documentWindowBuilder.buildHead("Document editor");
+            return documentWindowBuilder.buildHead("Document Manager");
         }
 
         function buildFooter() {
