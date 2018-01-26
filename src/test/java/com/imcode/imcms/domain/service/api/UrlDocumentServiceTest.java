@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
+import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.model.DocumentURL;
@@ -107,5 +108,15 @@ public class UrlDocumentServiceTest {
         final UrlDocumentDTO actualUrlDocumentDTO = urlDocumentService.get(savedDocId);
 
         assertNotNull(actualUrlDocumentDTO);
+    }
+
+    @Test(expected = DocumentNotExistException.class)
+    public void deleteDocumentUrl_When_Expect_Deleted() {
+        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
+
+        assertNotNull(urlDocumentService.get(savedDocId));
+
+        urlDocumentService.deleteByDocId(savedDocId);
+        urlDocumentService.get(savedDocId);
     }
 }
