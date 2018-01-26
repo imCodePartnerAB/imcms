@@ -115,13 +115,13 @@
             //  <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/windows/page_info_tabs/imcms_page_info_tabs_builder.js",
             "imcms-page-info-tab-form-builder": "builders/windows/page_info_tabs/imcms_page_info_tab_form_builder.js",
-            "imcms-appearance-tab-builder": "builders/windows/page_info_tabs/imcms_appearance_tab_builder.js",
+            "imcms-title-tab-builder": "builders/windows/page_info_tabs/imcms_title_tab_builder.js",
             "imcms-life-cycle-tab-builder": "builders/windows/page_info_tabs/imcms_life_cycle_tab_builder.js",
             "imcms-keywords-tab-builder": "builders/windows/page_info_tabs/imcms_keywords_tab_builder.js",
             "imcms-categories-tab-builder": "builders/windows/page_info_tabs/imcms_categories_tab_builder.js",
             "imcms-access-tab-builder": "builders/windows/page_info_tabs/imcms_access_tab_builder.js",
             "imcms-permissions-tab-builder": "builders/windows/page_info_tabs/imcms_permissions_tab_builder.js",
-            "imcms-templates-tab-builder": "builders/windows/page_info_tabs/imcms_templates_tab_builder.js",
+            "imcms-appearance-tab-builder": "builders/windows/page_info_tabs/imcms_appearance_tab_builder.js",
             "imcms-file-tab-builder": "builders/windows/page_info_tabs/imcms_file_tab_builder.js",
             "imcms-status-tab-builder": "builders/windows/page_info_tabs/imcms_status_tab_builder.js",
             //  </page_info_tabs>
