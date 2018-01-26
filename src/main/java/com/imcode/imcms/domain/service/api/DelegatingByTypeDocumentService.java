@@ -24,7 +24,7 @@ import java.util.Optional;
  * 22.12.17.
  */
 @Service
-public class DelegatingByTypeDocumentService implements TypedDocumentService<Document> {
+class DelegatingByTypeDocumentService implements TypedDocumentService<Document> {
 
     private final DocumentService<UberDocumentDTO> wrappedTextDocumentService;
     private final DocumentService<UberDocumentDTO> wrappedFileDocumentService;
