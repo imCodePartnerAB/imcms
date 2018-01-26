@@ -114,8 +114,8 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
         final UrlDocumentDTO urlDocumentDTO = fromJson(response, UrlDocumentDTO.class);
 
-        final DocumentUrlDTO actualDocumentUrlDTO = urlDocumentDTO.getDocumentUrlDTO();
-        final DocumentUrlDTO expectedDocumentUrlDTO = UrlDocumentDTO.createEmpty(documentService.createEmpty()).getDocumentUrlDTO();
+        final DocumentUrlDTO actualDocumentUrlDTO = urlDocumentDTO.getDocumentURL();
+        final DocumentUrlDTO expectedDocumentUrlDTO = UrlDocumentDTO.createEmpty(documentService.createEmpty()).getDocumentURL();
 
         assertNull(urlDocumentDTO.getId());
         assertEquals(urlDocumentDTO.getType(), documentType);
@@ -128,7 +128,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
     @Test
     public void getUrlDocument_When_DocumentExists_Expect_Returned() throws Exception {
         final UrlDocumentDTO empty = urlDocumentService.createEmpty();
-        empty.setDocumentUrlDTO(null);
+        empty.setDocumentURL(null);
 
         final int savedId = urlDocumentService.save(empty);
 
