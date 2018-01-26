@@ -94,7 +94,7 @@
     display: block;
     overflow: hidden;
     padding-left: 70px;
-    padding-right: 35px;
+    padding-right: 20px;
     position: relative;
     width: 100%;
 }
@@ -125,6 +125,11 @@
     content: "";
     display: block;
     clear: both;
+}
+
+.imcms-document-list__items .imcms-document-items-list__document-items .imcms-document-items__document-item > .imcms-document-item__controls:first-child {
+    right: auto;
+    left: 0;
 }
 
 .imcms-document-item:hover .imcms-document-item__controls {

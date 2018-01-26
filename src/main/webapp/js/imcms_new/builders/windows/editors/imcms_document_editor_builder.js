@@ -249,7 +249,7 @@ Imcms.define("imcms-document-editor-builder",
                 pageX: event.clientX,
                 pageY: event.clientY,
                 top: $this.closest(".imcms-document-items").position().top,
-                left: $this.closest(".imcms-document-items").position().left + 500
+                left: $this.closest(".imcms-document-items").position().left
             };
             menuAreaProp = {
                 top: $menuArea.position().top,
@@ -292,26 +292,20 @@ Imcms.define("imcms-document-editor-builder",
 
         function buildDocItemControls(document, opts) {
             var controls = [];
+            opts = opts || {};
 
-            if (opts) {
-                if (opts.moveEnable) {
-                    var $controlMove = controlsBuilder.move().on("mousedown", createFrame);
-                    controls.push($controlMove);
-                }
+            if (opts.removeEnable) {
+                var $controlRemove = controlsBuilder.remove(function () {
+                    removeDocument.call(this, document);
+                });
+                controls.push($controlRemove);
+            }
 
-                if (opts.removeEnable) {
-                    var $controlRemove = controlsBuilder.remove(function () {
-                        removeDocument.call(this, document);
-                    });
-                    controls.push($controlRemove);
-                }
-
-                if (opts.editEnable) {
-                    var $controlEdit = controlsBuilder.edit(function () {
-                        pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
-                    });
-                    controls.push($controlEdit);
-                }
+            if (opts.editEnable) {
+                var $controlEdit = controlsBuilder.edit(function () {
+                    pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
+                });
+                controls.push($controlEdit);
             }
 
             return controlsBuilder.buildControlsBlock("<div>", controls);
@@ -567,17 +561,27 @@ Imcms.define("imcms-document-editor-builder",
             var $docItemType = components.texts.titleText("<div>", document.type);
             $docItemType.modifiers = ["col-2", "type"];
 
-            return new BEM({
-                block: "imcms-document-item",
-                elements: {
+            var elements = [
+                {
                     "info": [
                         $docItemId,
                         $docItemTitle,
                         $docItemAlias,
                         $docItemType
-                    ],
-                    "controls": buildDocItemControls(document, opts)
-                }
+                    ]
+                },
+                {"controls": buildDocItemControls(document, opts)}
+            ];
+
+            if (opts && opts.moveEnable) {
+                var $moveControl = controlsBuilder.move().on("mousedown", createFrame);
+                var $controlsBlock = controlsBuilder.buildControlsBlock("<div>", [$moveControl]);
+                elements.unshift({controls: $controlsBlock});
+            }
+
+            return new BEM({
+                block: "imcms-document-item",
+                elements: elements
             }).buildBlockStructure("<div>");
         }
 
