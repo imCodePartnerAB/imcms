@@ -29,11 +29,15 @@
 }
 
 .imcms-menu-item__info {
+    width: 80%;
     cursor: pointer;
+    max-height: 45px;
     line-height: 45px;
     text-transform: none;
     text-align: left;
     float: left;
+    text-overflow: ellipsis;
+    overflow: inherit;
 }
 
 .imcms-menu-item:hover {

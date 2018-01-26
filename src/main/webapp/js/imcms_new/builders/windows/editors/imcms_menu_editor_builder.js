@@ -490,7 +490,9 @@ Imcms.define("imcms-menu-editor-builder",
             }
 
             elements.push({
-                info: components.texts.titleText("<div>", menuElementTree.documentId + " - " + menuElementTree.title)
+                info: components.texts.titleText("<div>", menuElementTree.documentId + " - " + menuElementTree.title, {
+                    title: menuElementTree.title
+                })
             });
             elements.push({controls: buildMenuItemControls(menuElementTree)});
 
