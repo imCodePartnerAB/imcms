@@ -210,13 +210,13 @@ Imcms.define("imcms-document-editor-builder",
             $idColumnHead.modifiers = ["col-2"];
 
             var $titleColumnHead = $("<div>", {text: "Title"});
-            $titleColumnHead.modifiers = ["col-3"];
+            $titleColumnHead.modifiers = ["col-5"];
 
             var $aliasColumnHead = $("<div>", {text: "Alias"});
             $aliasColumnHead.modifiers = ["col-3"];
 
             var $typeColumnHead = $("<div>", {text: "Type"});
-            $typeColumnHead.modifiers = ["col-4"];
+            $typeColumnHead.modifiers = ["col-2"];
 
             return new BEM({
                 block: "imcms-document-list-titles",
@@ -559,13 +559,13 @@ Imcms.define("imcms-document-editor-builder",
             })[0] : document.title;
 
             var $docItemTitle = components.texts.titleText("<div>", title);
-            $docItemTitle.modifiers = ["col-3", "title"];
+            $docItemTitle.modifiers = ["col-5", "title"];
 
             var $docItemAlias = components.texts.titleText("<div>", document.alias);
             $docItemAlias.modifiers = ["col-3", "alias"];
 
             var $docItemType = components.texts.titleText("<div>", document.type);
-            $docItemType.modifiers = ["col-4", "type"];
+            $docItemType.modifiers = ["col-2", "type"];
 
             return new BEM({
                 block: "imcms-document-item",

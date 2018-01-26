@@ -48,13 +48,13 @@
     -moz-box-shadow: none;
     box-shadow: none;
     float: left;
-    padding: 27px 0;
+    padding: 0;
     overflow: hidden;
     height: 100%;
 }
 
 .imcms-menu-editor-body__left-side {
-    padding-top: 82px;
+    padding-top: 94px;
     padding-bottom: 0;
 }
 
