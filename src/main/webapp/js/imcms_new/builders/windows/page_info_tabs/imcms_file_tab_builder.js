@@ -164,6 +164,10 @@ Imcms.define("imcms-file-tab-builder",
                 appendFiles(document.files);
             },
             saveData: function (document) {
+                if (!this.isDocumentTypeSupported(document.type)) {
+                    return document;
+                }
+
                 document.files = getFileObjects(document.id);
                 document.newFiles = tabData.formData;
                 return document;

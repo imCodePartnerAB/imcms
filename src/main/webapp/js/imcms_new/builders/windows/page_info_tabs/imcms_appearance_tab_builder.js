@@ -61,7 +61,7 @@ Imcms.define("imcms-appearance-tab-builder",
                 }
             },
             saveData: function (documentDTO) {
-                if (!documentDTO.template) {
+                if (!this.isDocumentTypeSupported(documentDTO.type)) {
                     return documentDTO;
                 }
 
