@@ -103,7 +103,7 @@ public class UrlDocumentServiceTest {
     }
 
     @Test
-    public void getDocumentUrlByDocId_When_DocumentExists_Expect_Found() {
+    public void getUrlDocumentByDocId_When_DocumentExists_Expect_Found() {
         final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
         final UrlDocumentDTO actualUrlDocumentDTO = urlDocumentService.get(savedDocId);
 
@@ -111,12 +111,23 @@ public class UrlDocumentServiceTest {
     }
 
     @Test(expected = DocumentNotExistException.class)
-    public void deleteDocumentUrl_When_Expect_Deleted() {
+    public void deleteUrlDocument_When_Expect_Deleted() {
         final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
 
         assertNotNull(urlDocumentService.get(savedDocId));
 
         urlDocumentService.deleteByDocId(savedDocId);
         urlDocumentService.get(savedDocId);
+    }
+
+    @Test
+    public void deleteUrlDocumentWithItsDocumentUrl_When_DocumentUrlExists_Expect_DocumentUrlIsDeleted() {
+        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
+
+        assertEquals(1, documentUrlRepository.findAll().size());
+
+        urlDocumentService.deleteByDocId(savedDocId);
+
+        assertEquals(0, documentUrlRepository.findAll().size());
     }
 }
