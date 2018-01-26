@@ -115,7 +115,7 @@ public class DocumentUrlRepositoryTest {
 
     @Test
     public void findByVersion() {
-        final DocumentUrlDTO expectedDocument = documentDataInitializer.createUrlDocument().getDocumentUrlDTO();
+        final DocumentUrlDTO expectedDocument = documentDataInitializer.createUrlDocument().getDocumentURL();
         final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, DEFAULT_DOC_ID);
         final List<DocumentUrlJPA> byVersion = documentUrlRepository.findByVersion(version);
 

@@ -516,6 +516,8 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         final List<Integer> docIds = new ArrayList<>();
         final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
 
+        documentIndex.removeDocument(1001); // this doc is already indexed in some cases
+
         for (int i = 0; i < documentNumber; i++) {
             textDocumentDTOS.add(documentDataInitializer.createTextDocument());
         }

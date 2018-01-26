@@ -28,7 +28,7 @@ public class UberDocumentDTO extends Document {
 
     private List<DocumentFileDTO> files;
 
-    private DocumentUrlDTO documentUrlDTO;
+    private DocumentUrlDTO documentURL;
 
     private UberDocumentDTO(Document from) {
         super(from);
@@ -47,7 +47,7 @@ public class UberDocumentDTO extends Document {
 
     private UberDocumentDTO(UrlDocumentDTO from) {
         this((Document) from);
-        this.documentUrlDTO = from.getDocumentUrlDTO();
+        this.documentURL = from.getDocumentURL();
     }
 
     public static <T extends Document> UberDocumentDTO of(T from) {

@@ -50,15 +50,14 @@ Imcms.define("imcms-document-editor-builder",
 
             docSearchRestApi.read(searchQueryObj).done(function (documentList) {
 
-                documentList = documentList || [];
-
-                if (documentList.length === 0) {
+                if (!documentList || (documentList.length === 0)) {
                     currentPage--;
-                } else {
-                    (documentList).forEach(function (document) {
-                        $documentsList.append(buildDocument(document, documentEditorOptions));
-                    });
+                    return;
                 }
+
+                documentList.forEach(function (document) {
+                    $documentsList.append(buildDocument(document, documentEditorOptions));
+                });
             });
         }
 
@@ -632,9 +631,9 @@ Imcms.define("imcms-document-editor-builder",
             $documentsList.scroll(function () {
                 var $this = $(this);
 
-                if ($this.scrollTop() + $this.innerHeight() >= this.scrollHeight &&
-                    searchQueryObj["page.page"] === currentPage) {
-
+                if ((($this.scrollTop() + $this.innerHeight()) >= this.scrollHeight)
+                    && (searchQueryObj["page.page"] === currentPage))
+                {
                     appendDocuments("page.page", ++currentPage, false);
                 }
             });

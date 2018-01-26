@@ -19,7 +19,7 @@ public class UrlDocumentDTO extends Document implements Serializable {
 
     private static final long serialVersionUID = -8053993136553115412L;
 
-    private DocumentUrlDTO documentUrlDTO;
+    private DocumentUrlDTO documentURL;
 
     {
         super.type = Meta.DocumentType.URL;
@@ -31,12 +31,12 @@ public class UrlDocumentDTO extends Document implements Serializable {
 
     UrlDocumentDTO(UberDocumentDTO from) {
         this((Document) from);
-        this.documentUrlDTO = from.getDocumentUrlDTO();
+        this.documentURL = from.getDocumentURL();
     }
 
     public static UrlDocumentDTO createEmpty(Document from) {
         final UrlDocumentDTO urlDocumentDTO = new UrlDocumentDTO(from);
-        urlDocumentDTO.documentUrlDTO = DocumentUrlDTO.createDefault();
+        urlDocumentDTO.documentURL = DocumentUrlDTO.createDefault();
 
         return urlDocumentDTO;
     }

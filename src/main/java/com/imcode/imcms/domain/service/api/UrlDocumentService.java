@@ -30,7 +30,7 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
         final UrlDocumentDTO urlDocumentDTO = new UrlDocumentDTO(defaultDocumentService.get(docId));
         final DocumentUrlDTO documentUrlDTO = new DocumentUrlDTO(documentUrlService.getByDocId(docId));
 
-        urlDocumentDTO.setDocumentUrlDTO(documentUrlDTO);
+        urlDocumentDTO.setDocumentURL(documentUrlDTO);
 
         return urlDocumentDTO;
     }
@@ -48,7 +48,7 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
     @Override
     public int save(UrlDocumentDTO saveMe) {
         final boolean isNew = (saveMe.getId() == null);
-        final Optional<DocumentUrlDTO> documentUrlDTO = Optional.ofNullable(saveMe.getDocumentUrlDTO());
+        final Optional<DocumentUrlDTO> documentUrlDTO = Optional.ofNullable(saveMe.getDocumentURL());
 
         final int savedDocId = defaultDocumentService.save(new DocumentDTO(saveMe));
 
