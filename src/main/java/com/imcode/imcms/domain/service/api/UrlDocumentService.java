@@ -56,8 +56,6 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
             documentUrlDTO.ifPresent(urlDTO -> urlDTO.setDocId(savedDocId));
         }
 
-        documentUrlService.save(documentUrlDTO.get());
-
         documentUrlDTO.ifPresent(documentUrlService::save);
 
         return savedDocId;
