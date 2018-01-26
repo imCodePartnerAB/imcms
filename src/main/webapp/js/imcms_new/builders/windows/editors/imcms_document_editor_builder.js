@@ -552,10 +552,10 @@ Imcms.define("imcms-document-editor-builder",
 
             })[0] : document.title;
 
-            var $docItemTitle = components.texts.titleText("<div>", title);
+            var $docItemTitle = components.texts.titleText("<div>", title, {title: title});
             $docItemTitle.modifiers = ["col-5", "title"];
 
-            var $docItemAlias = components.texts.titleText("<div>", document.alias);
+            var $docItemAlias = components.texts.titleText("<div>", document.alias, {title: document.alias});
             $docItemAlias.modifiers = ["col-3", "alias"];
 
             var $docItemType = components.texts.titleText("<div>", document.type);

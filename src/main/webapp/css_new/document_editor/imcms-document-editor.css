@@ -106,6 +106,8 @@
     text-align: left;
     float: left;
     height: 45px;
+    text-overflow: ellipsis;
+    overflow: inherit;
 }
 
 .imcms-document-item__controls {
