@@ -31,7 +31,7 @@ public class UrlDocumentDTO extends Document implements Serializable {
 
     UrlDocumentDTO(UberDocumentDTO from) {
         this((Document) from);
-        this.documentURL = from.getDocumentUrlDTO();
+        this.documentURL = from.getDocumentURL();
     }
 
     public static UrlDocumentDTO createEmpty(Document from) {
