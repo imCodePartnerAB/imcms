@@ -1,4 +1,4 @@
-Imcms.define("imcms-templates-tab-builder",
+Imcms.define("imcms-appearance-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-templates-rest-api", "imcms-document-types",
         "imcms-page-info-tab-form-builder"
@@ -6,7 +6,7 @@ Imcms.define("imcms-templates-tab-builder",
     function (BEM, components, templatesRestApi, docTypes, tabContentBuilder) {
 
         return {
-            name: "templates",
+            name: "appearance",
             data: {},
             tabIndex: null,
             isDocumentTypeSupported: function (docType) {
