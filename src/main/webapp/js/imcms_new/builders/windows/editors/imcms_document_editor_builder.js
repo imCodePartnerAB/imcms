@@ -49,9 +49,16 @@ Imcms.define("imcms-document-editor-builder",
             }
 
             docSearchRestApi.read(searchQueryObj).done(function (documentList) {
-                (documentList || []).forEach(function (document) {
-                    $documentsList.append(buildDocument(document, documentEditorOptions));
-                });
+
+                documentList = documentList || [];
+
+                if (documentList.length === 0) {
+                    currentPage--;
+                } else {
+                    (documentList).forEach(function (document) {
+                        $documentsList.append(buildDocument(document, documentEditorOptions));
+                    });
+                }
             });
         }
 
@@ -625,7 +632,9 @@ Imcms.define("imcms-document-editor-builder",
             $documentsList.scroll(function () {
                 var $this = $(this);
 
-                if ($this.scrollTop() + $this.innerHeight() >= this.scrollHeight) {
+                if ($this.scrollTop() + $this.innerHeight() >= this.scrollHeight &&
+                    searchQueryObj["page.page"] === currentPage) {
+
                     appendDocuments("page.page", ++currentPage, false);
                 }
             });
