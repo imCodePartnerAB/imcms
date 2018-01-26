@@ -26,9 +26,9 @@ import java.util.Optional;
 @Service
 public class DelegatingByTypeDocumentService implements TypedDocumentService<Document> {
 
-    private final WrappingDocumentService<TextDocumentDTO> wrappedTextDocumentService;
-    private final WrappingDocumentService<FileDocumentDTO> wrappedFileDocumentService;
-    private final WrappingDocumentService<UrlDocumentDTO> wrappedUrlDocumentService;
+    private final DocumentService<UberDocumentDTO> wrappedTextDocumentService;
+    private final DocumentService<UberDocumentDTO> wrappedFileDocumentService;
+    private final DocumentService<UberDocumentDTO> wrappedUrlDocumentService;
     private final MetaRepository metaRepository;
 
     DelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService,
@@ -36,8 +36,8 @@ public class DelegatingByTypeDocumentService implements TypedDocumentService<Doc
                                     DocumentService<UrlDocumentDTO> urlDocumentService,
                                     MetaRepository metaRepository) {
 
-        this.wrappedFileDocumentService = new WrappingDocumentService<>(fileDocumentService);
         this.wrappedTextDocumentService = new WrappingDocumentService<>(textDocumentService);
+        this.wrappedFileDocumentService = new WrappingDocumentService<>(fileDocumentService);
         this.wrappedUrlDocumentService = new WrappingDocumentService<>(urlDocumentService);
         this.metaRepository = metaRepository;
     }
@@ -67,13 +67,13 @@ public class DelegatingByTypeDocumentService implements TypedDocumentService<Doc
         getCorrespondingDocumentService(docIdToDelete).deleteByDocId(docIdToDelete);
     }
 
-    private WrappingDocumentService getCorrespondingDocumentService(int docId) {
+    private DocumentService<UberDocumentDTO> getCorrespondingDocumentService(int docId) {
         return Optional.ofNullable(metaRepository.findType(docId))
                 .map(this::getCorrespondingDocumentService)
                 .orElseThrow(DocumentNotExistException::new);
     }
 
-    private WrappingDocumentService getCorrespondingDocumentService(DocumentType type) {
+    private DocumentService<UberDocumentDTO> getCorrespondingDocumentService(DocumentType type) {
         switch (type) {
             case TEXT:
                 return wrappedTextDocumentService;
