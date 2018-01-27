@@ -10,6 +10,10 @@ import com.imcode.imcms.model.DocumentURL;
 import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
+import imcode.server.Imcms;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +50,18 @@ public class DefaultDocumentUrlServiceTest {
     @Autowired
     private VersionedContentService<DocumentURL> defaultDocumentUrlService;
 
+    @Before
+    public void setUp() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user);
+    }
+
     @Test
     public void saveDocumentUrl_Expect_Saved() {
         final DocumentUrlDTO urlDocument = DocumentUrlDTO.createDefault();
         urlDocument.setDocId(1001);
 
-        versionDataInitializer.createData(Version.WORKING_VERSION_INDEX, DEFAULT_DOC_ID);
         documentUrlService.save(urlDocument);
 
         assertEquals(1, documentUrlRepository.findAll().size());

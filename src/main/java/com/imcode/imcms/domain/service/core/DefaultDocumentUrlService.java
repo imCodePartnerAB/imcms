@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
+import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.domain.service.VersionService;
@@ -39,7 +40,14 @@ public class DefaultDocumentUrlService
 
     @Override
     public DocumentURL save(DocumentURL documentURL) {
-        final Version documentWorkingVersion = versionService.getDocumentWorkingVersion(documentURL.getDocId());
+
+        Version documentWorkingVersion;
+        try {
+            documentWorkingVersion = versionService.getDocumentWorkingVersion(documentURL.getDocId());
+
+        } catch (DocumentNotExistException e) {
+            documentWorkingVersion = versionService.create(documentURL.getDocId());
+        }
 
         final DocumentUrlJPA documentUrlJPA = documentUrlRepository.saveAndFlush(
                 new DocumentUrlJPA(documentURL, documentWorkingVersion)
