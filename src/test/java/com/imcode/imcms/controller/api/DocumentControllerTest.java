@@ -13,6 +13,7 @@ import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
@@ -79,6 +80,9 @@ public class DocumentControllerTest extends AbstractControllerTest {
     @Autowired
     private DocumentService<UrlDocumentDTO> urlDocumentService;
 
+    @Autowired
+    private MetaRepository metaRepository;
+
     @Override
     protected String controllerPath() {
         return "/documents";
@@ -136,6 +140,18 @@ public class DocumentControllerTest extends AbstractControllerTest {
                 .param("docId", "" + ((Long) Instant.now().toEpochMilli()).intValue());
 
         performRequestBuilderExpectException(DocumentNotExistException.class, requestBuilder);
+    }
+
+    @Test
+    public void saveUrlDocument_Expect_Saved() throws Exception {
+        final UrlDocumentDTO empty = urlDocumentService.createEmpty();
+        final int beforeSavingSize = metaRepository.findAll().size();
+
+        performPostWithContentExpectOk(empty);
+
+        final int afterSavingSize = metaRepository.findAll().size();
+
+        assertEquals(beforeSavingSize + 1, afterSavingSize);
     }
 
     @Test
