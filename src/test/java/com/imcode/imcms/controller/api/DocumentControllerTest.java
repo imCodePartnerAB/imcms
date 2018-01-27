@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -127,6 +128,14 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(expectedUrlDocument));
 
+    }
+
+    @Test
+    public void getUrlDocument_When_DocumentDoesNotExist_Expect_DocumentNotExistException() throws Exception {
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + ((Long) Instant.now().toEpochMilli()).intValue());
+
+        performRequestBuilderExpectException(DocumentNotExistException.class, requestBuilder);
     }
 
     @Test
