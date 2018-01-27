@@ -631,9 +631,13 @@ Imcms.define("imcms-document-editor-builder",
             $documentsList.scroll(function () {
                 var $this = $(this);
 
-                if ((($this.scrollTop() + $this.innerHeight()) >= this.scrollHeight)
-                    && (searchQueryObj["page.page"] === currentPage))
-                {
+                var innerHeight = $this.innerHeight();
+                var scrollHeight = this.scrollHeight;
+
+                if (innerHeight !== scrollHeight
+                    && (($this.scrollTop() + innerHeight) >= scrollHeight)
+                    && (searchQueryObj["page.page"] === currentPage)
+                ) {
                     appendDocuments("page.page", ++currentPage, false);
                 }
             });
