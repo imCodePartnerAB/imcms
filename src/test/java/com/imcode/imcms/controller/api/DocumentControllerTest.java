@@ -3,7 +3,6 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
-import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.*;
@@ -12,11 +11,8 @@ import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.TextDocumentTemplate;
-import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
-import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
@@ -82,12 +78,6 @@ public class DocumentControllerTest extends AbstractControllerTest {
     @Autowired
     private DocumentService<UrlDocumentDTO> urlDocumentService;
 
-    @Autowired
-    private DocumentUrlRepository documentUrlRepository;
-
-    @Autowired
-    private VersionDataInitializer versionDataInitializer;
-
     @Override
     protected String controllerPath() {
         return "/documents";
@@ -128,21 +118,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
     @Test
     public void getUrlDocument_When_DocumentExists_Expect_Returned() throws Exception {
         final UrlDocumentDTO empty = urlDocumentService.createEmpty();
-        empty.setDocumentURL(null);
-
         final int savedId = urlDocumentService.save(empty);
-
-        final DocumentUrlJPA documentUrlJPA = new DocumentUrlJPA();
-        documentUrlJPA.setUrlFrameName("test");
-        documentUrlJPA.setUrl("test");
-        documentUrlJPA.setUrlLanguagePrefix("t");
-        documentUrlJPA.setUrlTarget("test");
-        documentUrlJPA.setUrlText("test");
-
-        final Version version = versionDataInitializer.createData(0, savedId);
-        documentUrlJPA.setVersion(version);
-
-        documentUrlRepository.saveAndFlush(documentUrlJPA);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", savedId + "");
