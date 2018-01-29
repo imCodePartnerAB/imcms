@@ -42,7 +42,7 @@
     border-top: 1px solid #d3d8de;
 }
 
-.imcms-footer__buttons .imcms-button:first-child {
+.imcms-loop-editor__footer .imcms-footer__buttons .imcms-button:first-child {
     float: left;
 }
 
