@@ -60,8 +60,9 @@ public class DefaultDocumentUrlServiceTest {
     @Test
     public void saveDocumentUrl_Expect_Saved() {
         final DocumentUrlDTO urlDocument = DocumentUrlDTO.createDefault();
-        urlDocument.setDocId(1001);
+        urlDocument.setDocId(DEFAULT_DOC_ID);
 
+        versionDataInitializer.createData(Version.WORKING_VERSION_INDEX, DEFAULT_DOC_ID);
         documentUrlService.save(urlDocument);
 
         assertEquals(1, documentUrlRepository.findAll().size());
