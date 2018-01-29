@@ -66,9 +66,7 @@ Imcms.define("imcms-text-editor-initializer",
             }
         }
 
-        function setFocusTextEditAreaToggle() {
-            $(document).click(toggleFocusEditArea);
-        }
+        $(document).click(toggleFocusEditArea);
 
         function initTextEditor() {
             var toolbarId = uuidGenerator.generateUUID();
@@ -95,7 +93,6 @@ Imcms.define("imcms-text-editor-initializer",
 
         return {
             initEditor: function () {
-                $(setFocusTextEditAreaToggle);
                 $(".imcms-editor-content--text").each(initTextEditor);
             }
         };
