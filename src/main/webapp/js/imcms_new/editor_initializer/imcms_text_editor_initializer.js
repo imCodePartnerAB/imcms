@@ -46,9 +46,16 @@ Imcms.define("imcms-text-editor-initializer",
                 });
         }
 
+        function showEditButton($editor) {
+            $editor.parent(".imcms-editor-area--text")
+                .find(".imcms-control--edit.imcms-control--text")
+                .css("display", "block");
+        }
+
         function prepareEditor(editor) {
             clearSaveBtnText(editor);
             setEditorFocusOnEditControlClick(editor);
+            showEditButton(editor.$());
         }
 
         function toggleFocusEditArea(e) {
