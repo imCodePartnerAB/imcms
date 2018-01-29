@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
+import imcode.server.document.index.DocumentIndex;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
@@ -10,8 +11,14 @@ public class PageRequestDTO {
 
     private PageRequest pageRequest;
 
+    private Sort.Direction direction;
+    private String property;
+
     public PageRequestDTO() {
         this.pageRequest = new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
+
+        property = DocumentIndex.FIELD__META_ID;
+        direction = Sort.Direction.DESC;
     }
 
     public PageRequestDTO(int page, int size) {
@@ -40,5 +47,20 @@ public class PageRequestDTO {
 
     public Sort getSort() {
         return pageRequest.getSort();
+    }
+
+    public void setDirection(Sort.Direction direction) {
+        this.direction = direction;
+        setSort();
+    }
+
+    public void setProperty(String property) {
+        this.property = property;
+        setSort();
+    }
+
+    private void setSort() {
+        final Sort sort = new Sort(new Sort.Order(this.direction, this.property));
+        pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), sort);
     }
 }

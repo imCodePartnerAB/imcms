@@ -32,6 +32,17 @@ Imcms.define("imcms-document-editor-builder",
 
         var currentPage = 0;
 
+        var term = "term";
+        var userId = "userId";
+        var categoriesId = "categoriesId";
+        var pageNumber = "page.page";
+        var sortProperty = "page.property";
+        var sortDirection = "page.direction";
+
+        var defaultSortPropertyValue = "meta_id";
+        var asc = "ASC";
+        var desc = "DESC";
+
         var searchQueryObj = {
             "term": "",
             "userId": null,
@@ -39,13 +50,17 @@ Imcms.define("imcms-document-editor-builder",
             "page.page": currentPage
         };
 
-        function appendDocuments(field, value, removeOldDocuments) {
+        function appendDocuments(field, value, removeOldDocuments, setDefaultSort) {
             setField(field, value);
 
             if (removeOldDocuments) {
                 $documentsList.empty();
                 currentPage = 0;
-                setField("page.page", currentPage);
+                setField(pageNumber, currentPage);
+            }
+
+            if (setDefaultSort) {
+                setDefaultSortProperties();
             }
 
             docSearchRestApi.read(searchQueryObj).done(function (documentList) {
@@ -94,8 +109,8 @@ Imcms.define("imcms-document-editor-builder",
 
                 $textField.$input.on("input", function () {
                     var textFieldValue = $(this).val().trim();
-                    if (searchQueryObj["term"] !== textFieldValue) {
-                        appendDocuments("term", textFieldValue, true);
+                    if (searchQueryObj[term] !== textFieldValue) {
+                        appendDocuments(term, textFieldValue, true, true);
                     }
                 });
 
@@ -110,8 +125,8 @@ Imcms.define("imcms-document-editor-builder",
 
             function buildUsersFilterSelect() {
                 var onSelected = function (value) {
-                    if (searchQueryObj["userId"] !== value) {
-                        appendDocuments("userId", value, true);
+                    if (searchQueryObj[userId] !== value) {
+                        appendDocuments(userId, value, true, true);
                     }
                 };
 
@@ -141,8 +156,8 @@ Imcms.define("imcms-document-editor-builder",
 
             function buildCategoriesFilterSelect() {
                 var onSelected = function (value) {
-                    if (searchQueryObj["categoriesId"][0] !== value) {
-                        appendDocuments("categoriesId", {0: value}, true);
+                    if (searchQueryObj[categoriesId][0] !== value) {
+                        appendDocuments(categoriesId, {0: value}, true, true);
                     }
                 };
 
@@ -211,14 +226,53 @@ Imcms.define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
+        function setDefaultSortProperties() {
+            searchQueryObj[sortProperty] = defaultSortPropertyValue;
+            searchQueryObj[sortDirection] = desc;
+        }
+
+        function onClickSorting(bySorting) {
+            if (searchQueryObj[sortProperty] === bySorting) {
+                if (searchQueryObj[sortDirection] === asc) {
+                    searchQueryObj[sortDirection] = desc;
+                } else {
+                    if (bySorting === defaultSortPropertyValue) {
+                        searchQueryObj[sortDirection] = asc;
+                    } else {
+                        setDefaultSortProperties();
+                    }
+                }
+            } else {
+                searchQueryObj[sortProperty] = bySorting;
+                searchQueryObj[sortDirection] = asc;
+            }
+
+            appendDocuments(sortProperty, searchQueryObj[sortProperty], true, false);
+        }
+
         function buildDocumentListTitlesRow() {
-            var $idColumnHead = $("<div>", {text: "id"});
+            var $idColumnHead = $("<div>", {
+                text: "id",
+                click: function () {
+                    onClickSorting(defaultSortPropertyValue);
+                }
+            });
             $idColumnHead.modifiers = ["col-2"];
 
-            var $titleColumnHead = $("<div>", {text: "Title"});
+            var $titleColumnHead = $("<div>", {
+                text: "Title",
+                click: function () {
+                    onClickSorting("meta_headline");
+                }
+            });
             $titleColumnHead.modifiers = ["col-5"];
 
-            var $aliasColumnHead = $("<div>", {text: "Alias"});
+            var $aliasColumnHead = $("<div>", {
+                text: "Alias",
+                click: function () {
+                    onClickSorting("alias");
+                }
+            });
             $aliasColumnHead.modifiers = ["col-3"];
 
             var $typeColumnHead = $("<div>", {text: "Type"});
@@ -636,9 +690,9 @@ Imcms.define("imcms-document-editor-builder",
 
                 if (innerHeight !== scrollHeight
                     && (($this.scrollTop() + innerHeight) >= scrollHeight)
-                    && (searchQueryObj["page.page"] === currentPage)
+                    && (searchQueryObj[pageNumber] === currentPage)
                 ) {
-                    appendDocuments("page.page", ++currentPage, false);
+                    appendDocuments(pageNumber, ++currentPage, false, false);
                 }
             });
 

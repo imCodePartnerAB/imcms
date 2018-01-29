@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,7 +67,6 @@ class DefaultSearchDocumentService implements SearchDocumentService {
                 .documentStoredFieldsList()
                 .stream()
                 .map(DocumentStoredFieldsDTO::new)
-                .sorted(Comparator.comparingInt(DocumentStoredFieldsDTO::getId).reversed())
                 .collect(Collectors.toList());
     }
 
