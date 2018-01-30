@@ -1,10 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.TextDTO;
-import com.imcode.imcms.domain.service.AbstractVersionedContentService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
@@ -27,11 +24,17 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, 
 
     private final LanguageService languageService;
     private final VersionService versionService;
+    private final TextHistoryService textHistoryService;
 
-    DefaultTextService(TextRepository textRepository, LanguageService languageService, VersionService versionService) {
+    DefaultTextService(TextRepository textRepository,
+                       LanguageService languageService,
+                       VersionService versionService,
+                       TextHistoryService textHistoryService) {
         super(textRepository);
+
         this.languageService = languageService;
         this.versionService = versionService;
+        this.textHistoryService = textHistoryService;
     }
 
     @Override
@@ -63,8 +66,11 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, 
         final Integer textId = getTextId(text, version, language);
 
         textJPA.setId(textId);
+
         repository.save(textJPA);
         super.updateWorkingVersion(docId);
+
+        textHistoryService.save(text);
     }
 
     @Override
