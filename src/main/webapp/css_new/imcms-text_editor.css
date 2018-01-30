@@ -13,3 +13,8 @@
     background-image: url("../images_new/text_editor/text_history.png");
     background-size: 16px;
 }
+
+.mce-tooltip {
+    margin-left: 6px;
+    margin-top: 8px;
+}
