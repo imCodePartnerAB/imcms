@@ -295,9 +295,24 @@ Imcms.define("imcms-document-editor-builder",
             var $this = $(this),
                 original = $this.closest(".imcms-document-items"),
                 $frame = original.clone(),
+                $frameLayout = $("<div>"),
                 frameItem = $frame.find(".imcms-document-item")
             ;
+
             $menuArea = $(".imcms-menu-items-tree");
+            $frameLayout.addClass("imcms-frame-layout")
+                .css({
+                    "display": "none",
+                    "position": "fixed",
+                    "top": 0,
+                    "left": 0,
+                    "width": "100%",
+                    "height": "100%",
+                    "background": "transparent",
+                    // "opacity": 0,
+                    "z-index": 10101
+                });
+            $frameLayout.appendTo($("body"));
 
             if (!checkDocInMenuEditor(original)) {
                 event.preventDefault();
@@ -336,10 +351,12 @@ Imcms.define("imcms-document-editor-builder",
             $frame.appendTo("body");
         }
 
-        $(document).on("mousemove", moveFrame)
-            .on("mousedown", "imcms-document-item__info", function () {
-                return false;
-            });
+        $(document).on("mousemove", function (event) {
+            if (!isMouseDown) return;
+            console.log("moving!");
+            console.log("isMouseDown!", isMouseDown);
+            moveFrame(event);
+        });
 
         function refreshDocumentInList(document) {
             var $oldDocumentElement = $documentsList.find("[data-doc-id=" + document.id + "]");
@@ -565,14 +582,15 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function toggleUserSelect(flag) {
-            /*if (flag) {
-                $("body").find("*").css({"user-select": "none"});
+            if (flag) {
+                $(".imcms-frame-layout").css({"display": "block"});
             } else {
-                $("body").find("*").css({"user-select": "auto"});
-            }*/
+                $(".imcms-frame-layout").remove();
+            }
         }
 
         $(document).on("mouseup", function (event) {
+            if (!isMouseDown) return;
             var $frame = $(".imcms-document-items--frame"),
                 frameItem = $frame.find(".imcms-document-item"),
                 insertedParent = null
