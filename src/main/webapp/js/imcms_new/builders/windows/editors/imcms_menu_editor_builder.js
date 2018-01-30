@@ -372,8 +372,6 @@ Imcms.define("imcms-menu-editor-builder",
 
         $(document).on("mousemove", function (event) {
             if (!isMouseDown) return;
-            console.log("moving!");
-            console.log("isMouseDown!", isMouseDown);
             moveFrame(event);
         });
 
