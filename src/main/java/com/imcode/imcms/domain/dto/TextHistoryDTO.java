@@ -8,12 +8,13 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class TextHistoryDTO extends TextHistory {
-    private final AuditDTO modified = new AuditDTO();
+    private AuditDTO modified;
     private Integer index;
     private String text;
     private Type type;
@@ -37,11 +38,16 @@ public class TextHistoryDTO extends TextHistory {
 
     @Override
     public Date getModifiedDt() {
-        return modified.getFormattedDate();
+        if (this.modified == null) {
+            return null;
+        }
+
+        return this.modified.getFormattedDate();
     }
 
     @Override
     public void setModifiedDt(Date modifiedDt) {
+        this.modified = Optional.ofNullable(this.modified).orElse(new AuditDTO());
         this.modified.setDateTime(modifiedDt);
     }
 
