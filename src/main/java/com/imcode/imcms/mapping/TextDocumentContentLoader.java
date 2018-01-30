@@ -107,17 +107,16 @@ public class TextDocumentContentLoader {
      *
      * @param docRef {@link DocRef} item
      * @param textNo text id
-     * @return {@link Set< TextHistory >} of text history
+     * @return {@link Set<  TextHistoryJPA  >} of text history
      * @see Version
      * @see LanguageJPA
      * @see DocRef
      * @see imcode.server.document.DocumentDomainObject
      */
-    public Collection<TextHistory> getTextHistory(DocRef docRef, int textNo) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
+    public Collection<TextHistoryJPA> getTextHistory(DocRef docRef, int textNo) {
         LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
-        return textHistoryRepository.findAllByVersionAndLanguageAndNo(version, language, textNo);
+        return textHistoryRepository.findAllByLanguageAndNo(language, textNo);
     }
 
     /**
@@ -125,22 +124,21 @@ public class TextDocumentContentLoader {
      *
      * @param docRef {@link DocRef} item
      * @param textNo text id
-     * @return {@link Collection<TextHistory>} of text history
+     * @return {@link Collection< TextHistoryJPA >} of text history
      * @see Version
      * @see LanguageJPA
      * @see DocRef
      * @see LoopEntryRefJPA
      * @see imcode.server.document.DocumentDomainObject
      */
-    public Collection<TextHistory> getTextHistory(DocRef docRef, LoopEntryRefJPA loopEntryRef, int textNo) {
+    public Collection<TextHistoryJPA> getTextHistory(DocRef docRef, LoopEntryRefJPA loopEntryRef, int textNo) {
         if (loopEntryRef == null) {
             return getTextHistory(docRef, textNo);
         }
 
-        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
         LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
-        return textHistoryRepository.findAllByVersionAndLanguageAndLoopEntryRefAndNo(version, language, loopEntryRef, textNo);
+        return textHistoryRepository.findAllByLanguageAndLoopEntryRefAndNo(language, loopEntryRef, textNo);
     }
 
 
