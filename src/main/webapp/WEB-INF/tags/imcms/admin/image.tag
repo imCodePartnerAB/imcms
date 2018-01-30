@@ -27,9 +27,8 @@
      ? imageService.getImage(targetDocId, index, language, loopEntryRef)
      : imageService.getPublicImage(targetDocId, index, language, loopEntryRef)}"/>
     <c:set var="imgPath" value="${image.generatedFilePath}"/>
-    <c:set var="imgPath" value="${empty imgPath ? '/imcms/eng/images/admin/ico_image.gif' : imgPath}"/>
     <c:set var="style" value="${empty style ? '' : ' style=\"'.concat(style).concat('\"')}"/>
-    ${pre}<img src="${contextPath}${imgPath}"${style}/>${post}
+    ${pre}<img src="${empty imgPath ? '' : contextPath}${imgPath}"${style}/>${post}
 </c:set>
 
 <c:if test="${isEditMode}">
