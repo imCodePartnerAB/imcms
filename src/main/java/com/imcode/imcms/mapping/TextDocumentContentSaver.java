@@ -270,7 +270,7 @@ public class TextDocumentContentSaver {
         createLoopEntryIfNotExists(text.getVersion(), text.getLoopEntryRef());
 
         textRepository.save(text);
-        textHistoryRepository.save(new TextHistory(text, user));
+        textHistoryRepository.save(new TextHistoryJPA(text, user));
     }
 
     private void createLoopEntryIfNotExists(Version version, LoopEntryRefJPA entryRef) {

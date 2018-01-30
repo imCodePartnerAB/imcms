@@ -1,32 +1,26 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.LoopEntryRef;
-import com.imcode.imcms.model.Text;
+import com.imcode.imcms.model.TextHistory;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
-@Entity
-@Table(name = "imcms_text_doc_texts")
-@NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class TextJPA extends Text {
+@Entity
+@NoArgsConstructor
+@Table(name = "imcms_text_doc_texts_history")
+public class TextHistoryJPA extends TextHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @NotNull
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
-            @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
-    })
-    private Version version;
 
     @NotNull
     @Column(name = "`index`")
@@ -45,20 +39,32 @@ public class TextJPA extends Text {
 
     private LoopEntryRefJPA loopEntryRef;
 
-    public TextJPA(Text from, Version version, LanguageJPA language) {
-        super(from);
-        setVersion(version);
-        setLanguage(language);
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User modifiedBy;
+
+    @Column(name = "modified_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modifiedDt;
+
+    public TextHistoryJPA(TextJPA text, User modifiedBy) {
+        setLanguage(text.getLanguage());
+        setIndex(text.getIndex());
+        setText(text.getText());
+        setType(text.getType());
+        setLoopEntryRef(text.getLoopEntryRef());
+        setModifiedBy(modifiedBy);
+        setModifiedDt(new Date());
     }
 
     @Override
     public Integer getDocId() {
-        return version.getDocId();
+        return null;
     }
 
     @Override
     public String getLangCode() {
-        return language.getCode();
+        return this.language.getCode();
     }
 
     @Override

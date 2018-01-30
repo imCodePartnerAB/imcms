@@ -8,7 +8,7 @@ import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.TextHistory;
+import com.imcode.imcms.persistence.entity.TextHistoryJPA;
 import com.jcabi.w3c.Defect;
 import com.jcabi.w3c.ValidationResponse;
 import com.jcabi.w3c.ValidatorBuilder;
@@ -109,7 +109,7 @@ public class TextController {
     }
 
     /**
-     * Save passed text into database. Also passed text saved into {@link TextHistory} table
+     * Save passed text into database. Also passed text saved into {@link TextHistoryJPA} table
      *
      * @param content      Content to save
      * @param locale       Content language. For more information about languages see {@link LanguageJPA} and {@link imcode.server.LanguageMapper}
@@ -240,11 +240,11 @@ public class TextController {
         public String text;
         public String type;
 
-        TextHistoryWebEntity(TextHistory textHistory) {
-            this.modifiedBy = textHistory.getModifiedBy().getFirstName();
-            this.modifiedDate = textHistory.getModifiedDt().getTime();
-            this.text = textHistory.getText();
-            this.type = textHistory.getType().name().toLowerCase();
+        TextHistoryWebEntity(TextHistoryJPA textHistoryJPA) {
+            this.modifiedBy = textHistoryJPA.getModifiedBy().getFirstName();
+            this.modifiedDate = textHistoryJPA.getModifiedDt().getTime();
+            this.text = textHistoryJPA.getText();
+            this.type = textHistoryJPA.getType().name().toLowerCase();
         }
     }
 }
