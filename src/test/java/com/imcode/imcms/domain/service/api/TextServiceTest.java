@@ -13,7 +13,11 @@ import com.imcode.imcms.persistence.entity.TextJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
+import imcode.server.Imcms;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +57,13 @@ public class TextServiceTest {
 
     @Autowired
     private TextRepository textRepository;
+
+    @BeforeClass
+    public static void setUser() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+    }
 
     private Version workingVersion;
     private Version latestVersion;
