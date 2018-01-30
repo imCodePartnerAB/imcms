@@ -155,6 +155,7 @@
             "imcms-images-rest-api": "rest/imcms_images_rest_api.js",
             "imcms-languages-rest-api": "rest/imcms_languages_rest_api.js",
             "imcms-texts-rest-api": "rest/imcms_texts_rest_api.js",
+            "imcms-texts-history-rest-api": "rest/imcms_texts_history_rest_api.js",
             "imcms-file-doc-files-rest-api": "rest/imcms_file_doc_files_rest_api.js"
         }
     };
