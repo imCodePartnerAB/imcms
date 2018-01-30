@@ -3,7 +3,9 @@ package com.imcode.imcms.config;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
+import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
@@ -391,4 +393,31 @@ class MappingConfig {
         };
     }
 
+    @Bean
+    public Function<TextHistoryJPA, TextHistoryDTO> textHistoryJpaToTextHistoryDTO(final UserService userService) {
+        return textHistoryJPA -> {
+            final User modifierUser = userService.getUser(textHistoryJPA.getModifierId());
+
+            final TextHistoryDTO textHistoryDTO = new TextHistoryDTO(textHistoryJPA);
+            textHistoryDTO.setLangCode(textHistoryJPA.getLangCode());
+            textHistoryDTO.setModifiedBy(modifierUser);
+
+            return textHistoryDTO;
+        };
+    }
+
+    @Bean
+    public Function<TextHistoryDTO, TextHistoryJPA> textHistoryDtoToTextHistoryJPA(final UserService userService,
+                                                                                   final LanguageService languageService) {
+        return textHistoryDTO -> {
+            final User modifierUser = userService.getUser(textHistoryDTO.getModifierId());
+            final Language language = languageService.findByCode(textHistoryDTO.getLangCode());
+
+            final TextHistoryJPA textHistoryJPA = new TextHistoryJPA(textHistoryDTO);
+            textHistoryJPA.setLanguage(new LanguageJPA(language));
+            textHistoryJPA.setModifiedBy(modifierUser);
+
+            return textHistoryJPA;
+        };
+    }
 }
