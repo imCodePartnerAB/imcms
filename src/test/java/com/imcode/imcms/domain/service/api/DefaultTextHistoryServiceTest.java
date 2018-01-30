@@ -6,7 +6,9 @@ import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.TextHistoryService;
 import com.imcode.imcms.model.Language;
+import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
+import com.imcode.imcms.model.TextHistory;
 import com.imcode.imcms.persistence.repository.TextHistoryRepository;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
@@ -20,6 +22,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 
@@ -38,7 +44,9 @@ public class DefaultTextHistoryServiceTest {
     @Autowired
     private TextHistoryRepository textHistoryRepository;
 
-    private Text text;
+    private Language language;
+    private Integer index;
+    private LoopEntryRef loopEntryRef;
 
     @BeforeClass
     public static void setUser() {
@@ -49,28 +57,59 @@ public class DefaultTextHistoryServiceTest {
 
     @Before
     public void setUp() {
-        final Language en = languageDataInitializer.createData().get(0);
-        final int index = 1;
+        this.language = languageDataInitializer.createData().get(0);
+        this.index = 1;
 
-        final LoopEntryRefDTO loopEntryRef = new LoopEntryRefDTO();
+        this.loopEntryRef = new LoopEntryRefDTO();
         loopEntryRef.setLoopEntryIndex(1);
         loopEntryRef.setLoopIndex(1);
-
-        final TextDTO textDTO = new TextDTO(index, null, en.getCode(), loopEntryRef);
-        textDTO.setType(Text.Type.PLAIN_TEXT);
-        textDTO.setText("Long text");
-
-        this.text = textDTO;
     }
 
     @Test
     public void saveTextHistory_Expect_Saved() {
         final int expected = textHistoryRepository.findAll().size() + 1;
+        final Text text = textList(1).get(0);
 
-        textHistoryService.save(this.text);
+        textHistoryService.save(text);
 
         final int actual = textHistoryRepository.findAll().size();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void findAllByLanguageAndLoopEntryRefAndNo_When_ThreeSpecifiedTextHistoriesExists_Expect_Returned() {
+        final int textHistoryListSize = 3;
+        final List<Text> texts = textList(textHistoryListSize);
+
+        // create another text history
+        this.index++;
+        texts.addAll(textList(1));
+        this.index--;
+
+        texts.forEach(textHistoryService::save);
+
+        final List<TextHistory> actual = textHistoryService
+                .findAllByLanguageAndLoopEntryRefAndNo(this.language, this.loopEntryRef, this.index);
+
+        assertEquals(textHistoryListSize, actual.size());
+
+        actual.forEach(textHistory -> {
+            assertEquals(textHistory.getIndex(), this.index);
+            assertEquals(textHistory.getLangCode(), this.language.getCode());
+            assertEquals(textHistory.getLoopEntryRef(), this.loopEntryRef);
+        });
+    }
+
+    private List<Text> textList(int number) {
+        return IntStream.range(0, number)
+                .mapToObj(i -> {
+                    final TextDTO textDTO = new TextDTO(this.index, null, this.language.getCode(), this.loopEntryRef);
+                    textDTO.setType(Text.Type.PLAIN_TEXT);
+                    textDTO.setText("Long text" + i);
+
+                    return textDTO;
+                })
+                .collect(Collectors.toList());
     }
 }
