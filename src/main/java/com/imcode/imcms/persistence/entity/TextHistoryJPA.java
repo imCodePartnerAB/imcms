@@ -57,6 +57,10 @@ public class TextHistoryJPA extends TextHistory {
         setModifiedDt(new Date());
     }
 
+    public TextHistoryJPA(TextHistory from) {
+        super(from);
+    }
+
     @Override
     public Integer getDocId() {
         return null;
@@ -70,5 +74,10 @@ public class TextHistoryJPA extends TextHistory {
     @Override
     public void setLoopEntryRef(LoopEntryRef loopEntryRef) {
         this.loopEntryRef = (loopEntryRef == null) ? null : new LoopEntryRefJPA(loopEntryRef);
+    }
+
+    @Override
+    public Integer getModifierId() {
+        return this.modifiedBy.getId();
     }
 }
