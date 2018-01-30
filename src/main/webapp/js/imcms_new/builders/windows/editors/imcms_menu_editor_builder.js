@@ -88,8 +88,9 @@ Imcms.define("imcms-menu-editor-builder",
             var $originItemParent = $originItem.parent("[data-menu-items-lvl]");
             var $originDropItem = $(".imcms-menu-items--is-drop");
             $frame.remove();
+            toggleUserSelect(false);
             isMouseDown = false;
-            if (isPasted) {
+            if (isPasted && $originDropItem.length !== 0) {
                 $originItem.remove();
                 if ($originItemParent.find("[data-menu-items-lvl]").length === 0) {
                     $originItemParent.find(".children-triangle").remove();
@@ -286,16 +287,23 @@ Imcms.define("imcms-menu-editor-builder",
             mouseCoords.newPageX = event.clientX;
             mouseCoords.newPageY = event.clientY;
 
-            if (isMouseDown && detectTargetArea(event)) {
-                $frame.css({
-                    "top": (mouseCoords.newPageY - mouseCoords.pageY) + mouseCoords.top,
-                    "left": (mouseCoords.newPageX - mouseCoords.pageX) + mouseCoords.left
-                });
-                detectPasteArea($frame);
-            } else {
-                disableDrag($frame);
-                disableHighlightingMenuDoc();
+            var deltaPageX =  mouseCoords.newPageX - mouseCoords.pageX;
+            var deltaPageY = mouseCoords.newPageY - mouseCoords.pageY;
+
+            if (Math.abs(deltaPageX) > 7 || Math.abs(deltaPageY) > 7) {
+                if (isMouseDown && detectTargetArea(event)) {
+                    $frame.css({
+                        "top": (mouseCoords.newPageY - mouseCoords.pageY) + mouseCoords.top,
+                        "left": (mouseCoords.newPageX - mouseCoords.pageX) + mouseCoords.left
+                    });
+                    detectPasteArea($frame);
+                } else {
+                    disableDrag($frame);
+                    disableHighlightingMenuDoc();
+                }
             }
+
+
         }
 
         function closeSubItems(elem) {
@@ -307,7 +315,6 @@ Imcms.define("imcms-menu-editor-builder",
 
         function dragMenuItem(event) {
             var $this = $(this);
-
             var $originItem = $this.closest(".imcms-menu-items"),
                 originItemLvl = parseInt($originItem.attr("data-menu-items-lvl"))
             ;
