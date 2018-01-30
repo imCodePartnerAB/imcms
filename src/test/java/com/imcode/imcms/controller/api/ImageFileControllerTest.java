@@ -2,7 +2,6 @@ package com.imcode.imcms.controller.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
@@ -37,7 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class ImageFileControllerTest extends AbstractControllerTest {
 
     @Value("classpath:img1.jpg")

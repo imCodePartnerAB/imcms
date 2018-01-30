@@ -3,7 +3,6 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import imcode.server.Imcms;
@@ -22,7 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class MenuControllerTest extends AbstractControllerTest {
 
     @Autowired

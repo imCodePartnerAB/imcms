@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
+import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
@@ -270,7 +270,7 @@ public class TextDocumentContentSaver {
         createLoopEntryIfNotExists(text.getVersion(), text.getLoopEntryRef());
 
         textRepository.save(text);
-        textHistoryRepository.save(new TextHistory(text, user));
+        textHistoryRepository.save(new TextHistoryJPA(text, user));
     }
 
     private void createLoopEntryIfNotExists(Version version, LoopEntryRefJPA entryRef) {

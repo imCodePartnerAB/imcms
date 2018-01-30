@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.core;
 
-import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.TypedDocumentService;
+import com.imcode.imcms.model.Document;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
@@ -19,9 +20,9 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/publish-document")
 public class DocumentPublicationController {
 
-    private final DocumentService documentService;
+    private final TypedDocumentService documentService;
 
-    public DocumentPublicationController(DocumentService documentService) {
+    public DocumentPublicationController(TypedDocumentService<Document> documentService) {
         this.documentService = documentService;
     }
 

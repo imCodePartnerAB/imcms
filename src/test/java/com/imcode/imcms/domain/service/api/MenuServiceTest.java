@@ -3,7 +3,6 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.MenuService;
@@ -22,7 +21,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,7 +32,7 @@ import static org.junit.Assert.*;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class MenuServiceTest {
 
     private static final int WORKING_VERSION_NO = 0;
@@ -144,10 +146,10 @@ public class MenuServiceTest {
 
         final int docId = 1001;
 
-        IntStream.range(0, 10).forEach((versionIndex) -> {
+        IntStream.range(0, 3).forEach((versionIndex) -> {
             versionDataInitializer.createData(versionIndex, docId);
 
-            IntStream.range(1, 10).forEach((menuIndex) ->
+            IntStream.range(1, 5).forEach((menuIndex) ->
                     menuDataInitializer.createData(true, menuIndex, versionIndex, docId)
             );
         });

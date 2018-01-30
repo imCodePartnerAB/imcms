@@ -3,7 +3,7 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
-import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
+import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
@@ -43,10 +43,10 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     // runs inside transaction
     public void visitUrlDocument(UrlDocumentDomainObject document) {
-        UrlDocContent urlDocContent = docRepository.getUrlDocContent(document.getRef());
-        urlDocContent.setUrl(document.getUrl());
+        DocumentUrlJPA documentUrlJPA = docRepository.getUrlDocContent(document.getRef());
+        documentUrlJPA.setUrl(document.getUrl());
 
-        docRepository.saveUrlDocContent(urlDocContent);
+        docRepository.saveUrlDocContent(documentUrlJPA);
     }
 
     // runs inside transaction

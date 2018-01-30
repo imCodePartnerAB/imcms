@@ -14,9 +14,11 @@
 .imcms-document-item__info--col-2,
 .imcms-document-item__info--col-3,
 .imcms-document-item__info--col-4,
+.imcms-document-item__info--col-5,
 .imcms-document-list-titles__title--col-2,
 .imcms-document-list-titles__title--col-3,
 .imcms-document-list-titles__title--col-4,
+.imcms-document-list-titles__title--col-5,
 .imcms-loop-list-titles__title--col-1,
 .imcms-loop-list-titles__title--col-2,
 .imcms-loop-list-titles__title--col-3,
@@ -89,7 +91,9 @@
     width: 33.33%;
 }
 
+.imcms-document-list-titles__title--col-5,
 .imcms-loop-list-titles__title--col-5,
+.imcms-document-item__info--col-5,
 .imcms-loop-item__info--col-5,
 .imcms-grid-coll-5 {
     width: 41.66%;

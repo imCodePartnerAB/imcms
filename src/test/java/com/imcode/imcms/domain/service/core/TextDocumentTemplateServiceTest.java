@@ -1,12 +1,10 @@
 package com.imcode.imcms.domain.service.core;
 
+import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.model.TextDocumentTemplate;
-import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
-import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,25 +21,23 @@ import static org.junit.Assert.*;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class TextDocumentTemplateServiceTest {
 
     private static final int DOC_ID = 1001;
     @Autowired
     private TextDocumentTemplateService textDocumentTemplateService;
 
-    @Autowired
-    private TextDocumentTemplateRepository textDocumentTemplateRepository;
-
     private TextDocumentTemplate saved;
+
+    @Autowired
+    private TemplateDataInitializer templateDataInitializer;
 
     @Before
     public void setUp() throws Exception {
-        final TextDocumentTemplateJPA templateJPA = textDocumentTemplateRepository.save(
-                new TextDocumentTemplateJPA(DOC_ID, "demo", "demo")
+        saved = new TextDocumentTemplateDTO(
+                templateDataInitializer.createData(DOC_ID, "demo", "demo")
         );
-
-        saved = new TextDocumentTemplateDTO(templateJPA);
     }
 
     @Test

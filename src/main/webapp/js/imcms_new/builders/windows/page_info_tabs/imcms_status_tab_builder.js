@@ -81,7 +81,18 @@ Imcms.define("imcms-status-tab-builder",
 
         return {
             name: "status",
+            tabIndex: null,
+            isDocumentTypeSupported: function () {
+                return true; // all supported
+            },
+            showTab: function () {
+                tabContentBuilder.showTab(this.tabIndex);
+            },
+            hideTab: function () {
+                tabContentBuilder.hideTab(this.tabIndex);
+            },
             buildTab: function (index) {
+                this.tabIndex = index;
                 return tabContentBuilder.buildFormBlock(statusTabs.map(buildStatusInfoRow), index);
             },
             fillTabDataFromDocument: function (document) {

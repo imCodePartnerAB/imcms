@@ -1,72 +1,37 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode;
-import com.imcode.imcms.persistence.entity.Meta.DocumentType;
+import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
-import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.Value;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static com.imcode.imcms.persistence.entity.Meta.PublicationStatus.NEW;
 
 @Data
 @NoArgsConstructor
-public class DocumentDTO implements Serializable {
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class DocumentDTO extends Document implements Serializable {
 
-    private static final long serialVersionUID = -2317764204932918145L;
+    protected static final long serialVersionUID = -1197329246115859534L;
 
-    private Integer id;
+    public DocumentDTO(Document from) {
+        super(from);
+    }
 
-    private String title;
-
-    private DocumentType type;
-
-    private String target;
-
-    private String alias;
-
-    private List<CommonContentDTO> commonContents;
-
-    private PublicationStatus publicationStatus;
-
-    private AuditDTO published;
-
-    private AuditDTO archived;
-
-    private AuditDTO publicationEnd;
-
-    private AuditDTO modified;
-
-    private AuditDTO created;
-
-    private DisabledLanguageShowMode disabledLanguageShowMode;
-
-    private AuditDTO currentVersion;
-
-    private Set<String> keywords;
-
-    private boolean searchDisabled;
-
-    private Set<CategoryDTO> categories;
-
-    private Set<RestrictedPermissionDTO> restrictedPermissions;
-
-    private Map<Integer, Permission> roleIdToPermission;
-
-    private TextDocumentTemplateDTO template;
-
-    public static DocumentDTO createNew(DocumentType type) {
+    public static DocumentDTO createEmpty() {
         return Value.with(new DocumentDTO(), documentDTO -> {
-            documentDTO.title = "";
             documentDTO.target = "";
             documentDTO.alias = "";
-            documentDTO.type = type;
 
             // common contents have to be set by service
 
@@ -92,11 +57,7 @@ public class DocumentDTO implements Serializable {
             documentDTO.created = new AuditDTO();
             documentDTO.currentVersion = new AuditDTO();
             documentDTO.currentVersion.setId(Version.WORKING_VERSION_INDEX);
-            documentDTO.template = TextDocumentTemplateDTO.createDefault();
         });
     }
 
-    public Set<RestrictedPermissionDTO> getRestrictedPermissions() {
-        return (this.restrictedPermissions == null) ? null : new TreeSet<>(this.restrictedPermissions);
-    }
 }

@@ -99,7 +99,18 @@ Imcms.define("imcms-access-tab-builder",
 
         return {
             name: "access",
+            tabIndex: null,
+            isDocumentTypeSupported: function () {
+                return true; // all supported
+            },
+            showTab: function () {
+                tabContentBuilder.showTab(this.tabIndex);
+            },
+            hideTab: function () {
+                tabContentBuilder.hideTab(this.tabIndex);
+            },
             buildTab: function (index, docId) {
+                this.tabIndex = index;
                 var $addRoleSelect = components.selects.imcmsSelect("<div>");
 
                 var $addRoleButton = components.buttons.neutralButton({

@@ -33,6 +33,14 @@
     height: 90%;
 }
 
+.imcms-menu-editor-body__left-side {
+    width: 35%;
+}
+
+.imcms-menu-editor-body__right-side {
+    width: 65%;
+}
+
 .imcms-menu-editor-body__left-side,
 .imcms-menu-editor-body__right-side {
     border-bottom: 1px solid #d3d8de;
@@ -40,14 +48,13 @@
     -moz-box-shadow: none;
     box-shadow: none;
     float: left;
-    padding: 27px 0;
+    padding: 0;
     overflow: hidden;
-    width: 50%;
     height: 100%;
 }
 
 .imcms-menu-editor-body__left-side {
-    padding-top: 82px;
+    padding-top: 94px;
     padding-bottom: 0;
 }
 

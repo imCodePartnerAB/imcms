@@ -30,10 +30,60 @@ Imcms.define("imcms-document-editor-builder",
 
         var $documentsContainer, $editorBody, $documentsList;
 
+        var currentPage = 0;
+
+        var term = "term";
+        var userId = "userId";
+        var categoriesId = "categoriesId";
+        var pageNumber = "page.page";
+        var sortProperty = "page.property";
+        var sortDirection = "page.direction";
+
+        var defaultSortPropertyValue = "meta_id";
+        var asc = "ASC";
+        var desc = "DESC";
+
+        var searchQueryObj = {
+            "term": "",
+            "userId": null,
+            "categoriesId": {},
+            "page.page": currentPage
+        };
+
+        function appendDocuments(field, value, removeOldDocuments, setDefaultSort) {
+            setField(field, value);
+
+            if (removeOldDocuments) {
+                $documentsList.empty();
+                currentPage = 0;
+                setField(pageNumber, currentPage);
+            }
+
+            if (setDefaultSort) {
+                setDefaultSortProperties();
+            }
+
+            docSearchRestApi.read(searchQueryObj).done(function (documentList) {
+
+                if (!documentList || (documentList.length === 0)) {
+                    currentPage--;
+                    return;
+                }
+
+                documentList.forEach(function (document) {
+                    $documentsList.append(buildDocument(document, documentEditorOptions));
+                });
+            });
+        }
+
+        function setField(field, value) {
+            searchQueryObj[field] = value;
+        }
+
         function buildBodyHeadTools() {
             function addDocumentToList(document) {
                 var $document = buildDocument(document, documentEditorOptions);
-                $documentsList.append($document); // todo: replace append by pasting into correct position in sorted list
+                $documentsList.prepend($document); // todo: replace append by pasting into correct position in sorted list
             }
 
             function onNewDocButtonClick(e) {
@@ -49,23 +99,43 @@ Imcms.define("imcms-document-editor-builder",
             }
 
             function buildSearchDocField() {
+
+                var $textField = components.texts.textField("<div>", {
+                    id: "searchText",
+                    name: "search",
+                    placeholder: "Type to find document",
+                    text: "Free text"
+                });
+
+                $textField.$input.on("input", function () {
+                    var textFieldValue = $(this).val().trim();
+                    if (searchQueryObj[term] !== textFieldValue) {
+                        appendDocuments(term, textFieldValue, true, true);
+                    }
+                });
+
                 return new BEM({
                     block: "imcms-input-search",
                     elements: {
-                        "text-box": primitives.imcmsInputText({
-                            id: "searchText",
-                            name: "search",
-                            placeholder: "Type to find document"
-                        }),
+                        "text-box": $textField,
                         "button": components.buttons.searchButton()
                     }
                 }).buildBlockStructure("<div>");
             }
 
             function buildUsersFilterSelect() {
-                var $usersFilterSelect = components.selects.imcmsSelect("<div>", {
+                var onSelected = function (value) {
+                    if (searchQueryObj[userId] !== value) {
+                        appendDocuments(userId, value, true, true);
+                    }
+                };
+
+                var $usersFilterSelectContainer = components.selects.selectContainer("<div>", {
                     id: "users-filter",
-                    name: "users-filter"
+                    name: "users-filter",
+                    text: "Owner",
+                    emptySelect: true,
+                    onSelected: onSelected
                 });
 
                 usersRestApi.read(null).done(function (users) {
@@ -75,16 +145,28 @@ Imcms.define("imcms-document-editor-builder",
                             "data-value": user.id
                         }
                     });
-                    components.selects.addOptionsToSelect(usersDataMapped, $usersFilterSelect);
+
+                    components.selects.addOptionsToSelect(
+                        usersDataMapped, $usersFilterSelectContainer.getSelect(), onSelected
+                    );
                 });
 
-                return $usersFilterSelect;
+                return $usersFilterSelectContainer;
             }
 
             function buildCategoriesFilterSelect() {
-                var $categoriesFilterSelect = components.selects.imcmsSelect("<div>", {
+                var onSelected = function (value) {
+                    if (searchQueryObj[categoriesId][0] !== value) {
+                        appendDocuments(categoriesId, {0: value}, true, true);
+                    }
+                };
+
+                var $categoriesFilterSelectContainer = components.selects.selectContainer("<div>", {
                     id: "categories-filter",
-                    name: "categories-filter"
+                    name: "categories-filter",
+                    text: "Category",
+                    emptySelect: true,
+                    onSelected: onSelected
                 });
 
                 categoriesRestApi.read(null).done(function (categories) {
@@ -94,10 +176,12 @@ Imcms.define("imcms-document-editor-builder",
                             "data-value": category.id
                         }
                     });
-                    components.selects.addOptionsToSelect(categoriesDataMapped, $categoriesFilterSelect);
+
+                    components.selects.addOptionsToSelect(
+                        categoriesDataMapped, $categoriesFilterSelectContainer.getSelect(), onSelected);
                 });
 
-                return $categoriesFilterSelect;
+                return $categoriesFilterSelectContainer;
             }
 
             var toolBEM = new BEM({
@@ -142,18 +226,57 @@ Imcms.define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
+        function setDefaultSortProperties() {
+            searchQueryObj[sortProperty] = defaultSortPropertyValue;
+            searchQueryObj[sortDirection] = desc;
+        }
+
+        function onClickSorting(bySorting) {
+            if (searchQueryObj[sortProperty] === bySorting) {
+                if (searchQueryObj[sortDirection] === asc) {
+                    searchQueryObj[sortDirection] = desc;
+                } else {
+                    if (bySorting === defaultSortPropertyValue) {
+                        searchQueryObj[sortDirection] = asc;
+                    } else {
+                        setDefaultSortProperties();
+                    }
+                }
+            } else {
+                searchQueryObj[sortProperty] = bySorting;
+                searchQueryObj[sortDirection] = asc;
+            }
+
+            appendDocuments(sortProperty, searchQueryObj[sortProperty], true, false);
+        }
+
         function buildDocumentListTitlesRow() {
-            var $idColumnHead = $("<div>", {text: "id"});
+            var $idColumnHead = $("<div>", {
+                text: "id",
+                click: function () {
+                    onClickSorting(defaultSortPropertyValue);
+                }
+            });
             $idColumnHead.modifiers = ["col-2"];
 
-            var $titleColumnHead = $("<div>", {text: "Title"});
-            $titleColumnHead.modifiers = ["col-3"];
+            var $titleColumnHead = $("<div>", {
+                text: "Title",
+                click: function () {
+                    onClickSorting("meta_headline");
+                }
+            });
+            $titleColumnHead.modifiers = ["col-5"];
 
-            var $aliasColumnHead = $("<div>", {text: "Alias"});
+            var $aliasColumnHead = $("<div>", {
+                text: "Alias",
+                click: function () {
+                    onClickSorting("alias");
+                }
+            });
             $aliasColumnHead.modifiers = ["col-3"];
 
             var $typeColumnHead = $("<div>", {text: "Type"});
-            $typeColumnHead.modifiers = ["col-4"];
+            $typeColumnHead.modifiers = ["col-2"];
 
             return new BEM({
                 block: "imcms-document-list-titles",
@@ -181,15 +304,12 @@ Imcms.define("imcms-document-editor-builder",
                 return
             }
 
-            $frame.find(".imcms-title").last().remove();
-            $frame.find(".imcms-title").last().remove();
-
             isMouseDown = true;
             mouseCoords = {
                 pageX: event.clientX,
                 pageY: event.clientY,
                 top: $this.closest(".imcms-document-items").position().top,
-                left: $this.closest(".imcms-document-items").position().left + 500
+                left: $this.closest(".imcms-document-items").position().left
             };
             menuAreaProp = {
                 top: $menuArea.position().top,
@@ -198,8 +318,9 @@ Imcms.define("imcms-document-editor-builder",
                 bottom: menuAreaProp.top + $menuArea.outerHeight()
             };
 
-            frameItem.attr("data-id", frameItem.children().first().text());
-            frameItem.attr("data-title", frameItem.children().eq(1).text());
+            frameItem.attr("data-id", frameItem.find(".imcms-document-item__info--id").text());
+            frameItem.attr("data-title", frameItem.find(".imcms-document-item__info--title").text());
+            frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
 
             $frame.addClass("imcms-document-items--frame");
             $frame.css({
@@ -231,26 +352,20 @@ Imcms.define("imcms-document-editor-builder",
 
         function buildDocItemControls(document, opts) {
             var controls = [];
+            opts = opts || {};
 
-            if (opts) {
-                if (opts.moveEnable) {
-                    var $controlMove = controlsBuilder.move().on("mousedown", createFrame);
-                    controls.push($controlMove);
-                }
+            if (opts.removeEnable) {
+                var $controlRemove = controlsBuilder.remove(function () {
+                    removeDocument.call(this, document);
+                });
+                controls.push($controlRemove);
+            }
 
-                if (opts.removeEnable) {
-                    var $controlRemove = controlsBuilder.remove(function () {
-                        removeDocument.call(this, document);
-                    });
-                    controls.push($controlRemove);
-                }
-
-                if (opts.editEnable) {
-                    var $controlEdit = controlsBuilder.edit(function () {
-                        pageInfoBuilder.build(document.id, refreshDocumentInList);
-                    });
-                    controls.push($controlEdit);
-                }
+            if (opts.editEnable) {
+                var $controlEdit = controlsBuilder.edit(function () {
+                    pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
+                });
+                controls.push($controlEdit);
             }
 
             return controlsBuilder.buildControlsBlock("<div>", controls);
@@ -268,7 +383,7 @@ Imcms.define("imcms-document-editor-builder",
                 });
 
                 if (detectTargetArea(event)) {
-                    if ( $menuArea.css("border-color") !== "#51aeea") {
+                    if ($menuArea.css("border-color") !== "#51aeea") {
                         $menuArea.css({
                             "border-color": "#51aeea"
                         });
@@ -327,15 +442,11 @@ Imcms.define("imcms-document-editor-builder",
             var $menuTree = $(".imcms-menu-items-tree"),
                 $menuItemFrame = $(".imcms-document-items--frame").find(".imcms-document-item"),
                 $frameParent = $menuTree.find("[data-document-id=" + $menuItemFrame.attr("data-id") + "]")
-                .parent("[data-menu-items-lvl]")
+                    .parent("[data-menu-items-lvl]")
             ;
 
-            if ($frameParent
-                    .find("[data-menu-items-lvl]")
-                    .length === 1) {
-                $frameParent
-                    .find(".children-triangle")
-                    .remove()
+            if ($frameParent.find("[data-menu-items-lvl]").length === 1) {
+                $frameParent.find(".children-triangle").remove();
             }
             $menuTree.find("[data-document-id=" + $menuItemFrame.attr("data-id") + "]").remove();
         }
@@ -385,7 +496,7 @@ Imcms.define("imcms-document-editor-builder",
                 } else {
                     elem.css({
                         "border-bottom": "1px solid #51aeea"
-                    })
+                    });
                 }
             }
 
@@ -449,6 +560,7 @@ Imcms.define("imcms-document-editor-builder",
             }
 
             dataInput.attr("data-id", frameItem.attr("data-id"));
+            dataInput.attr("data-type", frameItem.attr("data-type"));
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
         }
 
@@ -490,7 +602,7 @@ Imcms.define("imcms-document-editor-builder",
 
         function buildDocItem(document, opts) {
             var $docItemId = components.texts.titleText("<div>", document.id);
-            $docItemId.modifiers = ["col-2"];
+            $docItemId.modifiers = ["col-2", "id"];
 
             var title = (document.commonContents) ? document.commonContents.filter(function (commonContent) {
                 return commonContent.language.code === imcms.language.code;
@@ -500,26 +612,36 @@ Imcms.define("imcms-document-editor-builder",
 
             })[0] : document.title;
 
-            var $docItemTitle = components.texts.titleText("<div>", title);
-            $docItemTitle.modifiers = ["col-3"];
+            var $docItemTitle = components.texts.titleText("<div>", title, {title: title});
+            $docItemTitle.modifiers = ["col-5", "title"];
 
-            var $docItemAlias = components.texts.titleText("<div>", document.alias);
-            $docItemAlias.modifiers = ["col-3"];
+            var $docItemAlias = components.texts.titleText("<div>", document.alias, {title: document.alias});
+            $docItemAlias.modifiers = ["col-3", "alias"];
 
             var $docItemType = components.texts.titleText("<div>", document.type);
-            $docItemType.modifiers = ["col-4"];
+            $docItemType.modifiers = ["col-2", "type"];
 
-            return new BEM({
-                block: "imcms-document-item",
-                elements: {
+            var elements = [
+                {
                     "info": [
                         $docItemId,
                         $docItemTitle,
                         $docItemAlias,
                         $docItemType
-                    ],
-                    "controls": buildDocItemControls(document, opts)
-                }
+                    ]
+                },
+                {"controls": buildDocItemControls(document, opts)}
+            ];
+
+            if (opts && opts.moveEnable) {
+                var $moveControl = controlsBuilder.move().on("mousedown", createFrame);
+                var $controlsBlock = controlsBuilder.buildControlsBlock("<div>", [$moveControl]);
+                elements.unshift({controls: $controlsBlock});
+            }
+
+            return new BEM({
+                block: "imcms-document-item",
+                elements: elements
             }).buildBlockStructure("<div>");
         }
 
@@ -558,17 +680,33 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function buildEditorBody(documentList, opts) {
+            $documentsList = buildDocumentList(documentList, opts);
+
+            $documentsList.scroll(function () {
+                var $this = $(this);
+
+                var innerHeight = $this.innerHeight();
+                var scrollHeight = this.scrollHeight;
+
+                if (innerHeight !== scrollHeight
+                    && (($this.scrollTop() + innerHeight) >= scrollHeight)
+                    && (searchQueryObj[pageNumber] === currentPage)
+                ) {
+                    appendDocuments(pageNumber, ++currentPage, false, false);
+                }
+            });
+
             return new BEM({
                 block: "imcms-document-list",
                 elements: {
                     "titles": buildDocumentListTitlesRow(),
-                    "items": ($documentsList = buildDocumentList(documentList, opts))
+                    "items": $documentsList
                 }
             }).buildBlockStructure("<div>");
         }
 
         function buildHead() {
-            return documentWindowBuilder.buildHead("Document editor");
+            return documentWindowBuilder.buildHead("Document Manager");
         }
 
         function buildFooter() {

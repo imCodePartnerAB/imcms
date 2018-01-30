@@ -105,7 +105,18 @@ Imcms.define("imcms-categories-tab-builder",
 
         return {
             name: "categories",
+            tabIndex: null,
+            isDocumentTypeSupported: function () {
+                return true; // all supported
+            },
+            showTab: function () {
+                tabContentBuilder.showTab(this.tabIndex);
+            },
+            hideTab: function () {
+                tabContentBuilder.hideTab(this.tabIndex);
+            },
             buildTab: function (index, docId) {
+                this.tabIndex = index;
                 tabData.$categoriesBlock = tabContentBuilder.buildFormBlock([], index);
                 docId || this.fillTabDataFromDocument();
                 return tabData.$categoriesBlock;

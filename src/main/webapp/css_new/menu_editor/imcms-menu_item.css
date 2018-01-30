@@ -19,7 +19,7 @@
     padding: 10px;
     position: absolute;
     top: 12px;
-    left: 37px;
+    left: 45px;
     width: 10px;
     height: 10px;
 }
@@ -29,11 +29,15 @@
 }
 
 .imcms-menu-item__info {
+    width: 80%;
     cursor: pointer;
+    max-height: 45px;
     line-height: 45px;
     text-transform: none;
     text-align: left;
     float: left;
+    text-overflow: ellipsis;
+    overflow: inherit;
 }
 
 .imcms-menu-item:hover {

@@ -11,32 +11,33 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
-public abstract class AbstractVersionedContentService<JPA, DTO, R extends VersionedContentRepository<JPA> & JpaRepository<JPA, Integer>> implements VersionedContentService<DTO> {
+public abstract class AbstractVersionedContentService<JPA, DTO, Repository extends VersionedContentRepository<JPA> & JpaRepository<JPA, Integer>>
+        implements VersionedContentService<DTO> {
 
-    protected final R repository;
+    protected final Repository repository;
 
     @Autowired
     private VersionService versionService;
 
-    protected AbstractVersionedContentService(R repository) {
+    protected AbstractVersionedContentService(Repository repository) {
         this.repository = repository;
     }
 
-    protected abstract DTO mapping(JPA jpa, Version version);
+    protected abstract DTO mapToDTO(JPA jpa);
 
-    protected abstract JPA mappingWithoutId(DTO dto, Version version);
+    protected abstract JPA mapToJpaWithoutId(DTO dto, Version version);
 
     @Override
     public Set<DTO> getByVersion(Version version) {
         return repository.findByVersion(version).stream()
-                .map(jpa -> mapping(jpa, version))
+                .map(this::mapToDTO)
                 .collect(Collectors.toSet());
     }
 
     @Override
     public void createVersionedContent(Version workingVersion, Version newVersion) {
         final List<JPA> forSave = getByVersion(workingVersion).stream()
-                .map(jpa -> mappingWithoutId(jpa, newVersion))
+                .map(jpa -> mapToJpaWithoutId(jpa, newVersion))
                 .collect(toList());
 
         repository.save(forSave);

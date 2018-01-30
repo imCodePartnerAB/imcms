@@ -4,7 +4,6 @@ package com.imcode.imcms.persistence.repository;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
@@ -30,7 +29,7 @@ import static org.junit.Assert.*;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class MenuRepositoryTest {
 
     @Autowired
@@ -141,10 +140,10 @@ public class MenuRepositoryTest {
 
         final int docId = 1001;
 
-        IntStream.range(0, 10).forEach((versionIndex) -> {
+        IntStream.range(0, 3).forEach((versionIndex) -> {
             versionDataInitializer.createData(versionIndex, docId);
 
-            IntStream.range(1, 10).forEach((menuIndex) ->
+            IntStream.range(1, 5).forEach((menuIndex) ->
                     menuDataInitializer.createData(true, menuIndex, versionIndex, docId)
             );
         });
@@ -160,10 +159,10 @@ public class MenuRepositoryTest {
 
         final int docId = 1001;
 
-        IntStream.range(0, 10).forEach((versionIndex) -> {
+        IntStream.range(0, 3).forEach((versionIndex) -> {
             versionDataInitializer.createData(versionIndex, docId);
 
-            IntStream.range(1, 10).forEach((menuIndex) ->
+            IntStream.range(1, 5).forEach((menuIndex) ->
                     menuDataInitializer.createData(true, menuIndex, versionIndex, docId)
             );
         });

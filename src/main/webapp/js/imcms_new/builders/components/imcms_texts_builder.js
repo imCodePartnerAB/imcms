@@ -129,6 +129,7 @@ Imcms.define("imcms-texts-builder",
 
             $resultTextBox.setValue = createSetValue($resultTextBox, $input);
             $resultTextBox.getValue = createGetValue($input);
+            $resultTextBox.$input = $input;
 
             return $resultTextBox;
         }

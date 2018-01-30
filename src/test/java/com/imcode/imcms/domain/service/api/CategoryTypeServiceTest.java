@@ -2,7 +2,6 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.CategoryType;
@@ -25,7 +24,7 @@ import static org.junit.Assert.*;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class CategoryTypeServiceTest {
 
     @Autowired

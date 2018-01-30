@@ -189,8 +189,12 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         function addShowHideBtn(menuDoc) {
-            if (menuDoc.find(".imcms-menu-item").first().find(".children-triangle").length === 0) {
-                menuDoc.find(".imcms-menu-item").first().prepend(buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open"));
+            var $menuItem = menuDoc.find(".imcms-menu-item").first();
+
+            if ($menuItem.find(".children-triangle").length === 0) {
+                $menuItem.find(".imcms-controls").first().after(
+                    buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open")
+                );
             }
         }
 
@@ -322,7 +326,7 @@ Imcms.define("imcms-menu-editor-builder",
                 pageX: event.clientX,
                 pageY: event.clientY,
                 top: $originItem.position().top,
-                left: $originItem.position().left + 510
+                left: $originItem.position().left
             };
             $menuArea = $(".imcms-menu-items-tree");
             menuAreaProp = {
@@ -365,6 +369,7 @@ Imcms.define("imcms-menu-editor-builder",
             var $dataInput = $(this),
                 parentId = $dataInput.attr("data-parent-id"),
                 menuElementsTree = {
+                    type: $dataInput.attr("data-type"),
                     documentId: $dataInput.attr("data-id"),
                     title: $dataInput.attr("data-title")
                 },
@@ -381,7 +386,9 @@ Imcms.define("imcms-menu-editor-builder",
 
                     var parent = $menuElement.parent();
                     if (parent.find(".children-triangle").length === 0) {
-                        parent.find(".imcms-menu-item").first().prepend(buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open"));
+                        parent.find(".imcms-menu-item").first().find(".imcms-controls").first().after(
+                            buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open")
+                        );
                     }
                 } else {
                     $menuElement = buildMenuItemTree(menuElementsTree, level);
@@ -391,7 +398,7 @@ Imcms.define("imcms-menu-editor-builder",
                 $menuElement = buildMenuItemTree(menuElementsTree, level);
                 $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement);
             }
-
+            $menuElement.addClass("imcms-menu-items-tree__menu-items");
         }
 
         function buildFooter() {
@@ -436,22 +443,15 @@ Imcms.define("imcms-menu-editor-builder",
             });
         }
 
-        function buildMenuItemControls(menuItemDocId) {
-            var $controlMove = controls.move();
+        function buildMenuItemControls(menuElementTree) {
             var $controlRemove = controls.remove(function () {
-                removeMenuItem.call(this, menuItemDocId);
+                removeMenuItem.call(this, menuElementTree.documentId);
             });
             var $controlEdit = controls.edit(function () {
-                pageInfoBuilder.build(menuItemDocId);
+                pageInfoBuilder.build(menuElementTree.documentId, null, menuElementTree.type);
             });
 
-            $controlMove.on("mousedown", dragMenuItem);
-
-            return controls.buildControlsBlock("<div>", [
-                $controlMove,
-                $controlRemove,
-                $controlEdit
-            ]);
+            return controls.buildControlsBlock("<div>", [$controlRemove, $controlEdit]);
         }
 
         function showHideSubmenu() {
@@ -475,15 +475,26 @@ Imcms.define("imcms-menu-editor-builder",
             });
         }
 
+        function buildMoveControl() {
+            var $controlMove = controls.move();
+            $controlMove.on("mousedown", dragMenuItem);
+
+            return controls.buildControlsBlock("<div>", [$controlMove]);
+        }
+
         function buildMenuItems(menuElementTree) {
-            var elements = {};
+            var elements = [{controls: buildMoveControl()}];
 
             if (menuElementTree.children.length) {
-                elements.btn = buildChildrenTriangle();
+                elements.push({btn: buildChildrenTriangle()});
             }
 
-            elements.info = components.texts.titleText("<div>", menuElementTree.documentId + " - " + menuElementTree.title);
-            elements.controls = buildMenuItemControls(menuElementTree.documentId);
+            elements.push({
+                info: components.texts.titleText("<div>", menuElementTree.documentId + " - " + menuElementTree.title, {
+                    title: menuElementTree.title
+                })
+            });
+            elements.push({controls: buildMenuItemControls(menuElementTree)});
 
             return new BEM({
                 block: "imcms-menu-item",

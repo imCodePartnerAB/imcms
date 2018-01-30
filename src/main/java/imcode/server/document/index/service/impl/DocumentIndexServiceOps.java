@@ -5,6 +5,7 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
+import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
@@ -109,9 +110,9 @@ public class DocumentIndexServiceOps {
 
         if (!solrInputDocs.isEmpty()) {
             solrServer.add(solrInputDocs);
-            solrServer.commit();
+            solrServer.commit(false, false, true);
 
-            logger.trace(String.format("Added %d solrInputDoc(s) with docId %d into the index.", solrInputDocs.size(), docId));
+            logger.info(String.format("Added %d solrInputDoc(s) with docId %d into the index.", solrInputDocs.size(), docId));
         }
     }
 
@@ -119,20 +120,26 @@ public class DocumentIndexServiceOps {
         String query = mkSolrDocsDeleteQuery(docId);
 
         solrServer.deleteByQuery(query);
-        solrServer.commit();
+        solrServer.commit(false, false, true);
+        logger.info(String.format("Removed document with docId %d from index.", docId));
     }
 
-    public void rebuildIndex(SolrServer solrServer, Consumer<IndexRebuildProgress> progressCallback)
-            throws SolrServerException, IOException, InterruptedException {
+    public void rebuildIndex(SolrServer solrServer) {
+        rebuildIndex(solrServer, indexRebuildProgress -> {
+        });
+    }
+
+    @SneakyThrows
+    private void rebuildIndex(SolrServer solrServer, Consumer<IndexRebuildProgress> progressCallback) {
         logger.debug("Rebuilding index.");
 
-        List<Integer> ids = documentMapper.getAllDocumentIds();
-        List<DocumentLanguage> languages = documentLanguages.getAll();
+        final List<Integer> ids = documentMapper.getAllDocumentIds();
+        final List<DocumentLanguage> languages = documentLanguages.getAll();
 
-        int docsCount = ids.size();
+        final int docsCount = ids.size();
         int docNo = 0;
-        Date rebuildStartDt = new Date();
-        long rebuildStartTime = rebuildStartDt.getTime();
+        final Date rebuildStartDt = new Date();
+        final long rebuildStartTime = rebuildStartDt.getTime();
 
         progressCallback.accept(new IndexRebuildProgress(rebuildStartTime, rebuildStartTime, docsCount, docNo));
 

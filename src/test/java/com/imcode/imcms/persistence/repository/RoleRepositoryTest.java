@@ -1,7 +1,6 @@
 package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,14 +19,14 @@ import static org.junit.Assert.assertNotNull;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class RoleRepositoryTest {
 
     @Autowired
     private RoleRepository roleRepository;
 
     @Test
-    public void save() throws Exception {
+    public void save() {
         final RoleJPA role = new RoleJPA();
         role.setName("test_name");
 
@@ -37,7 +36,7 @@ public class RoleRepositoryTest {
     }
 
     @Test
-    public void saveCollection() throws Exception {
+    public void saveCollection() {
         final int howMuch = 4;
         final List<RoleJPA> forSave = new ArrayList<>();
 
@@ -54,7 +53,7 @@ public class RoleRepositoryTest {
     }
 
     @Test
-    public void findOne() throws Exception {
+    public void findOne() {
         final RoleJPA role = new RoleJPA();
         role.setName("test_name");
         roleRepository.save(role);
@@ -63,7 +62,7 @@ public class RoleRepositoryTest {
     }
 
     @Test
-    public void findAll() throws Exception {
+    public void findAll() {
         final int prev = roleRepository.findAll().size();
         final int howMuch = 4;
 

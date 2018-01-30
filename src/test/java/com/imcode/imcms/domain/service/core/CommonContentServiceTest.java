@@ -4,7 +4,6 @@ import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
@@ -32,7 +31,7 @@ import static org.junit.Assert.*;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class CommonContentServiceTest {
 
     private static final int DOC_ID = 1001;

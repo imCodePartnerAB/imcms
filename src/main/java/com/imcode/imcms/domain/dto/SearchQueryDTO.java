@@ -2,7 +2,6 @@ package com.imcode.imcms.domain.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 
 import java.io.Serializable;
 import java.util.List;
@@ -22,5 +21,5 @@ public class SearchQueryDTO implements Serializable {
 
     private List<Integer> categoriesId;
 
-    private PageRequest page;
+    private PageRequestDTO page;
 }

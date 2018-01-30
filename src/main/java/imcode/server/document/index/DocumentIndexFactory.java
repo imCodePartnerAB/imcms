@@ -3,7 +3,6 @@ package imcode.server.document.index;
 import imcode.server.Config;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
-import imcode.server.document.index.service.impl.IndexRebuildScheduler;
 import imcode.server.document.index.service.impl.InternalDocumentIndexService;
 import imcode.server.document.index.service.impl.RemoteDocumentIndexService;
 import org.apache.log4j.Logger;
@@ -30,16 +29,11 @@ public class DocumentIndexFactory {
         if (oSolrUrl.isPresent()) {
             final String solrUrl = oSolrUrl.get();
 
-            service = new RemoteDocumentIndexServiceScheduler(
-                    solrUrl, solrUrl, documentIndexServiceOps, periodInMinutes
-            );
+            service = new RemoteDocumentIndexService(solrUrl, solrUrl, documentIndexServiceOps, periodInMinutes);
 
         } else if (oSolrHome.isPresent()) {
             final String solrHome = oSolrHome.get();
-
-            service = new InternalDocumentIndexServiceScheduler(
-                    solrHome, documentIndexServiceOps, periodInMinutes
-            );
+            service = new InternalDocumentIndexService(solrHome, documentIndexServiceOps, periodInMinutes);
 
         } else {
             final String errMsg = "Configuration error. Unable to create DocumentIndex.\n"
@@ -52,20 +46,6 @@ public class DocumentIndexFactory {
         }
 
         return new DocumentIndexImpl(service);
-    }
-
-    static class RemoteDocumentIndexServiceScheduler extends RemoteDocumentIndexService implements IndexRebuildScheduler {
-        RemoteDocumentIndexServiceScheduler(String solrReadUrl, String solrWriteUrl, DocumentIndexServiceOps serviceOps, long periodInMinutes) {
-            super(solrReadUrl, solrWriteUrl, serviceOps);
-            setRebuildIntervalInMinutes(periodInMinutes);
-        }
-    }
-
-    static class InternalDocumentIndexServiceScheduler extends InternalDocumentIndexService implements IndexRebuildScheduler {
-        InternalDocumentIndexServiceScheduler(String solrHome, DocumentIndexServiceOps serviceOps, long periodInMinutes) {
-            super(solrHome, serviceOps);
-            setRebuildIntervalInMinutes(periodInMinutes);
-        }
     }
 
 }

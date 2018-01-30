@@ -3,7 +3,6 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
@@ -33,7 +32,7 @@ import static org.junit.Assert.*;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class LoopServiceTest {
 
     private static final int TEST_DOC_ID = 1001;

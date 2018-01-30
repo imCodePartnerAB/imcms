@@ -4,7 +4,6 @@ import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
@@ -14,6 +13,7 @@ import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
@@ -31,9 +31,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
@@ -42,10 +44,11 @@ import static org.junit.Assert.*;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class DocumentControllerTest extends AbstractControllerTest {
 
-    private DocumentDTO createdDoc;
+    private TextDocumentDTO createdTextDoc;
+    private FileDocumentDTO createdFileDoc;
 
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
@@ -71,6 +74,15 @@ public class DocumentControllerTest extends AbstractControllerTest {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private DocumentService<DocumentDTO> documentService;
+
+    @Autowired
+    private DocumentService<UrlDocumentDTO> urlDocumentService;
+
+    @Autowired
+    private MetaRepository metaRepository;
+
     @Override
     protected String controllerPath() {
         return "/documents";
@@ -78,7 +90,8 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        createdDoc = documentDataInitializer.createData();
+        createdTextDoc = documentDataInitializer.createTextDocument();
+        createdFileDoc = documentDataInitializer.createFileDocument();
 
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(RoleId.SUPERADMIN);
@@ -86,11 +99,67 @@ public class DocumentControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void getUrlDocument_When_DocIdIsNull_Expect_DefaultUrlDocumentIsReturned() throws Exception {
+        final Meta.DocumentType documentType = Meta.DocumentType.URL;
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("type", documentType.toString());
+
+        final String response = getJsonResponse(requestBuilder);
+
+        final UrlDocumentDTO urlDocumentDTO = fromJson(response, UrlDocumentDTO.class);
+
+        final DocumentUrlDTO actualDocumentUrlDTO = urlDocumentDTO.getDocumentURL();
+        final DocumentUrlDTO expectedDocumentUrlDTO = UrlDocumentDTO.createEmpty(documentService.createEmpty()).getDocumentURL();
+
+        assertNull(urlDocumentDTO.getId());
+        assertEquals(urlDocumentDTO.getType(), documentType);
+        assertFalse(urlDocumentDTO.getCommonContents().isEmpty());
+        assertEquals(urlDocumentDTO.getCommonContents(), commonContentService.createCommonContents());
+        assertEquals(urlDocumentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
+        assertEquals(expectedDocumentUrlDTO, actualDocumentUrlDTO);
+    }
+
+    @Test
+    public void getUrlDocument_When_DocumentExists_Expect_Returned() throws Exception {
+        final UrlDocumentDTO empty = urlDocumentService.createEmpty();
+        final int savedId = urlDocumentService.save(empty);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", savedId + "");
+
+        final UrlDocumentDTO expectedUrlDocument = urlDocumentService.get(savedId);
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(expectedUrlDocument));
+
+    }
+
+    @Test
+    public void getUrlDocument_When_DocumentDoesNotExist_Expect_DocumentNotExistException() throws Exception {
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + ((Long) Instant.now().toEpochMilli()).intValue());
+
+        performRequestBuilderExpectException(DocumentNotExistException.class, requestBuilder);
+    }
+
+    @Test
+    public void saveUrlDocument_Expect_Saved() throws Exception {
+        final UrlDocumentDTO empty = urlDocumentService.createEmpty();
+        final int beforeSavingSize = metaRepository.findAll().size();
+
+        performPostWithContentExpectOk(empty);
+
+        final int afterSavingSize = metaRepository.findAll().size();
+
+        assertEquals(beforeSavingSize + 1, afterSavingSize);
+    }
+
+    @Test
     public void getDocument() throws Exception {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
@@ -102,13 +171,17 @@ public class DocumentControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void get_When_IdIsNull_Expect_DefaultEmptyDtoReturned() throws Exception {
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
+    public void get_When_IdIsNull_Expect_DefaultEmptyTextDocumentDtoReturned() throws Exception {
+        final Meta.DocumentType documentType = Meta.DocumentType.TEXT;
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("type", "" + documentType);
+
         final String response = getJsonResponse(requestBuilder);
-        final DocumentDTO documentDTO = fromJson(response, DocumentDTO.class);
+        final TextDocumentDTO documentDTO = fromJson(response, TextDocumentDTO.class);
 
         assertNull(documentDTO.getId());
-        assertNotEquals(documentDTO.getCommonContents().size(), 0);
+        assertEquals(documentDTO.getType(), documentType);
+        assertFalse(documentDTO.getCommonContents().isEmpty());
         assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
         assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
         assertEquals(documentDTO.getTemplate(), TextDocumentTemplateDTO.createDefault());
@@ -116,7 +189,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void saveDocument_When_NoChanges_Expect_NoError() throws Exception {
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
     }
 
     @Test
@@ -125,23 +198,23 @@ public class DocumentControllerTest extends AbstractControllerTest {
         user.addRoleId(RoleId.USERS);
         Imcms.setUser(user); // means current user is not admin now
 
-        performPostWithContentExpectException(createdDoc, NoPermissionToEditDocumentException.class);
+        performPostWithContentExpectException(createdTextDoc, NoPermissionToEditDocumentException.class);
     }
 
     @Test
     public void save_With_Target_Expected_Saved() throws Exception {
-        createdDoc.setTarget("test");
-        performPostWithContentExpectOk(createdDoc);
+        createdTextDoc.setTarget("test");
+        performPostWithContentExpectOk(createdTextDoc);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
     public void save_When_CustomCommonContentsSet_Expect_Saved() throws Exception {
-        final List<CommonContentDTO> commonContents = createdDoc.getCommonContents();
+        final List<CommonContentDTO> commonContents = createdTextDoc.getCommonContents();
 
         for (int i = 0; i < commonContents.size(); i++) {
             CommonContentDTO commonContentDTO = commonContents.get(i);
@@ -151,12 +224,12 @@ public class DocumentControllerTest extends AbstractControllerTest {
             commonContentDTO.setEnabled((i % 2) == 0);
         }
 
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
@@ -164,14 +237,14 @@ public class DocumentControllerTest extends AbstractControllerTest {
         final String newTarget = "_blank";
         final String newAlias = "test-alias";
 
-        createdDoc.setTarget(newTarget);
-        createdDoc.setAlias(newAlias);
-        performPostWithContentExpectOk(createdDoc);
+        createdTextDoc.setTarget(newTarget);
+        createdTextDoc.setAlias(newAlias);
+        performPostWithContentExpectOk(createdTextDoc);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
@@ -180,26 +253,26 @@ public class DocumentControllerTest extends AbstractControllerTest {
         final Meta.PublicationStatus statusDisapproved = Meta.PublicationStatus.DISAPPROVED;
         final Meta.PublicationStatus statusNew = Meta.PublicationStatus.NEW;
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
         // approved
-        createdDoc.setPublicationStatus(statusApproved);
-        performPostWithContentExpectOk(createdDoc);
+        createdTextDoc.setPublicationStatus(statusApproved);
+        performPostWithContentExpectOk(createdTextDoc);
 
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
 
         // disapproved
-        createdDoc.setPublicationStatus(statusDisapproved);
-        performPostWithContentExpectOk(createdDoc);
+        createdTextDoc.setPublicationStatus(statusDisapproved);
+        performPostWithContentExpectOk(createdTextDoc);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
 
         // new
-        createdDoc.setPublicationStatus(statusNew);
-        performPostWithContentExpectOk(createdDoc);
+        createdTextDoc.setPublicationStatus(statusNew);
+        performPostWithContentExpectOk(createdTextDoc);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
@@ -220,48 +293,48 @@ public class DocumentControllerTest extends AbstractControllerTest {
         final AuditDTO publishedAudit = auditCreator.get();
         final AuditDTO depublishedAudit = auditCreator.get();
 
-        createdDoc.setCreated(createdAudit);
-        createdDoc.setModified(modifiedAudit);
-        createdDoc.setArchived(archivedAudit);
-        createdDoc.setPublished(publishedAudit);
-        createdDoc.setPublicationEnd(depublishedAudit);
+        createdTextDoc.setCreated(createdAudit);
+        createdTextDoc.setModified(modifiedAudit);
+        createdTextDoc.setArchived(archivedAudit);
+        createdTextDoc.setPublished(publishedAudit);
+        createdTextDoc.setPublicationEnd(depublishedAudit);
 
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
 
         // only for nullable things
         final AuditDTO emptyArchivedAudit = new AuditDTO();
         final AuditDTO emptyPublishedAudit = new AuditDTO();
         final AuditDTO emptyDepublishedAudit = new AuditDTO();
 
-        createdDoc.setArchived(emptyArchivedAudit);
-        createdDoc.setPublished(emptyPublishedAudit);
-        createdDoc.setPublicationEnd(emptyDepublishedAudit);
+        createdTextDoc.setArchived(emptyArchivedAudit);
+        createdTextDoc.setPublished(emptyPublishedAudit);
+        createdTextDoc.setPublicationEnd(emptyDepublishedAudit);
 
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
     public void save_When_CustomMissingLanguagePropertySet_Expect_Saved() throws Exception {
-        createdDoc.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
+        createdTextDoc.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
 
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
 
-        createdDoc.setDisabledLanguageShowMode(DO_NOT_SHOW);
+        createdTextDoc.setDisabledLanguageShowMode(DO_NOT_SHOW);
 
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
@@ -274,39 +347,39 @@ public class DocumentControllerTest extends AbstractControllerTest {
         keywords.add("test keyword 5");
         keywords.add("test keyword 6");
 
-        createdDoc.setKeywords(keywords);
+        createdTextDoc.setKeywords(keywords);
 
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
 
         final int prevSize = keywords.size();
         keywords.remove("test keyword 1");
         assertEquals(keywords.size() + 1, prevSize);
 
-        createdDoc.setKeywords(keywords);
-        performPostWithContentExpectOk(createdDoc);
+        createdTextDoc.setKeywords(keywords);
+        performPostWithContentExpectOk(createdTextDoc);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
     public void save_When_SearchEnabledAndDisabled_Expect_Saved() throws Exception {
-        createdDoc.setSearchDisabled(true);
-        performPostWithContentExpectOk(createdDoc);
+        createdTextDoc.setSearchDisabled(true);
+        performPostWithContentExpectOk(createdTextDoc);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
 
-        createdDoc.setSearchDisabled(false);
-        performPostWithContentExpectOk(createdDoc);
+        createdTextDoc.setSearchDisabled(false);
+        performPostWithContentExpectOk(createdTextDoc);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
@@ -318,25 +391,25 @@ public class DocumentControllerTest extends AbstractControllerTest {
                 .map(CategoryDTO::new)
                 .collect(Collectors.toSet());
 
-        createdDoc.setCategories(categories);
+        createdTextDoc.setCategories(categories);
 
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
 
         final Set<CategoryDTO> categories1 = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 1)
                 .map(CategoryDTO::new)
                 .collect(Collectors.toSet());
 
-        createdDoc.setCategories(categories1);
+        createdTextDoc.setCategories(categories1);
 
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
@@ -348,21 +421,21 @@ public class DocumentControllerTest extends AbstractControllerTest {
             roleIdToPermission.put(role.getId(), permission);
         }
 
-        createdDoc.setRoleIdToPermission(roleIdToPermission);
+        createdTextDoc.setRoleIdToPermission(roleIdToPermission);
 
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
 
         final Map<Integer, Permission> roleIdToPermission1 = new HashMap<>();
-        createdDoc.setRoleIdToPermission(roleIdToPermission1);
+        createdTextDoc.setRoleIdToPermission(roleIdToPermission1);
 
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
@@ -388,21 +461,21 @@ public class DocumentControllerTest extends AbstractControllerTest {
         restrictedPermissions.add(restricted1);
         restrictedPermissions.add(restricted2);
 
-        createdDoc.setRestrictedPermissions(restrictedPermissions);
+        createdTextDoc.setRestrictedPermissions(restrictedPermissions);
 
-        performPostWithContentExpectOk(createdDoc);
+        performPostWithContentExpectOk(createdTextDoc);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", "" + createdDoc.getId());
+                .param("docId", "" + createdTextDoc.getId());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
     }
 
     @Test
     public void save_When_CustomTemplateSet_Expect_Saved() throws Exception {
 
         final String templateName = "test_" + System.currentTimeMillis();
-        final int docId = createdDoc.getId();
+        final int docId = createdTextDoc.getId();
 
         final File templateDirectory = templateService.getTemplateDirectory();
         final File templateFile = new File(templateDirectory, templateName + ".jsp");
@@ -418,14 +491,14 @@ public class DocumentControllerTest extends AbstractControllerTest {
             final TextDocumentTemplate savedTemplate = textDocumentTemplateService.save(templateDTO);
             assertNotNull(savedTemplate);
 
-            createdDoc.setTemplate(templateDTO);
+            createdTextDoc.setTemplate(templateDTO);
 
-            performPostWithContentExpectOk(createdDoc);
+            performPostWithContentExpectOk(createdTextDoc);
 
             final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                    .param("docId", "" + createdDoc.getId());
+                    .param("docId", "" + createdTextDoc.getId());
 
-            performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdDoc));
+            performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
 
         } finally {
             assertTrue(templateFile.delete());
@@ -438,14 +511,14 @@ public class DocumentControllerTest extends AbstractControllerTest {
         user.addRoleId(RoleId.USERS);
         Imcms.setUser(user); // means current user is not admin now
 
-        performDeleteWithContentExpectException(createdDoc, NotImplementedException.class);
+        performDeleteWithContentExpectException(createdTextDoc, NotImplementedException.class);
         // todo: change when will be implemented to this: NoPermissionToEditDocumentException.class);
     }
 
     @Test
     public void delete_When_DocumentExistAndUserIsAdmin_Expect_NoError() throws Exception {
 
-        performDeleteWithContentExpectException(createdDoc, NotImplementedException.class);
+        performDeleteWithContentExpectException(createdTextDoc, NotImplementedException.class);
         // todo: change when will be implemented to this:
 //        final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(createdDoc);
 //        performRequestBuilderExpectedOk(requestBuilder);
@@ -461,4 +534,164 @@ public class DocumentControllerTest extends AbstractControllerTest {
 //
 //        performRequestBuilderExpectException(DocumentNotExistException.class, requestBuilder);
 //    }
+
+    @Test
+    public void createEmpty_When_FileDocTypeSet_Expect_EmptyFileDoc() throws Exception {
+        final Meta.DocumentType documentType = Meta.DocumentType.FILE;
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("type", "" + documentType);
+
+        final String response = getJsonResponse(requestBuilder);
+        final FileDocumentDTO documentDTO = fromJson(response, FileDocumentDTO.class);
+
+        assertNull(documentDTO.getId());
+        assertEquals(documentDTO.getType(), documentType);
+        assertFalse(documentDTO.getCommonContents().isEmpty());
+        assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
+        assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
+        assertTrue(documentDTO.getFiles().isEmpty());
+    }
+
+    @Test
+    public void getFileDocument_When_Exist_Expect_Found() throws Exception {
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + createdFileDoc.getId());
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdFileDoc));
+    }
+
+    @Test
+    public void save_When_CustomFileSet_Expect_Saved() throws Exception {
+        final String testName = "test_name";
+
+        final List<DocumentFileDTO> files = createdFileDoc.getFiles();
+
+        final List<DocumentFileDTO> newFiles = IntStream.range(0, 5).mapToObj(value -> {
+            final DocumentFileDTO documentFileDTO = new DocumentFileDTO();
+            documentFileDTO.setDocId(createdFileDoc.getId());
+            documentFileDTO.setFilename(testName + value);
+            documentFileDTO.setFileId(testName + value);
+            documentFileDTO.setDefaultFile(value == 0);
+            documentFileDTO.setMimeType("test");
+
+            return documentFileDTO;
+        }).collect(Collectors.toList());
+
+        files.addAll(newFiles);
+
+        performPostWithContentExpectOk(createdFileDoc);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + createdFileDoc.getId());
+
+        final String response = getJsonResponse(requestBuilder);
+        final FileDocumentDTO documentDTO = fromJson(response, FileDocumentDTO.class);
+
+        assertNotNull(documentDTO);
+        assertNotNull(documentDTO.getFiles());
+        assertFalse(documentDTO.getFiles().isEmpty());
+        assertEquals(documentDTO.getFiles().size(), files.size());
+
+        for (DocumentFileDTO fileDTO : documentDTO.getFiles()) {
+            assertEquals(fileDTO.getDocId(), createdFileDoc.getId());
+            assertTrue(fileDTO.getFilename().contains(testName));
+        }
+    }
+
+    @Test
+    public void save_When_DocumentHaveFilesAndNewFilesSet_Expect_NewSavedAndOldRemoved() throws Exception {
+        final String testName = "test_name";
+
+        final List<DocumentFileDTO> oldFiles = createdFileDoc.getFiles();
+
+        final List<DocumentFileDTO> newFiles = IntStream.range(0, 5)
+                .mapToObj(value -> {
+                    final DocumentFileDTO documentFileDTO = new DocumentFileDTO();
+                    documentFileDTO.setDocId(createdFileDoc.getId());
+                    documentFileDTO.setFilename(testName + value);
+                    documentFileDTO.setFileId(testName + value);
+                    documentFileDTO.setDefaultFile(value == 0);
+                    documentFileDTO.setMimeType("test");
+
+                    return documentFileDTO;
+                })
+                .collect(Collectors.toList());
+
+        createdFileDoc.setFiles(newFiles);
+
+        performPostWithContentExpectOk(createdFileDoc);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + createdFileDoc.getId());
+
+        final String response = getJsonResponse(requestBuilder);
+        final FileDocumentDTO documentDTO = fromJson(response, FileDocumentDTO.class);
+
+        assertNotNull(documentDTO);
+        assertNotNull(documentDTO.getFiles());
+        assertFalse(documentDTO.getFiles().isEmpty());
+        assertFalse(documentDTO.getFiles().containsAll(oldFiles));
+        assertEquals(documentDTO.getFiles().size(), newFiles.size());
+
+        for (DocumentFileDTO fileDTO : documentDTO.getFiles()) {
+            assertEquals(fileDTO.getDocId(), createdFileDoc.getId());
+            assertTrue(fileDTO.getFilename().contains(testName));
+        }
+    }
+
+    @Test
+    public void saveFileDoc_When_FilesAlreadyExistAndDefaultFileChanged_Expect_Saved() throws Exception {
+        List<DocumentFileDTO> oldFiles = createdFileDoc.getFiles();
+
+        assertFalse(oldFiles.isEmpty());
+
+        oldFiles.get(0).setDefaultFile(true); // first is set as default
+
+        performPostWithContentExpectOk(createdFileDoc);
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + createdFileDoc.getId());
+
+        String response = getJsonResponse(requestBuilder);
+        FileDocumentDTO documentDTO = fromJson(response, FileDocumentDTO.class);
+        final String newDefaultFileName = "default_file";
+
+        oldFiles = documentDTO.getFiles();
+
+        for (DocumentFileDTO oldFile : oldFiles) {
+            oldFile.setDefaultFile(false); // all old files set as not default now
+        }
+
+        final DocumentFileDTO newFile = new DocumentFileDTO();
+        newFile.setDocId(documentDTO.getId());
+        newFile.setFilename(newDefaultFileName);
+        newFile.setDefaultFile(true); // new file is default
+        newFile.setMimeType("test");
+
+        oldFiles.add(newFile);
+
+        performPostWithContentExpectOk(documentDTO);
+
+        requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("docId", "" + documentDTO.getId());
+
+        response = getJsonResponse(requestBuilder);
+        documentDTO = fromJson(response, FileDocumentDTO.class);
+
+        assertFalse(documentDTO.getFiles().isEmpty());
+
+        final List<DocumentFileDTO> defaultFiles = documentDTO.getFiles()
+                .stream()
+                .filter(DocumentFileDTO::isDefaultFile)
+                .collect(Collectors.toList());
+
+        assertFalse(defaultFiles.isEmpty());
+        assertEquals(defaultFiles.size(), 1);
+
+        final DocumentFileDTO defaultFile = defaultFiles.get(0);
+
+        assertNotNull(defaultFile);
+        assertTrue(defaultFile.isDefaultFile());
+        assertEquals(newDefaultFileName, defaultFile.getFilename());
+    }
 }

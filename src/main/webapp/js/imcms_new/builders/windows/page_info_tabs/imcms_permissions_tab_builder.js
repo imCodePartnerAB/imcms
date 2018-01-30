@@ -1,11 +1,8 @@
 /** @namespace document.restrictedPermissions */
 
 Imcms.define("imcms-permissions-tab-builder",
-    [
-        "imcms-bem-builder", "imcms-components-builder",
-        "imcms-page-info-tab-form-builder"
-    ],
-    function (BEM, components, tabContentBuilder) {
+    ["imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder", "imcms-document-types"],
+    function (BEM, components, tabContentBuilder, docTypes) {
 
         var defaultPermissions = [{
             permission: "RESTRICTED_1"
@@ -67,7 +64,18 @@ Imcms.define("imcms-permissions-tab-builder",
 
         return {
             name: "permissions",
+            tabIndex: null,
+            isDocumentTypeSupported: function (docType) {
+                return docType === docTypes.TEXT;
+            },
+            showTab: function () {
+                tabContentBuilder.showTab(this.tabIndex);
+            },
+            hideTab: function () {
+                tabContentBuilder.hideTab(this.tabIndex);
+            },
             buildTab: function (index) {
+                this.tabIndex = index;
                 tabData.$permissionsWrapper = permissionsWrapperBEM.buildBlockStructure("<div>");
                 return tabContentBuilder.buildFormBlock([tabData.$permissionsWrapper], index);
             },
@@ -102,6 +110,10 @@ Imcms.define("imcms-permissions-tab-builder",
                 });
             },
             saveData: function (documentDTO) {
+                if (!this.isDocumentTypeSupported(documentDTO.type)) {
+                    return documentDTO;
+                }
+
                 var restrictedCheckboxes = {};
 
                 tabData.restrictedCheckboxes$.forEach(function ($restrictedPermCheckbox) {

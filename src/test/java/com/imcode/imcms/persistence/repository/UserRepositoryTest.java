@@ -3,7 +3,6 @@ package com.imcode.imcms.persistence.repository;
 import com.imcode.imcms.api.Role;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.User.PasswordReset;
 import imcode.server.user.RoleId;
@@ -28,7 +27,7 @@ import static org.junit.Assert.assertNotNull;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class UserRepositoryTest {
 
     @Autowired
@@ -57,27 +56,27 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testFindByLogin() throws Exception {
+    public void testFindByLogin() {
         assertNotNull(repository.findByLogin("admin"));
     }
 
     @Test
-    public void testFindByLoginIgnoreCase() throws Exception {
+    public void testFindByLoginIgnoreCase() {
         assertNotNull(repository.findByLoginIgnoreCase("admin"));
     }
 
     @Test
-    public void testFindByEmail() throws Exception {
+    public void testFindByEmail() {
         assertNotNull(repository.findByEmail("admin"));
     }
 
     @Test
-    public void testFindById() throws Exception {
+    public void testFindById() {
         assertNotNull(repository.findById(1));
     }
 
     @Test
-    public void testFindByPasswordResetId() throws Exception {
+    public void testFindByPasswordResetId() {
         final User user = users.get(0);
         final PasswordReset passwordReset = new PasswordReset();
         passwordReset.setId("test");
@@ -97,7 +96,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void findByIdIn() throws Exception {
+    public void findByIdIn() {
 
         final List<User> users = this.users.subList(0, 4);
 

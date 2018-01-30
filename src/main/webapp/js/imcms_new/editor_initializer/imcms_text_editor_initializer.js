@@ -3,8 +3,11 @@
  * 01.09.17
  */
 Imcms.define("imcms-text-editor-initializer",
-    ["tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events"],
-    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events) {
+    [
+        "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
+        "imcms-text-history-window-builder"
+    ],
+    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistoryBuilder) {
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
         function saveContent(editor) {
@@ -13,6 +16,21 @@ Imcms.define("imcms-text-editor-initializer",
 
             textsRestApi.create(textDTO).success(function () { // todo: unfocus current editor, maybe
                 events.trigger("imcms-version-modified");
+            });
+        }
+
+        function addTextHistoryButton(editor) {
+
+            editor.addButton('text_history', {
+                icon: 'imcms-text-history-icon',
+                tooltip: "Show text history",
+                onclick: function () {
+                    var textDTO = $(this.$el).parents(".imcms-editor-area--text")
+                        .find(".imcms-editor-content--text")
+                        .data();
+
+                    textHistoryBuilder.buildTextHistory(textDTO);
+                }
             });
         }
 
@@ -26,11 +44,14 @@ Imcms.define("imcms-text-editor-initializer",
             content_css: imcms.contextPath + '/css_new/imcms-text_editor.css',
             plugins: ['autolink link image lists hr code fullscreen save table contextmenu'],
             toolbar: 'code | bold italic underline | bullist numlist | hr |' +
-            ' alignleft aligncenter alignright alignjustify | link image | fullscreen | save',
+            ' alignleft aligncenter alignright alignjustify | link image | text_history | fullscreen | save',
             menubar: false,
             statusbar: false,
             init_instance_callback: prepareEditor,
-            save_onsavecallback: saveContent
+            save_onsavecallback: saveContent,
+            setup: function (editor) {
+                addTextHistoryButton(editor);
+            }
         };
 
         function clearSaveBtnText(editor) {
@@ -46,9 +67,16 @@ Imcms.define("imcms-text-editor-initializer",
                 });
         }
 
+        function showEditButton($editor) {
+            $editor.parent(".imcms-editor-area--text")
+                .find(".imcms-control--edit.imcms-control--text")
+                .css("display", "block");
+        }
+
         function prepareEditor(editor) {
             clearSaveBtnText(editor);
             setEditorFocusOnEditControlClick(editor);
+            showEditButton(editor.$());
         }
 
         function toggleFocusEditArea(e) {
@@ -66,9 +94,7 @@ Imcms.define("imcms-text-editor-initializer",
             }
         }
 
-        function setFocusTextEditAreaToggle() {
-            $(document).click(toggleFocusEditArea);
-        }
+        $(document).click(toggleFocusEditArea);
 
         function initTextEditor() {
             var toolbarId = uuidGenerator.generateUUID();
@@ -95,7 +121,6 @@ Imcms.define("imcms-text-editor-initializer",
 
         return {
             initEditor: function () {
-                $(setFocusTextEditAreaToggle);
                 $(".imcms-editor-content--text").each(initTextEditor);
             }
         };

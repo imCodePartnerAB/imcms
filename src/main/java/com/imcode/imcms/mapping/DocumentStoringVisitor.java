@@ -4,8 +4,7 @@ import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.FileDocFile;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentVisitor;
@@ -138,7 +137,7 @@ class DocumentStoringVisitor extends DocumentVisitor {
     public void visitFileDocument(FileDocumentDomainObject fileDocument) {
         docRepository.deleteFileDocContent(fileDocument.getRef());
 
-        Version version = versionRepository.findByDocIdAndNo(fileDocument.getId(), fileDocument.getVersionNo());
+//        Version version = versionRepository.findByDocIdAndNo(fileDocument.getId(), fileDocument.getVersionNo());
 
         for (Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> entry : fileDocument.getFiles().entrySet()) {
             String fileId = entry.getKey();
@@ -150,15 +149,16 @@ class DocumentStoringVisitor extends DocumentVisitor {
             }
 
             boolean isDefaultFile = fileId.equals(fileDocument.getDefaultFileId());
-            FileDocFile fileDocFile = new FileDocFile();
-            fileDocFile.setVersion(version);
-            fileDocFile.setFileId(fileId);
-            fileDocFile.setFilename(filename);
-            fileDocFile.setDefaultFileId(isDefaultFile);
-            fileDocFile.setMimeType(fileDocumentFile.getMimeType());
-            fileDocFile.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
+            DocumentFileJPA documentFile = new DocumentFileJPA();
+            documentFile.setDocId(fileDocument.getId());
+            documentFile.setVersionIndex(fileDocument.getVersionNo());
+            documentFile.setFileId(fileId);
+            documentFile.setFilename(filename);
+            documentFile.setDefaultFile(isDefaultFile);
+            documentFile.setMimeType(fileDocumentFile.getMimeType());
+            documentFile.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
 
-            docRepository.saveFileDocFile(fileDocFile);
+            docRepository.saveFileDocFile(documentFile);
 
             saveFileDocumentFile(fileDocument.getVersionRef(), fileDocumentFile, fileId);
         }

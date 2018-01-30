@@ -190,7 +190,18 @@ Imcms.define("imcms-life-cycle-tab-builder",
 
         return {
             name: "life cycle",
+            tabIndex: null,
+            isDocumentTypeSupported: function () {
+                return true; // all supported
+            },
+            showTab: function () {
+                tabContentBuilder.showTab(this.tabIndex);
+            },
+            hideTab: function () {
+                tabContentBuilder.hideTab(this.tabIndex);
+            },
             buildTab: function (index) {
+                this.tabIndex = index;
                 return tabContentBuilder.buildFormBlock([
                     buildDocStatusSelect(),
                     buildPublishedDateTimeContainer(),

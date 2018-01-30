@@ -157,12 +157,12 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageDT
     }
 
     @Override
-    protected ImageDTO mapping(Image jpa, Version version) {
+    protected ImageDTO mapToDTO(Image jpa) {
         return imageToImageDTO.apply(jpa);
     }
 
     @Override
-    protected Image mappingWithoutId(ImageDTO dto, Version version) {
+    protected Image mapToJpaWithoutId(ImageDTO dto, Version version) {
         final Language language = languageService.findByCode(dto.getLangCode());
         return imageDtoToImage.apply(dto, version, language);
     }

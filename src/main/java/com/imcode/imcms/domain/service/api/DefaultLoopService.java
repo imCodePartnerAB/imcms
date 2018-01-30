@@ -46,7 +46,7 @@ class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, Loop, 
         final LoopJPA loop = repository.findByVersionAndIndex(documentWorkingVersion, loopIndex);
 
         return Optional.ofNullable(loop)
-                .map(loop1 -> new LoopDTO(loop1, loop1.getVersion()))
+                .map(LoopDTO::new)
                 .orElse(LoopDTO.empty(docId, loopIndex));
     }
 
@@ -74,12 +74,12 @@ class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, Loop, 
     }
 
     @Override
-    protected Loop mapping(LoopJPA jpa, Version version) {
-        return new LoopDTO(jpa, version);
+    protected Loop mapToDTO(LoopJPA jpa) {
+        return new LoopDTO(jpa);
     }
 
     @Override
-    protected LoopJPA mappingWithoutId(Loop dto, Version version) {
+    protected LoopJPA mapToJpaWithoutId(Loop dto, Version version) {
         return new LoopJPA(dto, version);
     }
 

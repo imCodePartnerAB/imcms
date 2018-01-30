@@ -1,9 +1,9 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.FileDocFile;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
-import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
+import com.imcode.imcms.persistence.entity.DocumentFileJPA;
+import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -38,9 +38,9 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
      * ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
     public void visitFileDocument(FileDocumentDomainObject doc) {
-        Collection<FileDocFile> fileDocItems = docRepository.getFileDocContent(doc.getRef());
+        Collection<DocumentFileJPA> fileDocItems = docRepository.getFileDocContent(doc.getRef());
 
-        for (FileDocFile item : fileDocItems) {
+        for (DocumentFileJPA item : fileDocItems) {
             String fileId = item.getFileId();
             FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
 
@@ -62,7 +62,7 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
             doc.addFile(fileId, file);
 
-            if (item.isDefaultFileId()) {
+            if (item.isDefaultFile()) {
                 doc.setDefaultFileId(fileId);
             }
 
@@ -76,7 +76,7 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject doc) {
-        UrlDocContent reference = docRepository.getUrlDocContent(doc.getRef());
+        DocumentUrlJPA reference = docRepository.getUrlDocContent(doc.getRef());
         doc.setUrl(reference.getUrl());
     }
 

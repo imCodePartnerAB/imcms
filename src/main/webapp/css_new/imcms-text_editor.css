@@ -8,3 +8,8 @@
 .mce-btn-group {
     float: left;
 }
+
+.mce-i-imcms-text-history-icon {
+    background-image: url("../images_new/text_editor/text_history.png");
+    background-size: 16px;
+}

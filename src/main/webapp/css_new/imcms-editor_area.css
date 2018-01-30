@@ -62,9 +62,8 @@
 }
 
 .imcms-editor-area__control-edit {
-    display: block;
+    display: none;
     float: right;
-
 }
 
 .imcms-editor-area__control-title {

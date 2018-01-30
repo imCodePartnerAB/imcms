@@ -79,7 +79,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, 
 
         return repository.findByVersionAndLanguage(latestVersion, languageJPA)
                 .stream()
-                .map(text1 -> new TextDTO(text1, latestVersion, languageJPA))
+                .map(TextDTO::new)
                 .collect(Collectors.toSet());
     }
 
@@ -91,7 +91,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, 
         final TextJPA text = getText(index, version, language, loopEntryRef);
 
         return Optional.ofNullable(text)
-                .map(text1 -> new TextDTO(text1, text1.getVersion(), text1.getLanguage()))
+                .map(TextDTO::new)
                 .orElse(new TextDTO(index, docId, langCode, loopEntryRef));
     }
 
@@ -119,12 +119,12 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, 
     }
 
     @Override
-    protected Text mapping(TextJPA entity, Version version) {
-        return new TextDTO(entity, version, entity.getLanguage());
+    protected Text mapToDTO(TextJPA entity) {
+        return new TextDTO(entity);
     }
 
     @Override
-    protected TextJPA mappingWithoutId(Text entity, Version version) {
+    protected TextJPA mapToJpaWithoutId(Text entity, Version version) {
         final LanguageJPA languageJPA = new LanguageJPA(languageService.findByCode(entity.getLangCode()));
         return new TextJPA(entity, version, languageJPA);
     }

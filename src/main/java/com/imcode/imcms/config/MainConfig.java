@@ -3,6 +3,17 @@ package com.imcode.imcms.config;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.FileDocumentDTO;
+import com.imcode.imcms.domain.dto.TextDocumentDTO;
+import com.imcode.imcms.domain.dto.UrlDocumentDTO;
+import com.imcode.imcms.domain.service.DocumentFileService;
+import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.DocumentUrlService;
+import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.domain.service.api.FileDocumentService;
+import com.imcode.imcms.domain.service.api.TextDocumentService;
+import com.imcode.imcms.domain.service.api.UrlDocumentService;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
@@ -138,5 +149,26 @@ class MainConfig {
         documentMapper.setDocumentIndex(documentIndex);
 
         return documentIndex;
+    }
+
+    @Bean
+    public DocumentService<TextDocumentDTO> textDocumentService(DocumentService<DocumentDTO> documentService,
+                                                                TextDocumentTemplateService textDocumentTemplateService) {
+
+        return new TextDocumentService(documentService, textDocumentTemplateService);
+    }
+
+    @Bean
+    public DocumentService<FileDocumentDTO> fileDocumentService(DocumentService<DocumentDTO> documentService,
+                                                                DocumentFileService documentFileService) {
+
+        return new FileDocumentService(documentService, documentFileService);
+    }
+
+    @Bean
+    public DocumentService<UrlDocumentDTO> urlDocumentService(DocumentService<DocumentDTO> documentService,
+                                                              DocumentUrlService documentUrlService) {
+
+        return new UrlDocumentService(documentService, documentUrlService);
     }
 }

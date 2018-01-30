@@ -103,7 +103,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
     public void setDefaultFileId(String defaultFileId) {
         if (!files.containsKey(defaultFileId)) {
-            throw new IllegalArgumentException("Cannot set defaultFileId to non-existant key "
+            throw new IllegalArgumentException("Cannot set defaultFile to non-existant key "
                     + defaultFileId);
         }
         this.defaultFileId = defaultFileId;

@@ -11,7 +11,9 @@ Imcms.define("imcms-editor-init-strategy", ["jquery"], function ($) {
                 editorInitData.editorBuilder.setTag($editedTag).build(editorData);
             };
 
-            $(editorInitData.EDIT_AREA_SELECTOR).find(editorInitData.CONTROL_SELECTOR).click(openEditor);
+            $(editorInitData.EDIT_AREA_SELECTOR).find(editorInitData.CONTROL_SELECTOR)
+                .click(openEditor)
+                .css("display", "block");
         }
     };
 });

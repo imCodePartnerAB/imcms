@@ -10,30 +10,24 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
 
     function logAjaxResponse(type, url, response) {
         console.timeEnd(url);
-        console.log("%c AJAX " + type + " call: " + url + (response ? " response: " : ""), "color: blue;");
+        console.log("%c AJAX " + type + " call done: " + url + (response ? " response: " : ""), "color: green;");
         response && console.log(response);
     }
 
     function ajax(data, callback) {
         var url = imcms.contextPath + API_PREFIX + this.url;
         var type = this.type;
+        var contentType = (this.contentType === undefined) // exactly
+            ? ('application/' + (this.json ? 'json' : 'x-www-form-urlencoded') + '; charset=UTF-8')
+            : this.contentType;
+
         logAjaxRequest(type, url, data);
-
-        var contentType;
-
-        if (this.contentType === undefined) {
-            contentType = 'application/' + (this.json ? 'json' : 'x-www-form-urlencoded') + '; charset=UTF-8'
-
-        } else {
-            contentType = this.contentType;
-        }
 
         return $.ajax({
             url: url,
             type: type,
             contentType: contentType,
             processData: this.processData,
-
             data: this.json ? JSON.stringify(data) : data,
 
             success: function (response) {
@@ -55,6 +49,10 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
         return ajax.bind({url: path, type: "POST", json: true});
     }
 
+    function postFiles(path) {
+        return ajax.bind({url: path, type: "POST", json: false, contentType: false, processData: false});
+    }
+
     function patch(path) {
         return ajax.bind({url: path, type: "PATCH", json: true});
     }
@@ -68,29 +66,14 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
         this.read = get(url);
         this.update = patch(url);
         this.remove = remove(url);
+        this.postFiles = postFiles(url);
     };
 
     return {
-
         ajax: ajax,
-
-        API: API,
-
-        create: function (path, data, callback) {
-            post(path)(data, callback);
-        },
-
-        read: function (path, data, callback) {
-            get(path)(data, callback);
-        },
-
-        update: function (path, data, callback) {
-            patch(path)(data, callback);
-        },
-
-        remove: function (path, data, callback) {
-            remove(path)(data, callback);
-        }
-
+        /**
+         * Always call {@code new API()}
+         */
+        API: API
     }
 });

@@ -5,19 +5,19 @@
 Imcms.define("imcms-page-info-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-documents-rest-api", "imcms-window-builder",
-        "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms"
+        "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms", "imcms-file-doc-files-rest-api",
+        "imcms-modal-window-builder"
     ],
-    function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms) {
+    function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms, docFilesAjaxApi,
+              modalWindowBuilder) {
 
-        var panels, $title, documentDTO, $saveAndPublishBtn;
+        var panels, $title, documentDTO, $saveAndPublishBtn, $tabsContainer;
 
         function buildPageInfoHead() {
-            return new BEM({
-                block: "imcms-head",
-                elements: {
-                    "title": $title = components.texts.titleText("<div>", "")
-                }
-            }).buildBlockStructure("<div>");
+            var $head = pageInfoWindowBuilder.buildHead();
+            $title = $head.find(".imcms-head__title");
+
+            return $head;
         }
 
         function showPanel(index) {
@@ -48,7 +48,7 @@ Imcms.define("imcms-page-info-builder",
                 };
             });
 
-            var $tabsContainer = new BEM({
+            $tabsContainer = new BEM({
                 block: "imcms-tabs",
                 elements: {
                     "tab": $tabs
@@ -73,7 +73,7 @@ Imcms.define("imcms-page-info-builder",
             pageInfoWindowBuilder.closeWindow();
         }
 
-        function saveAndClose(onDocumentSaved) {
+        function saveAndClose(onDocumentSavedCallback) {
             pageInfoTabs.tabBuilders.forEach(function (tabBuilder) {
                 documentDTO = tabBuilder.saveData(documentDTO);
             });
@@ -82,14 +82,25 @@ Imcms.define("imcms-page-info-builder",
 
             documentsRestApi.create(documentDTO).success(function (savedDocId) {
 
-                if (documentDTO.id) {
+                if (documentDTO.newFiles) {
+                    // files saved separately because of different content types and in file-doc case
+                    documentDTO.newFiles.append("docId", savedDocId);
+                    docFilesAjaxApi.postFiles(documentDTO.newFiles);
+                }
+
+                if (documentDTO.id === imcms.document.id) {
                     events.trigger("imcms-version-modified");
 
                 } else {
                     documentDTO.id = savedDocId;
                 }
 
-                onDocumentSaved && onDocumentSaved(documentDTO);
+                if (onDocumentSavedCallback) {
+                    onDocumentSavedCallback(documentDTO);
+
+                } else if (onDocumentSaved) {
+                    onDocumentSaved(documentDTO);
+                }
             });
         }
 
@@ -99,10 +110,16 @@ Imcms.define("imcms-page-info-builder",
             });
         }
 
-        function buildPageInfoFooterButtons(onDocumentSaved) {
+        function confirmSaving() {
+            modalWindowBuilder.buildModalWindow("Save changes?", function (isUserConfirmedSaving) {
+                isUserConfirmedSaving ? saveAndClose() : "do nothing =)";
+            });
+        }
+
+        function buildPageInfoFooterButtons() {
             var $saveBtn = components.buttons.positiveButton({
                 text: "ok",
-                click: saveAndClose.bindArgs(onDocumentSaved)
+                click: confirmSaving
             });
 
             var $cancelBtn = components.buttons.negativeButton({
@@ -119,8 +136,9 @@ Imcms.define("imcms-page-info-builder",
             return [$saveAndPublishBtn, $cancelBtn, $saveBtn];
         }
 
-        function buildPageInfo(docId, onDocumentSaved, docType) {
-            panels = buildPageInfoPanels(docId);
+        function buildPageInfo(docId, onDocumentSavedCallback, docType) {
+            onDocumentSaved = onDocumentSavedCallback;
+            panels = buildPageInfoPanels(docId, docType);
 
             return new BEM({
                 block: "imcms-pop-up-modal",
@@ -128,7 +146,7 @@ Imcms.define("imcms-page-info-builder",
                     "head": buildPageInfoHead(),
                     "left-side": buildPageInfoTabs(),
                     "right-side": $("<div>", {"class": "imcms-right-side"}).append(panels),
-                    "footer": $("<div>", {"class": "imcms-footer"}).append(buildPageInfoFooterButtons(onDocumentSaved))
+                    "footer": $("<div>", {"class": "imcms-footer"}).append(buildPageInfoFooterButtons())
                 }
             }).buildBlockStructure("<div>", {"data-menu": "pageInfo"});
         }
@@ -150,7 +168,13 @@ Imcms.define("imcms-page-info-builder",
                 $title.text((document.id) ? "document " + document.id : "new document");
 
                 pageInfoTabs.tabBuilders.forEach(function (tab) {
-                    tab.fillTabDataFromDocument(document);
+                    if (tab.isDocumentTypeSupported(document.type)) {
+                        tab.fillTabDataFromDocument(document);
+                        tab.showTab();
+
+                    } else {
+                        tab.hideTab();
+                    }
                 });
             });
         }
@@ -163,7 +187,9 @@ Imcms.define("imcms-page-info-builder",
             });
         }
 
-        function loadData(docId, onDocumentSaved, docType) {
+        function loadData(docId, onDocumentSavedCallback, docType) {
+            onDocumentSaved = onDocumentSavedCallback;
+            $tabsContainer.find("[data-window-id=0]").click();
             loadPageInfoDataFromDocumentBy(docId, docType);
         }
 
@@ -173,8 +199,11 @@ Imcms.define("imcms-page-info-builder",
             clearDataStrategy: clearPageInfoData
         });
 
+        var onDocumentSaved;
+
         return {
-            build: function (docId, onDocumentSaved, docType) {
+            build: function (docId, onDocumentSavedCallback, docType) {
+                onDocumentSaved = onDocumentSavedCallback;
                 pageInfoWindowBuilder.buildWindowWithShadow.applyAsync(arguments, pageInfoWindowBuilder);
             }
         }

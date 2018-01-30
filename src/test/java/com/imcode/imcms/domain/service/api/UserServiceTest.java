@@ -2,7 +2,6 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.mapping.jpa.User;
@@ -25,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class UserServiceTest {
 
     @Autowired

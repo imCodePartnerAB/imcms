@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
@@ -21,7 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 @WebAppConfiguration
 @Transactional
 public class DocGetterCallbackTest {

@@ -36,7 +36,7 @@ public class Meta implements Serializable {
     private DisabledLanguageShowMode disabledLanguageShowMode = DisabledLanguageShowMode.DO_NOT_SHOW;
 
     @Column(name = "doc_type", nullable = false, updatable = false)
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.ORDINAL) // todo: change to EnumType.STRING
     private DocumentType documentType;
 
     @Column(name = "owner_id", nullable = false)

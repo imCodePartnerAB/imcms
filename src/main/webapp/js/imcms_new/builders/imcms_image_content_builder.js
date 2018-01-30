@@ -484,7 +484,7 @@ Imcms.define("imcms-image-content-builder",
                 var saveImageRequestData = formData;
                 saveImageRequestData.append("folder", getFolderPath(activeFolder.$folder));
 
-                imageFilesREST.create(saveImageRequestData).done(function (uploadedImageFiles) {
+                imageFilesREST.postFiles(saveImageRequestData).done(function (uploadedImageFiles) {
                     var $newImages = uploadedImageFiles.map(function (imageFile) {
                         return buildImage(imageFile).css("display", "block");
                     });

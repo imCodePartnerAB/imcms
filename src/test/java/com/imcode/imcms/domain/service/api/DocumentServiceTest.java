@@ -2,7 +2,6 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.*;
@@ -11,7 +10,6 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import com.imcode.imcms.persistence.entity.TextJPA;
@@ -51,15 +49,15 @@ import static org.junit.Assert.*;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class DocumentServiceTest {
 
     private static File testSolrFolder;
 
-    private DocumentDTO createdDoc;
+    private TextDocumentDTO createdDoc;
 
     @Autowired
-    private DocumentService documentService;
+    private DocumentService<TextDocumentDTO> textDocumentService;
 
     @Autowired
     private UserDataInitializer userDataInitializer;
@@ -125,13 +123,17 @@ public class DocumentServiceTest {
     private File defaultSolrFolder;
 
     @AfterClass
-    public static void shutDownSolr() throws Exception {
-        FileUtility.forceDelete(testSolrFolder);
+    public static void shutDownSolr() {
+        try {
+            FileUtility.forceDelete(testSolrFolder);
+        } catch (Exception e) {
+            // windows user may receive it
+        }
     }
 
     @Before
     public void setUp() throws Exception {
-        createdDoc = documentDataInitializer.createData();
+        createdDoc = documentDataInitializer.createTextDocument();
 
         testSolrFolder = new File(config.getSolrHome());
 
@@ -142,24 +144,13 @@ public class DocumentServiceTest {
 
     @Test
     public void get() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
         assertEquals(documentDTO, createdDoc);
     }
 
     @Test(expected = DocumentNotExistException.class)
     public void get_When_DocumentNotExist_Expect_CorrectException() {
-        documentService.get(((Long) System.currentTimeMillis()).intValue());
-    }
-
-    @Test
-    public void get_When_IdIsNull_Expect_DefaultEmptyDtoReturned() {
-        final DocumentDTO documentDTO = documentService.getOrEmpty(null, DocumentType.TEXT);
-
-        assertNull(documentDTO.getId());
-        assertFalse(documentDTO.getCommonContents().isEmpty());
-        assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
-        assertEquals(documentDTO.getPublicationStatus(), PublicationStatus.NEW);
-        assertEquals(documentDTO.getTemplate(), TextDocumentTemplateDTO.createDefault());
+        textDocumentService.get(((Long) System.currentTimeMillis()).intValue());
     }
 
     @Test
@@ -168,8 +159,8 @@ public class DocumentServiceTest {
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user); // means current user is admin now
 
-        final DocumentDTO emptyDocumentDTO = documentService.getOrEmpty(null, DocumentType.TEXT);
-        documentService.save(emptyDocumentDTO);
+        final TextDocumentDTO emptyDocumentDTO = textDocumentService.createEmpty();
+        textDocumentService.save(emptyDocumentDTO);
     }
 
     @Test
@@ -185,14 +176,18 @@ public class DocumentServiceTest {
 
     @Test
     public void save_With_Target_Expect_Saved() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
+
         final String testTarget = "_test";
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
 
         documentDTO.setTarget(testTarget);
 
-        documentService.save(documentDTO);
+        textDocumentService.save(documentDTO);
 
-        final DocumentDTO documentDTO1 = documentService.get(documentDTO.getId());
+        final TextDocumentDTO documentDTO1 = textDocumentService.get(documentDTO.getId());
 
         assertEquals(documentDTO1, documentDTO);
     }
@@ -205,19 +200,19 @@ public class DocumentServiceTest {
 
         final String testTarget = "_test";
 
-        final DocumentDTO emptyDocumentDTO = documentService.getOrEmpty(null, DocumentType.TEXT);
+        final TextDocumentDTO emptyDocumentDTO = textDocumentService.createEmpty();
         emptyDocumentDTO.setTarget(testTarget);
 
-        final int saveDocId = documentService.save(emptyDocumentDTO);
+        final int saveDocId = textDocumentService.save(emptyDocumentDTO);
         emptyDocumentDTO.setId(saveDocId);
-        final DocumentDTO documentDTO = documentService.get(saveDocId);
+        final TextDocumentDTO documentDTO = textDocumentService.get(saveDocId);
 
         assertEquals(documentDTO.getTarget(), testTarget);
     }
 
     @Test
     public void save_When_CustomCommonContentsSet_Expect_Saved() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
 
         final List<CommonContentDTO> commonContents = documentDTO.getCommonContents();
 
@@ -229,23 +224,23 @@ public class DocumentServiceTest {
             commonContentDTO.setEnabled((i % 2) == 0);
         }
 
-        documentService.save(documentDTO);
-        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        textDocumentService.save(documentDTO);
+        final TextDocumentDTO savedDocumentDTO = textDocumentService.get(createdDoc.getId());
 
         assertEquals(savedDocumentDTO.getCommonContents(), commonContents);
     }
 
     @Test
     public void save_When_TargetAndAliasChanged_Expect_Saved() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
         final String newTarget = "_blank";
         final String newAlias = "test-alias";
 
         documentDTO.setTarget(newTarget);
         documentDTO.setAlias(newAlias);
-        documentService.save(documentDTO);
+        textDocumentService.save(documentDTO);
 
-        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO savedDocumentDTO = textDocumentService.get(createdDoc.getId());
 
         assertEquals(savedDocumentDTO.getTarget(), newTarget);
         assertEquals(savedDocumentDTO.getAlias(), newAlias);
@@ -253,36 +248,42 @@ public class DocumentServiceTest {
 
     @Test
     public void save_When_DifferentPublicationStatusSet_Expect_Saved() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
         final PublicationStatus statusApproved = PublicationStatus.APPROVED;
         final PublicationStatus statusDisapproved = PublicationStatus.DISAPPROVED;
         final PublicationStatus statusNew = PublicationStatus.NEW;
 
         // approved
         documentDTO.setPublicationStatus(statusApproved);
-        documentService.save(documentDTO);
+        textDocumentService.save(documentDTO);
 
-        DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        TextDocumentDTO savedDocumentDTO = textDocumentService.get(createdDoc.getId());
         assertEquals(savedDocumentDTO.getPublicationStatus(), statusApproved);
 
         // disapproved
         documentDTO.setPublicationStatus(statusDisapproved);
-        documentService.save(documentDTO);
+        textDocumentService.save(documentDTO);
 
-        savedDocumentDTO = documentService.get(createdDoc.getId());
+        savedDocumentDTO = textDocumentService.get(createdDoc.getId());
         assertEquals(savedDocumentDTO.getPublicationStatus(), statusDisapproved);
 
         // new
         documentDTO.setPublicationStatus(statusNew);
-        documentService.save(documentDTO);
+        textDocumentService.save(documentDTO);
 
-        savedDocumentDTO = documentService.get(createdDoc.getId());
+        savedDocumentDTO = textDocumentService.get(createdDoc.getId());
         assertEquals(savedDocumentDTO.getPublicationStatus(), statusNew);
     }
 
     @Test
     public void save_When_CreatedAndModifiedAndArchivedAndPublishedAndDepublishedAttributesSet_Expect_Saved() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+
+        final UserDomainObject currentUser = new UserDomainObject(1);
+        currentUser.addRoleId(RoleId.SUPERADMIN);
+        currentUser.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+        Imcms.setUser(currentUser); // means current user is admin now
+
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
         final User user = userDataInitializer.createData("testUser");
 
         final Supplier<AuditDTO> auditCreator = () -> {
@@ -305,8 +306,8 @@ public class DocumentServiceTest {
         documentDTO.setPublished(publishedAudit);
         documentDTO.setPublicationEnd(depublishedAudit);
 
-        documentService.save(documentDTO);
-        DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        textDocumentService.save(documentDTO);
+        TextDocumentDTO savedDocumentDTO = textDocumentService.get(createdDoc.getId());
 
         assertEquals(createdAudit, savedDocumentDTO.getCreated());
         assertEquals(modifiedAudit, savedDocumentDTO.getModified());
@@ -323,8 +324,8 @@ public class DocumentServiceTest {
         documentDTO.setPublished(emptyPublishedAudit);
         documentDTO.setPublicationEnd(emptyDepublishedAudit);
 
-        documentService.save(documentDTO);
-        savedDocumentDTO = documentService.get(createdDoc.getId());
+        textDocumentService.save(documentDTO);
+        savedDocumentDTO = textDocumentService.get(createdDoc.getId());
 
         assertEquals(emptyArchivedAudit, savedDocumentDTO.getArchived());
         assertEquals(emptyPublishedAudit, savedDocumentDTO.getPublished());
@@ -333,18 +334,18 @@ public class DocumentServiceTest {
 
     @Test
     public void save_When_CustomMissingLanguagePropertySet_Expect_Saved() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
         documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
 
-        documentService.save(documentDTO);
-        DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        textDocumentService.save(documentDTO);
+        TextDocumentDTO savedDocumentDTO = textDocumentService.get(createdDoc.getId());
 
         assertEquals(savedDocumentDTO.getDisabledLanguageShowMode(), SHOW_IN_DEFAULT_LANGUAGE);
 
         documentDTO.setDisabledLanguageShowMode(DO_NOT_SHOW);
 
-        documentService.save(documentDTO);
-        savedDocumentDTO = documentService.get(createdDoc.getId());
+        textDocumentService.save(documentDTO);
+        savedDocumentDTO = textDocumentService.get(createdDoc.getId());
 
         assertEquals(savedDocumentDTO.getDisabledLanguageShowMode(), DO_NOT_SHOW);
     }
@@ -359,12 +360,12 @@ public class DocumentServiceTest {
         keywords.add("test keyword 5");
         keywords.add("test keyword 6");
 
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
         documentDTO.setKeywords(keywords);
 
-        documentService.save(documentDTO);
+        textDocumentService.save(documentDTO);
 
-        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO savedDocumentDTO = textDocumentService.get(createdDoc.getId());
         assertEquals(keywords, savedDocumentDTO.getKeywords());
 
         final int prevSize = keywords.size();
@@ -372,34 +373,38 @@ public class DocumentServiceTest {
         assertEquals(keywords.size() + 1, prevSize);
 
         savedDocumentDTO.setKeywords(keywords);
-        documentService.save(savedDocumentDTO);
+        textDocumentService.save(savedDocumentDTO);
 
-        final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
+        final TextDocumentDTO savedDocumentDTO1 = textDocumentService.get(createdDoc.getId());
         assertEquals(keywords, savedDocumentDTO1.getKeywords());
     }
 
     @Test
     public void save_When_SearchEnabledAndDisabled_Expect_Saved() {
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
 
         documentDTO.setSearchDisabled(true);
-        documentService.save(documentDTO);
+        textDocumentService.save(documentDTO);
 
-        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO savedDocumentDTO = textDocumentService.get(createdDoc.getId());
         assertTrue(savedDocumentDTO.isSearchDisabled());
 
         savedDocumentDTO.setSearchDisabled(false);
-        documentService.save(savedDocumentDTO);
+        textDocumentService.save(savedDocumentDTO);
 
-        final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
+        final TextDocumentDTO savedDocumentDTO1 = textDocumentService.get(createdDoc.getId());
         assertFalse(savedDocumentDTO1.isSearchDisabled());
     }
 
     @Test
     public void save_When_CategoriesIsSet_Expect_Saved() {
-        categoryDataInitializer.createData(50);
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user); // means current user is admin now
 
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        categoryDataInitializer.createData(20);
+
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
 
         final Set<CategoryDTO> categories = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 0)
@@ -408,8 +413,8 @@ public class DocumentServiceTest {
 
         documentDTO.setCategories(categories);
 
-        documentService.save(documentDTO);
-        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        textDocumentService.save(documentDTO);
+        final TextDocumentDTO savedDocumentDTO = textDocumentService.get(createdDoc.getId());
 
         assertEquals(categories, savedDocumentDTO.getCategories());
 
@@ -420,8 +425,8 @@ public class DocumentServiceTest {
 
         documentDTO.setCategories(categories1);
 
-        documentService.save(documentDTO);
-        final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
+        textDocumentService.save(documentDTO);
+        final TextDocumentDTO savedDocumentDTO1 = textDocumentService.get(createdDoc.getId());
 
         assertEquals(categories1, savedDocumentDTO1.getCategories());
 
@@ -436,26 +441,26 @@ public class DocumentServiceTest {
             roleIdToPermission.put(role.getId(), permission);
         }
 
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
         documentDTO.setRoleIdToPermission(roleIdToPermission);
 
-        documentService.save(documentDTO);
-        final DocumentDTO savedDocumentDTO = documentService.get(createdDoc.getId());
+        textDocumentService.save(documentDTO);
+        final TextDocumentDTO savedDocumentDTO = textDocumentService.get(createdDoc.getId());
 
         assertTrue(savedDocumentDTO.getRoleIdToPermission().entrySet().containsAll(roleIdToPermission.entrySet()));
 
         final Map<Integer, Permission> roleIdToPermission1 = new HashMap<>();
         savedDocumentDTO.setRoleIdToPermission(roleIdToPermission1);
-        documentService.save(savedDocumentDTO);
+        textDocumentService.save(savedDocumentDTO);
 
-        final DocumentDTO savedDocumentDTO1 = documentService.get(createdDoc.getId());
+        final TextDocumentDTO savedDocumentDTO1 = textDocumentService.get(createdDoc.getId());
         assertEquals(savedDocumentDTO1.getRoleIdToPermission(), roleIdToPermission1);
     }
 
     @Test
     public void save_When_RestrictedPermissionsSet_Expect_Saved() {
 
-        final DocumentDTO documentDTO = documentService.get(createdDoc.getId());
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
         final Set<RestrictedPermissionDTO> restrictedPermissions = new HashSet<>();
 
         final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
@@ -479,9 +484,9 @@ public class DocumentServiceTest {
 
         documentDTO.setRestrictedPermissions(restrictedPermissions);
 
-        documentService.save(documentDTO);
+        textDocumentService.save(documentDTO);
 
-        final DocumentDTO documentDTO1 = documentService.get(documentDTO.getId());
+        final TextDocumentDTO documentDTO1 = textDocumentService.get(documentDTO.getId());
 
         assertTrue(restrictedPermissions.containsAll(documentDTO1.getRestrictedPermissions()));
         assertEquals(documentDTO1, documentDTO);
@@ -505,12 +510,12 @@ public class DocumentServiceTest {
             final TextDocumentTemplate savedTemplate = textDocumentTemplateService.save(templateDTO);
             assertNotNull(savedTemplate);
 
-            final DocumentDTO documentDTO = documentService.get(docId);
+            final TextDocumentDTO documentDTO = textDocumentService.get(docId);
             documentDTO.setTemplate(templateDTO);
 
-            documentService.save(documentDTO);
+            textDocumentService.save(documentDTO);
 
-            final DocumentDTO savedDoc = documentService.get(documentDTO.getId());
+            final TextDocumentDTO savedDoc = textDocumentService.get(documentDTO.getId());
             final TextDocumentTemplate savedDocTemplate = savedDoc.getTemplate();
 
             assertEquals(savedDocTemplate, savedTemplate);
@@ -523,10 +528,10 @@ public class DocumentServiceTest {
     @Test
     public void deleteById_Expect_Deleted() {
         final int docId = createdDoc.getId();
-        documentService.deleteByDocId(docId);
+        textDocumentService.deleteByDocId(docId);
 
         try {
-            documentService.get(docId);
+            textDocumentService.get(docId);
             fail("Expected exception wasn't thrown!");
 
         } catch (DocumentNotExistException e) {
@@ -542,7 +547,7 @@ public class DocumentServiceTest {
         Imcms.setUser(user); // means current user is admin now
 
         final Integer createdDocId = createdDoc.getId();
-        final DocumentDTO documentDTO = documentService.get(createdDocId);
+        final TextDocumentDTO documentDTO = textDocumentService.get(createdDocId);
         assertNotNull(documentDTO);
 
         final int testIndex = 1;
@@ -588,10 +593,10 @@ public class DocumentServiceTest {
 
         menuService.saveFrom(menuDTO);
 
-        documentService.delete(documentDTO);
+        textDocumentService.deleteByDocId(documentDTO.getId());
 
         try {
-            documentService.get(createdDocId);
+            textDocumentService.get(createdDocId);
             fail("Expected exception wasn't thrown!");
 
         } catch (DocumentNotExistException e) {
@@ -620,7 +625,7 @@ public class DocumentServiceTest {
 
         //invoke test
 
-        final boolean isPublished = documentService.publishDocument(createdDoc.getId(), Imcms.getUser().getId());
+        final boolean isPublished = textDocumentService.publishDocument(createdDoc.getId(), Imcms.getUser().getId());
 
         //checking
 
@@ -665,7 +670,7 @@ public class DocumentServiceTest {
         workingVersion.setCreatedDt(new Date(0L));
         versionRepository.save(workingVersion);
         versionService.create(createdDoc.getId(), Imcms.getUser().getId());
-        final boolean isPublished = documentService.publishDocument(createdDoc.getId(), Imcms.getUser().getId());
+        final boolean isPublished = textDocumentService.publishDocument(createdDoc.getId(), Imcms.getUser().getId());
         assertFalse(isPublished);
     }
 
@@ -694,7 +699,7 @@ public class DocumentServiceTest {
 
         //invoke test
 
-        final boolean isPublished = documentService.publishDocument(createdDoc.getId(), Imcms.getUser().getId());
+        final boolean isPublished = textDocumentService.publishDocument(createdDoc.getId(), Imcms.getUser().getId());
 
         //checking
 
@@ -743,6 +748,5 @@ public class DocumentServiceTest {
 
         textRepository.saveAndFlush(text);
     }
-
 
 }

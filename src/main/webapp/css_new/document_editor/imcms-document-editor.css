@@ -32,7 +32,7 @@
 .imcms-document-editor__body {
     background-color: #f3f3fc;
     overflow: hidden;
-    padding-top: 62px;
+    padding-top: 42px;
     width: 100%;
     height: 95%;
 }
@@ -43,7 +43,12 @@
     border-bottom: 1px solid #d3d8de;
 }
 
+.imcms-document-list__title, .imcms-document-list-titles__title:hover {
+    background-color: #ededed;
+}
+
 .imcms-document-list__title, .imcms-document-list-titles__title {
+    cursor: pointer;
     color: #2e3f47;
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 13px;
@@ -94,7 +99,7 @@
     display: block;
     overflow: hidden;
     padding-left: 70px;
-    padding-right: 35px;
+    padding-right: 20px;
     position: relative;
     width: 100%;
 }
@@ -106,6 +111,8 @@
     text-align: left;
     float: left;
     height: 45px;
+    text-overflow: ellipsis;
+    overflow: inherit;
 }
 
 .imcms-document-item__controls {
@@ -127,6 +134,11 @@
     clear: both;
 }
 
+.imcms-document-list__items .imcms-document-items-list__document-items .imcms-document-items__document-item > .imcms-document-item__controls:first-child {
+    right: auto;
+    left: 0;
+}
+
 .imcms-document-item:hover .imcms-document-item__controls {
     display: block;
 }
@@ -145,19 +157,19 @@
 }
 
 .imcms-menu-editor__body .imcms-document-list__items {
-    height: -webkit-calc(100% - 25px);
-    height: -moz-calc(100% - 25px);
-    height: -ms-calc(100% - 25px);
-    height: -o-calc(100% - 25px);
-    height: calc(100% - 25px);
+    height: -webkit-calc(100% - 63px);
+    height: -moz-calc(100% - 63px);
+    height: -ms-calc(100% - 63px);
+    height: -o-calc(100% - 63px);
+    height: calc(100% - 63px);
 }
 
 .imcms-document-editor .imcms-document-list__items {
-    height: -webkit-calc(100% - 80px);
-    height: -moz-calc(100% - 80px);
-    height: -ms-calc(100% - 80px);
-    height: -o-calc(100% - 80px);
-    height: calc(100% - 80px);
+    height: -webkit-calc(100% - 118px);
+    height: -moz-calc(100% - 118px);
+    height: -ms-calc(100% - 118px);
+    height: -o-calc(100% - 118px);
+    height: calc(100% - 118px);
 }
 
 .imcms-document-editor__footer {

@@ -2,7 +2,6 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.config.WebTestConfig;
 import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Template;
@@ -26,7 +25,7 @@ import static org.junit.Assert.*;
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, WebTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 public class TemplateServiceTest {
 
     @Value("WEB-INF/templates/text")

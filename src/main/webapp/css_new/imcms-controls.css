@@ -26,6 +26,11 @@
     right: 27px;
 }
 
+.imcms-menu-items-tree__menu-items .imcms-menu-items__menu-item > .imcms-menu-item__controls:first-child {
+    right: auto;
+    left: 0;
+}
+
 .imcms-controls__control {
     display: block;
     float: right;

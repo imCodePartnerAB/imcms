@@ -1,10 +1,8 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
-import com.imcode.imcms.domain.dto.ImageData.ImageCropRegionDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
-import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
@@ -12,11 +10,14 @@ import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
+import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.DocumentStoredFields;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.solr.common.SolrDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +47,7 @@ class MappingConfig {
 
                 final MenuItemDTO menuItemDTO = new MenuItemDTO();
                 menuItemDTO.setDocumentId(documentId);
+                menuItemDTO.setType(documentMenuService.getDocumentType(documentId));
                 menuItemDTO.setTitle(documentMenuService.getDocumentTitle(documentId));
                 menuItemDTO.setLink(documentMenuService.getDocumentLink(documentId));
                 menuItemDTO.setTarget(documentMenuService.getDocumentTarget(documentId));
@@ -223,10 +225,7 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping(
-            UserService userService,
-            TextDocumentTemplateService textDocumentTemplateService
-    ) {
+    public TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping(UserService userService) {
         final BiFunction<Supplier<Integer>, Supplier<Date>, AuditDTO> auditDtoCreator =
                 (auditorIdSupplier, auditedDateSupplier) -> {
 
@@ -249,7 +248,6 @@ class MappingConfig {
             dto.setTarget(meta.getTarget());
             dto.setAlias(meta.getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
             dto.setPublicationStatus(meta.getPublicationStatus());
-            dto.setType(meta.getDocumentType());
 
             Optional.ofNullable(commonContents).map(commonContents1
                     -> commonContents1.stream().map(CommonContentDTO::new).collect(Collectors.toList()))
@@ -285,8 +283,6 @@ class MappingConfig {
                     .collect(Collectors.toSet());
 
             dto.setRestrictedPermissions(restrictedPermissions);
-
-            textDocumentTemplateService.get(metaId).map(TextDocumentTemplateDTO::new).ifPresent(dto::setTemplate);
 
             return dto;
         };
@@ -375,6 +371,23 @@ class MappingConfig {
 
                 return imageFolderDTO;
             }
+        };
+    }
+
+    @Bean
+    public Function<TextDocumentDTO, DocumentStoredFieldsDTO> textDocumentDTOtoDocumentStoredFieldsDTO() {
+        return textDocument -> {
+            SolrDocument solrDocument = new SolrDocument();
+            solrDocument.put(DocumentIndex.FIELD__META_ID, textDocument.getId());
+
+            solrDocument.put(DocumentIndex.FIELD__META_HEADLINE, textDocument.getCommonContents().get(0).getHeadline());
+
+            solrDocument.put(DocumentIndex.FIELD__DOC_TYPE_ID, textDocument.getType().ordinal());
+            solrDocument.put(DocumentIndex.FIELD__ALIAS, textDocument.getAlias());
+
+            DocumentStoredFields from = new DocumentStoredFields(solrDocument);
+
+            return new DocumentStoredFieldsDTO(from);
         };
     }
 
