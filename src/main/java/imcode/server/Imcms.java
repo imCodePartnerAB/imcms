@@ -1,5 +1,6 @@
 package imcode.server;
 
+import com.imcode.imcms.model.Language;
 import imcode.server.user.UserDomainObject;
 import imcode.util.PropertyManager;
 import org.apache.log4j.Logger;
@@ -36,6 +37,11 @@ public class Imcms {
      * @see com.imcode.imcms.servlet.ImcmsSetupFilter
      */
     private static InheritableThreadLocal<UserDomainObject> users = new InheritableThreadLocal<>();
+
+    /**
+     * Current language for user
+     */
+    private static ThreadLocal<Language> languages = new ThreadLocal<>();
 
     /**
      * Flag variable that shows is document versioning feature are turned on in server properties
@@ -121,6 +127,20 @@ public class Imcms {
      */
     public static void setUser(UserDomainObject user) {
         users.set(user);
+    }
+
+    /**
+     * @return a language associated with a current user
+     */
+    public static Language getLanguage() {
+        return languages.get();
+    }
+
+    /**
+     * Associates a language with a current user
+     */
+    public static void setLanguage(Language language) {
+        languages.set(language);
     }
 
     /**
