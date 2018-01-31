@@ -503,6 +503,11 @@ public class SearchDocumentServiceTest {
         checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getTitle), "meta_headline", Sort.Direction.ASC);
     }
 
+    @Test
+    public void getDocuments_When_SortingByTitleDESC_Expect_CorrectData() throws InterruptedException {
+        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getTitle).reversed(), "meta_headline", Sort.Direction.DESC);
+    }
+
     private void checkSorting(Comparator<DocumentStoredFieldsDTO> comparator, String property, Sort.Direction direction) throws InterruptedException {
         List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
 
