@@ -59,11 +59,23 @@ Imcms.define("imcms-flags-builder", ["imcms-bem-builder", "imcms-languages-rest-
         });
     }
 
+    function flagOnClick() {
+        languagesRestApi.update({code: $(this).text()})
+            .done(function () {
+                location.reload(true);
+            })
+    }
+
     return {
         flagsContainer: function (flagBuilderDataProducer) {
             var $result = flagsBEM.buildBlock("<div>", [], "flag");
             languagesRestApi.read().done(function (languages) {
                 var flags = mapLanguagesToFlags(languages, flagBuilderDataProducer);
+
+                flags.forEach(function (flag) {
+                    flag.click(flagOnClick);
+                });
+
                 $result.append(flags);
             });
             return $result;
