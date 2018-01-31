@@ -95,16 +95,18 @@ Imcms.define("imcms-menu-editor-builder",
                 if ($originItemParent.find("[data-menu-items-lvl]").length === 0) {
                     $originItemParent.find(".children-triangle").remove();
                 }
-                $originDropItem.find(".children-triangle").first().trigger("click");
+                $originDropItem.find(".children-triangle").first().click();
                 $originDropItem.removeClass("imcms-menu-items--is-drop");
             } else {
                 $originItem.removeClass("imcms-menu-items--is-drag");
-                $originItem.find(".children-triangle").first().trigger("click");
             }
         }
 
         function detectTargetArea(event) {
-            return (event.pageY > menuAreaProp.top) && (event.pageY < menuAreaProp.bottom) && (event.pageX > menuAreaProp.left) && (event.pageX < menuAreaProp.right);
+            return (event.pageY > menuAreaProp.top) &&
+                (event.pageY < menuAreaProp.bottom) &&
+                (event.pageX > menuAreaProp.left) &&
+                (event.pageX < menuAreaProp.right);
         }
 
         function toggleUserSelect(flag) {
@@ -287,10 +289,10 @@ Imcms.define("imcms-menu-editor-builder",
             mouseCoords.newPageX = event.clientX;
             mouseCoords.newPageY = event.clientY;
 
-            var deltaPageX =  mouseCoords.newPageX - mouseCoords.pageX;
-            var deltaPageY = mouseCoords.newPageY - mouseCoords.pageY;
+            mouseCoords.deltaPageX = mouseCoords.newPageX - mouseCoords.pageX;
+            mouseCoords.deltaPageY = mouseCoords.newPageY - mouseCoords.pageY;
 
-            if (Math.abs(deltaPageX) > 7 || Math.abs(deltaPageY) > 7) {
+            if (Math.abs(mouseCoords.deltaPageX) > 7 || Math.abs(mouseCoords.deltaPageY) > 7) {
                 if (isMouseDown && detectTargetArea(event)) {
                     $frame.css({
                         "top": (mouseCoords.newPageY - mouseCoords.pageY) + mouseCoords.top,
@@ -335,7 +337,6 @@ Imcms.define("imcms-menu-editor-builder",
                     "width": "100%",
                     "height": "100%",
                     "background": "transparent",
-                    // "opacity": 0,
                     "z-index": 10101
                 });
             $frameLayout.appendTo($("body"));
@@ -483,12 +484,16 @@ Imcms.define("imcms-menu-editor-builder",
             ;
 
             level = parseInt(level) + 1;
-            $btn.parents(".imcms-menu-items")
-                .find(".imcms-menu-items[data-menu-items-lvl=" + level + "]")
-                .each(function () {
-                    $(this).slideToggle()
-                });
-            $btn.toggleClass("imcms-menu-item-btn--open");
+            var submenus = $btn.parents(".imcms-menu-items")
+                .find(".imcms-menu-items[data-menu-items-lvl=" + level + "]");
+
+            if (!submenus.is(":animated")) {
+                submenus.each(function () {
+                        $(this).slideToggle();
+                        $(this).toggleClass("imcms-submenu-items--close");
+                    });
+                $btn.toggleClass("imcms-menu-item-btn--open");
+            }
         }
 
         function buildChildrenTriangle() {
