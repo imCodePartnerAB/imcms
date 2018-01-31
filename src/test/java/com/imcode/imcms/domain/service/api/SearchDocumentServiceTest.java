@@ -516,17 +516,22 @@ public class SearchDocumentServiceTest {
 
     @Test
     public void getDocuments_When_SortingByTitleASC_Expect_CorrectData() throws InterruptedException {
-        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getTitle), "meta_headline", Sort.Direction.ASC);
+        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getTitle), titleField, Sort.Direction.ASC);
     }
 
     @Test
     public void getDocuments_When_SortingByTitleDESC_Expect_CorrectData() throws InterruptedException {
-        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getTitle).reversed(), "meta_headline", Sort.Direction.DESC);
+        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getTitle).reversed(), titleField, Sort.Direction.DESC);
     }
 
     @Test
     public void getDocuments_When_SortingByAliasASC_Expect_CorrectData() throws InterruptedException {
-        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getAlias), "alias", Sort.Direction.ASC);
+        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getAlias), aliasField, Sort.Direction.ASC);
+    }
+
+    @Test
+    public void getDocuments_When_SortingByAliasDESC_Expect_CorrectData() throws InterruptedException {
+        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getAlias).reversed(), aliasField, Sort.Direction.DESC);
     }
 
     private void checkSorting(Comparator<DocumentStoredFieldsDTO> comparator, String property, Sort.Direction direction) throws InterruptedException {
