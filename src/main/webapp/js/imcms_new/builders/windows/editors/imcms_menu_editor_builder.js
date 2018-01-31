@@ -486,9 +486,11 @@ Imcms.define("imcms-menu-editor-builder",
             $btn.parents(".imcms-menu-items")
                 .find(".imcms-menu-items[data-menu-items-lvl=" + level + "]")
                 .each(function () {
-                    $(this).slideToggle()
+                    if (!$(this).is(":animated")) {
+                        $(this).slideToggle();
+                        $btn.toggleClass("imcms-menu-item-btn--open");
+                    }
                 });
-            $btn.toggleClass("imcms-menu-item-btn--open");
         }
 
         function buildChildrenTriangle() {
