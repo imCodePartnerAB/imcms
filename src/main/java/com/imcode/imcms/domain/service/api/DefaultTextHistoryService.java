@@ -1,12 +1,13 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.dto.TextHistoryDTO;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.TextHistoryService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Language;
-import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
@@ -57,11 +58,13 @@ public class DefaultTextHistoryService implements TextHistoryService {
     }
 
     @Override
-    public List<TextHistoryDTO> findAllByLanguageAndLoopEntryRefAndNo(String langCode, LoopEntryRef loopEntryRef, int no) {
-        final Language language = languageService.findByCode(langCode);
+    public List<TextHistoryDTO> getAll(TextDTO textDTO) {
+        final Integer index = textDTO.getIndex();
+        final LoopEntryRefDTO loopEntryRef = textDTO.getLoopEntryRef();
+        final Language language = languageService.findByCode(textDTO.getLangCode());
 
         return this.textHistoryRepository
-                .findAllByLanguageAndLoopEntryRefAndNo(new LanguageJPA(language), new LoopEntryRefJPA(loopEntryRef), no)
+                .findAllByLanguageAndLoopEntryRefAndNo(new LanguageJPA(language), new LoopEntryRefJPA(loopEntryRef), index)
                 .stream()
                 .map(textHistoryJpaToTextHistoryDTO)
                 .collect(Collectors.toList());

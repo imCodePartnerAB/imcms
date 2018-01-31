@@ -1,6 +1,5 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.dto.TextHistoryDTO;
 import com.imcode.imcms.domain.service.TextHistoryService;
@@ -22,10 +21,6 @@ public class TextHistoryController {
 
     @GetMapping
     public List<TextHistoryDTO> getTextHistories(TextDTO textDTO) {
-        final Integer index = textDTO.getIndex();
-        final LoopEntryRefDTO loopEntryRef = textDTO.getLoopEntryRef();
-        final String langCode = textDTO.getLangCode();
-
-        return this.textHistoryService.findAllByLanguageAndLoopEntryRefAndNo(langCode, loopEntryRef, index);
+        return this.textHistoryService.getAll(textDTO);
     }
 }
