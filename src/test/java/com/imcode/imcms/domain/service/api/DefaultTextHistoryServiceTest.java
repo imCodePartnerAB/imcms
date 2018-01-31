@@ -4,11 +4,11 @@ import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
+import com.imcode.imcms.domain.dto.TextHistoryDTO;
 import com.imcode.imcms.domain.service.TextHistoryService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.model.TextHistory;
 import com.imcode.imcms.persistence.repository.TextHistoryRepository;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
@@ -24,6 +24,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -80,7 +81,7 @@ public class DefaultTextHistoryServiceTest {
     @Test
     public void findAllByLanguageAndLoopEntryRefAndNo_When_ThreeSpecifiedTextHistoriesExists_Expect_Returned() {
         final int textHistoryListSize = 3;
-        final List<Text> texts = textList(textHistoryListSize);
+        final List<TextDTO> texts = textList(textHistoryListSize);
 
         // create another text history
         this.index++;
@@ -89,8 +90,8 @@ public class DefaultTextHistoryServiceTest {
 
         texts.forEach(textHistoryService::save);
 
-        final List<TextHistory> actual = textHistoryService
-                .findAllByLanguageAndLoopEntryRefAndNo(this.language, this.loopEntryRef, this.index);
+        final List<TextHistoryDTO> actual = textHistoryService
+                .getAll(texts.get(new Random().nextInt(textHistoryListSize)));
 
         assertEquals(textHistoryListSize, actual.size());
 
@@ -101,7 +102,7 @@ public class DefaultTextHistoryServiceTest {
         });
     }
 
-    private List<Text> textList(int number) {
+    private List<TextDTO> textList(int number) {
         return IntStream.range(0, number)
                 .mapToObj(i -> {
                     final TextDTO textDTO = new TextDTO(this.index, null, this.language.getCode(), this.loopEntryRef);

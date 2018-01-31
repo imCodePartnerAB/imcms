@@ -90,7 +90,7 @@
 
 
         <field name="role_id" type="int" indexed="true" stored="false" multiValued="true"/>
-        <field name="meta_headline" type="text_general" indexed="true" stored="true"/>
+        <field name="meta_headline" type="string" indexed="true" stored="true"/>
         <field name="meta_headline_keyword" type="string" indexed="true" stored="false"/>
         <field name="meta_text" type="string" indexed="true" stored="false"/>
         <field name="doc_type_id" type="int" indexed="true" stored="true"/>
@@ -115,7 +115,7 @@
         <field name="parent_id" type="int" indexed="true" stored="false" multiValued="true"/>
         <field name="parent_menu_id" type="text_general" indexed="true" stored="false" multiValued="true"/>
         <field name="has_parents" type="boolean" indexed="true" stored="false"/>
-        <field name="alias" type="text_general" indexed="true" stored="true"/>
+        <field name="alias" type="string" indexed="true" stored="true"/>
 
         <field name="parents_count" type="int" indexed="true" stored="true" default="0"/>
         <field name="children_count" type="int" indexed="true" stored="true" default="0"/>

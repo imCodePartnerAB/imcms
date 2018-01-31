@@ -21,6 +21,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -53,6 +57,11 @@ public class SearchDocumentServiceTest {
     private static boolean flag = true;
 
     private static VersionDataInitializer versionDataInitializerStatic;
+
+    private static final List<String> mockData = new ArrayList<>();
+
+    private static final String titleField = "meta_headline";
+    private static final String aliasField = "alias";
 
     @Value("WEB-INF/solr")
     private File defaultSolrFolder;
@@ -80,6 +89,18 @@ public class SearchDocumentServiceTest {
 
     @Autowired
     private DocumentIndex documentIndex;
+
+    @Autowired
+    private Function<TextDocumentDTO, DocumentStoredFieldsDTO> textDocumentDTOtoDocumentStoredFieldsDTO;
+
+    @BeforeClass
+    public static void setMockData() {
+        mockData.add("asdf a");
+        mockData.add("555");
+        mockData.add("1");
+        mockData.add("1187 ENG+ (1)");
+        mockData.add("DSTE 12");
+    }
 
     @AfterClass
     public static void shutDown() {
@@ -489,6 +510,77 @@ public class SearchDocumentServiceTest {
             docs.forEach(document -> {
                 documentDataInitializer.cleanRepositories(document.getId());
                 documentIndex.removeDocument(document.getId());
+            });
+        }
+    }
+
+    @Test
+    public void getDocuments_When_SortingByTitleASC_Expect_CorrectData() throws InterruptedException {
+        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getTitle), titleField, Sort.Direction.ASC);
+    }
+
+    @Test
+    public void getDocuments_When_SortingByTitleDESC_Expect_CorrectData() throws InterruptedException {
+        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getTitle).reversed(), titleField, Sort.Direction.DESC);
+    }
+
+    @Test
+    public void getDocuments_When_SortingByAliasASC_Expect_CorrectData() throws InterruptedException {
+        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getAlias), aliasField, Sort.Direction.ASC);
+    }
+
+    @Test
+    public void getDocuments_When_SortingByAliasDESC_Expect_CorrectData() throws InterruptedException {
+        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getAlias).reversed(), aliasField, Sort.Direction.DESC);
+    }
+
+    private void checkSorting(Comparator<DocumentStoredFieldsDTO> comparator, String property, Sort.Direction direction) throws InterruptedException {
+        final int documentListSize = 5;
+
+        List<TextDocumentDTO> textDocumentDTOS = IntStream.range(0, documentListSize)
+                .mapToObj(i -> documentDataInitializer.createTextDocument())
+                .collect(Collectors.toList());
+
+        if (property.equals(titleField)) {
+            IntStream.range(0, documentListSize)
+                    .forEach(i -> textDocumentDTOS.get(i).getCommonContents().get(0).setHeadline(mockData.get(i)));
+        }
+
+        if (property.equals(aliasField)) {
+            IntStream.range(0, documentListSize)
+                    .forEach(i -> textDocumentDTOS.get(i).setAlias(mockData.get(i)));
+        }
+
+        List<DocumentStoredFieldsDTO> expected = textDocumentDTOS.stream()
+                .map(textDocumentDTOtoDocumentStoredFieldsDTO)
+                .sorted(comparator)
+                .collect(Collectors.toList());
+
+        final List<Integer> docIds = new ArrayList<>();
+
+        textDocumentDTOS.forEach(textDocumentDTO -> docIds.add(documentService.save(textDocumentDTO)));
+
+        try {
+            waitForIndexUpdates();
+
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+
+            final PageRequestDTO pageRequestDTO = new PageRequestDTO();
+            pageRequestDTO.setProperty(property);
+            pageRequestDTO.setDirection(direction);
+
+            searchQueryDTO.setPage(pageRequestDTO);
+
+            final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(searchQueryDTO)
+                    .stream()
+                    .filter(doc -> docIds.contains(doc.getId()))
+                    .collect(Collectors.toList());
+
+            assertEquals(expected, actual);
+        } finally {
+            docIds.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
             });
         }
     }
