@@ -60,8 +60,8 @@ public class SearchDocumentServiceTest {
 
     private static final List<String> mockData = new ArrayList<>();
 
-    private static final String titleField = "meta_headline";
-    private static final String aliasField = "alias";
+    private static final String titleField = DocumentIndex.FIELD__META_HEADLINE;
+    private static final String aliasField = DocumentIndex.FIELD__ALIAS;
 
     @Value("WEB-INF/solr")
     private File defaultSolrFolder;
@@ -535,21 +535,17 @@ public class SearchDocumentServiceTest {
     }
 
     private void checkSorting(Comparator<DocumentStoredFieldsDTO> comparator, String property, Sort.Direction direction) throws InterruptedException {
-        final int documentListSize = 5;
+        final int documentListSize = mockData.size();
 
         List<TextDocumentDTO> textDocumentDTOS = IntStream.range(0, documentListSize)
                 .mapToObj(i -> documentDataInitializer.createTextDocument())
                 .collect(Collectors.toList());
 
-        if (property.equals(titleField)) {
-            IntStream.range(0, documentListSize)
-                    .forEach(i -> textDocumentDTOS.get(i).getCommonContents().get(0).setHeadline(mockData.get(i)));
-        }
-
-        if (property.equals(aliasField)) {
-            IntStream.range(0, documentListSize)
-                    .forEach(i -> textDocumentDTOS.get(i).setAlias(mockData.get(i)));
-        }
+        IntStream.range(0, documentListSize)
+                .forEach(i -> {
+                    textDocumentDTOS.get(i).getCommonContents().get(0).setHeadline(mockData.get(i));
+                    textDocumentDTOS.get(i).setAlias(mockData.get(i));
+                });
 
         List<DocumentStoredFieldsDTO> expected = textDocumentDTOS.stream()
                 .map(textDocumentDTOtoDocumentStoredFieldsDTO)
