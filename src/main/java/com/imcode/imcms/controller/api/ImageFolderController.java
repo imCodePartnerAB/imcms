@@ -42,7 +42,7 @@ public class ImageFolderController {
         return imageFolderService.createImageFolder(folderToCreate);
     }
 
-    @PatchMapping
+    @PutMapping
     public boolean renameFolder(@RequestBody ImageFolderDTO folderToRename) {
         // todo: create annotation instead of copying this each time!
         if (!Imcms.getUser().isSuperAdmin()) {

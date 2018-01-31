@@ -184,13 +184,13 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(folder.isDirectory());
             assertTrue(folder.canRead());
 
-            final MockHttpServletRequestBuilder requestBuilderPatch = MockMvcRequestBuilders.patch(controllerPath())
+            final MockHttpServletRequestBuilder requestBuilderPut = MockMvcRequestBuilders.put(controllerPath())
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
-            final String jsonPatchResponse = getJsonResponse(requestBuilderPatch);
+            final String jsonPutResponse = getJsonResponse(requestBuilderPut);
 
-            assertTrue(Boolean.parseBoolean(jsonPatchResponse));
+            assertTrue(Boolean.parseBoolean(jsonPutResponse));
             assertFalse(folder.exists());
             assertTrue(newFolder.exists());
             assertTrue(newFolder.isDirectory());
@@ -243,13 +243,13 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(nestedFolder.isDirectory());
             assertTrue(nestedFolder.canRead());
 
-            final MockHttpServletRequestBuilder requestBuilderPatch = MockMvcRequestBuilders.patch(controllerPath())
+            final MockHttpServletRequestBuilder requestBuilderPut = MockMvcRequestBuilders.put(controllerPath())
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageNestedFolderDTO));
 
-            final String jsonPatchResponse = getJsonResponse(requestBuilderPatch);
+            final String jsonPutResponse = getJsonResponse(requestBuilderPut);
 
-            assertTrue(Boolean.parseBoolean(jsonPatchResponse));
+            assertTrue(Boolean.parseBoolean(jsonPutResponse));
             assertFalse(nestedFolder.exists());
             assertTrue(newNestedFolder.exists());
             assertTrue(newNestedFolder.isDirectory());
@@ -280,11 +280,11 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
         assertFalse(newFolder.exists());
 
-        final MockHttpServletRequestBuilder requestBuilderPatch = MockMvcRequestBuilders.patch(controllerPath())
+        final MockHttpServletRequestBuilder requestBuilderPut = MockMvcRequestBuilders.put(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(imageFolderDTO));
 
-        performRequestBuilderExpectException(FolderNotExistException.class, requestBuilderPatch);
+        performRequestBuilderExpectException(FolderNotExistException.class, requestBuilderPut);
         assertFalse(newFolder.exists());
 
     }
@@ -325,11 +325,11 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(Boolean.parseBoolean(jsonResponse1));
             assertTrue(folder1.exists());
 
-            final MockHttpServletRequestBuilder requestBuilderPatch = MockMvcRequestBuilders.patch(controllerPath())
+            final MockHttpServletRequestBuilder requestBuilderPut = MockMvcRequestBuilders.put(controllerPath())
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO1));
 
-            performRequestBuilderExpectException(FolderAlreadyExistException.class, requestBuilderPatch);
+            performRequestBuilderExpectException(FolderAlreadyExistException.class, requestBuilderPut);
             assertFalse(renamedFolder.exists());
 
         } finally {
@@ -371,11 +371,11 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             Imcms.setUser(user); // means current user is not admin now
 
 
-            final MockHttpServletRequestBuilder requestBuilderPatch = MockMvcRequestBuilders.patch(controllerPath())
+            final MockHttpServletRequestBuilder requestBuilderPut = MockMvcRequestBuilders.put(controllerPath())
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
-            performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilderPatch);
+            performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilderPut);
             assertFalse(newFolder.exists());
 
 

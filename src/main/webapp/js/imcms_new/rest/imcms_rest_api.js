@@ -53,8 +53,8 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
         return ajax.bind({url: path, type: "POST", json: false, contentType: false, processData: false});
     }
 
-    function patch(path) {
-        return ajax.bind({url: path, type: "PATCH", json: true});
+    function put(path) {
+        return ajax.bind({url: path, type: "PUT", json: true});
     }
 
     function remove(path) {
@@ -64,7 +64,7 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
     var API = function (url) {
         this.create = post(url);
         this.read = get(url);
-        this.update = patch(url);
+        this.update = put(url);
         this.remove = remove(url);
         this.postFiles = postFiles(url);
     };
