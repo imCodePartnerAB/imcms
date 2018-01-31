@@ -35,7 +35,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -80,6 +82,9 @@ public class SearchDocumentServiceTest {
 
     @Autowired
     private DocumentIndex documentIndex;
+
+    @Autowired
+    private Function<TextDocumentDTO, DocumentStoredFieldsDTO> textDocumentDTOtoDocumentStoredFieldsDTO;
 
     @AfterClass
     public static void shutDown() {
@@ -489,6 +494,68 @@ public class SearchDocumentServiceTest {
             docs.forEach(document -> {
                 documentDataInitializer.cleanRepositories(document.getId());
                 documentIndex.removeDocument(document.getId());
+            });
+        }
+    }
+
+    @Test
+    public void getDocuments_When_SortingByTitleASC_Expect_CorrectData() throws InterruptedException {
+        checkSorting(Comparator.comparing(DocumentStoredFieldsDTO::getTitle), "meta_headline", Sort.Direction.ASC);
+    }
+
+    private void checkSorting(Comparator<DocumentStoredFieldsDTO> comparator, String property, Sort.Direction direction) throws InterruptedException {
+        List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+
+        final TextDocumentDTO firstDocument = documentDataInitializer.createTextDocument();
+        textDocumentDTOS.add(firstDocument);
+        firstDocument.getCommonContents().get(0).setHeadline("asdf a");
+
+        final TextDocumentDTO secondDocument = documentDataInitializer.createTextDocument();
+        textDocumentDTOS.add(secondDocument);
+        secondDocument.getCommonContents().get(0).setHeadline("555");
+
+        final TextDocumentDTO thirdDocument = documentDataInitializer.createTextDocument();
+        textDocumentDTOS.add(thirdDocument);
+        thirdDocument.getCommonContents().get(0).setHeadline("1");
+
+        final TextDocumentDTO fourthDocument = documentDataInitializer.createTextDocument();
+        textDocumentDTOS.add(fourthDocument);
+        fourthDocument.getCommonContents().get(0).setHeadline("1187 ENG+ (1)");
+
+        final TextDocumentDTO fifthDocument = documentDataInitializer.createTextDocument();
+        textDocumentDTOS.add(fifthDocument);
+        fifthDocument.getCommonContents().get(0).setHeadline("DSTE");
+
+        List<DocumentStoredFieldsDTO> expected = textDocumentDTOS.stream()
+                .map(textDocumentDTOtoDocumentStoredFieldsDTO)
+                .sorted(comparator)
+                .collect(Collectors.toList());
+
+        final List<Integer> docIds = new ArrayList<>();
+
+        textDocumentDTOS.forEach(textDocumentDTO -> docIds.add(documentService.save(textDocumentDTO)));
+
+        try {
+            waitForIndexUpdates();
+
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+
+            final PageRequestDTO pageRequestDTO = new PageRequestDTO();
+            pageRequestDTO.setProperty(property);
+            pageRequestDTO.setDirection(direction);
+
+            searchQueryDTO.setPage(pageRequestDTO);
+
+            final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(searchQueryDTO)
+                    .stream()
+                    .filter(doc -> docIds.contains(doc.getId()))
+                    .collect(Collectors.toList());
+
+            assertEquals(expected, actual);
+        } finally {
+            docIds.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
             });
         }
     }
