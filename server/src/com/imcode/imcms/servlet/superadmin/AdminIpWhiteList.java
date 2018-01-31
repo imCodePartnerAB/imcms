@@ -233,7 +233,7 @@ public class AdminIpWhiteList extends HttpServlet {
         String userIP = request.getRemoteAddr();
 
         if ("0:0:0:0:0:0:0:1".equals(userIP)) {
-            userIP = "172.0.0.1"; // localhost handled here
+            userIP = "127.0.0.1"; // localhost handled here
         }
 
         request.setAttribute("contextPath", request.getContextPath());
@@ -254,7 +254,7 @@ public class AdminIpWhiteList extends HttpServlet {
         String userIP = request.getRemoteAddr();
 
         if ("0:0:0:0:0:0:0:1".equals(userIP)) {
-            userIP = "172.0.0.1"; // localhost handled here
+            userIP = "127.0.0.1"; // localhost handled here
         }
 
         request.setAttribute("contextPath", request.getContextPath());

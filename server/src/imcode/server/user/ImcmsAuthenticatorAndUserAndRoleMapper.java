@@ -962,7 +962,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         String userIP = request.getRemoteAddr();
 
         if ("0:0:0:0:0:0:0:1".equals(userIP)) {
-            userIP = "172.0.0.1"; // localhost handled here
+            userIP = "127.0.0.1"; // localhost handled here
         }
 
         if (isNotValidInet4Address(userIP)) {
