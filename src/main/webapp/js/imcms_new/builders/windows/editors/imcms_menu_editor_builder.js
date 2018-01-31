@@ -95,11 +95,11 @@ Imcms.define("imcms-menu-editor-builder",
                 if ($originItemParent.find("[data-menu-items-lvl]").length === 0) {
                     $originItemParent.find(".children-triangle").remove();
                 }
-                $originDropItem.find(".children-triangle").first().trigger("click");
+                $originDropItem.find(".children-triangle").first().click();
                 $originDropItem.removeClass("imcms-menu-items--is-drop");
             } else {
                 $originItem.removeClass("imcms-menu-items--is-drag");
-                $originItem.find(".children-triangle").first().trigger("click");
+                //$originItem.find(".children-triangle").first().click();
             }
         }
 
@@ -290,10 +290,10 @@ Imcms.define("imcms-menu-editor-builder",
             mouseCoords.newPageX = event.clientX;
             mouseCoords.newPageY = event.clientY;
 
-            var deltaPageX = mouseCoords.newPageX - mouseCoords.pageX;
-            var deltaPageY = mouseCoords.newPageY - mouseCoords.pageY;
+            mouseCoords.deltaPageX = mouseCoords.newPageX - mouseCoords.pageX;
+            mouseCoords.deltaPageY = mouseCoords.newPageY - mouseCoords.pageY;
 
-            if (Math.abs(deltaPageX) > 7 || Math.abs(deltaPageY) > 7) {
+            if (Math.abs(mouseCoords.deltaPageX) > 7 || Math.abs(mouseCoords.deltaPageY) > 7) {
                 if (isMouseDown && detectTargetArea(event)) {
                     $frame.css({
                         "top": (mouseCoords.newPageY - mouseCoords.pageY) + mouseCoords.top,
