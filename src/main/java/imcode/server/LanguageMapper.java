@@ -2,6 +2,8 @@ package imcode.server;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.model.Language;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
@@ -123,10 +125,17 @@ public class LanguageMapper {
 
     private final Database database;
     private final String defaultLanguage;
+    private LanguageService languageService;
 
     public LanguageMapper(Database database, String defaultLanguage) {
         this.database = database;
         this.defaultLanguage = defaultLanguage;
+    }
+
+    public LanguageMapper(Database database, String defaultLanguage, LanguageService languageService) {
+        this.database = database;
+        this.defaultLanguage = defaultLanguage;
+        this.languageService = languageService;
     }
 
     public static String getAsIso639_2OrDefaultLanguage(String langStr, String defaultLanguage) {
@@ -224,6 +233,10 @@ public class LanguageMapper {
 
     public String getDefaultLanguage() {
         return defaultLanguage;
+    }
+
+    public Language getLanguageByCode(String code) {
+        return this.languageService.findByCode(code);
     }
 
     public static class LanguageNotSupportedException extends RuntimeException {

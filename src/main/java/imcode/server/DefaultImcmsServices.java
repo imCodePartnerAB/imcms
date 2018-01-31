@@ -87,7 +87,8 @@ public class DefaultImcmsServices implements ImcmsServices {
                                 MailService mailService,
                                 TemplateService templateService,
                                 DocumentMapper documentMapper,
-                                ProcedureExecutor procedureExecutor) {
+                                ProcedureExecutor procedureExecutor,
+                                LanguageMapper languageMapper) {
 
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
@@ -101,8 +102,8 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.templateService = templateService;
         this.procedureExecutor = procedureExecutor;
         this.documentMapper = documentMapper;
+        this.languageMapper = languageMapper;
 
-        this.languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
         this.kerberosLoginService = new KerberosLoginService(config);
     }
 

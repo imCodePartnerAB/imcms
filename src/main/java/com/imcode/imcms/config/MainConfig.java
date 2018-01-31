@@ -7,10 +7,7 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
-import com.imcode.imcms.domain.service.DocumentFileService;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.DocumentUrlService;
-import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.domain.service.api.FileDocumentService;
 import com.imcode.imcms.domain.service.api.TextDocumentService;
 import com.imcode.imcms.domain.service.api.UrlDocumentService;
@@ -20,6 +17,7 @@ import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.Config;
+import imcode.server.LanguageMapper;
 import imcode.server.LoggingDocumentIndex;
 import imcode.server.PhaseQueryFixingDocumentIndex;
 import imcode.server.document.index.DocumentIndex;
@@ -170,5 +168,12 @@ class MainConfig {
                                                               DocumentUrlService documentUrlService) {
 
         return new UrlDocumentService(documentService, documentUrlService);
+    }
+
+    @Bean
+    public LanguageMapper languageMapper(Database createDatabase,
+                                         LanguageService languageService,
+                                         Config config) {
+        return new LanguageMapper(createDatabase, config.getDefaultLanguage(), languageService);
     }
 }
