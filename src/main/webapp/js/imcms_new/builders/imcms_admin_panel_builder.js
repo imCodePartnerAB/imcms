@@ -111,9 +111,8 @@ Imcms.define("imcms-admin-panel-builder",
 
         function buildFlags() {
             return componentsBuilder.flags.flagsContainer(function (language) {
-                return ["<a>", {
-                    text: language.code,
-                    href: imcms.contextPath + "/api/viewDoc/" + imcms.document.id + "?language-code=" + language.code
+                return ["<div>", {
+                    text: language.code
                 }];
             });
         }
