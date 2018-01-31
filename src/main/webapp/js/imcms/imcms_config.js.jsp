@@ -113,6 +113,7 @@
             "imcms-page-info-builder": "builders/windows/imcms_page_info_builder.js",
             "imcms-document-type-select-window-builder": "builders/windows/imcms_document_type_select_window_builder.js",
             "imcms-text-history-window-builder": "builders/windows/imcms_text_history_window_builder.js",
+            "imcms-text-validation-result-builder": "builders/windows/imcms_text_validation_result_builder.js",
             //  <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/windows/page_info_tabs/imcms_page_info_tabs_builder.js",
             "imcms-page-info-tab-form-builder": "builders/windows/page_info_tabs/imcms_page_info_tab_form_builder.js",
@@ -156,6 +157,7 @@
             "imcms-languages-rest-api": "rest/imcms_languages_rest_api.js",
             "imcms-texts-rest-api": "rest/imcms_texts_rest_api.js",
             "imcms-texts-history-rest-api": "rest/imcms_texts_history_rest_api.js",
+            "imcms-texts-validation-rest-api": "rest/imcms_texts_validation_rest_api.js",
             "imcms-file-doc-files-rest-api": "rest/imcms_file_doc_files_rest_api.js"
         }
     };

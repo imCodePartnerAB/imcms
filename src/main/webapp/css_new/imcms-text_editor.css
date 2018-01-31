@@ -9,9 +9,64 @@
     float: left;
 }
 
-.mce-i-imcms-text-history-icon {
-    background-image: url("../images_new/text_editor/text_history.png");
+.mce-i-imcms-w3c-text-validation-icon {
+    padding-top: 2px;
+    background-size: 24px;
+    background-image: url("../images_new/text_editor/ic_w3c.png");
+    background-repeat: no-repeat;
+}
+
+.mce-i-imcms-w3c-text-validation-processing-icon {
+    padding-top: 2px;
+    background: url("../images_new/text_editor/ic_loader.gif") no-repeat;
     background-size: 16px;
+}
+
+.mce-i-imcms-w3c-text-validation-valid-icon {
+    padding-top: 2px;
+    background: url("../images_new/text_editor/ic_valid.png") no-repeat;
+    background-size: 16px;
+}
+
+.mce-i-imcms-w3c-text-validation-invalid-icon {
+    padding-top: 2px;
+    background: url("../images_new/text_editor/ic_invalid.png") no-repeat;
+    background-size: 16px;
+}
+
+.mce-i-imcms-text-history-icon {
+    padding-top: 2px;
+    background: url("../images_new/text_editor/text_history.png") no-repeat;
+    background-size: 16px;
+}
+
+.w3c-validation-result .imcms-pop-up-modal__body {
+    height: 80%;
+    background-color: ghostwhite;
+}
+
+.w3c-validation-result .imcms-pop-up-modal__footer {
+    padding: 15px 40px 15px 15px;
+    width: 100%;
+    height: 10%;
+}
+
+.w3c-validation-result .imcms-w3c-errors {
+    padding: 20px;
+}
+
+.w3c-validation-result .imcms-w3c-errors h2 {
+    padding-bottom: 10px;
+    font-size: 30px;
+}
+
+.w3c-validation-result .imcms-w3c-error > div:first-child {
+    font-weight: bold;
+}
+
+.w3c-validation-result .imcms-w3c-error > div:last-child,
+.w3c-validation-result .imcms-w3c-error code {
+    padding: 10px !important;
 }
 
 .mce-tooltip {

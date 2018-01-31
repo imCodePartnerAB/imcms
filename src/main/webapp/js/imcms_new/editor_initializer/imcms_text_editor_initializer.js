@@ -1,13 +1,17 @@
 /**
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 01.09.17
+ *
+ * @namespace tinyMCE.activeEditor
+ * @namespace tinyMCE.activeEditor.getContent
  */
 Imcms.define("imcms-text-editor-initializer",
     [
         "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
-        "imcms-text-history-window-builder"
+        "imcms-text-history-window-builder", "imcms-texts-validation-rest-api", "imcms-text-validation-result-builder"
     ],
-    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistoryBuilder) {
+    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistoryBuilder, textValidationAPI,
+              textValidationBuilder) {
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
         function saveContent(editor) {
@@ -23,7 +27,7 @@ Imcms.define("imcms-text-editor-initializer",
 
             editor.addButton('text_history', {
                 icon: 'imcms-text-history-icon',
-                tooltip: "Show text history",
+                tooltip: 'Show text history',
                 onclick: function () {
                     var textDTO = $(this.$el).parents(".imcms-editor-area--text")
                         .find(".imcms-editor-content--text")
@@ -32,6 +36,33 @@ Imcms.define("imcms-text-editor-initializer",
                     textHistoryBuilder.buildTextHistory(textDTO);
                 }
             });
+        }
+
+        function addW3cValidationButton(editor) {
+
+            editor.addButton('w3c_validation', {
+                icon: 'imcms-w3c-text-validation-icon',
+                tooltip: 'Validate Content over W3C',
+                onclick: function () {
+                    var content = tinyMCE.activeEditor.getContent();
+                    var $icon = $(this.$el).find(".mce-ico")
+                        .removeAttr("class")
+                        .attr("class", "mce-ico mce-i-imcms-w3c-text-validation-processing-icon");
+
+                    textValidationAPI.validate({content: content}).done(function (validationResult) {
+                        var iconClass = validationResult.valid
+                            ? "mce-i-imcms-w3c-text-validation-valid-icon"
+                            : "mce-i-imcms-w3c-text-validation-invalid-icon";
+
+                        $icon.removeAttr("class").attr("class", "mce-ico " + iconClass);
+
+                        if (!validationResult.valid) {
+                            textValidationBuilder.buildTextValidationFailWindow(validationResult);
+                        }
+                    });
+                }
+            });
+
         }
 
         var inlineEditorConfig = {
@@ -44,13 +75,15 @@ Imcms.define("imcms-text-editor-initializer",
             content_css: imcms.contextPath + '/css_new/imcms-text_editor.css',
             plugins: ['autolink link image lists hr code fullscreen save table contextmenu'],
             toolbar: 'code | bold italic underline | bullist numlist | hr |' +
-            ' alignleft aligncenter alignright alignjustify | link image | text_history | fullscreen | save',
+            ' alignleft aligncenter alignright alignjustify | link image | text_history w3c_validation |' +
+            ' fullscreen | save',
             menubar: false,
             statusbar: false,
             init_instance_callback: prepareEditor,
             save_onsavecallback: saveContent,
             setup: function (editor) {
                 addTextHistoryButton(editor);
+                addW3cValidationButton(editor);
             }
         };
 
