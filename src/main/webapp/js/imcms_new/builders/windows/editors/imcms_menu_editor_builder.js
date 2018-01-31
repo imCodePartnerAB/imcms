@@ -99,7 +99,6 @@ Imcms.define("imcms-menu-editor-builder",
                 $originDropItem.removeClass("imcms-menu-items--is-drop");
             } else {
                 $originItem.removeClass("imcms-menu-items--is-drag");
-                //$originItem.find(".children-triangle").first().click();
             }
         }
 
@@ -338,7 +337,6 @@ Imcms.define("imcms-menu-editor-builder",
                     "width": "100%",
                     "height": "100%",
                     "background": "transparent",
-                    // "opacity": 0,
                     "z-index": 10101
                 });
             $frameLayout.appendTo($("body"));
