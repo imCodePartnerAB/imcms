@@ -1,12 +1,10 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,8 +24,8 @@ public class LanguageController {
     }
 
     @PutMapping
-    public void changeLanguageForCurrentUser(String langCode) {
-        final Language language = languageService.findByCode(langCode);
+    public void changeLanguageForCurrentUser(@RequestBody LanguageDTO languageDTO) {
+        final Language language = languageService.findByCode(languageDTO.getCode());
 
         Imcms.setLanguage(language);
     }
