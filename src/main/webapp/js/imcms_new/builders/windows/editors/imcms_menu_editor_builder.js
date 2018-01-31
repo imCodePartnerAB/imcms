@@ -104,7 +104,10 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         function detectTargetArea(event) {
-            return (event.pageY > menuAreaProp.top) && (event.pageY < menuAreaProp.bottom) && (event.pageX > menuAreaProp.left) && (event.pageX < menuAreaProp.right);
+            return (event.pageY > menuAreaProp.top) &&
+                (event.pageY < menuAreaProp.bottom) &&
+                (event.pageX > menuAreaProp.left) &&
+                (event.pageX < menuAreaProp.right);
         }
 
         function toggleUserSelect(flag) {
@@ -287,7 +290,7 @@ Imcms.define("imcms-menu-editor-builder",
             mouseCoords.newPageX = event.clientX;
             mouseCoords.newPageY = event.clientY;
 
-            var deltaPageX =  mouseCoords.newPageX - mouseCoords.pageX;
+            var deltaPageX = mouseCoords.newPageX - mouseCoords.pageX;
             var deltaPageY = mouseCoords.newPageY - mouseCoords.pageY;
 
             if (Math.abs(deltaPageX) > 7 || Math.abs(deltaPageY) > 7) {
@@ -483,14 +486,16 @@ Imcms.define("imcms-menu-editor-builder",
             ;
 
             level = parseInt(level) + 1;
-            $btn.parents(".imcms-menu-items")
-                .find(".imcms-menu-items[data-menu-items-lvl=" + level + "]")
-                .each(function () {
-                    if (!$(this).is(":animated")) {
+            var submenus = $btn.parents(".imcms-menu-items")
+                .find(".imcms-menu-items[data-menu-items-lvl=" + level + "]");
+
+            if (!submenus.is(":animated")) {
+                submenus.each(function () {
                         $(this).slideToggle();
-                        $btn.toggleClass("imcms-menu-item-btn--open");
-                    }
-                });
+                        $(this).toggleClass("imcms-submenu-items--close");
+                    });
+                $btn.toggleClass("imcms-menu-item-btn--open");
+            }
         }
 
         function buildChildrenTriangle() {
