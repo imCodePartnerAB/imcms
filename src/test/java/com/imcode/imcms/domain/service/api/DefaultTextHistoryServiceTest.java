@@ -4,11 +4,11 @@ import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
+import com.imcode.imcms.domain.dto.TextHistoryDTO;
 import com.imcode.imcms.domain.service.TextHistoryService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.model.TextHistory;
 import com.imcode.imcms.persistence.repository.TextHistoryRepository;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
@@ -89,8 +89,8 @@ public class DefaultTextHistoryServiceTest {
 
         texts.forEach(textHistoryService::save);
 
-        final List<TextHistory> actual = textHistoryService
-                .findAllByLanguageAndLoopEntryRefAndNo(this.language, this.loopEntryRef, this.index);
+        final List<TextHistoryDTO> actual = textHistoryService
+                .findAllByLanguageAndLoopEntryRefAndNo(this.language.getCode(), this.loopEntryRef, this.index);
 
         assertEquals(textHistoryListSize, actual.size());
 

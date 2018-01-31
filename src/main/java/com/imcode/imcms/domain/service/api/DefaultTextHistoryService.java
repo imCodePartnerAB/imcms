@@ -8,7 +8,6 @@ import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.model.TextHistory;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextHistoryJPA;
@@ -58,7 +57,9 @@ public class DefaultTextHistoryService implements TextHistoryService {
     }
 
     @Override
-    public List<TextHistory> findAllByLanguageAndLoopEntryRefAndNo(Language language, LoopEntryRef loopEntryRef, int no) {
+    public List<TextHistoryDTO> findAllByLanguageAndLoopEntryRefAndNo(String langCode, LoopEntryRef loopEntryRef, int no) {
+        final Language language = languageService.findByCode(langCode);
+
         return this.textHistoryRepository
                 .findAllByLanguageAndLoopEntryRefAndNo(new LanguageJPA(language), new LoopEntryRefJPA(loopEntryRef), no)
                 .stream()
