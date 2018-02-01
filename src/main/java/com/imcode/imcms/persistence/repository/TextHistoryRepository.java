@@ -11,9 +11,9 @@ import java.util.List;
 
 @Repository
 public interface TextHistoryRepository extends JpaRepository<TextHistoryJPA, Integer> {
-    @Query("SELECT th FROM TextHistoryJPA th WHERE th.loopEntryRef=null AND  th.language=?1 AND th.index = ?2")
-    List<TextHistoryJPA> findAllByLanguageAndNo(LanguageJPA language, int no);
+    @Query("select th from TextHistoryJPA th where th.docId=?1 and th.loopEntryRef is null and  th.language=?2 and th.index = ?3")
+    List<TextHistoryJPA> findTextHistoryNotInLoop(int docId, LanguageJPA language, int no);
 
-    @Query("SELECT th FROM TextHistoryJPA th WHERE th.language=?1 AND th.loopEntryRef=?2 AND th.index = ?3")
-    List<TextHistoryJPA> findAllByLanguageAndLoopEntryRefAndNo(LanguageJPA language, LoopEntryRefJPA loopEntryRef, int no);
+    @Query("select th from TextHistoryJPA th where th.docId=?1 and th.language=?2 and th.loopEntryRef=?3 and th.index = ?4")
+    List<TextHistoryJPA> findTextHistoryInLoop(int docId, LanguageJPA language, LoopEntryRefJPA loopEntryRef, int no);
 }

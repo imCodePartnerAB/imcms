@@ -1,7 +1,9 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.model.Text;
 import com.imcode.imcms.model.TextHistory;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,6 +23,9 @@ public class TextHistoryJPA extends TextHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name = "doc_id", updatable = false, nullable = false)
+    private Integer docId;
 
     @NotNull
     @Column(name = "`index`")
@@ -47,23 +52,19 @@ public class TextHistoryJPA extends TextHistory {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
-    public TextHistoryJPA(TextJPA text, User modifiedBy) {
-        setLanguage(text.getLanguage());
+    public TextHistoryJPA(Text text, Language language, User modifiedBy) {
         setIndex(text.getIndex());
         setText(text.getText());
         setType(text.getType());
+        setDocId(text.getDocId());
         setLoopEntryRef(text.getLoopEntryRef());
         setModifiedBy(modifiedBy);
         setModifiedDt(new Date());
+        setLanguage(new LanguageJPA(language));
     }
 
     public TextHistoryJPA(TextHistory from) {
         super(from);
-    }
-
-    @Override
-    public Integer getDocId() {
-        return null;
     }
 
     @Override

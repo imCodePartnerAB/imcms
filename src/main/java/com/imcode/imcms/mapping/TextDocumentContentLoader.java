@@ -107,7 +107,7 @@ public class TextDocumentContentLoader {
      *
      * @param docRef {@link DocRef} item
      * @param textNo text id
-     * @return {@link Set<  TextHistoryJPA  >} of text history
+     * @return {@link Set<TextHistoryJPA>} of text history
      * @see Version
      * @see LanguageJPA
      * @see DocRef
@@ -116,7 +116,7 @@ public class TextDocumentContentLoader {
     public Collection<TextHistoryJPA> getTextHistory(DocRef docRef, int textNo) {
         LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
-        return textHistoryRepository.findAllByLanguageAndNo(language, textNo);
+        return textHistoryRepository.findTextHistoryNotInLoop(docRef.getId(), language, textNo);
     }
 
     /**
@@ -124,7 +124,7 @@ public class TextDocumentContentLoader {
      *
      * @param docRef {@link DocRef} item
      * @param textNo text id
-     * @return {@link Collection< TextHistoryJPA >} of text history
+     * @return {@link Collection<TextHistoryJPA>} of text history
      * @see Version
      * @see LanguageJPA
      * @see DocRef
@@ -138,7 +138,7 @@ public class TextDocumentContentLoader {
 
         LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
-        return textHistoryRepository.findAllByLanguageAndLoopEntryRefAndNo(language, loopEntryRef, textNo);
+        return textHistoryRepository.findTextHistoryInLoop(docRef.getId(), language, loopEntryRef, textNo);
     }
 
 

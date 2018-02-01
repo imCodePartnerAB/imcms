@@ -36,6 +36,8 @@ import static org.junit.Assert.assertEquals;
 @ContextConfiguration(classes = {TestConfig.class})
 public class DefaultTextHistoryServiceTest {
 
+    private final static int DOC_ID = 1001;
+
     @Autowired
     private TextHistoryService textHistoryService;
 
@@ -105,7 +107,7 @@ public class DefaultTextHistoryServiceTest {
     private List<TextDTO> textList(int number) {
         return IntStream.range(0, number)
                 .mapToObj(i -> {
-                    final TextDTO textDTO = new TextDTO(this.index, null, this.language.getCode(), this.loopEntryRef);
+                    final TextDTO textDTO = new TextDTO(this.index, DOC_ID, this.language.getCode(), this.loopEntryRef);
                     textDTO.setType(Text.Type.PLAIN_TEXT);
                     textDTO.setText("Long text" + i);
 

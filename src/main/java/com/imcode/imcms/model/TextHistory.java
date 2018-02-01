@@ -11,7 +11,10 @@ public abstract class TextHistory extends Text {
         super(from);
 
         setModifiedDt(from.getModifiedDt());
+        setDocId(from.getDocId());
     }
+
+    public abstract void setDocId(Integer docId);
 
     public abstract Date getModifiedDt();
 
