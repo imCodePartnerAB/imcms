@@ -18,6 +18,7 @@ Imcms.define("imcms-text-history-window-builder",
             viewText.call(textButton);
 
             tinyMCE.activeEditor.setContent($textHistoryView.html());
+            tinyMCE.activeEditor.setDirty(true);
             textHistoryWindowBuilder.closeWindow();
         }
 
@@ -65,11 +66,13 @@ Imcms.define("imcms-text-history-window-builder",
             return components.buttons.buttonsContainer("<div>", [
                 components.buttons.negativeButton({
                     "class": "view-source-button",
+                    "style": "display: none;",
                     text: "View Source",
                     click: viewSource
                 }),
                 components.buttons.negativeButton({
                     "class": "view-text-button",
+                    "style": "display: none;",
                     text: "View Text",
                     click: viewText
                 })
