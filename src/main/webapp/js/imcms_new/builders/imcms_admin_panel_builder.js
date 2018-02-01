@@ -5,9 +5,9 @@
 Imcms.define("imcms-admin-panel-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder",
-        "jquery", "imcms", "imcms-events"
+        "jquery", "imcms", "imcms-events", "imcms-languages-rest-api"
     ],
-    function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events) {
+    function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi) {
         var $panel;
 
         var panelSensitivePixels = 15;
@@ -109,10 +109,21 @@ Imcms.define("imcms-admin-panel-builder",
             return panelButtonsBEM.buildBlock("<div>", [{"items": $buttonsWrapper}]);
         }
 
+        function flagOnClick() {
+            var languageCode = $(this).text();
+
+            if (languageCode !== imcms.language.code) {
+                languagesRestApi.update({code: languageCode}).done(function () {
+                    location.reload(true);
+                });
+            }
+        }
+
         function buildFlags() {
             return componentsBuilder.flags.flagsContainer(function (language) {
                 return ["<div>", {
-                    text: language.code
+                    text: language.code,
+                    click: flagOnClick
                 }];
             });
         }

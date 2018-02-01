@@ -10,7 +10,9 @@ import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
+import imcode.server.LanguageMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,8 +37,6 @@ import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
 @Controller
 @RequestMapping("/viewDoc")
 public class ViewDocumentController {
-
-    private static final String DEFAULT_LANGUAGE_CODE = "en";
 
     private final DocumentMapper documentMapper;
     private final VersionService versionService;
@@ -90,11 +90,10 @@ public class ViewDocumentController {
 
         final String viewName = textDocument.getTemplateName();
         final int docId = textDocument.getId();
-        String langCode = textDocument.getLanguage().getCode();
-
+        final String docLangCode = textDocument.getLanguage().getCode();
         final Version latestDocVersion = versionService.getLatestVersion(docId);
 
-        List<CommonContent> enabledCommonContents =
+        final List<CommonContent> enabledCommonContents =
                 commonContentService.getCommonContents(docId, latestDocVersion.getNo())
                         .stream()
                         .filter(CommonContent::isEnabled)
@@ -104,24 +103,28 @@ public class ViewDocumentController {
             throw new DocumentLanguageDisabledException(textDocument, textDocument.getLanguage());
         }
 
-        String docLangCode = langCode;
         final Optional<CommonContent> optionalCommonContent = enabledCommonContents.stream()
                 .filter(commonContent -> commonContent.getLanguage().getCode().equals(docLangCode))
                 .findFirst();
 
+        final String language;
+        final UserDomainObject user = Imcms.getUser();
+
         if (!optionalCommonContent.isPresent()) {
             if (textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
-                langCode = DEFAULT_LANGUAGE_CODE;
+                language = LanguageMapper.convert639_2to639_1(user.getLanguageIso639_2());
             } else {
                 throw new DocumentLanguageDisabledException(textDocument, textDocument.getLanguage());
             }
+        } else {
+            language = docLangCode;
         }
 
         mav.setViewName(viewName);
 
         mav.addObject("currentDocument", textDocument);
-        mav.addObject("language", langCode);
-        mav.addObject("isAdmin", Imcms.getUser().isAdmin());
+        mav.addObject("language", language);
+        mav.addObject("isAdmin", user.isAdmin());
         mav.addObject("isEditMode", isEditMode);
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("imagesPath", imagesPath);
