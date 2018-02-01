@@ -60,10 +60,14 @@ Imcms.define("imcms-flags-builder", ["imcms-bem-builder", "imcms-languages-rest-
     }
 
     function flagOnClick() {
-        languagesRestApi.update({code: $(this).text()})
-            .done(function () {
-                location.reload(true);
-            })
+        var languageCode = $(this).text();
+
+        if (languageCode !== imcms.language.code) {
+            languagesRestApi.update({code: languageCode})
+                .done(function () {
+                    location.reload(true);
+                })
+        }
     }
 
     return {
