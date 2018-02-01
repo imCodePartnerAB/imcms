@@ -30,10 +30,12 @@ Imcms.define("imcms-text-history-window-builder",
             return textHistoryWindowBuilder.buildFooter([
                 components.buttons.negativeButton({
                     text: "Cancel",
+                    "class": "imcms-text-history-cancel",
                     click: onCancel
                 }),
                 components.buttons.saveButton({
                     text: "Write to text field",
+                    "style": "display: none;",
                     click: onWriteToTextField
                 })
             ]);
@@ -188,6 +190,7 @@ Imcms.define("imcms-text-history-window-builder",
             $textHistoryView.html('');
             textHistoryWindowBuilder.$editor.find(".imcms-buttons")
                 .find(".imcms-button")
+                .not(".imcms-text-history-cancel")
                 .css("display", "none");
         }
 
