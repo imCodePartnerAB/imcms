@@ -4,6 +4,7 @@ import com.google.common.primitives.Ints;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.mapping.DocGetterCallback;
+import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -25,6 +26,7 @@ import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -39,6 +41,8 @@ public class ImcmsSetupFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
     public static final String USER_LOGGED_IN_COOKIE_NAME = "userLoggedIn";
+    public static final String USER_LANGUAGE_IN_COOKIE_NAME = "userLanguage";
+
     private final Logger logger = Logger.getLogger(getClass());
     private FilterDelegate filterDelegate;
 
@@ -177,7 +181,36 @@ public class ImcmsSetupFilter implements Filter {
             Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
             Imcms.setUser(user);
-            ImcmsSetupFilter.updateUserDocGetterCallback(request, Imcms.getServices(), user);
+
+            final Cookie[] cookies = request.getCookies();
+            final LanguageMapper languageMapper = service.getLanguageMapper();
+
+            if (cookies != null) {
+                final Optional<Cookie> userLanguageCookie = Arrays.stream(cookies)
+                        .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
+                        .findFirst();
+
+                Language language;
+                if (userLanguageCookie.isPresent()) {
+                    final Cookie cookie = userLanguageCookie.get();
+
+                    language = languageMapper.getLanguageByCode(cookie.getValue());
+                } else {
+                    final String userLangCode = LanguageMapper.convert639_2to639_1(user.getLanguageIso639_2());
+                    final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, userLangCode);
+
+                    newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
+                    newUserLanguageCookie.setPath("/");
+
+                    response.addCookie(newUserLanguageCookie);
+
+                    language = languageMapper.getLanguageByCode(userLangCode);
+                }
+
+                Imcms.setLanguage(language);
+            }
+
+            ImcmsSetupFilter.updateUserDocGetterCallback(request, service, user);
 
             Utility.initRequestWithApi(request, user);
 

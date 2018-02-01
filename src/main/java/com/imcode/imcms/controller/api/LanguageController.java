@@ -3,10 +3,17 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
-import imcode.server.Imcms;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
+import static com.imcode.imcms.servlet.ImcmsSetupFilter.USER_LANGUAGE_IN_COOKIE_NAME;
 
 @RestController
 @RequestMapping("/languages")
@@ -24,9 +31,29 @@ public class LanguageController {
     }
 
     @PutMapping
-    public void changeLanguageForCurrentUser(@RequestBody LanguageDTO languageDTO) {
-        final Language language = languageService.findByCode(languageDTO.getCode());
+    public void changeLanguageForCurrentUser(@RequestBody LanguageDTO languageDTO,
+                                             HttpServletRequest request,
+                                             HttpServletResponse response) {
 
-        Imcms.setLanguage(language);
+        final HttpSession session = request.getSession();
+        final Cookie[] cookies = request.getCookies();
+        final String languageCode = languageDTO.getCode();
+
+        final Optional<Cookie> optionalUserLanguageCookie = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
+                .findFirst();
+
+        if (optionalUserLanguageCookie.isPresent()) {
+            final Cookie languageCookie = optionalUserLanguageCookie.get();
+
+            if (!languageCookie.getValue().equals(languageCode)) {
+                final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, languageCode);
+
+                newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
+                newUserLanguageCookie.setPath("/");
+
+                response.addCookie(newUserLanguageCookie);
+            }
+        }
     }
 }
