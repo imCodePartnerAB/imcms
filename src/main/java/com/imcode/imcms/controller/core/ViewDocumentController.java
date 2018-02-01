@@ -1,9 +1,13 @@
 package com.imcode.imcms.controller.core;
 
+import com.imcode.imcms.api.DocumentLanguageDisabledException;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
+import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -14,9 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static com.imcode.imcms.mapping.DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
 
 /**
@@ -29,20 +36,25 @@ import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
 @RequestMapping("/viewDoc")
 public class ViewDocumentController {
 
+    private static final String DEFAULT_LANGUAGE_CODE = "en";
+
     private final DocumentMapper documentMapper;
     private final VersionService versionService;
+    private final CommonContentService commonContentService;
     private final String imagesPath;
     private final String version;
     private final boolean isVersioningAllowed;
 
     ViewDocumentController(DocumentMapper documentMapper,
                            VersionService versionService,
+                           CommonContentService commonContentService,
                            @Value("${ImagePath}") String imagesPath,
                            @Value("${imcms.version}") String version,
                            @Value("${document.versioning:true}") boolean isVersioningAllowed) {
 
         this.documentMapper = documentMapper;
         this.versionService = versionService;
+        this.commonContentService = commonContentService;
         this.imagesPath = imagesPath;
         this.version = version;
         this.isVersioningAllowed = isVersioningAllowed;
@@ -77,18 +89,45 @@ public class ViewDocumentController {
                 && Boolean.parseBoolean(request.getParameter(REQUEST_PARAM__WORKING_PREVIEW));
 
         final String viewName = textDocument.getTemplateName();
+        final int docId = textDocument.getId();
+        String langCode = textDocument.getLanguage().getCode();
+
+        final Version latestDocVersion = versionService.getLatestVersion(docId);
+
+        List<CommonContent> enabledCommonContents =
+                commonContentService.getCommonContents(docId, latestDocVersion.getNo())
+                        .stream()
+                        .filter(CommonContent::isEnabled)
+                        .collect(Collectors.toList());
+
+        if (enabledCommonContents.size() == 0) {
+            throw new DocumentLanguageDisabledException(textDocument, textDocument.getLanguage());
+        }
+
+        String docLangCode = langCode;
+        final Optional<CommonContent> optionalCommonContent = enabledCommonContents.stream()
+                .filter(commonContent -> commonContent.getLanguage().getCode().equals(docLangCode))
+                .findFirst();
+
+        if (!optionalCommonContent.isPresent()) {
+            if (textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
+                langCode = DEFAULT_LANGUAGE_CODE;
+            } else {
+                throw new DocumentLanguageDisabledException(textDocument, textDocument.getLanguage());
+            }
+        }
 
         mav.setViewName(viewName);
 
         mav.addObject("currentDocument", textDocument);
-        mav.addObject("language", textDocument.getLanguage().getCode());
+        mav.addObject("language", langCode);
         mav.addObject("isAdmin", Imcms.getUser().isAdmin());
         mav.addObject("isEditMode", isEditMode);
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("imagesPath", imagesPath);
         mav.addObject("isVersioningAllowed", isVersioningAllowed);
         mav.addObject("isPreviewMode", isPreviewMode);
-        mav.addObject("hasNewerVersion", versionService.hasNewerVersion(textDocument.getId()));
+        mav.addObject("hasNewerVersion", versionService.hasNewerVersion(docId));
         mav.addObject("version", version);
 
         return mav;
