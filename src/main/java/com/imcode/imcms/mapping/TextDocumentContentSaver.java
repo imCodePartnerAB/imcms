@@ -258,19 +258,23 @@ public class TextDocumentContentSaver {
     }
 
     private void saveText(TextJPA text, User user, SaveMode saveMode) {
+        final Version version = text.getVersion();
+        final LanguageJPA language = text.getLanguage();
+        final Integer index = text.getIndex();
+
         if (saveMode == SaveMode.UPDATE) {
-            LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
-            Integer id = loopEntryRef == null
-                    ? textRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(text.getVersion(), text.getLanguage(), text.getIndex())
-                    : textRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(text.getVersion(), text.getLanguage(), text.getIndex(), loopEntryRef);
+            final LoopEntryRefJPA loopEntryRef = text.getLoopEntryRef();
+            final Integer id = (loopEntryRef == null)
+                    ? textRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, index)
+                    : textRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, index, loopEntryRef);
 
             text.setId(id);
         }
 
-        createLoopEntryIfNotExists(text.getVersion(), text.getLoopEntryRef());
+        createLoopEntryIfNotExists(version, text.getLoopEntryRef());
 
         textRepository.save(text);
-        textHistoryRepository.save(new TextHistoryJPA(text, user));
+        textHistoryRepository.save(new TextHistoryJPA(text, language, user));
     }
 
     private void createLoopEntryIfNotExists(Version version, LoopEntryRefJPA entryRef) {

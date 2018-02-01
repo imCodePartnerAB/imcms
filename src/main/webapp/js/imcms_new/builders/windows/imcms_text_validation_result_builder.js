@@ -1,6 +1,7 @@
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
- * 31.01.18
+ * @date 31.01.18
+ * @namespace validationResult.data.warnings
  */
 Imcms.define("imcms-text-validation-result-builder",
     ["imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery"],
@@ -33,13 +34,8 @@ Imcms.define("imcms-text-validation-result-builder",
         }
 
         function loadData(validationResult) {
-            var $wrapper = $("<div>"),
-                $content = $("<div>").addClass("imcms-w3c-errors"),
-                $title = $("<h2>").text("Validation Output: " + validationResult.data.errors.length + " Errors");
 
-            $content.append($title);
-
-            validationResult.data.errors.forEach(function (item, pos) {
+            function appendValidationFailRow(item, pos) {
                 var $container = $("<div>").addClass("imcms-w3c-error"),
                     $sourceContainer = $("<div>");
 
@@ -52,7 +48,21 @@ Imcms.define("imcms-text-validation-result-builder",
                 $sourceContainer.append($invalidHtml);
                 $container.append($errorMessage).append($sourceContainer);
                 $content.append($container);
-            });
+            }
+
+            var $wrapper = $("<div>"),
+                $content = $("<div>").addClass("imcms-w3c-errors"),
+                $errorsTitle = $("<h2>").text("Validation Output: " + validationResult.data.errors.length + " Errors");
+
+            $content.append($errorsTitle);
+
+            validationResult.data.errors.forEach(appendValidationFailRow);
+
+            var $warningsTitle = $("<h2>").text("Validation Output: " + validationResult.data.warnings.length + " Warnings");
+
+            $content.append($warningsTitle);
+
+            validationResult.data.warnings.forEach(appendValidationFailRow);
 
             $wrapper.append($content);
             $validationResultContainer.append($wrapper);

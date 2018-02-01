@@ -18,6 +18,7 @@ Imcms.define("imcms-text-history-window-builder",
             viewText.call(textButton);
 
             tinyMCE.activeEditor.setContent($textHistoryView.html());
+            tinyMCE.activeEditor.setDirty(true);
             textHistoryWindowBuilder.closeWindow();
         }
 
@@ -29,10 +30,12 @@ Imcms.define("imcms-text-history-window-builder",
             return textHistoryWindowBuilder.buildFooter([
                 components.buttons.negativeButton({
                     text: "Cancel",
+                    "class": "imcms-text-history-cancel",
                     click: onCancel
                 }),
                 components.buttons.saveButton({
                     text: "Write to text field",
+                    "style": "display: none;",
                     click: onWriteToTextField
                 })
             ]);
@@ -65,11 +68,13 @@ Imcms.define("imcms-text-history-window-builder",
             return components.buttons.buttonsContainer("<div>", [
                 components.buttons.negativeButton({
                     "class": "view-source-button",
+                    "style": "display: none;",
                     text: "View Source",
                     click: viewSource
                 }),
                 components.buttons.negativeButton({
                     "class": "view-text-button",
+                    "style": "display: none;",
                     text: "View Text",
                     click: viewText
                 })
@@ -185,6 +190,7 @@ Imcms.define("imcms-text-history-window-builder",
             $textHistoryView.html('');
             textHistoryWindowBuilder.$editor.find(".imcms-buttons")
                 .find(".imcms-button")
+                .not(".imcms-text-history-cancel")
                 .css("display", "none");
         }
 

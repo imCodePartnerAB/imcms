@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.TextHistory;
 import lombok.Data;
@@ -14,6 +13,8 @@ import java.util.Optional;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class TextHistoryDTO extends TextHistory {
+
+    private Integer docId;
     private AuditDTO modified;
     private Integer index;
     private String text;
@@ -24,11 +25,6 @@ public class TextHistoryDTO extends TextHistory {
 
     public TextHistoryDTO(TextHistory from) {
         super(from);
-    }
-
-    @Override
-    public Integer getDocId() {
-        return null;
     }
 
     @Override
@@ -56,7 +52,7 @@ public class TextHistoryDTO extends TextHistory {
         return this.modifiedBy.getId();
     }
 
-    public void setModifiedBy(User modifiedBy) {
-        this.modifiedBy = new UserDTO(modifiedBy);
+    public void setModifiedBy(UserDTO modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
 }

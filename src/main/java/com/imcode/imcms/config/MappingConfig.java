@@ -400,7 +400,7 @@ class MappingConfig {
 
             final TextHistoryDTO textHistoryDTO = new TextHistoryDTO(textHistoryJPA);
             textHistoryDTO.setLangCode(textHistoryJPA.getLangCode());
-            textHistoryDTO.setModifiedBy(modifierUser);
+            textHistoryDTO.setModifiedBy(new UserDTO(modifierUser));
 
             return textHistoryDTO;
         };

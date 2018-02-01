@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.dto.TextHistoryDTO;
 import com.imcode.imcms.domain.service.LanguageService;
@@ -12,15 +11,16 @@ import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextHistoryJPA;
-import com.imcode.imcms.persistence.entity.TextJPA;
 import com.imcode.imcms.persistence.repository.TextHistoryRepository;
 import imcode.server.Imcms;
-import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -47,25 +47,26 @@ public class DefaultTextHistoryService implements TextHistoryService {
     @Override
     public void save(Text text) {
         final Language language = languageService.findByCode(text.getLangCode());
-        final TextJPA textJPA = new TextJPA(text, null, new LanguageJPA(language));
-
-        final UserDomainObject userDomainObject = Imcms.getUser();
-        final User user = userService.getUser(userDomainObject.getId());
-
-        final TextHistoryJPA textHistoryJPA = new TextHistoryJPA(textJPA, user);
+        final User user = userService.getUser(Imcms.getUser().getId());
+        final TextHistoryJPA textHistoryJPA = new TextHistoryJPA(text, language, user);
 
         textHistoryRepository.save(textHistoryJPA);
     }
 
     @Override
     public List<TextHistoryDTO> getAll(TextDTO textDTO) {
+        final Integer docId = textDTO.getDocId();
         final Integer index = textDTO.getIndex();
-        final LoopEntryRefDTO loopEntryRef = textDTO.getLoopEntryRef();
-        final Language language = languageService.findByCode(textDTO.getLangCode());
+        final LanguageJPA language = new LanguageJPA(languageService.findByCode(textDTO.getLangCode()));
+        final Optional<LoopEntryRefJPA> oLoopEntry = Optional.ofNullable(textDTO.getLoopEntryRef())
+                .map(LoopEntryRefJPA::new);
 
-        return this.textHistoryRepository
-                .findAllByLanguageAndLoopEntryRefAndNo(new LanguageJPA(language), new LoopEntryRefJPA(loopEntryRef), index)
-                .stream()
+        final List<TextHistoryJPA> textHistory = (oLoopEntry.isPresent())
+                ? textHistoryRepository.findTextHistoryInLoop(docId, language, oLoopEntry.get(), index)
+                : textHistoryRepository.findTextHistoryNotInLoop(docId, language, index);
+
+        return textHistory.stream()
+                .sorted(Collections.reverseOrder(Comparator.comparing(TextHistoryJPA::getModifiedDt)))
                 .map(textHistoryJpaToTextHistoryDTO)
                 .collect(Collectors.toList());
     }
