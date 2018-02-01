@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.core;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,19 +52,18 @@ public class ViewDocumentController {
     public ModelAndView goToStartPage(HttpServletRequest request, ModelAndView mav) {
 
         final String docId = String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID);
-        final TextDocumentDomainObject textDocument = getTextDocument(docId, getDefaultLanguageCode(), request);
+        final TextDocumentDomainObject textDocument = getTextDocument(docId, getLanguageCode(), request);
 
         return processDocView(textDocument, request, mav);
     }
 
     @RequestMapping("/{docIdentifier}")
     public ModelAndView getDocument(@PathVariable("docIdentifier") String docIdentifier,
-                                    @RequestParam(value = "language-code", required = false) String languageCode,
                                     HttpServletRequest request,
                                     ModelAndView mav) {
 
-        final String languageCodeOrDefault = getLanguageCodeOrDefault(languageCode);
-        final TextDocumentDomainObject textDocument = getTextDocument(docIdentifier, languageCodeOrDefault, request);
+        final TextDocumentDomainObject textDocument = getTextDocument(docIdentifier, getLanguageCode(), request);
+
         return processDocView(textDocument, request, mav);
     }
 
@@ -100,13 +99,9 @@ public class ViewDocumentController {
                 .orElseThrow(() -> new DocumentNotExistException(docId));
     }
 
-    private String getDefaultLanguageCode() {
-        return Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
-    }
+    private String getLanguageCode() {
+        final Language language = Imcms.getLanguage();
 
-    private String getLanguageCodeOrDefault(String languageCode) {
-        return Optional.ofNullable(languageCode)
-                .orElseGet(this::getDefaultLanguageCode);
+        return language.getCode();
     }
-
 }
