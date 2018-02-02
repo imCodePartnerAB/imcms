@@ -71,9 +71,12 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Test
     public void getImage_Expect_Ok() throws Exception {
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX);
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(TEST_DOC_ID))
-                .param("index", String.valueOf(TEST_IMAGE_INDEX));
+                .param("index", String.valueOf(TEST_IMAGE_INDEX))
+                .param("langCode", imageDTO.getLangCode());
 
         performRequestBuilderExpectedOk(requestBuilder);
     }
@@ -82,7 +85,8 @@ public class ImageControllerTest extends AbstractControllerTest {
     public void getImage_When_ImageNotExist_Expect_OkAndEmptyDTO() throws Exception {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(TEST_DOC_ID))
-                .param("index", String.valueOf(TEST_IMAGE_INDEX));
+                .param("index", String.valueOf(TEST_IMAGE_INDEX))
+                .param("langCode", TEST_IMAGE_DTO.getLangCode());
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(TEST_IMAGE_DTO));
     }
