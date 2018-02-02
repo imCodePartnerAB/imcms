@@ -5,9 +5,9 @@
 Imcms.define("imcms-image-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder", "imcms-content-manager-builder",
-        "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events"
+        "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms"
     ],
-    function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $, events) {
+    function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $, events, imcms) {
         var $rightSidePanel, $bottomPanel, $editableImageArea, $previewImageArea;
 
         var imageDataContainers = {},
@@ -428,7 +428,8 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function reloadImageOnPage(imageDTO) {
-            $tag.find(".imcms-editor-content>img").attr("src", Imcms.contextPath + imageDTO.generatedFilePath);
+            /** @namespace imageDTO.generatedFilePath */
+            $tag.find(".imcms-editor-content>img").attr("src", imcms.contextPath + imageDTO.generatedFilePath);
         }
 
         function buildRightSide(imageEditorBlockClass) {
@@ -767,7 +768,7 @@ Imcms.define("imcms-image-editor-builder",
                 return;
             }
 
-            imageDataContainers.$image.attr("src", Imcms.contextPath + "/" + Imcms.imagesPath + imageData.path);
+            imageDataContainers.$image.attr("src", imcms.contextPath + "/" + imcms.imagesPath + imageData.path);
 
             setTimeout(function () { // to let image src load
                 imageDataContainers.$image.removeAttr("style");
@@ -787,7 +788,7 @@ Imcms.define("imcms-image-editor-builder",
                     top: angleBorderSize
                 });
 
-                imageDataContainers.$cropImg.attr("src", Imcms.contextPath + "/" + Imcms.imagesPath + imageData.path);
+                imageDataContainers.$cropImg.attr("src", imcms.contextPath + "/" + imcms.imagesPath + imageData.path);
 
                 // todo: receive correct crop area
                 imageDataContainers.$cropArea.css({
