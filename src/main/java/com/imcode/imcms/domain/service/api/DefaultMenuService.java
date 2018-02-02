@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -74,11 +73,6 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuDTO, 
         super.updateWorkingVersion(docId);
 
         return savedMenu;
-    }
-
-    @Override
-    public Collection<MenuDTO> findAllByVersion(Version version) {
-        return repository.findByVersion(version).stream().map(menuToMenuDTO).collect(Collectors.toList());
     }
 
     @Override
