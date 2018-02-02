@@ -9,6 +9,12 @@
     float: left;
 }
 
+.mce-i-imcms-image--in-text-editor-icon {
+    padding-top: 2px;
+    background: url("../images_new/text_editor/ic_images.png") no-repeat;
+    background-size: 16px;
+}
+
 .mce-i-imcms-w3c-text-validation-icon {
     padding-top: 2px;
     background-size: 24px;

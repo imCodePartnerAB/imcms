@@ -65,6 +65,18 @@ Imcms.define("imcms-text-editor-initializer",
 
         }
 
+        function addImageEditorButton(editor) {
+
+            editor.addButton('image_editor', {
+                icon: 'imcms-image--in-text-editor-icon',
+                tooltip: 'Add Image',
+                onclick: function () {
+                    // todo: implement here
+                }
+            });
+
+        }
+
         var inlineEditorConfig = {
             skin_url: imcms.contextPath + '/js/libs/tinymce/skins/white',
             cache_suffix: '?v=0.0.1',
@@ -73,9 +85,9 @@ Imcms.define("imcms-text-editor-initializer",
             inline: true,
             toolbar_items_size: 'small',
             content_css: imcms.contextPath + '/css_new/imcms-text_editor.css',
-            plugins: ['autolink link image lists hr code fullscreen save table contextmenu'],
+            plugins: ['autolink link lists hr code fullscreen save table contextmenu'],
             toolbar: 'code | bold italic underline | bullist numlist | hr |' +
-            ' alignleft aligncenter alignright alignjustify | link image | text_history w3c_validation |' +
+            ' alignleft aligncenter alignright alignjustify | link image_editor | text_history w3c_validation |' +
             ' fullscreen | save',
             menubar: false,
             statusbar: false,
@@ -84,6 +96,7 @@ Imcms.define("imcms-text-editor-initializer",
             setup: function (editor) {
                 addTextHistoryButton(editor);
                 addW3cValidationButton(editor);
+                addImageEditorButton(editor);
             }
         };
 
