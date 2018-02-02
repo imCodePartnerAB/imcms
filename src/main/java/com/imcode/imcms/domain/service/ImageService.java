@@ -20,4 +20,6 @@ public interface ImageService extends VersionedContentService<ImageDTO>, Deleter
      * Returns a set of non-empty image links for latest document version and specified language
      */
     Set<String> getPublicImageLinks(int docId, Language language);
+
+    Integer getFreeIndexForImageInTextEditor(Integer docId);
 }

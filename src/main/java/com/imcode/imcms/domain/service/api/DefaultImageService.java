@@ -93,6 +93,12 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageDT
         return repository.findNonEmptyImageLinkUrlByVersionAndLanguage(latestVersion, new LanguageJPA(language));
     }
 
+    @Override
+    public Integer getFreeIndexForImageInTextEditor(Integer docId) {
+        final int minIndex = Optional.ofNullable(repository.findMinIndexByVersion(docId)).orElse(-1);
+        return Math.min(minIndex, -1);
+    }
+
     private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
                               Function<Integer, Version> versionReceiver) {
 

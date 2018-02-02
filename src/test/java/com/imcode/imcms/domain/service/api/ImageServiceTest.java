@@ -332,4 +332,32 @@ public class ImageServiceTest {
             links.forEach(s -> assertTrue(s.startsWith(testLinkUrl)));
         }
     }
+
+    @Test
+    public void getFreeIndexForImageInTextEditor_When_SomePositiveIndexesExist_Expect_MinusOne() {
+        final int minIndex = TEST_IMAGE_INDEX;
+        final LanguageJPA lang = languageRepository.findAll().get(0);
+
+        IntStream.range(minIndex, minIndex + 10)
+                .forEach(index -> imageDataInitializer.generateImage(index, lang, workingVersion, null));
+
+        final Integer minIndexByVersion = imageService.getFreeIndexForImageInTextEditor(TEST_DOC_ID);
+
+        assertNotNull(minIndexByVersion);
+        assertEquals(-1, minIndexByVersion.intValue());
+    }
+
+    @Test
+    public void getFreeIndexForImageInTextEditor_When_SomeNegativeIndexExist_Expect_MinReturned() {
+        final int minIndex = TEST_IMAGE_INDEX - 10;
+        final LanguageJPA lang = languageRepository.findAll().get(0);
+
+        IntStream.range(minIndex, TEST_IMAGE_INDEX + 10)
+                .forEach(index -> imageDataInitializer.generateImage(index, lang, workingVersion, null));
+
+        final Integer minIndexByVersion = imageService.getFreeIndexForImageInTextEditor(TEST_DOC_ID);
+
+        assertNotNull(minIndexByVersion);
+        assertEquals(minIndex, minIndexByVersion.intValue());
+    }
 }
