@@ -297,4 +297,30 @@ public class ImageRepositoryTest {
         }
 
     }
+
+    @Test
+    public void findMinIndexByVersion_When_SomeRegularImagesExist_Expect_MinReturned() {
+        final int minIndex = IMAGE_INDEX;
+
+        IntStream.range(minIndex, minIndex + 10)
+                .forEach(index -> imageDataInitializer.generateImage(index, english, version, null));
+
+        final Integer minIndexByVersion = imageRepository.findMinIndexByVersion(DOC_ID);
+
+        assertNotNull(minIndexByVersion);
+        assertEquals(minIndex, minIndexByVersion.intValue());
+    }
+
+    @Test
+    public void findMinIndexByVersion_When_SomeNegativeIndexExist_Expect_MinReturned() {
+        final int minIndex = IMAGE_INDEX - 10;
+
+        IntStream.range(minIndex, IMAGE_INDEX + 10)
+                .forEach(index -> imageDataInitializer.generateImage(index, english, version, null));
+
+        final Integer minIndexByVersion = imageRepository.findMinIndexByVersion(DOC_ID);
+
+        assertNotNull(minIndexByVersion);
+        assertEquals(minIndex, minIndexByVersion.intValue());
+    }
 }

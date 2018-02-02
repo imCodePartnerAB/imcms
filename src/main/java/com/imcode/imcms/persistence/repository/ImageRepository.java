@@ -60,4 +60,7 @@ public interface ImageRepository extends JpaRepository<Image, Integer>, Versione
     @Modifying
     @Query(value = "DELETE FROM imcms_text_doc_images WHERE doc_id = ?1", nativeQuery = true)
     void deleteByDocId(Integer docId);
+
+    @Query(value = "SELECT MIN(img.index) FROM imcms_text_doc_images img WHERE img.doc_id=?1", nativeQuery = true)
+    Integer findMinIndexByVersion(int docId);
 }
