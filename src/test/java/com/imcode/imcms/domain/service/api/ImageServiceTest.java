@@ -341,10 +341,13 @@ public class ImageServiceTest {
         IntStream.range(minIndex, minIndex + 10)
                 .forEach(index -> imageDataInitializer.generateImage(index, lang, workingVersion, null));
 
-        final Integer minIndexByVersion = imageService.getFreeIndexForImageInTextEditor(TEST_DOC_ID);
+        final ImageDTO imageDTO = new ImageDTO(null, TEST_DOC_ID, null, lang.getCode());
+        imageDTO.setInText(true);
 
-        assertNotNull(minIndexByVersion);
-        assertEquals(-1, minIndexByVersion.intValue());
+        final ImageDTO receivedImage = imageService.getImage(imageDTO);
+
+        assertNotNull(receivedImage);
+        assertEquals(-1, receivedImage.getIndex().intValue());
     }
 
     @Test
@@ -352,12 +355,15 @@ public class ImageServiceTest {
         final int minIndex = TEST_IMAGE_INDEX - 10;
         final LanguageJPA lang = languageRepository.findAll().get(0);
 
-        IntStream.range(minIndex, TEST_IMAGE_INDEX + 10)
+        IntStream.range(minIndex + 1, TEST_IMAGE_INDEX + 10)
                 .forEach(index -> imageDataInitializer.generateImage(index, lang, workingVersion, null));
 
-        final Integer minIndexByVersion = imageService.getFreeIndexForImageInTextEditor(TEST_DOC_ID);
+        final ImageDTO imageDTO = new ImageDTO(null, TEST_DOC_ID, null, lang.getCode());
+        imageDTO.setInText(true);
 
-        assertNotNull(minIndexByVersion);
-        assertEquals(minIndex, minIndexByVersion.intValue());
+        final ImageDTO receivedImage = imageService.getImage(imageDTO);
+
+        assertNotNull(receivedImage);
+        assertEquals(minIndex, receivedImage.getIndex().intValue());
     }
 }

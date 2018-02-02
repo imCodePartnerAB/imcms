@@ -21,5 +21,4 @@ public interface ImageService extends VersionedContentService<ImageDTO>, Deleter
      */
     Set<String> getPublicImageLinks(int docId, Language language);
 
-    Integer getFreeIndexForImageInTextEditor(Integer docId);
 }
