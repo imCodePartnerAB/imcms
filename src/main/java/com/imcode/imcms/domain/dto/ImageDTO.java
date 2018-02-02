@@ -27,10 +27,11 @@ public class ImageDTO extends ImageData {
     private LoopEntryRefDTO loopEntryRef;
     private String generatedFilePath;
 
-    public ImageDTO(Integer index, Integer docId, LoopEntryRef loopEntryRef) {
+    public ImageDTO(Integer index, Integer docId, LoopEntryRef loopEntryRef, String langCode) {
         this.index = index;
         this.docId = docId;
         this.loopEntryRef = (loopEntryRef == null) ? null : new LoopEntryRefDTO(loopEntryRef);
+        this.langCode = langCode;
         this.name = "";
         this.path = "";
         this.url = "";
@@ -39,10 +40,9 @@ public class ImageDTO extends ImageData {
         this.format = Format.JPEG;
         this.width = 0;
         this.height = 0;
-        this.langCode = "en";
     }
 
     public ImageDTO(Integer index, Integer docId) {
-        this(index, docId, null);
+        this(index, docId, null, "en");
     }
 }

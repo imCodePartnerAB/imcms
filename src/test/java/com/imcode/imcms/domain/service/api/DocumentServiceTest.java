@@ -576,9 +576,8 @@ public class DocumentServiceTest {
                 textDTO.setLangCode(langCode);
                 textService.save(textDTO);
 
-                final ImageDTO imageDTO = new ImageDTO(testIndex, createdDocId, loopEntryRefDTO);
+                final ImageDTO imageDTO = new ImageDTO(testIndex, createdDocId, loopEntryRefDTO, langCode);
                 imageDTO.setFormat(Format.JPEG);
-                imageDTO.setLangCode(langCode);
 
                 imageService.saveImage(imageDTO);
             });
