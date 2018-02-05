@@ -16,6 +16,7 @@ public class ImageDTO extends ImageData {
     private static final long serialVersionUID = -3103155597832120014L;
     private Integer index;
     private Integer docId;
+    private boolean inText;
 
     /**
      * Two-letter language code ISO-639-1
@@ -44,5 +45,9 @@ public class ImageDTO extends ImageData {
 
     public ImageDTO(Integer index, Integer docId) {
         this(index, docId, null, "en");
+    }
+
+    public ImageDTO(ImageDTO from) {
+        this(from.index, from.docId, from.loopEntryRef, from.langCode);
     }
 }

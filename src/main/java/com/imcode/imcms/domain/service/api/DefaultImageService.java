@@ -49,6 +49,11 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
 
     @Override
     public ImageDTO getImage(ImageDTO dataHolder) {
+
+        if ((dataHolder.getIndex() == null) && dataHolder.isInText()) {
+            return getEmptyDtoForTextEditor(dataHolder);
+        }
+
         return getImage(
                 dataHolder.getDocId(),
                 dataHolder.getIndex(),
@@ -94,10 +99,16 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
         return repository.findNonEmptyImageLinkUrlByVersionAndLanguage(latestVersion, new LanguageJPA(language));
     }
 
-    @Override
-    public Integer getFreeIndexForImageInTextEditor(Integer docId) {
-        final int minIndex = Optional.ofNullable(repository.findMinIndexByVersion(docId)).orElse(-1);
-        return Math.min(minIndex, -1);
+    private ImageDTO getEmptyDtoForTextEditor(ImageDTO dataHolder) {
+        final ImageDTO emptyDTO = new ImageDTO(dataHolder);
+        emptyDTO.setIndex(getFreeIndexForImageInTextEditor(dataHolder.getDocId()));
+
+        return emptyDTO;
+    }
+
+    private Integer getFreeIndexForImageInTextEditor(Integer docId) {
+        final int minIndex = Optional.ofNullable(repository.findMinIndexByVersion(docId)).orElse(0);
+        return Math.min(minIndex, 0) - 1;
     }
 
     @Override
